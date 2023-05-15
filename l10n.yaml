@@ -1,0 +1,7 @@
+arb-dir: lib/src/localization
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+nullable-getter: false
+
+# https://codewithandrea.com/articles/flutter-localization-build-context-extension/#the-l10nyaml-file
+# run [flutter gen-l10n] to regenerate files
