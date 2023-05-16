@@ -68,19 +68,76 @@ class ExtendedAppBar extends StatelessWidget {
                     ],
                   ),
                 ),
+                Flexible(
+                  child: Center(
+                    child: Container(
+                      color: Colors.black,
+                      width: 300,
+                      height: 0.5,
+                    ),
+                  ),
+                ),
                 Expanded(
                   flex: 2,
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text(
-                        'Thu nhập',
-                        style: TextStyle(fontSize: 18),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.keyboard_arrow_left),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Flexible(
+                                  child: Text('JAN',
+                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900))),
+                              Flexible(
+                                child: Text(
+                                  '2023',
+                                  style: TextStyle(fontSize: 18, height: 0),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Icon(Icons.keyboard_arrow_right),
+                        ],
                       ),
-                      Text(
-                        'Chi tiêu',
-                        style: TextStyle(fontSize: 18),
+                      SizedBox(width: 30),
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('+', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    '2.000.000 VND',
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Flexible(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('-', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    '3.240.000 VND',
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -135,72 +192,51 @@ class ChildAppBar extends StatelessWidget {
 
 List<Widget> _coloredContainer = [
   const Card(
+    // key: ValueKey(1),
     margin: EdgeInsets.all(8),
     color: Colors.red,
     child: SizedBox(
       width: 200,
       height: 100,
+      child: Center(
+        child: Text('Biểu đồ chi tiêu trong tháng'),
+      ),
     ),
   ),
   const Card(
+    // key: ValueKey(1),
     margin: EdgeInsets.all(8),
     color: Colors.green,
     child: SizedBox(
       width: 200,
-      height: 200,
+      height: 100,
+      child: Center(
+        child: Text('Biểu đồ thu nhập trong tháng'),
+      ),
     ),
   ),
-  Container(
-    color: Colors.blue,
-    width: 200,
-    height: 300,
-  ),
   const Card(
+    // key: ValueKey(1),
     margin: EdgeInsets.all(8),
     color: Colors.purple,
     child: SizedBox(
       width: 200,
-      height: 150,
-    ),
-  ),
-  const Card(
-    margin: EdgeInsets.all(8),
-    color: Colors.teal,
-    child: SizedBox(
-      width: 200,
-      height: 100,
-    ),
-  ),
-  const Card(
-    margin: EdgeInsets.all(8),
-    color: Colors.red,
-    child: SizedBox(
-      width: 200,
-      height: 100,
-    ),
-  ),
-  const Card(
-    margin: EdgeInsets.all(8),
-    color: Colors.green,
-    child: SizedBox(
-      width: 200,
       height: 200,
+      child: Center(
+        child: Text('Khoản tiết kiệm'),
+      ),
     ),
   ),
   const Card(
-    margin: EdgeInsets.all(8),
-    color: Colors.purple,
-    child: SizedBox(
-      width: 200,
-      height: 150,
-    ),
-  ),
-  const Card(
+    // key: ValueKey(1),
     margin: EdgeInsets.all(8),
     color: Colors.teal,
     child: SizedBox(
       width: 200,
-      height: 100,
+      height: 800,
+      child: Center(
+        child: Text('Các transaction'),
+      ),
     ),
   ),
 ];
