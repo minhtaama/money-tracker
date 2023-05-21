@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/navigation_bar/presentation/bottom_app_bar/bottom_app_bar_with_fab.dart';
+import 'package:money_tracker_app/src/features/navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
 import 'package:money_tracker_app/src/features/tab_page/presentation/custom_tab_page/custom_tab_page_controller.dart';
-import 'package:money_tracker_app/src/localization/extensions/app_localization_context_extension.dart';
-import 'package:money_tracker_app/src/localization/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/app_localization_context_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,12 +31,12 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
-        iconData: Icons.home,
+        iconData: Icons.home.temporaryIcon,
         text: context.localize.home,
       ),
       BottomAppBarItem(
         path: RoutePath.accounts,
-        iconData: Icons.account_balance_wallet_sharp,
+        iconData: Icons.account_balance_wallet_sharp.temporaryIcon,
         text: context.localize.accounts,
       ),
     ];
@@ -43,12 +45,28 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        tooltip: "Add Transaction".hardcoded,
-        onPressed: () {
-          //TODO: Implement FAB
-        },
-        child: const Icon(Icons.add), //TODO: Implement Hive icon
+      floatingActionButton: CustomFloatingActionButton(
+        items: [
+          FABItem(
+            icon: Icons.arrow_circle_down.temporaryIcon,
+            label: 'Income'.hardcoded,
+            color: Colors.lightBlueAccent,
+            onTap: () => print('tapped'),
+          ),
+          FABItem(
+            icon: Icons.compare_arrows.temporaryIcon,
+            label: 'Transfer'.hardcoded,
+            color: Colors.blueGrey,
+            onTap: () => print('tapped'),
+          ),
+          FABItem(
+            icon: Icons.arrow_circle_up,
+            label: 'Expense'.hardcoded,
+            color: Colors.redAccent,
+            onTap: () => print('tapped'),
+          ),
+          //TODO: Implement Hive icon
+        ],
       ),
       floatingActionButtonLocation: isFABDocked
           ? FloatingActionButtonLocation.centerDocked

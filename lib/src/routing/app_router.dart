@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import '../features/tab_page/presentation/tab_page_accounts/accounts_screen.dart';
-import '../features/tab_page/presentation/tab_page_home/home_screen.dart';
+import '../features/tab_page/presentation/tab_accounts/accounts_screen.dart';
+import '../features/tab_page/presentation/tab_home/home_screen.dart';
 import '../features/navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
 
 class RoutePath {
