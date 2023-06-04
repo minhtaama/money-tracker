@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 
 class CustomListViewState {
   CustomListViewState(

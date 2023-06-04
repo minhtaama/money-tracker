@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/tab_home/app_bar.dart';
-import 'package:money_tracker_app/src/features/date_time/presentation/day_card.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/tab_home/extended_app_bar.dart';
-import '../custom_tab_page/custom_tab_page.dart';
-import '../custom_tab_page/custom_tab_bar.dart';
+import 'package:money_tracker_app/src/features/home/presentation/app_bar.dart';
+import 'package:money_tracker_app/src/features/date_time/presentation/homepage_card.dart';
+import 'package:money_tracker_app/src/features/home/presentation/extended_app_bar.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 List<Widget> _coloredContainer = [
-  DayCard(
+  HomePageCard(
     header: 'Thứ 2 - 23/3/2023',
     title: '+ 840.000 VND',
     child: Column(
@@ -33,7 +33,7 @@ List<Widget> _coloredContainer = [
       ],
     ),
   ),
-  DayCard(
+  HomePageCard(
     header: 'Thứ 3 - 24/3/2023',
     title: '+ 840.000 VND',
     child: Column(
@@ -45,7 +45,7 @@ List<Widget> _coloredContainer = [
       ],
     ),
   ),
-  DayCard(
+  HomePageCard(
     header: 'Thứ 4 - 24/3/2023',
     title: '+ 840.000 VND',
     child: Column(

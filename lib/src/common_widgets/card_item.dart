@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theming/app_theme.dart';
 
 class CardItem extends StatelessWidget {
   const CardItem({Key? key, required this.child, this.color}) : super(key: key);
@@ -15,10 +16,10 @@ class CardItem extends StatelessWidget {
         ),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: color ?? Theme.of(context).colorScheme.surfaceVariant,
+          color: color ?? AppTheme.of(context).background2,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 1, offset: const Offset(1, 2)),
+            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 2, offset: const Offset(1, 2)),
           ],
         ),
         child: Padding(

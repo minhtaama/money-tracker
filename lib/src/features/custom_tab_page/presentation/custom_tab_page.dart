@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/custom_tab_page/custom_tab_bar.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/custom_tab_page/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 
@@ -88,7 +88,6 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // ReorderableListView(
         ListView(
           physics: widget.customTabBar != null
               ? SnapScrollPhysics(
@@ -96,16 +95,6 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
                 )
               : const ClampingScrollPhysics(),
           controller: _controller,
-          // scrollController: _controller,
-          // onReorder: (int oldIndex, int newIndex) {
-          //   setState(() {
-          //     if (oldIndex < newIndex) {
-          //       newIndex -= 1;
-          //     }
-          //     final Widget item = widget.children.removeAt(oldIndex - 1);
-          //     widget.children.insert(newIndex - 1, item);
-          //   });
-          // },
           children: [
             SizedBox(height: widget.customTabBar != null ? kExtendedCustomAppBarHeight : 0),
             ...widget.children,

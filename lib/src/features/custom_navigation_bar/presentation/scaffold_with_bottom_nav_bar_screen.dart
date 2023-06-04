@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/features/navigation_bar/presentation/bottom_app_bar/bottom_app_bar_with_fab.dart';
-import 'package:money_tracker_app/src/features/navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/custom_tab_page/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_with_fab.dart';
+import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/extensions/app_localization_context_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -78,6 +79,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
           context.go(tabItems[tabIndex].path); // Change Tab
         },
       ),
+      backgroundColor: AppTheme.of(context).background,
       body: SafeArea(
         child: widget.child,
       ),

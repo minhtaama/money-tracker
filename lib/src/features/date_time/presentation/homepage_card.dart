@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-class DayCard extends StatelessWidget {
-  const DayCard({Key? key, this.header, this.title, required this.child}) : super(key: key);
+class HomePageCard extends StatelessWidget {
+  const HomePageCard({Key? key, this.header, this.title, required this.child}) : super(key: key);
   final String? header;
   final String? title;
   final Widget child;

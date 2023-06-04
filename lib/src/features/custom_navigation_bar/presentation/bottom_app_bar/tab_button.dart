@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'bottom_app_bar_with_fab.dart';
 
 class TabButton extends StatelessWidget {
@@ -49,13 +50,13 @@ class TabButton extends StatelessWidget {
                 children: [
                   Icon(
                     item.iconData,
-                    color: isSelected ? Colors.white : backgroundColor,
+                    color: isSelected ? AppTheme.of(context).accentNegative : backgroundColor,
                   ), //TODO: Implement Hive icon
                   const SizedBox(width: 8), //TODO: Implement Gaps
                   Text(
                     item.text,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : backgroundColor,
+                      color: isSelected ? AppTheme.of(context).accentNegative : backgroundColor,
                     ),
                   ),
                 ],

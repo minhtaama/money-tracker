@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/features/navigation_bar/presentation/bottom_app_bar/tab_button.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/custom_tab_page/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/tab_button.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 //This class is used as element in `items` list of BottomAppBarWithFAB
@@ -54,7 +55,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     List<Widget> buttons = List.generate(widget.items.length, (index) {
       bool isSelected = _selectedIndex == index;
       return TabButton(
-        backgroundColor: Theme.of(context).colorScheme.primary, //TODO: Implement Theme
+        backgroundColor: AppTheme.of(context).secondary,
         index: index,
         onTap: _updateIndex,
         isLeft: index < widget.items.length / 2,
@@ -66,16 +67,21 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     return AnimatedContainer(
       duration: kNavBarDuration,
       height: bottomAppBarHeight,
-      child: BottomAppBar(
-        color: Colors.white, //TODO: Hardnumber
-        child: AnimatedOpacity(
-          opacity: isNavBarGoUp ? 1 : 0,
-          duration: kNavBarDuration,
-          curve: isNavBarGoUp ? Curves.easeInExpo : Curves.easeOutExpo,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: buttons,
+      child: Theme(
+        data: ThemeData(useMaterial3: false),
+        child: BottomAppBar(
+          color: AppTheme.of(context).background3, //TODO: Hardnumber
+          surfaceTintColor: null,
+          elevation: 0,
+          child: AnimatedOpacity(
+            opacity: isNavBarGoUp ? 1 : 0,
+            duration: kNavBarDuration,
+            curve: isNavBarGoUp ? Curves.easeInExpo : Curves.easeOutExpo,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: buttons,
+            ),
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/features/tab_page/presentation/custom_tab_page/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 class CustomTabBar extends ConsumerWidget {
@@ -12,14 +12,11 @@ class CustomTabBar extends ConsumerWidget {
 
   double _getAppBarHeight({required bool isScrollIdle, required double pixelsOffset}) {
     double height;
-
     height = (kExtendedCustomAppBarHeight - 2 * pixelsOffset)
         .clamp(kCustomAppBarHeight, kExtendedCustomAppBarHeight);
-
     if (isScrollIdle) {
       return height > _triggerHeight ? kExtendedCustomAppBarHeight : kCustomAppBarHeight;
     }
-
     return height;
   }
 

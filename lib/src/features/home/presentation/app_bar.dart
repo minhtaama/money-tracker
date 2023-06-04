@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
@@ -10,7 +11,7 @@ class ChildAppBar extends StatelessWidget {
     return GestureDetector(
       onTap: () => print('child tapped'),
       child: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: AppTheme.of(context).background,
         height: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),

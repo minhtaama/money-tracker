@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 class FABItem {
@@ -30,9 +31,10 @@ class _FABOverlayButton extends StatelessWidget {
       width: height,
       height: height,
       decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 30)]),
+        color: color,
+        borderRadius: BorderRadius.circular(100),
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 30)],
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
@@ -84,27 +86,22 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     overlayBoxHeight = MediaQuery.of(context).size.height / 5;
 
     _widgets = List.generate(widget.items.length, (index) {
-      return Expanded(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            //This is how the overlay buttons is aligned.
-            mainAxisAlignment: index == 0 || index == widget.items.length - 1
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: widget.items[index].onTap,
-                child: _FABOverlayButton(
-                  icon: widget.items[index].icon,
-                  label: widget.items[index].label,
-                  color: widget.items[index].color,
-                  height: overlayBoxHeight / 1.7,
-                ),
-              ),
-            ],
+      return Column(
+        //This is how the overlay buttons is aligned.
+        mainAxisAlignment: index == 0 || index == widget.items.length - 1
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: widget.items[index].onTap,
+            child: _FABOverlayButton(
+              icon: widget.items[index].icon,
+              label: widget.items[index].label,
+              color: widget.items[index].color,
+              height: overlayBoxHeight / 2,
+            ),
           ),
-        ),
+        ],
       );
     });
     super.didChangeDependencies();
@@ -147,7 +144,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     //color: Colors.deepOrangeAccent,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: _widgets,
                     ),
@@ -198,7 +195,11 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     return FloatingActionButton(
       key: globalKey,
       onPressed: _showOverlay,
-      child: const Icon(Icons.add),
+      backgroundColor: AppTheme.of(context).secondary,
+      child: Icon(
+        Icons.add,
+        color: AppTheme.of(context).accentNegative,
+      ),
     );
   }
 }
