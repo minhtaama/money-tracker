@@ -5,15 +5,19 @@ import 'package:money_tracker_app/src/features/home/presentation/extended_app_ba
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
 
+import '../../../theming/app_theme.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomTabPage(
-      customTabBar: const CustomTabBar(
-        extendedChild: ExtendedAppBar(),
-        child: ChildAppBar(),
+      customTabBar: CustomTabBar(
+        extendedTabBar: ExtendedTabBar(
+            backgroundColor: AppTheme.of(context).primary, child: const ExtendedHomeAppBar()),
+        childTabBar:
+            ChildTabBar(backgroundColor: AppTheme.of(context).background, child: const HomeAppBar()),
       ),
       children: _coloredContainer,
     );

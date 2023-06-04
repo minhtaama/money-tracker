@@ -4,8 +4,8 @@ import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../utils/constants.dart';
 
-class ChildAppBar extends StatelessWidget {
-  const ChildAppBar({Key? key}) : super(key: key);
+class HomeAppBar extends StatelessWidget {
+  const HomeAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

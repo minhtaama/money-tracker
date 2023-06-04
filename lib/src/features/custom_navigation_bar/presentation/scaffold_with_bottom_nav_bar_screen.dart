@@ -79,9 +79,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       ),
       extendBody: false,
       backgroundColor: AppTheme.of(context).background,
-      body: SafeArea(
-        child: widget.child,
-      ),
+      body: widget.child,
     );
   }
 }

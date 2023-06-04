@@ -7,8 +7,8 @@ const kHeader3TextStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 18);
 const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 
 // Value related to CustomTabBar and CustomTabPage
-const double kCustomAppBarHeight = 50;
-const double kExtendedCustomAppBarHeight = 230;
+const double kCustomTabBarHeight = 50;
+const double kExtendedCustomTabBarHeight = 230;
 const double kTriggerHeight = 10;
 const Duration kAppBarExtendDuration = Duration(milliseconds: 10);
 
@@ -32,4 +32,6 @@ class Gap {
   static get h32 => const SizedBox(height: 32);
   static get h40 => const SizedBox(height: 40);
   static get h48 => const SizedBox(height: 48);
+
+  static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;
 }

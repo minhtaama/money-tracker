@@ -91,12 +91,12 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
         ListView(
           physics: widget.customTabBar != null
               ? SnapScrollPhysics(
-                  snaps: [Snap.avoidZone(0, kExtendedCustomAppBarHeight - kCustomAppBarHeight)],
+                  snaps: [Snap.avoidZone(0, kExtendedCustomTabBarHeight - kCustomTabBarHeight)],
                 )
               : const ClampingScrollPhysics(),
           controller: _controller,
           children: [
-            SizedBox(height: widget.customTabBar != null ? kExtendedCustomAppBarHeight : 0),
+            SizedBox(height: widget.customTabBar != null ? kExtendedCustomTabBarHeight : 0),
             ...widget.children,
           ],
         ),
