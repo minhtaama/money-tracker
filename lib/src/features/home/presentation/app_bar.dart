@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import '../../../utils/constants.dart';
 
 class ChildAppBar extends StatelessWidget {
   const ChildAppBar({Key? key}) : super(key: key);
@@ -25,13 +26,7 @@ class ChildAppBar extends StatelessWidget {
                 width: 8,
               ),
               Expanded(
-                child: Text(
-                  '9.000.000 VND'.hardcoded,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
+                child: Text('9.000.000 VND'.hardcoded, style: kHeader2TextStyle),
               ),
               const Icon(Icons.remove_red_eye).temporaryIcon
             ],

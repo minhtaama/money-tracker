@@ -24,11 +24,6 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
 class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNavBar> {
   @override
   Widget build(BuildContext context) {
-    // Watch state in TabPage to change behaviour of Floating Action Button
-    bool isFABDocked =
-        ref.watch(customListViewStateControllerProvider.select((value) => value.isScrollForward));
-
-    // List of items in BottomAppBar
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
@@ -42,43 +37,47 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       ),
     ];
 
+    final fabItems = <FABItem>[
+      FABItem(
+        icon: Icons.arrow_circle_down.temporaryIcon,
+        label: 'Income'.hardcoded,
+        color: Colors.lightBlueAccent,
+        onTap: () => print('tapped'),
+      ),
+      FABItem(
+        icon: Icons.compare_arrows.temporaryIcon,
+        label: 'Transfer'.hardcoded,
+        color: Colors.blueGrey,
+        onTap: () => print('tapped'),
+      ),
+      FABItem(
+        icon: Icons.arrow_circle_up,
+        label: 'Expense'.hardcoded,
+        color: Colors.redAccent,
+        onTap: () => print('tapped'),
+      ),
+      //TODO: Implement Hive icon
+    ];
+
+    // Watch state in TabPage to change behaviour of Floating Action Button
+    bool isFABDocked =
+        ref.watch(customListViewStateControllerProvider.select((value) => value.isScrollForward));
+
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
-      floatingActionButton: CustomFloatingActionButton(
-        items: [
-          FABItem(
-            icon: Icons.arrow_circle_down.temporaryIcon,
-            label: 'Income'.hardcoded,
-            color: Colors.lightBlueAccent,
-            onTap: () => print('tapped'),
-          ),
-          FABItem(
-            icon: Icons.compare_arrows.temporaryIcon,
-            label: 'Transfer'.hardcoded,
-            color: Colors.blueGrey,
-            onTap: () => print('tapped'),
-          ),
-          FABItem(
-            icon: Icons.arrow_circle_up,
-            label: 'Expense'.hardcoded,
-            color: Colors.redAccent,
-            onTap: () => print('tapped'),
-          ),
-          //TODO: Implement Hive icon
-        ],
-      ),
+      floatingActionButton: CustomFloatingActionButton(items: fabItems),
       floatingActionButtonLocation: isFABDocked
           ? FloatingActionButtonLocation.centerDocked
           : FloatingActionButtonLocation.centerFloat,
-      extendBody: true,
       bottomNavigationBar: BottomAppBarWithFAB(
         items: tabItems,
         onTabSelected: (int tabIndex) {
           context.go(tabItems[tabIndex].path); // Change Tab
         },
       ),
+      extendBody: false,
       backgroundColor: AppTheme.of(context).background,
       body: SafeArea(
         child: widget.child,

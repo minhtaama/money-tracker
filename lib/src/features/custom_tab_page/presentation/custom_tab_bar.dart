@@ -12,7 +12,7 @@ class CustomTabBar extends ConsumerWidget {
 
   double _getAppBarHeight({required bool isScrollIdle, required double pixelsOffset}) {
     double height;
-    height = (kExtendedCustomAppBarHeight - 2 * pixelsOffset)
+    height = (kExtendedCustomAppBarHeight - pixelsOffset - 2) // 2px is added for clamping
         .clamp(kCustomAppBarHeight, kExtendedCustomAppBarHeight);
     if (isScrollIdle) {
       return height > _triggerHeight ? kExtendedCustomAppBarHeight : kCustomAppBarHeight;
@@ -24,17 +24,9 @@ class CustomTabBar extends ConsumerWidget {
     final height = appBarHeight;
 
     if (isExtendedChild) {
-      return height <= _triggerHeight
-          ? 1 - kCustomAppBarHeight / height
-          : height >= kCustomAppBarHeight
-              ? 1
-              : 0;
+      return (height - kCustomAppBarHeight) / (kExtendedCustomAppBarHeight - kCustomAppBarHeight);
     } else {
-      return height >= _triggerHeight
-          ? 1 - height / kExtendedCustomAppBarHeight
-          : height <= _triggerHeight
-              ? 1
-              : 0;
+      return 1 - (height - kCustomAppBarHeight) / (kExtendedCustomAppBarHeight - kCustomAppBarHeight);
     }
   }
 
