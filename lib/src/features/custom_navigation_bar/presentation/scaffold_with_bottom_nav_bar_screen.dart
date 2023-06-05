@@ -21,6 +21,7 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
 }
 
 class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNavBar> {
+  bool isHomeScreen = true;
   @override
   Widget build(BuildContext context) {
     final tabItems = <BottomAppBarItem>[
@@ -66,7 +67,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
-      floatingActionButton: CustomFloatingActionButton(items: fabItems),
+      floatingActionButton: isHomeScreen ? CustomFloatingActionButton(items: fabItems) : null,
       floatingActionButtonLocation: isFABDocked
           ? FloatingActionButtonLocation.centerDocked
           : FloatingActionButtonLocation.centerFloat,
@@ -74,6 +75,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         items: tabItems,
         onTabSelected: (int tabIndex) {
           context.go(tabItems[tabIndex].path); // Change Tab
+          isHomeScreen = tabIndex == 0;
         },
       ),
       extendBody: false,

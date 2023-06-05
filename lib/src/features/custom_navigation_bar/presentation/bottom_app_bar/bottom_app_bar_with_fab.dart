@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/tab_button.dart';
+import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_button.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
-import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 //This class is used as element in `items` list of BottomAppBarWithFAB
 class BottomAppBarItem {
-  const BottomAppBarItem({required this.path, required this.iconData, required this.text});
+  const BottomAppBarItem({
+    required this.path,
+    required this.iconData,
+    required this.text,
+  });
   final String path;
   //TODO: Implement Hive icon
   final IconData iconData;
@@ -55,7 +58,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     //Generate button from items argument
     List<Widget> buttons = List.generate(widget.items.length, (index) {
       bool isSelected = _selectedIndex == index;
-      return TabButton(
+      return BottomAppBarButton(
         backgroundColor: context.appTheme.primary,
         index: index,
         onTap: _updateIndex,

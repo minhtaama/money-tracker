@@ -32,6 +32,7 @@ final goRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/home',
+          name: 'home',
           pageBuilder: (_, __) => showFadeTransitionPage(
             _,
             __,
@@ -72,6 +73,7 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/accounts',
+          name: 'accounts',
           pageBuilder: (_, __) => showFadeTransitionPage(
             _,
             __,

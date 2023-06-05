@@ -23,5 +23,6 @@ Page<T> showAddTransactionModalPage<T>(BuildContext context, GoRouterState state
     backgroundColor: context.appTheme.background,
     modalBarrierColor: context.appTheme.background.withOpacity(kModalBarrierOpacity - 0.3),
     child: child,
+    isScrollControlled: true,
   );
 }

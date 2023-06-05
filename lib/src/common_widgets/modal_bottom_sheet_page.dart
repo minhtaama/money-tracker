@@ -6,7 +6,12 @@ class ModalBottomSheetPage<T> extends Page<T> {
   /// set `parentNavigatorKey` of the [GoRoute] to the root-key
   /// so that this Modal can display on top of the bottom navigation bar.
   ///
-  /// [https://stackoverflow.com/questions/75690299/how-do-i-show-a-dialog-in-flutter-using-a-go-router-route]
+  /// > https://stackoverflow.com/questions/75690299/how-do-i-show-a-dialog-in-flutter-using-a-go-router-route
+  ///
+  /// Note: The ModalBottomSheet animation isn't working when testing on profile mode
+  /// with Samsung device when having a accessibility application turned on
+  ///
+  /// > https://github.com/flutter/flutter/issues/119094
   const ModalBottomSheetPage({
     required this.child,
     this.shape,
@@ -15,7 +20,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
     this.backgroundColor,
     this.modalBarrierColor,
     this.isDismissible = true,
-    this.isScrollControlled = true,
+    this.isScrollControlled = false,
     super.key,
     super.name,
     super.arguments,
@@ -41,6 +46,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
         modalBarrierColor: modalBarrierColor,
         isDismissible: isDismissible,
         isScrollControlled: isScrollControlled,
+        enableDrag: true,
         useSafeArea: true,
         builder: (context) => Padding(
           padding: const EdgeInsets.all(16),

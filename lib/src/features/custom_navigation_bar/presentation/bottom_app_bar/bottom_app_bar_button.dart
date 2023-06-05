@@ -3,8 +3,8 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'bottom_app_bar_with_fab.dart';
 
-class TabButton extends StatelessWidget {
-  const TabButton({
+class BottomAppBarButton extends StatelessWidget {
+  const BottomAppBarButton({
     Key? key,
     required this.index,
     required this.onTap,
