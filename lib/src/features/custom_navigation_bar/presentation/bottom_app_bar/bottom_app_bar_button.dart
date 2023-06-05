@@ -24,7 +24,7 @@ class BottomAppBarButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // use isLeft to set padding for symmetric with centered FAB
-    EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 28 : 40, right: isLeft ? 40 : 28);
+    EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 40 : 35, right: isLeft ? 35 : 40);
     BorderRadius borderRadius = BorderRadius.circular(12);
 
     return Expanded(

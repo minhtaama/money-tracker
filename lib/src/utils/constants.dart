@@ -15,7 +15,7 @@ const Duration kAppBarExtendDuration = Duration(milliseconds: 10);
 // Value related to BottomAppBar
 const Duration kBottomAppBarDuration = Duration(milliseconds: 150);
 const double kBottomAppBarHeight = 70.0;
-const double kModalBarrierOpacity = 0.8;
+const double kModalBarrierOpacity = 0.9;
 
 // Define Gaps
 class Gap {
