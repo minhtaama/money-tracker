@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/theming/app_theme.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'bottom_app_bar_with_fab.dart';
 
 class TabButton extends StatelessWidget {
@@ -23,7 +24,7 @@ class TabButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // use isLeft to set padding for symmetric with centered FAB
-    EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 10 : 45, right: isLeft ? 45 : 10);
+    EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 28 : 40, right: isLeft ? 40 : 28);
     BorderRadius borderRadius = BorderRadius.circular(12);
 
     return Expanded(
@@ -37,7 +38,7 @@ class TabButton extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: backgroundColor,
+                color: isSelected ? backgroundColor : Colors.transparent,
               ),
               borderRadius: borderRadius,
               color: isSelected ? backgroundColor : Colors.transparent,
@@ -50,13 +51,14 @@ class TabButton extends StatelessWidget {
                 children: [
                   Icon(
                     item.iconData,
-                    color: isSelected ? AppTheme.of(context).accentNegative : backgroundColor,
+                    color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
                   ), //TODO: Implement Hive icon
                   const SizedBox(width: 8), //TODO: Implement Gaps
                   Text(
                     item.text,
-                    style: TextStyle(
-                      color: isSelected ? AppTheme.of(context).accentNegative : backgroundColor,
+                    style: kHeader4TextStyle.copyWith(
+                      color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
+                      fontFamily: 'WixMadeforDisplay',
                     ),
                   ),
                 ],

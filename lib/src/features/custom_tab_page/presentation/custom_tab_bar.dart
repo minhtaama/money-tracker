@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import '../../../theming/app_theme.dart';
 
+/// Use this class as the value for [CustomTabPage]'s argument
 class CustomTabBar extends ConsumerWidget {
   const CustomTabBar({Key? key, this.extendedTabBar, required this.childTabBar}) : super(key: key);
   final ChildTabBar childTabBar;
@@ -13,7 +14,7 @@ class CustomTabBar extends ConsumerWidget {
 
   double _getAppBarHeight({required bool isScrollIdle, required double pixelsOffset}) {
     double height;
-    height = (kExtendedCustomTabBarHeight - pixelsOffset - 2) // 2px is added for clamping
+    height = (kExtendedCustomTabBarHeight - pixelsOffset)
         .clamp(kCustomTabBarHeight, kExtendedCustomTabBarHeight);
     if (isScrollIdle) {
       return height > _triggerHeight ? kExtendedCustomTabBarHeight : kCustomTabBarHeight;
@@ -80,6 +81,7 @@ class CustomTabBar extends ConsumerWidget {
   }
 }
 
+/// Use this class as the value for [CustomTabBar]'s argument
 class ChildTabBar extends StatelessWidget {
   const ChildTabBar({Key? key, required this.backgroundColor, required this.child}) : super(key: key);
   final Color backgroundColor;
@@ -97,6 +99,7 @@ class ChildTabBar extends StatelessWidget {
   }
 }
 
+/// Use this class as the value for [CustomTabBar]'s argument
 class ExtendedTabBar extends StatelessWidget {
   const ExtendedTabBar({Key? key, required this.backgroundColor, required this.child}) : super(key: key);
   final Color backgroundColor;
@@ -104,20 +107,26 @@ class ExtendedTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [backgroundColor, AppTheme.of(context).background],
-          stops: [0, 1],
-        )),
-        alignment: Alignment.center,
-        child: Padding(
-          padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
-          child: child,
-        ));
+    return Stack(children: [
+      Transform(
+        transform: Matrix4.identity()
+          ..scale(1.5, 1.0, 1.0)
+          ..translate(0.0, -20.0, 0.0),
+        origin: Offset(MediaQuery.of(context).size.width / 2, kExtendedCustomTabBarHeight / 2),
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(200),
+          ),
+          alignment: Alignment.center,
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
+        child: child,
+      ),
+    ]);
   }
 }

@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/features/custom_navigation_bar/presentatio
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 //This class is used as element in `items` list of BottomAppBarWithFAB
 class BottomAppBarItem {
@@ -48,14 +49,14 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     // Watch to the provider value (represent user scroll direction)
     final isShowAppBar =
         ref.watch(customListViewStateControllerProvider.select((value) => value.isScrollForward));
-    double bottomAppBarHeight = isShowAppBar ? 70.0 : 0;
-    bool isNavBarGoUp = bottomAppBarHeight == 70;
+    double bottomAppBarHeight = isShowAppBar ? kBottomAppBarHeight : 0;
+    bool isBottomAppBarGoUp = bottomAppBarHeight == kBottomAppBarHeight;
 
     //Generate button from items argument
     List<Widget> buttons = List.generate(widget.items.length, (index) {
       bool isSelected = _selectedIndex == index;
       return TabButton(
-        backgroundColor: AppTheme.of(context).secondary,
+        backgroundColor: context.appTheme.primary,
         index: index,
         onTap: _updateIndex,
         isLeft: index < widget.items.length / 2,
@@ -65,18 +66,18 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     });
 
     return AnimatedContainer(
-      duration: kNavBarDuration,
+      duration: kBottomAppBarDuration,
       height: bottomAppBarHeight,
       child: Theme(
         data: ThemeData(useMaterial3: false),
         child: BottomAppBar(
-          color: AppTheme.of(context).background3, //TODO: Hardnumber
+          color: context.appTheme.background3,
           surfaceTintColor: null,
           elevation: 0,
           child: AnimatedOpacity(
-            opacity: isNavBarGoUp ? 1 : 0,
-            duration: kNavBarDuration,
-            curve: isNavBarGoUp ? Curves.easeInExpo : Curves.easeOutExpo,
+            opacity: isBottomAppBarGoUp ? 1 : 0,
+            duration: kBottomAppBarDuration,
+            curve: isBottomAppBarGoUp ? Curves.easeInExpo : Curves.easeOutExpo,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

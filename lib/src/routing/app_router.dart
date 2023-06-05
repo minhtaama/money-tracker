@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import '../features/accounts/presentation/accounts_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
 
 class RoutePath {
   static String get home => '/home';
+  static String get addIncome => '/home/addIncome';
+  static String get addExpense => '/home/addExpense';
+  static String get addTransfer => '/home/addTransfer';
   static String get accounts => '/accounts';
 }
 
@@ -26,26 +31,64 @@ final goRouter = GoRouter(
       },
       routes: [
         GoRoute(
-          path: RoutePath.home,
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
+          path: '/home',
+          pageBuilder: (_, __) => showFadeTransitionPage(
+            _,
+            __,
             child: const HomeScreen(),
-            transitionDuration: const Duration(milliseconds: 200),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                FadeTransition(opacity: animation, child: child),
           ),
+          routes: [
+            GoRoute(
+              path: 'addIncome',
+              parentNavigatorKey: _rootNavKey,
+              pageBuilder: (_, __) => showAddTransactionModalPage(
+                _,
+                __,
+                child: const AddTransactionModalScreen(),
+              ),
+              //TODO: Implement add transaction widget
+            ),
+            GoRoute(
+              path: 'addExpense',
+              parentNavigatorKey: _rootNavKey,
+              pageBuilder: (_, __) => showAddTransactionModalPage(
+                _,
+                __,
+                child: const AddTransactionModalScreen(),
+              ),
+              //TODO: Implement add transaction widget
+            ),
+            GoRoute(
+              path: 'addTransfer',
+              parentNavigatorKey: _rootNavKey,
+              pageBuilder: (_, __) => showAddTransactionModalPage(
+                _,
+                __,
+                child: const AddTransactionModalScreen(),
+              ),
+              //TODO: Implement add transaction widget
+            ),
+          ],
         ),
         GoRoute(
-          path: RoutePath.accounts,
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
+          path: '/accounts',
+          pageBuilder: (_, __) => showFadeTransitionPage(
+            _,
+            __,
             child: const AccountsScreen(),
-            transitionDuration: const Duration(milliseconds: 200),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                FadeTransition(opacity: animation, child: child),
           ),
         ),
       ],
     ),
   ],
 );
+
+Page<void> showFadeTransitionPage(BuildContext context, GoRouterState state, {required Widget child}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: kBottomAppBarDuration,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(opacity: animation, child: child),
+  );
+}

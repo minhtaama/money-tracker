@@ -6,22 +6,6 @@ class AccountsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomTabPage(children: [
-      Container(
-        color: Colors.yellow,
-        width: 200,
-        height: 300,
-      ),
-      Container(
-        color: Colors.teal,
-        width: 200,
-        height: 300,
-      ),
-      Container(
-        color: Colors.red,
-        width: 200,
-        height: 300,
-      ),
-    ]);
+    return CustomTabPage(children: []);
   }
 }

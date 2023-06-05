@@ -8,12 +8,14 @@ const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 
 // Value related to CustomTabBar and CustomTabPage
 const double kCustomTabBarHeight = 50;
-const double kExtendedCustomTabBarHeight = 230;
+const double kExtendedCustomTabBarHeight = 250;
 const double kTriggerHeight = 10;
 const Duration kAppBarExtendDuration = Duration(milliseconds: 10);
 
 // Value related to BottomAppBar
-const Duration kNavBarDuration = Duration(milliseconds: 200);
+const Duration kBottomAppBarDuration = Duration(milliseconds: 150);
+const double kBottomAppBarHeight = 70.0;
+const double kModalBarrierOpacity = 0.8;
 
 // Define Gaps
 class Gap {

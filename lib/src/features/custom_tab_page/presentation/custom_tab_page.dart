@@ -5,12 +5,14 @@ import 'package:money_tracker_app/src/features/custom_tab_page/presentation/cust
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
+import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
 
-// This class used to wrap the contents of each tab to expose user
-// scroll direction to the ScaffoldWithBottomNavBar. This class returns
-// a `ListView` which has a `ScrollController` and is
-// linked with ScaffoldWithBottomNavBar through a state class CustomListViewState,
-// which is exposed by customListViewStateControllerProvider.
+/// This class used to wrap the contents of each tab to expose user
+/// scroll direction to the [ScaffoldWithBottomNavBar]. This class returns
+/// a [ListView] which has a [ScrollController] and is
+/// linked with [ScaffoldWithBottomNavBar] through a state class [CustomListViewState],
+/// which is exposed by [customListViewStateControllerProvider].
+///
 class CustomTabPage extends ConsumerStatefulWidget {
   const CustomTabPage({Key? key, this.customTabBar, required this.children}) : super(key: key);
   final CustomTabBar? customTabBar;
@@ -98,6 +100,7 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
           children: [
             SizedBox(height: widget.customTabBar != null ? kExtendedCustomTabBarHeight : 0),
             ...widget.children,
+            const SizedBox(height: kBottomAppBarHeight + 8),
           ],
         ),
         widget.customTabBar ?? const SizedBox(),

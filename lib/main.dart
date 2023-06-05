@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/src/routing/app_router.dart';
@@ -17,15 +18,18 @@ class MoneyTrackerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppTheme(
-      data: AppThemeData.defaultWithSwatch(AppColors.redBlue),
-      child: MaterialApp.router(
-        restorationScopeId: 'app',
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: goRouter,
-        theme: ThemeData(
-          useMaterial3: true,
-          fontFamily: 'WixMadeforDisplay',
+      data: AppColors.allThemeData[0],
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: AppColors.allThemeData[0].overlayStyle,
+        child: MaterialApp.router(
+          restorationScopeId: 'app',
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: goRouter,
+          theme: ThemeData(
+            useMaterial3: true,
+            fontFamily: 'WixMadeforDisplay',
+          ),
         ),
       ),
     );

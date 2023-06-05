@@ -3,17 +3,16 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_with_fab.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
-import 'package:money_tracker_app/src/theming/app_theme.dart';
-import 'package:money_tracker_app/src/utils/extensions/app_localization_context_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// This is a StatefulWidget, which return a Scaffold with BottomAppBar, a FAB and
-// a SafeArea wrap the child widget.
-// This Scaffold screen is the ShellRoute's child in GoRouter and using `rootNavKey`
 class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
+  /// This is a [StatefulWidget], which return a [Scaffold] with [BottomAppBarWithFAB],
+  /// a [CustomFloatingActionButton] and the child widget.
+  /// This [Scaffold] screen is the [ShellRoute]'s child in [GoRouter] and using `rootNavKey`
   const ScaffoldWithBottomNavBar({Key? key, required this.child}) : super(key: key);
   final Widget child;
 
@@ -39,22 +38,22 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
 
     final fabItems = <FABItem>[
       FABItem(
-        icon: Icons.arrow_circle_down.temporaryIcon,
+        icon: Icons.arrow_downward.temporaryIcon,
         label: 'Income'.hardcoded,
-        color: Colors.lightBlueAccent,
-        onTap: () => print('tapped'),
+        color: Color.lerp(context.appTheme.primary, Colors.indigo[400], 0.5)!,
+        onTap: () => context.go(RoutePath.addIncome),
       ),
       FABItem(
         icon: Icons.compare_arrows.temporaryIcon,
         label: 'Transfer'.hardcoded,
-        color: Colors.blueGrey,
-        onTap: () => print('tapped'),
+        color: Color.lerp(context.appTheme.secondary, Colors.grey[600], 0.5)!,
+        onTap: () => context.go(RoutePath.addTransfer),
       ),
       FABItem(
-        icon: Icons.arrow_circle_up,
+        icon: Icons.arrow_upward.temporaryIcon,
         label: 'Expense'.hardcoded,
-        color: Colors.redAccent,
-        onTap: () => print('tapped'),
+        color: Color.lerp(context.appTheme.accent, Colors.pink[400], 0.5)!,
+        onTap: () => context.go(RoutePath.addExpense),
       ),
       //TODO: Implement Hive icon
     ];
@@ -78,7 +77,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         },
       ),
       extendBody: false,
-      backgroundColor: AppTheme.of(context).background,
+      backgroundColor: context.appTheme.background,
       body: widget.child,
     );
   }

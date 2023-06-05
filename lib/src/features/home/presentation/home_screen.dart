@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/home/presentation/app_bar.dart';
-import 'package:money_tracker_app/src/features/date_time/presentation/homepage_card.dart';
-import 'package:money_tracker_app/src/features/home/presentation/extended_app_bar.dart';
+import 'package:money_tracker_app/src/features/home/presentation/home_tab.dart';
+import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
+import 'package:money_tracker_app/src/features/home/presentation/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
-
-import '../../../theming/app_theme.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,49 +14,161 @@ class HomeScreen extends StatelessWidget {
     return CustomTabPage(
       customTabBar: CustomTabBar(
         extendedTabBar: ExtendedTabBar(
-            backgroundColor: AppTheme.of(context).primary, child: const ExtendedHomeAppBar()),
-        childTabBar:
-            ChildTabBar(backgroundColor: AppTheme.of(context).background, child: const HomeAppBar()),
+          backgroundColor: context.appTheme.secondary,
+          child: const ExtendedHomeTab(),
+        ),
+        childTabBar: ChildTabBar(
+          backgroundColor: context.appTheme.background,
+          child: const HomeTab(),
+        ),
       ),
-      children: _coloredContainer,
+      children: _testTransactions,
     );
   }
 }
 
-List<Widget> _coloredContainer = [
+List<Widget> _testTransactions = [
   HomePageCard(
     header: 'Thứ 2 - 23/3/2023',
     title: '+ 840.000 VND',
     child: Column(
       children: const [
-        Text('Transaction1'),
-        Text('Transaction2'),
-        Text('Transaction3'),
-        Text('Transaction4'),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction1'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction2'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction3'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction4'),
+        ),
       ],
     ),
   ),
   HomePageCard(
-    header: 'Thứ 3 - 24/3/2023',
+    header: 'Thứ 2 - 23/3/2023',
     title: '+ 840.000 VND',
     child: Column(
       children: const [
-        Text('Transaction1'),
-        Text('Transaction2'),
-        Text('Transaction3'),
-        Text('Transaction4'),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction1'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction2'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction3'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction4'),
+        ),
       ],
     ),
   ),
   HomePageCard(
-    header: 'Thứ 4 - 24/3/2023',
+    header: 'Thứ 2 - 23/3/2023',
     title: '+ 840.000 VND',
     child: Column(
       children: const [
-        Text('Transaction1'),
-        Text('Transaction2'),
-        Text('Transaction3'),
-        Text('Transaction4'),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction1'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction2'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction3'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction4'),
+        ),
+      ],
+    ),
+  ),
+  HomePageCard(
+    header: 'Thứ 2 - 23/3/2023',
+    title: '+ 840.000 VND',
+    child: Column(
+      children: const [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction1'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction2'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction3'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction4'),
+        ),
+      ],
+    ),
+  ),
+  HomePageCard(
+    header: 'Thứ 2 - 23/3/2023',
+    title: '+ 840.000 VND',
+    child: Column(
+      children: const [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction1'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction2'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction3'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction4'),
+        ),
+      ],
+    ),
+  ),
+  HomePageCard(
+    header: 'Thứ 2 - 23/3/2023',
+    title: '+ 840.000 VND',
+    child: Column(
+      children: const [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction1'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction2'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction3'),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Transaction4'),
+        ),
       ],
     ),
   ),

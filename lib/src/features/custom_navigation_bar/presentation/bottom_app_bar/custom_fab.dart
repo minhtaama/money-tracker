@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class FABItem {
   FABItem({required this.icon, required this.label, required this.color, required this.onTap});
@@ -18,31 +19,41 @@ class _FABOverlayButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.color,
-    required this.height,
+    required this.size,
   }) : super(key: key);
   final IconData icon;
   final String label;
   final Color color;
-  final double height;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: height,
-      height: height,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(100),
-        boxShadow: [BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 30)],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Icon(icon),
-          Material(color: Colors.transparent, child: Text(label)),
-        ],
-      ),
+    return Column(
+      children: [
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(100),
+            boxShadow: [BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 30)],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: FittedBox(
+              child: Icon(icon),
+            ),
+          ),
+        ),
+        Gap.h8,
+        Material(
+            color: Colors.transparent,
+            child: Text(
+              label,
+              style:
+                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
+            )),
+      ],
     );
   }
 }
@@ -61,7 +72,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  late List<Widget> _widgets;
+  late List<Widget> Function(OverlayEntry overlayEntry) _widgets;
   late double overlayBoxWidth;
   late double overlayBoxHeight;
 
@@ -73,7 +84,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   void initState() {
     _animationController = AnimationController(
       vsync: this,
-      duration: kAppBarExtendDuration,
+      duration: kBottomAppBarDuration,
     );
     _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
 
@@ -83,27 +94,35 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   @override
   void didChangeDependencies() {
     overlayBoxWidth = MediaQuery.of(context).size.width / 1.2;
-    overlayBoxHeight = MediaQuery.of(context).size.height / 5;
+    overlayBoxHeight = MediaQuery.of(context).size.height / 4.5;
 
-    _widgets = List.generate(widget.items.length, (index) {
-      return Column(
-        //This is how the overlay buttons is aligned.
-        mainAxisAlignment: index == 0 || index == widget.items.length - 1
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: widget.items[index].onTap,
-            child: _FABOverlayButton(
-              icon: widget.items[index].icon,
-              label: widget.items[index].label,
-              color: widget.items[index].color,
-              height: overlayBoxHeight / 2,
-            ),
-          ),
-        ],
+    _widgets = (overlayEntry) {
+      return List.generate(
+        widget.items.length,
+        (index) {
+          return Column(
+            //This is how the overlay buttons is aligned.
+            mainAxisAlignment: index == 0 || index == widget.items.length - 1
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  widget.items[index].onTap();
+                  _removeEntry(overlayEntry);
+                },
+                child: _FABOverlayButton(
+                  icon: widget.items[index].icon,
+                  label: widget.items[index].label,
+                  color: widget.items[index].color,
+                  size: overlayBoxWidth / 5.5,
+                ),
+              ),
+            ],
+          );
+        },
       );
-    });
+    };
     super.didChangeDependencies();
   }
 
@@ -130,7 +149,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             children: [
               ModalBarrier(
                 onDismiss: () => _removeEntry(overlayEntry),
-                color: Colors.black.withAlpha((125 * _animation.value).toInt()),
+                color: context.appTheme.background.withOpacity(kModalBarrierOpacity * _animation.value),
               ),
               Positioned(
                 top: fabPosition.dy - overlayBoxHeight,
@@ -146,7 +165,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: _widgets,
+                      children: _widgets(overlayEntry),
                     ),
                     // child: Row(
                     //   children: _widgets,
@@ -194,11 +213,12 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   Widget build(BuildContext context) {
     return FloatingActionButton(
       key: globalKey,
+      shape: const CircleBorder(),
       onPressed: _showOverlay,
-      backgroundColor: AppTheme.of(context).secondary,
+      backgroundColor: context.appTheme.primary,
       child: Icon(
         Icons.add,
-        color: AppTheme.of(context).accentNegative,
+        color: context.appTheme.primaryNegative,
       ),
     );
   }
