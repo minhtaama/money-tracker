@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -213,12 +214,22 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   Widget build(BuildContext context) {
     return FloatingActionButton(
       key: globalKey,
-      shape: const CircleBorder(),
       onPressed: _showOverlay,
-      backgroundColor: context.appTheme.primary,
-      child: Icon(
-        Icons.add,
-        color: context.appTheme.primaryNegative,
+      shape: const CircleBorder(),
+      elevation: 8,
+      highlightElevation: 2,
+      backgroundColor: Colors.transparent,
+      child: CardItem(
+        margin: EdgeInsets.zero,
+        borderRadius: BorderRadius.circular(100),
+        height: double.infinity,
+        width: double.infinity,
+        color: context.appTheme.accent,
+        isGradient: true,
+        child: Icon(
+          Icons.add,
+          color: context.appTheme.primaryNegative,
+        ),
       ),
     );
   }

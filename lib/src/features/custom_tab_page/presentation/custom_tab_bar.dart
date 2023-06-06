@@ -110,15 +110,15 @@ class ExtendedTabBar extends StatelessWidget {
     return Stack(children: [
       Transform(
         transform: Matrix4.identity()
-          ..scale(1.5, 1.0, 1.0)
-          ..translate(0.0, -20.0, 0.0),
+          ..translate(0.0, -90, 0.0)
+          ..scale(1.5, 1.0, 1.0),
         origin: Offset(MediaQuery.of(context).size.width / 2, kExtendedCustomTabBarHeight / 2),
         child: Container(
           width: double.infinity,
           height: double.infinity,
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(200),
+            borderRadius: BorderRadius.circular(1000),
           ),
           alignment: Alignment.center,
         ),

@@ -3,16 +3,32 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CardItem extends StatelessWidget {
   /// A common widget for this project
-  const CardItem({Key? key, required this.child, this.color, this.height, this.width}) : super(key: key);
-  final Widget child;
+  const CardItem(
+      {Key? key,
+      required this.child,
+      this.color,
+      this.height,
+      this.width,
+      this.isGradient = false,
+      this.borderRadius,
+      this.margin,
+      this.elevation = 1})
+      : super(key: key);
   final Color? color;
   final double? height;
   final double? width;
+  final double elevation;
+  final EdgeInsetsGeometry? margin;
+  final BorderRadiusGeometry? borderRadius;
+  final bool isGradient;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
+    final defaultBgColor = Color.lerp(context.appTheme.background2, context.appTheme.secondary, 0.08)!;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: margin ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       child: Container(
         constraints: const BoxConstraints(
           minHeight: 20,
@@ -21,11 +37,25 @@ class CardItem extends StatelessWidget {
         height: height,
         width: width,
         decoration: BoxDecoration(
-          color: color ?? context.appTheme.background2,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 2, offset: const Offset(1, 2)),
-          ],
+          color: color ?? defaultBgColor,
+          borderRadius: borderRadius ?? BorderRadius.circular(16),
+          boxShadow: elevation == 0
+              ? null
+              : [
+                  BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 2 + elevation,
+                      offset: Offset(1, 2 + elevation)),
+                ],
+          gradient: isGradient
+              ? LinearGradient(
+                  colors: [
+                    color ?? defaultBgColor,
+                    Color.lerp(color ?? defaultBgColor, context.appTheme.background2, 0.3)!
+                  ],
+                  stops: const [0.15, 1],
+                )
+              : null,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),

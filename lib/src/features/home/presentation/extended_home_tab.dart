@@ -20,9 +20,9 @@ class ExtendedHomeTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               verticalDirection: VerticalDirection.up,
               children: [
-                const Expanded(flex: 2, child: SizedBox()),
+                const Expanded(flex: 3, child: SizedBox()),
                 Expanded(
-                  flex: 7,
+                  flex: 9,
                   child: Row(
                     children: const [
                       Expanded(
@@ -106,8 +106,10 @@ class IncomeExpenseCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: CardItem(
         color: isIncome ? context.appTheme.primary : context.appTheme.accent,
+        isGradient: true,
         width: double.infinity,
         height: double.infinity,
+        elevation: 6,
         child: Text(
           isIncome ? 'Income' : 'Expense',
           style: kHeader2TextStyle.copyWith(
@@ -126,24 +128,40 @@ class DateSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CardItem(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.keyboard_arrow_left).temporaryIcon,
-          Gap.w4,
-          FittedBox(
-            child: Text(
-              'December, 2023'.hardcoded,
-              style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: context.appTheme.primary.withOpacity(0.3),
           ),
-          Gap.w4,
-          const Icon(Icons.keyboard_arrow_right).temporaryIcon,
-        ],
-      ),
+        ),
+        CardItem(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.keyboard_arrow_left).temporaryIcon,
+              Gap.w4,
+              FittedBox(
+                child: Text(
+                  'December, 2023'.hardcoded,
+                  style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                ),
+              ),
+              Gap.w4,
+              const Icon(Icons.keyboard_arrow_right).temporaryIcon,
+              Gap.w8,
+              const Icon(Icons.filter_alt_rounded, size: 20).temporaryIcon,
+            ],
+          ),
+        ),
+        Expanded(
+          child: Divider(
+            color: context.appTheme.primary.withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 }
