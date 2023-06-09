@@ -1,11 +1,11 @@
-import 'package:money_tracker_app/src/features/category/model/category.dart';
+import 'package:money_tracker_app/src/features/category/model/income_category.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class Transaction {
   final double amount;
   final TransactionType transactionType;
-  final Category category;
-  final Category? transferToCategory;
+  final IncomeCategory category;
+  final IncomeCategory? transferToCategory;
   final String? note;
   final DateTime dateTime;
 
@@ -21,8 +21,8 @@ class Transaction {
   Transaction copyWith(
     double? amount,
     TransactionType? transactionType, {
-    Category? category,
-    Category? transferToCategory,
+    IncomeCategory? category,
+    IncomeCategory? transferToCategory,
     String? note,
     DateTime? dateTime,
   }) {

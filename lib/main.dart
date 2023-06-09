@@ -2,15 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
+import 'package:money_tracker_app/persistent/hive_data_store.dart';
+import 'package:money_tracker_app/src/features/category/model/income_category.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theming/app_colors.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-void main() async {
+Future<void> main() async {
   usePathUrlStrategy(); //remove # character in web link
-  runApp(const ProviderScope(child: MoneyTrackerApp()));
+  final hiveData = HiveDataStore();
+  await hiveData.init();
+  await hiveData.createDemoCategory(
+    categories: [IncomeCategory.autoID(icon: 'shop', name: 'name', color: 'white')],
+    force: false,
+  );
+  runApp(
+    const ProviderScope(
+      child: MoneyTrackerApp(),
+    ),
+  );
 }
 
 class MoneyTrackerApp extends StatelessWidget {
