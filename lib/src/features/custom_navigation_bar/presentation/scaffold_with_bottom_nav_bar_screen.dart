@@ -79,7 +79,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         },
       ),
       extendBody: false,
-      backgroundColor: Color.lerp(context.appTheme.background, context.appTheme.secondary, 0.15)!,
+      backgroundColor: Color.lerp(context.appTheme.background, context.appTheme.secondary, 0.05)!,
       body: widget.child,
     );
   }

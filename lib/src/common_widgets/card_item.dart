@@ -5,7 +5,7 @@ class CardItem extends StatelessWidget {
   /// A common widget for this project
   const CardItem(
       {Key? key,
-      required this.child,
+      this.child,
       this.color,
       this.height,
       this.width,
@@ -21,11 +21,11 @@ class CardItem extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final BorderRadiusGeometry? borderRadius;
   final bool isGradient;
-  final Widget child;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
-    final defaultBgColor = Color.lerp(context.appTheme.background2, context.appTheme.secondary, 0.08)!;
+    final defaultBgColor = Color.lerp(context.appTheme.background2, context.appTheme.secondary, 0.03)!;
 
     return Padding(
       padding: margin ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
@@ -43,15 +43,17 @@ class CardItem extends StatelessWidget {
               ? null
               : [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withOpacity(elevation * 0.1),
                       blurRadius: 2 + elevation,
                       offset: Offset(1, 2 + elevation)),
                 ],
           gradient: isGradient
               ? LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
                   colors: [
                     color ?? defaultBgColor,
-                    Color.lerp(color ?? defaultBgColor, context.appTheme.background2, 0.3)!
+                    Color.lerp(color ?? defaultBgColor, context.appTheme.background2, 0.35)!
                   ],
                   stops: const [0.15, 1],
                 )
@@ -59,7 +61,7 @@ class CardItem extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-          child: child,
+          child: child ?? SizedBox(),
         ),
       ),
     );

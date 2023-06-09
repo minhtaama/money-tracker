@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import '../features/accounts/presentation/accounts_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
+import '../utils/enums.dart';
 
 class RoutePath {
   static String get home => '/home';
@@ -44,7 +45,7 @@ final goRouter = GoRouter(
               pageBuilder: (_, __) => showAddTransactionModalPage(
                 _,
                 __,
-                child: const AddTransactionModalScreen(),
+                child: const AddTransactionModalScreen(TransactionType.income),
               ),
               //TODO: Implement add transaction widget
             ),
@@ -54,7 +55,7 @@ final goRouter = GoRouter(
               pageBuilder: (_, __) => showAddTransactionModalPage(
                 _,
                 __,
-                child: const AddTransactionModalScreen(),
+                child: const AddTransactionModalScreen(TransactionType.expense),
               ),
               //TODO: Implement add transaction widget
             ),
@@ -64,7 +65,7 @@ final goRouter = GoRouter(
               pageBuilder: (_, __) => showAddTransactionModalPage(
                 _,
                 __,
-                child: const AddTransactionModalScreen(),
+                child: const AddTransactionModalScreen(TransactionType.transfer),
               ),
               //TODO: Implement add transaction widget
             ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 /// Use this class as the value for [CustomTabPage]'s argument
 class CustomTabBar extends ConsumerWidget {
-  const CustomTabBar({Key? key, this.extendedTabBar, required this.childTabBar}) : super(key: key);
-  final ChildTabBar childTabBar;
+  const CustomTabBar({Key? key, this.extendedTabBar, required this.tabBar}) : super(key: key);
+  final SmallTabBar tabBar;
   final ExtendedTabBar? extendedTabBar;
 
   final _triggerHeight = kCustomTabBarHeight + (kExtendedCustomTabBarHeight - kCustomTabBarHeight) / 2;
@@ -54,13 +55,13 @@ class CustomTabBar extends ConsumerWidget {
             duration: kAppBarExtendDuration,
             child: IgnorePointer(
               ignoring: childOpacity == 1 ? false : true,
-              child: childTabBar,
+              child: tabBar,
             ),
           ),
         ],
       );
     } else {
-      return childTabBar;
+      return tabBar;
     }
   }
 
@@ -82,8 +83,8 @@ class CustomTabBar extends ConsumerWidget {
 }
 
 /// Use this class as the value for [CustomTabBar]'s argument
-class ChildTabBar extends StatelessWidget {
-  const ChildTabBar({Key? key, required this.backgroundColor, required this.child}) : super(key: key);
+class SmallTabBar extends StatelessWidget {
+  const SmallTabBar({Key? key, required this.backgroundColor, required this.child}) : super(key: key);
   final Color backgroundColor;
   final Widget child;
 
@@ -101,32 +102,35 @@ class ChildTabBar extends StatelessWidget {
 
 /// Use this class as the value for [CustomTabBar]'s argument
 class ExtendedTabBar extends StatelessWidget {
-  const ExtendedTabBar({Key? key, required this.backgroundColor, required this.child}) : super(key: key);
+  const ExtendedTabBar(
+      {Key? key, required this.backgroundColor, required this.innerChild, required this.outerChild})
+      : super(key: key);
   final Color backgroundColor;
-  final Widget child;
+  final Widget innerChild;
+  final Widget outerChild;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Transform(
-        transform: Matrix4.identity()
-          ..translate(0.0, -90, 0.0)
-          ..scale(1.5, 1.0, 1.0),
-        origin: Offset(MediaQuery.of(context).size.width / 2, kExtendedCustomTabBarHeight / 2),
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
+    return Stack(
+      children: [
+        Transform(
+          transform: Matrix4.identity()..translate(0.0, -kOuterChildHeight / 2, 0.0),
+          child: CardItem(
+            width: double.infinity,
+            height: double.infinity,
+            isGradient: true,
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(1000),
+            margin: EdgeInsets.zero,
+            borderRadius: BorderRadius.zero,
+            elevation: 3,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: innerChild,
+            ),
           ),
-          alignment: Alignment.center,
         ),
-      ),
-      Padding(
-        padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
-        child: child,
-      ),
-    ]);
+        Align(alignment: Alignment.bottomCenter, child: outerChild),
+      ],
+    );
   }
 }

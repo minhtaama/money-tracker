@@ -12,7 +12,7 @@ class HomeTab extends StatelessWidget {
     return GestureDetector(
       onTap: () => print('child tapped'),
       child: Container(
-        color: Color.lerp(context.appTheme.background, context.appTheme.secondary, 0.15)!,
+        color: Color.lerp(context.appTheme.background, context.appTheme.secondary, 0.05)!,
         height: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),

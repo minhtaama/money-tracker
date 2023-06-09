@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/modal_bottom_sheet_page.dart';
 
 class AddTransactionModalScreen extends StatelessWidget {
-  const AddTransactionModalScreen({Key? key}) : super(key: key);
+  const AddTransactionModalScreen(this.transactionType, {Key? key}) : super(key: key);
+  final TransactionType transactionType;
 
   @override
   Widget build(BuildContext context) {

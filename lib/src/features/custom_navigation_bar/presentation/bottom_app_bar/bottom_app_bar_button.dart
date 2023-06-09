@@ -38,26 +38,33 @@ class BottomAppBarButton extends StatelessWidget {
           highlightColor: backgroundColor.withAlpha(105),
           child: CardItem(
             color: isSelected ? backgroundColor : Colors.transparent,
+            height: kBottomAppBarHeight - 28,
             borderRadius: borderRadius,
             margin: EdgeInsets.zero,
             isGradient: isSelected ? true : false,
             elevation: isSelected ? 1 : 0,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  item.iconData,
-                  color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
-                ), //TODO: Implement Hive icon
-                Gap.w8,
                 Expanded(
+                  flex: 1,
+                  child: Icon(
+                    item.iconData,
+                    color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
+                  ),
+                ), //TODO: Implement Hive icon
+                Gap.w16,
+                Expanded(
+                  flex: 5,
                   child: FittedBox(
+                    fit: BoxFit.scaleDown,
                     child: Text(
                       item.text,
                       style: kHeader4TextStyle.copyWith(
                         color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
                         fontFamily: 'WixMadeforDisplay',
+                        fontSize: 14,
                       ),
                     ),
                   ),

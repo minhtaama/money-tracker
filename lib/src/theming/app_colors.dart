@@ -21,6 +21,8 @@ class AppColors {
     secondary: const Color(0xFF2A9D8F),
     accent: const Color(0xFFE9C46A),
     primaryNegative: AppColors.white,
+    secondaryNegative: AppColors.white,
+    accentNegative: AppColors.darkestGrey,
     background: AppColors.lightestGrey,
     background2: AppColors.white,
     background3: AppColors.white,
@@ -30,7 +32,24 @@ class AppColors {
     overlayStyle: SystemUiOverlayStyle.light,
   );
 
+  static final _theme2 = AppThemeData(
+    primary: const Color(0xFF1d3557),
+    secondary: const Color(0xFF1d3557),
+    accent: const Color(0xFFe63946),
+    primaryNegative: AppColors.white,
+    secondaryNegative: AppColors.white,
+    accentNegative: AppColors.white,
+    background: const Color(0xFFf1faee),
+    background2: const Color(0xFFf1faee),
+    background3: const Color(0xFFf1faee),
+    backgroundNegative: AppColors.darkText,
+    placeholder2: const Color(0xFF457b9d),
+    placeholder3: const Color(0xFF1d3557),
+    overlayStyle: SystemUiOverlayStyle.light,
+  );
+
   static List<AppThemeData> allThemeData = [
     _theme1,
+    _theme2,
   ];
 }

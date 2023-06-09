@@ -1,22 +1,39 @@
 import 'package:flutter/material.dart';
 
-// Value related to Text. To change more details, use .copyWith()
+/// Value related to Text. To change more details, use .copyWith()
 const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28);
+
+/// Value related to Text. To change more details, use .copyWith()
 const kHeader2TextStyle = TextStyle(fontWeight: FontWeight.w800, fontSize: 21);
+
+/// Value related to Text. To change more details, use .copyWith()
 const kHeader3TextStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 18);
+
+/// Value related to Text. To change more details, use .copyWith()
 const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 
-// Value related to CustomTabBar and CustomTabPage
+/// Value related to CustomTabBar and CustomTabPage
 const double kCustomTabBarHeight = 50;
-const double kExtendedCustomTabBarHeight = 260;
+
+/// Value related to CustomTabBar and CustomTabPage
+const double kExtendedCustomTabBarHeight = 230;
+
+/// Value related to OuterChild of ExtendedTabBar
+const double kOuterChildHeight = 35;
+
+/// Value related to CustomTabBar and CustomTabPage
 const Duration kAppBarExtendDuration = Duration(milliseconds: 10);
 
-// Value related to BottomAppBar
+/// Value related to BottomAppBar
 const Duration kBottomAppBarDuration = Duration(milliseconds: 150);
+
+/// Value related to BottomAppBar
 const double kBottomAppBarHeight = 70.0;
+
+/// Value related to BottomAppBar
 const double kModalBarrierOpacity = 0.9;
 
-// Define Gaps
+/// [Gap] is a quick way to display a [SizedBox] widget
 class Gap {
   static get w4 => const SizedBox(width: 4);
   static get w8 => const SizedBox(width: 8);

@@ -31,18 +31,16 @@ class _FABOverlayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        CardItem(
           width: size,
           height: size,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(100),
-            boxShadow: [BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 30)],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: FittedBox(
-              child: Icon(icon),
+          color: color,
+          borderRadius: BorderRadius.circular(100),
+          isGradient: true,
+          child: FittedBox(
+            child: Icon(
+              icon,
+              color: context.appTheme.primaryNegative,
             ),
           ),
         ),
@@ -228,7 +226,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
         isGradient: true,
         child: Icon(
           Icons.add,
-          color: context.appTheme.primaryNegative,
+          color: context.appTheme.accentNegative,
         ),
       ),
     );
