@@ -5,8 +5,8 @@ import 'package:money_tracker_app/src/features/custom_navigation_bar/presentatio
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_button.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
-import 'package:money_tracker_app/src/features/home/presentation/extended_tab.dart';
-import 'package:money_tracker_app/src/features/home/presentation/tab.dart';
+import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
+import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 
 class AppThemeData {
   /// [BottomAppBarButton] color when selected or outline when not selected
@@ -41,7 +41,7 @@ class AppThemeData {
 
   /// [ScaffoldWithBottomNavBar]'s color
   ///
-  /// [HomeTab]'s background color
+  /// [SmallHomeTab]'s background color
   ///
   /// Modals background
   final Color background;

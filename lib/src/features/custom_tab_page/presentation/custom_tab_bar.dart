@@ -7,8 +7,8 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 
 /// Use this class as the value for [CustomTabPage]'s argument
 class CustomTabBar extends ConsumerWidget {
-  const CustomTabBar({Key? key, this.extendedTabBar, required this.tabBar}) : super(key: key);
-  final SmallTabBar tabBar;
+  const CustomTabBar({Key? key, this.extendedTabBar, required this.smallTabBar}) : super(key: key);
+  final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
 
   final _triggerHeight = kCustomTabBarHeight + (kExtendedCustomTabBarHeight - kCustomTabBarHeight) / 2;
@@ -55,13 +55,13 @@ class CustomTabBar extends ConsumerWidget {
             duration: kAppBarExtendDuration,
             child: IgnorePointer(
               ignoring: childOpacity == 1 ? false : true,
-              child: tabBar,
+              child: smallTabBar,
             ),
           ),
         ],
       );
     } else {
-      return tabBar;
+      return smallTabBar;
     }
   }
 

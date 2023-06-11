@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/home/presentation/tab.dart';
+import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
+import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
-import 'package:money_tracker_app/src/features/home/presentation/extended_tab.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
-
 import '../../../common_widgets/card_item.dart';
 import '../../../utils/constants.dart';
 
@@ -23,9 +20,9 @@ class HomeScreen extends StatelessWidget {
           innerChild: const ExtendedHomeTab(),
           outerChild: const DateSelector(),
         ),
-        tabBar: SmallTabBar(
+        smallTabBar: SmallTabBar(
           backgroundColor: context.appTheme.background,
-          child: const HomeTab(),
+          child: const SmallHomeTab(),
         ),
       ),
       children: [

@@ -15,12 +15,13 @@ Future<void> main() async {
   final hiveData = HiveDataStore();
   await hiveData.init();
   await hiveData.createDemoCategory(
-    categories: [IncomeCategory.autoID(icon: 'shop', name: 'name', color: 'white')],
-    force: false,
+    categories: [IncomeCategory.fromColorWithUuid(icon: 'shop', name: 'name', color: Colors.blue)],
+    force: true,
   );
   runApp(
-    const ProviderScope(
-      child: MoneyTrackerApp(),
+    ProviderScope(
+      overrides: [hiveStoreProvider.overrideWithValue(hiveData)],
+      child: const MoneyTrackerApp(),
     ),
   );
 }

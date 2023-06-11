@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,15 +15,16 @@ class IncomeCategory {
   @HiveField(2)
   final String name;
   @HiveField(3)
-  final String color;
+  final int color;
 
-  factory IncomeCategory.autoID({required String icon, required String name, required String color}) {
+  factory IncomeCategory.fromColorWithUuid(
+      {required String icon, required String name, required Color color}) {
     final id = const Uuid().v1();
-    return IncomeCategory(id: id, icon: icon, name: name, color: color);
+    return IncomeCategory(id: id, icon: icon, name: name, color: color.value);
   }
 
   @override
   String toString() {
-    return 'IncomeCategory{id: $id, icon: $icon, name: $name, color: $color}';
+    return 'IncomeCategory{id: $id, icon: $icon, name: $name, color: ${color.toString()}}';
   }
 }

@@ -17,48 +17,4 @@ class Transaction {
     this.transferToCategory,
     this.note,
   });
-
-  Transaction copyWith(
-    double? amount,
-    TransactionType? transactionType, {
-    IncomeCategory? category,
-    IncomeCategory? transferToCategory,
-    String? note,
-    DateTime? dateTime,
-  }) {
-    return Transaction(
-      amount ?? this.amount,
-      transactionType ?? this.transactionType,
-      category: category ?? this.category,
-      transferToCategory: transferToCategory ?? this.transferToCategory,
-      note: note ?? this.note,
-      dateTime: dateTime ?? this.dateTime,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Transaction &&
-          runtimeType == other.runtimeType &&
-          amount == other.amount &&
-          transactionType == other.transactionType &&
-          category == other.category &&
-          transferToCategory == other.transferToCategory &&
-          note == other.note &&
-          dateTime == other.dateTime;
-
-  @override
-  int get hashCode =>
-      amount.hashCode ^
-      transactionType.hashCode ^
-      category.hashCode ^
-      transferToCategory.hashCode ^
-      note.hashCode ^
-      dateTime.hashCode;
-
-  @override
-  String toString() {
-    return 'Transaction{amount: $amount, transactionType: $transactionType, category: $category, transferToCategory: $transferToCategory, note: $note, dateTime: $dateTime}';
-  }
 }

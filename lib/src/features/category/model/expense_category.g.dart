@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'income_category.dart';
+part of 'expense_category.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class IncomeCategoryAdapter extends TypeAdapter<IncomeCategory> {
+class ExpenseCategoryAdapter extends TypeAdapter<ExpenseCategory> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  IncomeCategory read(BinaryReader reader) {
+  ExpenseCategory read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return IncomeCategory(
+    return ExpenseCategory(
       id: fields[0] as String,
       icon: fields[1] as String,
       name: fields[2] as String,
@@ -25,7 +25,7 @@ class IncomeCategoryAdapter extends TypeAdapter<IncomeCategory> {
   }
 
   @override
-  void write(BinaryWriter writer, IncomeCategory obj) {
+  void write(BinaryWriter writer, ExpenseCategory obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)
@@ -44,7 +44,7 @@ class IncomeCategoryAdapter extends TypeAdapter<IncomeCategory> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IncomeCategoryAdapter &&
+      other is ExpenseCategoryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

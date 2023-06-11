@@ -4,7 +4,7 @@ import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-import '../../../common_widgets/card_item.dart';
+import '../../../../common_widgets/card_item.dart';
 
 class ExtendedHomeTab extends StatelessWidget {
   const ExtendedHomeTab({Key? key}) : super(key: key);

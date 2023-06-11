@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import '../features/accounts/presentation/accounts_screen.dart';
+import '../features/accounts/presentation/accounts_list_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
 import '../utils/enums.dart';
@@ -76,7 +76,7 @@ final goRouter = GoRouter(
           pageBuilder: (_, __) => showFadeTransitionPage(
             _,
             __,
-            child: const AccountsScreen(),
+            child: const AccountsListScreen(),
           ),
         ),
       ],

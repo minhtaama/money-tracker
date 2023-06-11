@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import '../../category/model/income_category.dart';
 
-class AccountsScreen extends StatelessWidget {
-  const AccountsScreen({Key? key}) : super(key: key);
+class CategoriesListScreen extends ConsumerWidget {
+  const CategoriesListScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final hiveStore = HiveDataStore();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hiveStore = ref.watch(hiveStoreProvider);
     return ValueListenableBuilder(
-      valueListenable: hiveStore.incomeCategoriesListenable(),
+      valueListenable: hiveStore.incomeCategoriesBoxListenable(),
       builder: (_, box, __) {
         List<IncomeCategory> categories = box.values.toList();
-        return CustomTabPage(
+        return ListView(
           children: List.generate(
             categories.length,
             (index) => Text(

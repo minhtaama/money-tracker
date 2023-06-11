@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
-import '../../../utils/constants.dart';
+import '../../../../utils/constants.dart';
 
-class HomeTab extends StatelessWidget {
-  const HomeTab({Key? key}) : super(key: key);
+class SmallHomeTab extends StatelessWidget {
+  const SmallHomeTab({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
