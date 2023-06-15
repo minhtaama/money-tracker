@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:money_tracker_app/src/features/category/model/expense_category.dart';
-import 'package:money_tracker_app/src/features/category/model/income_category.dart';
+import 'package:money_tracker_app/src/features/category/domain/expense_category.dart';
+import 'package:money_tracker_app/src/features/category/domain/income_category.dart';
 
 class HiveDataStore {
   /// String value of Hive Box. Do not modify this string value or all the data will be gone

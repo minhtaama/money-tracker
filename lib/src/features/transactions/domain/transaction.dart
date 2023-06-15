@@ -1,4 +1,4 @@
-import 'package:money_tracker_app/src/features/category/model/income_category.dart';
+import 'package:money_tracker_app/src/features/category/domain/income_category.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class Transaction {

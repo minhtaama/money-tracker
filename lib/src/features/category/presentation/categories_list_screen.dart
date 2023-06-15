@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import '../../category/model/income_category.dart';
+import '../../category/domain/income_category.dart';
 
 class CategoriesListScreen extends ConsumerWidget {
   const CategoriesListScreen({Key? key}) : super(key: key);
