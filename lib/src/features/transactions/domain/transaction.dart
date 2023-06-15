@@ -1,11 +1,10 @@
-import 'package:money_tracker_app/src/features/category/domain/income_category.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class Transaction {
   final double amount;
   final TransactionType transactionType;
-  final IncomeCategory category;
-  final IncomeCategory? transferToCategory;
+  final category;
+  final transferToCategory;
   final String? note;
   final DateTime dateTime;
 

@@ -1,40 +1,43 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'income_category.dart';
+part of 'category_hive_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class IncomeCategoryAdapter extends TypeAdapter<IncomeCategory> {
+class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  IncomeCategory read(BinaryReader reader) {
+  CategoryHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return IncomeCategory(
-      id: fields[0] as String,
-      icon: fields[1] as String,
-      name: fields[2] as String,
-      color: fields[3] as int,
+    return CategoryHiveModel(
+      type: fields[0] as CategoryType,
+      id: fields[1] as String,
+      icon: fields[2] as String,
+      name: fields[3] as String,
+      color: fields[4] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, IncomeCategory obj) {
+  void write(BinaryWriter writer, CategoryHiveModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.type)
       ..writeByte(1)
-      ..write(obj.icon)
+      ..write(obj.id)
       ..writeByte(2)
-      ..write(obj.name)
+      ..write(obj.icon)
       ..writeByte(3)
+      ..write(obj.name)
+      ..writeByte(4)
       ..write(obj.color);
   }
 
@@ -44,7 +47,7 @@ class IncomeCategoryAdapter extends TypeAdapter<IncomeCategory> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IncomeCategoryAdapter &&
+      other is CategoryHiveModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import 'package:money_tracker_app/src/features/category/domain/income_category.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theming/app_colors.dart';
@@ -14,10 +13,6 @@ Future<void> main() async {
   usePathUrlStrategy(); //remove # character in web link
   final hiveData = HiveDataStore();
   await hiveData.init();
-  await hiveData.createDemoCategory(
-    categories: [IncomeCategory.fromColorWithUuid(icon: 'shop', name: 'name', color: Colors.blue)],
-    force: true,
-  );
   runApp(
     ProviderScope(
       overrides: [hiveStoreProvider.overrideWithValue(hiveData)],
