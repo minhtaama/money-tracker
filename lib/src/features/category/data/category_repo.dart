@@ -11,20 +11,43 @@ class CategoryRepository {
   final incomeCategoryBox = Hive.box<CategoryHiveModel>(HiveDataStore.incomeCategoriesBox);
   final expenseCategoryBox = Hive.box<CategoryHiveModel>(HiveDataStore.expenseCategoriesBox);
 
-  List<AppCategory> getCategoryList(CategoryType type) {
+  List<AppCategory> getAppCategoryList(CategoryType type) {
     List<CategoryHiveModel> categoryBox = type == CategoryType.income
         ? incomeCategoryBox.values.toList()
         : expenseCategoryBox.values.toList();
+
     final List<AppCategory> returnList = <AppCategory>[];
-    for (CategoryHiveModel category in categoryBox) {
+
+    for (int i = 0; i <= categoryBox.length; i++) {
       returnList.add(AppCategory(
-          type: category.type,
-          id: category.id,
-          icon: CategoryIcons.getIconFromName(category.icon),
-          name: category.name,
-          color: Color(category.color)));
+          type: categoryBox[i].type,
+          id: categoryBox[i].id,
+          index: i,
+          icon: CategoryIcons.getIcon(categoryBox[i].icon),
+          name: categoryBox[i].name,
+          color: Color(categoryBox[i].color)));
     }
+
     return returnList;
+  }
+
+  Future<void> writeNewCategory(
+      {required CategoryType type,
+      required String icon,
+      required String name,
+      required Color color}) async {
+    final categoryHiveModel = CategoryHiveModel.create(type: type, icon: icon, name: name, color: color);
+    if (type == CategoryType.income) {
+      incomeCategoryBox.add(categoryHiveModel);
+    } else {
+      expenseCategoryBox.add(categoryHiveModel);
+    }
+  }
+
+  Future<void> deleteCategory({required CategoryType type, required int index}) async {
+    if (type == CategoryType.income) {
+      incomeCategoryBox.deleteAt(index);
+    }
   }
 }
 
@@ -32,5 +55,5 @@ final categoryRepositoryProvider = Provider<CategoryRepository>((ref) => Categor
 
 final categoryListProvider = Provider.family<List<AppCategory>, CategoryType>((ref, type) {
   final categoryProvider = ref.watch(categoryRepositoryProvider);
-  return categoryProvider.getCategoryList(type);
+  return categoryProvider.getAppCategoryList(type);
 });

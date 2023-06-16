@@ -25,23 +25,11 @@ class CategoryHiveModel {
   @HiveField(4)
   final int color;
 
-  factory CategoryHiveModel.createExpenseCategory(
-      {required String icon, required String name, required Color color}) {
+  factory CategoryHiveModel.create(
+      {required CategoryType type, required String icon, required String name, required Color color}) {
     final id = const Uuid().v1();
     return CategoryHiveModel(
-      type: CategoryType.expense,
-      id: id,
-      icon: icon,
-      name: name,
-      color: color.value,
-    );
-  }
-
-  factory CategoryHiveModel.createIncomeCategory(
-      {required String icon, required String name, required Color color}) {
-    final id = const Uuid().v1();
-    return CategoryHiveModel(
-      type: CategoryType.income,
+      type: type,
       id: id,
       icon: icon,
       name: name,

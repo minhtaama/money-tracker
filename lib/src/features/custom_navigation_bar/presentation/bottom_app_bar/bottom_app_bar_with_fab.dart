@@ -74,7 +74,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
       child: Theme(
         data: ThemeData(useMaterial3: false),
         child: BottomAppBar(
-          color: Color.lerp(context.appTheme.background3, context.appTheme.secondary, 0.03)!,
+          color: context.appTheme.background3,
           surfaceTintColor: null,
           elevation: 0,
           child: AnimatedOpacity(

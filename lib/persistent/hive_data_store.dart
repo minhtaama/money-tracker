@@ -8,11 +8,10 @@ class HiveDataStore {
   static const expenseCategoriesBox = 'expensesCategories';
 
   Future<void> init() async {
-    await Hive.initFlutter(); // Trong hive_flutter
-    // Register Adapters
+    await Hive.initFlutter(); // In hive_flutter package
+
     Hive.registerAdapter<CategoryHiveModel>(CategoryHiveModelAdapter());
 
-    // Open boxes
     await Hive.openBox<CategoryHiveModel>(incomeCategoriesBox);
     await Hive.openBox<CategoryHiveModel>(expenseCategoriesBox);
   }

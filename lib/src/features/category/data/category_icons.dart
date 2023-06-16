@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CategoryIcons {
-  static IconData get home => Icons.home;
+  static String get home => 'home';
 
-  static IconData getIconFromName(String name) {
+  static IconData getIcon(String name) {
     switch (name) {
       case 'home':
         return Icons.home;

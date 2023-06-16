@@ -31,8 +31,7 @@ class MoneyTrackerApp extends StatelessWidget {
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
           value: AppColors.allThemeData[1].overlayStyle.copyWith(
-              systemNavigationBarColor: Color.lerp(context.appTheme.background3,
-                  context.appTheme.secondary, 0.03)!, //Same as BottomAppBarWithFab
+              systemNavigationBarColor: context.appTheme.background3, //Same as BottomAppBarWithFab
               systemNavigationBarIconBrightness: Brightness.dark),
           child: MaterialApp.router(
             restorationScopeId: 'app',

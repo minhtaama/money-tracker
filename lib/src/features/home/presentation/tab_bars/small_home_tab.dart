@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../utils/constants.dart';
@@ -11,8 +10,7 @@ class SmallHomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => print('child tapped'),
-      child: Container(
-        color: Color.lerp(context.appTheme.background, context.appTheme.secondary, 0.05)!,
+      child: SizedBox(
         height: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),

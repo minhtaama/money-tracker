@@ -25,7 +25,7 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultBgColor = Color.lerp(context.appTheme.background2, context.appTheme.secondary, 0.03)!;
+    final defaultBgColor = context.appTheme.background2;
 
     return Padding(
       padding: margin ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
