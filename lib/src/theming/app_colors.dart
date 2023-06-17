@@ -2,8 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
 
 class AppColors {
-  static const white = Color(0xFFFEFEFE);
-  static const whiteSmoke = Color(0xFFFAFAFA);
+  static const white = Color(0xFFFCFCFC);
+  static const whiteSmoke = Color(0xFFF2F2F2);
   static const lighterGrey = Color(0xFFD2D2D2);
   static const grey = Color(0xFFA1A1A1);
   static const darkerGrey = Color(0xFF696969);
@@ -41,8 +41,8 @@ class AppColors {
     accentNegative: AppColors.white,
     background: AppColors.white,
     background2: AppColors.white,
-    background3: AppColors.lighterGrey,
-    backgroundNegative: AppColors.darkText,
+    background3: AppColors.whiteSmoke,
+    backgroundNegative: AppColors.black,
     placeholder2: const Color(0xFF457b9d),
     placeholder3: const Color(0xFF1d3557),
     overlayStyle: SystemUiOverlayStyle.light,

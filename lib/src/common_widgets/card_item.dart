@@ -11,16 +11,16 @@ class CardItem extends StatelessWidget {
       this.width,
       this.isGradient = false,
       this.borderRadius,
-      this.margin,
-      this.padding,
+      this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
       this.elevation = 1})
       : super(key: key);
   final Color? color;
   final double? height;
   final double? width;
   final double elevation;
-  final EdgeInsetsGeometry? margin;
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry padding;
   final BorderRadiusGeometry? borderRadius;
   final bool isGradient;
   final Widget? child;
@@ -30,7 +30,7 @@ class CardItem extends StatelessWidget {
     final defaultBgColor = context.appTheme.background2;
 
     return Padding(
-      padding: margin ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: margin,
       child: Container(
         constraints: const BoxConstraints(
           minHeight: 20,
@@ -72,7 +72,7 @@ class CardItem extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: Padding(
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+            padding: padding,
             child: child,
           ),
         ),

@@ -19,7 +19,7 @@ class PageHeading extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              leading ?? const SizedBox(),
+              leading ?? Gap.w4,
               Expanded(
                 flex: 2,
                 child: Text(

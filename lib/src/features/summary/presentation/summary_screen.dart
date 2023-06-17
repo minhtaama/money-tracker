@@ -3,7 +3,9 @@ import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
+import 'package:money_tracker_app/src/features/summary/presentation/summary_card.dart';
 import 'package:money_tracker_app/src/theming/app_colors.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class SummaryScreen extends StatelessWidget {
@@ -25,7 +27,34 @@ class SummaryScreen extends StatelessWidget {
           ),
         ),
       ),
-      children: [Placeholder()],
+      children: [
+        Gap.h16,
+        SummaryCard(
+          title: 'Accounts',
+          icon: Icons.currency_exchange,
+          child: Placeholder(),
+        ),
+        SummaryCard(
+          title: 'Category',
+          icon: Icons.category,
+          child: Placeholder(),
+        ),
+        SummaryCard(
+          title: 'Budget',
+          icon: Icons.book,
+          child: Placeholder(),
+        ),
+        SummaryCard(
+          title: 'Saving',
+          icon: Icons.savings,
+          child: Placeholder(),
+        ),
+        SummaryCard(
+          title: 'Reports',
+          icon: Icons.pie_chart,
+          child: Placeholder(),
+        ),
+      ],
     );
   }
 }

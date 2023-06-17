@@ -90,23 +90,52 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ListView(
+        // ListView(
+        //   physics: widget.customTabBar != null
+        //       ? SnapScrollPhysics(
+        //           snaps: [Snap.avoidZone(0, kExtendedCustomTabBarHeight - kCustomTabBarHeight)],
+        //         )
+        //       : const ClampingScrollPhysics(),
+        //   controller: _controller,
+        //   children: [
+        //     SizedBox(
+        //         height: widget.customTabBar == null
+        //             ? 0
+        //             : widget.customTabBar!.extendedTabBar == null
+        //                 ? widget.customTabBar!.smallTabBar.height
+        //                 : widget.customTabBar!.extendedTabBar!.height),
+        //     ...widget.children,
+        //     const SizedBox(height: kBottomAppBarHeight + 8),
+        //   ],
+        // ),
+        ListView.builder(
           physics: widget.customTabBar != null
               ? SnapScrollPhysics(
-                  snaps: [Snap.avoidZone(0, kExtendedCustomTabBarHeight - kCustomTabBarHeight)],
+                  snaps: [
+                    Snap.avoidZone(
+                        0,
+                        widget.customTabBar!.extendedTabBar != null
+                            ? widget.customTabBar!.extendedTabBar!.height -
+                                widget.customTabBar!.smallTabBar.height
+                            : 30)
+                  ],
                 )
               : const ClampingScrollPhysics(),
           controller: _controller,
-          children: [
-            SizedBox(
-                height: widget.customTabBar == null
-                    ? 0
-                    : widget.customTabBar!.extendedTabBar == null
-                        ? widget.customTabBar!.smallTabBar.height
-                        : widget.customTabBar!.extendedTabBar!.height),
-            ...widget.children,
-            const SizedBox(height: kBottomAppBarHeight + 8),
-          ],
+          itemCount: widget.children.length + 2,
+          itemBuilder: (context, index) {
+            return index == 0
+                ? SizedBox(
+                    height: widget.customTabBar == null
+                        ? 0
+                        : widget.customTabBar!.extendedTabBar == null
+                            ? widget.customTabBar!.smallTabBar.height
+                            : widget.customTabBar!.extendedTabBar!.height,
+                  )
+                : index == widget.children.length + 1
+                    ? const SizedBox(height: kBottomAppBarHeight + 8)
+                    : widget.children[index - 1];
+          },
         ),
         widget.customTabBar ?? const SizedBox(),
       ],

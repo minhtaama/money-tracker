@@ -6,6 +6,8 @@ import 'package:money_tracker_app/src/features/custom_tab_page/presentation/cust
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+final _extendedTabBarKey = GlobalKey();
+
 /// Use this class as the value for [CustomTabPage]'s argument
 class CustomTabBar extends ConsumerWidget {
   const CustomTabBar({
@@ -94,20 +96,33 @@ class CustomTabBar extends ConsumerWidget {
 }
 
 /// Use this class as the value for [CustomTabBar]'s argument
-class SmallTabBar extends StatelessWidget {
+class SmallTabBar extends ConsumerWidget {
+  /// By default, no need to change `extendedTabBarHeight` argument.
+  /// If there is an extendedTabBar, change `isHasExtendedTabBar` to `true`
+  /// and config `extendedTabBarHeight` if the extended tab bar has custom height.
   const SmallTabBar({
     Key? key,
     this.backgroundColor,
     required this.child,
     this.height = kCustomTabBarHeight,
+    this.extendedTabBarHeight = kExtendedCustomTabBarHeight,
+    this.isHasExtendedTabBar = false,
   }) : super(key: key);
   final Color? backgroundColor;
   final Widget child;
   final double height;
+  final double extendedTabBarHeight;
+  final bool isHasExtendedTabBar;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pixelsOffset =
+        ref.watch(customListViewStateControllerProvider.select((value) => value.pixelsOffset));
+
+    double offsetTriggerShowBottomDivider = isHasExtendedTabBar ? extendedTabBarHeight - height + 3 : 10;
+
+    return AnimatedContainer(
+      duration: kBottomAppBarDuration,
       width: double.infinity,
       height: double.infinity,
       padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
@@ -115,7 +130,9 @@ class SmallTabBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? context.appTheme.background,
         border: Border(
-          bottom: BorderSide(color: Colors.black.withOpacity(0.1), width: 2),
+          bottom: BorderSide(
+              color: Colors.black.withOpacity(pixelsOffset > offsetTriggerShowBottomDivider ? 0.1 : 0.0),
+              width: 2),
         ),
       ),
       child: child,
@@ -126,13 +143,13 @@ class SmallTabBar extends StatelessWidget {
 /// Use this class as the value for [CustomTabBar]'s argument
 class ExtendedTabBar extends StatelessWidget {
   const ExtendedTabBar({
-    Key? key,
+    super.key,
     required this.backgroundColor,
     required this.innerChild,
     this.outerChild,
     this.height = kExtendedCustomTabBarHeight,
     this.outerChildHeight = kOuterChildHeight,
-  }) : super(key: key);
+  });
   final Color backgroundColor;
   final Widget innerChild;
   final Widget? outerChild;

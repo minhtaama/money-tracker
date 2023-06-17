@@ -21,6 +21,7 @@ class HomeScreen extends StatelessWidget {
           outerChild: const DateSelector(),
         ),
         smallTabBar: const SmallTabBar(
+          isHasExtendedTabBar: true,
           child: SmallHomeTab(),
         ),
       ),
