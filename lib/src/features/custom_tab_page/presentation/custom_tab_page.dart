@@ -98,7 +98,12 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
               : const ClampingScrollPhysics(),
           controller: _controller,
           children: [
-            SizedBox(height: widget.customTabBar != null ? kExtendedCustomTabBarHeight : 0),
+            SizedBox(
+                height: widget.customTabBar == null
+                    ? 0
+                    : widget.customTabBar!.extendedTabBar == null
+                        ? widget.customTabBar!.smallTabBar.height
+                        : widget.customTabBar!.extendedTabBar!.height),
             ...widget.children,
             const SizedBox(height: kBottomAppBarHeight + 8),
           ],

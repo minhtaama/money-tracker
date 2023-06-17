@@ -13,7 +13,7 @@ const kHeader3TextStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 18);
 const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 
 /// Value related to CustomTabBar and CustomTabPage
-const double kCustomTabBarHeight = 50;
+const double kCustomTabBarHeight = 80;
 
 /// Value related to CustomTabBar and CustomTabPage
 const double kExtendedCustomTabBarHeight = 230;

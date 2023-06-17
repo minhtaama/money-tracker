@@ -20,9 +20,8 @@ class HomeScreen extends StatelessWidget {
           innerChild: const ExtendedHomeTab(),
           outerChild: const DateSelector(),
         ),
-        smallTabBar: SmallTabBar(
-          backgroundColor: context.appTheme.background,
-          child: const SmallHomeTab(),
+        smallTabBar: const SmallTabBar(
+          child: SmallHomeTab(),
         ),
       ),
       children: [
@@ -58,7 +57,7 @@ class IncomeExpenseCard extends StatelessWidget {
         isGradient: true,
         width: double.infinity,
         height: 100,
-        elevation: 3,
+        elevation: 2,
         child: Text(
           isIncome ? 'Income' : 'Expense',
           style: kHeader2TextStyle.copyWith(

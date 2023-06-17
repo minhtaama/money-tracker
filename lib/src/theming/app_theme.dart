@@ -43,13 +43,14 @@ class AppThemeData {
   ///
   /// [SmallHomeTab]'s background color
   ///
+  /// [BottomAppBarWithFAB]'s background
+  ///
   /// Modals background
   final Color background;
 
   /// [CardItem]'s default background
   final Color background2;
 
-  ///[BottomAppBarWithFAB]'s background
   final Color background3;
 
   /// Colors of text on backgrounds

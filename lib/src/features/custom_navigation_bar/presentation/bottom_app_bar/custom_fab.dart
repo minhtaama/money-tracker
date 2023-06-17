@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/theming/app_theme.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../../../common_widgets/rounded_icon_button.dart';
 
 class FABItem {
   FABItem({required this.icon, required this.label, required this.color, required this.onTap});
@@ -11,50 +11,6 @@ class FABItem {
   final String label;
   final Color color;
   final VoidCallback onTap;
-}
-
-// UI class of overlay buttons
-class _FABOverlayButton extends StatelessWidget {
-  const _FABOverlayButton({
-    Key? key,
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.size,
-  }) : super(key: key);
-  final IconData icon;
-  final String label;
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CardItem(
-          width: size,
-          height: size,
-          color: color,
-          borderRadius: BorderRadius.circular(100),
-          isGradient: true,
-          child: FittedBox(
-            child: Icon(
-              icon,
-              color: context.appTheme.primaryNegative,
-            ),
-          ),
-        ),
-        Gap.h8,
-        Material(
-            color: Colors.transparent,
-            child: Text(
-              label,
-              style:
-                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
-            )),
-      ],
-    );
-  }
 }
 
 // https://blog.logrocket.com/complete-guide-implementing-overlays-flutter/#example-2-a-floatingactionbutton-showing-three-other-buttons
@@ -105,17 +61,15 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                 ? MainAxisAlignment.end
                 : MainAxisAlignment.start,
             children: [
-              GestureDetector(
+              RoundedIconButton(
                 onTap: () {
                   widget.items[index].onTap();
                   _removeEntry(overlayEntry);
                 },
-                child: _FABOverlayButton(
-                  icon: widget.items[index].icon,
-                  label: widget.items[index].label,
-                  color: widget.items[index].color,
-                  size: overlayBoxWidth / 5.5,
-                ),
+                icon: widget.items[index].icon,
+                label: widget.items[index].label,
+                backgroundColor: widget.items[index].color,
+                size: overlayBoxWidth / 5.5,
               ),
             ],
           );

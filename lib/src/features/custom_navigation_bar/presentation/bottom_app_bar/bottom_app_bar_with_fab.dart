@@ -36,7 +36,9 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
   late List<Widget> buttons;
   int _selectedIndex = 0;
 
-  void _updateIndex(int index) {
+  void _updateIndex(int index) async {
+    // wait for button animation
+    await Future.delayed(const Duration(milliseconds: 100));
     if (_selectedIndex != index) {
       setState(() {
         _selectedIndex = index;
@@ -74,7 +76,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
       child: Theme(
         data: ThemeData(useMaterial3: false),
         child: BottomAppBar(
-          color: context.appTheme.background3,
+          color: context.appTheme.background,
           surfaceTintColor: null,
           elevation: 0,
           child: AnimatedOpacity(

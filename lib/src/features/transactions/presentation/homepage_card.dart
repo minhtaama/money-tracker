@@ -33,7 +33,11 @@ class HomePageCard extends StatelessWidget {
                       textAlign: TextAlign.left,
                     )
                   : const SizedBox(),
-              header != null || title != null ? const Divider() : const SizedBox(),
+              header != null || title != null
+                  ? Divider(
+                      color: Colors.black.withOpacity(0.1),
+                    )
+                  : const SizedBox(),
               Center(child: child),
             ],
           ),

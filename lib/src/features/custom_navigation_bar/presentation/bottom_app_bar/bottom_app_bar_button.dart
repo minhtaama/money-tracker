@@ -35,7 +35,7 @@ class BottomAppBarButton extends StatelessWidget {
           onTap: () => onTap(index),
           borderRadius: borderRadius,
           splashColor: backgroundColor.withAlpha(105),
-          highlightColor: backgroundColor.withAlpha(105),
+          highlightColor: Colors.transparent,
           child: CardItem(
             color: isSelected ? backgroundColor : Colors.transparent,
             height: kBottomAppBarHeight - 28,

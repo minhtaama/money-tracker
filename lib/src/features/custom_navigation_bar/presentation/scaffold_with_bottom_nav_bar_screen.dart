@@ -31,9 +31,9 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         text: context.localize.home,
       ),
       BottomAppBarItem(
-        path: RoutePath.accounts,
-        iconData: Icons.account_balance_wallet_sharp.temporaryIcon,
-        text: context.localize.accounts,
+        path: RoutePath.summary,
+        iconData: Icons.folder_copy.temporaryIcon,
+        text: context.localize.summary,
       ),
     ];
 

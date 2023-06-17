@@ -12,6 +12,7 @@ class CardItem extends StatelessWidget {
       this.isGradient = false,
       this.borderRadius,
       this.margin,
+      this.padding,
       this.elevation = 1})
       : super(key: key);
   final Color? color;
@@ -19,6 +20,7 @@ class CardItem extends StatelessWidget {
   final double? width;
   final double elevation;
   final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
   final BorderRadiusGeometry? borderRadius;
   final bool isGradient;
   final Widget? child;
@@ -43,9 +45,17 @@ class CardItem extends StatelessWidget {
               ? null
               : [
                   BoxShadow(
-                      color: Colors.black.withOpacity(elevation * 0.1),
-                      blurRadius: 2 + elevation,
-                      offset: Offset(1, 2 + elevation)),
+                    color: Colors.black.withOpacity(elevation * 0.1),
+                    blurRadius: 0.5 + elevation,
+                    spreadRadius: 0.5 * elevation,
+                    offset: Offset(0, 1 + elevation),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 0,
+                    spreadRadius: 0.2,
+                    offset: const Offset(0, 0),
+                  ),
                 ],
           gradient: isGradient
               ? LinearGradient(
@@ -59,9 +69,12 @@ class CardItem extends StatelessWidget {
                 )
               : null,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-          child: child ?? SizedBox(),
+        child: Material(
+          color: Colors.transparent,
+          child: Padding(
+            padding: padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+            child: child,
+          ),
         ),
       ),
     );

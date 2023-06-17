@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import '../features/accounts/presentation/accounts_list_screen.dart';
+import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
 import '../utils/enums.dart';
@@ -12,7 +12,7 @@ class RoutePath {
   static String get addIncome => '/home/addIncome';
   static String get addExpense => '/home/addExpense';
   static String get addTransfer => '/home/addTransfer';
-  static String get accounts => '/accounts';
+  static String get summary => '/summary';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -33,9 +33,9 @@ final goRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/home',
-          pageBuilder: (_, __) => showFadeTransitionPage(
-            _,
-            __,
+          parentNavigatorKey: _shellNavKey,
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
             child: const HomeScreen(),
           ),
           routes: [
@@ -72,11 +72,11 @@ final goRouter = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/accounts',
-          pageBuilder: (_, __) => showFadeTransitionPage(
-            _,
-            __,
-            child: const AccountsListScreen(),
+          path: '/summary',
+          parentNavigatorKey: _shellNavKey,
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const SummaryScreen(),
           ),
         ),
       ],
@@ -87,9 +87,9 @@ final goRouter = GoRouter(
 Page<void> showFadeTransitionPage(BuildContext context, GoRouterState state, {required Widget child}) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
-    child: child,
     transitionDuration: kBottomAppBarDuration,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>
         FadeTransition(opacity: animation, child: child),
+    child: child,
   );
 }

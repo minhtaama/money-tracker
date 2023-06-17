@@ -12,23 +12,20 @@ class SmallHomeTab extends StatelessWidget {
       onTap: () => print('child tapped'),
       child: SizedBox(
         height: double.infinity,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.wallet,
-                size: 28,
-              ).temporaryIcon,
-              const SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: Text('9.000.000 VND'.hardcoded, style: kHeader2TextStyle),
-              ),
-              const Icon(Icons.remove_red_eye).temporaryIcon
-            ],
-          ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.wallet,
+              size: 28,
+            ).temporaryIcon,
+            const SizedBox(
+              width: 8,
+            ),
+            Expanded(
+              child: Text('9.000.000 VND'.hardcoded, style: kHeader2TextStyle),
+            ),
+            const Icon(Icons.remove_red_eye).temporaryIcon
+          ],
         ),
       ),
     );

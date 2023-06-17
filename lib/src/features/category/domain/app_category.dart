@@ -16,4 +16,22 @@ class AppCategory {
   final String name;
   final Color color;
   final CategoryType type;
+
+  AppCategory copyWith({
+    String? id,
+    IconData? icon,
+    int? index,
+    String? name,
+    Color? color,
+    CategoryType? type,
+  }) {
+    return AppCategory(
+      id: id ?? this.id,
+      icon: icon ?? this.icon,
+      index: index ?? this.index,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      type: type ?? this.type,
+    );
+  }
 }

@@ -4,32 +4,43 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 /// Use this class as the value for [CustomTabPage]'s argument
 class CustomTabBar extends ConsumerWidget {
-  const CustomTabBar({Key? key, this.extendedTabBar, required this.smallTabBar}) : super(key: key);
+  const CustomTabBar({
+    Key? key,
+    this.extendedTabBar,
+    required this.smallTabBar,
+  }) : super(key: key);
   final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
 
-  final _triggerHeight = kCustomTabBarHeight + (kExtendedCustomTabBarHeight - kCustomTabBarHeight) / 2;
-
   double _getAppBarHeight({required bool isScrollIdle, required double pixelsOffset}) {
-    double height;
-    height = (kExtendedCustomTabBarHeight - pixelsOffset)
-        .clamp(kCustomTabBarHeight, kExtendedCustomTabBarHeight);
-    if (isScrollIdle) {
-      return height > _triggerHeight ? kExtendedCustomTabBarHeight : kCustomTabBarHeight;
+    if (extendedTabBar != null) {
+      final triggerHeight = smallTabBar.height + (extendedTabBar!.height - smallTabBar.height) / 2;
+      double height =
+          (extendedTabBar!.height - pixelsOffset).clamp(smallTabBar.height, extendedTabBar!.height);
+      if (isScrollIdle) {
+        return height > triggerHeight ? extendedTabBar!.height : smallTabBar.height;
+      }
+      return height;
+    } else {
+      return smallTabBar.height;
     }
-    return height;
   }
 
   double _getAppBarChildOpacity({required bool isExtendedChild, required double appBarHeight}) {
     final height = appBarHeight;
 
-    if (isExtendedChild) {
-      return (height - kCustomTabBarHeight) / (kExtendedCustomTabBarHeight - kCustomTabBarHeight);
+    if (extendedTabBar != null) {
+      if (isExtendedChild) {
+        return (height - smallTabBar.height) / (extendedTabBar!.height - smallTabBar.height);
+      } else {
+        return 1 - (height - smallTabBar.height) / (extendedTabBar!.height - smallTabBar.height);
+      }
     } else {
-      return 1 - (height - kCustomTabBarHeight) / (kExtendedCustomTabBarHeight - kCustomTabBarHeight);
+      return 1;
     }
   }
 
@@ -84,37 +95,56 @@ class CustomTabBar extends ConsumerWidget {
 
 /// Use this class as the value for [CustomTabBar]'s argument
 class SmallTabBar extends StatelessWidget {
-  const SmallTabBar({Key? key, required this.backgroundColor, required this.child}) : super(key: key);
-  final Color backgroundColor;
+  const SmallTabBar({
+    Key? key,
+    this.backgroundColor,
+    required this.child,
+    this.height = kCustomTabBarHeight,
+  }) : super(key: key);
+  final Color? backgroundColor;
   final Widget child;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: backgroundColor,
-        alignment: Alignment.center,
-        child: Padding(
-          padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
-          child: child,
-        ));
+      width: double.infinity,
+      height: double.infinity,
+      padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
+      margin: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: backgroundColor ?? context.appTheme.background,
+        border: Border(
+          bottom: BorderSide(color: Colors.black.withOpacity(0.1), width: 2),
+        ),
+      ),
+      child: child,
+    );
   }
 }
 
 /// Use this class as the value for [CustomTabBar]'s argument
 class ExtendedTabBar extends StatelessWidget {
-  const ExtendedTabBar(
-      {Key? key, required this.backgroundColor, required this.innerChild, required this.outerChild})
-      : super(key: key);
+  const ExtendedTabBar({
+    Key? key,
+    required this.backgroundColor,
+    required this.innerChild,
+    this.outerChild,
+    this.height = kExtendedCustomTabBarHeight,
+    this.outerChildHeight = kOuterChildHeight,
+  }) : super(key: key);
   final Color backgroundColor;
   final Widget innerChild;
-  final Widget outerChild;
+  final Widget? outerChild;
+  final double height;
+  final double outerChildHeight;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Transform(
-          transform: Matrix4.identity()..translate(0.0, -kOuterChildHeight / 2, 0.0),
+          transform: Matrix4.translationValues(0.0, -outerChildHeight / 2, 0.0),
           child: CardItem(
             width: double.infinity,
             height: double.infinity,
@@ -122,11 +152,13 @@ class ExtendedTabBar extends StatelessWidget {
             color: backgroundColor,
             margin: EdgeInsets.zero,
             borderRadius: BorderRadius.zero,
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: innerChild,
-            ),
+            padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                bottom: outerChild != null ? 12.0 : 0,
+                top: Gap.statusBarHeight(context) + outerChildHeight / 2),
+            elevation: 2,
+            child: innerChild,
           ),
         ),
         Align(alignment: Alignment.bottomCenter, child: outerChild),
