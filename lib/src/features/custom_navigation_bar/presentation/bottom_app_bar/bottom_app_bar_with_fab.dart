@@ -78,7 +78,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
         child: BottomAppBar(
           color: context.appTheme.background,
           surfaceTintColor: null,
-          elevation: 0,
+          elevation: 11,
           child: AnimatedOpacity(
             opacity: isBottomAppBarGoUp ? 1 : 0,
             duration: kBottomAppBarDuration,

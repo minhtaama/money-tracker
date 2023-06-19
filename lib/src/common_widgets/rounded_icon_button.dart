@@ -29,37 +29,42 @@ class RoundedIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final key = GlobalKey();
-    return Column(
-      mainAxisAlignment: label != null ? MainAxisAlignment.start : MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CardItem(
-          key: key,
-          width: size,
-          height: size,
-          color: backgroundColor,
-          padding: EdgeInsets.zero,
-          borderRadius: BorderRadius.circular(1000),
-          elevation: 0,
-          isGradient: true,
-          child: InkWell(
-            onTap: onTap,
-            splashColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
-            highlightColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
-            borderRadius: BorderRadius.circular(1000),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: FittedBox(
-                child: Icon(
-                  icon,
-                  color: iconColor ?? context.appTheme.primaryNegative,
+    return label != null
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CardItem(
+                key: key,
+                width: size ?? 24,
+                height: size ?? 24,
+                color: backgroundColor,
+                padding: EdgeInsets.zero,
+                margin: EdgeInsets.zero,
+                borderRadius: BorderRadius.circular(1000),
+                elevation: 0,
+                isGradient: true,
+                child: InkWell(
+                  onTap: () async {
+                    // wait for button animation
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    onTap != null ? onTap!() : () {};
+                  },
+                  splashColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
+                  highlightColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
+                  borderRadius: BorderRadius.circular(1000),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: FittedBox(
+                      child: Icon(
+                        icon,
+                        color: iconColor ?? context.appTheme.primaryNegative,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-        label != null
-            ? Material(
+              Material(
                 color: Colors.transparent,
                 child: Text(
                   label!,
@@ -70,8 +75,37 @@ class RoundedIconButton extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               )
-            : const SizedBox(),
-      ],
-    );
+            ],
+          )
+        : CardItem(
+            key: key,
+            width: size ?? 48,
+            height: size ?? 48,
+            color: backgroundColor,
+            padding: EdgeInsets.zero,
+            margin: EdgeInsets.zero,
+            borderRadius: BorderRadius.circular(1000),
+            elevation: 0,
+            isGradient: true,
+            child: InkWell(
+              onTap: () async {
+                // wait for button animation
+                await Future.delayed(const Duration(milliseconds: 100));
+                onTap != null ? onTap!() : () {};
+              },
+              splashColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
+              highlightColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
+              borderRadius: BorderRadius.circular(1000),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: FittedBox(
+                  child: Icon(
+                    icon,
+                    color: iconColor ?? context.appTheme.primaryNegative,
+                  ),
+                ),
+              ),
+            ),
+          );
   }
 }

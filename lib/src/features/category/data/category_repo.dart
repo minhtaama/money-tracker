@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
 import 'package:money_tracker_app/src/features/category/data/category_icons.dart';
 import 'package:money_tracker_app/src/features/category/data/hive_model/category_hive_model.dart';
@@ -8,8 +7,8 @@ import 'package:money_tracker_app/src/features/category/domain/app_category.dart
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class CategoryRepository {
-  final _incomeCategoryBox = Hive.box<CategoryHiveModel>(HiveDataStore.incomeCategoriesBox);
-  final _expenseCategoryBox = Hive.box<CategoryHiveModel>(HiveDataStore.expenseCategoriesBox);
+  final _incomeCategoryBox = HiveDataStore.getIncomeCategoriesBox;
+  final _expenseCategoryBox = HiveDataStore.getExpenseCategoriesBox;
 
   List<AppCategory> _getAppCategoryList(CategoryType type) {
     List<CategoryHiveModel> categoryBox = type == CategoryType.income

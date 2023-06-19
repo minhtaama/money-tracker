@@ -166,23 +166,28 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   Widget build(BuildContext context) {
     return FloatingActionButton(
       key: globalKey,
-      onPressed: _showOverlay,
+      onPressed: () {},
       shape: const CircleBorder(),
-      elevation: 8,
-      highlightElevation: 2,
+      elevation: 4,
       backgroundColor: Colors.transparent,
-      child: CardItem(
-        margin: EdgeInsets.zero,
-        borderRadius: BorderRadius.circular(100),
-        height: double.infinity,
-        width: double.infinity,
-        color: context.appTheme.accent,
-        isGradient: true,
-        child: Icon(
-          Icons.add,
-          color: context.appTheme.accentNegative,
-        ),
+      child: RoundedIconButton(
+        icon: Icons.add,
+        backgroundColor: context.appTheme.accent,
+        size: double.infinity,
+        onTap: _showOverlay,
       ),
+      // child: CardItem(
+      //   margin: EdgeInsets.zero,
+      //   borderRadius: BorderRadius.circular(100),
+      //   height: double.infinity,
+      //   width: double.infinity,
+      //   color: context.appTheme.accent,
+      //   isGradient: true,
+      //   child: Icon(
+      //     Icons.add,
+      //     color: context.appTheme.accentNegative,
+      //   ),
+      // ),
     );
   }
 }

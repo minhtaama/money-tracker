@@ -131,7 +131,8 @@ class SmallTabBar extends ConsumerWidget {
         color: backgroundColor ?? context.appTheme.background,
         border: Border(
           bottom: BorderSide(
-              color: Colors.black.withOpacity(pixelsOffset > offsetTriggerShowBottomDivider ? 0.1 : 0.0),
+              color: context.appTheme.backgroundNegative
+                  .withOpacity(pixelsOffset > offsetTriggerShowBottomDivider ? 0.1 : 0.0),
               width: 2),
         ),
       ),

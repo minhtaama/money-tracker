@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 
-@HiveType(typeId: 2)
+part 'account_hive_model.g.dart';
+
+@HiveType(typeId: 0)
 class AccountHiveModel {
   AccountHiveModel({
     required this.id,

@@ -58,7 +58,6 @@ class IncomeExpenseCard extends StatelessWidget {
         isGradient: true,
         width: double.infinity,
         height: 100,
-        elevation: 2,
         child: Text(
           isIncome ? 'Income' : 'Expense',
           style: kHeader2TextStyle.copyWith(

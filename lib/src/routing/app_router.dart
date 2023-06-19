@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
+import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/custom_navigation_bar/presentation/scaffold_with_bottom_nav_bar_screen.dart';
@@ -13,6 +13,7 @@ class RoutePath {
   static String get addExpense => '/home/addExpense';
   static String get addTransfer => '/home/addTransfer';
   static String get summary => '/summary';
+  static String get setting => '/summary/settings';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -72,24 +73,23 @@ final goRouter = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/summary',
-          parentNavigatorKey: _shellNavKey,
-          pageBuilder: (context, state) => NoTransitionPage(
-            key: state.pageKey,
-            child: const SummaryScreen(),
-          ),
-        ),
+            path: '/summary',
+            parentNavigatorKey: _shellNavKey,
+            pageBuilder: (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const SummaryScreen(),
+                ),
+            routes: [
+              GoRoute(
+                path: 'settings',
+                parentNavigatorKey: _rootNavKey,
+                pageBuilder: (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const SettingsScreen(),
+                ),
+              )
+            ]),
       ],
     ),
   ],
 );
-
-Page<void> showFadeTransitionPage(BuildContext context, GoRouterState state, {required Widget child}) {
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    transitionDuration: kBottomAppBarDuration,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        FadeTransition(opacity: animation, child: child),
-    child: child,
-  );
-}
