@@ -63,7 +63,7 @@ class CardItem extends StatelessWidget {
                   end: Alignment.topRight,
                   colors: [
                     color ?? defaultBgColor,
-                    Color.lerp(color ?? defaultBgColor, context.appTheme.background2, 0.25)!
+                    Color.lerp(color ?? defaultBgColor, context.appTheme.background2, 0.2)!
                   ],
                   stops: const [0.15, 1],
                 )

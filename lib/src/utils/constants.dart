@@ -51,5 +51,9 @@ class Gap {
   static get h40 => const SizedBox(height: 40);
   static get h48 => const SizedBox(height: 48);
 
+  static get divider => Divider(
+        color: Colors.black.withOpacity(0.1),
+      );
+
   static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;
 }

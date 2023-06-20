@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/persistent/hive_data_store.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/features/settings/presentation/color_picker.dart';
+import 'package:money_tracker_app/src/features/settings/presentation/setting_tile_toggle.dart';
+import 'package:money_tracker_app/src/theming/app_colors.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -23,13 +29,32 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         children: [
-          const Placeholder(),
-          ElevatedButton(
-              onPressed: () {
-                settingsController.changeTheme(2);
-              },
-              child: Text('change to 1')),
-          Text(settingsState.toString()),
+          CustomSection(
+            title: 'Theme',
+            children: [
+              ColorPicker(
+                colorsList: AppColors.allThemeData,
+                currentColorIndex: settingsState.currentThemeIndex,
+                onColorTap: (int value) {
+                  settingsController.setThemeColor(value);
+                },
+              ),
+              SettingTileToggle(
+                title: 'Use dark mode',
+                valueLabels: const [
+                  'Off',
+                  'On',
+                  'System default',
+                ],
+                onTap: (int index) {
+                  settingsController.setThemeType(ThemeType.values[index]);
+                },
+                valuesCount: ThemeType.values.length,
+                initialValueIndex: ThemeType.values.indexOf(settingsState.themeType),
+              ),
+              Text(HiveDataStore.getSettingsHiveModel.toString()),
+            ],
+          )
         ],
       ),
     );

@@ -12,12 +12,10 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 Future<void> main() async {
   usePathUrlStrategy(); //remove # character in web link
-  //final hiveData = HiveDataStore();
   await HiveDataStore.init();
   runApp(
     ProviderScope(
       overrides: [
-        // hiveStoreProvider.overrideWithValue(hiveData),
         settingsHiveModelControllerProvider.overrideWith(
           (ref) => SettingsHiveModelController(HiveDataStore.getSettingsHiveModel),
         ),
@@ -27,16 +25,18 @@ Future<void> main() async {
   );
 }
 
-class MoneyTrackerApp extends StatelessWidget {
+class MoneyTrackerApp extends ConsumerWidget {
   const MoneyTrackerApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsState = ref.watch(settingsHiveModelControllerProvider);
+
     return AppTheme(
-      data: AppColors.allThemeData[0],
+      data: AppColors.allThemeData[settingsState.currentThemeIndex],
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-          value: AppColors.allThemeData[0].overlayStyle.copyWith(
+          value: AppColors.allThemeData[settingsState.currentThemeIndex].overlayStyle.copyWith(
               systemNavigationBarColor: context.appTheme.background, //Same as BottomAppBarWithFab
               systemNavigationBarIconBrightness: Brightness.dark),
           child: MaterialApp.router(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppThemeData {
+  final bool isDuoColor;
+
   /// [BottomAppBarButton] color when selected or outline when not selected
   ///
   /// [CustomFloatingActionButton]'s background
@@ -60,6 +62,7 @@ class AppThemeData {
   final SystemUiOverlayStyle overlayStyle;
 
   AppThemeData({
+    required this.isDuoColor,
     required this.primary,
     required this.secondary,
     required this.accent,
