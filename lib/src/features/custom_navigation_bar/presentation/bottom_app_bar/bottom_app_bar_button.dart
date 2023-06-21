@@ -41,7 +41,7 @@ class BottomAppBarButton extends StatelessWidget {
             height: kBottomAppBarHeight - 28,
             borderRadius: borderRadius,
             margin: EdgeInsets.zero,
-            isGradient: isSelected ? true : false,
+            isGradient: isSelected ? (context.appTheme.isDarkTheme ? false : true) : false,
             elevation: isSelected ? 1 : 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,7 +51,11 @@ class BottomAppBarButton extends StatelessWidget {
                   flex: 1,
                   child: Icon(
                     item.iconData,
-                    color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
+                    color: isSelected
+                        ? (context.appTheme.isDarkTheme
+                            ? context.appTheme.secondary
+                            : context.appTheme.primaryNegative)
+                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary : backgroundColor),
                   ),
                 ), //TODO: Implement Hive icon
                 Gap.w16,
@@ -62,7 +66,13 @@ class BottomAppBarButton extends StatelessWidget {
                     child: Text(
                       item.text,
                       style: kHeader4TextStyle.copyWith(
-                        color: isSelected ? context.appTheme.primaryNegative : backgroundColor,
+                        color: isSelected
+                            ? (context.appTheme.isDarkTheme
+                                ? context.appTheme.secondary
+                                : context.appTheme.primaryNegative)
+                            : (context.appTheme.isDarkTheme
+                                ? context.appTheme.secondary
+                                : backgroundColor),
                         fontFamily: 'WixMadeforDisplay',
                         fontSize: 14,
                       ),

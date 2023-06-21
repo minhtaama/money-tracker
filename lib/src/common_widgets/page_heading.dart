@@ -38,7 +38,9 @@ class PageHeading extends StatelessWidget {
                       flex: 2,
                       child: Text(
                         title,
-                        style: kHeader1TextStyle,
+                        style: kHeader1TextStyle.copyWith(
+                          color: context.appTheme.backgroundNegative,
+                        ),
                       ),
                     ),
                     Expanded(
@@ -55,7 +57,9 @@ class PageHeading extends StatelessWidget {
                 )
               : Text(
                   title,
-                  style: kHeader1TextStyle,
+                  style: kHeader1TextStyle.copyWith(
+                    color: context.appTheme.backgroundNegative,
+                  ),
                 ),
         ),
         trailing ?? const SizedBox(),

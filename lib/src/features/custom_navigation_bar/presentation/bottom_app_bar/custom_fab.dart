@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
@@ -172,22 +171,12 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       backgroundColor: Colors.transparent,
       child: RoundedIconButton(
         icon: Icons.add,
+        iconColor:
+            context.appTheme.isDarkTheme ? context.appTheme.background : context.appTheme.accentNegative,
         backgroundColor: context.appTheme.accent,
         size: double.infinity,
         onTap: _showOverlay,
       ),
-      // child: CardItem(
-      //   margin: EdgeInsets.zero,
-      //   borderRadius: BorderRadius.circular(100),
-      //   height: double.infinity,
-      //   width: double.infinity,
-      //   color: context.appTheme.accent,
-      //   isGradient: true,
-      //   child: Icon(
-      //     Icons.add,
-      //     color: context.appTheme.accentNegative,
-      //   ),
-      // ),
     );
   }
 }

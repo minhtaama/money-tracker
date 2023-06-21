@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theming/app_colors.dart';
 import 'package:money_tracker_app/src/theming/app_theme.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 Future<void> main() async {
@@ -20,7 +21,7 @@ Future<void> main() async {
           (ref) => SettingsHiveModelController(HiveDataStore.getSettingsHiveModel),
         ),
       ],
-      child: const MoneyTrackerApp(),
+      child: const MaterialApp(home: MoneyTrackerApp()),
     ),
   );
 }
@@ -28,15 +29,27 @@ Future<void> main() async {
 class MoneyTrackerApp extends ConsumerWidget {
   const MoneyTrackerApp({Key? key}) : super(key: key);
 
+  ThemeType getThemeType(BuildContext context, ThemeType currentThemeType) {
+    if (currentThemeType == ThemeType.system) {
+      return MediaQuery.of(context).platformBrightness == Brightness.light
+          ? ThemeType.light
+          : ThemeType.dark;
+    } else {
+      return currentThemeType;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsState = ref.watch(settingsHiveModelControllerProvider);
+    final currentTheme = AppColors.allThemeData[settingsState.currentThemeIndex]
+        [getThemeType(context, settingsState.themeType)]!;
 
     return AppTheme(
-      data: AppColors.allThemeData[settingsState.currentThemeIndex],
+      data: currentTheme,
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-          value: AppColors.allThemeData[settingsState.currentThemeIndex].overlayStyle.copyWith(
+          value: currentTheme.overlayStyle.copyWith(
               systemNavigationBarColor: context.appTheme.background, //Same as BottomAppBarWithFab
               systemNavigationBarIconBrightness: Brightness.dark),
           child: MaterialApp.router(

@@ -6,7 +6,6 @@ import 'package:money_tracker_app/src/features/custom_tab_page/presentation/cust
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/summary/presentation/summary_card.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
-import 'package:money_tracker_app/src/theming/app_colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -24,7 +23,7 @@ class SummaryScreen extends StatelessWidget {
             trailing: RoundedIconButton(
               icon: Icons.settings,
               backgroundColor: context.appTheme.background3,
-              iconColor: AppColors.black,
+              iconColor: context.appTheme.backgroundNegative,
               onTap: () => context.push(RoutePath.setting),
             ),
           ),
@@ -32,30 +31,40 @@ class SummaryScreen extends StatelessWidget {
       ),
       children: [
         Gap.h16,
-        SummaryCard(
+        const SummaryCard(
           title: 'Accounts',
           icon: Icons.currency_exchange,
-          child: Placeholder(),
+          child: SizedBox(
+            height: 300,
+          ),
         ),
-        SummaryCard(
+        const SummaryCard(
           title: 'Category',
           icon: Icons.category,
-          child: Placeholder(),
+          child: SizedBox(
+            height: 300,
+          ),
         ),
-        SummaryCard(
+        const SummaryCard(
           title: 'Budget',
           icon: Icons.book,
-          child: Placeholder(),
+          child: SizedBox(
+            height: 300,
+          ),
         ),
-        SummaryCard(
+        const SummaryCard(
           title: 'Saving',
           icon: Icons.savings,
-          child: Placeholder(),
+          child: SizedBox(
+            height: 300,
+          ),
         ),
-        SummaryCard(
+        const SummaryCard(
           title: 'Reports',
           icon: Icons.pie_chart,
-          child: Placeholder(),
+          child: SizedBox(
+            height: 300,
+          ),
         ),
       ],
     );

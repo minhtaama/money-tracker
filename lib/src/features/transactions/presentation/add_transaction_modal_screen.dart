@@ -23,7 +23,7 @@ Page<T> showAddTransactionModalPage<T>(BuildContext context, GoRouterState state
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height * 0.92,
     ),
-    backgroundColor: context.appTheme.background,
+    backgroundColor: context.appTheme.background2,
     modalBarrierColor: context.appTheme.background.withOpacity(kModalBarrierOpacity - 0.3),
     child: child,
     isScrollControlled: true,

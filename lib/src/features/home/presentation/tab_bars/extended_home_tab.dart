@@ -18,8 +18,8 @@ class ExtendedHomeTab extends StatelessWidget {
         reverse: true,
         children: [
           Gap.h8,
-          TotalMoney(),
-          WelcomeText(),
+          const TotalMoney(),
+          const WelcomeText(),
         ],
       ),
     );
@@ -36,12 +36,16 @@ class DateSelector extends StatelessWidget {
     return CardItem(
       height: kOuterChildHeight,
       margin: EdgeInsets.zero,
+      color: context.appTheme.isDarkTheme ? context.appTheme.background3 : null,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.keyboard_arrow_left).temporaryIcon,
+          Icon(
+            Icons.keyboard_arrow_left,
+            color: context.appTheme.backgroundNegative,
+          ).temporaryIcon,
           Gap.w4,
           FittedBox(
             child: Text(
@@ -50,9 +54,16 @@ class DateSelector extends StatelessWidget {
             ),
           ),
           Gap.w4,
-          const Icon(Icons.keyboard_arrow_right).temporaryIcon,
+          Icon(
+            Icons.keyboard_arrow_right,
+            color: context.appTheme.backgroundNegative,
+          ).temporaryIcon,
           Gap.w8,
-          const Icon(Icons.filter_alt_rounded, size: 20).temporaryIcon,
+          Icon(
+            Icons.filter_alt_rounded,
+            size: 20,
+            color: context.appTheme.backgroundNegative,
+          ).temporaryIcon,
         ],
       ),
     );

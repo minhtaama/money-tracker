@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 /// Value related to Text. To change more details, use .copyWith()
 const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28);
@@ -28,7 +29,7 @@ const Duration kAppBarExtendDuration = Duration(milliseconds: 10);
 const Duration kBottomAppBarDuration = Duration(milliseconds: 150);
 
 /// Value related to BottomAppBar
-const double kBottomAppBarHeight = 70.0;
+const double kBottomAppBarHeight = 75.0;
 
 /// Value related to BottomAppBar
 const double kModalBarrierOpacity = 0.9;
@@ -51,8 +52,10 @@ class Gap {
   static get h40 => const SizedBox(height: 40);
   static get h48 => const SizedBox(height: 48);
 
-  static get divider => Divider(
-        color: Colors.black.withOpacity(0.1),
+  static divider(BuildContext context, {double? indent}) => Divider(
+        color: context.appTheme.backgroundNegative.withOpacity(0.2),
+        indent: indent,
+        endIndent: indent,
       );
 
   static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;

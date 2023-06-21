@@ -3,52 +3,89 @@ import 'package:flutter/services.dart';
 
 class AppThemeData {
   final bool isDuoColor;
+  final bool isDarkTheme;
 
-  /// [BottomAppBarButton] color when selected or outline when not selected
+  /// __Light Mode:__
+  /// * [CustomFloatingActionButton]'s background
+  /// * [IncomeCard]'s background
+  /// * [BottomAppBarButton]'s color when selected
   ///
-  /// [CustomFloatingActionButton]'s background
-  ///
-  /// [IncomeCard]'s background
+  /// __Dark Mode:__
+  /// *
+  /// *
+  /// *
   final Color primary;
 
-  /// [ExtendedHomeTab]'s background
+  /// __Light Mode:__
+  /// * [ExtendedHomeTab]'s background
+  ///
+  /// __Dark Mode:__
+  /// * [BottomAppBarButton]'s text when selected
+  ///
   final Color secondary;
 
-  /// [ExpenseCard]'s background
+  /// __Light Mode:__
+  /// * [ExpenseCard]'s background
+  ///
+  /// __Dark Mode:__
+  /// * [BottomAppBarButton]'s icons and text color
   final Color accent;
 
-  /// [BottomAppBarButton]'s text when selected
+  /// __Light Mode:__
+  /// * [CustomFloatingActionButton]'s icon
+  /// * [IncomeCard]'s text
+  /// * [ExtendedHomeTab]'s text
   ///
-  /// [CustomFloatingActionButton]'s icon
+  /// __Dark Mode:__
   ///
-  /// [IncomeCard]'s text
-  ///
-  /// [ExtendedHomeTab]'s text
   final Color primaryNegative;
 
-  /// [ExpandedHomeTab]'s text
+  /// __Light Mode:__
+  ///
+  /// __Dark Mode:__
+  ///
   final Color secondaryNegative;
 
-  /// [ExpenseCard]'s text
+  /// __Light Mode:__
+  /// * [ExpenseCard]'s text
+  /// * [CustomFloatingActionButton]'s icon
   ///
-  /// [CustomFloatingActionButton]'s icon
+  /// __DarkMode:__
+  ///
   final Color accentNegative;
 
-  /// [ScaffoldWithBottomNavBar]'s color
+  /// __Light Mode:__
+  /// * [ScaffoldWithBottomNavBar]'s color
+  /// * [SmallHomeTab]'s background color
+  /// * [BottomAppBarWithFAB]'s background
+  /// * Modals background
   ///
-  /// [SmallHomeTab]'s background color
-  ///
-  /// [BottomAppBarWithFAB]'s background
-  ///
-  /// Modals background
+  /// __Dark Mode:__
+  /// * [ScaffoldWithBottomNavBar]'s color
+  /// * [SmallHomeTab]'s background color
+  /// * [BottomAppBarWithFAB]'s background
   final Color background;
 
-  /// [CardItem]'s default background
+  /// __Light Mode:__
+  /// *
+  ///
+  /// __DarkMode:__
+  /// * [ExtendedHomeTab]'s background
+  /// * Modals background
+  /// *
   final Color background2;
 
-  /// [RoundedIconButton]'s default background
+  /// __Light Mode:__
+  /// * [RoundedIconButton]'s default background
+  /// * [CardItem]'s default background
+  ///
+  /// __DarkMode:__
+  /// * [CardItem]'s default background
+  /// *
+  /// *
   final Color background3;
 
+  /// __Both Light Mode and Dark Mode:__
   /// Colors of text on backgrounds
   final Color backgroundNegative;
 
@@ -63,6 +100,7 @@ class AppThemeData {
 
   AppThemeData({
     required this.isDuoColor,
+    required this.isDarkTheme,
     required this.primary,
     required this.secondary,
     required this.accent,
@@ -79,7 +117,7 @@ class AppThemeData {
   });
 }
 
-// Class for reading AppThemeData via InheritedWidget
+/// Class for reading AppThemeData via InheritedWidget
 class AppTheme extends InheritedWidget {
   const AppTheme({
     Key? key,

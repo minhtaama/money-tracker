@@ -56,10 +56,12 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
         toggleIndexValues();
         widget.onTap(currentIndex);
       },
-      splashColor: context.appTheme.backgroundNegative.withOpacity(0.1),
+      splashColor: context.appTheme.backgroundNegative.withOpacity(0.05),
+      focusColor: context.appTheme.backgroundNegative.withOpacity(0.05),
+      highlightColor: context.appTheme.backgroundNegative.withOpacity(0.05),
       borderRadius: BorderRadius.circular(6),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: Row(
           children: [
             widget.leading ?? const SizedBox(),
@@ -68,14 +70,26 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.title, style: kHeader2TextStyle),
+                        Text(
+                          widget.title,
+                          style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.backgroundNegative,
+                          ),
+                        ),
                         Text(
                           widget.valueLabels![currentIndex],
-                          style: kHeader4TextStyle,
+                          style: kHeader4TextStyle.copyWith(
+                            color: context.appTheme.backgroundNegative,
+                          ),
                         )
                       ],
                     )
-                  : Text(widget.title, style: kHeader2TextStyle),
+                  : Text(
+                      widget.title,
+                      style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.backgroundNegative,
+                      ),
+                    ),
             ),
             AnimatedToggle(
               currentValueIndex: currentIndex,

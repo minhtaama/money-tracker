@@ -14,10 +14,9 @@ class CustomSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CardItem(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       padding: EdgeInsets.zero,
-      elevation: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -26,7 +25,7 @@ class CustomSection extends StatelessWidget {
             child: Text(
               title,
               style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.7),
+                color: context.appTheme.backgroundNegative.withOpacity(0.85),
               ),
             ),
           ),
@@ -43,7 +42,7 @@ class CustomSection extends StatelessWidget {
                     children: [
                       children[index],
                       Gap.h8,
-                      Gap.divider,
+                      Gap.divider(context, indent: 2),
                       Gap.h4,
                     ],
                   );

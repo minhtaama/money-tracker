@@ -1,29 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../theming/app_theme.dart';
 
 class ColorPicker extends StatelessWidget {
   const ColorPicker(
-      {Key? key, required this.colorsList, required this.onColorTap, required this.currentColorIndex})
+      {Key? key,
+      required this.colorsList,
+      required this.onColorTap,
+      required this.currentColorIndex,
+      required this.currentThemeType})
       : super(key: key);
-  final List<AppThemeData> colorsList;
+  final ThemeType currentThemeType;
+  final List<Map<ThemeType, AppThemeData>> colorsList;
   final ValueChanged<int> onColorTap;
   final int currentColorIndex;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 15,
-      children: List.generate(colorsList.length, (index) {
-        return CircleColor(
-          color1: colorsList[index].accent,
-          color2: colorsList[index].isDuoColor ? colorsList[index].primary : null,
-          isSelected: currentColorIndex == index,
-          onTap: onColorTap,
-          index: index,
-        );
-      }),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Wrap(
+        spacing: 15,
+        children: List.generate(colorsList.length, (index) {
+          return CircleColor(
+            color1: colorsList[index][currentThemeType]!.accent,
+            color2: colorsList[index][currentThemeType]!.isDuoColor
+                ? colorsList[index][currentThemeType]!.primary
+                : null,
+            isSelected: currentColorIndex == index,
+            onTap: onColorTap,
+            index: index,
+          );
+        }),
+      ),
     );
   }
 }

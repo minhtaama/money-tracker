@@ -6,8 +6,6 @@ import 'package:money_tracker_app/src/features/custom_tab_page/presentation/cust
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-final _extendedTabBarKey = GlobalKey();
-
 /// Use this class as the value for [CustomTabPage]'s argument
 class CustomTabBar extends ConsumerWidget {
   const CustomTabBar({
@@ -166,16 +164,16 @@ class ExtendedTabBar extends StatelessWidget {
           child: CardItem(
             width: double.infinity,
             height: double.infinity,
-            isGradient: true,
+            isGradient: context.appTheme.isDarkTheme ? false : true,
             color: backgroundColor,
             margin: EdgeInsets.zero,
             borderRadius: BorderRadius.zero,
             padding: EdgeInsets.only(
                 left: 16,
                 right: 16,
-                bottom: outerChild != null ? 12.0 : 0,
+                bottom: outerChild != null ? 22.0 : 0,
                 top: Gap.statusBarHeight(context) + outerChildHeight / 2),
-            elevation: 2,
+            elevation: context.appTheme.isDarkTheme ? 0 : 2,
             child: innerChild,
           ),
         ),
