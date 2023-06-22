@@ -3,7 +3,6 @@ import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
 import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
-import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../../utils/constants.dart';
@@ -14,17 +13,12 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomTabPage(
-      customTabBar: CustomTabBar(
-        extendedTabBar: ExtendedTabBar(
-          backgroundColor:
-              context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary,
-          innerChild: const ExtendedHomeTab(),
-          outerChild: const DateSelector(),
-        ),
-        smallTabBar: const SmallTabBar(
-          isHasExtendedTabBar: true,
-          child: SmallHomeTab(),
-        ),
+      extendedTabBar: const ExtendedTabBar(
+        innerChild: ExtendedHomeTab(),
+        outerChild: DateSelector(),
+      ),
+      smallTabBar: const SmallTabBar(
+        child: SmallHomeTab(),
       ),
       children: [
         Padding(

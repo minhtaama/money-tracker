@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_button.dart';
-import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -52,8 +52,8 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
   @override
   Widget build(BuildContext context) {
     // Watch to the provider value (represent user scroll direction)
-    final isShowAppBar =
-        ref.watch(customListViewStateControllerProvider.select((value) => value.isScrollForward));
+    final isShowAppBar = ref.watch(scrollForwardStateProvider);
+
     double bottomAppBarHeight = isShowAppBar ? kBottomAppBarHeight : 0;
     bool isBottomAppBarGoUp = bottomAppBarHeight == kBottomAppBarHeight;
 

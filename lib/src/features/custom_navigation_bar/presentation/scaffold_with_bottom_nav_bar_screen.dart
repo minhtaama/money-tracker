@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_with_fab.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
-import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page_controller.dart';
+import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -60,8 +60,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     ];
 
     // Watch state in TabPage to change behaviour of Floating Action Button
-    bool isFABDocked =
-        ref.watch(customListViewStateControllerProvider.select((value) => value.isScrollForward));
+    bool isFABDocked = ref.watch(scrollForwardStateProvider);
 
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but

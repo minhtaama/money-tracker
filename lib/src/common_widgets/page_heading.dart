@@ -15,54 +15,53 @@ class PageHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
       children: [
-        hasBackButton
-            ? RoundedIconButton(
-                icon: Icons.arrow_back_outlined,
-                backgroundColor: context.appTheme.background3,
-                iconColor: context.appTheme.backgroundNegative,
-                onTap: () => context.pop(),
-              )
-            : const SizedBox(),
-        Gap.w8,
-        Expanded(
-          flex: 5,
-          child: secondaryTitle != null
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Gap.h8,
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        title,
-                        style: kHeader1TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            hasBackButton
+                ? RoundedIconButton(
+                    icon: Icons.arrow_back_outlined,
+                    backgroundColor: context.appTheme.background3,
+                    iconColor: context.appTheme.backgroundNegative,
+                    onTap: () => context.pop(),
+                  )
+                : const SizedBox(),
+            Gap.w8,
+            Expanded(
+              flex: 5,
+              child: secondaryTitle != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Gap.h8,
+                        Text(
+                          title,
+                          style: kHeader1TextStyle.copyWith(
+                            color: context.appTheme.backgroundNegative,
+                          ),
                         ),
+                        Text(
+                          secondaryTitle!,
+                          style: kHeader4TextStyle.copyWith(
+                            color: context.appTheme.backgroundNegative.withOpacity(0.8),
+                          ),
+                        ),
+                        Gap.h8,
+                      ],
+                    )
+                  : Text(
+                      title,
+                      style: kHeader1TextStyle.copyWith(
+                        color: context.appTheme.backgroundNegative,
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Text(
-                        secondaryTitle!,
-                        style: kHeader4TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative.withOpacity(0.8),
-                        ),
-                      ),
-                    ),
-                    Gap.h8,
-                  ],
-                )
-              : Text(
-                  title,
-                  style: kHeader1TextStyle.copyWith(
-                    color: context.appTheme.backgroundNegative,
-                  ),
-                ),
+            ),
+            trailing ?? const SizedBox(),
+          ],
         ),
-        trailing ?? const SizedBox(),
+        const Expanded(child: SizedBox())
       ],
     );
   }
