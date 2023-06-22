@@ -18,13 +18,13 @@ class SummaryScreen extends StatelessWidget {
       customTabBar: CustomTabBar(
         smallTabBar: SmallTabBar(
           child: PageHeading(
-            title: 'Summary',
+            title: context.localize.summary,
             secondaryTitle: 'Cashflow: +900.000 VND',
             trailing: RoundedIconButton(
               icon: Icons.settings,
               backgroundColor: context.appTheme.background3,
               iconColor: context.appTheme.backgroundNegative,
-              onTap: () => context.push(RoutePath.setting),
+              onTap: () => context.push(RoutePath.settings),
             ),
           ),
         ),
@@ -38,10 +38,11 @@ class SummaryScreen extends StatelessWidget {
             height: 300,
           ),
         ),
-        const SummaryCard(
+        SummaryCard(
+          onTap: () => context.push(RoutePath.categories),
           title: 'Category',
           icon: Icons.category,
-          child: SizedBox(
+          child: const SizedBox(
             height: 300,
           ),
         ),

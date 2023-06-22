@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 
@@ -49,17 +50,12 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        // wait for button animation
-        await Future.delayed(const Duration(milliseconds: 100));
+    return CustomInkWell(
+      onTap: () {
         toggleIndexValues();
         widget.onTap(currentIndex);
       },
-      splashColor: context.appTheme.backgroundNegative.withOpacity(0.05),
-      focusColor: context.appTheme.backgroundNegative.withOpacity(0.05),
-      highlightColor: context.appTheme.backgroundNegative.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(6),
+      inkColor: context.appTheme.backgroundNegative,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: Row(

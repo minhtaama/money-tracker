@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 import 'card_item.dart';
@@ -44,15 +45,10 @@ class RoundedIconButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(1000),
                 elevation: 0,
                 isGradient: true,
-                child: InkWell(
-                  onTap: () async {
-                    // wait for button animation
-                    await Future.delayed(const Duration(milliseconds: 100));
-                    onTap != null ? onTap!() : () {};
-                  },
-                  splashColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
-                  highlightColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
-                  borderRadius: BorderRadius.circular(1000),
+                child: CustomInkWell(
+                  onTap: onTap,
+                  borderCircularRadiusValue: 1000,
+                  inkColor: iconColor ?? context.appTheme.primaryNegative,
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: FittedBox(

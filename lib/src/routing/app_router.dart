@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
@@ -13,7 +14,8 @@ class RoutePath {
   static String get addExpense => '/home/addExpense';
   static String get addTransfer => '/home/addTransfer';
   static String get summary => '/summary';
-  static String get setting => '/summary/settings';
+  static String get settings => '/summary/settings';
+  static String get categories => '/summary/categories';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -86,6 +88,14 @@ final goRouter = GoRouter(
                 pageBuilder: (context, state) => NoTransitionPage(
                   key: state.pageKey,
                   child: const SettingsScreen(),
+                ),
+              ),
+              GoRoute(
+                path: 'categories',
+                parentNavigatorKey: _rootNavKey,
+                pageBuilder: (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const CategoriesListScreen(),
                 ),
               )
             ]),

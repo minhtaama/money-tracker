@@ -17,7 +17,7 @@ class CategoryRepository {
 
     final List<AppCategory> returnList = <AppCategory>[];
 
-    for (int i = 0; i <= categoryBox.length; i++) {
+    for (int i = 0; i <= categoryBox.length - 1; i++) {
       returnList.add(AppCategory(
           type: categoryBox[i].type,
           id: categoryBox[i].id,
