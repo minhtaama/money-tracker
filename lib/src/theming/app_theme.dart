@@ -58,7 +58,6 @@ class AppThemeData {
   /// * [ScaffoldWithBottomNavBar]'s color
   /// * [SmallHomeTab]'s background color
   /// * [BottomAppBarWithFAB]'s background
-  /// * Modals background
   ///
   /// __Dark Mode:__
   /// * [ScaffoldWithBottomNavBar]'s color
@@ -67,7 +66,7 @@ class AppThemeData {
   final Color background;
 
   /// __Light Mode:__
-  /// *
+  /// * Modals background
   ///
   /// __DarkMode:__
   /// * [ExtendedHomeTab]'s background

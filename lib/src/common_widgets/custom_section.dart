@@ -7,9 +7,11 @@ class CustomSection extends StatelessWidget {
   const CustomSection({
     Key? key,
     required this.title,
+    this.isWrapByCard = true,
     required this.children,
   }) : super(key: key);
   final String title;
+  final bool isWrapByCard;
   final List<Widget> children;
 
   @override
@@ -31,7 +33,10 @@ class CustomSection extends StatelessWidget {
           ),
           Gap.h4,
           CardItem(
-            padding: const EdgeInsets.all(16),
+            padding: isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
+            margin: isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 12),
+            elevation: isWrapByCard ? 1 : 0,
+            color: isWrapByCard ? null : Colors.transparent,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               //children: children,

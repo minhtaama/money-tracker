@@ -16,7 +16,9 @@ class PageHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        secondaryTitle != null ? Gap.h8 : Gap.h16,
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -35,7 +37,6 @@ class PageHeading extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Gap.h8,
                         Text(
                           title,
                           style: kHeader1TextStyle.copyWith(

@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
+import '../common_widgets/modal_bottom_sheet_page.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
@@ -16,6 +18,7 @@ class RoutePath {
   static String get summary => '/summary';
   static String get settings => '/summary/settings';
   static String get categories => '/summary/categories';
+  static String get addCategory => '/summary/categories/addCategory';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -45,9 +48,9 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addIncome',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (_, __) => showAddTransactionModalPage(
-                _,
-                __,
+              pageBuilder: (context, state) => showModalBottomSheetPage(
+                context,
+                state,
                 child: const AddTransactionModalScreen(TransactionType.income),
               ),
               //TODO: Implement add transaction widget
@@ -55,9 +58,9 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addExpense',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (_, __) => showAddTransactionModalPage(
-                _,
-                __,
+              pageBuilder: (context, state) => showModalBottomSheetPage(
+                context,
+                state,
                 child: const AddTransactionModalScreen(TransactionType.expense),
               ),
               //TODO: Implement add transaction widget
@@ -65,9 +68,9 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addTransfer',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (_, __) => showAddTransactionModalPage(
-                _,
-                __,
+              pageBuilder: (context, state) => showModalBottomSheetPage(
+                context,
+                state,
                 child: const AddTransactionModalScreen(TransactionType.transfer),
               ),
               //TODO: Implement add transaction widget
@@ -75,30 +78,36 @@ final goRouter = GoRouter(
           ],
         ),
         GoRoute(
-            path: '/summary',
-            parentNavigatorKey: _shellNavKey,
-            pageBuilder: (context, state) => NoTransitionPage(
-                  key: state.pageKey,
-                  child: const SummaryScreen(),
-                ),
-            routes: [
-              GoRoute(
-                path: 'settings',
-                parentNavigatorKey: _rootNavKey,
-                pageBuilder: (context, state) => NoTransitionPage(
-                  key: state.pageKey,
-                  child: const SettingsScreen(),
-                ),
-              ),
-              GoRoute(
-                path: 'categories',
-                parentNavigatorKey: _rootNavKey,
-                pageBuilder: (context, state) => NoTransitionPage(
-                  key: state.pageKey,
-                  child: const CategoriesListScreen(),
-                ),
-              )
-            ]),
+          path: '/summary',
+          parentNavigatorKey: _shellNavKey,
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const SummaryScreen(),
+          ),
+          routes: [
+            GoRoute(
+              path: 'settings',
+              parentNavigatorKey: _rootNavKey,
+              builder: (context, state) => const SettingsScreen(),
+            ),
+            GoRoute(
+              path: 'categories',
+              parentNavigatorKey: _rootNavKey,
+              builder: (context, state) => const CategoriesListScreen(),
+              routes: [
+                GoRoute(
+                  path: 'addCategory',
+                  parentNavigatorKey: _rootNavKey,
+                  pageBuilder: (context, state) => showModalBottomSheetPage(
+                    context,
+                    state,
+                    child: const AddCategoryModalScreen(),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ],
     ),
   ],

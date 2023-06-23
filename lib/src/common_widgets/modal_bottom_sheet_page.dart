@@ -1,4 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../utils/constants.dart';
+
+/// This function is used in app_router to show a [ModalBottomSheetPage]
+Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {required Widget child}) {
+  return ModalBottomSheetPage(
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(context).size.height * 0.90,
+    ),
+    backgroundColor: Color.lerp(context.appTheme.background2, context.appTheme.backgroundNegative, 0.05),
+    modalBarrierColor: context.appTheme.background.withOpacity(0.9),
+    isScrollControlled: true,
+    child: Column(
+      children: [
+        // Show a handle
+        Container(
+          width: 50,
+          height: 5,
+          decoration: BoxDecoration(
+            color: context.appTheme.backgroundNegative.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        Gap.h24,
+        child,
+      ],
+    ),
+  );
+}
 
 class ModalBottomSheetPage<T> extends Page<T> {
   /// This Page is used with [GoRoute] pageBuilder to build a
@@ -15,7 +45,6 @@ class ModalBottomSheetPage<T> extends Page<T> {
   const ModalBottomSheetPage({
     required this.child,
     this.shape,
-    this.elevation,
     this.constraints,
     this.backgroundColor,
     this.modalBarrierColor,
@@ -28,7 +57,6 @@ class ModalBottomSheetPage<T> extends Page<T> {
   });
 
   final ShapeBorder? shape;
-  final double? elevation;
   final BoxConstraints? constraints;
   final Color? backgroundColor;
   final Color? modalBarrierColor;
@@ -40,7 +68,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
   Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute(
         settings: this,
         shape: shape,
-        elevation: elevation,
+        elevation: 0,
         constraints: constraints,
         backgroundColor: backgroundColor,
         modalBarrierColor: modalBarrierColor,
