@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
+import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
 import '../common_widgets/modal_bottom_sheet_page.dart';
 import '../features/settings/presentation/settings_screen.dart';
@@ -19,6 +20,7 @@ class RoutePath {
   static String get settings => '/summary/settings';
   static String get categories => '/summary/categories';
   static String get addCategory => '/summary/categories/addCategory';
+  static String get selectIcon => '/summary/selectIcon';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -89,6 +91,11 @@ final goRouter = GoRouter(
               path: 'settings',
               parentNavigatorKey: _rootNavKey,
               builder: (context, state) => const SettingsScreen(),
+            ),
+            GoRoute(
+              path: 'selectIcon',
+              parentNavigatorKey: _rootNavKey,
+              builder: (context, state) => const SelectIconsScreen(),
             ),
             GoRoute(
               path: 'categories',

@@ -19,7 +19,8 @@ class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
     return CategoryHiveModel(
       type: fields[0] as CategoryType,
       id: fields[1] as String,
-      icon: fields[2] as String,
+      iconCategory: fields[2] as String,
+      iconIndex: fields[5] as int,
       name: fields[3] as String,
       color: fields[4] as int,
     );
@@ -28,17 +29,19 @@ class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
   @override
   void write(BinaryWriter writer, CategoryHiveModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.type)
       ..writeByte(1)
       ..write(obj.id)
       ..writeByte(2)
-      ..write(obj.icon)
+      ..write(obj.iconCategory)
       ..writeByte(3)
       ..write(obj.name)
       ..writeByte(4)
-      ..write(obj.color);
+      ..write(obj.color)
+      ..writeByte(5)
+      ..write(obj.iconIndex);
   }
 
   @override

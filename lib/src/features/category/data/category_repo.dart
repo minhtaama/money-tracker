@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import 'package:money_tracker_app/src/features/category/data/category_icons.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/features/category/data/hive_model/category_hive_model.dart';
 import 'package:money_tracker_app/src/features/category/domain/app_category.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -22,7 +22,7 @@ class CategoryRepository {
           type: categoryBox[i].type,
           id: categoryBox[i].id,
           index: i,
-          icon: CategoryIcons.getIcon(categoryBox[i].icon),
+          icon: AppIcons.fromCategoryAndIndex(categoryBox[i].iconCategory, categoryBox[i].iconIndex),
           name: categoryBox[i].name,
           color: Color(categoryBox[i].color)));
     }
@@ -32,10 +32,12 @@ class CategoryRepository {
 
   Future<void> writeNewCategory(
       {required CategoryType type,
-      required String icon,
+      required String iconCategory,
+      required int iconIndex,
       required String name,
       required Color color}) async {
-    final categoryHiveModel = CategoryHiveModel.create(type: type, icon: icon, name: name, color: color);
+    final categoryHiveModel = CategoryHiveModel.create(
+        type: type, iconCategory: iconCategory, iconIndex: iconIndex, name: name, color: color);
     if (type == CategoryType.income) {
       _incomeCategoryBox.add(categoryHiveModel);
     } else {

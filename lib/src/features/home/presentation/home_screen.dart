@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
-import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../../utils/constants.dart';
@@ -60,7 +60,11 @@ class IncomeExpenseCard extends StatelessWidget {
         child: Text(
           isIncome ? 'Income' : 'Expense',
           style: kHeader2TextStyle.copyWith(
-              color: isIncome ? context.appTheme.primaryNegative : context.appTheme.accentNegative,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.backgroundNegative
+                  : isIncome
+                      ? context.appTheme.primaryNegative
+                      : context.appTheme.accentNegative,
               fontSize: 20),
         ),
       ),

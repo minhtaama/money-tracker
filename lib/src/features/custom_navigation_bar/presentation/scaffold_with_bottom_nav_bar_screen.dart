@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/bottom_app_bar_with_fab.dart';
 import 'package:money_tracker_app/src/features/custom_navigation_bar/presentation/bottom_app_bar/custom_fab.dart';
-import 'package:money_tracker_app/src/features/custom_tab_page/presentation/custom_tab_page.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -27,31 +28,31 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
-        iconData: Icons.home.temporaryIcon,
+        iconData: AppIcons.home,
         text: context.localize.home,
       ),
       BottomAppBarItem(
         path: RoutePath.summary,
-        iconData: Icons.folder_copy.temporaryIcon,
+        iconData: AppIcons.summary,
         text: context.localize.summary,
       ),
     ];
 
     final fabItems = <FABItem>[
       FABItem(
-        icon: Icons.arrow_downward.temporaryIcon,
+        icon: AppIcons.income,
         label: 'Income'.hardcoded,
         color: Color.lerp(context.appTheme.primary, Colors.indigo[400], 0.5)!,
         onTap: () => context.go(RoutePath.addIncome),
       ),
       FABItem(
-        icon: Icons.compare_arrows.temporaryIcon,
+        icon: AppIcons.transfer,
         label: 'Transfer'.hardcoded,
         color: Color.lerp(context.appTheme.secondary, Colors.grey[600], 0.5)!,
         onTap: () => context.go(RoutePath.addTransfer),
       ),
       FABItem(
-        icon: Icons.arrow_upward.temporaryIcon,
+        icon: AppIcons.expense,
         label: 'Expense'.hardcoded,
         color: Color.lerp(context.appTheme.accent, Colors.pink[400], 0.5)!,
         onTap: () => context.go(RoutePath.addExpense),

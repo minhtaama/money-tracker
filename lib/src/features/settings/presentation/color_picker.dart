@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../theming/app_theme.dart';
+import '../../../theme_and_ui/app_theme.dart';
 
 class ColorPicker extends StatelessWidget {
   const ColorPicker(

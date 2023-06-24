@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:money_tracker_app/src/theming/app_theme.dart';
+import 'package:money_tracker_app/src/theme_and_ui/app_theme.dart';
 
 // https://codewithandrea.com/articles/flutter-localization-build-context-extension/#buildcontext-extension-to-the-rescue
 

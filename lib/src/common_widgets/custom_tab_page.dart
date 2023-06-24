@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
-import '../../../common_widgets/card_item.dart';
+import 'card_item.dart';
 
 final scrollForwardStateProvider = StateProvider<bool>((ref) {
   return true;
@@ -131,8 +131,10 @@ class CustomTabBar extends StatelessWidget {
       return height;
     } else if (smallTabBar != null) {
       return smallTabBar!.height;
-    } else {
+    } else if (extendedTabBar != null) {
       return extendedTabBar!.height;
+    } else {
+      return 0;
     }
   }
 

@@ -7,31 +7,40 @@ part 'category_hive_model.g.dart';
 
 @HiveType(typeId: 1)
 class CategoryHiveModel {
-  CategoryHiveModel(
-      {required this.type,
-      required this.id,
-      required this.icon,
-      required this.name,
-      required this.color});
+  CategoryHiveModel({
+    required this.type,
+    required this.id,
+    required this.iconCategory,
+    required this.iconIndex,
+    required this.name,
+    required this.color,
+  });
 
   @HiveField(0)
   final CategoryType type;
   @HiveField(1)
   final String id;
   @HiveField(2)
-  final String icon;
+  final String iconCategory;
   @HiveField(3)
   final String name;
   @HiveField(4)
   final int color;
+  @HiveField(5)
+  final int iconIndex;
 
   factory CategoryHiveModel.create(
-      {required CategoryType type, required String icon, required String name, required Color color}) {
+      {required CategoryType type,
+      required String iconCategory,
+      required int iconIndex,
+      required String name,
+      required Color color}) {
     final id = const Uuid().v1();
     return CategoryHiveModel(
       type: type,
       id: id,
-      icon: icon,
+      iconCategory: iconCategory,
+      iconIndex: iconIndex,
       name: name,
       color: color.value,
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -43,7 +44,7 @@ class DateSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.keyboard_arrow_left,
+            AppIcons.arrowLeft,
             color: context.appTheme.backgroundNegative,
           ).temporaryIcon,
           Gap.w4,
@@ -55,12 +56,12 @@ class DateSelector extends StatelessWidget {
           ),
           Gap.w4,
           Icon(
-            Icons.keyboard_arrow_right,
+            AppIcons.arrowRight,
             color: context.appTheme.backgroundNegative,
           ).temporaryIcon,
           Gap.w8,
           Icon(
-            Icons.filter_alt_rounded,
+            AppIcons.filter,
             size: 20,
             color: context.appTheme.backgroundNegative,
           ).temporaryIcon,
@@ -124,7 +125,7 @@ class TotalMoney extends StatelessWidget {
         ),
         const Expanded(child: SizedBox()),
         Icon(
-          Icons.remove_red_eye,
+          AppIcons.eye,
           color: context.appTheme.secondaryNegative,
           size: 28,
         ),

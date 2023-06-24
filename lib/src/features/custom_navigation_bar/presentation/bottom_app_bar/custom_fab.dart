@@ -171,8 +171,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       backgroundColor: Colors.transparent,
       child: RoundedIconButton(
         icon: Icons.add,
-        iconColor:
-            context.appTheme.isDarkTheme ? context.appTheme.background : context.appTheme.accentNegative,
+        iconColor: context.appTheme.accentNegative,
         backgroundColor: context.appTheme.accent,
         size: double.infinity,
         onTap: _showOverlay,

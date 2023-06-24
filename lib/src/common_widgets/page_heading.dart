@@ -4,6 +4,8 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+import '../theme_and_ui/icons.dart';
+
 class PageHeading extends StatelessWidget {
   const PageHeading(
       {Key? key, required this.title, this.hasBackButton = false, this.trailing, this.secondaryTitle})
@@ -24,7 +26,7 @@ class PageHeading extends StatelessWidget {
           children: [
             hasBackButton
                 ? RoundedIconButton(
-                    icon: Icons.arrow_back_outlined,
+                    icon: AppIcons.back,
                     backgroundColor: context.appTheme.background3,
                     iconColor: context.appTheme.backgroundNegative,
                     onTap: () => context.pop(),

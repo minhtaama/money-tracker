@@ -7,14 +7,13 @@ import '../utils/constants.dart';
 Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {required Widget child}) {
   return ModalBottomSheetPage(
     constraints: BoxConstraints(
-      maxHeight: MediaQuery.of(context).size.height * 0.90,
+      maxHeight: MediaQuery.of(context).size.height * 0.80,
     ),
     backgroundColor: Color.lerp(context.appTheme.background2, context.appTheme.backgroundNegative, 0.05),
     modalBarrierColor: context.appTheme.background.withOpacity(0.9),
     isScrollControlled: true,
     child: Column(
       children: [
-        // Show a handle
         Container(
           width: 50,
           height: 5,
@@ -23,7 +22,7 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-        Gap.h24,
+        Gap.h32,
         child,
       ],
     ),
@@ -75,10 +74,16 @@ class ModalBottomSheetPage<T> extends Page<T> {
         isDismissible: isDismissible,
         isScrollControlled: isScrollControlled,
         enableDrag: true,
-        useSafeArea: true,
+        useSafeArea: false,
         builder: (context) => Padding(
-          padding: const EdgeInsets.all(16),
-          child: child,
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+          child: SingleChildScrollView(
+            child: AnimatedPadding(
+              padding: MediaQuery.of(context).viewInsets,
+              duration: kBottomAppBarDuration,
+              child: child,
+            ),
+          ),
         ),
       );
 }
