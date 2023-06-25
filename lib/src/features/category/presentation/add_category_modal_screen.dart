@@ -19,6 +19,7 @@ class AddCategoryModalScreen extends StatefulWidget {
 }
 
 class _AddCategoryModalScreenState extends State<AddCategoryModalScreen> {
+  CategoryType categoryType = CategoryType.income;
   String categoryName = '';
   String iconCategory = '';
   int iconIndex = 0;
@@ -34,7 +35,7 @@ class _AddCategoryModalScreenState extends State<AddCategoryModalScreen> {
           values: const [CategoryType.income, CategoryType.expense],
           labels: const ['Income', 'Expense'],
           onTap: (type) {
-            print(type.toString());
+            categoryType = type;
           },
         ),
         Gap.h24,
@@ -43,15 +44,17 @@ class _AddCategoryModalScreenState extends State<AddCategoryModalScreen> {
             IconSelectButton(
               backGroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
               iconColor: AppColors.allColorsUserCanPick[colorIndex][1],
-              onTap: (iconCategory, iconIndex) {
-                print('$iconCategory, $iconIndex');
+              onTap: (iconC, iconI) {
+                iconCategory = iconC;
+                iconIndex = iconI;
               },
             ),
             Gap.w16,
             Expanded(
               child: CustomTextField(
+                focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
                 onChanged: (value) {
-                  print(value);
+                  categoryName = value;
                 },
               ),
             ),
@@ -60,7 +63,6 @@ class _AddCategoryModalScreenState extends State<AddCategoryModalScreen> {
         Gap.h32,
         ColorSelectListView(
           onColorTap: (index) {
-            print(index);
             setState(() {
               colorIndex = index;
             });
@@ -68,7 +70,7 @@ class _AddCategoryModalScreenState extends State<AddCategoryModalScreen> {
         ),
         Gap.h24,
         IconWithTextButton(
-          icon: AppIcons.arrowLeft,
+          icon: AppIcons.add,
           label: 'Create',
           backgroundColor: context.appTheme.accent,
         ),

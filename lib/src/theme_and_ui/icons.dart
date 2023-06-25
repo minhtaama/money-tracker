@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppIcons {
   static Map<String, List<IconData>> get iconsWithCategories => <String, List<IconData>>{
-        'Default icons': [
+        'Default': [
           Icons.home,
           Icons.add,
           Icons.access_time,
@@ -16,7 +16,7 @@ class AppIcons {
           Icons.access_time,
           Icons.account_balance_wallet,
         ],
-        'Money icons': [
+        'Money': [
           Icons.home,
           Icons.add,
           Icons.access_time,
@@ -43,6 +43,7 @@ class AppIcons {
   static IconData get filter => Icons.filter_alt;
   static IconData get settings => Icons.settings;
   static IconData get back => Icons.arrow_back_outlined;
+  static IconData get add => Icons.add;
 
   static IconData get _defaultIcon => Icons.question_mark_rounded;
 
