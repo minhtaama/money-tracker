@@ -5,7 +5,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 
 class ColorSelectListView extends StatefulWidget {
-  /// This class `onColorTap` returns index of color in [AppColors.allColorsUserCanPick]
+  /// This class `onColorTap` returns index of `List<Color>` in [AppColors.allColorsUserCanPick]
   const ColorSelectListView({
     Key? key,
     this.size = 75,
@@ -47,7 +47,7 @@ class _ColorSelectListViewState extends State<ColorSelectListView> {
               padding: EdgeInsets.only(
                   right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
               child: CircleColor(
-                  color: AppColors.allColorsUserCanPick[index],
+                  color: AppColors.allColorsUserCanPick[index][0],
                   isSelected: currentColorIndex == index,
                   size: widget.size - widget.spacing * 2,
                   onTap: (index) {

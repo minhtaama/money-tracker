@@ -31,7 +31,6 @@ class CustomSection extends StatelessWidget {
               ),
             ),
           ),
-          Gap.h8,
           CardItem(
             padding: isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
             margin: isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),

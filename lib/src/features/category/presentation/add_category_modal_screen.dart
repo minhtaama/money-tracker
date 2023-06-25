@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
@@ -7,6 +8,7 @@ import 'package:money_tracker_app/src/features/icons_and_colors/presentation/ico
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class AddCategoryModalScreen extends StatefulWidget {
@@ -28,10 +30,19 @@ class _AddCategoryModalScreenState extends State<AddCategoryModalScreen> {
       title: 'Add Category',
       isWrapByCard: false,
       children: [
+        CustomSliderToggle<CategoryType>(
+          values: const [CategoryType.income, CategoryType.expense],
+          labels: const ['Income', 'Expense'],
+          onTap: (type) {
+            print(type.toString());
+          },
+        ),
+        Gap.h24,
         Row(
           children: [
             IconSelectButton(
-              backGroundColor: AppColors.allColorsUserCanPick[colorIndex],
+              backGroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
+              iconColor: AppColors.allColorsUserCanPick[colorIndex][1],
               onTap: (iconCategory, iconIndex) {
                 print('$iconCategory, $iconIndex');
               },

@@ -7,9 +7,9 @@ import '../utils/constants.dart';
 Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {required Widget child}) {
   return ModalBottomSheetPage(
     constraints: BoxConstraints(
-      maxHeight: MediaQuery.of(context).size.height * 0.80,
+      maxHeight: MediaQuery.of(context).size.height * 0.90,
     ),
-    backgroundColor: Color.lerp(context.appTheme.background2, context.appTheme.backgroundNegative, 0.05),
+    backgroundColor: Color.lerp(context.appTheme.background2, context.appTheme.backgroundNegative, 0.09),
     modalBarrierColor: context.appTheme.background.withOpacity(0.9),
     isScrollControlled: true,
     child: Column(
@@ -22,7 +22,7 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-        Gap.h32,
+        Gap.h16,
         child,
       ],
     ),
