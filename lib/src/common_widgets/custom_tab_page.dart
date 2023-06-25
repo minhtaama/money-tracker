@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -51,8 +52,10 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
 
     deltaPosition = (position.pixels - previousPositionPixels).abs();
 
-    setState(() {
-      pixelsOffset = position.pixels;
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        pixelsOffset = position.pixels;
+      });
     });
 
     // Read the Provider to change its state
