@@ -8,21 +8,29 @@ class AppCategory {
       required this.index,
       required this.icon,
       required this.name,
-      required this.color});
+      required this.backgroundColor,
+      required this.iconColor});
 
   final String id;
   final IconData icon;
   final int index;
   final String name;
-  final Color color;
+  final Color backgroundColor;
+  final Color iconColor;
   final CategoryType type;
+
+  @override
+  String toString() {
+    return 'AppCategory{id: $id, icon: $icon, index: $index, name: $name, backgroundColor: $backgroundColor, iconColor: $iconColor, type: $type}';
+  }
 
   AppCategory copyWith({
     String? id,
     IconData? icon,
     int? index,
     String? name,
-    Color? color,
+    Color? backgroundColor,
+    Color? iconColor,
     CategoryType? type,
   }) {
     return AppCategory(
@@ -30,7 +38,8 @@ class AppCategory {
       icon: icon ?? this.icon,
       index: index ?? this.index,
       name: name ?? this.name,
-      color: color ?? this.color,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      iconColor: iconColor ?? this.iconColor,
       type: type ?? this.type,
     );
   }

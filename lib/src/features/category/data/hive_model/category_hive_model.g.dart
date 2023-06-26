@@ -22,7 +22,7 @@ class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
       iconCategory: fields[2] as String,
       iconIndex: fields[5] as int,
       name: fields[3] as String,
-      color: fields[4] as int,
+      colorIndex: fields[4] as int,
     );
   }
 
@@ -39,7 +39,7 @@ class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
       ..writeByte(3)
       ..write(obj.name)
       ..writeByte(4)
-      ..write(obj.color)
+      ..write(obj.colorIndex)
       ..writeByte(5)
       ..write(obj.iconIndex);
   }
@@ -50,7 +50,5 @@ class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CategoryHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is CategoryHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

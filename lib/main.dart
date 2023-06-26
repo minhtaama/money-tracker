@@ -13,10 +13,12 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 Future<void> main() async {
   usePathUrlStrategy(); //remove # character in web link
+  // final hiveDataStore = HiveDataStore();
   await HiveDataStore.init();
   runApp(
     ProviderScope(
       overrides: [
+        // hiveStoreProvider.overrideWithValue(hiveDataStore),
         settingsHiveModelControllerProvider.overrideWith(
           (ref) => SettingsHiveModelController(HiveDataStore.getSettingsHiveModel),
         ),

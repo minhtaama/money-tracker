@@ -1,4 +1,3 @@
-//import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:money_tracker_app/src/features/accounts/data/hive_model/account_hive_model.dart';
 import 'package:money_tracker_app/src/features/settings/data/hive_model/settings_hive_model.dart';
@@ -41,9 +40,3 @@ class HiveDataStore {
     await Hive.openBox<SettingsHiveModel>(_settingsBox);
   }
 }
-
-//
-// /// This provider data is override in main() function
-// final hiveStoreProvider = Provider<HiveDataStore>((ref) {
-//   throw UnimplementedError();
-// });

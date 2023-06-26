@@ -13,7 +13,7 @@ class CategoryHiveModel {
     required this.iconCategory,
     required this.iconIndex,
     required this.name,
-    required this.color,
+    required this.colorIndex,
   });
 
   @HiveField(0)
@@ -25,7 +25,7 @@ class CategoryHiveModel {
   @HiveField(3)
   final String name;
   @HiveField(4)
-  final int color;
+  final int colorIndex;
   @HiveField(5)
   final int iconIndex;
 
@@ -34,7 +34,7 @@ class CategoryHiveModel {
       required String iconCategory,
       required int iconIndex,
       required String name,
-      required Color color}) {
+      required int colorIndex}) {
     final id = const Uuid().v1();
     return CategoryHiveModel(
       type: type,
@@ -42,7 +42,7 @@ class CategoryHiveModel {
       iconCategory: iconCategory,
       iconIndex: iconIndex,
       name: name,
-      color: color.value,
+      colorIndex: colorIndex,
     );
   }
 }
