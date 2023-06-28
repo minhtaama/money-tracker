@@ -94,19 +94,14 @@ class _CustomSectionState extends State<CustomSection> {
                   )
                 : ReorderableColumn(
                     scrollController: ScrollController(),
-                    draggingWidgetOpacity: 0.05,
+                    draggingWidgetOpacity: 0,
                     // This callback build the widget when dragging is happening
                     buildDraggableFeedback: (context, constraint, feedback) {
                       Widget tile = Transform.scale(
                         scale: 1.05,
-                        child: CardItem(
-                          color: context.appTheme.isDarkTheme ? AppColors.grey : null,
-                          elevation: 2,
-                          margin: EdgeInsets.zero,
-                          child: SectionTile(
-                            isHasDivider: false,
-                            child: (feedback as SectionTile).child,
-                          ),
+                        child: SectionTile(
+                          isHasDivider: false,
+                          child: (feedback as SectionTile).child,
                         ),
                       );
                       return Container(
