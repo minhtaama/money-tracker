@@ -23,16 +23,19 @@ class HiveBoxValuesController extends StateNotifier<List> {
   }
 }
 
-/// This provider takes an argument type `Box<dynamic>`
-/// When a variable is assigned by watching to this [StateNotifierProvider],
-/// It will be updated when the state of this provider change.
+/// This provider takes an argument type `Box<dynamic>` and all dependency
+/// will be updated when this `Box` changes its value (or we can say when
+/// this provider changes its state).
+///
+/// By giving this provider a `Box`, it will convert this `Box.values` to
+/// a `List<dynamic>` and notify its consumer when the values/list changes.
 ///
 /// We can add more logic by watching to this provider inside a [StateProvider],
 /// as this provider state will be the state of the parent [StateProvider].
 ///
-/// _FOR EXAMPLE:_
+/// __For example:__
 /// ```
-/// final hiveModelsList = ref.watch(hiveBoxValuesControllerProvider(categoryRepository._expenseCategoryBox))
+/// final hiveList = ref.watch(hiveBoxValuesControllerProvider(someHiveBox))
 /// ```
 final hiveBoxValuesControllerProvider =
     StateNotifierProvider.family<HiveBoxValuesController, List, Box>((ref, hiveBox) {

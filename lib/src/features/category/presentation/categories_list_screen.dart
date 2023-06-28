@@ -10,6 +10,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/category/domain/app_category.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CategoriesListScreen extends ConsumerWidget {
@@ -17,8 +18,43 @@ class CategoriesListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final incomeCategoriesList = ref.watch(incomeCategoryListProvider);
-    final expenseCategoriesList = ref.watch(expenseCategoryListProvider);
+    final categoryRepository = ref.watch(categoryRepositoryProvider);
+    final incomeAppCategoriesList = ref.watch(incomeAppCategoryDomainListProvider);
+    final expenseAppCategoriesList = ref.watch(expenseAppCategoryDomainListProvider);
+
+    List<Widget> getIncomeTiles() {
+      return List.generate(
+        incomeAppCategoriesList.length,
+        (index) {
+          AppCategory category = incomeAppCategoriesList[index];
+          return CategoryListTile(
+            key: ValueKey(index),
+            icon: category.icon,
+            backgroundColor: category.backgroundColor,
+            iconColor: category.iconColor,
+            name: category.name,
+            onDelete: () => categoryRepository.deleteCategory(type: CategoryType.income, index: index),
+          );
+        },
+      );
+    }
+
+    List<Widget> getExpenseTiles() {
+      return List.generate(
+        expenseAppCategoriesList.length,
+        (index) {
+          AppCategory category = expenseAppCategoriesList[index];
+          return CategoryListTile(
+            icon: category.icon,
+            backgroundColor: category.backgroundColor,
+            iconColor: category.iconColor,
+            name: category.name,
+            onDelete: () => categoryRepository.deleteCategory(type: CategoryType.expense, index: index),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: context.appTheme.background,
       body: CustomTabPage(
@@ -37,33 +73,15 @@ class CategoriesListScreen extends ConsumerWidget {
         children: [
           CustomSection(
             title: 'Income',
-            children: List.generate(
-              incomeCategoriesList.length,
-              (index) {
-                AppCategory category = incomeCategoriesList[index];
-                return CategoryListTile(
-                    icon: category.icon,
-                    backgroundColor: category.backgroundColor,
-                    iconColor: category.iconColor,
-                    name: category.name,
-                    index: category.index);
-              },
-            ),
+            onReorder: (oldIndex, newIndex) {
+              categoryRepository.reorderCategory(
+                  type: CategoryType.income, oldIndex: oldIndex, newIndex: newIndex);
+            },
+            children: getIncomeTiles(),
           ),
           CustomSection(
             title: 'Expense',
-            children: List.generate(
-              expenseCategoriesList.length,
-              (index) {
-                AppCategory category = expenseCategoriesList[index];
-                return CategoryListTile(
-                    icon: category.icon,
-                    backgroundColor: category.backgroundColor,
-                    iconColor: category.iconColor,
-                    name: category.name,
-                    index: category.index);
-              },
-            ),
+            children: getExpenseTiles(),
           )
         ],
       ),
@@ -72,19 +90,19 @@ class CategoriesListScreen extends ConsumerWidget {
 }
 
 class CategoryListTile extends StatelessWidget {
-  const CategoryListTile(
-      {Key? key,
-      required this.icon,
-      required this.backgroundColor,
-      required this.iconColor,
-      required this.name,
-      required this.index})
-      : super(key: key);
+  const CategoryListTile({
+    Key? key,
+    required this.icon,
+    required this.backgroundColor,
+    required this.iconColor,
+    required this.name,
+    required this.onDelete,
+  }) : super(key: key);
   final IconData icon;
   final Color backgroundColor;
   final Color iconColor;
   final String name;
-  final int index;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +121,12 @@ class CategoryListTile extends StatelessWidget {
           ),
         ),
         Gap.w8,
-        Icon(Icons.edit, color: context.appTheme.backgroundNegative),
+        RoundedIconButton(
+          icon: Icons.cancel,
+          backgroundColor: Colors.transparent,
+          iconColor: context.appTheme.backgroundNegative,
+          onTap: onDelete,
+        ),
       ],
     );
   }

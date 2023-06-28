@@ -5,7 +5,6 @@ class AppCategory {
   AppCategory(
       {required this.type,
       required this.id,
-      required this.index,
       required this.icon,
       required this.name,
       required this.backgroundColor,
@@ -13,7 +12,6 @@ class AppCategory {
 
   final String id;
   final IconData icon;
-  final int index;
   final String name;
   final Color backgroundColor;
   final Color iconColor;
@@ -21,13 +19,12 @@ class AppCategory {
 
   @override
   String toString() {
-    return 'AppCategory{id: $id, icon: $icon, index: $index, name: $name, backgroundColor: $backgroundColor, iconColor: $iconColor, type: $type}';
+    return 'AppCategory{id: $id, icon: $icon, name: $name, backgroundColor: $backgroundColor, iconColor: $iconColor, type: $type}';
   }
 
   AppCategory copyWith({
     String? id,
     IconData? icon,
-    int? index,
     String? name,
     Color? backgroundColor,
     Color? iconColor,
@@ -36,7 +33,6 @@ class AppCategory {
     return AppCategory(
       id: id ?? this.id,
       icon: icon ?? this.icon,
-      index: index ?? this.index,
       name: name ?? this.name,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       iconColor: iconColor ?? this.iconColor,

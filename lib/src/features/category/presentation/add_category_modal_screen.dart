@@ -22,7 +22,7 @@ class AddCategoryModalScreen extends ConsumerStatefulWidget {
 }
 
 class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen> {
-  CategoryType categoryType = CategoryType.income;
+  CategoryType categoryType = CategoryType.expense;
   String categoryName = '';
   String iconCategory = '';
   int iconIndex = 0;
@@ -37,6 +37,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
         CustomSliderToggle<CategoryType>(
           values: const [CategoryType.income, CategoryType.expense],
           labels: const ['Income', 'Expense'],
+          initialValueIndex: 1,
           onTap: (type) {
             categoryType = type;
           },

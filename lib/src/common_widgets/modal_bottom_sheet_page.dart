@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 
@@ -9,8 +10,9 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height * 0.90,
     ),
-    backgroundColor: Color.lerp(context.appTheme.background2, context.appTheme.backgroundNegative, 0.09),
-    modalBarrierColor: context.appTheme.background.withOpacity(0.9),
+    backgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+    modalBarrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
     isScrollControlled: true,
     child: Column(
       children: [

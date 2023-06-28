@@ -17,6 +17,7 @@ class CustomSliderToggle<T> extends StatefulWidget {
       required this.values,
       required this.labels,
       this.height = 45,
+      this.initialValueIndex = 0,
       required this.onTap,
       this.labelsOnToggleColor,
       this.labelsOnBackgroundColor})
@@ -24,6 +25,7 @@ class CustomSliderToggle<T> extends StatefulWidget {
   final Color? toggleColor;
   final Color? labelsOnToggleColor;
   final Color? labelsOnBackgroundColor;
+  final int initialValueIndex;
   final List<T> values;
   final List<String> labels;
   final double height;
@@ -36,15 +38,16 @@ class CustomSliderToggle<T> extends StatefulWidget {
 class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
   final _rootSizedBoxKey = GlobalKey();
   double _rootSizedBoxWidth = 0;
-  int currentValueIndex = 0;
+  late int currentValueIndex;
 
   @override
   void initState() {
+    super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _rootSizedBoxWidth = _rootSizedBoxKey.currentContext!.size!.width;
       setState(() {});
     });
-    super.initState();
+    currentValueIndex = widget.initialValueIndex;
   }
 
   @override
