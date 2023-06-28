@@ -93,6 +93,7 @@ class _CustomSectionState extends State<CustomSection> {
                     children: _children,
                   )
                 : ReorderableColumn(
+                    scrollController: ScrollController(),
                     draggingWidgetOpacity: 0.05,
                     // This callback build the widget when dragging is happening
                     buildDraggableFeedback: (context, constraint, feedback) {

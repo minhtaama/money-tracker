@@ -81,6 +81,10 @@ class CategoriesListScreen extends ConsumerWidget {
           ),
           CustomSection(
             title: 'Expense',
+            onReorder: (oldIndex, newIndex) {
+              categoryRepository.reorderCategory(
+                  type: CategoryType.expense, oldIndex: oldIndex, newIndex: newIndex);
+            },
             children: getExpenseTiles(),
           )
         ],
