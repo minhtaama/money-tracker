@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import 'package:money_tracker_app/src/features/settings/data/hive_model/settings_hive_model.dart';
+import 'package:money_tracker_app/src/features/settings/domain/settings_hive_model.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class SettingsHiveModelController extends StateNotifier<SettingsHiveModel> {

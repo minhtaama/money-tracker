@@ -19,10 +19,11 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsState = ref.watch(settingsHiveModelControllerProvider);
     final settingsController = ref.watch(settingsHiveModelControllerProvider.notifier);
+
     return Scaffold(
       backgroundColor: context.appTheme.background,
       body: CustomTabPage(
-        smallTabBar: SmallTabBar(
+        smallTabBar: const SmallTabBar(
           child: PageHeading(
             hasBackButton: true,
             title: 'Settings',

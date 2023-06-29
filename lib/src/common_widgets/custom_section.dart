@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:reorderables/reorderables.dart';

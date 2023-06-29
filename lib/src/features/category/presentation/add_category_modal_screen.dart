@@ -56,9 +56,13 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             Gap.w16,
             Expanded(
               child: CustomTextField(
+                autofocus: false,
                 focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                hintText: 'Category Name',
                 onChanged: (value) {
-                  categoryName = value;
+                  setState(() {
+                    categoryName = value;
+                  });
                 },
               ),
             ),
@@ -73,21 +77,25 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
           },
         ),
         Gap.h24,
-        IconWithTextButton(
-          icon: AppIcons.add,
-          label: 'Create',
-          backgroundColor: context.appTheme.accent,
-          onTap: () {
-            final categoryRepository = ref.read(categoryRepositoryProvider);
-            categoryRepository.writeNewCategory(
-              type: categoryType,
-              iconCategory: iconCategory,
-              iconIndex: iconIndex,
-              name: categoryName,
-              colorIndex: colorIndex,
-            );
-            context.pop();
-          },
+        Align(
+          alignment: Alignment.centerRight,
+          child: IconWithTextButton(
+            icon: AppIcons.add,
+            label: 'Create',
+            backgroundColor: context.appTheme.accent,
+            isDisabled: categoryName == '',
+            onTap: () {
+              final categoryRepository = ref.read(categoryRepositoryProvider);
+              categoryRepository.writeNewCategory(
+                type: categoryType,
+                iconCategory: iconCategory,
+                iconIndex: iconIndex,
+                name: categoryName,
+                colorIndex: colorIndex,
+              );
+              context.pop();
+            },
+          ),
         ),
       ],
     );

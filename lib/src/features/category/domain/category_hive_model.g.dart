@@ -50,5 +50,7 @@ class CategoryHiveModelAdapter extends TypeAdapter<CategoryHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CategoryHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is CategoryHiveModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

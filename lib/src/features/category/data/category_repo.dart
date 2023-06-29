@@ -1,35 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:money_tracker_app/persistent/hive_data_store.dart';
 import 'package:money_tracker_app/persistent/hive_data_store_controller.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
-import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/features/category/data/hive_model/category_hive_model.dart';
-import 'package:money_tracker_app/src/features/category/domain/app_category.dart';
+import 'package:money_tracker_app/src/features/category/domain/category_hive_model.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class CategoryRepository {
   final _incomeCategoryBox = HiveDataStore.getIncomeCategoriesBox;
   final _expenseCategoryBox = HiveDataStore.getExpenseCategoriesBox;
-
-  List<AppCategory> _getAppCategoryList(List<CategoryHiveModel> categoryHiveModelList) {
-    final List<AppCategory> returnList = <AppCategory>[];
-
-    for (int i = 0; i <= categoryHiveModelList.length - 1; i++) {
-      returnList.add(
-        AppCategory(
-          type: categoryHiveModelList[i].type,
-          id: categoryHiveModelList[i].id,
-          icon: AppIcons.fromCategoryAndIndex(
-              categoryHiveModelList[i].iconCategory, categoryHiveModelList[i].iconIndex),
-          name: categoryHiveModelList[i].name,
-          backgroundColor: AppColors.allColorsUserCanPick[categoryHiveModelList[i].colorIndex][0],
-          iconColor: AppColors.allColorsUserCanPick[categoryHiveModelList[i].colorIndex][1],
-        ),
-      );
-    }
-    return returnList;
-  }
 
   Future<void> writeNewCategory(
       {required CategoryType type,
@@ -59,6 +36,15 @@ class CategoryRepository {
     }
   }
 
+  Future<void> editCategory(
+      {required CategoryType type, required int index, required CategoryHiveModel newValue}) async {
+    if (type == CategoryType.income) {
+      _incomeCategoryBox.putAt(index, newValue);
+    } else if (type == CategoryType.expense) {
+      _expenseCategoryBox.putAt(index, newValue);
+    }
+  }
+
   Future<void> reorderCategory(
       {required CategoryType type, required int oldIndex, required int newIndex}) async {
     if (type == CategoryType.income) {
@@ -76,21 +62,17 @@ final categoryRepositoryProvider = Provider<CategoryRepository>((ref) => Categor
 /// This [StateProvider] returns a `List` of domains of this Category feature.
 ///
 /// Widgets must watch to this StateProvider in order to be rebuilt
-final incomeAppCategoryDomainListProvider = StateProvider<List<AppCategory>>((ref) {
+final incomeAppCategoryDomainListProvider = StateProvider<List<CategoryHiveModel>>((ref) {
   final categoryRepository = ref.watch(categoryRepositoryProvider);
-  final hiveModelsList =
-      ref.watch(hiveBoxValuesControllerProvider(categoryRepository._incomeCategoryBox))
-          as List<CategoryHiveModel>;
-  return categoryRepository._getAppCategoryList(hiveModelsList);
+  return ref.watch(hiveBoxValuesControllerProvider(categoryRepository._incomeCategoryBox))
+      as List<CategoryHiveModel>;
 });
 
 /// This [StateProvider] returns a `List` of domains of this Category feature.
 ///
 /// Widgets must watch to this StateProvider in order to be rebuilt
-final expenseAppCategoryDomainListProvider = StateProvider<List<AppCategory>>((ref) {
+final expenseAppCategoryDomainListProvider = StateProvider<List<CategoryHiveModel>>((ref) {
   final categoryRepository = ref.watch(categoryRepositoryProvider);
-  final hiveModelsList =
-      ref.watch(hiveBoxValuesControllerProvider(categoryRepository._expenseCategoryBox))
-          as List<CategoryHiveModel>;
-  return categoryRepository._getAppCategoryList(hiveModelsList);
+  return ref.watch(hiveBoxValuesControllerProvider(categoryRepository._expenseCategoryBox))
+      as List<CategoryHiveModel>;
 });

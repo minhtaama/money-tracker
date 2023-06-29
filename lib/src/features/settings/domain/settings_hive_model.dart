@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import '../../../../utils/enums.dart';
+import '../../../utils/enums.dart';
 
 part 'settings_hive_model.g.dart';
 

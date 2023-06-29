@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -13,6 +14,10 @@ class SelectIconsScreen extends StatefulWidget {
   /// When this screen is popped, the returned value has type of List<dynamic>,
   /// where the first element is the category name, the second element is
   /// the icon index.
+  ///
+  /// Take these two argument and assign like below:
+  ///
+  /// [AppIcons.iconsWithCategories[category-name]][[icon-index]]
   const SelectIconsScreen({Key? key}) : super(key: key);
 
   @override
@@ -52,8 +57,8 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
               title: keyList[keyIndex],
               children: [
                 Wrap(
-                  spacing: 4,
-                  runSpacing: 4,
+                  spacing: 13,
+                  runSpacing: 13,
                   children: List.generate(
                     AppIcons.iconsWithCategories[keyList[keyIndex]]!.length,
                     (iconIndex) {
@@ -111,6 +116,7 @@ class CircleIcon extends StatelessWidget {
               decoration: BoxDecoration(
                 color: context.appTheme.background3,
                 borderRadius: BorderRadius.circular(1000),
+                border: Border.all(width: 2, color: AppColors.grey),
               ),
             ),
             AnimatedOpacity(
@@ -128,7 +134,7 @@ class CircleIcon extends StatelessWidget {
             Center(
               child: Icon(
                 AppIcons.fromCategoryAndIndex(iconCategory, iconIndex),
-                size: 30,
+                size: 26,
                 color:
                     isSelected ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
               ),

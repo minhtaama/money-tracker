@@ -4,7 +4,7 @@ import 'package:money_tracker_app/src/features/category/presentation/add_categor
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
-import '../common_widgets/modal_bottom_sheet_page.dart';
+import '../common_widgets/modal_bottom_sheets.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';

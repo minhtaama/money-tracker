@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 import 'card_item.dart';
@@ -11,6 +12,7 @@ class IconWithTextButton extends StatelessWidget {
     required this.label,
     required this.backgroundColor,
     this.size = 55,
+    this.isDisabled = false,
     this.onTap,
     this.color,
   }) : super(key: key);
@@ -21,20 +23,21 @@ class IconWithTextButton extends StatelessWidget {
   final Color? color;
   final double size;
   final VoidCallback? onTap;
+  final bool isDisabled;
 
   @override
   Widget build(BuildContext context) {
     return CardItem(
       height: size,
       width: 150,
-      color: backgroundColor,
+      color: isDisabled ? AppColors.grey : backgroundColor,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
       borderRadius: BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
       child: CustomInkWell(
-        onTap: onTap,
+        onTap: isDisabled ? null : onTap,
         borderCircularRadiusValue: 1000,
         inkColor: color ?? context.appTheme.primaryNegative,
         child: Padding(
@@ -45,17 +48,22 @@ class IconWithTextButton extends StatelessWidget {
                 flex: 2,
                 child: Icon(
                   icon,
-                  color: color ?? context.appTheme.accentNegative,
+                  color: isDisabled
+                      ? context.appTheme.backgroundNegative
+                      : color ?? context.appTheme.accentNegative,
                 ),
               ),
               Gap.w8,
               Expanded(
                 flex: 5,
                 child: FittedBox(
+                  fit: BoxFit.scaleDown,
                   child: Text(
                     label,
                     style: kHeader2TextStyle.copyWith(
-                      color: color ?? context.appTheme.accentNegative,
+                      color: isDisabled
+                          ? context.appTheme.backgroundNegative
+                          : color ?? context.appTheme.accentNegative,
                     ),
                   ),
                 ),

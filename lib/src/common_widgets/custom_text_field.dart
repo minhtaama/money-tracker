@@ -6,16 +6,20 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     Key? key,
+    required this.hintText,
     required this.focusColor,
     required this.onChanged,
+    this.autofocus = true,
   }) : super(key: key);
   final ValueChanged<String> onChanged;
+  final String hintText;
   final Color focusColor;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      autofocus: true,
+      autofocus: autofocus,
       cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
       style: kHeader2TextStyle.copyWith(
         color: context.appTheme.backgroundNegative,
@@ -28,7 +32,7 @@ class CustomTextField extends StatelessWidget {
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: focusColor, width: 2),
         ),
-        hintText: "Category Name",
+        hintText: hintText,
         hintStyle: kHeader2TextStyle.copyWith(
           color: context.appTheme.backgroundNegative.withOpacity(0.5),
           fontSize: 18,

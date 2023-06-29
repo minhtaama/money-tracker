@@ -8,11 +8,18 @@ import '../../../theme_and_ui/icons.dart';
 class IconSelectButton extends StatefulWidget {
   /// This button will push to [SelectIconsScreen]. The returned value
   /// can be used as argument in `onTap` function.
-  const IconSelectButton(
-      {Key? key, required this.backGroundColor, required this.iconColor, required this.onTap})
-      : super(key: key);
+  const IconSelectButton({
+    Key? key,
+    required this.backGroundColor,
+    required this.iconColor,
+    required this.onTap,
+    this.initialCategory = '',
+    this.initialIconIndex = 0,
+  }) : super(key: key);
   final Color backGroundColor;
   final Color iconColor;
+  final String initialCategory;
+  final int initialIconIndex;
   final Function(String, int) onTap;
 
   @override
@@ -22,8 +29,15 @@ class IconSelectButton extends StatefulWidget {
 class _IconSelectButtonState extends State<IconSelectButton> {
   final keyList = AppIcons.iconsWithCategories.keys.toList();
 
-  String currentCategory = '';
-  int currentIconIndex = 0;
+  late String currentCategory;
+  late int currentIconIndex;
+
+  @override
+  void initState() {
+    currentCategory = widget.initialCategory;
+    currentIconIndex = widget.initialIconIndex;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

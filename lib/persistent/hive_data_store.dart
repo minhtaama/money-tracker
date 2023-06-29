@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:money_tracker_app/src/features/accounts/data/hive_model/account_hive_model.dart';
-import 'package:money_tracker_app/src/features/settings/data/hive_model/settings_hive_model.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_hive_model.dart';
+import 'package:money_tracker_app/src/features/settings/domain/settings_hive_model.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
-import '../src/features/category/data/hive_model/category_hive_model.dart';
+import '../src/features/category/domain/category_hive_model.dart';
 
 class HiveDataStore {
   // String value of Hive Box. DO NOT MODIFY this value or all the data will be gone

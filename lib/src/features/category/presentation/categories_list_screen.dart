@@ -3,15 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
-import 'package:money_tracker_app/src/features/category/domain/app_category.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../domain/category_hive_model.dart';
+import 'category_list_tile.dart';
+import 'edit_category_modal_screen.dart';
 
 class CategoriesListScreen extends ConsumerWidget {
   const CategoriesListScreen({Key? key}) : super(key: key);
@@ -22,34 +27,35 @@ class CategoriesListScreen extends ConsumerWidget {
     final incomeAppCategoriesList = ref.watch(incomeAppCategoryDomainListProvider);
     final expenseAppCategoriesList = ref.watch(expenseAppCategoryDomainListProvider);
 
-    List<Widget> getIncomeTiles() {
+    List<Widget> getTiles(BuildContext context, CategoryType type) {
+      final list = type == CategoryType.income ? incomeAppCategoriesList : expenseAppCategoriesList;
+      if (list.isEmpty) {
+        return [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            child: Text(
+              'Nothing in here!\n Please create your first category',
+              textAlign: TextAlign.center,
+              style: kHeader1TextStyle.copyWith(
+                  color: context.appTheme.backgroundNegative.withOpacity(0.15)),
+            ),
+          )
+        ];
+      }
       return List.generate(
-        incomeAppCategoriesList.length,
+        list.length,
         (index) {
-          AppCategory category = incomeAppCategoriesList[index];
+          CategoryHiveModel model = list[index];
           return CategoryListTile(
             key: ValueKey(index),
-            icon: category.icon,
-            backgroundColor: category.backgroundColor,
-            iconColor: category.iconColor,
-            name: category.name,
-            onDelete: () => categoryRepository.deleteCategory(type: CategoryType.income, index: index),
-          );
-        },
-      );
-    }
-
-    List<Widget> getExpenseTiles() {
-      return List.generate(
-        expenseAppCategoriesList.length,
-        (index) {
-          AppCategory category = expenseAppCategoriesList[index];
-          return CategoryListTile(
-            icon: category.icon,
-            backgroundColor: category.backgroundColor,
-            iconColor: category.iconColor,
-            name: category.name,
-            onDelete: () => categoryRepository.deleteCategory(type: CategoryType.expense, index: index),
+            icon: AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
+            backgroundColor: AppColors.allColorsUserCanPick[model.colorIndex][0],
+            iconColor: AppColors.allColorsUserCanPick[model.colorIndex][1],
+            name: model.name,
+            onMenuTap: () => showCustomModalBottomSheet(
+              context: context,
+              child: EditCategoryModalScreen(model, index: index),
+            ),
           );
         },
       );
@@ -77,7 +83,7 @@ class CategoriesListScreen extends ConsumerWidget {
               categoryRepository.reorderCategory(
                   type: CategoryType.income, oldIndex: oldIndex, newIndex: newIndex);
             },
-            children: getIncomeTiles(),
+            children: getTiles(context, CategoryType.income),
           ),
           CustomSection(
             title: 'Expense',
@@ -85,53 +91,10 @@ class CategoriesListScreen extends ConsumerWidget {
               categoryRepository.reorderCategory(
                   type: CategoryType.expense, oldIndex: oldIndex, newIndex: newIndex);
             },
-            children: getExpenseTiles(),
+            children: getTiles(context, CategoryType.expense),
           )
         ],
       ),
-    );
-  }
-}
-
-class CategoryListTile extends StatelessWidget {
-  const CategoryListTile({
-    Key? key,
-    required this.icon,
-    required this.backgroundColor,
-    required this.iconColor,
-    required this.name,
-    required this.onDelete,
-  }) : super(key: key);
-  final IconData icon;
-  final Color backgroundColor;
-  final Color iconColor;
-  final String name;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        RoundedIconButton(
-          icon: icon,
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
-        ),
-        Gap.w16,
-        Expanded(
-          child: Text(
-            name,
-            style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-          ),
-        ),
-        Gap.w8,
-        RoundedIconButton(
-          icon: Icons.cancel,
-          backgroundColor: Colors.transparent,
-          iconColor: context.appTheme.backgroundNegative,
-          onTap: onDelete,
-        ),
-      ],
     );
   }
 }

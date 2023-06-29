@@ -11,17 +11,25 @@ class ColorSelectListView extends StatefulWidget {
     this.size = 75,
     this.spacing = 12,
     required this.onColorTap,
+    this.initialColorIndex = 0,
   }) : super(key: key);
   final ValueChanged<int> onColorTap;
   final double size;
   final double spacing;
+  final int initialColorIndex;
 
   @override
   State<ColorSelectListView> createState() => _ColorSelectListViewState();
 }
 
 class _ColorSelectListViewState extends State<ColorSelectListView> {
-  int currentColorIndex = 0;
+  late int currentColorIndex;
+
+  @override
+  void initState() {
+    currentColorIndex = widget.initialColorIndex;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:hive/hive.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:uuid/uuid.dart';
@@ -43,6 +42,22 @@ class CategoryHiveModel {
       iconIndex: iconIndex,
       name: name,
       colorIndex: colorIndex,
+    );
+  }
+
+  CategoryHiveModel copyWith({
+    String? iconCategory,
+    String? name,
+    int? colorIndex,
+    int? iconIndex,
+  }) {
+    return CategoryHiveModel(
+      type: type,
+      id: id,
+      iconCategory: iconCategory ?? this.iconCategory,
+      name: name ?? this.name,
+      colorIndex: colorIndex ?? this.colorIndex,
+      iconIndex: iconIndex ?? this.iconIndex,
     );
   }
 }
