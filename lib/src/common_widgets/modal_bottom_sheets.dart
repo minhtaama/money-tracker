@@ -11,7 +11,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
   required BuildContext context,
   required String label,
   String confirmLabel = 'Delete',
-  IconData? confirmIcon,
+  String? confirmIcon,
   required VoidCallback onConfirm,
 }) {
   return showModalBottomSheet<T>(

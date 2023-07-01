@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -36,7 +37,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
       backgroundColor: context.appTheme.background,
       floatingActionButton: IconWithTextButton(
         size: 60,
-        icon: Icons.done,
+        icon: AppIcons.done,
         label: 'Choose',
         backgroundColor: context.appTheme.accent,
         color: context.appTheme.accentNegative,
@@ -132,9 +133,8 @@ class CircleIcon extends StatelessWidget {
               ),
             ),
             Center(
-              child: Icon(
+              child: SvgIcon(
                 AppIcons.fromCategoryAndIndex(iconCategory, iconIndex),
-                size: 26,
                 color:
                     isSelected ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
               ),

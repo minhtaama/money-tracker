@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -13,7 +14,7 @@ class SummaryCard extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
   final String title;
-  final IconData icon;
+  final String icon;
   final Widget child;
   final VoidCallback? onTap;
 
@@ -29,7 +30,7 @@ class SummaryCard extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  Icon(
+                  SvgIcon(
                     icon,
                     color: context.appTheme.backgroundNegative,
                   ),

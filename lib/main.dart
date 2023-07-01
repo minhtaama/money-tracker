@@ -8,13 +8,14 @@ import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/app_theme.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 Future<void> main() async {
   usePathUrlStrategy(); //remove # character in web link
-  // final hiveDataStore = HiveDataStore();
   await HiveDataStore.init();
+  await AppIcons.init();
   runApp(
     ProviderScope(
       overrides: [

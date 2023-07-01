@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/icons.dart';
 
 class SmallHomeTab extends StatelessWidget {
@@ -13,7 +14,7 @@ class SmallHomeTab extends StatelessWidget {
         child: PageHeading(
           title: 'VND 8.540.000',
           secondaryTitle: 'December, 2023',
-          trailing: Icon(
+          trailing: SvgIcon(
             AppIcons.eye,
             color: context.appTheme.backgroundNegative,
           ),

@@ -45,6 +45,7 @@ class _IconSelectButtonState extends State<IconSelectButton> {
       icon: AppIcons.fromCategoryAndIndex(currentCategory, currentIconIndex),
       backgroundColor: widget.backGroundColor,
       iconColor: widget.iconColor,
+      iconPadding: 8,
       size: 50,
       onTap: () async {
         List<dynamic> returnedValue = await context.push(RoutePath.selectIcon) as List<dynamic>;

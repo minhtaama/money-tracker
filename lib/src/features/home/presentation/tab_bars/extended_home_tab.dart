@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
@@ -43,10 +44,10 @@ class DateSelector extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          SvgIcon(
             AppIcons.arrowLeft,
             color: context.appTheme.backgroundNegative,
-          ).temporaryIcon,
+          ),
           Gap.w4,
           FittedBox(
             child: Text(
@@ -55,16 +56,18 @@ class DateSelector extends StatelessWidget {
             ),
           ),
           Gap.w4,
-          Icon(
+          SvgIcon(
             AppIcons.arrowRight,
             color: context.appTheme.backgroundNegative,
-          ).temporaryIcon,
+          ),
           Gap.w8,
-          Icon(
-            AppIcons.filter,
-            size: 20,
-            color: context.appTheme.backgroundNegative,
-          ).temporaryIcon,
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: SvgIcon(
+              AppIcons.filter,
+              color: context.appTheme.backgroundNegative,
+            ),
+          ),
         ],
       ),
     );
@@ -124,10 +127,9 @@ class TotalMoney extends StatelessWidget {
           ),
         ),
         const Expanded(child: SizedBox()),
-        Icon(
+        SvgIcon(
           AppIcons.eye,
           color: context.appTheme.secondaryNegative,
-          size: 28,
         ),
       ],
     );

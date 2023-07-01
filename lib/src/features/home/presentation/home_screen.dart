@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
@@ -73,13 +74,6 @@ class IncomeExpenseCard extends StatelessWidget {
 }
 
 List<Widget> _testTransactions = [
-  const HomePageCard(
-    header: 'Thứ 2 - 23/3/2023',
-    title: '+ 840.000 VND',
-    child: SizedBox(
-      height: 300,
-    ),
-  ),
   const HomePageCard(
     header: 'Thứ 2 - 23/3/2023',
     title: '+ 840.000 VND',

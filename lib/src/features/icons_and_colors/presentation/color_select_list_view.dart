@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../../utils/constants.dart';
@@ -115,9 +117,9 @@ class CircleColor extends StatelessWidget {
                   borderRadius: BorderRadius.circular(1000),
                   color: context.appTheme.background.withOpacity(0.5),
                 ),
-                child: const Icon(
-                  Icons.done,
-                  size: 30,
+                child: Transform.scale(
+                  scale: 1.12,
+                  child: SvgIcon(AppIcons.done),
                 ),
               ),
             )

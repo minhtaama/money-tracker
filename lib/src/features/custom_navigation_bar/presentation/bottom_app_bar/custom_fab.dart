@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../theme_and_ui/icons.dart';
 
 class FABItem {
   FABItem({required this.icon, required this.label, required this.color, required this.onTap});
 
-  final IconData icon;
+  final String icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
@@ -66,6 +67,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   _removeEntry(overlayEntry);
                 },
                 icon: widget.items[index].icon,
+                iconColor: context.appTheme.backgroundNegative,
                 label: widget.items[index].label,
                 backgroundColor: widget.items[index].color,
                 size: overlayBoxWidth / 5.5,
@@ -170,7 +172,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       elevation: 4,
       backgroundColor: Colors.transparent,
       child: RoundedIconButton(
-        icon: Icons.add,
+        icon: AppIcons.add,
         iconColor: context.appTheme.accentNegative,
         backgroundColor: context.appTheme.accent,
         size: double.infinity,

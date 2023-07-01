@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'bottom_app_bar_with_fab.dart';
@@ -48,8 +49,8 @@ class BottomAppBarButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  flex: 1,
-                  child: Icon(
+                  flex: 2,
+                  child: SvgIcon(
                     item.iconData,
                     color: isSelected
                         ? (context.appTheme.isDarkTheme
@@ -58,7 +59,7 @@ class BottomAppBarButton extends StatelessWidget {
                         : (context.appTheme.isDarkTheme ? context.appTheme.secondary : backgroundColor),
                   ),
                 ), //TODO: Implement Hive icon
-                Gap.w16,
+                Gap.w4,
                 Expanded(
                   flex: 5,
                   child: FittedBox(

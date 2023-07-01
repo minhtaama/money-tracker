@@ -69,7 +69,8 @@ class CategoriesListScreen extends ConsumerWidget {
             hasBackButton: true,
             title: 'Categories',
             trailing: RoundedIconButton(
-              icon: Icons.add,
+              icon: AppIcons.add,
+              iconPadding: 8,
               iconColor: context.appTheme.backgroundNegative,
               backgroundColor: context.appTheme.background3,
               onTap: () => context.push(RoutePath.addCategory),

@@ -14,7 +14,7 @@ class BottomAppBarItem {
   });
   final String path;
   //TODO: Implement Hive icon
-  final IconData iconData;
+  final String iconData;
   final String text;
 }
 

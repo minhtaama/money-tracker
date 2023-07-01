@@ -15,6 +15,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^2.3.6
+  flutter_svg: ^2.0.5
   flutter_web_plugins:
     sdk: flutter
   go_router: ^7.0.0
@@ -42,6 +43,9 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/svg/app/
+    - assets/svg/business/
+    - assets/svg/money/
 
   fonts:
     - family: WixMadeforDisplay

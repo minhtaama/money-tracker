@@ -166,7 +166,7 @@ class CustomTabBar extends StatelessWidget {
       children: [
         AnimatedOpacity(
           opacity: extendedChildOpacity,
-          duration: kAppBarExtendDuration,
+          duration: kNoDuration,
           child: IgnorePointer(
             ignoring: extendedChildOpacity == 1 ? false : true,
             child: extendedTabBar ?? const SizedBox(),
@@ -174,7 +174,7 @@ class CustomTabBar extends StatelessWidget {
         ),
         AnimatedOpacity(
           opacity: childOpacity,
-          duration: kAppBarExtendDuration,
+          duration: kNoDuration,
           child: IgnorePointer(
             ignoring: childOpacity == 1 ? false : true,
             child: smallTabBar ?? const SizedBox(),

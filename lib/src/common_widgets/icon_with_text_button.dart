@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
@@ -17,7 +18,7 @@ class IconWithTextButton extends StatelessWidget {
     this.color,
   }) : super(key: key);
 
-  final IconData icon;
+  final String icon;
   final String label;
   final Color backgroundColor;
   final Color? color;
@@ -46,7 +47,7 @@ class IconWithTextButton extends StatelessWidget {
             children: [
               Expanded(
                 flex: 2,
-                child: Icon(
+                child: SvgIcon(
                   icon,
                   color: isDisabled
                       ? context.appTheme.backgroundNegative

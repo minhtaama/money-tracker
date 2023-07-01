@@ -23,7 +23,7 @@ const double kExtendedCustomTabBarHeight = 230;
 const double kOuterChildHeight = 35;
 
 /// Value related to CustomTabBar and CustomTabPage
-const Duration kAppBarExtendDuration = Duration(milliseconds: 10);
+const Duration kNoDuration = Duration(milliseconds: 0);
 
 /// Value related to BottomAppBar
 const Duration kBottomAppBarDuration = Duration(milliseconds: 150);

@@ -86,6 +86,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             RoundedIconButton(
               size: 55,
               icon: AppIcons.delete,
+              iconPadding: 15,
               backgroundColor: AppColors.grey,
               iconColor: context.appTheme.backgroundNegative,
               onTap: () {

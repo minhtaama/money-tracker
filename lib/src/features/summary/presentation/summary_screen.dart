@@ -30,38 +30,38 @@ class SummaryScreen extends StatelessWidget {
       ),
       children: [
         Gap.h16,
-        const SummaryCard(
+        SummaryCard(
           title: 'Accounts',
-          icon: Icons.currency_exchange,
-          child: SizedBox(
+          icon: AppIcons.accounts,
+          child: const SizedBox(
             height: 300,
           ),
         ),
         SummaryCard(
           onTap: () => context.push(RoutePath.categories),
           title: 'Category',
-          icon: Icons.category,
+          icon: AppIcons.categories,
           child: const SizedBox(
             height: 300,
           ),
         ),
-        const SummaryCard(
+        SummaryCard(
           title: 'Budget',
-          icon: Icons.book,
+          icon: AppIcons.budgets,
           child: SizedBox(
             height: 300,
           ),
         ),
-        const SummaryCard(
+        SummaryCard(
           title: 'Saving',
-          icon: Icons.savings,
+          icon: AppIcons.savings,
           child: SizedBox(
             height: 300,
           ),
         ),
-        const SummaryCard(
+        SummaryCard(
           title: 'Reports',
-          icon: Icons.pie_chart,
+          icon: AppIcons.reports,
           child: SizedBox(
             height: 300,
           ),
