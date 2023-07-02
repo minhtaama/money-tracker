@@ -6,7 +6,6 @@ import '../../../utils/enums.dart';
 
 class SettingsRepository {
   SettingsRepository(this.isar);
-
   final Isar isar;
 
   Stream<SettingsIsar?> _watchSettingsObject() {
@@ -26,11 +25,13 @@ class SettingsRepository {
   }
 }
 
+/// Read this provider to write settings to Isar
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   final isar = ref.watch(isarProvider);
   return SettingsRepository(isar);
 });
 
+/// Watch this provider to get settingsObject
 final settingsObjectProvider = StreamProvider.autoDispose((ref) {
   final settingsRepository = ref.watch(settingsRepositoryProvider);
   return settingsRepository._watchSettingsObject();
