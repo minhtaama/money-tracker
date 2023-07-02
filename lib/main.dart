@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
-import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
+import 'package:money_tracker_app/persistent/isar_data_store.dart';
+import 'package:money_tracker_app/src/features/settings/data/settings_repo.dart';
+import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -13,16 +14,15 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy(); //remove # character in web link
-  await HiveDataStore.init();
+  final isarDataStore = IsarDataStore();
+  await isarDataStore.init();
   await AppIcons.init();
   runApp(
     ProviderScope(
       overrides: [
-        // hiveStoreProvider.overrideWithValue(hiveDataStore),
-        settingsHiveModelControllerProvider.overrideWith(
-          (ref) => SettingsHiveModelController(HiveDataStore.getSettingsHiveModel),
-        ),
+        isarDataStoreProvider.overrideWithValue(isarDataStore),
       ],
       child: const MaterialApp(home: MoneyTrackerApp()),
     ),
@@ -44,12 +44,12 @@ class MoneyTrackerApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsState = ref.watch(settingsHiveModelControllerProvider);
-    final currentTheme = AppColors.allThemeData[settingsState.currentThemeIndex]
-        [getThemeType(context, settingsState.themeType)]!;
+    final settingsObject = ref.watch(settingsObjectProvider).asData?.valueOrNull ?? SettingsIsar();
+    final currentTheme = AppColors.allThemeData[settingsObject.currentThemeIndex]
+        [getThemeType(context, settingsObject.themeType)];
 
     return AppTheme(
-      data: currentTheme,
+      data: currentTheme!,
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
           value: currentTheme.overlayStyle.copyWith(

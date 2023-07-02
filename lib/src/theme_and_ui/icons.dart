@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 
 class AppIcons {
-  static Map<String, dynamic> json = {};
+  static Map<String, dynamic> _json = {};
 
   /// This Map contain keys type `String` as category and
   /// values type `List<String>` as the name of each svg file
@@ -11,8 +11,8 @@ class AppIcons {
   /// Remember everytime adding a new folder/category, add a
   /// asset path to that folder in pubspec.yaml.
   static Map<String, List<String>> get iconsWithCategories => <String, List<String>>{
-        'Money': _getFileNameListInFolderPath(json, 'assets/svg/money/'),
-        'Business': _getFileNameListInFolderPath(json, 'assets/svg/business/'),
+        'Money': _getFileNameListInFolderPath(_json, 'assets/svg/money/'),
+        'Business': _getFileNameListInFolderPath(_json, 'assets/svg/business/'),
       };
 
   static String fromCategoryAndIndex(String iconCategory, int iconIndex) {
@@ -47,7 +47,7 @@ class AppIcons {
   /// Call this function in `main()` method, before `runApp()`
   static Future<void> init() async {
     final assets = await rootBundle.loadString('AssetManifest.json');
-    json = jsonDecode(assets);
+    _json = jsonDecode(assets);
   }
 
   /// This function is used to get all the file name in folder path.

@@ -1,78 +1,97 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/persistent/hive_data_store.dart';
-import 'package:money_tracker_app/persistent/hive_data_store_controller.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_hive_model.dart';
+import 'package:isar/isar.dart';
+import 'package:money_tracker_app/persistent/isar_data_store.dart';
+import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class CategoryRepository {
-  final _incomeCategoryBox = HiveDataStore.getIncomeCategoriesBox;
-  final _expenseCategoryBox = HiveDataStore.getExpenseCategoriesBox;
+  CategoryRepository(this.isar);
 
-  Future<void> writeNewCategory(
-      {required CategoryType type,
-      required String iconCategory,
-      required int iconIndex,
-      required String name,
-      required int colorIndex}) async {
-    final categoryHiveModel = CategoryHiveModel.create(
-        type: type,
-        iconCategory: iconCategory,
-        iconIndex: iconIndex,
-        name: name,
-        colorIndex: colorIndex);
+  final Isar isar;
 
-    if (type == CategoryType.income) {
-      _incomeCategoryBox.add(categoryHiveModel);
-    } else if (type == CategoryType.expense) {
-      _expenseCategoryBox.add(categoryHiveModel);
-    }
+  Stream<List<CategoryIsar>> _watchCategoryList(CategoryType type) {
+    Query<CategoryIsar> query = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
+    return query.watch(fireImmediately: true);
   }
 
-  Future<void> deleteCategory({required CategoryType type, required int index}) async {
-    if (type == CategoryType.income) {
-      _incomeCategoryBox.deleteAt(index);
-    } else if (type == CategoryType.expense) {
-      _expenseCategoryBox.deleteAt(index);
-    }
+  Future<void> writeNewCategory({
+    required CategoryType type,
+    required String iconCategory,
+    required int iconIndex,
+    required String name,
+    required int colorIndex,
+  }) async {
+    final newCategory = CategoryIsar()
+      ..type = type
+      ..iconCategory = iconCategory
+      ..iconIndex = iconIndex
+      ..name = name
+      ..colorIndex = colorIndex;
+    await isar.writeTxn(() async {
+      await isar.categoryIsars.put(newCategory);
+      // Assign order value equal to its `Isar.autoIncrementID` at the first time
+      newCategory.order = newCategory.id;
+      await isar.categoryIsars.put(newCategory);
+    });
   }
 
   Future<void> editCategory(
-      {required CategoryType type, required int index, required CategoryHiveModel newValue}) async {
-    if (type == CategoryType.income) {
-      _incomeCategoryBox.putAt(index, newValue);
-    } else if (type == CategoryType.expense) {
-      _expenseCategoryBox.putAt(index, newValue);
-    }
+    CategoryIsar currentCategory, {
+    required String iconCategory,
+    required int iconIndex,
+    required String name,
+    required int colorIndex,
+  }) async {
+    currentCategory
+      ..iconCategory = iconCategory
+      ..iconIndex = iconIndex
+      ..name = name
+      ..colorIndex = colorIndex;
+    await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
   }
 
-  Future<void> reorderCategory(
-      {required CategoryType type, required int oldIndex, required int newIndex}) async {
-    if (type == CategoryType.income) {
-      HiveDataStore.reorderBox(_incomeCategoryBox, oldIndex, newIndex);
-    } else if (type == CategoryType.expense) {
-      HiveDataStore.reorderBox(_expenseCategoryBox, oldIndex, newIndex);
-    }
+  Future<void> deleteCategory(CategoryIsar category) async {
+    await isar.writeTxn(() async => await isar.categoryIsars.delete(category.id));
+  }
+
+  /// The list must be the same list displayed in the widget (including order)
+  Future<void> reorderCategory(List<CategoryIsar> list, int oldIndex, int newIndex) async {
+    await isar.writeTxn(
+      () async {
+        if (newIndex < oldIndex) {
+          // Move item up the list
+          int temp = list[newIndex].order!;
+          for (int i = newIndex; i < oldIndex; i++) {
+            list[i].order = list[i + 1].order;
+            isar.categoryIsars.put(list[i]);
+          }
+          list[oldIndex].order = temp;
+          isar.categoryIsars.put(list[oldIndex]);
+        } else {
+          // Move item down the list
+          int temp = list[newIndex].order!;
+          for (int i = newIndex; i > oldIndex; i--) {
+            list[i].order = list[i - 1].order;
+            isar.categoryIsars.put(list[i]);
+          }
+          list[oldIndex].order = temp;
+          isar.categoryIsars.put(list[oldIndex]);
+        }
+      },
+    );
   }
 }
 
-/// Widgets only watch to this Provider if needed to call function
-/// on this Category Repository.
-final categoryRepositoryProvider = Provider<CategoryRepository>((ref) => CategoryRepository());
+final categoryRepositoryIsarProvider = Provider<CategoryRepository>(
+  (ref) {
+    final isar = ref.watch(isarProvider);
+    return CategoryRepository(isar);
+  },
+);
 
-/// This [StateProvider] returns a `List` of domains of this Category feature.
-///
-/// Widgets must watch to this StateProvider in order to be rebuilt
-final incomeAppCategoryDomainListProvider = StateProvider<List<CategoryHiveModel>>((ref) {
-  final categoryRepository = ref.watch(categoryRepositoryProvider);
-  return ref.watch(hiveBoxValuesControllerProvider(categoryRepository._incomeCategoryBox))
-      as List<CategoryHiveModel>;
-});
-
-/// This [StateProvider] returns a `List` of domains of this Category feature.
-///
-/// Widgets must watch to this StateProvider in order to be rebuilt
-final expenseAppCategoryDomainListProvider = StateProvider<List<CategoryHiveModel>>((ref) {
-  final categoryRepository = ref.watch(categoryRepositoryProvider);
-  return ref.watch(hiveBoxValuesControllerProvider(categoryRepository._expenseCategoryBox))
-      as List<CategoryHiveModel>;
-});
+final categoryListProvider = StreamProvider.autoDispose.family<List<CategoryIsar>, CategoryType>(
+  (ref, type) {
+    final categoryRepo = ref.watch(categoryRepositoryIsarProvider);
+    return categoryRepo._watchCategoryList(type);
+  },
+);

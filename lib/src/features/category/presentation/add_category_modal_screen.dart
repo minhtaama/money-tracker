@@ -85,7 +85,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             backgroundColor: context.appTheme.accent,
             isDisabled: categoryName == '',
             onTap: () {
-              final categoryRepository = ref.read(categoryRepositoryProvider);
+              final categoryRepository = ref.read(categoryRepositoryIsarProvider);
               categoryRepository.writeNewCategory(
                 type: categoryType,
                 iconCategory: iconCategory,

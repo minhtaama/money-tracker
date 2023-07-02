@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/persistent/hive_data_store.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/features/settings/presentation/color_picker.dart';
 import 'package:money_tracker_app/src/features/settings/presentation/setting_tile_toggle.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../data/settings_repo.dart';
+import '../domain/settings_isar.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsState = ref.watch(settingsHiveModelControllerProvider);
-    final settingsController = ref.watch(settingsHiveModelControllerProvider.notifier);
+    final settingsObject = ref.watch(settingsObjectProvider).asData?.valueOrNull ?? SettingsIsar();
+    final settingsRepository = ref.watch(settingsRepositoryProvider);
 
     return Scaffold(
       backgroundColor: context.appTheme.background,
@@ -36,9 +35,9 @@ class SettingsScreen extends ConsumerWidget {
               ColorPicker(
                 currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
                 colorsList: AppColors.allThemeData,
-                currentColorIndex: settingsState.currentThemeIndex,
+                currentColorIndex: settingsObject.currentThemeIndex,
                 onColorTap: (int value) {
-                  settingsController.setThemeColor(value);
+                  settingsRepository.setThemeColor(value);
                 },
               ),
               SettingTileToggle(
@@ -49,16 +48,10 @@ class SettingsScreen extends ConsumerWidget {
                   'System default',
                 ],
                 onTap: (int index) {
-                  settingsController.setThemeType(ThemeType.values[index]);
+                  settingsRepository.setThemeType(ThemeType.values[index]);
                 },
                 valuesCount: ThemeType.values.length,
-                initialValueIndex: ThemeType.values.indexOf(settingsState.themeType),
-              ),
-              Text(
-                HiveDataStore.getSettingsHiveModel.toString(),
-                style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.backgroundNegative,
-                ),
+                initialValueIndex: ThemeType.values.indexOf(settingsObject.themeType),
               ),
             ],
           )

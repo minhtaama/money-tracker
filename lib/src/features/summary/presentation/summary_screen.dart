@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/features/summary/presentation/summary_card
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-
 import '../../../theme_and_ui/icons.dart';
 
 class SummaryScreen extends StatelessWidget {
