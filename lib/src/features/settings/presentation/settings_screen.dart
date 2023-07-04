@@ -8,16 +8,15 @@ import 'package:money_tracker_app/src/features/settings/presentation/setting_til
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../data/settings_repo.dart';
-import '../domain/settings_isar.dart';
+import '../data/settings_controller.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsObject = ref.watch(settingsObjectProvider).asData?.valueOrNull ?? SettingsIsar();
-    final settingsRepository = ref.watch(settingsRepositoryProvider);
+    final settingsController = ref.watch(settingsControllerProvider.notifier);
+    final settingsObject = ref.watch(settingsControllerProvider);
 
     return Scaffold(
       backgroundColor: context.appTheme.background,
@@ -37,7 +36,7 @@ class SettingsScreen extends ConsumerWidget {
                 colorsList: AppColors.allThemeData,
                 currentColorIndex: settingsObject.currentThemeIndex,
                 onColorTap: (int value) {
-                  settingsRepository.setThemeColor(value);
+                  settingsController.set(themeIndex: value);
                 },
               ),
               SettingTileToggle(
@@ -48,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
                   'System default',
                 ],
                 onTap: (int index) {
-                  settingsRepository.setThemeType(ThemeType.values[index]);
+                  settingsController.set(themeType: ThemeType.values[index]);
                 },
                 valuesCount: ThemeType.values.length,
                 initialValueIndex: ThemeType.values.indexOf(settingsObject.themeType),

@@ -11,20 +11,22 @@ class IsarDataStore {
 
   Future<void> init() async {
     _dir = await getApplicationDocumentsDirectory();
+
+    // Init Isar instance
     _isar = await Isar.open(
       [CategoryIsarSchema, SettingsIsarSchema],
       directory: _dir.path,
     );
-    final settingsObj = await _isar.settingsIsars.get(0);
-    if (settingsObj == null) {
+
+    // Init settingsObject
+    if (await _isar.settingsIsars.get(0) == null) {
       _isar.writeTxn(() async => await _isar.settingsIsars.put(SettingsIsar()));
     }
   }
 }
 
-/// Override this provider in `ProviderScope` value
-/// with an instance of `IsarDataStore` after calling
-/// asynchronous function `init()`.
+/// Override this provider in `ProviderScope` value with an instance
+/// of `IsarDataStore` after calling asynchronous function `init()`.
 final isarDataStoreProvider = Provider<IsarDataStore>((ref) {
   throw UnimplementedError();
 });

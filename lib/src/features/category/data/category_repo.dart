@@ -54,7 +54,7 @@ class CategoryRepository {
     await isar.writeTxn(() async => await isar.categoryIsars.delete(category.id));
   }
 
-  /// The list must be the same list displayed in the widget (including order)
+  /// The list must be the same list displayed in the widget (with the same sort order)
   Future<void> reorderCategory(List<CategoryIsar> list, int oldIndex, int newIndex) async {
     await isar.writeTxn(
       () async {

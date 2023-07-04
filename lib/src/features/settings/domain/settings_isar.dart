@@ -9,4 +9,13 @@ class SettingsIsar {
   int currentThemeIndex = 0;
   @enumerated
   ThemeType themeType = ThemeType.light;
+
+  SettingsIsar copyWith({
+    int? currentThemeIndex,
+    ThemeType? themeType,
+  }) {
+    return SettingsIsar()
+      ..currentThemeIndex = currentThemeIndex ?? this.currentThemeIndex
+      ..themeType = themeType ?? this.themeType;
+  }
 }
