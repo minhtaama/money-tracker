@@ -20,7 +20,7 @@ class SummaryScreen extends StatelessWidget {
           title: context.localize.summary,
           secondaryTitle: 'Cashflow: +900.000 VND',
           trailing: RoundedIconButton(
-            icon: AppIcons.settings,
+            iconPath: AppIcons.settings,
             backgroundColor: context.appTheme.background3,
             iconColor: context.appTheme.backgroundNegative,
             onTap: () => context.push(RoutePath.settings),
@@ -30,6 +30,7 @@ class SummaryScreen extends StatelessWidget {
       children: [
         Gap.h16,
         SummaryCard(
+          onTap: () => context.push(RoutePath.accounts),
           title: 'Accounts',
           icon: AppIcons.accounts,
           child: const SizedBox(

@@ -66,7 +66,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   widget.items[index].onTap();
                   _removeEntry(overlayEntry);
                 },
-                icon: widget.items[index].icon,
+                iconPath: widget.items[index].icon,
                 iconColor: context.appTheme.backgroundNegative,
                 label: widget.items[index].label,
                 backgroundColor: widget.items[index].color,
@@ -172,7 +172,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       elevation: 4,
       backgroundColor: Colors.transparent,
       child: RoundedIconButton(
-        icon: AppIcons.add,
+        iconPath: AppIcons.add,
         iconColor: context.appTheme.accentNegative,
         backgroundColor: context.appTheme.accent,
         size: double.infinity,

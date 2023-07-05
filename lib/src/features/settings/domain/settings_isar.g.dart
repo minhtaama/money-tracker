@@ -71,7 +71,8 @@ SettingsIsar _settingsIsarDeserialize(
   final object = SettingsIsar();
   object.currentThemeIndex = reader.readLong(offsets[0]);
   object.themeType =
-      _SettingsIsarthemeTypeValueEnumMap[reader.readByteOrNull(offsets[1])] ?? ThemeType.light;
+      _SettingsIsarthemeTypeValueEnumMap[reader.readByteOrNull(offsets[1])] ??
+          ThemeType.light;
   return object;
 }
 
@@ -85,7 +86,9 @@ P _settingsIsarDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (_SettingsIsarthemeTypeValueEnumMap[reader.readByteOrNull(offset)] ?? ThemeType.light) as P;
+      return (_SettingsIsarthemeTypeValueEnumMap[
+              reader.readByteOrNull(offset)] ??
+          ThemeType.light) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -110,9 +113,11 @@ List<IsarLinkBase<dynamic>> _settingsIsarGetLinks(SettingsIsar object) {
   return [];
 }
 
-void _settingsIsarAttach(IsarCollection<dynamic> col, Id id, SettingsIsar object) {}
+void _settingsIsarAttach(
+    IsarCollection<dynamic> col, Id id, SettingsIsar object) {}
 
-extension SettingsIsarQueryWhereSort on QueryBuilder<SettingsIsar, SettingsIsar, QWhere> {
+extension SettingsIsarQueryWhereSort
+    on QueryBuilder<SettingsIsar, SettingsIsar, QWhere> {
   QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -120,7 +125,8 @@ extension SettingsIsarQueryWhereSort on QueryBuilder<SettingsIsar, SettingsIsar,
   }
 }
 
-extension SettingsIsarQueryWhere on QueryBuilder<SettingsIsar, SettingsIsar, QWhereClause> {
+extension SettingsIsarQueryWhere
+    on QueryBuilder<SettingsIsar, SettingsIsar, QWhereClause> {
   QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
@@ -130,7 +136,8 @@ extension SettingsIsarQueryWhere on QueryBuilder<SettingsIsar, SettingsIsar, QWh
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idNotEqualTo(
+      Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -152,7 +159,8 @@ extension SettingsIsarQueryWhere on QueryBuilder<SettingsIsar, SettingsIsar, QWh
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idGreaterThan(
+      Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -161,7 +169,8 @@ extension SettingsIsarQueryWhere on QueryBuilder<SettingsIsar, SettingsIsar, QWh
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -186,8 +195,10 @@ extension SettingsIsarQueryWhere on QueryBuilder<SettingsIsar, SettingsIsar, QWh
   }
 }
 
-extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QFilterCondition> {
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> currentThemeIndexEqualTo(int value) {
+extension SettingsIsarQueryFilter
+    on QueryBuilder<SettingsIsar, SettingsIsar, QFilterCondition> {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      currentThemeIndexEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'currentThemeIndex',
@@ -196,7 +207,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> currentThemeIndexGreaterThan(
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      currentThemeIndexGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -209,7 +221,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> currentThemeIndexLessThan(
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      currentThemeIndexLessThan(
     int value, {
     bool include = false,
   }) {
@@ -222,7 +235,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> currentThemeIndexBetween(
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      currentThemeIndexBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -239,7 +253,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> idEqualTo(
+      Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -291,7 +306,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> themeTypeEqualTo(ThemeType value) {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      themeTypeEqualTo(ThemeType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'themeType',
@@ -300,7 +316,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> themeTypeGreaterThan(
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      themeTypeGreaterThan(
     ThemeType value, {
     bool include = false,
   }) {
@@ -313,7 +330,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> themeTypeLessThan(
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      themeTypeLessThan(
     ThemeType value, {
     bool include = false,
   }) {
@@ -326,7 +344,8 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition> themeTypeBetween(
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterFilterCondition>
+      themeTypeBetween(
     ThemeType lower,
     ThemeType upper, {
     bool includeLower = true,
@@ -344,18 +363,23 @@ extension SettingsIsarQueryFilter on QueryBuilder<SettingsIsar, SettingsIsar, QF
   }
 }
 
-extension SettingsIsarQueryObject on QueryBuilder<SettingsIsar, SettingsIsar, QFilterCondition> {}
+extension SettingsIsarQueryObject
+    on QueryBuilder<SettingsIsar, SettingsIsar, QFilterCondition> {}
 
-extension SettingsIsarQueryLinks on QueryBuilder<SettingsIsar, SettingsIsar, QFilterCondition> {}
+extension SettingsIsarQueryLinks
+    on QueryBuilder<SettingsIsar, SettingsIsar, QFilterCondition> {}
 
-extension SettingsIsarQuerySortBy on QueryBuilder<SettingsIsar, SettingsIsar, QSortBy> {
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy> sortByCurrentThemeIndex() {
+extension SettingsIsarQuerySortBy
+    on QueryBuilder<SettingsIsar, SettingsIsar, QSortBy> {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy>
+      sortByCurrentThemeIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'currentThemeIndex', Sort.asc);
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy> sortByCurrentThemeIndexDesc() {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy>
+      sortByCurrentThemeIndexDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'currentThemeIndex', Sort.desc);
     });
@@ -374,14 +398,17 @@ extension SettingsIsarQuerySortBy on QueryBuilder<SettingsIsar, SettingsIsar, QS
   }
 }
 
-extension SettingsIsarQuerySortThenBy on QueryBuilder<SettingsIsar, SettingsIsar, QSortThenBy> {
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy> thenByCurrentThemeIndex() {
+extension SettingsIsarQuerySortThenBy
+    on QueryBuilder<SettingsIsar, SettingsIsar, QSortThenBy> {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy>
+      thenByCurrentThemeIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'currentThemeIndex', Sort.asc);
     });
   }
 
-  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy> thenByCurrentThemeIndexDesc() {
+  QueryBuilder<SettingsIsar, SettingsIsar, QAfterSortBy>
+      thenByCurrentThemeIndexDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'currentThemeIndex', Sort.desc);
     });
@@ -412,8 +439,10 @@ extension SettingsIsarQuerySortThenBy on QueryBuilder<SettingsIsar, SettingsIsar
   }
 }
 
-extension SettingsIsarQueryWhereDistinct on QueryBuilder<SettingsIsar, SettingsIsar, QDistinct> {
-  QueryBuilder<SettingsIsar, SettingsIsar, QDistinct> distinctByCurrentThemeIndex() {
+extension SettingsIsarQueryWhereDistinct
+    on QueryBuilder<SettingsIsar, SettingsIsar, QDistinct> {
+  QueryBuilder<SettingsIsar, SettingsIsar, QDistinct>
+      distinctByCurrentThemeIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'currentThemeIndex');
     });
@@ -426,14 +455,16 @@ extension SettingsIsarQueryWhereDistinct on QueryBuilder<SettingsIsar, SettingsI
   }
 }
 
-extension SettingsIsarQueryProperty on QueryBuilder<SettingsIsar, SettingsIsar, QQueryProperty> {
+extension SettingsIsarQueryProperty
+    on QueryBuilder<SettingsIsar, SettingsIsar, QQueryProperty> {
   QueryBuilder<SettingsIsar, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<SettingsIsar, int, QQueryOperations> currentThemeIndexProperty() {
+  QueryBuilder<SettingsIsar, int, QQueryOperations>
+      currentThemeIndexProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'currentThemeIndex');
     });

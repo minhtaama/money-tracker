@@ -36,7 +36,7 @@ class CategoriesListScreen extends ConsumerWidget {
                   CategoryIsar model = data[index];
                   return CategoryListTile(
                     key: ValueKey(index),
-                    icon: AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
+                    iconPath: AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
                     backgroundColor: AppColors.allColorsUserCanPick[model.colorIndex][0],
                     iconColor: AppColors.allColorsUserCanPick[model.colorIndex][1],
                     name: model.name,
@@ -68,8 +68,7 @@ class CategoriesListScreen extends ConsumerWidget {
             hasBackButton: true,
             title: 'Categories',
             trailing: RoundedIconButton(
-              icon: AppIcons.add,
-              iconPadding: 8,
+              iconPath: AppIcons.add,
               iconColor: context.appTheme.backgroundNegative,
               backgroundColor: context.appTheme.background3,
               onTap: () => context.push(RoutePath.addCategory),

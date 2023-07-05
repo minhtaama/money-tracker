@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/isar_data_store.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
-import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -54,7 +53,7 @@ class MoneyTrackerApp extends ConsumerWidget {
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
           value: currentTheme.overlayStyle.copyWith(
-              systemNavigationBarColor: context.appTheme.background, //Same as BottomAppBarWithFab
+              systemNavigationBarColor: context.appTheme.background,
               systemNavigationBarIconBrightness: Brightness.dark),
           child: MaterialApp.router(
             restorationScopeId: 'app',

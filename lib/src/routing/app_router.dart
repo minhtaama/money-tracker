@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/accounts_screen.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/add_acount_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
@@ -18,9 +20,11 @@ class RoutePath {
   static String get addTransfer => '/home/addTransfer';
   static String get summary => '/summary';
   static String get settings => '/summary/settings';
+  static String get selectIcon => '/summary/selectIcon';
   static String get categories => '/summary/categories';
   static String get addCategory => '/summary/categories/addCategory';
-  static String get selectIcon => '/summary/selectIcon';
+  static String get accounts => '/summary/accounts';
+  static String get addAccount => '/summary/accounts/addAccount';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -113,6 +117,22 @@ final goRouter = GoRouter(
                 )
               ],
             ),
+            GoRoute(
+              path: 'accounts',
+              parentNavigatorKey: _rootNavKey,
+              builder: (context, state) => const AccountsScreen(),
+              routes: [
+                GoRoute(
+                  path: 'addAccount',
+                  parentNavigatorKey: _rootNavKey,
+                  pageBuilder: (context, state) => showModalBottomSheetPage(
+                    context,
+                    state,
+                    child: const AddAccountModalScreen(),
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ],

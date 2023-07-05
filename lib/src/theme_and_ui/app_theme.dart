@@ -58,19 +58,20 @@ class AppThemeData {
   /// * [ScaffoldWithBottomNavBar]'s color
   /// * [SmallHomeTab]'s background color
   /// * [BottomAppBarWithFAB]'s background
+  /// * System nav bar color
+  /// * Modals background
   ///
   /// __Dark Mode:__
   /// * [ScaffoldWithBottomNavBar]'s color
   /// * [SmallHomeTab]'s background color
   /// * [BottomAppBarWithFAB]'s background
+  /// * System nav bar color
   final Color background;
 
   /// __Light Mode:__
-  /// * Modals background
   ///
   /// __DarkMode:__
   /// * [ExtendedHomeTab]'s background
-  /// * Modals background
   /// *
   final Color background2;
 
@@ -79,8 +80,9 @@ class AppThemeData {
   /// * [CardItem]'s default background
   ///
   /// __DarkMode:__
+  /// * [RoundedIconButton]'s default background
   /// * [CardItem]'s default background
-  /// *
+  /// * Modals background
   /// *
   final Color background3;
 

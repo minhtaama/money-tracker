@@ -42,7 +42,7 @@ class _IconSelectButtonState extends State<IconSelectButton> {
   @override
   Widget build(BuildContext context) {
     return RoundedIconButton(
-      icon: AppIcons.fromCategoryAndIndex(currentCategory, currentIconIndex),
+      iconPath: AppIcons.fromCategoryAndIndex(currentCategory, currentIconIndex),
       backgroundColor: widget.backGroundColor,
       iconColor: widget.iconColor,
       iconPadding: 8,

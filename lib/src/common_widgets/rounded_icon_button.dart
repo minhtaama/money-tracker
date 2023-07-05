@@ -8,7 +8,7 @@ import 'card_item.dart';
 class RoundedIconButton extends StatelessWidget {
   const RoundedIconButton({
     Key? key,
-    required this.icon,
+    required this.iconPath,
     this.label,
     required this.backgroundColor,
     this.size,
@@ -17,7 +17,7 @@ class RoundedIconButton extends StatelessWidget {
     this.iconColor,
   }) : super(key: key);
 
-  final String icon;
+  final String iconPath;
   final String? label;
   final Color backgroundColor;
   final Color? iconColor;
@@ -55,7 +55,7 @@ class RoundedIconButton extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(iconPadding),
                     child: SvgIcon(
-                      icon,
+                      iconPath,
                       color: iconColor,
                     ),
                   ),
@@ -96,7 +96,7 @@ class RoundedIconButton extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.all(iconPadding),
                 child: SvgIcon(
-                  icon,
+                  iconPath,
                   color: iconColor,
                 ),
               ),
