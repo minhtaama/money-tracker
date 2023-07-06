@@ -42,7 +42,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             categoryType = type;
           },
         ),
-        Gap.h24,
+        Gap.h16,
         Row(
           children: [
             IconSelectButton(
@@ -68,7 +68,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             ),
           ],
         ),
-        Gap.h32,
+        Gap.h16,
         ColorSelectListView(
           onColorTap: (index) {
             setState(() {
@@ -76,7 +76,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             });
           },
         ),
-        Gap.h24,
+        Gap.h16,
         Align(
           alignment: Alignment.centerRight,
           child: IconWithTextButton(
@@ -85,8 +85,8 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             backgroundColor: context.appTheme.accent,
             isDisabled: categoryName == '',
             onTap: () {
-              final categoryRepository = ref.read(categoryRepositoryIsarProvider);
-              categoryRepository.writeNewCategory(
+              final categoryRepository = ref.read(categoryRepositoryProvider);
+              categoryRepository.writeNew(
                 type: categoryType,
                 iconCategory: iconCategory,
                 iconIndex: iconIndex,

@@ -9,12 +9,17 @@ class CategoryRepository {
 
   final Isar isar;
 
-  Stream<List<CategoryIsar>> _watchCategoryList(CategoryType type) {
+  List<CategoryIsar> getList(CategoryType type) {
     Query<CategoryIsar> query = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
-    return query.watch(fireImmediately: true);
+    return query.findAllSync();
   }
 
-  Future<void> writeNewCategory({
+  Stream<void> _watchListChanges(CategoryType type) {
+    Query<CategoryIsar> query = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
+    return query.watchLazy(fireImmediately: true);
+  }
+
+  Future<void> writeNew({
     required CategoryType type,
     required String iconCategory,
     required int iconIndex,
@@ -29,13 +34,15 @@ class CategoryRepository {
       ..colorIndex = colorIndex;
     await isar.writeTxn(() async {
       await isar.categoryIsars.put(newCategory);
-      // Assign order value equal to its `Isar.autoIncrementID` at the first time
+      // If this database is user-reorderable, then we must
+      // assign `order` value equal to its `Isar.autoIncrementID` at the first time
+      // then update it
       newCategory.order = newCategory.id;
       await isar.categoryIsars.put(newCategory);
     });
   }
 
-  Future<void> editCategory(
+  Future<void> edit(
     CategoryIsar currentCategory, {
     required String iconCategory,
     required int iconIndex,
@@ -50,12 +57,12 @@ class CategoryRepository {
     await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
   }
 
-  Future<void> deleteCategory(CategoryIsar category) async {
+  Future<void> delete(CategoryIsar category) async {
     await isar.writeTxn(() async => await isar.categoryIsars.delete(category.id));
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)
-  Future<void> reorderCategory(List<CategoryIsar> list, int oldIndex, int newIndex) async {
+  Future<void> reorder(List<CategoryIsar> list, int oldIndex, int newIndex) async {
     await isar.writeTxn(
       () async {
         if (newIndex < oldIndex) {
@@ -82,16 +89,16 @@ class CategoryRepository {
   }
 }
 
-final categoryRepositoryIsarProvider = Provider<CategoryRepository>(
+final categoryRepositoryProvider = Provider<CategoryRepository>(
   (ref) {
     final isar = ref.watch(isarProvider);
     return CategoryRepository(isar);
   },
 );
 
-final categoryListProvider = StreamProvider.autoDispose.family<List<CategoryIsar>, CategoryType>(
+final categoriesChangesProvider = StreamProvider.autoDispose.family<void, CategoryType>(
   (ref, type) {
-    final categoryRepo = ref.watch(categoryRepositoryIsarProvider);
-    return categoryRepo._watchCategoryList(type);
+    final categoryRepo = ref.watch(categoryRepositoryProvider);
+    return categoryRepo._watchListChanges(type);
   },
 );

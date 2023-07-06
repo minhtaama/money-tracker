@@ -53,80 +53,78 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
   @override
   Widget build(BuildContext context) {
     double togglePosition = currentValueIndex / (widget.values.length - 1);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              key: _rootSizedBoxKey,
-              height: widget.height,
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: AppColors.grey,
-                    ),
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            key: _rootSizedBoxKey,
+            height: widget.height,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: AppColors.grey,
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: AnimatedSlide(
-                      duration: kBottomAppBarDuration,
-                      curve: Curves.easeOut,
-                      offset: Offset(togglePosition, 0),
-                      child: SizedBox(
-                        height: widget.height,
-                        width: _rootSizedBoxWidth / widget.values.length,
-                        child: CardItem(
-                          margin: EdgeInsets.zero,
-                          elevation: 1.5,
-                          isGradient: true,
-                          borderRadius: BorderRadius.circular(100),
-                          color: widget.toggleColor ?? context.appTheme.accent,
-                        ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: AnimatedSlide(
+                    duration: kBottomAppBarDuration,
+                    curve: Curves.easeOut,
+                    offset: Offset(togglePosition, 0),
+                    child: SizedBox(
+                      height: widget.height,
+                      width: _rootSizedBoxWidth / widget.values.length,
+                      child: CardItem(
+                        margin: EdgeInsets.zero,
+                        elevation: 1.5,
+                        isGradient: true,
+                        borderRadius: BorderRadius.circular(100),
+                        color: widget.toggleColor ?? context.appTheme.accent,
                       ),
                     ),
                   ),
-                  Row(
-                    children: List.generate(
-                        widget.values.length,
-                        (index) => Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    currentValueIndex = index;
-                                    widget.onTap(widget.values[currentValueIndex]);
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: widget.height,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        widget.labels[index],
-                                        style: kHeader2TextStyle.copyWith(
-                                          color: currentValueIndex == index
-                                              ? widget.labelsOnToggleColor ??
-                                                  context.appTheme.accentNegative
-                                              : widget.labelsOnBackgroundColor ??
-                                                  context.appTheme.backgroundNegative,
-                                        ),
+                ),
+                Row(
+                  children: List.generate(
+                      widget.values.length,
+                      (index) => Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  currentValueIndex = index;
+                                  widget.onTap(widget.values[currentValueIndex]);
+                                });
+                              },
+                              child: SizedBox(
+                                height: widget.height,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      widget.labels[index],
+                                      style: kHeader2TextStyle.copyWith(
+                                        fontSize: 19,
+                                        color: currentValueIndex == index
+                                            ? widget.labelsOnToggleColor ??
+                                                context.appTheme.accentNegative
+                                            : widget.labelsOnBackgroundColor ??
+                                                context.appTheme.backgroundNegative,
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            )),
-                  )
-                ],
-              ),
+                            ),
+                          )),
+                )
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

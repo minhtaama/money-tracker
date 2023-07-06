@@ -21,9 +21,8 @@ Future<T?> showConfirmModalBottomSheet<T>({
     backgroundColor:
         context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
     barrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
-    isScrollControlled: true,
     builder: (context) => Padding(
-      padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+      padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: Padding(
@@ -82,26 +81,15 @@ Future<T?> showCustomModalBottomSheet<T>({required BuildContext context, require
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: AnimatedPadding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          duration: const Duration(milliseconds: 0),
-          child: Column(
-            children: [
-              Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: context.appTheme.backgroundNegative.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              Gap.h16,
-              child,
-            ],
+      child: Stack(
+        children: [
+          AnimatedPadding(
+            padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+            duration: const Duration(milliseconds: 0),
+            child: SingleChildScrollView(child: child),
           ),
-        ),
+          const Handle(),
+        ],
       ),
     ),
   );
@@ -114,21 +102,7 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {
     backgroundColor:
         context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
     modalBarrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
-    isScrollControlled: true,
-    child: Column(
-      children: [
-        Container(
-          width: 50,
-          height: 5,
-          decoration: BoxDecoration(
-            color: context.appTheme.backgroundNegative.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        Gap.h16,
-        child,
-      ],
-    ),
+    child: child,
   );
 }
 
@@ -146,11 +120,10 @@ class ModalBottomSheetPage<T> extends Page<T> {
   /// > https://github.com/flutter/flutter/issues/119094
   const ModalBottomSheetPage({
     required this.child,
+    this.bottomFrontChild,
     this.shape,
     this.backgroundColor,
     this.modalBarrierColor,
-    this.isDismissible = true,
-    this.isScrollControlled = false,
     super.key,
     super.name,
     super.arguments,
@@ -160,9 +133,8 @@ class ModalBottomSheetPage<T> extends Page<T> {
   final ShapeBorder? shape;
   final Color? backgroundColor;
   final Color? modalBarrierColor;
-  final bool isDismissible;
-  final bool isScrollControlled;
   final Widget child;
+  final Widget? bottomFrontChild;
 
   @override
   Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute(
@@ -174,20 +146,44 @@ class ModalBottomSheetPage<T> extends Page<T> {
         ),
         backgroundColor: backgroundColor,
         modalBarrierColor: modalBarrierColor,
-        isDismissible: isDismissible,
-        isScrollControlled: isScrollControlled,
+        isDismissible: true,
+        isScrollControlled: true,
         enableDrag: true,
         useSafeArea: false,
         builder: (context) => Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            child: AnimatedPadding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-              duration: const Duration(milliseconds: 0),
-              child: child,
-            ),
+          child: Stack(
+            children: [
+              AnimatedPadding(
+                padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                duration: const Duration(milliseconds: 0),
+                child: SingleChildScrollView(child: child),
+              ),
+              const Handle(),
+            ],
           ),
         ),
       );
+}
+
+class Handle extends StatelessWidget {
+  const Handle({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Center(
+        heightFactor: 0,
+        child: Container(
+          width: 50,
+          height: 5,
+          decoration: BoxDecoration(
+            color: context.appTheme.backgroundNegative.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
 }

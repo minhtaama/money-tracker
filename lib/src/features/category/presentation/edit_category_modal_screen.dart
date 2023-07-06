@@ -69,7 +69,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             ),
           ],
         ),
-        Gap.h32,
+        Gap.h16,
         ColorSelectListView(
           initialColorIndex: widget.currentCategory.colorIndex,
           onColorTap: (index) {
@@ -78,7 +78,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             });
           },
         ),
-        Gap.h24,
+        Gap.h16,
         Row(
           children: [
             RoundedIconButton(
@@ -92,8 +92,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
                   context: context,
                   label: 'Are you sure that you want to delete "${widget.currentCategory.name}"?',
                   onConfirm: () {
-                    final categoryRepository = ref.read(categoryRepositoryIsarProvider);
-                    categoryRepository.deleteCategory(widget.currentCategory);
+                    final categoryRepository = ref.read(categoryRepositoryProvider);
+                    categoryRepository.delete(widget.currentCategory);
                     context.pop();
                   },
                 );
@@ -105,8 +105,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
               label: 'Done',
               backgroundColor: context.appTheme.accent,
               onTap: () async {
-                final categoryRepository = ref.read(categoryRepositoryIsarProvider);
-                await categoryRepository.editCategory(
+                final categoryRepository = ref.read(categoryRepositoryProvider);
+                await categoryRepository.edit(
                   widget.currentCategory,
                   iconCategory: newIconCategory,
                   iconIndex: newIconIndex,

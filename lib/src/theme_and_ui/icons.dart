@@ -13,6 +13,13 @@ class AppIcons {
   static Map<String, List<String>> get iconsWithCategories => <String, List<String>>{
         'Money': _getFileNameListInFolderPath(_json, 'assets/svg/money/'),
         'Business': _getFileNameListInFolderPath(_json, 'assets/svg/business/'),
+        'Activities': _getFileNameListInFolderPath(_json, 'assets/svg/activity/'),
+        'Food': _getFileNameListInFolderPath(_json, 'assets/svg/food/'),
+        'Games': _getFileNameListInFolderPath(_json, 'assets/svg/game/'),
+        'Households': _getFileNameListInFolderPath(_json, 'assets/svg/household/'),
+        'Health': _getFileNameListInFolderPath(_json, 'assets/svg/health/'),
+        'Buildings': _getFileNameListInFolderPath(_json, 'assets/svg/building/'),
+        'Emoji': _getFileNameListInFolderPath(_json, 'assets/svg/emoji/'),
       };
 
   static String fromCategoryAndIndex(String iconCategory, int iconIndex) {

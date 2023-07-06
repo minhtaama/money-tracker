@@ -73,7 +73,7 @@ class _CustomSectionState extends State<CustomSection> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
             child: Text(
               widget.title,
               style: kHeader2TextStyle.copyWith(

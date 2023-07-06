@@ -22,42 +22,48 @@ class CategoriesListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoryRepository = ref.watch(categoryRepositoryIsarProvider);
-    final incomeAppCategoriesList = ref.watch(categoryListProvider(CategoryType.income));
-    final expenseAppCategoriesList = ref.watch(categoryListProvider(CategoryType.expense));
+    final categoryRepository = ref.watch(categoryRepositoryProvider);
 
-    List<Widget> getTiles(BuildContext context, CategoryType type) {
-      final list = type == CategoryType.income ? incomeAppCategoriesList : expenseAppCategoriesList;
-      final asyncValue = list.whenData(
-        (data) => data.isNotEmpty
-            ? List.generate(
-                data.length,
-                (index) {
-                  CategoryIsar model = data[index];
-                  return CategoryListTile(
-                    key: ValueKey(index),
-                    iconPath: AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
-                    backgroundColor: AppColors.allColorsUserCanPick[model.colorIndex][0],
-                    iconColor: AppColors.allColorsUserCanPick[model.colorIndex][1],
-                    name: model.name,
-                    onMenuTap: () {
-                      showCustomModalBottomSheet(
-                        context: context,
-                        child: EditCategoryModalScreen(model),
-                      );
-                    },
-                  );
-                },
+    List<CategoryIsar> incomeList = categoryRepository.getList(CategoryType.income);
+    List<CategoryIsar> expenseList = categoryRepository.getList(CategoryType.expense);
+
+    ref.watch(categoriesChangesProvider(CategoryType.income)).whenData((_) {
+      incomeList = categoryRepository.getList(CategoryType.income);
+    });
+
+    ref.watch(categoriesChangesProvider(CategoryType.expense)).whenData((_) {
+      expenseList = categoryRepository.getList(CategoryType.expense);
+    });
+
+    List<Widget> buildCategoryTiles(BuildContext context, CategoryType type) {
+      List<CategoryIsar> list = type == CategoryType.income ? incomeList : expenseList;
+      return list.isNotEmpty
+          ? List.generate(
+              list.length,
+              (index) {
+                CategoryIsar model = list[index];
+                return CategoryListTile(
+                  key: ValueKey(index),
+                  iconPath: AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
+                  backgroundColor: AppColors.allColorsUserCanPick[model.colorIndex][0],
+                  iconColor: AppColors.allColorsUserCanPick[model.colorIndex][1],
+                  name: model.name,
+                  onMenuTap: () {
+                    showCustomModalBottomSheet(
+                      context: context,
+                      child: EditCategoryModalScreen(model),
+                    );
+                  },
+                );
+              },
+            )
+          : [
+              Text(
+                'Nothing in here.\nPlease add a new category',
+                style: kHeader2TextStyle.copyWith(color: AppColors.grey),
+                textAlign: TextAlign.center,
               )
-            : [
-                Text(
-                  'Nothing in here.\nPlease add a new category',
-                  style: kHeader2TextStyle.copyWith(color: AppColors.grey),
-                  textAlign: TextAlign.center,
-                )
-              ],
-      );
-      return asyncValue.value ?? [];
+            ];
     }
 
     return Scaffold(
@@ -79,18 +85,16 @@ class CategoriesListScreen extends ConsumerWidget {
           CustomSection(
             title: 'Income',
             onReorder: (oldIndex, newIndex) {
-              categoryRepository.reorderCategory(
-                  incomeAppCategoriesList.asData!.value, oldIndex, newIndex);
+              categoryRepository.reorder(incomeList, oldIndex, newIndex);
             },
-            children: getTiles(context, CategoryType.income),
+            children: buildCategoryTiles(context, CategoryType.income),
           ),
           CustomSection(
             title: 'Expense',
             onReorder: (oldIndex, newIndex) {
-              categoryRepository.reorderCategory(
-                  expenseAppCategoriesList.asData!.value, oldIndex, newIndex);
+              categoryRepository.reorder(expenseList, oldIndex, newIndex);
             },
-            children: getTiles(context, CategoryType.expense),
+            children: buildCategoryTiles(context, CategoryType.expense),
           )
         ],
       ),

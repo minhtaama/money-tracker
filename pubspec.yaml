@@ -47,8 +47,15 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/svg/activity/
     - assets/svg/app/
+    - assets/svg/building/
     - assets/svg/business/
+    - assets/svg/emoji/
+    - assets/svg/food/
+    - assets/svg/game/
+    - assets/svg/health/
+    - assets/svg/household/
     - assets/svg/money/
 
   fonts:

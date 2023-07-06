@@ -5,6 +5,8 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
+import 'package:money_tracker_app/src/common_widgets/number_input.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -26,6 +28,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   String iconCategory = '';
   int iconIndex = 0;
   int colorIndex = 0;
+  double initialBalance = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +36,21 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       title: 'Add Account',
       isWrapByCard: false,
       children: [
+        NumberInput(
+          hintText: 'Initial Balance',
+          focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+          onChanged: (value) {},
+        ),
+        Gap.h16,
         CustomSliderToggle<AccountType>(
           values: const [AccountType.onHand, AccountType.credit],
-          labels: const ['Income', 'Expense'],
+          labels: const ['On Hand', 'Credit'],
+          height: 42,
           onTap: (type) {
             accountType = type;
           },
         ),
-        Gap.h24,
+        Gap.h16,
         Row(
           children: [
             IconSelectButton(
@@ -56,7 +66,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               child: CustomTextField(
                 autofocus: false,
                 focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
-                hintText: 'Category Name',
+                hintText: 'Account Name',
                 onChanged: (value) {
                   setState(() {
                     accountName = value;
@@ -66,7 +76,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             ),
           ],
         ),
-        Gap.h32,
+        Gap.h16,
         ColorSelectListView(
           onColorTap: (index) {
             setState(() {
@@ -83,6 +93,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             backgroundColor: context.appTheme.accent,
             isDisabled: accountName.isEmpty,
             onTap: () {
+              final accountRepository = ref.read(accountRepositoryProvider);
               // final categoryRepository = ref.read(categoryRepositoryIsarProvider);
               // categoryRepository.writeNewCategory(
               //   type: categoryType,
