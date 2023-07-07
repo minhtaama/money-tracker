@@ -68,10 +68,16 @@ Future<T?> showConfirmModalBottomSheet<T>({
 
 /// This is a custom helper function to show a modal bottom sheet
 /// rather than pushing a new screen.
-Future<T?> showCustomModalBottomSheet<T>({required BuildContext context, required Widget child}) {
+Future<T?> showCustomModalBottomSheet<T>(
+    {required BuildContext context,
+    required Widget child,
+    bool hasHandle = true,
+    bool wrapWithScrollView = true,
+    bool enableDrag = true}) {
   return showModalBottomSheet<T>(
     context: context,
     elevation: 0,
+    enableDrag: enableDrag,
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),
@@ -81,16 +87,22 @@ Future<T?> showCustomModalBottomSheet<T>({required BuildContext context, require
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-      child: Stack(
-        children: [
-          AnimatedPadding(
-            padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
-            duration: const Duration(milliseconds: 0),
-            child: SingleChildScrollView(child: child),
-          ),
-          const Handle(),
-        ],
-      ),
+      child: hasHandle
+          ? Stack(
+              children: [
+                AnimatedPadding(
+                  padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                  duration: const Duration(milliseconds: 0),
+                  child: wrapWithScrollView ? SingleChildScrollView(child: child) : child,
+                ),
+                const Handle(),
+              ],
+            )
+          : AnimatedPadding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              duration: const Duration(milliseconds: 0),
+              child: wrapWithScrollView ? SingleChildScrollView(child: child) : child,
+            ),
     ),
   );
 }
@@ -124,6 +136,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
     this.shape,
     this.backgroundColor,
     this.modalBarrierColor,
+    this.hasHandle = true,
     super.key,
     super.name,
     super.arguments,
@@ -135,6 +148,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
   final Color? modalBarrierColor;
   final Widget child;
   final Widget? bottomFrontChild;
+  final bool hasHandle;
 
   @override
   Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute(
@@ -152,16 +166,23 @@ class ModalBottomSheetPage<T> extends Page<T> {
         useSafeArea: false,
         builder: (context) => Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-          child: Stack(
-            children: [
-              AnimatedPadding(
-                padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
-                duration: const Duration(milliseconds: 0),
-                child: SingleChildScrollView(child: child),
-              ),
-              const Handle(),
-            ],
-          ),
+          child: hasHandle
+              ? Stack(
+                  children: [
+                    AnimatedPadding(
+                      padding:
+                          EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                      duration: const Duration(milliseconds: 0),
+                      child: SingleChildScrollView(child: child),
+                    ),
+                    const Handle(),
+                  ],
+                )
+              : AnimatedPadding(
+                  padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                  duration: const Duration(milliseconds: 0),
+                  child: SingleChildScrollView(child: child),
+                ),
         ),
       );
 }

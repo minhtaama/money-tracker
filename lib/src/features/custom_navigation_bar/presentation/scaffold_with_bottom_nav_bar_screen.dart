@@ -23,7 +23,7 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
 class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNavBar> {
   @override
   Widget build(BuildContext context) {
-    bool isHomeScreen = GoRouter.of(context).location == '/home';
+    bool isHomeScreen = GoRouterState.of(context).location == '/home';
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
