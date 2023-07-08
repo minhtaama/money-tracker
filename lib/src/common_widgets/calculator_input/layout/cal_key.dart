@@ -1,34 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../theme_and_ui/icons.dart';
-import '../card_item.dart';
-import '../svg_icon.dart';
+import '../../../utils/constants.dart';
+import '../../card_item.dart';
 
-class BackspaceKey extends StatelessWidget {
-  const BackspaceKey({
+class CalKey extends StatelessWidget {
+  const CalKey({
     Key? key,
-    required this.onBackspace,
+    required this.text,
+    required this.onInput,
+    this.value,
   }) : super(key: key);
-  final VoidCallback onBackspace;
+  final String text;
+  final String? value;
+  final ValueSetter<String> onInput;
 
   @override
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
       color: context.appTheme.background3,
-      width: 40,
-      height: 40,
+      width: 70,
+      height: 70,
       padding: EdgeInsets.zero,
-      margin: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(8),
+      margin: const EdgeInsets.all(3),
+      borderRadius: BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
       child: InkWell(
-        onTap: onBackspace,
+        onTap: () => onInput(value ?? text),
         highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
-          child: SvgIcon(AppIcons.backspace),
+          child: Text(
+            text,
+            style: kHeader2TextStyle,
+          ),
         ),
       ),
     );

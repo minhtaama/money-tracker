@@ -1,17 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
-import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../theme_and_ui/colors.dart';
 import '../../utils/constants.dart';
 import 'package:intl/intl.dart';
-import 'calculator_layout.dart';
+import 'layout/calculator_layout.dart';
 
 class CalculatorInput extends StatefulWidget {
   /// This class is the entry point to open a calculator. In this class, the `onFormattedResultOutput`
   /// will return the result (__type String__) formatted with grouping by thousands (separated with ",").
-  /// The result is only returned by calculation of the [Calculator] widget.
+  /// The result is only returned by calculation of the [_Calculator] widget.
   const CalculatorInput(
       {Key? key,
       required this.onFormattedResultOutput,
@@ -74,7 +74,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
             hasHandle: false,
             wrapWithScrollView: false,
             enableDrag: false,
-            child: Calculator(
+            child: _Calculator(
               initialValue: _stringValue,
               formattedResultOutput: (value) {
                 // Replace '0' value with empty to show hint text
@@ -90,12 +90,12 @@ class _CalculatorInputState extends State<CalculatorInput> {
   }
 }
 
-class Calculator extends StatefulWidget {
+class _Calculator extends StatefulWidget {
   /// This widget take a __String__ `initialValue` as a value to represent the
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const Calculator({Key? key, required this.initialValue, required this.formattedResultOutput})
+  const _Calculator({Key? key, required this.initialValue, required this.formattedResultOutput})
       : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
@@ -106,79 +106,162 @@ class Calculator extends StatefulWidget {
   final ValueSetter<String> formattedResultOutput;
 
   @override
-  State<Calculator> createState() => _CalculatorState();
+  State<_Calculator> createState() => _CalculatorState();
 }
 
-class _CalculatorState extends State<Calculator> {
+class _CalculatorState extends State<_Calculator> {
   /// The mathematical expressions __without any format__ (use for interpreting by function_tree)
   late String _rawString;
 
-  /// The mathematical expressions __with grouping format__ (use for displaying in the widget)
+  /// The mathematical expressions __with grouping format and spacing around operator__ (use for displaying in the widget)
   late String _formattedString;
 
   @override
   void initState() {
-    // Format the initialValue without "," symbol and prevent empty display by displaying "0" number
+    // Un-format the initialValue (without "," symbol)
     _rawString = widget.initialValue.isEmpty ? '0' : _unformatNumberGrouping(widget.initialValue);
+
+    // Reformat again to display
     _formattedString = _formatNumberInGroup(_rawString);
+
+    if (kDebugMode) {
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+    }
+
     super.initState();
   }
 
-  /// Add a number or a mathematical operator to the expression
   void _add(String value) {
-    // Add the value to the mathematical expressions
-    _rawString = '$_rawString$value';
-    _formattedString = _formatNumberInGroup(_rawString);
+    // Adding an operator
+    final exp = RegExp(r'[+\-*/]');
+    if (exp.hasMatch(value)) {
+      // Only add operator if the latest character is not an operator
+      if (!exp.hasMatch(_rawString[_rawString.length - 1])) {
+        // Calculate the previous mathematical expression
+        _equal();
+        // Then add the new operator.
+        _rawString = '$_rawString$value';
+        _formattedString = _formatNumberInGroup(_rawString);
+      }
+    }
+
+    // Adding a dot
+    if (value == '.') {
+      if (!_isLatestNumberHasDot()) {
+        _rawString = '$_rawString$value';
+        _formattedString = '$_formattedString$value';
+      }
+    }
+
+    // Adding a number
+    if (RegExp(r'[0-9]').hasMatch(value)) {
+      _rawString = '$_rawString$value';
+      if (_isLatestNumberHasDot()) {
+        _formattedString = '$_formattedString$value';
+      } else {
+        _formattedString = _formatNumberInGroup(_rawString);
+      }
+    }
+
     setState(() {});
+
+    if (kDebugMode) {
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+    }
   }
 
-  /// Delete the latest character in the expression
   void _backspace() {
+    // Delete the _rawString
     if (_rawString.isNotEmpty) {
       _rawString = _rawString.substring(0, _rawString.length - 1);
     }
-    // Prevent empty display by displaying "0" number
     if (_rawString.isEmpty) {
       _rawString = '0';
     }
-    _formattedString = _formatNumberInGroup(_rawString);
+
+    // Only format if latest number do not have dot
+    if (_isLatestNumberHasDot()) {
+      _formattedString = _formattedString.substring(0, _formattedString.length - 1);
+    } else {
+      _formattedString = _formatNumberInGroup(_rawString);
+    }
+
     setState(() {});
+
+    if (kDebugMode) {
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+    }
   }
 
   /// Calculate the expression
   void _equal() {
-    // Call the interpret() function to calculate the mathematics expression
-    final result = _rawString.interpret();
-    // Push the result to the callback with grouping format
-    widget.formattedResultOutput(_formatNumberInGroup(result));
-    // pop!
-    context.pop();
+    String result;
+
+    // Try calling the interpret() function to calculate the mathematics expression
+    try {
+      result = _rawString.interpret().toString();
+
+      // Must reformat then unformat because when user try calculate "122,000.000",
+      // we must format `_rawString` to "122000", rather than "122000.0".
+      _rawString = _unformatNumberGrouping(_formatNumberInGroup(result)).trim();
+      _formattedString = _formatNumberInGroup(_rawString);
+
+      // Push the result to the callback with grouping format and trim the String
+      widget.formattedResultOutput(_formattedString.trim());
+
+      setState(() {});
+
+      if (kDebugMode) {
+        print('rawString: $_rawString');
+        print('formatted: $_formattedString');
+      }
+    } catch (_) {
+      if (kDebugMode) {
+        print('Error: Mathematical Expression is not correct');
+      }
+    }
   }
 
-  /// This function takes the argument only in type __String__ or __num__.
-  ///
-  /// When the argument is in type __String__, it use Regex to find all the number sequences
-  /// in the String and replace each sequence with the grouping thousand formatted sequence.
-  ///
-  /// The returned value will be in type __String__
-  String _formatNumberInGroup(dynamic value) {
+  /// This function takes the argument only in type __String__. It use Regex to find all
+  /// the number sequences in the String and replace each sequence with the
+  /// grouping thousand formatted sequence, and separate numbers and operators by the space
+  /// character. The returned value will be in type __String__
+  String _formatNumberInGroup(String value) {
     NumberFormat formatter = NumberFormat.decimalPattern('en_us');
-    if (value is String) {
-      RegExp exp = RegExp(r'(\d+)');
-      return value.replaceAllMapped(exp, (match) {
-        //Match[0] returns whole match of the regex.
-        return formatter.format(double.parse(match[0]!));
-      });
-    } else if (value is num) {
-      return formatter.format(value);
-    } else {
-      throw UnsupportedError('value input is not in type String or num');
+
+    if (value == '') {
+      return '0';
     }
+
+    String newValue = ' $value'.replaceAllMapped(RegExp(r'([0-9.]+)'), (match) {
+      //match[0] returns whole string of this match
+      return formatter.format(double.parse(match[0]!));
+    });
+    return newValue.replaceAllMapped(RegExp(r'[+\-*/]'), (match) => ' ${match[0]} ');
   }
 
   /// Delete all "," symbol in the String
   String _unformatNumberGrouping(String value) {
     return value.split(',').join();
+  }
+
+  bool _isLatestNumberHasDot() {
+    // RegExp finds all number sequences has a space character positive look behind
+    RegExp exp = RegExp(r'(?<=\s)([0-9,.]+)?');
+
+    // The String input to find matches has a space character at 0 index
+    final list = exp.allMatches(' $_formattedString').toList();
+
+    String latestNumber = list.isNotEmpty ? list[list.length - 1][0] ?? '' : '';
+
+    if (RegExp(r'\.').hasMatch(latestNumber)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -187,14 +270,15 @@ class _CalculatorState extends State<Calculator> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // TODO: Add a small display to show previous mathematical expression
         CalculatorDisplay(
           result: _formattedString,
-          onBackspace: _backspace,
         ),
         Gap.h24,
         CalculatorLayout(
           onInput: _add,
           onEqual: _equal,
+          onBackspace: _backspace,
         ),
       ],
     );

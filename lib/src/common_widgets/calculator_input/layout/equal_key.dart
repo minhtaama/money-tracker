@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../utils/constants.dart';
-import '../card_item.dart';
+import '../../card_item.dart';
 
-class CalKey extends StatelessWidget {
-  const CalKey({
+class EqualKey extends StatelessWidget {
+  const EqualKey({
     Key? key,
-    required this.text,
-    required this.onInput,
-    this.value,
+    required this.onEqual,
   }) : super(key: key);
-  final String text;
-  final String? value;
-  final ValueSetter<String> onInput;
+  final VoidCallback onEqual;
 
   @override
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
       color: context.appTheme.background3,
+      width: 140 + 6,
+      height: 70,
       padding: EdgeInsets.zero,
-      margin: EdgeInsets.zero,
+      margin: const EdgeInsets.all(3),
       borderRadius: BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
       child: InkWell(
-        onTap: () => onInput(value ?? text),
+        onTap: () => onEqual(),
         highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
-        child: Center(
-          child: Text(
-            text,
-            style: kHeader2TextStyle,
-          ),
+        child: const Center(
+          child: Text('=', style: kHeader2TextStyle),
         ),
       ),
     );
