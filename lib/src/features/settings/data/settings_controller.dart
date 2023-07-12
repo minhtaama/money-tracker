@@ -9,10 +9,11 @@ class SettingsController extends StateNotifier<SettingsIsar> {
 
   final Isar isar;
 
-  Future<void> set({ThemeType? themeType, int? themeIndex}) async {
+  Future<void> set({ThemeType? themeType, int? themeIndex, Currency? currency}) async {
     state = state.copyWith(
       themeType: themeType,
       currentThemeIndex: themeIndex,
+      currency: currency,
     );
     isar.writeTxn(() async => await isar.settingsIsars.put(state));
   }

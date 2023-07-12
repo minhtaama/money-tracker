@@ -5,15 +5,17 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
-import 'package:money_tracker_app/src/common_widgets/calculator_input/calculator_input.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
+import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+
+import '../../calculator_input/presentation/calculator_input.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
   const AddAccountModalScreen({Key? key}) : super(key: key);
@@ -32,16 +34,32 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsObject = ref.watch(settingsControllerProvider);
+
     return CustomSection(
       title: 'Add Account',
       isWrapByCard: false,
       children: [
-        CalculatorInput(
-          hintText: 'Initial Balance',
-          focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
-          onFormattedResultOutput: (value) {},
+        Row(
+          textBaseline: TextBaseline.alphabetic,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          children: [
+            Text(
+              settingsObject.currency.code,
+              style:
+                  kHeader4TextStyle.copyWith(fontSize: 22, color: context.appTheme.backgroundNegative),
+            ),
+            Gap.w16,
+            Expanded(
+              child: CalculatorInput(
+                hintText: 'Initial Balance',
+                focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                noFormatResultOutput: (value) => initialBalance = double.parse(value),
+              ),
+            ),
+          ],
         ),
-        Gap.h16,
+        Gap.h24,
         CustomSliderToggle<AccountType>(
           values: const [AccountType.onHand, AccountType.credit],
           labels: const ['On Hand', 'Credit'],
@@ -50,7 +68,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             accountType = type;
           },
         ),
-        Gap.h16,
+        Gap.h24,
         Row(
           children: [
             IconSelectButton(
@@ -76,7 +94,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             ),
           ],
         ),
-        Gap.h16,
+        Gap.h24,
         ColorSelectListView(
           onColorTap: (index) {
             setState(() {
@@ -94,6 +112,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             isDisabled: accountName.isEmpty,
             onTap: () {
               final accountRepository = ref.read(accountRepositoryProvider);
+              // TODO: Implement add account
               // final categoryRepository = ref.read(categoryRepositoryIsarProvider);
               // categoryRepository.writeNewCategory(
               //   type: categoryType,

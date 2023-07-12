@@ -56,8 +56,10 @@ class AppColors {
       background2: AppColors.white,
       background3: AppColors.white,
       backgroundNegative: AppColors.black,
-      placeholder2: const Color(0xFFF4A261),
-      placeholder3: const Color(0xFFE76F51),
+      positive: const Color(0xFFF4A261),
+      negative: const Color(0xFFE76F51),
+      onPositive: AppColors.black,
+      onNegative: AppColors.black,
       overlayStyle: SystemUiOverlayStyle.light,
     ),
     ThemeType.dark: AppThemeData(
@@ -73,8 +75,10 @@ class AppColors {
       background2: AppColors.lighterBlack,
       background3: AppColors.lightestBlack,
       backgroundNegative: AppColors.white,
-      placeholder2: const Color(0xFFF4A261),
-      placeholder3: const Color(0xFFE76F51),
+      positive: const Color(0xFFF4A261),
+      negative: const Color(0xFFE76F51),
+      onPositive: AppColors.black,
+      onNegative: AppColors.black,
       overlayStyle: SystemUiOverlayStyle.light,
     ),
   };
@@ -93,8 +97,10 @@ class AppColors {
       background2: AppColors.white,
       background3: AppColors.darkerWhite,
       backgroundNegative: AppColors.black,
-      placeholder2: const Color(0xFF457b9d),
-      placeholder3: const Color(0xFF1d3557),
+      positive: const Color(0xFF457b9d),
+      negative: const Color(0xFF1d3557),
+      onPositive: AppColors.black,
+      onNegative: AppColors.white,
       overlayStyle: SystemUiOverlayStyle.light,
     ),
     ThemeType.dark: AppThemeData(
@@ -110,8 +116,10 @@ class AppColors {
       background2: AppColors.lighterBlack,
       background3: AppColors.lightestBlack,
       backgroundNegative: AppColors.white,
-      placeholder2: const Color(0xFF457b9d),
-      placeholder3: const Color(0xFF1d3557),
+      positive: const Color(0xFF457b9d),
+      negative: const Color(0xFF1d3557),
+      onPositive: AppColors.black,
+      onNegative: AppColors.white,
       overlayStyle: SystemUiOverlayStyle.light,
     ),
   };
@@ -130,8 +138,10 @@ class AppColors {
       background2: AppColors.white,
       background3: AppColors.darkerWhite,
       backgroundNegative: AppColors.black,
-      placeholder2: const Color(0xFF457b9d),
-      placeholder3: const Color(0xFF1d3557),
+      positive: const Color(0xFF457b9d),
+      negative: const Color(0xFF1d3557),
+      onPositive: AppColors.black,
+      onNegative: AppColors.white,
       overlayStyle: SystemUiOverlayStyle.light,
     ),
     ThemeType.dark: AppThemeData(
@@ -147,8 +157,10 @@ class AppColors {
       background2: AppColors.lighterBlack,
       background3: AppColors.lightestBlack,
       backgroundNegative: AppColors.white,
-      placeholder2: const Color(0xFF457b9d),
-      placeholder3: const Color(0xFF1d3557),
+      positive: const Color(0xFF457b9d),
+      negative: const Color(0xFF1d3557),
+      onPositive: AppColors.black,
+      onNegative: AppColors.white,
       overlayStyle: SystemUiOverlayStyle.light,
     ),
   };
@@ -157,6 +169,7 @@ class AppColors {
   static final darkerWhite = Color.lerp(AppColors.white, AppColors.black, 0.05)!;
   static final darkestWhite = Color.lerp(AppColors.white, AppColors.black, 0.12)!;
   static final grey = const Color(0xFF696969).withOpacity(0.25);
+  static final darkerGrey = const Color(0xFF696969).withOpacity(0.3);
   static final lightestBlack = Color.lerp(AppColors.black, AppColors.white, 0.09)!;
   static final lighterBlack = Color.lerp(AppColors.black, AppColors.white, 0.05)!;
   static const black = Color(0xFF111111);

@@ -91,10 +91,16 @@ class AppThemeData {
   final Color backgroundNegative;
 
   ///
-  final Color placeholder2;
+  final Color positive;
 
   ///
-  final Color placeholder3;
+  final Color negative;
+
+  ///
+  final Color onPositive;
+
+  ///
+  final Color onNegative;
 
   ///
   final SystemUiOverlayStyle overlayStyle;
@@ -112,8 +118,10 @@ class AppThemeData {
     required this.background2,
     required this.background3,
     required this.backgroundNegative,
-    required this.placeholder2,
-    required this.placeholder3,
+    required this.positive,
+    required this.onPositive,
+    required this.negative,
+    required this.onNegative,
     required this.overlayStyle,
   });
 }

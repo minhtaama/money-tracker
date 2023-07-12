@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 
@@ -50,56 +51,23 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomInkWell(
+    return CustomTile(
+      title: widget.title,
+      secondaryTitle: widget.valueLabels![currentIndex],
+      trailing: _AnimatedToggle(
+        currentValueIndex: currentIndex,
+        valuesCount: widget.valuesCount,
+      ),
       onTap: () {
         toggleIndexValues();
         widget.onTap(currentIndex);
       },
-      inkColor: context.appTheme.backgroundNegative,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-        child: Row(
-          children: [
-            widget.leading ?? const SizedBox(),
-            Expanded(
-              child: widget.valueLabels != null
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: kHeader2TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative,
-                          ),
-                        ),
-                        Text(
-                          widget.valueLabels![currentIndex],
-                          style: kHeader4TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative,
-                          ),
-                        )
-                      ],
-                    )
-                  : Text(
-                      widget.title,
-                      style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative,
-                      ),
-                    ),
-            ),
-            AnimatedToggle(
-              currentValueIndex: currentIndex,
-              valuesCount: widget.valuesCount,
-            )
-          ],
-        ),
-      ),
     );
   }
 }
 
-class AnimatedToggle extends StatelessWidget {
-  const AnimatedToggle({Key? key, required this.currentValueIndex, this.valuesCount = 2})
+class _AnimatedToggle extends StatelessWidget {
+  const _AnimatedToggle({Key? key, required this.currentValueIndex, this.valuesCount = 2})
       : super(key: key);
 
   final int currentValueIndex;

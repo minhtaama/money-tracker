@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../utils/constants.dart';
-import '../../card_item.dart';
+import '../../../../common_widgets/card_item.dart';
+import '../../../../utils/constants.dart';
 
 class CalKey extends StatelessWidget {
   const CalKey({
@@ -18,7 +19,7 @@ class CalKey extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
-      color: context.appTheme.background3,
+      color: AppColors.darkerGrey,
       width: 70,
       height: 70,
       padding: EdgeInsets.zero,
@@ -33,7 +34,7 @@ class CalKey extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: kHeader2TextStyle,
+            style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 25),
           ),
         ),
       ),

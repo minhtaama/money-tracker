@@ -69,7 +69,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             ),
           ],
         ),
-        Gap.h16,
+        Gap.h24,
         ColorSelectListView(
           initialColorIndex: widget.currentCategory.colorIndex,
           onColorTap: (index) {
@@ -78,7 +78,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             });
           },
         ),
-        Gap.h16,
+        Gap.h24,
         Row(
           children: [
             RoundedIconButton(

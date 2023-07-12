@@ -7,12 +7,12 @@ import 'package:reorderables/reorderables.dart';
 class CustomSection extends StatefulWidget {
   const CustomSection({
     Key? key,
-    required this.title,
+    this.title,
     this.isWrapByCard = true,
     this.onReorder,
     required this.children,
   }) : super(key: key);
-  final String title;
+  final String? title;
   final bool isWrapByCard;
   final void Function(int oldIndex, int newIndex)? onReorder;
   final List<Widget> children;
@@ -72,15 +72,17 @@ class _CustomSectionState extends State<CustomSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
-            child: Text(
-              widget.title,
-              style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.85),
-              ),
-            ),
-          ),
+          widget.title != null
+              ? Padding(
+                  padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                  child: Text(
+                    widget.title!,
+                    style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative.withOpacity(0.85),
+                    ),
+                  ),
+                )
+              : const SizedBox(),
           CardItem(
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
             margin:

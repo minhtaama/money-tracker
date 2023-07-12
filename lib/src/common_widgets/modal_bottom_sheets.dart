@@ -78,6 +78,7 @@ Future<T?> showCustomModalBottomSheet<T>(
     context: context,
     elevation: 0,
     enableDrag: enableDrag,
+    useSafeArea: true,
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),

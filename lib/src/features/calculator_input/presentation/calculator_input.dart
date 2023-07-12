@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
+import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../theme_and_ui/colors.dart';
-import '../../utils/constants.dart';
+import '../../../theme_and_ui/colors.dart';
+import '../../../utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'layout/calculator_layout.dart';
 
@@ -14,26 +15,28 @@ class CalculatorInput extends StatefulWidget {
   /// The result is only returned by calculation of the [_Calculator] widget.
   const CalculatorInput(
       {Key? key,
-      required this.onFormattedResultOutput,
+      required this.noFormatResultOutput,
       required this.focusColor,
-      required this.hintText})
+      required this.hintText,
+      this.fontSize = 22})
       : super(key: key);
-  final ValueChanged<String> onFormattedResultOutput;
+  final ValueSetter<String> noFormatResultOutput;
   final Color focusColor;
   final String hintText;
+  final double fontSize;
 
   @override
   State<CalculatorInput> createState() => _CalculatorInputState();
 }
 
 class _CalculatorInputState extends State<CalculatorInput> {
-  late String _stringValue;
+  late String _formattedStringValue;
 
   late TextEditingController _controller;
 
   @override
   void initState() {
-    _stringValue = '';
+    _formattedStringValue = '';
     _controller = TextEditingController();
     super.initState();
   }
@@ -50,6 +53,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
       controller: _controller,
       style: kHeader2TextStyle.copyWith(
         color: context.appTheme.backgroundNegative,
+        fontSize: widget.fontSize,
       ),
       decoration: InputDecoration(
         focusColor: context.appTheme.primary,
@@ -62,8 +66,9 @@ class _CalculatorInputState extends State<CalculatorInput> {
         hintText: widget.hintText,
         hintStyle: kHeader2TextStyle.copyWith(
           color: context.appTheme.backgroundNegative.withOpacity(0.5),
-          fontSize: 18,
+          fontSize: widget.fontSize,
         ),
+        contentPadding: EdgeInsets.zero,
       ),
       readOnly: true,
       enableInteractiveSelection: false,
@@ -71,18 +76,18 @@ class _CalculatorInputState extends State<CalculatorInput> {
       onTap: () {
         showCustomModalBottomSheet(
             context: context,
-            hasHandle: false,
-            wrapWithScrollView: false,
-            enableDrag: false,
+            //hasHandle: false,
+            wrapWithScrollView: true,
+            //enableDrag: false,
             child: _Calculator(
-              initialValue: _stringValue,
-              formattedResultOutput: (value) {
+              initialValue: _formattedStringValue,
+              resultOutput: (value) {
                 // Replace '0' value with empty to show hint text
-                _stringValue = value == '0' ? '' : value;
+                _formattedStringValue = value == '0' ? '' : value;
                 // Update controller value to display in TextField
-                _controller.text = _stringValue;
+                _controller.text = _formattedStringValue;
                 // Call the callback to return the result value
-                widget.onFormattedResultOutput(_stringValue);
+                widget.noFormatResultOutput(_formattedStringValue);
               },
             ));
       },
@@ -95,15 +100,15 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.formattedResultOutput})
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
       : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__
   final String initialValue;
 
-  /// The value returned, which is formatted in thousands grouping and has type __String__
-  final ValueSetter<String> formattedResultOutput;
+  /// The value returned, which has no format and has type __String__
+  final ValueChanged<String> resultOutput;
 
   @override
   State<_Calculator> createState() => _CalculatorState();
@@ -116,6 +121,8 @@ class _CalculatorState extends State<_Calculator> {
   /// The mathematical expressions __with grouping format and spacing around operator__ (use for displaying in the widget)
   late String _formattedString;
 
+  late String _previousExpression;
+
   @override
   void initState() {
     // Un-format the initialValue (without "," symbol)
@@ -123,6 +130,8 @@ class _CalculatorState extends State<_Calculator> {
 
     // Reformat again to display
     _formattedString = _formatNumberInGroup(_rawString);
+
+    _previousExpression = '';
 
     if (kDebugMode) {
       print('rawString: $_rawString');
@@ -132,13 +141,41 @@ class _CalculatorState extends State<_Calculator> {
     super.initState();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CalDisplay(
+            previousExpression: _previousExpression,
+            result: _formattedString,
+          ),
+          Gap.divider(context),
+          KeysLayout(
+            onInput: _add,
+            onEqual: _equal,
+            onBackspace: _backspace,
+            onAC: _ac,
+            onDone: () {
+              _equal();
+              context.pop();
+            },
+          ),
+          Gap.h16,
+        ],
+      ),
+    );
+  }
+
   void _add(String value) {
     // Adding an operator
     final exp = RegExp(r'[+\-*/]');
     if (exp.hasMatch(value)) {
-      // Only add operator if the latest character is not an operator
+      // Only add if the latest character is not an operator
       if (!exp.hasMatch(_rawString[_rawString.length - 1])) {
-        // Calculate the previous mathematical expression
+        // calculate...
         _equal();
         // Then add the new operator.
         _rawString = '$_rawString$value';
@@ -156,7 +193,17 @@ class _CalculatorState extends State<_Calculator> {
 
     // Adding a number
     if (RegExp(r'[0-9]').hasMatch(value)) {
-      _rawString = '$_rawString$value';
+      // Only allow maximum 14 digits
+      if (_unformatNumberGrouping(_getCurrentFormattedNumberInput()).length < 14) {
+        if (value == '000') {
+          if (_unformatNumberGrouping(_getCurrentFormattedNumberInput()).length < 11) {
+            _rawString = '$_rawString$value';
+          }
+        } else {
+          _rawString = '$_rawString$value';
+        }
+      }
+
       if (_isLatestNumberHasDot()) {
         _formattedString = '$_formattedString$value';
       } else {
@@ -204,13 +251,16 @@ class _CalculatorState extends State<_Calculator> {
     try {
       result = _rawString.interpret().toString();
 
+      _previousExpression = _formattedString;
+
       // Must reformat then unformat because when user try calculate "122,000.000",
       // we must format `_rawString` to "122000", rather than "122000.0".
       _rawString = _unformatNumberGrouping(_formatNumberInGroup(result)).trim();
+
       _formattedString = _formatNumberInGroup(_rawString);
 
-      // Push the result to the callback with grouping format and trim the String
-      widget.formattedResultOutput(_formattedString.trim());
+      // Push the raw result to the callback
+      widget.resultOutput(_formattedString);
 
       setState(() {});
 
@@ -225,12 +275,24 @@ class _CalculatorState extends State<_Calculator> {
     }
   }
 
+  void _ac() {
+    _rawString = '0';
+    _formattedString = _formatNumberInGroup(_rawString);
+    _previousExpression = '';
+    setState(() {});
+    if (kDebugMode) {
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+    }
+  }
+
   /// This function takes the argument only in type __String__. It use Regex to find all
   /// the number sequences in the String and replace each sequence with the
   /// grouping thousand formatted sequence, and separate numbers and operators by the space
   /// character. The returned value will be in type __String__
   String _formatNumberInGroup(String value) {
-    NumberFormat formatter = NumberFormat.decimalPattern('en_us');
+    //NumberFormat formatter = NumberFormat.decimalPattern('en_us');
+    NumberFormat formatter = NumberFormat("###,###.##");
 
     if (value == '') {
       return '0';
@@ -249,13 +311,7 @@ class _CalculatorState extends State<_Calculator> {
   }
 
   bool _isLatestNumberHasDot() {
-    // RegExp finds all number sequences has a space character positive look behind
-    RegExp exp = RegExp(r'(?<=\s)([0-9,.]+)?');
-
-    // The String input to find matches has a space character at 0 index
-    final list = exp.allMatches(' $_formattedString').toList();
-
-    String latestNumber = list.isNotEmpty ? list[list.length - 1][0] ?? '' : '';
+    String latestNumber = _getCurrentFormattedNumberInput();
 
     if (RegExp(r'\.').hasMatch(latestNumber)) {
       return true;
@@ -264,23 +320,13 @@ class _CalculatorState extends State<_Calculator> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // TODO: Add a small display to show previous mathematical expression
-        CalculatorDisplay(
-          result: _formattedString,
-        ),
-        Gap.h24,
-        CalculatorLayout(
-          onInput: _add,
-          onEqual: _equal,
-          onBackspace: _backspace,
-        ),
-      ],
-    );
+  String _getCurrentFormattedNumberInput() {
+    // RegExp finds all number sequences has a space character positive look behind
+    RegExp exp = RegExp(r'(?<=\s)([0-9,.]+)?');
+
+    // The String input has a space character at 0 index
+    final list = exp.allMatches(' $_formattedString').toList();
+
+    return list.isNotEmpty ? list[list.length - 1][0] ?? '' : '';
   }
 }

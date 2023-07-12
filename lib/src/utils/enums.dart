@@ -46,7 +46,7 @@ enum Currency {
   cop('COP', 'Colombia Peso', symbol: '\$'),
   crc('CRC', 'Costa Rica Colon', symbol: '₡'),
   hrk('HRK', 'Croatia Kuna', symbol: 'kn'),
-  cup('cup', 'Cuba Peso', symbol: '₱'),
+  cup('CUP', 'Cuba Peso', symbol: '₱'),
   czk('CZK', 'Czech Republic Koruna', symbol: 'Kč'),
   dkk('DKK', 'Denmark Krone', symbol: 'kr'),
   dop('DOP', 'Dominican Republic Peso', symbol: 'RD\$'),

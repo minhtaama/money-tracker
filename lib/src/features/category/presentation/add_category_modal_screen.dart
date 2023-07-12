@@ -42,7 +42,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             categoryType = type;
           },
         ),
-        Gap.h16,
+        Gap.h24,
         Row(
           children: [
             IconSelectButton(
@@ -68,7 +68,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             ),
           ],
         ),
-        Gap.h16,
+        Gap.h24,
         ColorSelectListView(
           onColorTap: (index) {
             setState(() {
@@ -76,7 +76,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             });
           },
         ),
-        Gap.h16,
+        Gap.h24,
         Align(
           alignment: Alignment.centerRight,
           child: IconWithTextButton(
