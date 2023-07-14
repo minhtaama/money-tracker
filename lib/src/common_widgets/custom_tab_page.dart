@@ -27,12 +27,14 @@ class CustomTabPage extends StatefulWidget {
   final Map<dynamic, List<Widget>> pageViewChildren;
 
   @override
-  State<CustomTabPage> createState() => _TabPageState();
+  State<CustomTabPage> createState() => _CustomTabPageState();
 }
 
-class _TabPageState extends State<CustomTabPage> {
+class _CustomTabPageState extends State<CustomTabPage> {
   final PageController _pageController = PageController(); // PageController used for PageView
+  double currentPage = 0;
   double scrollOffset = 0;
+
   late double appBarHeight = _getAppBarHeight(pixelsOffset: scrollOffset);
 
   double _getAppBarHeight({required double pixelsOffset}) {
@@ -63,6 +65,10 @@ class _TabPageState extends State<CustomTabPage> {
     final mapKeysList = mapChildren.keys.toList();
     return PageView.builder(
       controller: _pageController,
+      onPageChanged: (_) {
+        scrollOffset = _getInitialOffset(appBarHeight: appBarHeight);
+        setState(() {});
+      },
       itemCount: mapKeysList.length,
       itemBuilder: (context, index) => CustomListView(
         smallTabBar: widget.smallTabBar,
@@ -73,11 +79,6 @@ class _TabPageState extends State<CustomTabPage> {
           appBarHeight = _getAppBarHeight(
             pixelsOffset: scrollOffset,
           );
-        }),
-        onDispose: () => SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-          setState(() {
-            scrollOffset = _getInitialOffset(appBarHeight: appBarHeight);
-          });
         }),
         children: mapChildren[mapKeysList[index]]!,
       ),
@@ -93,7 +94,6 @@ class _TabPageState extends State<CustomTabPage> {
                 smallTabBar: widget.smallTabBar,
                 extendedTabBar: widget.extendedTabBar,
                 onOffsetChange: (value) => setState(() => scrollOffset = value),
-                initialOffset: 0,
                 children: widget.listViewChildren,
               )
             : pageViewBuilder(widget.pageViewChildren),
@@ -115,15 +115,13 @@ class CustomListView extends ConsumerStatefulWidget {
     this.extendedTabBar,
     this.children = const [],
     required this.onOffsetChange,
-    required this.initialOffset,
-    this.onDispose,
+    this.initialOffset = 0,
   }) : super(key: key);
 
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final List<Widget> children;
   final ValueChanged<double> onOffsetChange;
-  final VoidCallback? onDispose;
   final double initialOffset;
 
   @override
@@ -152,12 +150,6 @@ class _CustomListViewState extends ConsumerState<CustomListView> {
     _scrollController.removeListener(_scrollControllerListener);
     _scrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  void deactivate() {
-    widget.onDispose != null ? widget.onDispose!() : () {};
-    super.deactivate();
   }
 
   void _scrollControllerListener() {
@@ -278,7 +270,7 @@ class CustomTabBar extends StatelessWidget {
     );
   }
 
-  bool _isShowShadow(double pixelsOffset) {
+  bool _isShowDivider(double pixelsOffset) {
     if (extendedTabBar != null && smallTabBar != null) {
       return pixelsOffset > extendedTabBar!.height - smallTabBar!.height;
     } else if (extendedTabBar == null && smallTabBar != null) {
@@ -298,8 +290,8 @@ class CustomTabBar extends StatelessWidget {
           duration: kBottomAppBarDuration,
           decoration: BoxDecoration(
             border: Border(
-              bottom: _isShowShadow(pixelOffset)
-                  ? BorderSide(color: Colors.black.withOpacity(0.2), width: 2)
+              bottom: _isShowDivider(pixelOffset) && !context.appTheme.isDarkTheme
+                  ? BorderSide(color: Colors.grey.shade700, width: 2)
                   : BorderSide.none,
             ),
           ),
