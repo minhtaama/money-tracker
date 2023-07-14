@@ -29,7 +29,7 @@ class SelectCurrencyScreen extends ConsumerWidget {
             title: 'Set Currency',
           ),
         ),
-        children: [
+        listViewChildren: [
           CustomSection(
             isWrapByCard: true,
             children: List.generate(

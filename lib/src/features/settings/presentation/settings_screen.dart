@@ -33,7 +33,7 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Settings',
           ),
         ),
-        children: [
+        listViewChildren: [
           CustomSection(children: [
             CustomTile(
               title: 'Set currency',

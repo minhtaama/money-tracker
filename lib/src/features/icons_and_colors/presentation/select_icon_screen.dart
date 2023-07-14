@@ -51,7 +51,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
             title: 'Choose Icon',
           ),
         ),
-        children: List.generate(
+        listViewChildren: List.generate(
           keyList.length,
           (keyIndex) {
             return CustomSection(

@@ -11,50 +11,165 @@ final scrollForwardStateProvider = StateProvider<bool>((ref) {
   return true;
 });
 
-class CustomTabPage extends ConsumerStatefulWidget {
-  const CustomTabPage({Key? key, this.smallTabBar, this.extendedTabBar, required this.children})
-      : super(key: key);
+class CustomTabPage extends StatefulWidget {
+  const CustomTabPage({
+    Key? key,
+    this.smallTabBar,
+    this.extendedTabBar,
+    this.hasPageView = false,
+    this.listViewChildren = const [],
+    this.pageViewChildren = const {},
+  }) : super(key: key);
+  final SmallTabBar? smallTabBar;
+  final ExtendedTabBar? extendedTabBar;
+  final bool hasPageView;
+  final List<Widget> listViewChildren;
+  final Map<dynamic, List<Widget>> pageViewChildren;
+
+  @override
+  State<CustomTabPage> createState() => _TabPageState();
+}
+
+class _TabPageState extends State<CustomTabPage> {
+  final PageController _pageController = PageController(); // PageController used for PageView
+  double scrollOffset = 0;
+  late double appBarHeight = _getAppBarHeight(pixelsOffset: scrollOffset);
+
+  double _getAppBarHeight({required double pixelsOffset}) {
+    if (widget.extendedTabBar != null) {
+      double height = (widget.extendedTabBar!.height - pixelsOffset)
+          .clamp(widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
+      return height;
+    } else if (widget.smallTabBar != null) {
+      return widget.smallTabBar!.height;
+    } else if (widget.extendedTabBar != null) {
+      return widget.extendedTabBar!.height;
+    } else {
+      return 0;
+    }
+  }
+
+  double _getInitialOffset({required double appBarHeight}) {
+    if (widget.smallTabBar != null &&
+        widget.extendedTabBar != null &&
+        appBarHeight == widget.smallTabBar!.height) {
+      return widget.extendedTabBar!.height - widget.smallTabBar!.height;
+    } else {
+      return 0;
+    }
+  }
+
+  PageView pageViewBuilder(Map<dynamic, List<Widget>> mapChildren) {
+    final mapKeysList = mapChildren.keys.toList();
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: mapKeysList.length,
+      itemBuilder: (context, index) => CustomListView(
+        smallTabBar: widget.smallTabBar,
+        extendedTabBar: widget.extendedTabBar,
+        initialOffset: _getInitialOffset(appBarHeight: appBarHeight),
+        onOffsetChange: (value) => setState(() {
+          scrollOffset = value;
+          appBarHeight = _getAppBarHeight(
+            pixelsOffset: scrollOffset,
+          );
+        }),
+        onDispose: () => SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+          setState(() {
+            scrollOffset = _getInitialOffset(appBarHeight: appBarHeight);
+          });
+        }),
+        children: mapChildren[mapKeysList[index]]!,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        !widget.hasPageView
+            ? CustomListView(
+                smallTabBar: widget.smallTabBar,
+                extendedTabBar: widget.extendedTabBar,
+                onOffsetChange: (value) => setState(() => scrollOffset = value),
+                initialOffset: 0,
+                children: widget.listViewChildren,
+              )
+            : pageViewBuilder(widget.pageViewChildren),
+        CustomTabBar(
+          smallTabBar: widget.smallTabBar,
+          extendedTabBar: widget.extendedTabBar,
+          height: appBarHeight,
+          pixelOffset: scrollOffset,
+        ),
+      ],
+    );
+  }
+}
+
+class CustomListView extends ConsumerStatefulWidget {
+  const CustomListView({
+    Key? key,
+    this.smallTabBar,
+    this.extendedTabBar,
+    this.children = const [],
+    required this.onOffsetChange,
+    required this.initialOffset,
+    this.onDispose,
+  }) : super(key: key);
+
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final List<Widget> children;
+  final ValueChanged<double> onOffsetChange;
+  final VoidCallback? onDispose;
+  final double initialOffset;
 
   @override
-  ConsumerState<CustomTabPage> createState() => _TabPageState();
+  ConsumerState<CustomListView> createState() => _CustomListViewState();
 }
 
-class _TabPageState extends ConsumerState<CustomTabPage> {
-  final ScrollController _controller = ScrollController(); // ScrollController used for ListView
+class _CustomListViewState extends ConsumerState<CustomListView> {
+  late ScrollController _scrollController; // ScrollController used for ListView
 
-  double previousPositionPixels = 0;
-  double deltaPosition = 0;
-
-  double pixelsOffset = 0;
+  double scrollPreviousPositionPixels = 0;
+  double scrollDeltaPosition = 0;
+  double scrollPixelsOffset = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_listen);
+    _scrollController = ScrollController(initialScrollOffset: widget.initialOffset);
+    _scrollController.addListener(_scrollControllerListener);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _controller.position.isScrollingNotifier.addListener(_listen);
+      _scrollController.position.isScrollingNotifier.addListener(_scrollControllerListener);
     });
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_listen);
-    _controller.dispose();
+    _scrollController.removeListener(_scrollControllerListener);
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _listen() {
-    ScrollPosition position = _controller.position;
+  @override
+  void deactivate() {
+    widget.onDispose != null ? widget.onDispose!() : () {};
+    super.deactivate();
+  }
+
+  void _scrollControllerListener() {
+    ScrollPosition position = _scrollController.position;
     ScrollDirection direction = position.userScrollDirection;
 
-    deltaPosition = (position.pixels - previousPositionPixels).abs();
+    scrollDeltaPosition = (position.pixels - scrollPreviousPositionPixels).abs();
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        pixelsOffset = position.pixels;
+        scrollPixelsOffset = position.pixels;
+        widget.onOffsetChange(scrollPixelsOffset);
       });
     });
 
@@ -62,7 +177,7 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
     final provider = ref.read(scrollForwardStateProvider.notifier);
 
     // Check user scroll direction
-    if (direction == ScrollDirection.forward && provider.state == false && deltaPosition > 20 ||
+    if (direction == ScrollDirection.forward && provider.state == false && scrollDeltaPosition > 20 ||
         position.pixels == 0) {
       // User scroll down (ListView go up)
       provider.state = true;
@@ -70,47 +185,38 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
       // User scroll up (ListView go down)
       provider.state = false;
     }
-    previousPositionPixels = position.pixels;
+    scrollPreviousPositionPixels = position.pixels;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ListView.builder(
-          physics: widget.smallTabBar != null
-              ? SnapScrollPhysics(
-                  snaps: [
-                    Snap.avoidZone(
-                        0,
-                        widget.extendedTabBar != null
-                            ? widget.extendedTabBar!.height - widget.smallTabBar!.height
-                            : 30)
-                  ],
-                )
-              : const ClampingScrollPhysics(),
-          controller: _controller,
-          itemCount: widget.children.length + 2,
-          itemBuilder: (context, index) {
-            return index == 0
-                ? SizedBox(
-                    height: widget.smallTabBar == null && widget.extendedTabBar == null
-                        ? 0
-                        : widget.extendedTabBar == null
-                            ? widget.smallTabBar!.height
-                            : widget.extendedTabBar!.height,
-                  )
-                : index == widget.children.length + 1
-                    ? const SizedBox(height: kBottomAppBarHeight + 8)
-                    : widget.children[index - 1];
-          },
-        ),
-        CustomTabBar(
-          smallTabBar: widget.smallTabBar,
-          extendedTabBar: widget.extendedTabBar,
-          pixelsOffset: pixelsOffset,
-        ),
-      ],
+    return ListView.builder(
+      physics: widget.smallTabBar != null
+          ? SnapScrollPhysics(
+              snaps: [
+                Snap.avoidZone(
+                    0,
+                    widget.extendedTabBar != null
+                        ? widget.extendedTabBar!.height - widget.smallTabBar!.height
+                        : 30)
+              ],
+            )
+          : const ClampingScrollPhysics(),
+      controller: _scrollController,
+      itemCount: widget.children.length + 2,
+      itemBuilder: (context, index) {
+        return index == 0
+            ? SizedBox(
+                height: widget.smallTabBar == null && widget.extendedTabBar == null
+                    ? 0
+                    : widget.extendedTabBar == null
+                        ? widget.smallTabBar!.height
+                        : widget.extendedTabBar!.height + 12,
+              )
+            : index == widget.children.length + 1
+                ? const SizedBox(height: kBottomAppBarHeight + 8)
+                : widget.children[index - 1];
+      },
     );
   }
 }
@@ -118,28 +224,16 @@ class _TabPageState extends ConsumerState<CustomTabPage> {
 class CustomTabBar extends StatelessWidget {
   const CustomTabBar({
     Key? key,
-    required this.pixelsOffset,
+    required this.height,
     this.extendedTabBar,
     this.smallTabBar,
+    required this.pixelOffset,
   }) : super(key: key);
 
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;
-  final double pixelsOffset;
-
-  double _getAppBarHeight({required double pixelsOffset}) {
-    if (extendedTabBar != null) {
-      double height = (extendedTabBar!.height - pixelsOffset)
-          .clamp(smallTabBar?.height ?? 0, extendedTabBar!.height);
-      return height;
-    } else if (smallTabBar != null) {
-      return smallTabBar!.height;
-    } else if (extendedTabBar != null) {
-      return extendedTabBar!.height;
-    } else {
-      return 0;
-    }
-  }
+  final double height;
+  final double pixelOffset;
 
   double _getAppBarChildOpacity({required bool isExtendedChild, required double appBarHeight}) {
     final height = appBarHeight;
@@ -196,21 +290,20 @@ class CustomTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double appBarHeight = _getAppBarHeight(pixelsOffset: pixelsOffset);
     double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return SizedBox(
-      height: appBarHeight + statusBarHeight,
+      height: height + statusBarHeight,
       child: AnimatedContainer(
           duration: kBottomAppBarDuration,
           decoration: BoxDecoration(
             border: Border(
-              bottom: _isShowShadow(pixelsOffset)
+              bottom: _isShowShadow(pixelOffset)
                   ? BorderSide(color: Colors.black.withOpacity(0.2), width: 2)
                   : BorderSide.none,
             ),
           ),
-          child: _animateChangingChild(appBarHeight)),
+          child: _animateChangingChild(height)),
     );
   }
 }

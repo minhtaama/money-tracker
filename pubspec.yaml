@@ -31,6 +31,7 @@ dependencies:
   reorderables: ^0.6.0
   simple_rich_text: ^2.0.49
   snap_scroll_physics: ^0.0.1+3
+  table_calendar: ^3.0.9
   uuid: ^3.0.7
 
 dev_dependencies:

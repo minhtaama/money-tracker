@@ -27,7 +27,7 @@ class SummaryScreen extends StatelessWidget {
           ),
         ),
       ),
-      children: [
+      listViewChildren: [
         Gap.h16,
         SummaryCard(
           onTap: () => context.push(RoutePath.accounts),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
@@ -21,7 +20,7 @@ class HomeScreen extends StatelessWidget {
       smallTabBar: const SmallTabBar(
         child: SmallHomeTab(),
       ),
-      children: [
+      listViewChildren: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -33,6 +32,8 @@ class HomeScreen extends StatelessWidget {
         ),
         ..._testTransactions,
       ],
+      hasPageView: true,
+      pageViewChildren: _testMap,
     );
   }
 }
@@ -110,3 +111,154 @@ List<Widget> _testTransactions = [
     ),
   ),
 ];
+
+Map<int, List<Widget>> _testMap = {
+  1: [
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+  ],
+  2: [
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+  ],
+  3: [
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+  ],
+  4: [
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+    const HomePageCard(
+      header: 'Thứ 2 - 23/3/2023',
+      title: '+ 840.000 VND',
+      child: SizedBox(
+        height: 300,
+      ),
+    ),
+  ],
+};

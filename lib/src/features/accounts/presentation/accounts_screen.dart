@@ -59,7 +59,7 @@ class AccountsScreen extends ConsumerWidget {
             ),
           ),
         ),
-        children: buildAccountCards(context),
+        listViewChildren: buildAccountCards(context),
       ),
     );
   }

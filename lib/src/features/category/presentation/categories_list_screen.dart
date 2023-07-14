@@ -81,7 +81,7 @@ class CategoriesListScreen extends ConsumerWidget {
             ),
           ),
         ),
-        children: [
+        listViewChildren: [
           CustomSection(
             title: 'Income',
             onReorder: (oldIndex, newIndex) {
