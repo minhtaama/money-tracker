@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
@@ -9,6 +8,8 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../utils/constants.dart';
 
 class SelectIconsScreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
             title: 'Choose Icon',
           ),
         ),
-        listViewChildren: List.generate(
+        children: List.generate(
           keyList.length,
           (keyIndex) {
             return CustomSection(

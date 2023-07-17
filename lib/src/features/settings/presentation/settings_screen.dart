@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/settings/presentation/color_picker.dart';
@@ -14,6 +13,8 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../data/settings_controller.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -33,7 +34,7 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Settings',
           ),
         ),
-        listViewChildren: [
+        children: [
           CustomSection(children: [
             CustomTile(
               title: 'Set currency',

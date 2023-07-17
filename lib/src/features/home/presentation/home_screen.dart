@@ -2,17 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_page_with_page_view.dart';
 import '../../../utils/constants.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int mapKey = 1;
+
+  @override
   Widget build(BuildContext context) {
-    return CustomTabPage(
+    return CustomTabPageWithPageView(
       extendedTabBar: const ExtendedTabBar(
         innerChild: ExtendedHomeTab(),
         outerChild: DateSelector(),
@@ -20,20 +28,26 @@ class HomeScreen extends StatelessWidget {
       smallTabBar: const SmallTabBar(
         child: SmallHomeTab(),
       ),
-      listViewChildren: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: const [
-              Expanded(child: IncomeExpenseCard(isIncome: true)),
-              Expanded(child: IncomeExpenseCard(isIncome: false)),
-            ],
-          ),
-        ),
-        ..._testTransactions,
-      ],
-      hasPageView: true,
-      pageViewChildren: _testMap,
+      onPageChanged: (index) {
+        mapKey = index + 1;
+      },
+      pageItemCount: _testMap.keys.length,
+      listItemCount: _testMap[mapKey]!.length + 1,
+      listItemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: const [
+                Expanded(child: IncomeExpenseCard(isIncome: true)),
+                Expanded(child: IncomeExpenseCard(isIncome: false)),
+              ],
+            ),
+          );
+        } else {
+          return _testMap[mapKey]![index - 1];
+        }
+      },
     );
   }
 }
@@ -74,76 +88,38 @@ class IncomeExpenseCard extends StatelessWidget {
   }
 }
 
-List<Widget> _testTransactions = [
-  const HomePageCard(
-    header: 'Thứ 2 - 23/3/2023',
-    title: '+ 840.000 VND',
-    child: SizedBox(
-      height: 300,
-    ),
-  ),
-  const HomePageCard(
-    header: 'Thứ 2 - 23/3/2023',
-    title: '+ 840.000 VND',
-    child: SizedBox(
-      height: 300,
-    ),
-  ),
-  const HomePageCard(
-    header: 'Thứ 2 - 23/3/2023',
-    title: '+ 840.000 VND',
-    child: SizedBox(
-      height: 300,
-    ),
-  ),
-  const HomePageCard(
-    header: 'Thứ 2 - 23/3/2023',
-    title: '+ 840.000 VND',
-    child: SizedBox(
-      height: 300,
-    ),
-  ),
-  const HomePageCard(
-    header: 'Thứ 2 - 23/3/2023',
-    title: '+ 840.000 VND',
-    child: SizedBox(
-      height: 300,
-    ),
-  ),
-];
-
 Map<int, List<Widget>> _testMap = {
   1: [
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '1 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
       ),
     ),
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '1 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
       ),
     ),
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '1 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
       ),
     ),
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '1 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
       ),
     ),
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '1 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
@@ -152,7 +128,7 @@ Map<int, List<Widget>> _testMap = {
   ],
   2: [
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '2 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
@@ -189,7 +165,7 @@ Map<int, List<Widget>> _testMap = {
   ],
   3: [
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '3 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,
@@ -226,7 +202,7 @@ Map<int, List<Widget>> _testMap = {
   ],
   4: [
     const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
+      header: '4 - 23/3/2023',
       title: '+ 840.000 VND',
       child: SizedBox(
         height: 300,

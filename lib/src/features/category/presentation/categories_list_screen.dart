@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -13,6 +12,8 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../domain/category_isar.dart';
 import 'category_list_tile.dart';
 import 'edit_category_modal_screen.dart';
@@ -81,7 +82,7 @@ class CategoriesListScreen extends ConsumerWidget {
             ),
           ),
         ),
-        listViewChildren: [
+        children: [
           CustomSection(
             title: 'Income',
             onReorder: (oldIndex, newIndex) {

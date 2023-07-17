@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../../common_widgets/rounded_icon_button.dart';
-import '../../../../theme_and_ui/icons.dart';
+import '../../../theme_and_ui/icons.dart';
+import '../../rounded_icon_button.dart';
 
 class FABItem {
   FABItem({required this.icon, required this.label, required this.color, required this.onTap});
