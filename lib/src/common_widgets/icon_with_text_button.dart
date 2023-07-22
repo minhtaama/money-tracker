@@ -38,7 +38,7 @@ class IconWithTextButton extends StatelessWidget {
       elevation: 0,
       isGradient: true,
       child: CustomInkWell(
-        onTap: isDisabled ? null : onTap,
+        onTap: onTap,
         borderCircularRadiusValue: 1000,
         inkColor: color ?? context.appTheme.primaryNegative,
         child: Padding(

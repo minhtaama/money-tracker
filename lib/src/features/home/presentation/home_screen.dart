@@ -3,6 +3,7 @@ import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page_with_page_view.dart';
@@ -16,25 +17,82 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int mapKey = 1;
+  late final PageController _controller;
+
+  late DateTime _currentDate;
+  late int _currentIndex;
+
+  late DateTime _displayDate;
+
+  late bool _showCurrentDateButton;
+
+  DateTime? _minDate;
+
+  DateTime? _maxDate;
+
+  @override
+  void initState() {
+    _currentDate = DateTime.now().onlyYearMonth;
+    _currentIndex = _currentDate.getMonthsDifferent(Calendar.minDate);
+
+    _controller = PageController(initialPage: _currentIndex);
+
+    _displayDate = _currentDate;
+
+    _showCurrentDateButton = false;
+
+    super.initState();
+  }
+
+  void _onPageChange(int value) {
+    _displayDate = DateTime(_currentDate.year, _currentDate.month + (value - _currentIndex));
+    _isShowGoToCurrentDateButton();
+    setState(() {});
+  }
+
+  void _previousPage() {
+    _controller.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+  }
+
+  void _nextPage() {
+    _controller.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+  }
+
+  void _animatedToPage(int page) {
+    _controller.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+  }
+
+  void _isShowGoToCurrentDateButton() {
+    if (_displayDate.year == _currentDate.year && _displayDate.month == _currentDate.month) {
+      _showCurrentDateButton = false;
+    } else {
+      _showCurrentDateButton = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomTabPageWithPageView(
-      extendedTabBar: const ExtendedTabBar(
-        innerChild: ExtendedHomeTab(),
-        outerChild: DateSelector(),
+      controller: _controller,
+      extendedTabBar: ExtendedTabBar(
+        innerChild: const ExtendedHomeTab(),
+        outerChild: DateSelector(
+          dateDisplay: '${_displayDate.monthToString()}, ${_displayDate.year}',
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onTapGoToCurrentDate: () {
+            _animatedToPage(_currentIndex);
+          },
+          showGoToCurrentDateButton: _showCurrentDateButton,
+        ),
       ),
       smallTabBar: const SmallTabBar(
         child: SmallHomeTab(),
       ),
-      onPageChanged: (index) {
-        mapKey = index + 1;
-      },
-      pageItemCount: _testMap.keys.length,
-      listItemCount: _testMap[mapKey]!.length + 1,
-      listItemBuilder: (context, index) {
-        if (index == 0) {
+      onPageChanged: _onPageChange,
+      listItemCount: 2,
+      itemBuilder: (context, pageIndex, listIndex) {
+        if (listIndex == 0) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -45,7 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         } else {
-          return _testMap[mapKey]![index - 1];
+          return Text(pageIndex.toString());
+          // TODO: Show transactions in month depends on pageIndex
         }
       },
     );
@@ -87,154 +146,3 @@ class IncomeExpenseCard extends StatelessWidget {
     );
   }
 }
-
-Map<int, List<Widget>> _testMap = {
-  1: [
-    const HomePageCard(
-      header: '1 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: '1 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: '1 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: '1 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: '1 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-  ],
-  2: [
-    const HomePageCard(
-      header: '2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-  ],
-  3: [
-    const HomePageCard(
-      header: '3 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-  ],
-  4: [
-    const HomePageCard(
-      header: '4 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-    const HomePageCard(
-      header: 'Thứ 2 - 23/3/2023',
-      title: '+ 840.000 VND',
-      child: SizedBox(
-        height: 300,
-      ),
-    ),
-  ],
-};

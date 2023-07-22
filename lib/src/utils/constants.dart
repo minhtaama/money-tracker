@@ -20,13 +20,13 @@ const double kCustomTabBarHeight = 80;
 const double kExtendedCustomTabBarHeight = 230;
 
 /// Value related to OuterChild of ExtendedTabBar
-const double kOuterChildHeight = 35;
+const double kExtendedTabBarOuterChildHeight = 35;
 
-/// Value related to CustomTabBar and CustomTabPage
+// Durations
 const Duration kNoDuration = Duration(milliseconds: 0);
-
-/// Value related to BottomAppBar
-const Duration kBottomAppBarDuration = Duration(milliseconds: 150);
+const Duration k150msDuration = Duration(milliseconds: 150);
+const Duration k250msDuration = Duration(milliseconds: 250);
+const Duration k350msDuration = Duration(milliseconds: 350);
 
 /// Value related to BottomAppBar
 const double kBottomAppBarHeight = 75.0;
@@ -59,4 +59,12 @@ class Gap {
       );
 
   static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;
+  static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
+  static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
+}
+
+class Calendar {
+  static final DateTime epochDate = DateTime(1970);
+  static final DateTime maxDate = DateTime(275759);
+  static final DateTime minDate = DateTime(-271819);
 }

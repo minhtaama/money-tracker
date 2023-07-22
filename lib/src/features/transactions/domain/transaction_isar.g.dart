@@ -27,13 +27,18 @@ const TransactionIsarSchema = CollectionSchema(
       name: r'dateTime',
       type: IsarType.dateTime,
     ),
-    r'note': PropertySchema(
+    r'isInitialTransaction': PropertySchema(
       id: 2,
+      name: r'isInitialTransaction',
+      type: IsarType.bool,
+    ),
+    r'note': PropertySchema(
+      id: 3,
       name: r'note',
       type: IsarType.string,
     ),
     r'transactionType': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'transactionType',
       type: IsarType.byte,
       enumMap: _TransactionIsartransactionTypeEnumValueMap,
@@ -109,8 +114,9 @@ void _transactionIsarSerialize(
 ) {
   writer.writeDouble(offsets[0], object.amount);
   writer.writeDateTime(offsets[1], object.dateTime);
-  writer.writeString(offsets[2], object.note);
-  writer.writeByte(offsets[3], object.transactionType.index);
+  writer.writeBool(offsets[2], object.isInitialTransaction);
+  writer.writeString(offsets[3], object.note);
+  writer.writeByte(offsets[4], object.transactionType.index);
 }
 
 TransactionIsar _transactionIsarDeserialize(
@@ -123,9 +129,10 @@ TransactionIsar _transactionIsarDeserialize(
   object.amount = reader.readDouble(offsets[0]);
   object.dateTime = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.note = reader.readStringOrNull(offsets[2]);
+  object.isInitialTransaction = reader.readBool(offsets[2]);
+  object.note = reader.readStringOrNull(offsets[3]);
   object.transactionType = _TransactionIsartransactionTypeValueEnumMap[
-          reader.readByteOrNull(offsets[3])] ??
+          reader.readByteOrNull(offsets[4])] ??
       TransactionType.income;
   return object;
 }
@@ -142,8 +149,10 @@ P _transactionIsarDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (_TransactionIsartransactionTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           TransactionType.income) as P;
@@ -544,6 +553,16 @@ extension TransactionIsarQueryFilter
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      isInitialTransactionEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isInitialTransaction',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -831,6 +850,20 @@ extension TransactionIsarQuerySortBy
     });
   }
 
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByIsInitialTransaction() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByIsInitialTransactionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.desc);
+    });
+  }
+
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> sortByNote() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'note', Sort.asc);
@@ -900,6 +933,20 @@ extension TransactionIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByIsInitialTransaction() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByIsInitialTransactionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.desc);
+    });
+  }
+
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenByNote() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'note', Sort.asc);
@@ -943,6 +990,13 @@ extension TransactionIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
+      distinctByIsInitialTransaction() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isInitialTransaction');
+    });
+  }
+
   QueryBuilder<TransactionIsar, TransactionIsar, QDistinct> distinctByNote(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -975,6 +1029,13 @@ extension TransactionIsarQueryProperty
   QueryBuilder<TransactionIsar, DateTime, QQueryOperations> dateTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dateTime');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, bool, QQueryOperations>
+      isInitialTransactionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isInitialTransaction');
     });
   }
 

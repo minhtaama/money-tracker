@@ -72,7 +72,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     });
 
     return AnimatedContainer(
-      duration: kBottomAppBarDuration,
+      duration: k150msDuration,
       height: bottomAppBarHeight,
       child: Theme(
         data: ThemeData(useMaterial3: false),
@@ -82,7 +82,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
           elevation: 11,
           child: AnimatedOpacity(
             opacity: isBottomAppBarGoUp ? 1 : 0,
-            duration: kBottomAppBarDuration,
+            duration: k150msDuration,
             curve: isBottomAppBarGoUp ? Curves.easeInExpo : Curves.easeOutExpo,
             child: Row(
               mainAxisSize: MainAxisSize.min,

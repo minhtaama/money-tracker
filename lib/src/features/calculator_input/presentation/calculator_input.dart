@@ -15,12 +15,14 @@ class CalculatorInput extends StatefulWidget {
   /// The result is only returned by calculation of the [_Calculator] widget.
   const CalculatorInput(
       {Key? key,
-      required this.noFormatResultOutput,
+      required this.formattedResultOutput,
       required this.focusColor,
       required this.hintText,
+      this.validator,
       this.fontSize = 22})
       : super(key: key);
-  final ValueSetter<String> noFormatResultOutput;
+  final ValueSetter<String> formattedResultOutput;
+  final String? Function(String? value)? validator;
   final Color focusColor;
   final String hintText;
   final double fontSize;
@@ -49,8 +51,9 @@ class _CalculatorInputState extends State<CalculatorInput> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: _controller,
+      validator: widget.validator,
       style: kHeader2TextStyle.copyWith(
         color: context.appTheme.backgroundNegative,
         fontSize: widget.fontSize,
@@ -68,6 +71,8 @@ class _CalculatorInputState extends State<CalculatorInput> {
           color: context.appTheme.backgroundNegative.withOpacity(0.5),
           fontSize: widget.fontSize,
         ),
+        errorStyle: kHeader4TextStyle.copyWith(fontSize: 12),
+        helperText: '',
         contentPadding: EdgeInsets.zero,
       ),
       readOnly: true,
@@ -87,7 +92,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
                 // Update controller value to display in TextField
                 _controller.text = _formattedStringValue;
                 // Call the callback to return the result value
-                widget.noFormatResultOutput(_formattedStringValue);
+                widget.formattedResultOutput(_formattedStringValue);
               },
             ));
       },
@@ -270,7 +275,7 @@ class _CalculatorState extends State<_Calculator> {
       }
     } catch (_) {
       if (kDebugMode) {
-        print('Error: Mathematical Expression is not correct');
+        print(_.toString());
       }
     }
   }

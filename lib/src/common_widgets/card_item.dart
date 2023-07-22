@@ -69,11 +69,14 @@ class CardItem extends StatelessWidget {
                 )
               : null,
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: padding,
-            child: child,
+        child: ClipRRect(
+          borderRadius: borderRadius ?? BorderRadius.circular(16),
+          child: Material(
+            color: Colors.transparent,
+            child: Padding(
+              padding: padding,
+              child: child,
+            ),
           ),
         ),
       ),

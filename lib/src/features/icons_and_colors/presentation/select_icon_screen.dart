@@ -122,7 +122,7 @@ class CircleIcon extends StatelessWidget {
               ),
             ),
             AnimatedOpacity(
-              duration: kBottomAppBarDuration,
+              duration: k150msDuration,
               opacity: isSelected ? 1 : 0,
               child: Container(
                 height: double.infinity,

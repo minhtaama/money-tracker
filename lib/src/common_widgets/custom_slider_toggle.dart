@@ -70,7 +70,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: AnimatedSlide(
-                    duration: kBottomAppBarDuration,
+                    duration: k150msDuration,
                     curve: Curves.easeOut,
                     offset: Offset(togglePosition, 0),
                     child: SizedBox(

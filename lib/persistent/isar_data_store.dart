@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../src/features/category/domain/category_isar.dart';
 
@@ -15,7 +16,7 @@ class IsarDataStore {
 
     // Init Isar instance
     _isar = await Isar.open(
-      [CategoryIsarSchema, SettingsIsarSchema, AccountIsarSchema],
+      [CategoryIsarSchema, SettingsIsarSchema, AccountIsarSchema, TransactionIsarSchema],
       directory: _dir.path,
     );
 

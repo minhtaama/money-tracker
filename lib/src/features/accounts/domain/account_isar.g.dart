@@ -32,23 +32,18 @@ const AccountIsarSchema = CollectionSchema(
       name: r'iconIndex',
       type: IsarType.long,
     ),
-    r'initialBalance': PropertySchema(
-      id: 3,
-      name: r'initialBalance',
-      type: IsarType.double,
-    ),
     r'name': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'order': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'order',
       type: IsarType.long,
     ),
     r'type': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'type',
       type: IsarType.byte,
       enumMap: _AccountIsartypeEnumValueMap,
@@ -60,7 +55,15 @@ const AccountIsarSchema = CollectionSchema(
   deserializeProp: _accountIsarDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {},
+  links: {
+    r'transactions': LinkSchema(
+      id: -5300728375415123032,
+      name: r'transactions',
+      target: r'TransactionIsar',
+      single: false,
+      linkName: r'account',
+    )
+  },
   embeddedSchemas: {},
   getId: _accountIsarGetId,
   getLinks: _accountIsarGetLinks,
@@ -88,10 +91,9 @@ void _accountIsarSerialize(
   writer.writeLong(offsets[0], object.colorIndex);
   writer.writeString(offsets[1], object.iconCategory);
   writer.writeLong(offsets[2], object.iconIndex);
-  writer.writeDouble(offsets[3], object.initialBalance);
-  writer.writeString(offsets[4], object.name);
-  writer.writeLong(offsets[5], object.order);
-  writer.writeByte(offsets[6], object.type.index);
+  writer.writeString(offsets[3], object.name);
+  writer.writeLong(offsets[4], object.order);
+  writer.writeByte(offsets[5], object.type.index);
 }
 
 AccountIsar _accountIsarDeserialize(
@@ -105,11 +107,10 @@ AccountIsar _accountIsarDeserialize(
   object.iconCategory = reader.readString(offsets[1]);
   object.iconIndex = reader.readLong(offsets[2]);
   object.id = id;
-  object.initialBalance = reader.readDouble(offsets[3]);
-  object.name = reader.readString(offsets[4]);
-  object.order = reader.readLongOrNull(offsets[5]);
+  object.name = reader.readString(offsets[3]);
+  object.order = reader.readLongOrNull(offsets[4]);
   object.type =
-      _AccountIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
+      _AccountIsartypeValueEnumMap[reader.readByteOrNull(offsets[5])] ??
           AccountType.onHand;
   return object;
 }
@@ -128,12 +129,10 @@ P _accountIsarDeserializeProp<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
-    case 4:
       return (reader.readString(offset)) as P;
-    case 5:
+    case 4:
       return (reader.readLongOrNull(offset)) as P;
-    case 6:
+    case 5:
       return (_AccountIsartypeValueEnumMap[reader.readByteOrNull(offset)] ??
           AccountType.onHand) as P;
     default:
@@ -155,12 +154,14 @@ Id _accountIsarGetId(AccountIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
-  return [];
+  return [object.transactions];
 }
 
 void _accountIsarAttach(
     IsarCollection<dynamic> col, Id id, AccountIsar object) {
   object.id = id;
+  object.transactions
+      .attach(col, col.isar.collection<TransactionIsar>(), r'transactions', id);
 }
 
 extension AccountIsarQueryWhereSort
@@ -544,72 +545,6 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      initialBalanceEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'initialBalance',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      initialBalanceGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'initialBalance',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      initialBalanceLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'initialBalance',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      initialBalanceBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'initialBalance',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -870,7 +805,68 @@ extension AccountIsarQueryObject
     on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {}
 
 extension AccountIsarQueryLinks
-    on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {}
+    on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> transactions(
+      FilterQuery<TransactionIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'transactions');
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactions', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactions', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactions', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactions', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactions', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'transactions', lower, includeLower, upper, includeUpper);
+    });
+  }
+}
 
 extension AccountIsarQuerySortBy
     on QueryBuilder<AccountIsar, AccountIsar, QSortBy> {
@@ -908,19 +904,6 @@ extension AccountIsarQuerySortBy
   QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> sortByIconIndexDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'iconIndex', Sort.desc);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> sortByInitialBalance() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'initialBalance', Sort.asc);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy>
-      sortByInitialBalanceDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'initialBalance', Sort.desc);
     });
   }
 
@@ -1012,19 +995,6 @@ extension AccountIsarQuerySortThenBy
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> thenByInitialBalance() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'initialBalance', Sort.asc);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy>
-      thenByInitialBalanceDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'initialBalance', Sort.desc);
-    });
-  }
-
   QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1083,12 +1053,6 @@ extension AccountIsarQueryWhereDistinct
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByInitialBalance() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'initialBalance');
-    });
-  }
-
   QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1132,12 +1096,6 @@ extension AccountIsarQueryProperty
   QueryBuilder<AccountIsar, int, QQueryOperations> iconIndexProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'iconIndex');
-    });
-  }
-
-  QueryBuilder<AccountIsar, double, QQueryOperations> initialBalanceProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'initialBalance');
     });
   }
 

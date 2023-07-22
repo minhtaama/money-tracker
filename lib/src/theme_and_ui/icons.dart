@@ -50,6 +50,7 @@ class AppIcons {
   static String get reports => 'assets/svg/app/report.svg';
   static String get coins => 'assets/svg/app/coins.svg';
   static String get backspace => 'assets/svg/app/backspace.svg';
+  static String get today => 'assets/svg/app/today.svg';
 
   static String get _defaultIcon => 'assets/svg/app/default.svg';
 

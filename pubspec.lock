@@ -185,22 +185,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  extended_text:
-    dependency: "direct main"
-    description:
-      name: extended_text
-      sha256: "3f555a60f63ff51d5080f5eed89e65bc18f17b69e01f4e16cadfd0cb3b49f42a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.0.1"
-  extended_text_library:
-    dependency: transitive
-    description:
-      name: extended_text_library
-      sha256: "6d06b0ac53a09989e9864549f133c19c676d1456c5ee9470e2483f3cb1900f6e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -333,14 +317,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  hive_generator:
-    dependency: "direct dev"
-    description:
-      name: hive_generator
-      sha256: "65998cc4d2cd9680a3d9709d893d2f6bb15e6c1f92626c3f1fa650b4b3281521"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -629,14 +605,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  simple_rich_text:
-    dependency: "direct main"
-    description:
-      name: simple_rich_text
-      sha256: ba678f8075336995604ccc1e8bf407dc6455e0d6dee17c2aabadba38a9dbd23f
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.49"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -658,14 +626,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
-  source_helper:
-    dependency: transitive
-    description:
-      name: source_helper
-      sha256: "6adebc0006c37dd63fe05bca0a929b99f06402fc95aa35bf36d67f5c06de01fd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.4"
   source_span:
     dependency: transitive
     description:
@@ -924,4 +884,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=2.19.0 <3.0.0"
-  flutter: ">=3.7.0"
+  flutter: ">=3.7.0-0"

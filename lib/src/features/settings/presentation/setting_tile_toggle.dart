@@ -88,7 +88,7 @@ class _AnimatedToggle extends StatelessWidget {
       child: Stack(
         children: [
           AnimatedContainer(
-            duration: kBottomAppBarDuration,
+            duration: k150msDuration,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
               color: bgrColor,
@@ -97,7 +97,7 @@ class _AnimatedToggle extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: AnimatedSlide(
-              duration: kBottomAppBarDuration,
+              duration: k150msDuration,
               offset: Offset((widthRatio - 1) * togglePosition, 0),
               child: SizedBox(
                 height: size,

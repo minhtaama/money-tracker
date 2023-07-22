@@ -15,7 +15,7 @@ class CustomTabPageWithPageView extends StatefulWidget {
     this.extendedTabBar,
     this.controller,
     this.onPageChanged,
-    required this.listItemBuilder,
+    required this.itemBuilder,
     this.pageItemCount,
     required this.listItemCount,
   }) : super(key: key);
@@ -23,7 +23,7 @@ class CustomTabPageWithPageView extends StatefulWidget {
   final ExtendedTabBar? extendedTabBar;
   final PageController? controller;
   final int? pageItemCount;
-  final Widget Function(BuildContext, int) listItemBuilder;
+  final Widget Function(BuildContext, int, int) itemBuilder;
   final ValueChanged<int>? onPageChanged;
   final int listItemCount;
 
@@ -74,11 +74,11 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
           controller: _controller,
           onPageChanged: (index) {
             scrollOffset = _getInitialOffset(appBarHeight: appBarHeight);
-            widget.onPageChanged?.call(index);
             setState(() {});
+            widget.onPageChanged?.call(index);
           },
           itemCount: widget.pageItemCount,
-          itemBuilder: (context, index) => CustomListViewBuilder(
+          itemBuilder: (context, pageIndex) => CustomListViewBuilder(
             smallTabBar: widget.smallTabBar,
             extendedTabBar: widget.extendedTabBar,
             initialOffset: _getInitialOffset(appBarHeight: appBarHeight),
@@ -90,7 +90,7 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
                 );
               },
             ),
-            itemBuilder: widget.listItemBuilder,
+            itemBuilder: (context, listIndex) => widget.itemBuilder(context, pageIndex, listIndex),
             itemCount: widget.listItemCount,
           ),
         ),

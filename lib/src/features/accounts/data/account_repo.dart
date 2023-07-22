@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/persistent/isar_data_store.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class AccountRepository {
@@ -9,11 +10,13 @@ class AccountRepository {
 
   final Isar isar;
 
+  // No need to run async method because user might not have over 100 account (Obviously!)
   List<AccountIsar> getList() {
     Query<AccountIsar> query = isar.accountIsars.where().sortByOrder().build();
     return query.findAllSync();
   }
 
+  // Used to watch list changes
   Stream<void> _watchListChanges() {
     Query<AccountIsar> query = isar.accountIsars.where().sortByOrder().build();
     return query.watchLazy(fireImmediately: true);
@@ -27,20 +30,36 @@ class AccountRepository {
     required String name,
     required int colorIndex,
   }) async {
+    // Create a new account
     final newAccount = AccountIsar()
       ..type = type
       ..iconCategory = iconCategory
       ..iconIndex = iconIndex
       ..name = name
-      ..colorIndex = colorIndex
-      ..initialBalance = initialBalance;
+      ..colorIndex = colorIndex;
+
+    // Create a new transaction of this account and flag as "initial transaction"
+    final initialTransaction = TransactionIsar()
+      ..transactionType = TransactionType.income
+      ..dateTime = DateTime.now()
+      ..isInitialTransaction = true
+      ..amount = initialBalance
+      ..note = 'Initial Balance'
+      ..account.value = newAccount;
+
     await isar.writeTxn(() async {
       await isar.accountIsars.put(newAccount);
       // If this database is user-reorderable, then we must
       // assign `order` value equal to its `Isar.autoIncrementID` at the first time
-      // then update it
+      // then update it again
       newAccount.order = newAccount.id;
       await isar.accountIsars.put(newAccount);
+
+      // Put the `initialTransaction` to the TransactionIsar collection
+      await isar.transactionIsars.put(initialTransaction);
+
+      // Save the link to this account in the `initialTransaction`
+      await initialTransaction.account.save();
     });
   }
 
@@ -50,13 +69,43 @@ class AccountRepository {
       required int iconIndex,
       required int colorIndex,
       required double initialBalance}) async {
+    // Update current account value
     currentAccount
       ..iconCategory = iconCategory
       ..iconIndex = iconIndex
       ..name = name
-      ..colorIndex = colorIndex
-      ..initialBalance = initialBalance;
-    await isar.writeTxn(() async => await isar.accountIsars.put(currentAccount));
+      ..colorIndex = colorIndex;
+
+    // Query to find the initial transaction of the current editing account
+    TransactionIsar? initialTransaction =
+        await currentAccount.transactions.filter().isInitialTransactionEqualTo(true).findFirst();
+
+    if (initialTransaction != null) {
+      // If the initial transaction is found
+      initialTransaction.amount = initialBalance;
+
+      await isar.writeTxn(() async {
+        await isar.accountIsars.put(currentAccount);
+        await isar.transactionIsars.put(initialTransaction!);
+      });
+    } else {
+      // In case user delete the initial transaction of the current editing account
+      initialTransaction = TransactionIsar()
+        ..transactionType = TransactionType.income
+        ..dateTime = DateTime.now()
+        ..isInitialTransaction = true
+        ..amount = initialBalance
+        ..note = 'Initial Balance'
+        ..account.value = currentAccount;
+
+      await isar.writeTxn(() async {
+        await isar.accountIsars.put(currentAccount);
+        await isar.transactionIsars.put(initialTransaction!);
+
+        // Save the link to this account in `initialTransaction`
+        await initialTransaction.account.save();
+      });
+    }
   }
 
   Future<void> delete(AccountIsar account) async {
@@ -100,7 +149,7 @@ final accountRepositoryProvider = Provider<AccountRepository>(
 
 final accountsChangesProvider = StreamProvider.autoDispose<void>(
   (ref) {
-    final categoryRepo = ref.watch(accountRepositoryProvider);
-    return categoryRepo._watchListChanges();
+    final accountRepo = ref.watch(accountRepositoryProvider);
+    return accountRepo._watchListChanges();
   },
 );

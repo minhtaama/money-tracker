@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import '../../../utils/enums.dart';
 
 // flutter pub run build_runner build --delete-conflicting-outputs
@@ -18,5 +19,6 @@ class AccountIsar {
 
   int? order;
 
-  late double initialBalance;
+  @Backlink(to: 'account')
+  final transactions = IsarLinks<TransactionIsar>();
 }

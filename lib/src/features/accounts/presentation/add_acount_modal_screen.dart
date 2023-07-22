@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_text_field.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
@@ -15,6 +15,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+import '../../../common_widgets/card_item.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
@@ -25,108 +26,144 @@ class AddAccountModalScreen extends ConsumerStatefulWidget {
 }
 
 class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   AccountType accountType = AccountType.onHand;
   String accountName = '';
   String iconCategory = '';
   int iconIndex = 0;
   int colorIndex = 0;
-  double initialBalance = 0;
+  String calculatorOutput = '0';
+
+  double? _formatToDouble(String formattedValue) {
+    try {
+      double value = double.parse(formattedValue.split(',').join());
+      if (value == double.infinity || value == double.negativeInfinity) {
+        return null;
+      } else {
+        return value;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final settingsObject = ref.watch(settingsControllerProvider);
 
-    return CustomSection(
-      title: 'Add Account',
-      isWrapByCard: false,
-      children: [
-        Row(
-          textBaseline: TextBaseline.alphabetic,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          children: [
-            Text(
-              settingsObject.currency.code,
-              style:
-                  kHeader4TextStyle.copyWith(fontSize: 22, color: context.appTheme.backgroundNegative),
-            ),
-            Gap.w16,
-            Expanded(
-              child: CalculatorInput(
-                hintText: 'Initial Balance',
-                focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
-                noFormatResultOutput: (value) => initialBalance = double.parse(value),
+    return Form(
+      key: _formKey,
+      child: CustomSection(
+        title: 'Add Account',
+        isWrapByCard: false,
+        children: [
+          Row(
+            textBaseline: TextBaseline.alphabetic,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            children: [
+              Text(
+                settingsObject.currency.code,
+                style: kHeader1TextStyle.copyWith(
+                  fontSize: 22,
+                  color: context.appTheme.backgroundNegative,
+                ),
               ),
-            ),
-          ],
-        ),
-        Gap.h24,
-        CustomSliderToggle<AccountType>(
-          values: const [AccountType.onHand, AccountType.credit],
-          labels: const ['On Hand', 'Credit'],
-          height: 42,
-          onTap: (type) {
-            accountType = type;
-          },
-        ),
-        Gap.h24,
-        Row(
-          children: [
-            IconSelectButton(
-              backGroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
-              iconColor: AppColors.allColorsUserCanPick[colorIndex][1],
-              onTap: (iconC, iconI) {
-                iconCategory = iconC;
-                iconIndex = iconI;
-              },
-            ),
-            Gap.w16,
-            Expanded(
-              child: CustomTextField(
-                autofocus: false,
-                focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
-                hintText: 'Account Name',
-                onChanged: (value) {
-                  setState(() {
-                    accountName = value;
-                  });
-                },
+              Gap.w16,
+              Expanded(
+                child: CalculatorInput(
+                  hintText: 'Initial Balance',
+                  focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                  validator: (_) {
+                    if (_formatToDouble(calculatorOutput) == null) {
+                      return 'Invalid amount';
+                    }
+                    return null;
+                  },
+                  formattedResultOutput: (value) {
+                    calculatorOutput = value;
+                    _formKey.currentState!.validate();
+                    print('double ${_formatToDouble(calculatorOutput)}');
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-        Gap.h24,
-        ColorSelectListView(
-          onColorTap: (index) {
-            setState(() {
-              colorIndex = index;
-            });
-          },
-        ),
-        Gap.h24,
-        Align(
-          alignment: Alignment.centerRight,
-          child: IconWithTextButton(
-            icon: AppIcons.add,
-            label: 'Create',
-            backgroundColor: context.appTheme.accent,
-            isDisabled: accountName.isEmpty,
-            onTap: () {
-              final accountRepository = ref.read(accountRepositoryProvider);
-              // TODO: Implement add account
-              // final categoryRepository = ref.read(categoryRepositoryIsarProvider);
-              // categoryRepository.writeNewCategory(
-              //   type: categoryType,
-              //   iconCategory: iconCategory,
-              //   iconIndex: iconIndex,
-              //   name: categoryName,
-              //   colorIndex: colorIndex,
-              // );
-              //TODO: implement add account
-              context.pop();
+            ],
+          ),
+          Gap.h8,
+          CustomSliderToggle<AccountType>(
+            values: const [AccountType.onHand, AccountType.credit],
+            labels: const ['On Hand', 'Credit'],
+            height: 42,
+            onTap: (type) {
+              accountType = type;
             },
           ),
-        ),
-      ],
+          Gap.h16,
+          Row(
+            children: [
+              IconSelectButton(
+                backGroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                iconColor: AppColors.allColorsUserCanPick[colorIndex][1],
+                onTap: (iconC, iconI) {
+                  iconCategory = iconC;
+                  iconIndex = iconI;
+                },
+              ),
+              Gap.w16,
+              Expanded(
+                child: CustomTextFormField(
+                  autofocus: false,
+                  focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Account name must not empty';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => _formKey.currentState!.validate(),
+                  hintText: 'Account Name',
+                  onChanged: (value) {
+                    setState(() {
+                      accountName = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          Gap.h8,
+          ColorSelectListView(
+            onColorTap: (index) {
+              setState(() {
+                colorIndex = index;
+              });
+            },
+          ),
+          Gap.h24,
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconWithTextButton(
+              icon: AppIcons.add,
+              label: 'Create',
+              backgroundColor: context.appTheme.accent,
+              isDisabled: accountName.isEmpty || _formatToDouble(calculatorOutput) == null,
+              onTap: () {
+                if (_formKey.currentState!.validate()) {
+                  // By validating, the _formatToDouble(calculatorOutput) must not null
+                  final accountRepository = ref.read(accountRepositoryProvider);
+                  accountRepository.writeNew(_formatToDouble(calculatorOutput)!,
+                      type: accountType,
+                      iconCategory: iconCategory,
+                      iconIndex: iconIndex,
+                      name: accountName,
+                      colorIndex: colorIndex);
+                  context.pop();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

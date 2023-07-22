@@ -19,9 +19,16 @@ class TransactionIsar {
   late double amount;
   String? note;
 
+  @Index()
   final category = IsarLink<CategoryIsar>();
+
+  @Index()
   final account = IsarLink<AccountIsar>();
 
   /// Only specify this if transaction type is __Transfer__
+  @Index()
   final toAccount = IsarLink<AccountIsar>();
+
+  /// Only specify this to [true] when first creating new account
+  bool isInitialTransaction = false;
 }

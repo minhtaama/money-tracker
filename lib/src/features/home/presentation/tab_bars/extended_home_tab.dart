@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/icon_extension.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
@@ -31,45 +30,108 @@ class ExtendedHomeTab extends StatelessWidget {
 class DateSelector extends StatelessWidget {
   const DateSelector({
     super.key,
+    required this.dateDisplay,
+    this.onTapLeft,
+    this.onTapRight,
+    this.onTapGoToCurrentDate,
+    required this.showGoToCurrentDateButton,
   });
+
+  final String dateDisplay;
+  final VoidCallback? onTapLeft;
+  final VoidCallback? onTapRight;
+  final VoidCallback? onTapGoToCurrentDate;
+  final bool showGoToCurrentDateButton;
 
   @override
   Widget build(BuildContext context) {
-    return CardItem(
-      height: kOuterChildHeight,
-      margin: EdgeInsets.zero,
-      color: context.appTheme.isDarkTheme ? context.appTheme.background3 : null,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgIcon(
-            AppIcons.arrowLeft,
-            color: context.appTheme.backgroundNegative,
-          ),
-          Gap.w4,
-          FittedBox(
-            child: Text(
-              'December, 2023'.hardcoded,
-              style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AnimatedOpacity(
+          duration: k150msDuration,
+          opacity: showGoToCurrentDateButton ? 1 : 0,
+          child: CardItem(
+            height: kExtendedTabBarOuterChildHeight,
+            margin: EdgeInsets.zero,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: GestureDetector(
+              onTap: onTapGoToCurrentDate,
+              child: SvgIcon(
+                AppIcons.today,
+                color: context.appTheme.backgroundNegative,
+              ),
             ),
           ),
-          Gap.w4,
-          SvgIcon(
-            AppIcons.arrowRight,
-            color: context.appTheme.backgroundNegative,
+        ),
+        Gap.w16,
+        CardItem(
+          height: kExtendedTabBarOuterChildHeight,
+          margin: EdgeInsets.zero,
+          color: context.appTheme.isDarkTheme ? context.appTheme.background3 : null,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: onTapLeft,
+                child: SvgIcon(
+                  AppIcons.arrowLeft,
+                  color: context.appTheme.backgroundNegative,
+                ),
+              ),
+              Gap.w4,
+              SizedBox(
+                width: 125,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: AnimatedSwitcher(
+                    duration: k150msDuration,
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: Tween<double>(
+                          begin: 0,
+                          end: 1,
+                        ).animate(animation),
+                        child: child,
+                      );
+                    },
+                    child: Text(
+                      key: ValueKey(dateDisplay),
+                      dateDisplay,
+                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                    ),
+                  ),
+                ),
+              ),
+              Gap.w4,
+              GestureDetector(
+                onTap: onTapRight,
+                child: SvgIcon(
+                  AppIcons.arrowRight,
+                  color: context.appTheme.backgroundNegative,
+                ),
+              ),
+            ],
           ),
-          Gap.w8,
-          Padding(
-            padding: const EdgeInsets.all(2.0),
+        ),
+        Gap.w16,
+        CardItem(
+          height: kExtendedTabBarOuterChildHeight,
+          margin: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: GestureDetector(
+            onTap: () {}, //TODO: FILTER
             child: SvgIcon(
               AppIcons.filter,
               color: context.appTheme.backgroundNegative,
+              size: 25,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

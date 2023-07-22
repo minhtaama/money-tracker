@@ -39,7 +39,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   void initState() {
     _animationController = AnimationController(
       vsync: this,
-      duration: kBottomAppBarDuration,
+      duration: k150msDuration,
     );
     _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
 

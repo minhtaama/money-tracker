@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_text_field.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
@@ -58,7 +58,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             ),
             Gap.w16,
             Expanded(
-              child: CustomTextField(
+              child: CustomTextFormField(
                 autofocus: false,
                 focusColor: AppColors.allColorsUserCanPick[newColorIndex][0],
                 hintText: widget.currentCategory.name,

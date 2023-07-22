@@ -78,7 +78,7 @@ class CustomTabBar extends StatelessWidget {
     return SizedBox(
       height: height + statusBarHeight,
       child: AnimatedContainer(
-          duration: kBottomAppBarDuration,
+          duration: k150msDuration,
           decoration: BoxDecoration(
             border: Border(
               bottom: _isShowDivider(pixelOffset) && !context.appTheme.isDarkTheme
@@ -120,7 +120,7 @@ class ExtendedTabBar extends StatelessWidget {
     required this.innerChild,
     this.outerChild,
     this.height = kExtendedCustomTabBarHeight,
-    this.outerChildHeight = kOuterChildHeight,
+    this.outerChildHeight = kExtendedTabBarOuterChildHeight,
   });
   final Color? backgroundColor;
   final Widget innerChild;

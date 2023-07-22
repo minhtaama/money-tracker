@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_text_field.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
@@ -22,6 +22,8 @@ class AddCategoryModalScreen extends ConsumerStatefulWidget {
 }
 
 class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   CategoryType categoryType = CategoryType.expense;
   String categoryName = '';
   String iconCategory = '';
@@ -30,74 +32,86 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
 
   @override
   Widget build(BuildContext context) {
-    return CustomSection(
-      title: 'Add Category',
-      isWrapByCard: false,
-      children: [
-        CustomSliderToggle<CategoryType>(
-          values: const [CategoryType.income, CategoryType.expense],
-          labels: const ['Income', 'Expense'],
-          initialValueIndex: 1,
-          onTap: (type) {
-            categoryType = type;
-          },
-        ),
-        Gap.h24,
-        Row(
-          children: [
-            IconSelectButton(
-              backGroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
-              iconColor: AppColors.allColorsUserCanPick[colorIndex][1],
-              onTap: (iconC, iconI) {
-                iconCategory = iconC;
-                iconIndex = iconI;
-              },
-            ),
-            Gap.w16,
-            Expanded(
-              child: CustomTextField(
-                autofocus: false,
-                focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
-                hintText: 'Category Name',
-                onChanged: (value) {
-                  setState(() {
-                    categoryName = value;
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-        Gap.h24,
-        ColorSelectListView(
-          onColorTap: (index) {
-            setState(() {
-              colorIndex = index;
-            });
-          },
-        ),
-        Gap.h24,
-        Align(
-          alignment: Alignment.centerRight,
-          child: IconWithTextButton(
-            icon: AppIcons.add,
-            label: 'Create',
-            backgroundColor: context.appTheme.accent,
-            isDisabled: categoryName == '',
-            onTap: () {
-              final categoryRepository = ref.read(categoryRepositoryProvider);
-              categoryRepository.writeNew(
-                type: categoryType,
-                iconCategory: iconCategory,
-                iconIndex: iconIndex,
-                name: categoryName,
-                colorIndex: colorIndex,
-              );
-              context.pop();
+    return Form(
+      key: _formKey,
+      child: CustomSection(
+        title: 'Add Category',
+        isWrapByCard: false,
+        children: [
+          CustomSliderToggle<CategoryType>(
+            values: const [CategoryType.income, CategoryType.expense],
+            labels: const ['Income', 'Expense'],
+            initialValueIndex: 1,
+            onTap: (type) {
+              categoryType = type;
             },
           ),
-        ),
-      ],
+          Gap.h24,
+          Row(
+            children: [
+              IconSelectButton(
+                backGroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                iconColor: AppColors.allColorsUserCanPick[colorIndex][1],
+                onTap: (iconC, iconI) {
+                  iconCategory = iconC;
+                  iconIndex = iconI;
+                },
+              ),
+              Gap.w16,
+              Expanded(
+                child: CustomTextFormField(
+                  autofocus: false,
+                  focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Account name must not empty';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => _formKey.currentState!.validate(),
+                  hintText: 'Category Name',
+                  onChanged: (value) {
+                    setState(() {
+                      categoryName = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          Gap.h8,
+          ColorSelectListView(
+            onColorTap: (index) {
+              setState(() {
+                colorIndex = index;
+              });
+            },
+          ),
+          Gap.h16,
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconWithTextButton(
+              icon: AppIcons.add,
+              label: 'Create',
+              backgroundColor: context.appTheme.accent,
+              isDisabled: categoryName == '',
+              onTap: () {
+                if (_formKey.currentState!.validate()) {
+                  final categoryRepository = ref.read(categoryRepositoryProvider);
+                  categoryRepository.writeNew(
+                    type: categoryType,
+                    iconCategory: iconCategory,
+                    iconIndex: iconIndex,
+                    name: categoryName,
+                    colorIndex: colorIndex,
+                  );
+                  context.pop();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
