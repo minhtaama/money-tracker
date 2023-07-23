@@ -6,7 +6,6 @@ import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../custom_tab_page/provider.dart';
 import 'bottom_app_bar/bottom_app_bar_with_fab.dart';
 import 'bottom_app_bar/custom_fab.dart';
 
@@ -60,17 +59,12 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       //TODO: Implement Hive icon
     ];
 
-    // Watch state in TabPage to change behaviour of Floating Action Button
-    bool isFABDocked = ref.watch(scrollForwardStateProvider);
-
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
       floatingActionButton: isHomeScreen ? CustomFloatingActionButton(items: fabItems) : null,
-      floatingActionButtonLocation: isFABDocked
-          ? FloatingActionButtonLocation.centerDocked
-          : FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBarWithFAB(
         items: tabItems,
         onTabSelected: (int tabIndex) {

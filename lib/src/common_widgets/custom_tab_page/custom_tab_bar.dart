@@ -45,15 +45,15 @@ class CustomTabBar extends StatelessWidget {
           opacity: extendedChildOpacity,
           duration: kNoDuration,
           child: IgnorePointer(
-            ignoring: extendedChildOpacity == 1 ? false : true,
+            ignoring: extendedChildOpacity > 0.9 ? false : true,
             child: extendedTabBar ?? const SizedBox(),
           ),
         ),
         AnimatedOpacity(
-          opacity: childOpacity,
-          duration: kNoDuration,
+          opacity: childOpacity > 0.9 ? 1 : 0,
+          duration: k150msDuration,
           child: IgnorePointer(
-            ignoring: childOpacity == 1 ? false : true,
+            ignoring: childOpacity > 0.9 ? false : true,
             child: smallTabBar ?? const SizedBox(),
           ),
         ),
@@ -63,7 +63,7 @@ class CustomTabBar extends StatelessWidget {
 
   bool _isShowDivider(double pixelsOffset) {
     if (extendedTabBar != null && smallTabBar != null) {
-      return pixelsOffset > extendedTabBar!.height - smallTabBar!.height;
+      return pixelsOffset > extendedTabBar!.height - smallTabBar!.height + 15;
     } else if (extendedTabBar == null && smallTabBar != null) {
       return pixelsOffset > 15;
     } else {

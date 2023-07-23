@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
-import 'package:money_tracker_app/src/features/transactions//presentation/homepage_card.dart';
+import 'package:money_tracker_app/src/features/transactions//presentation/day_card.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page_with_page_view.dart';
+import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../utils/constants.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late final accountRepository = ref.watch(transactionRepositoryProvider);
+
   late final PageController _controller;
 
   late DateTime _currentDate;
@@ -46,7 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onPageChange(int value) {
     _displayDate = DateTime(_currentDate.year, _currentDate.month + (value - _currentIndex));
+
     _isShowGoToCurrentDateButton();
+
     setState(() {});
   }
 
@@ -70,6 +77,28 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  List<DayCard> _buildTransactionWidgetList(
+    List<TransactionIsar> transactionList,
+    DateTime dayBeginOfMonth,
+    DateTime dayEndOfMonth,
+  ) {
+    final List<DayCard> dayCard = [];
+
+    for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+
+      if (transactionsInDay.isNotEmpty) {
+        dayCard.add(DayCard(
+          dateTime: transactionsInDay[0].dateTime,
+          transactions: transactionsInDay.reversed.toList(),
+        ));
+      }
+    }
+
+    return dayCard;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomTabPageWithPageView(
@@ -77,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       extendedTabBar: ExtendedTabBar(
         innerChild: const ExtendedHomeTab(),
         outerChild: DateSelector(
-          dateDisplay: '${_displayDate.monthToString()}, ${_displayDate.year}',
+          dateDisplay: '${_displayDate.monthString()}, ${_displayDate.year}',
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
           onTapGoToCurrentDate: () {
@@ -86,14 +115,24 @@ class _HomeScreenState extends State<HomeScreen> {
           showGoToCurrentDateButton: _showCurrentDateButton,
         ),
       ),
+      onDragLeft: _previousPage,
+      onDragRight: _nextPage,
       smallTabBar: const SmallTabBar(
         child: SmallHomeTab(),
       ),
       onPageChanged: _onPageChange,
-      listItemCount: 2,
-      itemBuilder: (context, pageIndex, listIndex) {
-        if (listIndex == 0) {
-          return Padding(
+      itemBuilder: (context, pageIndex) {
+        DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
+        DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0);
+
+        List<TransactionIsar> transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+
+        ref.watch(transactionChangesProvider([dayBeginOfMonth, dayEndOfMonth])).whenData((_) {
+          transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        });
+
+        return [
+          Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: const [
@@ -101,11 +140,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: IncomeExpenseCard(isIncome: false)),
               ],
             ),
-          );
-        } else {
-          return Text(pageIndex.toString());
-          // TODO: Show transactions in month depends on pageIndex
-        }
+          ),
+          ..._buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth),
+        ];
       },
     );
   }

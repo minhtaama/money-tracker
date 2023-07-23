@@ -38,14 +38,11 @@ class _ColorSelectListViewState extends State<ColorSelectListView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            'Choose Colors',
-            style: kHeader2TextStyle.copyWith(
-              color: context.appTheme.backgroundNegative,
-              fontSize: 18,
-            ),
+        Text(
+          'Choose Colors',
+          style: kHeader2TextStyle.copyWith(
+            color: context.appTheme.backgroundNegative,
+            fontSize: 18,
           ),
         ),
         SizedBox(

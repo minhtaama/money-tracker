@@ -13,6 +13,7 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.onFieldSubmitted,
     this.autofocus = true,
+    this.isMultiLine = false,
   }) : super(key: key);
   final ValueChanged<String> onChanged;
   final String hintText;
@@ -21,6 +22,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool autofocus;
   final String? Function(String?)? validator;
   final void Function(String)? onFieldSubmitted;
+  final bool isMultiLine;
 
   @override
   Widget build(BuildContext context) {
@@ -28,25 +30,49 @@ class CustomTextFormField extends StatelessWidget {
       autofocus: autofocus,
       onFieldSubmitted: onFieldSubmitted,
       cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
-      style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.backgroundNegative,
-      ),
+      style: isMultiLine
+          ? kHeader3TextStyle.copyWith(
+              color: context.appTheme.backgroundNegative,
+              fontSize: 15,
+            )
+          : kHeader2TextStyle.copyWith(
+              color: context.appTheme.backgroundNegative,
+              fontSize: 18,
+            ),
       validator: validator,
+      maxLines: isMultiLine ? 3 : 1,
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
+        contentPadding: isMultiLine ? const EdgeInsets.all(12) : null,
         focusColor: context.appTheme.primary,
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.grey, width: 1),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: focusColor, width: 2),
-        ),
+        enabledBorder: isMultiLine
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: AppColors.grey, width: 1),
+              )
+            : UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.grey, width: 1),
+              ),
+        focusedBorder: isMultiLine
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: focusColor, width: 2),
+              )
+            : UnderlineInputBorder(
+                borderSide: BorderSide(color: focusColor, width: 2),
+              ),
         hintText: hintText,
-        hintStyle: kHeader2TextStyle.copyWith(
-          color: context.appTheme.backgroundNegative.withOpacity(0.5),
-          fontSize: 18,
-        ),
+        hintStyle: isMultiLine
+            ? kHeader3TextStyle.copyWith(
+                color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                fontSize: 18,
+              )
+            : kHeader2TextStyle.copyWith(
+                color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                fontSize: 18,
+              ),
         errorStyle: kHeader4TextStyle.copyWith(fontSize: 12),
-        helperText: helperText ?? '',
+        helperText: helperText,
       ),
       onChanged: onChanged,
     );

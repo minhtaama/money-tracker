@@ -36,6 +36,8 @@ const double kModalBarrierOpacity = 0.9;
 
 /// [Gap] is a quick way to display a [SizedBox] widget
 class Gap {
+  static get noGap => const SizedBox();
+
   static get w4 => const SizedBox(width: 4);
   static get w8 => const SizedBox(width: 8);
   static get w16 => const SizedBox(width: 16);
@@ -57,6 +59,8 @@ class Gap {
         indent: indent,
         endIndent: indent,
       );
+
+  static get expanded => const Expanded(child: SizedBox());
 
   static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;
   static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;

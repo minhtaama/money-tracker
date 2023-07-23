@@ -15,7 +15,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../common_widgets/card_item.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
@@ -59,14 +58,20 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         isWrapByCard: false,
         children: [
           Row(
-            textBaseline: TextBaseline.alphabetic,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
             children: [
-              Text(
-                settingsObject.currency.code,
-                style: kHeader1TextStyle.copyWith(
-                  fontSize: 22,
-                  color: context.appTheme.backgroundNegative,
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: FittedBox(
+                    child: Text(
+                      settingsObject.currency.symbol ?? settingsObject.currency.code,
+                      style: kHeader1TextStyle.copyWith(
+                        color: AppColors.allColorsUserCanPick[colorIndex][1],
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Gap.w16,
@@ -83,13 +88,12 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   formattedResultOutput: (value) {
                     calculatorOutput = value;
                     _formKey.currentState!.validate();
-                    print('double ${_formatToDouble(calculatorOutput)}');
                   },
                 ),
               ),
             ],
           ),
-          Gap.h8,
+          Gap.h16,
           CustomSliderToggle<AccountType>(
             values: const [AccountType.onHand, AccountType.credit],
             labels: const ['On Hand', 'Credit'],

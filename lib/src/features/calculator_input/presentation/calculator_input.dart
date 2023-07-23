@@ -69,10 +69,9 @@ class _CalculatorInputState extends State<CalculatorInput> {
         hintText: widget.hintText,
         hintStyle: kHeader2TextStyle.copyWith(
           color: context.appTheme.backgroundNegative.withOpacity(0.5),
-          fontSize: widget.fontSize,
+          fontSize: 18,
         ),
         errorStyle: kHeader4TextStyle.copyWith(fontSize: 12),
-        helperText: '',
         contentPadding: EdgeInsets.zero,
       ),
       readOnly: true,

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/application/account_service.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -22,12 +23,6 @@ import '../../../utils/constants.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({Key? key}) : super(key: key);
-
-  String _formatWithGrouping(double value) {
-    //TODO: add a variable to modify decimal digits
-    final formatter = NumberFormat.decimalPatternDigits(decimalDigits: 0);
-    return formatter.format(value);
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,19 +42,19 @@ class AccountsScreen extends ConsumerWidget {
               (index) {
                 AccountIsar model = accountList[index];
                 return CardItem(
-                  margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   color: AppColors.allColorsUserCanPick[model.colorIndex][0]
                       .addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
-                  height: 140,
+                  height: 170,
                   child: Stack(
                     children: [
                       Align(
                         alignment: Alignment.centerRight,
                         child: Transform(
                           transform: Matrix4.identity()
-                            ..translate(-28.0, 25.0)
-                            ..scale(5.8),
+                            ..translate(-28.0, 35.0)
+                            ..scale(7.0),
                           origin: const Offset(15, 15),
                           child: Opacity(
                             opacity: 0.45,
@@ -124,7 +119,8 @@ class AccountsScreen extends ConsumerWidget {
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  _formatWithGrouping(AccountService.getTotalBalance(model)),
+                                  CalculatorService.formatCurrency(
+                                      AccountService.getTotalBalance(model)),
                                   style: kHeader1TextStyle.copyWith(
                                       color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                                   overflow: TextOverflow.fade,
@@ -164,7 +160,14 @@ class AccountsScreen extends ConsumerWidget {
             ),
           ),
         ),
-        children: buildAccountCards(context),
+        children: [
+          CustomSection(
+            isWrapByCard: false,
+            onReorder: (oldIndex, newIndex) =>
+                accountRepository.reorder(accountList, oldIndex, newIndex),
+            children: buildAccountCards(context),
+          ),
+        ],
       ),
     );
   }
