@@ -110,8 +110,10 @@ Future<T?> showCustomModalBottomSheet<T>(
 
 /// This function is used in app_router to show a [ModalBottomSheetPage]
 /// as a new screen with its unique path.
-Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state, {required Widget child}) {
+Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
+    {required Widget child, bool hasHandle = true}) {
   return ModalBottomSheetPage(
+    hasHandle: hasHandle,
     backgroundColor:
         context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
     modalBarrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
@@ -163,7 +165,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
         modalBarrierColor: modalBarrierColor,
         isDismissible: true,
         isScrollControlled: true,
-        enableDrag: true,
+        enableDrag: hasHandle,
         useSafeArea: false,
         builder: (context) => Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),

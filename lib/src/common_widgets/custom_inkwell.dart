@@ -5,14 +5,14 @@ class CustomInkWell extends StatelessWidget {
   const CustomInkWell({
     Key? key,
     this.onTap,
-    this.borderCircularRadiusValue = 6.0,
+    this.borderRadius,
     required this.inkColor,
     required this.child,
   }) : super(key: key);
   final VoidCallback? onTap;
   final Widget child;
   final Color inkColor;
-  final double borderCircularRadiusValue;
+  final BorderRadius? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class CustomInkWell extends StatelessWidget {
       },
       splashColor: inkColor.withOpacity(0.3),
       highlightColor: Colors.transparent,
-      borderRadius: BorderRadius.circular(borderCircularRadiusValue),
+      borderRadius: borderRadius,
       child: child,
     );
   }

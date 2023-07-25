@@ -18,6 +18,7 @@ class IconWithTextButton extends StatelessWidget {
     this.width = 150,
     this.padding,
     this.border,
+    this.borderRadius,
     this.isDisabled = false,
     this.onTap,
     this.color,
@@ -32,6 +33,7 @@ class IconWithTextButton extends StatelessWidget {
   final double? width;
   final EdgeInsets? padding;
   final BoxBorder? border;
+  final BorderRadius? borderRadius;
   final VoidCallback? onTap;
   final bool isDisabled;
 
@@ -44,12 +46,12 @@ class IconWithTextButton extends StatelessWidget {
       color: isDisabled ? AppColors.darkerGrey : backgroundColor,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(1000),
+      borderRadius: borderRadius ?? BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
       child: CustomInkWell(
         onTap: onTap,
-        borderCircularRadiusValue: 1000,
+        //borderRadius: borderRadius ?? BorderRadius.circular(1000),
         inkColor: color ?? context.appTheme.primaryNegative,
         child: Padding(
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),

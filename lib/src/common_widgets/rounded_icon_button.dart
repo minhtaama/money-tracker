@@ -50,7 +50,7 @@ class RoundedIconButton extends StatelessWidget {
                 isGradient: true,
                 child: CustomInkWell(
                   onTap: onTap,
-                  borderCircularRadiusValue: 1000,
+                  borderRadius: BorderRadius.circular(10000),
                   inkColor: iconColor ?? context.appTheme.primaryNegative,
                   child: Padding(
                     padding: EdgeInsets.all(iconPadding),

@@ -59,6 +59,7 @@ final goRouter = GoRouter(
               pageBuilder: (context, state) => showModalBottomSheetPage(
                 context,
                 state,
+                hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.income),
               ),
               //TODO: Implement add transaction widget
@@ -69,6 +70,7 @@ final goRouter = GoRouter(
               pageBuilder: (context, state) => showModalBottomSheetPage(
                 context,
                 state,
+                hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.expense),
               ),
               //TODO: Implement add transaction widget
@@ -79,6 +81,7 @@ final goRouter = GoRouter(
               pageBuilder: (context, state) => showModalBottomSheetPage(
                 context,
                 state,
+                hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.transfer),
               ),
               //TODO: Implement add transaction widget

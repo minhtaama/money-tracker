@@ -34,6 +34,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
     return IconWithTextButton(
       label: currentCategory != null ? currentCategory!.name : 'Add Category',
       labelSize: 15,
+      borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentCategory != null
           ? AppIcons.fromCategoryAndIndex(currentCategory!.iconCategory, currentCategory!.iconIndex)
@@ -84,6 +85,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                               AppIcons.fromCategoryAndIndex(category.iconCategory, category.iconIndex),
                           label: category.name,
                           labelSize: 18,
+                          borderRadius: BorderRadius.circular(16),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           backgroundColor: AppColors.allColorsUserCanPick[category.colorIndex][0],
                           color: AppColors.allColorsUserCanPick[category.colorIndex][1],

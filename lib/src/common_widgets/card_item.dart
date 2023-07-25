@@ -72,6 +72,7 @@ class CardItem extends StatelessWidget {
             : null,
       ),
       child: ClipRRect(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         borderRadius: borderRadius ?? BorderRadius.circular(16),
         child: Material(
           color: Colors.transparent,

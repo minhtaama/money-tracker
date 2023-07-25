@@ -4,9 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
+import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/account_selector.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/category_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -101,12 +104,53 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             ],
           ),
           Gap.h16,
-          widget.transactionType != TransactionType.transfer
-              ? CategorySelector(
-                  transactionType: widget.transactionType, onChangedCategory: (newCategory) {})
-              : Gap.noGap,
-          Gap.h8,
-          AccountSelector(transactionType: widget.transactionType, onChangedAccount: (newAccount) {}),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 6,
+                child: FittedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: DateTimeSelector(
+                      onChanged: (DateTime value) {
+                        print(value);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Gap.w16,
+              Expanded(
+                flex: 13,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:',
+                      style: kHeader2TextStyle.copyWith(
+                          fontSize: 18, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+                    ),
+                    Gap.h4,
+                    widget.transactionType != TransactionType.transfer
+                        ? CategorySelector(
+                            transactionType: widget.transactionType, onChangedCategory: (newCategory) {})
+                        : AccountSelector(
+                            transactionType: widget.transactionType, onChangedAccount: (newAccount) {}),
+                    Gap.h16,
+                    Text(
+                      widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:',
+                      style: kHeader2TextStyle.copyWith(
+                          fontSize: 18, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+                    ),
+                    Gap.h4,
+                    AccountSelector(
+                        transactionType: widget.transactionType, onChangedAccount: (newAccount) {}),
+                  ],
+                ),
+              ),
+            ],
+          ),
           Gap.h16,
           CustomTextFormField(
             autofocus: false,
@@ -119,29 +163,37 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
               });
             },
           ),
-          Gap.h8,
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconWithTextButton(
-              iconPath: AppIcons.add,
-              label: 'Add',
-              backgroundColor: context.appTheme.accent,
-              isDisabled: _formatToDouble(calculatorOutput) == null,
-              onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  // By validating, the _formatToDouble(calculatorOutput) must not null
-                  // final accountRepository = ref.read(accountRepositoryProvider);
-                  // accountRepository.writeNew(_formatToDouble(calculatorOutput)!,
-                  //     type: accountType,
-                  //     iconCategory: iconCategory,
-                  //     iconIndex: iconIndex,
-                  //     name: accountName,
-                  //     colorIndex: colorIndex);
-                  //TODO: Add transaction
-                  context.pop();
-                }
-              },
-            ),
+          Gap.h16,
+          Row(
+            children: [
+              RoundedIconButton(
+                iconPath: AppIcons.back,
+                backgroundColor: AppColors.darkerGrey,
+                size: 55,
+                onTap: () => context.pop(),
+              ),
+              const Spacer(),
+              IconWithTextButton(
+                iconPath: AppIcons.add,
+                label: 'Add',
+                backgroundColor: context.appTheme.accent,
+                isDisabled: _formatToDouble(calculatorOutput) == null,
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    // By validating, the _formatToDouble(calculatorOutput) must not null
+                    // final accountRepository = ref.read(transactionRepositoryProvider);
+                    // accountRepository.writeNew(_formatToDouble(calculatorOutput)!,
+                    //     type: accountType,
+                    //     iconCategory: iconCategory,
+                    //     iconIndex: iconIndex,
+                    //     name: accountName,
+                    //     colorIndex: colorIndex);
+                    //TODO: Add transaction
+                    context.pop();
+                  }
+                },
+              ),
+            ],
           ),
         ],
       ),

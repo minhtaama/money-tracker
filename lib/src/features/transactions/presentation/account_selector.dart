@@ -33,6 +33,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
     return IconWithTextButton(
       label: currentAccount != null ? currentAccount!.name : 'Add Account',
       labelSize: 15,
+      borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentAccount != null
           ? AppIcons.fromCategoryAndIndex(currentAccount!.iconCategory, currentAccount!.iconIndex)
@@ -74,6 +75,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                               AppIcons.fromCategoryAndIndex(account.iconCategory, account.iconIndex),
                           label: account.name,
                           labelSize: 18,
+                          borderRadius: BorderRadius.circular(16),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           backgroundColor: AppColors.allColorsUserCanPick[account.colorIndex][0],
                           color: AppColors.allColorsUserCanPick[account.colorIndex][1],
