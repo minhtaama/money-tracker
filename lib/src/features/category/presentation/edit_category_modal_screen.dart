@@ -101,7 +101,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             ),
             const Expanded(child: SizedBox()),
             IconWithTextButton(
-              icon: AppIcons.edit,
+              iconPath: AppIcons.edit,
               label: 'Done',
               backgroundColor: context.appTheme.accent,
               onTap: () async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
@@ -23,12 +24,20 @@ class CategoryListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        RoundedIconButton(
-          iconPath: iconPath,
-          iconPadding: 8,
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
-          onTap: null,
+        Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(1000),
+          ),
+          child: Transform.scale(
+            scale: 0.8,
+            child: SvgIcon(
+              iconPath,
+              color: iconColor,
+            ),
+          ),
         ),
         Gap.w16,
         Expanded(

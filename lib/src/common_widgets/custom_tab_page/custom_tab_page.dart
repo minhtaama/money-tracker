@@ -71,7 +71,6 @@ class _CustomTabPageState extends State<CustomTabPage> {
 ////////////////////////////////////////////////////////////////////////
 
 class CustomTabPageWithPageView extends StatefulWidget {
-  /// This Widget is used only on HomePage for DateTime changing
   const CustomTabPageWithPageView({
     Key? key,
     this.smallTabBar,

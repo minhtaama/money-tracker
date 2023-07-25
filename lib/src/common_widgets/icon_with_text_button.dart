@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -9,29 +10,38 @@ import 'card_item.dart';
 class IconWithTextButton extends StatelessWidget {
   const IconWithTextButton({
     Key? key,
-    required this.icon,
+    required this.iconPath,
     required this.label,
+    this.labelSize,
     required this.backgroundColor,
-    this.size = 55,
+    this.height = 55,
+    this.width = 150,
+    this.padding,
+    this.border,
     this.isDisabled = false,
     this.onTap,
     this.color,
   }) : super(key: key);
 
-  final String icon;
+  final String iconPath;
   final String label;
+  final double? labelSize;
   final Color backgroundColor;
   final Color? color;
-  final double size;
+  final double? height;
+  final double? width;
+  final EdgeInsets? padding;
+  final BoxBorder? border;
   final VoidCallback? onTap;
   final bool isDisabled;
 
   @override
   Widget build(BuildContext context) {
     return CardItem(
-      height: size,
-      width: 150,
-      color: isDisabled ? AppColors.grey : backgroundColor,
+      height: height,
+      width: width,
+      border: border,
+      color: isDisabled ? AppColors.darkerGrey : backgroundColor,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
       borderRadius: BorderRadius.circular(1000),
@@ -42,34 +52,34 @@ class IconWithTextButton extends StatelessWidget {
         borderCircularRadiusValue: 1000,
         inkColor: color ?? context.appTheme.primaryNegative,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: SvgIcon(
-                  icon,
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),
+          child: IntrinsicWidth(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgIcon(
+                  iconPath,
                   color: isDisabled
                       ? context.appTheme.backgroundNegative
                       : color ?? context.appTheme.accentNegative,
+                  size: 30,
                 ),
-              ),
-              Gap.w8,
-              Expanded(
-                flex: 5,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    label,
-                    style: kHeader2TextStyle.copyWith(
-                      color: isDisabled
-                          ? context.appTheme.backgroundNegative
-                          : color ?? context.appTheme.accentNegative,
+                Gap.w8,
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: kHeader2TextStyle.copyWith(
+                        color: isDisabled
+                            ? context.appTheme.backgroundNegative
+                            : color ?? context.appTheme.accentNegative,
+                        fontSize: labelSize,
+                      ),
                     ),
                   ),
                 ),
-              )
-            ],
+              ],
+            ),
           ),
         ),
       ),

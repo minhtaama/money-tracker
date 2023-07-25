@@ -11,11 +11,14 @@ class CustomSection extends StatefulWidget {
     this.isWrapByCard = true,
     this.onReorder,
     required this.children,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
   }) : super(key: key);
+
   final String? title;
   final bool isWrapByCard;
   final void Function(int oldIndex, int newIndex)? onReorder;
   final List<Widget> children;
+  final CrossAxisAlignment crossAxisAlignment;
 
   @override
   State<CustomSection> createState() => _CustomSectionState();
@@ -70,7 +73,7 @@ class _CustomSectionState extends State<CustomSection> {
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       padding: EdgeInsets.zero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           widget.title != null
               ? Padding(
@@ -91,9 +94,11 @@ class _CustomSectionState extends State<CustomSection> {
             color: widget.isWrapByCard ? null : Colors.transparent,
             child: widget.onReorder == null
                 ? Column(
+                    crossAxisAlignment: widget.crossAxisAlignment,
                     children: _children,
                   )
                 : ReorderableColumn(
+                    crossAxisAlignment: widget.crossAxisAlignment,
                     scrollController: ScrollController(),
                     draggingWidgetOpacity: 0,
                     // This callback build the widget when dragging is happening

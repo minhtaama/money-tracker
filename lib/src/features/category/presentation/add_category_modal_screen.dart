@@ -91,7 +91,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
           Align(
             alignment: Alignment.centerRight,
             child: IconWithTextButton(
-              icon: AppIcons.add,
+              iconPath: AppIcons.add,
               label: 'Create',
               backgroundColor: context.appTheme.accent,
               isDisabled: categoryName == '',

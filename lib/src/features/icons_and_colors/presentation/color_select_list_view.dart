@@ -115,7 +115,7 @@ class CircleColor extends StatelessWidget {
                   color: context.appTheme.background.withOpacity(0.5),
                 ),
                 child: Transform.scale(
-                  scale: 1.12,
+                  scale: 0.7,
                   child: SvgIcon(AppIcons.done),
                 ),
               ),

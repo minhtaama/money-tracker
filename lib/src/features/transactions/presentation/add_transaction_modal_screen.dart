@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
-import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
-import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/account_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/category_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-
+import '../../../common_widgets/card_item.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 
 class AddTransactionModalScreen extends ConsumerStatefulWidget {
@@ -60,22 +58,25 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             : widget.transactionType == TransactionType.expense
                 ? 'Add Expense'
                 : 'Transfer between accounts',
+        crossAxisAlignment: CrossAxisAlignment.start,
         isWrapByCard: false,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: context.appTheme.accent,
+              CardItem(
+                height: 50,
+                width: 50,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                margin: EdgeInsets.zero,
+                color: AppColors.grey,
+                borderRadius: BorderRadius.circular(1000),
                 child: FittedBox(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text(
-                      settingsObject.currency.symbol ?? settingsObject.currency.code,
-                      style: kHeader1TextStyle.copyWith(
-                        color: context.appTheme.accentNegative,
-                      ),
+                  child: Text(
+                    settingsObject.currency.symbol ?? settingsObject.currency.code,
+                    style: kHeader1TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative,
                     ),
                   ),
                 ),
@@ -86,9 +87,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   hintText: 'Amount',
                   focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null ||
-                        _formatToDouble(calculatorOutput) == 0) {
-                      return 'Amount must greater than 0';
+                    if (_formatToDouble(calculatorOutput) == null) {
+                      return 'Invalid amount';
                     }
                     return null;
                   },
@@ -101,11 +101,17 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             ],
           ),
           Gap.h16,
+          widget.transactionType != TransactionType.transfer
+              ? CategorySelector(
+                  transactionType: widget.transactionType, onChangedCategory: (newCategory) {})
+              : Gap.noGap,
+          Gap.h8,
+          AccountSelector(transactionType: widget.transactionType, onChangedAccount: (newAccount) {}),
+          Gap.h16,
           CustomTextFormField(
             autofocus: false,
-            focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+            focusColor: context.appTheme.accent,
             isMultiLine: true,
-            onFieldSubmitted: (_) => _formKey.currentState!.validate(),
             hintText: 'Note...',
             onChanged: (value) {
               setState(() {
@@ -117,10 +123,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
           Align(
             alignment: Alignment.centerRight,
             child: IconWithTextButton(
-              icon: AppIcons.add,
+              iconPath: AppIcons.add,
               label: 'Add',
               backgroundColor: context.appTheme.accent,
-              isDisabled: accountName.isEmpty || _formatToDouble(calculatorOutput) == null,
+              isDisabled: _formatToDouble(calculatorOutput) == null,
               onTap: () {
                 if (_formKey.currentState!.validate()) {
                   // By validating, the _formatToDouble(calculatorOutput) must not null

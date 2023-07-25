@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
@@ -15,6 +16,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+import '../../../common_widgets/svg_icon.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
@@ -59,17 +61,19 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: AppColors.allColorsUserCanPick[colorIndex][0],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: FittedBox(
-                    child: Text(
-                      settingsObject.currency.symbol ?? settingsObject.currency.code,
-                      style: kHeader1TextStyle.copyWith(
-                        color: AppColors.allColorsUserCanPick[colorIndex][1],
-                      ),
+              CardItem(
+                height: 50,
+                width: 50,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                margin: EdgeInsets.zero,
+                color: AppColors.grey,
+                borderRadius: BorderRadius.circular(1000),
+                child: FittedBox(
+                  child: Text(
+                    settingsObject.currency.symbol ?? settingsObject.currency.code,
+                    style: kHeader1TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative,
                     ),
                   ),
                 ),
@@ -147,7 +151,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           Align(
             alignment: Alignment.centerRight,
             child: IconWithTextButton(
-              icon: AppIcons.add,
+              iconPath: AppIcons.add,
               label: 'Create',
               backgroundColor: context.appTheme.accent,
               isDisabled: accountName.isEmpty || _formatToDouble(calculatorOutput) == null,

@@ -37,8 +37,8 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
     return Scaffold(
       backgroundColor: context.appTheme.background,
       floatingActionButton: IconWithTextButton(
-        size: 60,
-        icon: AppIcons.done,
+        height: 60,
+        iconPath: AppIcons.done,
         label: 'Choose',
         backgroundColor: context.appTheme.accent,
         color: context.appTheme.accentNegative,

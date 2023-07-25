@@ -39,7 +39,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
               Row(
                 children: [
                   IconWithTextButton(
-                    icon: AppIcons.back,
+                    iconPath: AppIcons.back,
                     label: 'No',
                     color: context.appTheme.backgroundNegative,
                     backgroundColor: AppColors.grey,
@@ -47,7 +47,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                   ),
                   const Expanded(child: SizedBox()),
                   IconWithTextButton(
-                    icon: confirmIcon ?? AppIcons.delete,
+                    iconPath: confirmIcon ?? AppIcons.delete,
                     label: confirmLabel,
                     color: context.appTheme.accentNegative,
                     backgroundColor: context.appTheme.accent,
