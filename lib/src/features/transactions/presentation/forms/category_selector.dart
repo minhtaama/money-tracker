@@ -8,8 +8,8 @@ import 'package:money_tracker_app/src/features/category/domain/category_isar.dar
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../theme_and_ui/icons.dart';
-import '../../../utils/enums.dart';
+import '../../../../theme_and_ui/icons.dart';
+import '../../../../utils/enums.dart';
 
 class CategorySelector extends ConsumerStatefulWidget {
   const CategorySelector({

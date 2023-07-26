@@ -54,6 +54,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
     return TextFormField(
       controller: _controller,
       validator: widget.validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       style: kHeader2TextStyle.copyWith(
         color: context.appTheme.backgroundNegative,
         fontSize: widget.fontSize,

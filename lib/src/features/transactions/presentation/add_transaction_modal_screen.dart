@@ -5,11 +5,12 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/account_selector.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/category_selector.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/date_time_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/forms/account_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/forms/category_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -17,6 +18,8 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
+import '../../category/domain/category_isar.dart';
+import 'forms/forms.dart';
 
 class AddTransactionModalScreen extends ConsumerStatefulWidget {
   const AddTransactionModalScreen(this.transactionType, {Key? key}) : super(key: key);
@@ -29,12 +32,13 @@ class AddTransactionModalScreen extends ConsumerStatefulWidget {
 class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  AccountType accountType = AccountType.onHand;
-  String accountName = '';
-  String iconCategory = '';
-  int iconIndex = 0;
-  int colorIndex = 0;
+  late TransactionType type = widget.transactionType;
+  late DateTime dateTime = DateTime.now();
   String calculatorOutput = '0';
+  String? note;
+  CategoryIsar? category;
+  AccountIsar? account;
+  AccountIsar? toAccount;
 
   double? _formatToDouble(String formattedValue) {
     try {
@@ -88,7 +92,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
               Expanded(
                 child: CalculatorInput(
                   hintText: 'Amount',
-                  focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                  focusColor: context.appTheme.primary,
                   validator: (_) {
                     if (_formatToDouble(calculatorOutput) == null) {
                       return 'Invalid amount';
@@ -97,7 +101,6 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   },
                   formattedResultOutput: (value) {
                     calculatorOutput = value;
-                    _formKey.currentState!.validate();
                   },
                 ),
               ),
@@ -114,7 +117,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                     padding: const EdgeInsets.only(top: 8.0),
                     child: DateTimeSelector(
                       onChanged: (DateTime value) {
-                        print(value);
+                        dateTime = value;
                       },
                     ),
                   ),
@@ -129,23 +132,65 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                     Text(
                       widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:',
                       style: kHeader2TextStyle.copyWith(
-                          fontSize: 18, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+                          fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
                     ),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
-                        ? CategorySelector(
-                            transactionType: widget.transactionType, onChangedCategory: (newCategory) {})
-                        : AccountSelector(
-                            transactionType: widget.transactionType, onChangedAccount: (newAccount) {}),
+                        ? CategoryFormSelector(
+                            transactionType: widget.transactionType,
+                            validator: (_) {
+                              if (category == null) {
+                                return '!';
+                              }
+                              return null;
+                            },
+                            onChangedCategory: (newCategory) {
+                              setState(() {
+                                category = newCategory;
+                              });
+                            })
+                        : AccountFormSelector(
+                            transactionType: widget.transactionType,
+                            validator: (_) {
+                              if (account == null) {
+                                return '!';
+                              }
+                              return null;
+                            },
+                            onChangedAccount: (newAccount) {
+                              setState(() {
+                                account = newAccount;
+                              });
+                            }),
                     Gap.h16,
                     Text(
                       widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:',
                       style: kHeader2TextStyle.copyWith(
-                          fontSize: 18, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+                          fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
                     ),
                     Gap.h4,
-                    AccountSelector(
-                        transactionType: widget.transactionType, onChangedAccount: (newAccount) {}),
+                    AccountFormSelector(
+                        transactionType: widget.transactionType,
+                        validator: (_) {
+                          if (widget.transactionType != TransactionType.transfer && account == null) {
+                            return '!';
+                          }
+                          if (widget.transactionType == TransactionType.transfer && toAccount == null) {
+                            return '!';
+                          }
+                          return null;
+                        },
+                        onChangedAccount: (newAccount) {
+                          if (widget.transactionType != TransactionType.transfer) {
+                            setState(() {
+                              account = newAccount;
+                            });
+                          } else {
+                            setState(() {
+                              toAccount = newAccount;
+                            });
+                          }
+                        }),
                   ],
                 ),
               ),
@@ -158,9 +203,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             isMultiLine: true,
             hintText: 'Note...',
             onChanged: (value) {
-              setState(() {
-                accountName = value;
-              });
+              note = value;
+              print(note);
             },
           ),
           Gap.h16,
@@ -177,18 +221,21 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                 iconPath: AppIcons.add,
                 label: 'Add',
                 backgroundColor: context.appTheme.accent,
-                isDisabled: _formatToDouble(calculatorOutput) == null,
+                isDisabled:
+                    _formatToDouble(calculatorOutput) == null || category == null || account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     // By validating, the _formatToDouble(calculatorOutput) must not null
-                    // final accountRepository = ref.read(transactionRepositoryProvider);
-                    // accountRepository.writeNew(_formatToDouble(calculatorOutput)!,
-                    //     type: accountType,
-                    //     iconCategory: iconCategory,
-                    //     iconIndex: iconIndex,
-                    //     name: accountName,
-                    //     colorIndex: colorIndex);
-                    //TODO: Add transaction
+                    final transactionRepository = ref.read(transactionRepositoryProvider);
+                    transactionRepository.writeNew(
+                      type,
+                      dateTime: dateTime,
+                      amount: _formatToDouble(calculatorOutput)!,
+                      note: note,
+                      category: category!,
+                      account: account!,
+                      toAccount: toAccount,
+                    );
                     context.pop();
                   }
                 },

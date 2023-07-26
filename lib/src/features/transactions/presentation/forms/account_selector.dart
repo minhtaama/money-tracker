@@ -7,9 +7,9 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../theme_and_ui/icons.dart';
-import '../../../utils/enums.dart';
-import '../../accounts/domain/account_isar.dart';
+import '../../../../theme_and_ui/icons.dart';
+import '../../../../utils/enums.dart';
+import '../../../accounts/domain/account_isar.dart';
 
 class AccountSelector extends ConsumerStatefulWidget {
   const AccountSelector({
