@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/features/transactions/data/transaction_rep
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../../../persistent/isar_data_store.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
@@ -20,40 +21,37 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late final accountRepository = ref.watch(transactionRepositoryProvider);
+  late final isar = ref.read(isarProvider);
+  late final accountRepository = ref.read(transactionRepositoryProvider);
 
   late final PageController _controller;
 
-  late DateTime _currentDate;
-  late int _currentIndex;
+  final DateTime _today = DateTime.now().onlyYearMonth;
+  late final int _indexToday = _today.getMonthsDifferent(Calendar.minDate);
 
   late DateTime _displayDate;
 
   late bool _showCurrentDateButton;
 
-  DateTime? _minDate;
+  // TODO: Save this to settings repo
+  late bool _hideTotalBalance = false;
 
-  DateTime? _maxDate;
+  // DateTime? _minDate;
+  //
+  // DateTime? _maxDate;
 
   @override
   void initState() {
-    _currentDate = DateTime.now().onlyYearMonth;
-    _currentIndex = _currentDate.getMonthsDifferent(Calendar.minDate);
-
-    _controller = PageController(initialPage: _currentIndex);
-
-    _displayDate = _currentDate;
-
+    _controller = PageController(initialPage: _indexToday);
+    _displayDate = _today;
     _showCurrentDateButton = false;
 
     super.initState();
   }
 
   void _onPageChange(int value) {
-    _displayDate = DateTime(_currentDate.year, _currentDate.month + (value - _currentIndex));
-
+    _displayDate = DateTime(_today.year, _today.month + (value - _indexToday));
     _isShowGoToCurrentDateButton();
-
     setState(() {});
   }
 
@@ -70,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _isShowGoToCurrentDateButton() {
-    if (_displayDate.year == _currentDate.year && _displayDate.month == _currentDate.month) {
+    if (_displayDate.year == _today.year && _displayDate.month == _today.month) {
       _showCurrentDateButton = false;
     } else {
       _showCurrentDateButton = true;
@@ -95,7 +93,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ));
       }
     }
-
     return dayCard;
   }
 
@@ -104,30 +101,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return CustomTabPageWithPageView(
       controller: _controller,
       extendedTabBar: ExtendedTabBar(
-        innerChild: const ExtendedHomeTab(),
+        innerChild: ExtendedHomeTab(
+          hideNumber: _hideTotalBalance,
+          onEyeTap: () => setState(() => _hideTotalBalance = !_hideTotalBalance),
+        ),
         outerChild: DateSelector(
           dateDisplay: '${_displayDate.monthString()}, ${_displayDate.year}',
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
           onTapGoToCurrentDate: () {
-            _animatedToPage(_currentIndex);
+            _animatedToPage(_indexToday);
           },
           showGoToCurrentDateButton: _showCurrentDateButton,
         ),
       ),
       onDragLeft: _previousPage,
       onDragRight: _nextPage,
-      smallTabBar: const SmallTabBar(
-        child: SmallHomeTab(),
+      smallTabBar: SmallTabBar(
+        child: SmallHomeTab(
+          secondaryTitle: '${_displayDate.monthString()}, ${_displayDate.year}',
+          hideNumber: _hideTotalBalance,
+          onEyeTap: () => setState(() => _hideTotalBalance = !_hideTotalBalance),
+        ),
       ),
       onPageChanged: _onPageChange,
       itemBuilder: (context, pageIndex) {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
-        DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0);
+        DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
         List<TransactionIsar> transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.watch(transactionChangesProvider([dayBeginOfMonth, dayEndOfMonth])).whenData((_) {
+        ref.listenManual(
+            transactionChangesProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+            (_, __) {
           transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
         });
 

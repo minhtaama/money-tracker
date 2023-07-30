@@ -91,7 +91,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   },
                   formattedResultOutput: (value) {
                     calculatorOutput = value;
-                    _formKey.currentState!.validate();
                   },
                 ),
               ),
@@ -128,7 +127,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     }
                     return null;
                   },
-                  onFieldSubmitted: (_) => _formKey.currentState!.validate(),
                   hintText: 'Account Name',
                   onChanged: (value) {
                     setState(() {

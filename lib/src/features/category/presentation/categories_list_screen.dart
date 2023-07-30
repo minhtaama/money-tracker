@@ -84,6 +84,7 @@ class CategoriesListScreen extends ConsumerWidget {
         ),
         children: [
           CustomSection(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             title: 'Income',
             onReorder: (oldIndex, newIndex) {
               categoryRepository.reorder(incomeList, oldIndex, newIndex);
@@ -91,6 +92,7 @@ class CategoriesListScreen extends ConsumerWidget {
             children: buildCategoryTiles(context, CategoryType.income),
           ),
           CustomSection(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             title: 'Expense',
             onReorder: (oldIndex, newIndex) {
               categoryRepository.reorder(expenseList, oldIndex, newIndex);

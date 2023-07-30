@@ -8,8 +8,6 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/forms/account_selector.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/forms/category_selector.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -94,7 +92,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   hintText: 'Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null) {
+                    if (_formatToDouble(calculatorOutput) == null ||
+                        _formatToDouble(calculatorOutput) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -204,7 +203,6 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             hintText: 'Note...',
             onChanged: (value) {
               note = value;
-              print(note);
             },
           ),
           Gap.h16,
@@ -221,8 +219,11 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                 iconPath: AppIcons.add,
                 label: 'Add',
                 backgroundColor: context.appTheme.accent,
-                isDisabled:
-                    _formatToDouble(calculatorOutput) == null || category == null || account == null,
+                isDisabled: _formatToDouble(calculatorOutput) == null ||
+                    _formatToDouble(calculatorOutput) == 0 ||
+                    (category == null && widget.transactionType != TransactionType.transfer) ||
+                    (toAccount == null && widget.transactionType == TransactionType.transfer) ||
+                    account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     // By validating, the _formatToDouble(calculatorOutput) must not null
@@ -232,7 +233,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                       dateTime: dateTime,
                       amount: _formatToDouble(calculatorOutput)!,
                       note: note,
-                      category: category!,
+                      category: category,
                       account: account!,
                       toAccount: toAccount,
                     );

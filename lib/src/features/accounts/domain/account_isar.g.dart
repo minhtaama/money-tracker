@@ -62,6 +62,13 @@ const AccountIsarSchema = CollectionSchema(
       target: r'TransactionIsar',
       single: false,
       linkName: r'account',
+    ),
+    r'transactionsTransferredTo': LinkSchema(
+      id: -5006061128410807070,
+      name: r'transactionsTransferredTo',
+      target: r'TransactionIsar',
+      single: false,
+      linkName: r'toAccount',
     )
   },
   embeddedSchemas: {},
@@ -154,7 +161,7 @@ Id _accountIsarGetId(AccountIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
-  return [object.transactions];
+  return [object.transactions, object.transactionsTransferredTo];
 }
 
 void _accountIsarAttach(
@@ -162,6 +169,8 @@ void _accountIsarAttach(
   object.id = id;
   object.transactions
       .attach(col, col.isar.collection<TransactionIsar>(), r'transactions', id);
+  object.transactionsTransferredTo.attach(col,
+      col.isar.collection<TransactionIsar>(), r'transactionsTransferredTo', id);
 }
 
 extension AccountIsarQueryWhereSort
@@ -864,6 +873,71 @@ extension AccountIsarQueryLinks
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
           r'transactions', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredTo(FilterQuery<TransactionIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'transactionsTransferredTo');
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredToLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'transactionsTransferredTo', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredToIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactionsTransferredTo', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredToIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'transactionsTransferredTo', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredToLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'transactionsTransferredTo', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredToLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'transactionsTransferredTo', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      transactionsTransferredToLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'transactionsTransferredTo', lower, includeLower,
+          upper, includeUpper);
     });
   }
 }

@@ -1,28 +1,38 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/transactions/application/transaction_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
+import '../../../../../persistent/isar_data_store.dart';
 import '../../../../common_widgets/card_item.dart';
+import '../../../../common_widgets/rounded_icon_button.dart';
+import '../../../settings/data/settings_controller.dart';
+import '../../../transactions/data/transaction_repo.dart';
 
 class ExtendedHomeTab extends StatelessWidget {
-  const ExtendedHomeTab({Key? key}) : super(key: key);
+  const ExtendedHomeTab({Key? key, required this.hideNumber, required this.onEyeTap}) : super(key: key);
+  final bool hideNumber;
+  final VoidCallback onEyeTap;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => print('extended child tapped'),
-      child: ListView(
-        physics: const NeverScrollableScrollPhysics(),
-        reverse: true,
-        children: [
-          Gap.h8,
-          const TotalMoney(),
-          const WelcomeText(),
-        ],
-      ),
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      reverse: true,
+      children: [
+        Gap.h8,
+        TotalMoney(
+          hideNumber: hideNumber,
+          onEyeTap: onEyeTap,
+        ),
+        const WelcomeText(),
+      ],
     );
   }
 }
@@ -153,19 +163,34 @@ class WelcomeText extends StatelessWidget {
   }
 }
 
-class TotalMoney extends StatelessWidget {
+class TotalMoney extends ConsumerWidget {
   const TotalMoney({
     super.key,
+    required this.hideNumber,
+    required this.onEyeTap,
   });
 
+  final bool hideNumber;
+  final VoidCallback onEyeTap;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isar = ref.watch(isarProvider);
+    final settingsRepository = ref.watch(settingsControllerProvider);
+
+    double totalBalance = TransactionService.getTotalBalance(isar);
+
+    ref
+        .watch(transactionChangesProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .whenData((_) {
+      totalBalance = TransactionService.getTotalBalance(isar);
+    });
+
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.ideographic,
+      textBaseline: TextBaseline.alphabetic,
       children: [
         Text(
-          'VND'.hardcoded,
+          settingsRepository.currency.code,
           style: kHeader4TextStyle.copyWith(
             fontWeight: FontWeight.w100,
             color: context.appTheme.secondaryNegative,
@@ -174,24 +199,31 @@ class TotalMoney extends StatelessWidget {
           ),
         ),
         Gap.w8,
-        Text(
-          '8'.hardcoded,
-          style: kHeader1TextStyle.copyWith(
-            color: context.appTheme.secondaryNegative,
-            fontSize: 36,
+        Expanded(
+          child: EasyRichText(
+            CalculatorService.formatCurrency(totalBalance, hideNumber: hideNumber),
+            defaultStyle: kHeader2TextStyle.copyWith(
+              color: context.appTheme.secondaryNegative,
+              fontSize: 25,
+            ),
+            //textAlign: TextAlign.right,
+            patternList: [
+              EasyRichTextPattern(
+                targetString: '^[0-9]+',
+                style: kHeader1TextStyle.copyWith(
+                  color: context.appTheme.secondaryNegative,
+                  fontSize: 36,
+                ),
+              ),
+            ],
           ),
         ),
-        Text(
-          ',540,000'.hardcoded,
-          style: kHeader2TextStyle.copyWith(
-            color: context.appTheme.secondaryNegative,
-            fontSize: 25,
-          ),
-        ),
-        const Expanded(child: SizedBox()),
-        SvgIcon(
-          AppIcons.eye,
-          color: context.appTheme.secondaryNegative,
+        Gap.w8,
+        RoundedIconButton(
+          iconPath: hideNumber ? AppIcons.eye : AppIcons.eyeSlash,
+          backgroundColor: Colors.transparent,
+          iconColor: context.appTheme.backgroundNegative,
+          onTap: onEyeTap,
         ),
       ],
     );

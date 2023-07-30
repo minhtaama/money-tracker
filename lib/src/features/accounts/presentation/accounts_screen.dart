@@ -6,11 +6,11 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/accounts/application/account_service.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
+import 'package:money_tracker_app/src/features/transactions/application/transaction_service.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -120,7 +120,7 @@ class AccountsScreen extends ConsumerWidget {
                               Expanded(
                                 child: Text(
                                   CalculatorService.formatCurrency(
-                                      AccountService.getTotalBalance(model)),
+                                      TransactionService.getAccountBalance(model)),
                                   style: kHeader1TextStyle.copyWith(
                                       color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                                   overflow: TextOverflow.fade,
@@ -163,6 +163,7 @@ class AccountsScreen extends ConsumerWidget {
         children: [
           CustomSection(
             isWrapByCard: false,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             onReorder: (oldIndex, newIndex) =>
                 accountRepository.reorder(accountList, oldIndex, newIndex),
             children: buildAccountCards(context),

@@ -1,7 +1,8 @@
 import 'package:intl/intl.dart';
 
 class CalculatorService {
-  static String formatCurrency(double value, {bool allowSubCurrency = false}) {
+  static String formatCurrency(double value,
+      {bool enableDecimalDigits = false, bool hideNumber = false}) {
     //TODO: add a variable to modify decimal digits
     NumberFormat formatter;
 
@@ -15,8 +16,13 @@ class CalculatorService {
       formatter = NumberFormat('###,###.##');
       return '${formatter.format(shortValue)} M';
     }
-    formatter = NumberFormat.decimalPatternDigits(decimalDigits: allowSubCurrency ? 2 : 0);
-    return formatter.format(value);
+    formatter = NumberFormat.decimalPatternDigits(decimalDigits: enableDecimalDigits ? 2 : 0);
+
+    if (hideNumber) {
+      return '***';
+    } else {
+      return formatter.format(value);
+    }
   }
 
   static String unformatNumberGrouping(String value) {

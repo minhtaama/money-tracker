@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
@@ -15,7 +16,8 @@ class TransactionRepository {
 
   // No need to run async method because user might not have over 100 account (Obviously!)
   List<TransactionIsar> getAll(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query = isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
+    Query<TransactionIsar> query =
+        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build();
     return query.findAllSync();
   }
 
@@ -30,7 +32,7 @@ class TransactionRepository {
     TransactionType type, {
     required DateTime dateTime,
     required double amount,
-    required CategoryIsar category,
+    required CategoryIsar? category,
     required AccountIsar account,
     String? note,
     AccountIsar? toAccount,
@@ -56,9 +58,28 @@ class TransactionRepository {
       // Save the links in the `newTransaction`
       await newTransaction.category.save();
       await newTransaction.account.save();
+      await newTransaction.toAccount.save();
     });
   }
 }
+
+// class DateTimeRange {
+//   const DateTimeRange({required this.upper, required this.lower});
+//
+//   final DateTime upper;
+//   final DateTime lower;
+//
+//   @override
+//   bool operator ==(Object other) =>
+//       identical(this, other) ||
+//       other is DateTimeRange &&
+//           runtimeType == other.runtimeType &&
+//           upper == other.upper &&
+//           lower == other.lower;
+//
+//   @override
+//   int get hashCode => upper.hashCode ^ lower.hashCode;
+// }
 
 final transactionRepositoryProvider = Provider<TransactionRepository>(
   (ref) {
@@ -67,9 +88,9 @@ final transactionRepositoryProvider = Provider<TransactionRepository>(
   },
 );
 
-final transactionChangesProvider = StreamProvider.autoDispose.family<void, List<DateTime>>(
-  (ref, list) {
+final transactionChangesProvider = StreamProvider.family<void, DateTimeRange>(
+  (ref, range) {
     final transactionRepo = ref.watch(transactionRepositoryProvider);
-    return transactionRepo._watchListChanges(list[0], list[1]);
+    return transactionRepo._watchListChanges(range.start, range.end);
   },
 );

@@ -31,9 +31,13 @@ class CategoryFormSelector extends FormField<CategoryIsar> {
                         state.didChange(newCategory);
                         onChangedCategory(newCategory);
                       }),
-                  state.errorText != null
-                      ? const AlertBox(offset: Offset(90, -33), errorText: '!')
-                      : Gap.noGap,
+                  AnimatedOpacity(
+                      opacity: state.errorText != null ? 1 : 0,
+                      duration: k250msDuration,
+                      child: const AlertBox(offset: Offset(90, -33), errorText: '!')),
+                  // state.errorText != null
+                  //     ? const AlertBox(offset: Offset(90, -33), errorText: '!')
+                  //     : Gap.noGap,
                 ],
               );
             });
@@ -62,9 +66,10 @@ class AccountFormSelector extends FormField<AccountIsar> {
                         state.didChange(newAccount);
                         onChangedAccount(newAccount);
                       }),
-                  state.errorText != null
-                      ? AlertBox(offset: const Offset(80, -33), errorText: state.errorText!)
-                      : Gap.noGap,
+                  AnimatedOpacity(
+                      opacity: state.errorText != null ? 1 : 0,
+                      duration: k250msDuration,
+                      child: const AlertBox(offset: Offset(80, -33), errorText: '!')),
                 ],
               );
             });

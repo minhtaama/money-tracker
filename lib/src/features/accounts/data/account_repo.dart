@@ -44,7 +44,6 @@ class AccountRepository {
       ..dateTime = DateTime.now()
       ..isInitialTransaction = true
       ..amount = initialBalance
-      ..note = 'Initial Balance'
       ..account.value = newAccount;
 
     await isar.writeTxn(() async {

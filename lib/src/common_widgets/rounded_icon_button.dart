@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:hive/hive.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -25,21 +27,14 @@ class RoundedIconButton extends StatelessWidget {
   final double iconPadding;
   final VoidCallback? onTap;
 
-  double _getSize(GlobalKey key, BuildContext context) {
-    final iconRenderBox = key.currentContext?.findRenderObject() as RenderBox;
-    return iconRenderBox.size.height;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final key = GlobalKey();
     return label != null
         ? Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CardItem(
-                key: key,
                 width: size ?? 24,
                 height: size ?? 24,
                 color: backgroundColor,
@@ -67,28 +62,27 @@ class RoundedIconButton extends StatelessWidget {
                   label!,
                   style: kHeader2TextStyle.copyWith(
                     color: context.appTheme.backgroundNegative,
-                    fontSize: size != null ? size! / 4 : _getSize(key, context) / 4,
+                    fontSize: size != null ? size! / 4 : 20,
                   ),
                   textAlign: TextAlign.center,
                 ),
               )
             ],
           )
-        : CardItem(
-            key: key,
+        : Container(
             width: size ?? 48,
             height: size ?? 48,
-            color: backgroundColor,
             padding: EdgeInsets.zero,
             margin: EdgeInsets.zero,
-            borderRadius: BorderRadius.circular(1000),
-            elevation: 0,
-            isGradient: true,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(1000),
+            ),
             child: InkWell(
               onTap: () async {
                 // wait for button animation
                 await Future.delayed(const Duration(milliseconds: 100));
-                onTap != null ? onTap!() : () {};
+                onTap?.call();
               },
               splashColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
               highlightColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),

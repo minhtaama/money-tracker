@@ -23,7 +23,7 @@ class AppIcons {
       };
 
   static String fromCategoryAndIndex(String iconCategory, int iconIndex) {
-    return iconsWithCategories[iconCategory]?[iconIndex] ?? _defaultIcon;
+    return iconsWithCategories[iconCategory]?[iconIndex] ?? defaultIcon;
   }
 
   static String get home => 'assets/svg/app/home.svg';
@@ -52,7 +52,7 @@ class AppIcons {
   static String get backspace => 'assets/svg/app/backspace.svg';
   static String get today => 'assets/svg/app/today.svg';
 
-  static String get _defaultIcon => 'assets/svg/app/default.svg';
+  static String get defaultIcon => 'assets/svg/app/default.svg';
 
   /// Call this function in `main()` method, before `runApp()`
   static Future<void> init() async {

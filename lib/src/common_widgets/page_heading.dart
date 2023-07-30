@@ -8,8 +8,14 @@ import '../theme_and_ui/icons.dart';
 
 class PageHeading extends StatelessWidget {
   const PageHeading(
-      {Key? key, required this.title, this.hasBackButton = false, this.trailing, this.secondaryTitle})
+      {Key? key,
+      required this.title,
+      this.hasBackButton = false,
+      this.trailing,
+      this.secondaryTitle,
+      this.leadingTitle})
       : super(key: key);
+  final String? leadingTitle;
   final String title;
   final bool hasBackButton;
   final Widget? trailing;
@@ -39,12 +45,32 @@ class PageHeading extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          title,
-                          style: kHeader1TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative,
-                          ),
-                        ),
+                        leadingTitle != null
+                            ? Row(
+                                children: [
+                                  Text(
+                                    leadingTitle!,
+                                    style: kHeader4TextStyle.copyWith(
+                                        color: context.appTheme.backgroundNegative,
+                                        fontSize: kHeader1TextStyle.fontSize),
+                                  ),
+                                  Gap.w8,
+                                  Expanded(
+                                    child: Text(
+                                      title,
+                                      style: kHeader1TextStyle.copyWith(
+                                        color: context.appTheme.backgroundNegative,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                title,
+                                style: kHeader1TextStyle.copyWith(
+                                  color: context.appTheme.backgroundNegative,
+                                ),
+                              ),
                         Text(
                           secondaryTitle!,
                           style: kHeader4TextStyle.copyWith(

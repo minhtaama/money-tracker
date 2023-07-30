@@ -211,9 +211,6 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
     super.initState();
     _scrollController = ScrollController(initialScrollOffset: widget.initialOffset);
     _scrollController.addListener(_scrollControllerListener);
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   _scrollController.position.isScrollingNotifier.addListener(_scrollControllerListener);
-    // });
   }
 
   @override
@@ -225,12 +222,8 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
 
   void _scrollControllerListener() {
     ScrollPosition position = _scrollController.position;
-    //ScrollDirection direction = position.userScrollDirection;
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      // if (position.pixels == position.maxScrollExtent) {
-      //   position.jumpTo(position.maxScrollExtent - 0.3);
-      // }
       scrollPixelsOffset = position.pixels;
       widget.onOffsetChange(scrollPixelsOffset);
     });
@@ -238,27 +231,38 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView(
       physics: widget.smallTabBar != null && widget.extendedTabBar != null
           ? SnapScrollPhysics(
               snaps: [Snap.avoidZone(0, widget.extendedTabBar!.height - widget.smallTabBar!.height)],
             )
           : const ClampingScrollPhysics(),
       controller: _scrollController,
-      itemCount: widget.children.length + 2,
-      itemBuilder: (context, index) {
-        return index == 0
-            ? SizedBox(
-                height: widget.smallTabBar == null && widget.extendedTabBar == null
-                    ? 0
-                    : widget.extendedTabBar == null
-                        ? widget.smallTabBar!.height
-                        : widget.extendedTabBar!.height + 12,
-              )
-            : index == widget.children.length + 1
-                ? const SizedBox(height: 30)
-                : widget.children[index - 1];
-      },
+      //itemCount: widget.children.length + 2,
+      // itemBuilder: (context, index) {
+      //   return index == 0
+      //       ? SizedBox(
+      //           height: widget.smallTabBar == null && widget.extendedTabBar == null
+      //               ? 0
+      //               : widget.extendedTabBar == null
+      //                   ? widget.smallTabBar!.height
+      //                   : widget.extendedTabBar!.height + 12,
+      //         )
+      //       : index == widget.children.length + 1
+      //           ? const SizedBox(height: 30)
+      //           : widget.children[index - 1];
+      // },
+      children: [
+        SizedBox(
+          height: widget.smallTabBar == null && widget.extendedTabBar == null
+              ? 0
+              : widget.extendedTabBar == null
+                  ? widget.smallTabBar!.height
+                  : widget.extendedTabBar!.height + 12,
+        ),
+        ...widget.children,
+        const SizedBox(height: 30),
+      ],
     );
   }
 }

@@ -12,6 +12,7 @@ class CustomTextFormField extends StatelessWidget {
     this.helperText,
     this.validator,
     this.onFieldSubmitted,
+    this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.autofocus = true,
     this.isMultiLine = false,
   }) : super(key: key);
@@ -23,11 +24,13 @@ class CustomTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final void Function(String)? onFieldSubmitted;
   final bool isMultiLine;
+  final AutovalidateMode autovalidateMode;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: autofocus,
+      autovalidateMode: autovalidateMode,
       onFieldSubmitted: onFieldSubmitted,
       cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
       style: isMultiLine
