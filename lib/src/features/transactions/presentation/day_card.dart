@@ -211,7 +211,9 @@ class DayCardTransactions extends StatelessWidget {
                     ),
                   ],
                 ),
-                transaction.note != null ? _Note(transaction: transaction) : Gap.noGap,
+                transaction.note != null || transaction.tag != null
+                    ? _Note(transaction: transaction)
+                    : Gap.noGap,
               ],
             ),
           ),
@@ -420,22 +422,15 @@ class _Note extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          // gradient: LinearGradient(colors: [
-          //   context.appTheme.backgroundNegative.withOpacity(0.3),
-          //   context.appTheme.backgroundNegative.withOpacity(0.05)
-          // ], stops: [
-          //   0.01,
-          //   0.01
-          // ]),
-          // border: Border(
-          //     left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
           borderRadius:
               const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             transaction.tag != null
                 ? Text(
