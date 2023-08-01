@@ -34,6 +34,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
   late DateTime dateTime = DateTime.now();
   String calculatorOutput = '0';
   String? note;
+  String? tag;
   CategoryIsar? category;
   AccountIsar? account;
   AccountIsar? toAccount;
@@ -99,7 +100,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                     return null;
                   },
                   formattedResultOutput: (value) {
-                    calculatorOutput = value;
+                    setState(() {
+                      calculatorOutput = value;
+                    });
                   },
                 ),
               ),
@@ -138,7 +141,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) {
-                              if (category == null) {
+                              if (category == null &&
+                                  widget.transactionType != TransactionType.transfer) {
                                 return '!';
                               }
                               return null;
@@ -199,8 +203,24 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
           CustomTextFormField(
             autofocus: false,
             focusColor: context.appTheme.accent,
-            isMultiLine: true,
-            hintText: 'Note...',
+            withOutlineBorder: true,
+            maxLength: 40,
+            maxLines: 1,
+            hintText: 'Tag ...',
+            prefixText: '#',
+            textInputAction: TextInputAction.done,
+            onChanged: (value) {
+              tag = value;
+            },
+          ),
+          Gap.h8,
+          CustomTextFormField(
+            autofocus: false,
+            focusColor: context.appTheme.accent,
+            withOutlineBorder: true,
+            maxLines: 3,
+            hintText: 'Note ...',
+            textInputAction: TextInputAction.done,
             onChanged: (value) {
               note = value;
             },
@@ -221,8 +241,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                 backgroundColor: context.appTheme.accent,
                 isDisabled: _formatToDouble(calculatorOutput) == null ||
                     _formatToDouble(calculatorOutput) == 0 ||
-                    (category == null && widget.transactionType != TransactionType.transfer) ||
-                    (toAccount == null && widget.transactionType == TransactionType.transfer) ||
+                    category == null && widget.transactionType != TransactionType.transfer ||
+                    toAccount == null && widget.transactionType == TransactionType.transfer ||
                     account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
@@ -232,6 +252,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                       type,
                       dateTime: dateTime,
                       amount: _formatToDouble(calculatorOutput)!,
+                      tag: tag,
                       note: note,
                       category: category,
                       account: account!,

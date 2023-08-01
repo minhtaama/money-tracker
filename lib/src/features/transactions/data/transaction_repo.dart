@@ -34,6 +34,7 @@ class TransactionRepository {
     required double amount,
     required CategoryIsar? category,
     required AccountIsar account,
+    String? tag,
     String? note,
     AccountIsar? toAccount,
   }) async {
@@ -42,12 +43,19 @@ class TransactionRepository {
       throw ErrorDescription('`toAccount` must be null if transaction type is Transfer');
     }
 
+    String? formattedTag;
+
+    if (tag != null) {
+      formattedTag = tag.split(' ').join('-');
+    }
+
     final newTransaction = TransactionIsar()
       ..transactionType = type
       ..dateTime = dateTime
       ..amount = amount
       ..category.value = category
       ..account.value = account
+      ..tag = formattedTag
       ..note = note
       ..toAccount.value = toAccount;
 

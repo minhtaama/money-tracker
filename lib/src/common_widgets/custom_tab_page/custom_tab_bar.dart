@@ -42,10 +42,10 @@ class CustomTabBar extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         AnimatedOpacity(
-          opacity: extendedChildOpacity,
+          opacity: extendedChildOpacity < 0.1 ? 0 : 1,
           duration: kNoDuration,
           child: IgnorePointer(
-            ignoring: extendedChildOpacity > 0.9 ? false : true,
+            ignoring: extendedChildOpacity > 0.1 ? false : true,
             child: extendedTabBar ?? const SizedBox(),
           ),
         ),

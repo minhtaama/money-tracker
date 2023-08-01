@@ -211,7 +211,6 @@ class DayCardTransactions extends StatelessWidget {
                     ),
                   ],
                 ),
-                Gap.h4,
                 transaction.note != null ? _Note(transaction: transaction) : Gap.noGap,
               ],
             ),
@@ -281,7 +280,7 @@ class _ExpandedCategory extends StatelessWidget {
         Expanded(
           child: Text(
             !transaction.isInitialTransaction ? transaction.category.value!.name : 'Initial Balance',
-            style: kHeader4TextStyle.copyWith(
+            style: kHeader3TextStyle.copyWith(
                 color: context.appTheme.backgroundNegative
                     .withOpacity(transaction.category.value != null ? 1 : 0.5),
                 fontSize: 12),
@@ -307,10 +306,15 @@ class _ExpandedAccount extends StatelessWidget {
         // Category Icon
         transaction.account.value != null
             ? SvgIcon(
-                AppIcons.fromCategoryAndIndex(
-                    transaction.account.value!.iconCategory, transaction.account.value!.iconIndex),
+                transaction.isInitialTransaction ||
+                        transaction.transactionType == TransactionType.transfer
+                    ? AppIcons.fromCategoryAndIndex(
+                        transaction.account.value!.iconCategory, transaction.account.value!.iconIndex)
+                    : transaction.transactionType == TransactionType.income
+                        ? AppIcons.download
+                        : AppIcons.upload,
                 size: 20,
-                color: context.appTheme.backgroundNegative,
+                color: context.appTheme.backgroundNegative.withOpacity(0.6),
               )
             : Gap.noGap,
         transaction.account.value != null ? Gap.w4 : Gap.noGap,
@@ -408,17 +412,51 @@ class _Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CardItem(
-      margin: EdgeInsets.zero,
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      elevation: 0,
-      border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.4)),
-      child: Text(
-        transaction.note!,
-        style: kHeader4TextStyle.copyWith(
-          color: context.appTheme.backgroundNegative.withOpacity(0.7),
-          fontSize: 12,
+    return Container(
+      margin: const EdgeInsets.only(left: 4, top: 6),
+      decoration: BoxDecoration(
+        border: Border(
+            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        decoration: BoxDecoration(
+          color: context.appTheme.backgroundNegative.withOpacity(0.05),
+          // gradient: LinearGradient(colors: [
+          //   context.appTheme.backgroundNegative.withOpacity(0.3),
+          //   context.appTheme.backgroundNegative.withOpacity(0.05)
+          // ], stops: [
+          //   0.01,
+          //   0.01
+          // ]),
+          // border: Border(
+          //     left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+          borderRadius:
+              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            transaction.tag != null
+                ? Text(
+                    '# ${transaction.tag!}',
+                    style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  )
+                : Gap.noGap,
+            transaction.tag != null && transaction.note != null ? Gap.h4 : Gap.noGap,
+            transaction.note != null
+                ? Text(
+                    transaction.note!,
+                    style: kHeader4TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  )
+                : Gap.noGap,
+          ],
         ),
       ),
     );

@@ -17,6 +17,8 @@ class TransactionIsar {
   late DateTime dateTime;
 
   late double amount;
+
+  String? tag;
   String? note;
 
   @Index()

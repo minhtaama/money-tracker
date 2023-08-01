@@ -56,7 +56,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
           keyList.length,
           (keyIndex) {
             return CustomSection(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               title: keyList[keyIndex],
               children: [
                 Wrap(

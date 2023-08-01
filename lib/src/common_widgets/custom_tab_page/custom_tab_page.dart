@@ -119,17 +119,6 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
     }
   }
 
-  // Get initial scroll view offset of new page
-  double _getInitialOffset({required double appBarHeight}) {
-    if (widget.smallTabBar != null &&
-        widget.extendedTabBar != null &&
-        appBarHeight == widget.smallTabBar!.height) {
-      return widget.extendedTabBar!.height - widget.smallTabBar!.height;
-    } else {
-      return 0;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -147,7 +136,9 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
             physics: const NeverScrollableScrollPhysics(),
             controller: _controller,
             onPageChanged: (index) {
-              scrollOffset = _getInitialOffset(appBarHeight: appBarHeight);
+              appBarHeight = _getAppBarHeight(
+                pixelsOffset: scrollOffset,
+              );
               setState(() {});
               widget.onPageChanged?.call(index);
             },
@@ -155,7 +146,7 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
             itemBuilder: (context, pageIndex) => _CustomListView(
               smallTabBar: widget.smallTabBar,
               extendedTabBar: widget.extendedTabBar,
-              initialOffset: _getInitialOffset(appBarHeight: appBarHeight),
+              initialOffset: scrollOffset,
               onOffsetChange: (value) => setState(
                 () {
                   scrollOffset = value;
@@ -187,14 +178,14 @@ class _CustomListView extends ConsumerStatefulWidget {
     this.smallTabBar,
     this.extendedTabBar,
     this.children = const [],
-    required this.onOffsetChange,
+    this.onOffsetChange,
     this.initialOffset = 0,
   }) : super(key: key);
 
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final List<Widget> children;
-  final ValueChanged<double> onOffsetChange;
+  final ValueChanged<double>? onOffsetChange;
   final double initialOffset;
 
   @override
@@ -225,44 +216,44 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       scrollPixelsOffset = position.pixels;
-      widget.onOffsetChange(scrollPixelsOffset);
+      widget.onOffsetChange?.call(scrollPixelsOffset);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return ListView.builder(
       physics: widget.smallTabBar != null && widget.extendedTabBar != null
           ? SnapScrollPhysics(
               snaps: [Snap.avoidZone(0, widget.extendedTabBar!.height - widget.smallTabBar!.height)],
             )
           : const ClampingScrollPhysics(),
       controller: _scrollController,
-      //itemCount: widget.children.length + 2,
-      // itemBuilder: (context, index) {
-      //   return index == 0
-      //       ? SizedBox(
-      //           height: widget.smallTabBar == null && widget.extendedTabBar == null
-      //               ? 0
-      //               : widget.extendedTabBar == null
-      //                   ? widget.smallTabBar!.height
-      //                   : widget.extendedTabBar!.height + 12,
-      //         )
-      //       : index == widget.children.length + 1
-      //           ? const SizedBox(height: 30)
-      //           : widget.children[index - 1];
-      // },
-      children: [
-        SizedBox(
-          height: widget.smallTabBar == null && widget.extendedTabBar == null
-              ? 0
-              : widget.extendedTabBar == null
-                  ? widget.smallTabBar!.height
-                  : widget.extendedTabBar!.height + 12,
-        ),
-        ...widget.children,
-        const SizedBox(height: 30),
-      ],
+      itemCount: widget.children.length + 2,
+      itemBuilder: (context, index) {
+        return index == 0
+            ? SizedBox(
+                height: widget.smallTabBar == null && widget.extendedTabBar == null
+                    ? 0
+                    : widget.extendedTabBar == null
+                        ? widget.smallTabBar!.height
+                        : widget.extendedTabBar!.height + 12,
+              )
+            : index == widget.children.length + 1
+                ? const SizedBox(height: 30)
+                : widget.children[index - 1];
+      },
+      // children: [
+      //   SizedBox(
+      //     height: widget.smallTabBar == null && widget.extendedTabBar == null
+      //         ? 0
+      //         : widget.extendedTabBar == null
+      //             ? widget.smallTabBar!.height
+      //             : widget.extendedTabBar!.height + 12,
+      //   ),
+      //   ...widget.children,
+      //   const SizedBox(height: 30),
+      // ],
     );
   }
 }

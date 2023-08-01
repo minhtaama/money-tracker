@@ -135,6 +135,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             transactionChangesProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
             (_, __) {
           transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+          setState(() {});
         });
 
         return [

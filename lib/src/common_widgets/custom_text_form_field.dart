@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -14,7 +15,12 @@ class CustomTextFormField extends StatelessWidget {
     this.onFieldSubmitted,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.autofocus = true,
-    this.isMultiLine = false,
+    this.withOutlineBorder = false,
+    this.maxLines,
+    this.maxLength,
+    this.textInputAction,
+    this.keyboardType,
+    this.prefixText,
   }) : super(key: key);
   final ValueChanged<String> onChanged;
   final String hintText;
@@ -23,8 +29,13 @@ class CustomTextFormField extends StatelessWidget {
   final bool autofocus;
   final String? Function(String?)? validator;
   final void Function(String)? onFieldSubmitted;
-  final bool isMultiLine;
+  final bool withOutlineBorder;
   final AutovalidateMode autovalidateMode;
+  final int? maxLines;
+  final int? maxLength;
+  final TextInputAction? textInputAction;
+  final TextInputType? keyboardType;
+  final String? prefixText;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +44,7 @@ class CustomTextFormField extends StatelessWidget {
       autovalidateMode: autovalidateMode,
       onFieldSubmitted: onFieldSubmitted,
       cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
-      style: isMultiLine
+      style: withOutlineBorder
           ? kHeader3TextStyle.copyWith(
               color: context.appTheme.backgroundNegative,
               fontSize: 15,
@@ -43,12 +54,28 @@ class CustomTextFormField extends StatelessWidget {
               fontSize: 18,
             ),
       validator: validator,
-      maxLines: isMultiLine ? 3 : 1,
+      maxLines: maxLines,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(maxLength),
+      ],
+      textInputAction: textInputAction,
+      keyboardType: keyboardType,
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
-        contentPadding: isMultiLine ? const EdgeInsets.all(12) : null,
+        contentPadding: withOutlineBorder ? const EdgeInsets.all(12) : null,
         focusColor: context.appTheme.primary,
-        enabledBorder: isMultiLine
+        prefixIcon: prefixText != null
+            ? Padding(
+                padding: const EdgeInsets.only(left: 12.0, right: 8, bottom: 2),
+                child: Text(prefixText!,
+                    style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                      fontSize: 18,
+                    )),
+              )
+            : null,
+        prefixIconConstraints: const BoxConstraints(minWidth: 0),
+        enabledBorder: withOutlineBorder
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: AppColors.grey, width: 1),
@@ -56,7 +83,7 @@ class CustomTextFormField extends StatelessWidget {
             : UnderlineInputBorder(
                 borderSide: BorderSide(color: AppColors.grey, width: 1),
               ),
-        focusedBorder: isMultiLine
+        focusedBorder: withOutlineBorder
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: focusColor, width: 2),
@@ -65,7 +92,7 @@ class CustomTextFormField extends StatelessWidget {
                 borderSide: BorderSide(color: focusColor, width: 2),
               ),
         hintText: hintText,
-        hintStyle: isMultiLine
+        hintStyle: withOutlineBorder
             ? kHeader3TextStyle.copyWith(
                 color: context.appTheme.backgroundNegative.withOpacity(0.5),
                 fontSize: 18,

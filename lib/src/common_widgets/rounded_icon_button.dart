@@ -69,24 +69,19 @@ class RoundedIconButton extends StatelessWidget {
               )
             ],
           )
-        : Container(
+        : CardItem(
             width: size ?? 48,
             height: size ?? 48,
+            color: backgroundColor,
             padding: EdgeInsets.zero,
             margin: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(1000),
-            ),
-            child: InkWell(
-              onTap: () async {
-                // wait for button animation
-                await Future.delayed(const Duration(milliseconds: 100));
-                onTap?.call();
-              },
-              splashColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
-              highlightColor: (iconColor ?? context.appTheme.primaryNegative).withAlpha(105),
-              borderRadius: BorderRadius.circular(1000),
+            borderRadius: BorderRadius.circular(1000),
+            elevation: 0,
+            isGradient: true,
+            child: CustomInkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(10000),
+              inkColor: iconColor ?? context.appTheme.primaryNegative,
               child: Padding(
                 padding: EdgeInsets.all(iconPadding),
                 child: SvgIcon(
