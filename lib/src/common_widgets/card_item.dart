@@ -16,7 +16,8 @@ class CardItem extends StatelessWidget {
       this.border,
       this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-      this.elevation = 1})
+      this.elevation = 1,
+      this.alignment})
       : super(key: key);
   final Color? color;
   final double? height;
@@ -29,6 +30,7 @@ class CardItem extends StatelessWidget {
   final BoxBorder? border;
   final bool isGradient;
   final Widget? child;
+  final Alignment? alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class CardItem extends StatelessWidget {
     return Container(
       margin: margin,
       constraints: constraints,
+      alignment: alignment,
       height: height,
       width: width,
       decoration: BoxDecoration(

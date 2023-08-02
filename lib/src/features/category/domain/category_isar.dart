@@ -11,6 +11,8 @@ class CategoryIsar {
   @enumerated
   late CategoryType type;
 
+  final List<String> tags = [];
+
   late String name;
   late int colorIndex;
   late String iconCategory;

@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
+import 'package:money_tracker_app/src/features/category/presentation/category_tag_list.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
@@ -125,7 +126,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   ),
                 ),
               ),
-              Gap.w16,
+              Gap.w24,
               Expanded(
                 flex: 13,
                 child: Column(
@@ -200,20 +201,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             ],
           ),
           Gap.h16,
-          CustomTextFormField(
-            autofocus: false,
-            focusColor: context.appTheme.accent,
-            withOutlineBorder: true,
-            maxLength: 40,
-            maxLines: 1,
-            hintText: 'Tag ...',
-            prefixText: '#',
-            textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              tag = value;
-            },
-          ),
-          Gap.h8,
+          CategoryTagList(category: category, onCreate: () {}),
+          Gap.h16,
           CustomTextFormField(
             autofocus: false,
             focusColor: context.appTheme.accent,
@@ -231,6 +220,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
               RoundedIconButton(
                 iconPath: AppIcons.back,
                 backgroundColor: AppColors.darkerGrey,
+                iconColor: context.appTheme.backgroundNegative,
                 size: 55,
                 onTap: () => context.pop(),
               ),

@@ -15,18 +15,20 @@ class CustomTextFormField extends StatelessWidget {
     this.onFieldSubmitted,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.autofocus = true,
+    this.focusNode,
     this.withOutlineBorder = false,
     this.maxLines,
     this.maxLength,
     this.textInputAction,
     this.keyboardType,
-    this.prefixText,
+    this.prefixIcon,
   }) : super(key: key);
   final ValueChanged<String> onChanged;
   final String hintText;
   final String? helperText;
   final Color focusColor;
   final bool autofocus;
+  final FocusNode? focusNode;
   final String? Function(String?)? validator;
   final void Function(String)? onFieldSubmitted;
   final bool withOutlineBorder;
@@ -35,12 +37,13 @@ class CustomTextFormField extends StatelessWidget {
   final int? maxLength;
   final TextInputAction? textInputAction;
   final TextInputType? keyboardType;
-  final String? prefixText;
+  final Widget? prefixIcon;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: autofocus,
+      focusNode: focusNode,
       autovalidateMode: autovalidateMode,
       onFieldSubmitted: onFieldSubmitted,
       cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
@@ -64,16 +67,7 @@ class CustomTextFormField extends StatelessWidget {
       decoration: InputDecoration(
         contentPadding: withOutlineBorder ? const EdgeInsets.all(12) : null,
         focusColor: context.appTheme.primary,
-        prefixIcon: prefixText != null
-            ? Padding(
-                padding: const EdgeInsets.only(left: 12.0, right: 8, bottom: 2),
-                child: Text(prefixText!,
-                    style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative.withOpacity(0.5),
-                      fontSize: 18,
-                    )),
-              )
-            : null,
+        prefixIcon: prefixIcon,
         prefixIconConstraints: const BoxConstraints(minWidth: 0),
         enabledBorder: withOutlineBorder
             ? OutlineInputBorder(

@@ -42,8 +42,13 @@ const CategoryIsarSchema = CollectionSchema(
       name: r'order',
       type: IsarType.long,
     ),
-    r'type': PropertySchema(
+    r'tags': PropertySchema(
       id: 5,
+      name: r'tags',
+      type: IsarType.stringList,
+    ),
+    r'type': PropertySchema(
+      id: 6,
       name: r'type',
       type: IsarType.byte,
       enumMap: _CategoryIsartypeEnumValueMap,
@@ -71,6 +76,13 @@ int _categoryIsarEstimateSize(
   var bytesCount = offsets.last;
   bytesCount += 3 + object.iconCategory.length * 3;
   bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 + object.tags.length * 3;
+  {
+    for (var i = 0; i < object.tags.length; i++) {
+      final value = object.tags[i];
+      bytesCount += value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -85,7 +97,8 @@ void _categoryIsarSerialize(
   writer.writeLong(offsets[2], object.iconIndex);
   writer.writeString(offsets[3], object.name);
   writer.writeLong(offsets[4], object.order);
-  writer.writeByte(offsets[5], object.type.index);
+  writer.writeStringList(offsets[5], object.tags);
+  writer.writeByte(offsets[6], object.type.index);
 }
 
 CategoryIsar _categoryIsarDeserialize(
@@ -102,7 +115,7 @@ CategoryIsar _categoryIsarDeserialize(
   object.name = reader.readString(offsets[3]);
   object.order = reader.readLongOrNull(offsets[4]);
   object.type =
-      _CategoryIsartypeValueEnumMap[reader.readByteOrNull(offsets[5])] ??
+      _CategoryIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
           CategoryType.income;
   return object;
 }
@@ -125,6 +138,8 @@ P _categoryIsarDeserializeProp<P>(
     case 4:
       return (reader.readLongOrNull(offset)) as P;
     case 5:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 6:
       return (_CategoryIsartypeValueEnumMap[reader.readByteOrNull(offset)] ??
           CategoryType.income) as P;
     default:
@@ -742,6 +757,231 @@ extension CategoryIsarQueryFilter
     });
   }
 
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'tags',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'tags',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'tags',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'tags',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition> typeEqualTo(
       CategoryType value) {
     return QueryBuilder.apply(this, (query) {
@@ -1003,6 +1243,12 @@ extension CategoryIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<CategoryIsar, CategoryIsar, QDistinct> distinctByTags() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tags');
+    });
+  }
+
   QueryBuilder<CategoryIsar, CategoryIsar, QDistinct> distinctByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'type');
@@ -1045,6 +1291,12 @@ extension CategoryIsarQueryProperty
   QueryBuilder<CategoryIsar, int?, QQueryOperations> orderProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'order');
+    });
+  }
+
+  QueryBuilder<CategoryIsar, List<String>, QQueryOperations> tagsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tags');
     });
   }
 
