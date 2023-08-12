@@ -11,7 +11,8 @@ class CategoryIsar {
   @enumerated
   late CategoryType type;
 
-  final List<String> tags = [];
+  /// __tags can be null as user delete a tag from list__
+  List<String?> tags = List.empty(growable: true);
 
   late String name;
   late int colorIndex;
@@ -20,3 +21,10 @@ class CategoryIsar {
 
   int? order;
 }
+
+// @embedded
+// class Tag {
+//   Id id = Isar.autoIncrement;
+//
+//   late String name;
+// }

@@ -42,17 +42,36 @@ class CategoryRepository {
     });
   }
 
+  Future<void> addTag(CategoryIsar currentCategory, {required String tag}) async {
+    List<String?> list = List.of(currentCategory.tags)..insert(0, tag);
+    currentCategory.tags = list;
+    await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
+  }
+
+  Future<void> editTag(CategoryIsar currentCategory,
+      {required int tagIndex, required String newTag}) async {
+    currentCategory.tags[tagIndex] = newTag;
+    await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
+  }
+
+  Future<void> removeTag(CategoryIsar currentCategory, {required int tagIndex}) async {
+    currentCategory.tags[tagIndex] = null;
+    await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
+  }
+
   Future<void> edit(
     CategoryIsar currentCategory, {
     required String iconCategory,
     required int iconIndex,
     required String name,
     required int colorIndex,
+    List<String>? tags,
   }) async {
     currentCategory
       ..iconCategory = iconCategory
       ..iconIndex = iconIndex
       ..name = name
+      ..tags = tags ?? currentCategory.tags
       ..colorIndex = colorIndex;
     await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
   }

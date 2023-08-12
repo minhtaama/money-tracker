@@ -5,11 +5,13 @@ class CustomInkWell extends StatelessWidget {
   const CustomInkWell({
     Key? key,
     this.onTap,
+    this.onLongPress,
     this.borderRadius,
     required this.inkColor,
     required this.child,
   }) : super(key: key);
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Widget child;
   final Color inkColor;
   final BorderRadius? borderRadius;
@@ -22,8 +24,9 @@ class CustomInkWell extends StatelessWidget {
         await Future.delayed(const Duration(milliseconds: 100));
         onTap != null ? onTap!() : () {};
       },
+      onLongPress: onLongPress,
       splashColor: inkColor.withOpacity(0.3),
-      highlightColor: Colors.transparent,
+      highlightColor: inkColor.withOpacity(0.3),
       borderRadius: borderRadius,
       child: child,
     );

@@ -80,7 +80,9 @@ int _categoryIsarEstimateSize(
   {
     for (var i = 0; i < object.tags.length; i++) {
       final value = object.tags[i];
-      bytesCount += value.length * 3;
+      if (value != null) {
+        bytesCount += value.length * 3;
+      }
     }
   }
   return bytesCount;
@@ -114,6 +116,7 @@ CategoryIsar _categoryIsarDeserialize(
   object.id = id;
   object.name = reader.readString(offsets[3]);
   object.order = reader.readLongOrNull(offsets[4]);
+  object.tags = reader.readStringOrNullList(offsets[5]) ?? [];
   object.type =
       _CategoryIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
           CategoryType.income;
@@ -138,7 +141,7 @@ P _categoryIsarDeserializeProp<P>(
     case 4:
       return (reader.readLongOrNull(offset)) as P;
     case 5:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readStringOrNullList(offset) ?? []) as P;
     case 6:
       return (_CategoryIsartypeValueEnumMap[reader.readByteOrNull(offset)] ??
           CategoryType.income) as P;
@@ -758,8 +761,26 @@ extension CategoryIsarQueryFilter
   }
 
   QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.elementIsNull(
+        property: r'tags',
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
+      tagsElementIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.elementIsNotNull(
+        property: r'tags',
+      ));
+    });
+  }
+
+  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
       tagsElementEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -773,7 +794,7 @@ extension CategoryIsarQueryFilter
 
   QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
       tagsElementGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -789,7 +810,7 @@ extension CategoryIsarQueryFilter
 
   QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
       tagsElementLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -805,8 +826,8 @@ extension CategoryIsarQueryFilter
 
   QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
       tagsElementBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1294,7 +1315,7 @@ extension CategoryIsarQueryProperty
     });
   }
 
-  QueryBuilder<CategoryIsar, List<String>, QQueryOperations> tagsProperty() {
+  QueryBuilder<CategoryIsar, List<String?>, QQueryOperations> tagsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'tags');
     });
