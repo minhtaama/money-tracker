@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
+import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 
 import '../../../../persistent/isar_data_store.dart';
@@ -16,14 +17,18 @@ class TransactionRepository {
 
   // No need to run async method because user might not have over 100 account (Obviously!)
   List<TransactionIsar> getAll(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query =
-        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build();
+    Query<TransactionIsar> query = isar.transactionIsars
+        .filter()
+        .dateTimeBetween(lower, upper)
+        .sortByDateTime()
+        .build();
     return query.findAllSync();
   }
 
   // Used to watch list changes
   Stream<void> _watchListChanges(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query = isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
+    Query<TransactionIsar> query =
+        isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
     return query.watchLazy(fireImmediately: true);
   }
 
@@ -34,19 +39,14 @@ class TransactionRepository {
     required double amount,
     required CategoryIsar? category,
     required AccountIsar account,
-    String? tag,
+    CategoryTagIsar? tag,
     String? note,
     AccountIsar? toAccount,
   }) async {
     // Create a new account
     if (type != TransactionType.transfer && toAccount != null) {
-      throw ErrorDescription('`toAccount` must be null if transaction type is Transfer');
-    }
-
-    String? formattedTag;
-
-    if (tag != null) {
-      formattedTag = tag.split(' ').join('-');
+      throw ErrorDescription(
+          '`toAccount` must be null if transaction type is Transfer');
     }
 
     final newTransaction = TransactionIsar()
@@ -55,7 +55,7 @@ class TransactionRepository {
       ..amount = amount
       ..category.value = category
       ..account.value = account
-      ..tag = formattedTag
+      ..tag.value = tag
       ..note = note
       ..toAccount.value = toAccount;
 
@@ -65,6 +65,7 @@ class TransactionRepository {
 
       // Save the links in the `newTransaction`
       await newTransaction.category.save();
+      await newTransaction.tag.save();
       await newTransaction.account.save();
       await newTransaction.toAccount.save();
     });

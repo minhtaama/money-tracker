@@ -10,5 +10,8 @@ class CategoryTagIsar {
 
   final category = IsarLink<CategoryIsar>();
 
-  String? name;
+  /// name can be `null` by user remove action
+  late String name;
+
+  int? order;
 }

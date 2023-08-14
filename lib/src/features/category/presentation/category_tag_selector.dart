@@ -1,6 +1,7 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
@@ -14,12 +15,14 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_text_form_field.dart';
 import '../domain/category_isar.dart';
+import '../domain/category_tag_isar.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
-  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading})
+  const CategoryTagSelector(
+      {Key? key, this.category, required this.onTagSelected, this.fading})
       : super(key: key);
   final Color? fading;
-  final ValueSetter<String?> onTagSelected;
+  final ValueSetter<CategoryTagIsar?> onTagSelected;
   final CategoryIsar? category;
 
   @override
@@ -27,16 +30,20 @@ class CategoryTagSelector extends ConsumerStatefulWidget {
 }
 
 class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
+  late final categoryRepo = ref.watch(categoryRepositoryProvider);
+
   final _key = GlobalKey();
   late final FocusNode _focusNode = FocusNode();
 
-  late List<String>? _tags = widget.category?.tags.whereType<String>().toList();
+  late CategoryIsar? currentCategory = widget.category;
+
+  late List<CategoryTagIsar>? _tags =
+      categoryRepo.getTagsSortedByOrder(currentCategory);
+
+  CategoryTagIsar? _chosenTag;
 
   bool _showTextField = false;
-
   double _rowWidth = 1;
-
-  String? _chosenTag;
 
   @override
   void initState() {
@@ -51,7 +58,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   @override
   void didUpdateWidget(covariant CategoryTagSelector oldWidget) {
-    _tags = widget.category?.tags.whereType<String>().toList();
+    currentCategory = widget.category;
     super.didUpdateWidget(oldWidget);
   }
 
@@ -76,6 +83,10 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(categoryTagsChangesProvider(currentCategory)).whenData((_) {
+      _tags = categoryRepo.getTagsSortedByOrder(currentCategory);
+    });
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       key: _key,
@@ -94,7 +105,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             child: Row(
               children: [
                 Expanded(
-                  child: ChosenTag(chosenTag: _chosenTag),
+                  child: ChosenTag(chosenTag: _chosenTag?.name),
                 ),
                 AnimatedContainer(
                   duration: k250msDuration,
@@ -141,19 +152,25 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                         _tags!.length,
                         (index) {
                           return CategoryTag(
-                            name: _tags![index],
-                            index: widget.category!.tags.indexOf(_tags![index]),
+                            categoryTag: _tags![index],
                             onTap: (tag) {
+                              categoryRepo.reorderTagToTop(_tags!, index);
                               setState(
                                 () {
                                   _chosenTag = tag;
+                                  _tags = categoryRepo
+                                      .getTagsSortedByOrder(widget.category!);
                                   widget.onTagSelected(_chosenTag);
                                 },
                               );
                             },
-                            onLongPress: (value) => showCustomModalBottomSheet(
-                                context: context,
-                                child: EditCategoryTag(category: widget.category!, index: index)),
+                            onLongPress: (tag) => showCustomModalBottomSheet(
+                              context: context,
+                              child: EditCategoryTag(
+                                tag,
+                                category: widget.category!,
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -164,9 +181,16 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             : Gap.noGap,
         AnimatedContainer(
           duration: k250msDuration,
-          width: _showTextField || _chosenTag != null || _tags == null || _tags!.isEmpty ? 0 : 16,
+          width: _showTextField ||
+                  _chosenTag != null ||
+                  _tags == null ||
+                  _tags!.isEmpty
+              ? 0
+              : 16,
           height: 25,
-          child: _showTextField || _chosenTag != null || _tags == null ? null : const VerticalDivider(),
+          child: _showTextField || _chosenTag != null || _tags == null
+              ? null
+              : const VerticalDivider(),
         ),
         AnimatedContainer(
           duration: k250msDuration,
@@ -180,11 +204,12 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             child: AddCategoryTagButton(
                 focusNode: _focusNode,
                 category: widget.category,
-                onEditingComplete: (value) {
-                  _chosenTag = value;
+                onEditingComplete: (tagName) {
                   setState(() {
-                    _tags = widget.category?.tags.whereType<String>().toList();
+                    _tags = categoryRepo.getTagsSortedByOrder(widget.category);
                   });
+                  print(_tags.toString().length);
+                  //_chosenTag = _tags!.last;
                 }),
           ),
         ),
@@ -228,15 +253,13 @@ class ChosenTag extends StatelessWidget {
 class CategoryTag extends StatelessWidget {
   const CategoryTag(
       {Key? key,
-      required this.name,
-      required this.index,
+      required this.categoryTag,
       required this.onTap,
       required this.onLongPress})
       : super(key: key);
-  final String name;
-  final int index;
-  final ValueSetter<String> onTap;
-  final ValueSetter<int> onLongPress;
+  final CategoryTagIsar categoryTag;
+  final ValueSetter<CategoryTagIsar> onTap;
+  final ValueSetter<CategoryTagIsar> onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -248,8 +271,8 @@ class CategoryTag extends StatelessWidget {
           child: CustomInkWell(
             inkColor: AppColors.grey,
             borderRadius: BorderRadius.circular(16),
-            onTap: () => onTap(name),
-            onLongPress: () => onLongPress(index),
+            onTap: () => onTap(categoryTag),
+            onLongPress: () => onLongPress(categoryTag),
             child: CardItem(
               elevation: 0,
               margin: EdgeInsets.zero,
@@ -257,7 +280,7 @@ class CategoryTag extends StatelessWidget {
               color: AppColors.grey.withOpacity(0.15),
               alignment: Alignment.center,
               child: EasyRichText(
-                '# $name',
+                '# ${categoryTag.name}',
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 defaultStyle: kHeader2TextStyle.copyWith(
@@ -269,7 +292,8 @@ class CategoryTag extends StatelessWidget {
                     targetString: '#',
                     hasSpecialCharacters: true,
                     style: kHeader4TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                      color:
+                          context.appTheme.backgroundNegative.withOpacity(0.5),
                       fontSize: 13,
                     ),
                   )
@@ -284,14 +308,19 @@ class CategoryTag extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton({Key? key, this.focusNode, this.category, required this.onEditingComplete})
+  const AddCategoryTagButton(
+      {Key? key,
+      this.focusNode,
+      this.category,
+      required this.onEditingComplete})
       : super(key: key);
   final FocusNode? focusNode;
   final CategoryIsar? category;
   final ValueSetter<String> onEditingComplete;
 
   @override
-  ConsumerState<AddCategoryTagButton> createState() => _AddCategoryTagButtonState();
+  ConsumerState<AddCategoryTagButton> createState() =>
+      _AddCategoryTagButtonState();
 }
 
 class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
@@ -299,13 +328,16 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
   final _formKey = GlobalKey<FormState>();
 
-  late List<String>? _tags = widget.category?.tags.whereType<String>().toList();
+  late final categoryRepo = ref.read(categoryRepositoryProvider);
+
+  late List<CategoryTagIsar>? _tags =
+      categoryRepo.getTagsSortedByOrder(widget.category);
 
   String? _newTag;
 
   @override
   void didUpdateWidget(covariant AddCategoryTagButton oldWidget) {
-    _tags = widget.category?.tags.whereType<String>().toList();
+    _tags = categoryRepo.getTagsSortedByOrder(widget.category);
     super.didUpdateWidget(oldWidget);
   }
 
@@ -322,9 +354,14 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
         enabled: widget.category == null ? false : true,
         maxLength: 40,
         maxLines: 1,
-        hintText: widget.category == null ? 'Choose a category first' : 'New category tag ...',
+        hintText: widget.category == null
+            ? 'Choose a category first'
+            : 'New category tag ...',
         validator: (value) {
-          if (_tags != null && _tags!.map((e) => e.toLowerCase()).contains(value?.toLowerCase())) {
+          if (_tags != null &&
+              _tags!
+                  .map((e) => e.name.toLowerCase())
+                  .contains(value?.toLowerCase())) {
             return 'Already has same tag';
           }
           return null;
@@ -333,7 +370,8 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           padding: const EdgeInsets.only(left: 12.0, right: 8, bottom: 2),
           child: SvgIcon(
             AppIcons.add,
-            color: context.appTheme.backgroundNegative.withOpacity(widget.category == null ? 0.2 : 0.5),
+            color: context.appTheme.backgroundNegative
+                .withOpacity(widget.category == null ? 0.2 : 0.5),
           ),
         ),
         textInputAction: TextInputAction.done,
@@ -346,9 +384,12 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
         },
         //onEditingComplete: widget.onEditingComplete,
         onEditingComplete: () {
-          if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
+          if (widget.category != null &&
+              _newTag != null &&
+              _formKey.currentState!.validate()) {
             final categoryRepo = ref.read(categoryRepositoryProvider);
-            categoryRepo.addTag(widget.category!, tag: _newTag!);
+            categoryRepo.writeNewTag(
+                name: _newTag!, category: widget.category!);
             widget.onEditingComplete(_newTag!);
             _newTag = null;
             _controller.text = '';

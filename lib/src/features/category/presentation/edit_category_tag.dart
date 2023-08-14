@@ -9,27 +9,31 @@ import '../../../common_widgets/custom_text_form_field.dart';
 import '../../../common_widgets/icon_with_text_button.dart';
 import '../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
-import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../data/category_repo.dart';
 import '../domain/category_isar.dart';
+import '../domain/category_tag_isar.dart';
 
 class EditCategoryTag extends ConsumerStatefulWidget {
-  const EditCategoryTag({Key? key, required this.category, required this.index}) : super(key: key);
+  const EditCategoryTag(this.tag, {Key? key, required this.category})
+      : super(key: key);
+
+  final CategoryTagIsar tag;
   final CategoryIsar category;
-  final int index;
 
   @override
   ConsumerState<EditCategoryTag> createState() => _EditCategoryTagState();
 }
 
 class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
-  late String newTag = widget.category.tags[widget.index]!;
-
-  late final List<String> _tags = widget.category.tags.whereType<String>().toList();
-
   final _formKey = GlobalKey<FormState>();
+  late final categoryRepo = ref.watch(categoryRepositoryProvider);
+
+  late final List<CategoryTagIsar> _tags =
+      categoryRepo.getTagsSortedByOrder(widget.category)!;
+
+  late String _newName = widget.tag.name;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
           CustomTextFormField(
             autofocus: false,
             focusColor: context.appTheme.primary,
-            hintText: widget.category.tags[widget.index]!,
+            hintText: widget.tag.name,
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 12.0, right: 8, top: 2),
               child: Text(
@@ -54,13 +58,15 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
               ),
             ),
             validator: (value) {
-              if (_tags.map((e) => e.toLowerCase()).contains(value?.toLowerCase())) {
+              if (_tags
+                  .map((e) => e.name.toLowerCase())
+                  .contains(value?.toLowerCase())) {
                 return 'Already has same tag';
               }
               return null;
             },
             onChanged: (value) {
-              newTag = value;
+              _newName = value;
             },
           ),
           Gap.h24,
@@ -76,10 +82,9 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                   showConfirmModalBottomSheet(
                     context: context,
                     label:
-                        'Are you sure that you want to delete tag "${widget.category.tags[widget.index]!}"?',
+                        'Are you sure that you want to delete tag "${widget.tag.name}"?',
                     onConfirm: () {
-                      final categoryRepo = ref.read(categoryRepositoryProvider);
-                      //categoryRepository.delete(widget.currentCategory);
+                      categoryRepo.deleteTag(widget.tag);
                       context.pop();
                     },
                   );
@@ -91,14 +96,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                 label: 'Done',
                 backgroundColor: context.appTheme.accent,
                 onTap: () async {
-                  final categoryRepository = ref.read(categoryRepositoryProvider);
-                  // await categoryRepository.edit(
-                  //   widget.currentCategory,
-                  //   iconCategory: newIconCategory,
-                  //   iconIndex: newIconIndex,
-                  //   name: newName,
-                  //   colorIndex: newColorIndex,
-                  // );
+                  await categoryRepo.editTag(widget.tag, name: _newName);
                   if (mounted) {
                     context.pop();
                   }

@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
+import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
@@ -21,21 +22,24 @@ import '../../category/domain/category_isar.dart';
 import 'forms/forms.dart';
 
 class AddTransactionModalScreen extends ConsumerStatefulWidget {
-  const AddTransactionModalScreen(this.transactionType, {Key? key}) : super(key: key);
+  const AddTransactionModalScreen(this.transactionType, {Key? key})
+      : super(key: key);
   final TransactionType transactionType;
 
   @override
-  ConsumerState<AddTransactionModalScreen> createState() => _AddTransactionModalScreenState();
+  ConsumerState<AddTransactionModalScreen> createState() =>
+      _AddTransactionModalScreenState();
 }
 
-class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalScreen> {
+class _AddTransactionModalScreenState
+    extends ConsumerState<AddTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TransactionType type = widget.transactionType;
   late DateTime dateTime = DateTime.now();
   String calculatorOutput = '0';
   String? note;
-  String? tag;
+  CategoryTagIsar? tag;
   CategoryIsar? category;
   AccountIsar? account;
   AccountIsar? toAccount;
@@ -81,7 +85,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                 borderRadius: BorderRadius.circular(1000),
                 child: FittedBox(
                   child: Text(
-                    settingsObject.currency.symbol ?? settingsObject.currency.code,
+                    settingsObject.currency.symbol ??
+                        settingsObject.currency.code,
                     style: kHeader1TextStyle.copyWith(
                       color: context.appTheme.backgroundNegative,
                     ),
@@ -133,9 +138,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:',
+                      widget.transactionType != TransactionType.transfer
+                          ? 'Category:'
+                          : 'From:',
                       style: kHeader2TextStyle.copyWith(
-                          fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+                          fontSize: 15,
+                          color: context.appTheme.backgroundNegative
+                              .withOpacity(0.5)),
                     ),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
@@ -143,7 +152,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                             transactionType: widget.transactionType,
                             validator: (_) {
                               if (category == null &&
-                                  widget.transactionType != TransactionType.transfer) {
+                                  widget.transactionType !=
+                                      TransactionType.transfer) {
                                 return '!';
                               }
                               return null;
@@ -168,24 +178,33 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                             }),
                     Gap.h16,
                     Text(
-                      widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:',
+                      widget.transactionType != TransactionType.transfer
+                          ? 'Account:'
+                          : 'To:',
                       style: kHeader2TextStyle.copyWith(
-                          fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+                          fontSize: 15,
+                          color: context.appTheme.backgroundNegative
+                              .withOpacity(0.5)),
                     ),
                     Gap.h4,
                     AccountFormSelector(
                         transactionType: widget.transactionType,
                         validator: (_) {
-                          if (widget.transactionType != TransactionType.transfer && account == null) {
+                          if (widget.transactionType !=
+                                  TransactionType.transfer &&
+                              account == null) {
                             return '!';
                           }
-                          if (widget.transactionType == TransactionType.transfer && toAccount == null) {
+                          if (widget.transactionType ==
+                                  TransactionType.transfer &&
+                              toAccount == null) {
                             return '!';
                           }
                           return null;
                         },
                         onChangedAccount: (newAccount) {
-                          if (widget.transactionType != TransactionType.transfer) {
+                          if (widget.transactionType !=
+                              TransactionType.transfer) {
                             setState(() {
                               account = newAccount;
                             });
@@ -235,13 +254,16 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                 backgroundColor: context.appTheme.accent,
                 isDisabled: _formatToDouble(calculatorOutput) == null ||
                     _formatToDouble(calculatorOutput) == 0 ||
-                    category == null && widget.transactionType != TransactionType.transfer ||
-                    toAccount == null && widget.transactionType == TransactionType.transfer ||
+                    category == null &&
+                        widget.transactionType != TransactionType.transfer ||
+                    toAccount == null &&
+                        widget.transactionType == TransactionType.transfer ||
                     account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     // By validating, the _formatToDouble(calculatorOutput) must not null
-                    final transactionRepository = ref.read(transactionRepositoryProvider);
+                    final transactionRepository =
+                        ref.read(transactionRepositoryProvider);
                     transactionRepository.writeNew(
                       type,
                       dateTime: dateTime,

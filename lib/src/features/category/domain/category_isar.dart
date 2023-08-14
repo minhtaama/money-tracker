@@ -13,10 +13,10 @@ class CategoryIsar {
   late CategoryType type;
 
   /// __tags can be null as user delete a tag from list__
-  List<String?> tags = List.empty(growable: true);
+  //List<String?> tags = List.empty(growable: true);
 
-  // @Backlink(to: 'category')
-  // final tags = IsarLinks<CategoryTagIsar>;
+  @Backlink(to: 'category')
+  final tags = IsarLinks<CategoryTagIsar>();
   //TODO: Change to IsarLinks
 
   late String name;

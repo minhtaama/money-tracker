@@ -37,13 +37,8 @@ const TransactionIsarSchema = CollectionSchema(
       name: r'note',
       type: IsarType.string,
     ),
-    r'tag': PropertySchema(
-      id: 4,
-      name: r'tag',
-      type: IsarType.string,
-    ),
     r'transactionType': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'transactionType',
       type: IsarType.byte,
       enumMap: _TransactionIsartransactionTypeEnumValueMap,
@@ -74,6 +69,12 @@ const TransactionIsarSchema = CollectionSchema(
       id: 5464079097723818832,
       name: r'category',
       target: r'CategoryIsar',
+      single: true,
+    ),
+    r'tag': LinkSchema(
+      id: 2810642075902042790,
+      name: r'tag',
+      target: r'CategoryTagIsar',
       single: true,
     ),
     r'account': LinkSchema(
@@ -108,12 +109,6 @@ int _transactionIsarEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  {
-    final value = object.tag;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -127,8 +122,7 @@ void _transactionIsarSerialize(
   writer.writeDateTime(offsets[1], object.dateTime);
   writer.writeBool(offsets[2], object.isInitialTransaction);
   writer.writeString(offsets[3], object.note);
-  writer.writeString(offsets[4], object.tag);
-  writer.writeByte(offsets[5], object.transactionType.index);
+  writer.writeByte(offsets[4], object.transactionType.index);
 }
 
 TransactionIsar _transactionIsarDeserialize(
@@ -143,9 +137,8 @@ TransactionIsar _transactionIsarDeserialize(
   object.id = id;
   object.isInitialTransaction = reader.readBool(offsets[2]);
   object.note = reader.readStringOrNull(offsets[3]);
-  object.tag = reader.readStringOrNull(offsets[4]);
   object.transactionType = _TransactionIsartransactionTypeValueEnumMap[
-          reader.readByteOrNull(offsets[5])] ??
+          reader.readByteOrNull(offsets[4])] ??
       TransactionType.income;
   return object;
 }
@@ -166,8 +159,6 @@ P _transactionIsarDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
       return (_TransactionIsartransactionTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           TransactionType.income) as P;
@@ -192,7 +183,7 @@ Id _transactionIsarGetId(TransactionIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _transactionIsarGetLinks(TransactionIsar object) {
-  return [object.category, object.account, object.toAccount];
+  return [object.category, object.tag, object.account, object.toAccount];
 }
 
 void _transactionIsarAttach(
@@ -200,6 +191,7 @@ void _transactionIsarAttach(
   object.id = id;
   object.category
       .attach(col, col.isar.collection<CategoryIsar>(), r'category', id);
+  object.tag.attach(col, col.isar.collection<CategoryTagIsar>(), r'tag', id);
   object.account
       .attach(col, col.isar.collection<AccountIsar>(), r'account', id);
   object.toAccount
@@ -732,160 +724,6 @@ extension TransactionIsarQueryFilter
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'tag',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'tag',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'tag',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'tag',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'tag',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'tag',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'tag',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'tag',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'tag',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'tag',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'tag',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      tagIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'tag',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       transactionTypeEqualTo(TransactionType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -958,6 +796,20 @@ extension TransactionIsarQueryLinks
       categoryIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'category', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition> tag(
+      FilterQuery<CategoryTagIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'tag');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      tagIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'tag', 0, true, 0, true);
     });
   }
 
@@ -1046,18 +898,6 @@ extension TransactionIsarQuerySortBy
     });
   }
 
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> sortByTag() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'tag', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> sortByTagDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'tag', Sort.desc);
-    });
-  }
-
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       sortByTransactionType() {
     return QueryBuilder.apply(this, (query) {
@@ -1141,18 +981,6 @@ extension TransactionIsarQuerySortThenBy
     });
   }
 
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenByTag() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'tag', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenByTagDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'tag', Sort.desc);
-    });
-  }
-
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       thenByTransactionType() {
     return QueryBuilder.apply(this, (query) {
@@ -1197,13 +1025,6 @@ extension TransactionIsarQueryWhereDistinct
     });
   }
 
-  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct> distinctByTag(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'tag', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
       distinctByTransactionType() {
     return QueryBuilder.apply(this, (query) {
@@ -1242,12 +1063,6 @@ extension TransactionIsarQueryProperty
   QueryBuilder<TransactionIsar, String?, QQueryOperations> noteProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'note');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, String?, QQueryOperations> tagProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'tag');
     });
   }
 
