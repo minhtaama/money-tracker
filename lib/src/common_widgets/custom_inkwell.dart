@@ -25,8 +25,8 @@ class CustomInkWell extends StatelessWidget {
         onTap != null ? onTap!() : () {};
       },
       onLongPress: onLongPress,
-      splashColor: inkColor.withOpacity(0.3),
-      highlightColor: inkColor.withOpacity(0.3),
+      splashColor: inkColor.opacity == 1 ? inkColor.withOpacity(0.3) : inkColor,
+      highlightColor: inkColor.opacity == 1 ? inkColor.withOpacity(0.3) : inkColor,
       borderRadius: borderRadius,
       child: child,
     );

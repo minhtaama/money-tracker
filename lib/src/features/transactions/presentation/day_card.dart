@@ -173,7 +173,7 @@ class DayCardTransactions extends StatelessWidget {
         final transaction = transactions[index];
 
         return CustomInkWell(
-          inkColor: AppColors.grey.withOpacity(0.1),
+          inkColor: AppColors.grey.withOpacity(0.15),
           borderRadius: BorderRadius.circular(12),
           onTap: () => onTap?.call(transaction),
           child: Padding(
@@ -184,7 +184,8 @@ class DayCardTransactions extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _Time(transaction: transaction),
+                    // _Time(transaction: transaction),
+                    _Dot(transaction: transaction),
                     Gap.w8,
                     Expanded(
                       child: Row(
@@ -192,9 +193,9 @@ class DayCardTransactions extends StatelessWidget {
                           transaction.transactionType ==
                                   TransactionType.transfer
                               ? const _TransferLine(
-                                  width: 12,
+                                  width: 14,
                                   adjustY: 1,
-                                )
+                                  height: 27)
                               : Gap.noGap,
                           Expanded(
                             child: Column(
@@ -273,6 +274,24 @@ class _Time extends StatelessWidget {
   }
 }
 
+class _Dot extends StatelessWidget {
+  const _Dot({Key? key, required this.transaction}) : super(key: key);
+
+  final TransactionIsar transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 6,
+      width: 6,
+      decoration: BoxDecoration(
+        color: transaction.transactionType == TransactionType.transfer ? AppColors.darkerGrey : transaction.transactionType == TransactionType.expense ? context.appTheme.negative : context.appTheme.positive ,
+        borderRadius: BorderRadius.circular(100),
+      ),
+    );
+  }
+}
+
 class _ExpandedCategory extends StatelessWidget {
   const _ExpandedCategory({Key? key, required this.transaction})
       : super(key: key);
@@ -327,7 +346,7 @@ class _ExpandedAccount extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
-        transaction.account.value != null
+        transaction.account.value != null && transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
                 transaction.isInitialTransaction ||
                         transaction.transactionType == TransactionType.transfer
@@ -371,7 +390,7 @@ class _ExpandedToAccount extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
-        transaction.toAccount.value != null
+        transaction.toAccount.value != null && transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
                 AppIcons.fromCategoryAndIndex(
                     transaction.toAccount.value!.iconCategory,
@@ -447,7 +466,7 @@ class _Note extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 4, top: 6),
+      margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
         border: Border(
             left: BorderSide(

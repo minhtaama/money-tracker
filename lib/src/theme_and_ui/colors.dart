@@ -168,7 +168,7 @@ class AppColors {
   static final darkerWhite = Color.lerp(AppColors.white, AppColors.black, 0.05)!;
   static final darkestWhite = Color.lerp(AppColors.white, AppColors.black, 0.12)!;
   static final grey = const Color(0xFF696969).withOpacity(0.25);
-  static final darkerGrey = const Color(0xFF696969).withOpacity(0.35);
+  static final darkerGrey = const Color(0xFF696969).withOpacity(0.45);
   static final lightestBlack = Color.lerp(AppColors.black, AppColors.white, 0.09)!;
   static final lighterBlack = Color.lerp(AppColors.black, AppColors.white, 0.05)!;
   static const black = Color(0xFF111111);

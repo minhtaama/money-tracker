@@ -67,11 +67,11 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Gap.h16,
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8.0),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
                       child: Text(
                         'Choose Category',
-                        style: kHeader2TextStyle,
+                        style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative),
                       ),
                     ),
                     Gap.h16,

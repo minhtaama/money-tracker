@@ -204,10 +204,15 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                 focusNode: _focusNode,
                 category: widget.category,
                 onEditingComplete: (tag) {
-                  // setState(() {
-                  //   _tags = categoryRepo.getTagsSortedByOrder(widget.category);
-                  // });
-                  _chosenTag = tag;
+                  categoryRepo.reorderTagToTop(_tags!, _tags!.length - 1);
+                  setState(
+                        () {
+                      _chosenTag = tag;
+                      _tags = categoryRepo
+                          .getTagsSortedByOrder(widget.category!);
+                      widget.onTagSelected(_chosenTag);
+                    },
+                  );
                 }),
           ),
         ),
@@ -389,6 +394,8 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
             CategoryTagIsar? newTag = await categoryRepo.writeNewTag(
                 name: _newTag!, category: widget.category!);
+
+            //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);
 
             widget.onEditingComplete(newTag!);
 
