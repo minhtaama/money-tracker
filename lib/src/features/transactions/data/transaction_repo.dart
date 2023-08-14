@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
+import 'package:async/async.dart';
 
 import '../../../../persistent/isar_data_store.dart';
 import '../../../utils/enums.dart';
@@ -25,11 +25,19 @@ class TransactionRepository {
     return query.findAllSync();
   }
 
-  // Used to watch list changes
+  // Used to watch transaction list changes
   Stream<void> _watchListChanges(DateTime lower, DateTime upper) {
     Query<TransactionIsar> query =
         isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
     return query.watchLazy(fireImmediately: true);
+  }
+
+  Stream<void> _watchDatabaseChanges() {
+    Stream<void> s1 = isar.accountIsars.watchLazy(fireImmediately: true);
+    Stream<void> s2 = isar.categoryIsars.watchLazy(fireImmediately: true);
+    Stream<void> s3 = isar.categoryTagIsars.watchLazy(fireImmediately: true);
+    Stream<void> s4 = isar.transactionIsars.watchLazy(fireImmediately: true);
+    return StreamGroup.merge([s1, s2, s3, s4]);
   }
 
   /// Only add value to __`toAccount`__ parameter if transaction type is __Transfer__
@@ -101,5 +109,12 @@ final transactionChangesProvider = StreamProvider.family<void, DateTimeRange>(
   (ref, range) {
     final transactionRepo = ref.watch(transactionRepositoryProvider);
     return transactionRepo._watchListChanges(range.start, range.end);
+  },
+);
+
+final databaseChangesProvider = StreamProvider.autoDispose<void>(
+      (ref) {
+    final transactionRepo = ref.watch(transactionRepositoryProvider);
+    return transactionRepo._watchDatabaseChanges();
   },
 );

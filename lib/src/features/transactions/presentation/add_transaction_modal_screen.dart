@@ -7,7 +7,7 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart'
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
-import 'package:money_tracker_app/src/features/category/presentation/category_tag_selector.dart';
+import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';

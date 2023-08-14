@@ -114,7 +114,7 @@ class CategoryRepository {
     }
   }
 
-  Future<void> writeNewTag(
+  Future<CategoryTagIsar?> writeNewTag(
       {required String name, required CategoryIsar category}) async {
     final newTag = CategoryTagIsar()
       ..name = name
@@ -130,6 +130,7 @@ class CategoryRepository {
       newTag.order = newTag.id;
       await isar.categoryTagIsars.put(newTag);
     });
+    return isar.categoryTagIsars.get(newTag.id);
   }
 
   Future<void> editTag(CategoryTagIsar currentTag,
@@ -141,7 +142,7 @@ class CategoryRepository {
 
   Future<void> deleteTag(CategoryTagIsar currentTag) async {
     await isar
-        .writeTxn(() async => await isar.categoryIsars.delete(currentTag.id));
+        .writeTxn(() async => await isar.categoryTagIsars.delete(currentTag.id));
   }
 
   /// The list must be the same list displayed in the widget (sorted by order in isar database)

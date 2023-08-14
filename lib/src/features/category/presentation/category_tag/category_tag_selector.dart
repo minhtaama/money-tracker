@@ -1,21 +1,20 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
-import 'package:money_tracker_app/src/features/category/presentation/edit_category_tag.dart';
+import 'package:money_tracker_app/src/features/category/presentation/category_tag/edit_category_tag.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../common_widgets/custom_text_form_field.dart';
-import '../domain/category_isar.dart';
-import '../domain/category_tag_isar.dart';
+import '../../../../common_widgets/custom_text_form_field.dart';
+import '../../domain/category_isar.dart';
+import '../../domain/category_tag_isar.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
   const CategoryTagSelector(
@@ -204,12 +203,11 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             child: AddCategoryTagButton(
                 focusNode: _focusNode,
                 category: widget.category,
-                onEditingComplete: (tagName) {
-                  setState(() {
-                    _tags = categoryRepo.getTagsSortedByOrder(widget.category);
-                  });
-                  print(_tags.toString().length);
-                  //_chosenTag = _tags!.last;
+                onEditingComplete: (tag) {
+                  // setState(() {
+                  //   _tags = categoryRepo.getTagsSortedByOrder(widget.category);
+                  // });
+                  _chosenTag = tag;
                 }),
           ),
         ),
@@ -316,7 +314,7 @@ class AddCategoryTagButton extends ConsumerStatefulWidget {
       : super(key: key);
   final FocusNode? focusNode;
   final CategoryIsar? category;
-  final ValueSetter<String> onEditingComplete;
+  final ValueSetter<CategoryTagIsar> onEditingComplete;
 
   @override
   ConsumerState<AddCategoryTagButton> createState() =>
@@ -382,15 +380,18 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           _newTag = null;
           _controller.text = '';
         },
-        //onEditingComplete: widget.onEditingComplete,
-        onEditingComplete: () {
+        onEditingComplete: () async {
           if (widget.category != null &&
               _newTag != null &&
               _formKey.currentState!.validate()) {
+
             final categoryRepo = ref.read(categoryRepositoryProvider);
-            categoryRepo.writeNewTag(
+
+            CategoryTagIsar? newTag = await categoryRepo.writeNewTag(
                 name: _newTag!, category: widget.category!);
-            widget.onEditingComplete(_newTag!);
+
+            widget.onEditingComplete(newTag!);
+
             _newTag = null;
             _controller.text = '';
           }

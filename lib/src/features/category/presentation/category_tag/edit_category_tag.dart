@@ -4,16 +4,17 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../common_widgets/custom_section.dart';
-import '../../../common_widgets/custom_text_form_field.dart';
-import '../../../common_widgets/icon_with_text_button.dart';
-import '../../../common_widgets/modal_bottom_sheets.dart';
-import '../../../common_widgets/rounded_icon_button.dart';
-import '../../../theme_and_ui/colors.dart';
-import '../../../theme_and_ui/icons.dart';
-import '../data/category_repo.dart';
-import '../domain/category_isar.dart';
-import '../domain/category_tag_isar.dart';
+import '../../../../common_widgets/custom_section.dart';
+import '../../../../common_widgets/custom_text_form_field.dart';
+import '../../../../common_widgets/icon_with_text_button.dart';
+import '../../../../common_widgets/modal_bottom_sheets.dart';
+import '../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../theme_and_ui/colors.dart';
+import '../../../../theme_and_ui/icons.dart';
+import '../../data/category_repo.dart';
+import '../../domain/category_isar.dart';
+import '../../domain/category_tag_isar.dart';
+
 
 class EditCategoryTag extends ConsumerStatefulWidget {
   const EditCategoryTag(this.tag, {Key? key, required this.category})
@@ -28,6 +29,7 @@ class EditCategoryTag extends ConsumerStatefulWidget {
 
 class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
   final _formKey = GlobalKey<FormState>();
+
   late final categoryRepo = ref.watch(categoryRepositoryProvider);
 
   late final List<CategoryTagIsar> _tags =

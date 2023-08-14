@@ -131,12 +131,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         List<TransactionIsar> transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
+        // ref.listenManual(
+        //     transactionChangesProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+        //     (_, __) {
+        //   transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        //   setState(() {});
+        // });
+
         ref.listenManual(
-            transactionChangesProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-            (_, __) {
-          transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
-          setState(() {});
-        });
+            databaseChangesProvider,
+                (_, __) {
+              transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+              setState(() {});
+            });
 
         return [
           Padding(
