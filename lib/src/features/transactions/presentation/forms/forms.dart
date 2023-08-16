@@ -12,7 +12,7 @@ class CategoryFormSelector extends FormField<CategoryIsar> {
   CategoryFormSelector(
       {super.key,
       required TransactionType transactionType,
-      required ValueChanged<CategoryIsar> onChangedCategory,
+      required ValueChanged<CategoryIsar?> onChangedCategory,
       FormFieldSetter<CategoryIsar>? onSaved,
       FormFieldValidator<CategoryIsar>? validator,
       CategoryIsar? initialValue,
@@ -47,7 +47,8 @@ class AccountFormSelector extends FormField<AccountIsar> {
   AccountFormSelector({
     super.key,
     required TransactionType transactionType,
-    required ValueChanged<AccountIsar> onChangedAccount,
+    required ValueChanged<AccountIsar?> onChangedAccount,
+    AccountIsar? otherSelectedAccount,
     FormFieldSetter<AccountIsar>? onSaved,
     FormFieldValidator<AccountIsar>? validator,
     AccountIsar? initialValue,
@@ -62,6 +63,7 @@ class AccountFormSelector extends FormField<AccountIsar> {
                 children: [
                   AccountSelector(
                       transactionType: transactionType,
+                      otherSelectedAccount: otherSelectedAccount,
                       onChangedAccount: (newAccount) {
                         state.didChange(newAccount);
                         onChangedAccount(newAccount);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -47,7 +46,8 @@ class SummaryCard extends StatelessWidget {
                     'See all',
                     style: kHeader3TextStyle.copyWith(
                       fontSize: 13,
-                      color: context.appTheme.backgroundNegative.withOpacity(0.6),
+                      color:
+                          context.appTheme.backgroundNegative.withOpacity(0.6),
                     ),
                   ),
                   Gap.w4,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CardItem extends StatelessWidget {
@@ -76,7 +75,7 @@ class CardItem extends StatelessWidget {
       ),
       child: ClipRRect(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        borderRadius: borderRadius ?? BorderRadius.circular(16),
+        borderRadius: borderRadius?.subtract(BorderRadius.circular(1)) ?? BorderRadius.circular(15),
         child: Material(
           color: Colors.transparent,
           child: Padding(

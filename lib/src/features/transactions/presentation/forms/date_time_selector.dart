@@ -24,7 +24,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       elevation: 0,
-      border: Border.all(color: AppColors.grey),
+      border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.4)),
       color: Colors.transparent,
       child: Column(
         children: [
@@ -36,16 +36,16 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 itemHeight: 26,
                 alignment: Alignment.center,
                 normalTextStyle: kHeader3TextStyle.copyWith(
-                    height: 0, color: AppColors.darkerGrey.withOpacity(0.6), fontSize: 15),
+                    height: 0, color: context.appTheme.backgroundNegative.withOpacity(0.4), fontSize: 15),
                 highlightedTextStyle: kHeader1TextStyle.copyWith(
-                    height: 0.9, color: context.appTheme.primary, fontSize: 25),
+                    height: 0.9,
+                    color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+                    fontSize: 25),
                 isForce2Digits: true,
                 onTimeChange: (newTime) {
                   setState(() {
                     currentDateTime = newTime.copyWith(
-                        year: currentDateTime.year,
-                        month: currentDateTime.month,
-                        day: currentDateTime.day);
+                        year: currentDateTime.year, month: currentDateTime.month, day: currentDateTime.day);
                   });
                   widget.onChanged(currentDateTime);
                 },
@@ -55,7 +55,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                   alignment: Alignment.center,
                   child: Text(
                     ':',
-                    style: kHeader1TextStyle.copyWith(fontSize: 23, color: context.appTheme.primary),
+                    style: kHeader1TextStyle.copyWith(fontSize: 23, color: context.appTheme.secondary),
                   ),
                 ),
               )
@@ -71,8 +71,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               );
               if (newDate != null) {
                 setState(() {
-                  currentDateTime =
-                      newDate.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
+                  currentDateTime = newDate.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
                   widget.onChanged(currentDateTime);
                 });
               }
@@ -89,12 +88,15 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 children: [
                   Expanded(
                     child: Container(
-                      color: context.appTheme.primary,
+                      color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
                       child: Center(
                         child: Text(
                           '${currentDateTime.day} ${currentDateTime.monthStringShort()}',
                           style: kHeader4TextStyle.copyWith(
-                              color: context.appTheme.primaryNegative, fontSize: 14),
+                              color: context.appTheme.isDarkTheme
+                                  ? context.appTheme.secondaryNegative
+                                  : context.appTheme.primaryNegative,
+                              fontSize: 14),
                         ),
                       ),
                     ),
@@ -106,7 +108,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                       child: Center(
                         child: Text(
                           currentDateTime.year.toString(),
-                          style: kHeader2TextStyle.copyWith(color: context.appTheme.primary),
+                          style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+                          ),
                         ),
                       ),
                     ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:hive/hive.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';

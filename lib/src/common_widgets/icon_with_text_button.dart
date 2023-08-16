@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -42,8 +41,8 @@ class IconWithTextButton extends StatelessWidget {
     return CardItem(
       height: height,
       width: width,
-      border: border,
-      color: isDisabled ? AppColors.darkerGrey : backgroundColor,
+      border: isDisabled ? Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.2)) : border,
+      color: isDisabled ? Colors.transparent : backgroundColor,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
       borderRadius: borderRadius ?? BorderRadius.circular(1000),
@@ -51,7 +50,6 @@ class IconWithTextButton extends StatelessWidget {
       isGradient: true,
       child: CustomInkWell(
         onTap: onTap,
-        //borderRadius: borderRadius ?? BorderRadius.circular(1000),
         inkColor: color ?? context.appTheme.primaryNegative,
         child: Padding(
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),
@@ -62,7 +60,7 @@ class IconWithTextButton extends StatelessWidget {
                 SvgIcon(
                   iconPath,
                   color: isDisabled
-                      ? context.appTheme.backgroundNegative
+                      ? context.appTheme.backgroundNegative.withOpacity(0.15)
                       : color ?? context.appTheme.accentNegative,
                   size: 30,
                 ),
@@ -73,7 +71,7 @@ class IconWithTextButton extends StatelessWidget {
                       label,
                       style: kHeader2TextStyle.copyWith(
                         color: isDisabled
-                            ? context.appTheme.backgroundNegative
+                            ? context.appTheme.backgroundNegative.withOpacity(0.15)
                             : color ?? context.appTheme.accentNegative,
                         fontSize: labelSize,
                       ),

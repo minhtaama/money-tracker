@@ -22,17 +22,14 @@ import '../../category/domain/category_isar.dart';
 import 'forms/forms.dart';
 
 class AddTransactionModalScreen extends ConsumerStatefulWidget {
-  const AddTransactionModalScreen(this.transactionType, {Key? key})
-      : super(key: key);
+  const AddTransactionModalScreen(this.transactionType, {Key? key}) : super(key: key);
   final TransactionType transactionType;
 
   @override
-  ConsumerState<AddTransactionModalScreen> createState() =>
-      _AddTransactionModalScreenState();
+  ConsumerState<AddTransactionModalScreen> createState() => _AddTransactionModalScreenState();
 }
 
-class _AddTransactionModalScreenState
-    extends ConsumerState<AddTransactionModalScreen> {
+class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TransactionType type = widget.transactionType;
@@ -85,8 +82,7 @@ class _AddTransactionModalScreenState
                 borderRadius: BorderRadius.circular(1000),
                 child: FittedBox(
                   child: Text(
-                    settingsObject.currency.symbol ??
-                        settingsObject.currency.code,
+                    settingsObject.currency.symbol ?? settingsObject.currency.code,
                     style: kHeader1TextStyle.copyWith(
                       color: context.appTheme.backgroundNegative,
                     ),
@@ -99,8 +95,7 @@ class _AddTransactionModalScreenState
                   hintText: 'Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null ||
-                        _formatToDouble(calculatorOutput) == 0) {
+                    if (_formatToDouble(calculatorOutput) == null || _formatToDouble(calculatorOutput) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -138,22 +133,16 @@ class _AddTransactionModalScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.transactionType != TransactionType.transfer
-                          ? 'Category:'
-                          : 'From:',
+                      widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:',
                       style: kHeader2TextStyle.copyWith(
-                          fontSize: 15,
-                          color: context.appTheme.backgroundNegative
-                              .withOpacity(0.5)),
+                          fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
                     ),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) {
-                              if (category == null &&
-                                  widget.transactionType !=
-                                      TransactionType.transfer) {
+                              if (category == null && widget.transactionType != TransactionType.transfer) {
                                 return '!';
                               }
                               return null;
@@ -161,6 +150,7 @@ class _AddTransactionModalScreenState
                             onChangedCategory: (newCategory) {
                               setState(() {
                                 category = newCategory;
+                                print(category);
                               });
                             })
                         : AccountFormSelector(
@@ -175,45 +165,40 @@ class _AddTransactionModalScreenState
                               setState(() {
                                 account = newAccount;
                               });
-                            }),
+                            },
+                            otherSelectedAccount: toAccount,
+                          ),
                     Gap.h16,
                     Text(
-                      widget.transactionType != TransactionType.transfer
-                          ? 'Account:'
-                          : 'To:',
+                      widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:',
                       style: kHeader2TextStyle.copyWith(
-                          fontSize: 15,
-                          color: context.appTheme.backgroundNegative
-                              .withOpacity(0.5)),
+                          fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
                     ),
                     Gap.h4,
                     AccountFormSelector(
-                        transactionType: widget.transactionType,
-                        validator: (_) {
-                          if (widget.transactionType !=
-                                  TransactionType.transfer &&
-                              account == null) {
-                            return '!';
-                          }
-                          if (widget.transactionType ==
-                                  TransactionType.transfer &&
-                              toAccount == null) {
-                            return '!';
-                          }
-                          return null;
-                        },
-                        onChangedAccount: (newAccount) {
-                          if (widget.transactionType !=
-                              TransactionType.transfer) {
-                            setState(() {
-                              account = newAccount;
-                            });
-                          } else {
-                            setState(() {
-                              toAccount = newAccount;
-                            });
-                          }
-                        }),
+                      transactionType: widget.transactionType,
+                      validator: (_) {
+                        if (widget.transactionType != TransactionType.transfer && account == null) {
+                          return '!';
+                        }
+                        if (widget.transactionType == TransactionType.transfer && toAccount == null) {
+                          return '!';
+                        }
+                        return null;
+                      },
+                      onChangedAccount: (newAccount) {
+                        if (widget.transactionType != TransactionType.transfer) {
+                          setState(() {
+                            account = newAccount;
+                          });
+                        } else {
+                          setState(() {
+                            toAccount = newAccount;
+                          });
+                        }
+                      },
+                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? account : null,
+                    ),
                   ],
                 ),
               ),
@@ -254,16 +239,13 @@ class _AddTransactionModalScreenState
                 backgroundColor: context.appTheme.accent,
                 isDisabled: _formatToDouble(calculatorOutput) == null ||
                     _formatToDouble(calculatorOutput) == 0 ||
-                    category == null &&
-                        widget.transactionType != TransactionType.transfer ||
-                    toAccount == null &&
-                        widget.transactionType == TransactionType.transfer ||
+                    category == null && widget.transactionType != TransactionType.transfer ||
+                    toAccount == null && widget.transactionType == TransactionType.transfer ||
                     account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     // By validating, the _formatToDouble(calculatorOutput) must not null
-                    final transactionRepository =
-                        ref.read(transactionRepositoryProvider);
+                    final transactionRepository = ref.read(transactionRepositoryProvider);
                     transactionRepository.writeNew(
                       type,
                       dateTime: dateTime,

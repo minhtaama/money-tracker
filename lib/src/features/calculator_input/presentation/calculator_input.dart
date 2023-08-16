@@ -62,7 +62,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
       decoration: InputDecoration(
         focusColor: context.appTheme.primary,
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.grey, width: 1),
+          borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: widget.focusColor, width: 2),
@@ -105,9 +105,7 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator(
-      {Key? key, required this.initialValue, required this.resultOutput})
-      : super(key: key);
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput}) : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__
@@ -132,9 +130,7 @@ class _CalculatorState extends State<_Calculator> {
   @override
   void initState() {
     // Un-format the initialValue (without "," symbol)
-    _rawString = widget.initialValue.isEmpty
-        ? '0'
-        : _unformatNumberGrouping(widget.initialValue);
+    _rawString = widget.initialValue.isEmpty ? '0' : _unformatNumberGrouping(widget.initialValue);
 
     // Reformat again to display
     _formattedString = _formatNumberInGroup(_rawString);
@@ -202,12 +198,9 @@ class _CalculatorState extends State<_Calculator> {
     // Adding a number
     if (RegExp(r'[0-9]').hasMatch(value)) {
       // Only allow maximum 14 digits
-      if (_unformatNumberGrouping(_getCurrentFormattedNumberInput()).length <
-          14) {
+      if (_unformatNumberGrouping(_getCurrentFormattedNumberInput()).length < 14) {
         if (value == '000') {
-          if (_unformatNumberGrouping(_getCurrentFormattedNumberInput())
-                  .length <
-              11) {
+          if (_unformatNumberGrouping(_getCurrentFormattedNumberInput()).length < 11) {
             _rawString = '$_rawString$value';
           }
         } else {
@@ -241,8 +234,7 @@ class _CalculatorState extends State<_Calculator> {
 
     // Only format if latest number do not have dot
     if (_isLatestNumberHasDot()) {
-      _formattedString =
-          _formattedString.substring(0, _formattedString.length - 1);
+      _formattedString = _formattedString.substring(0, _formattedString.length - 1);
     } else {
       _formattedString = _formatNumberInGroup(_rawString);
     }
@@ -314,8 +306,7 @@ class _CalculatorState extends State<_Calculator> {
       //match[0] returns whole string of this match
       return formatter.format(double.parse(match[0]!));
     });
-    return newValue.replaceAllMapped(
-        RegExp(r'[+\-*/]'), (match) => ' ${match[0]} ');
+    return newValue.replaceAllMapped(RegExp(r'[+\-*/]'), (match) => ' ${match[0]} ');
   }
 
   /// Delete all "," symbol in the String

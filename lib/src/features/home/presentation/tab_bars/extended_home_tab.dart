@@ -156,7 +156,7 @@ class WelcomeText extends StatelessWidget {
     return Text(
       'Hello, Tâm'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.secondaryNegative,
+        color: context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
         fontSize: 18,
       ),
     );
@@ -180,9 +180,7 @@ class TotalMoney extends ConsumerWidget {
 
     double totalBalance = TransactionService.getTotalBalance(isar);
 
-    ref
-        .watch(transactionChangesProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
-        .whenData((_) {
+    ref.watch(transactionChangesProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate))).whenData((_) {
       totalBalance = TransactionService.getTotalBalance(isar);
     });
 
@@ -193,7 +191,8 @@ class TotalMoney extends ConsumerWidget {
           settingsRepository.currency.code,
           style: kHeader4TextStyle.copyWith(
             fontWeight: FontWeight.w100,
-            color: context.appTheme.secondaryNegative,
+            color:
+                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
             fontSize: 36,
             letterSpacing: -2,
           ),
@@ -203,7 +202,9 @@ class TotalMoney extends ConsumerWidget {
           child: EasyRichText(
             CalculatorService.formatCurrency(totalBalance, hideNumber: hideNumber),
             defaultStyle: kHeader2TextStyle.copyWith(
-              color: context.appTheme.secondaryNegative,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.backgroundNegative
+                  : context.appTheme.secondaryNegative,
               fontSize: 25,
             ),
             //textAlign: TextAlign.right,
@@ -211,7 +212,9 @@ class TotalMoney extends ConsumerWidget {
               EasyRichTextPattern(
                 targetString: '^[0-9]+',
                 style: kHeader1TextStyle.copyWith(
-                  color: context.appTheme.secondaryNegative,
+                  color: context.appTheme.isDarkTheme
+                      ? context.appTheme.backgroundNegative
+                      : context.appTheme.secondaryNegative,
                   fontSize: 36,
                 ),
               ),

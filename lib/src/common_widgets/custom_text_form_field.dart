@@ -98,18 +98,20 @@ class CustomTextFormField extends StatelessWidget {
           errorBorder: withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: AppColors.grey, width: 1),
+                  borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
                 )
               : UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.grey, width: 1),
+                  borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
                 ),
           enabledBorder: withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: AppColors.grey, width: 1),
+                  borderSide:
+                      BorderSide(color: context.appTheme.backgroundNegative.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 )
               : UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.grey, width: 1),
+                  borderSide:
+                      BorderSide(color: context.appTheme.backgroundNegative.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 ),
           focusedBorder: withOutlineBorder
               ? OutlineInputBorder(

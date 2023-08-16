@@ -56,9 +56,8 @@ class DayCard extends ConsumerWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: dateTime.weekday == 6 || dateTime.weekday == 7
-                        ? context.appTheme.accent
-                        : AppColors.darkerGrey,
+                    color:
+                        dateTime.weekday == 6 || dateTime.weekday == 7 ? context.appTheme.accent : AppColors.darkerGrey,
                     borderRadius: BorderRadius.circular(8),
                     border: dateTime.year == DateTime.now().year &&
                             dateTime.month == DateTime.now().month &&
@@ -66,8 +65,7 @@ class DayCard extends ConsumerWidget {
                         ? Border.all(color: context.appTheme.backgroundNegative)
                         : null,
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   child: Text(
                     dateTime.day.toString(),
                     style: kHeader1TextStyle.copyWith(
@@ -93,9 +91,7 @@ class DayCard extends ConsumerWidget {
                     ),
                     Text(
                       '${dateTime.monthString()} ${dateTime.year}',
-                      style: kHeader4TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative,
-                          fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -107,15 +103,12 @@ class DayCard extends ConsumerWidget {
                     Text(
                       'Cash flow',
                       style: kHeader4TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative
-                              .withOpacity(0.5),
-                          fontSize: 12),
+                          color: context.appTheme.backgroundNegative.withOpacity(0.5), fontSize: 12),
                     ),
                     Row(
                       children: [
                         Text(
-                          CalculatorService.formatCurrency(
-                              _calculateCashFlow.abs()),
+                          CalculatorService.formatCurrency(_calculateCashFlow.abs()),
                           style: kHeader1TextStyle.copyWith(
                               color: _calculateCashFlow > 0
                                   ? context.appTheme.positive
@@ -190,43 +183,32 @@ class DayCardTransactions extends StatelessWidget {
                     Expanded(
                       child: Row(
                         children: [
-                          transaction.transactionType ==
-                                  TransactionType.transfer
-                              ? const _TransferLine(
-                                  width: 14,
-                                  adjustY: 1,
-                                  height: 27)
+                          transaction.transactionType == TransactionType.transfer
+                              ? const _TransferLine(width: 14, adjustY: 1, height: 27)
                               : Gap.noGap,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                transaction.transactionType !=
-                                        TransactionType.transfer
-                                    ? _ExpandedCategory(
-                                        transaction: transaction)
+                                transaction.transactionType != TransactionType.transfer
+                                    ? _ExpandedCategory(transaction: transaction)
                                     : Gap.noGap,
                                 _ExpandedAccount(transaction: transaction),
-                                transaction.transactionType ==
-                                        TransactionType.transfer
-                                    ? _ExpandedToAccount(
-                                        transaction: transaction)
+                                transaction.transactionType == TransactionType.transfer ? Gap.h4 : Gap.noGap,
+                                transaction.transactionType == TransactionType.transfer
+                                    ? _ExpandedToAccount(transaction: transaction)
                                     : Gap.noGap,
                               ],
                             ),
                           ),
                           Gap.w16,
-                          _Amount(
-                              currencyCode: currencyCode,
-                              transaction: transaction),
+                          _Amount(currencyCode: currencyCode, transaction: transaction),
                         ],
                       ),
                     ),
                   ],
                 ),
-                transaction.note != null || transaction.tag.value != null
-                    ? _Note(transaction: transaction)
-                    : Gap.noGap,
+                transaction.note != null || transaction.tag.value != null ? _Note(transaction: transaction) : Gap.noGap,
               ],
             ),
           ),
@@ -238,41 +220,36 @@ class DayCardTransactions extends StatelessWidget {
 
 ///////////////////////////////////////////
 
-class _Time extends StatelessWidget {
-  const _Time({Key? key, required this.transaction}) : super(key: key);
-
-  final TransactionIsar transaction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.grey,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            NumberFormat('00').format(transaction.dateTime.hour),
-            style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative,
-                fontSize: 12,
-                height: 1),
-          ),
-          Text(
-            NumberFormat('00').format(transaction.dateTime.minute),
-            style: kHeader4TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.5),
-                fontSize: 12,
-                height: 1),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class _Time extends StatelessWidget {
+//   const _Time({Key? key, required this.transaction}) : super(key: key);
+//
+//   final TransactionIsar transaction;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: AppColors.grey,
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.end,
+//         children: [
+//           Text(
+//             NumberFormat('00').format(transaction.dateTime.hour),
+//             style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12, height: 1),
+//           ),
+//           Text(
+//             NumberFormat('00').format(transaction.dateTime.minute),
+//             style: kHeader4TextStyle.copyWith(
+//                 color: context.appTheme.backgroundNegative.withOpacity(0.5), fontSize: 12, height: 1),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class _Dot extends StatelessWidget {
   const _Dot({Key? key, required this.transaction}) : super(key: key);
@@ -285,7 +262,11 @@ class _Dot extends StatelessWidget {
       height: 6,
       width: 6,
       decoration: BoxDecoration(
-        color: transaction.transactionType == TransactionType.transfer ? AppColors.darkerGrey : transaction.transactionType == TransactionType.expense ? context.appTheme.negative : context.appTheme.positive ,
+        color: transaction.transactionType == TransactionType.transfer
+            ? AppColors.darkerGrey
+            : transaction.transactionType == TransactionType.expense
+                ? context.appTheme.negative
+                : context.appTheme.positive,
         borderRadius: BorderRadius.circular(100),
       ),
     );
@@ -293,8 +274,7 @@ class _Dot extends StatelessWidget {
 }
 
 class _ExpandedCategory extends StatelessWidget {
-  const _ExpandedCategory({Key? key, required this.transaction})
-      : super(key: key);
+  const _ExpandedCategory({Key? key, required this.transaction}) : super(key: key);
 
   final TransactionIsar transaction;
 
@@ -307,23 +287,18 @@ class _ExpandedCategory extends StatelessWidget {
         SvgIcon(
           !transaction.isInitialTransaction
               ? AppIcons.fromCategoryAndIndex(
-                  transaction.category.value!.iconCategory,
-                  transaction.category.value!.iconIndex)
+                  transaction.category.value!.iconCategory, transaction.category.value!.iconIndex)
               : AppIcons.add,
           size: 20,
-          color: context.appTheme.backgroundNegative
-              .withOpacity(transaction.category.value != null ? 1 : 0.5),
+          color: context.appTheme.backgroundNegative.withOpacity(transaction.category.value != null ? 1 : 0.5),
         ),
         Gap.w4,
         // Category Name
         Expanded(
           child: Text(
-            !transaction.isInitialTransaction
-                ? transaction.category.value!.name
-                : 'Initial Balance',
+            !transaction.isInitialTransaction ? transaction.category.value!.name : 'Initial Balance',
             style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative
-                    .withOpacity(transaction.category.value != null ? 1 : 0.5),
+                color: context.appTheme.backgroundNegative.withOpacity(transaction.category.value != null ? 1 : 0.5),
                 fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -335,8 +310,7 @@ class _ExpandedCategory extends StatelessWidget {
 }
 
 class _ExpandedAccount extends StatelessWidget {
-  const _ExpandedAccount({Key? key, required this.transaction})
-      : super(key: key);
+  const _ExpandedAccount({Key? key, required this.transaction}) : super(key: key);
 
   final TransactionIsar transaction;
 
@@ -348,27 +322,21 @@ class _ExpandedAccount extends StatelessWidget {
         // Category Icon
         transaction.account.value != null && transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
-                transaction.isInitialTransaction ||
-                        transaction.transactionType == TransactionType.transfer
-                    ? AppIcons.fromCategoryAndIndex(
-                        transaction.account.value!.iconCategory,
-                        transaction.account.value!.iconIndex)
+                transaction.isInitialTransaction || transaction.transactionType == TransactionType.transfer
+                    ? AppIcons.download
                     : transaction.transactionType == TransactionType.income
                         ? AppIcons.download
                         : AppIcons.upload,
                 size: 20,
-                color: context.appTheme.backgroundNegative.withOpacity(0.6),
+                color: context.appTheme.backgroundNegative,
               )
             : Gap.noGap,
         transaction.account.value != null ? Gap.w4 : Gap.noGap,
         // Category Name
         Expanded(
           child: Text(
-            transaction.account.value != null
-                ? transaction.account.value!.name
-                : ' ',
-            style: kHeader4TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative, fontSize: 12),
+            transaction.account.value != null ? transaction.account.value!.name : ' ',
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
           ),
@@ -379,8 +347,7 @@ class _ExpandedAccount extends StatelessWidget {
 }
 
 class _ExpandedToAccount extends StatelessWidget {
-  const _ExpandedToAccount({Key? key, required this.transaction})
-      : super(key: key);
+  const _ExpandedToAccount({Key? key, required this.transaction}) : super(key: key);
 
   final TransactionIsar transaction;
 
@@ -393,8 +360,7 @@ class _ExpandedToAccount extends StatelessWidget {
         transaction.toAccount.value != null && transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
                 AppIcons.fromCategoryAndIndex(
-                    transaction.toAccount.value!.iconCategory,
-                    transaction.toAccount.value!.iconIndex),
+                    transaction.toAccount.value!.iconCategory, transaction.toAccount.value!.iconIndex),
                 size: 20,
                 color: context.appTheme.backgroundNegative,
               )
@@ -403,11 +369,8 @@ class _ExpandedToAccount extends StatelessWidget {
         // Category Name
         Expanded(
           child: Text(
-            transaction.toAccount.value != null
-                ? transaction.toAccount.value!.name
-                : ' ',
-            style: kHeader4TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative, fontSize: 12),
+            transaction.toAccount.value != null ? transaction.toAccount.value!.name : ' ',
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
           ),
@@ -418,9 +381,7 @@ class _ExpandedToAccount extends StatelessWidget {
 }
 
 class _Amount extends StatelessWidget {
-  const _Amount(
-      {Key? key, required this.currencyCode, required this.transaction})
-      : super(key: key);
+  const _Amount({Key? key, required this.currencyCode, required this.transaction}) : super(key: key);
 
   final String currencyCode;
   final TransactionIsar transaction;
@@ -468,18 +429,14 @@ class _Note extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(
-            left: BorderSide(
-                color: context.appTheme.backgroundNegative.withOpacity(0.3),
-                width: 1.5)),
+        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,21 +446,17 @@ class _Note extends StatelessWidget {
                 ? Text(
                     '# ${transaction.tag.value!.name}',
                     style: kHeader2TextStyle.copyWith(
-                      color:
-                          context.appTheme.backgroundNegative.withOpacity(0.7),
+                      color: context.appTheme.backgroundNegative.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   )
                 : Gap.noGap,
-            transaction.tag.value != null && transaction.note != null
-                ? Gap.h4
-                : Gap.noGap,
+            transaction.tag.value != null && transaction.note != null ? Gap.h4 : Gap.noGap,
             transaction.note != null
                 ? Text(
                     transaction.note!,
                     style: kHeader4TextStyle.copyWith(
-                      color:
-                          context.appTheme.backgroundNegative.withOpacity(0.7),
+                      color: context.appTheme.backgroundNegative.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   )
@@ -516,9 +469,7 @@ class _Note extends StatelessWidget {
 }
 
 class _TransferLine extends StatelessWidget {
-  const _TransferLine(
-      {Key? key, this.height = 30, this.width = 10, this.adjustY = 0})
-      : super(key: key);
+  const _TransferLine({Key? key, this.height = 30, this.width = 10, this.adjustY = 0}) : super(key: key);
 
   final double height;
   final double adjustY;
@@ -531,8 +482,7 @@ class _TransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context,
-              height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
@@ -542,8 +492,7 @@ class _TransferLine extends StatelessWidget {
 ///////////////////////////////////////
 
 class _TransferLinePainter extends CustomPainter {
-  _TransferLinePainter(this.context,
-      {this.height = 30, required this.width, required this.adjustY});
+  _TransferLinePainter(this.context, {this.height = 30, required this.width, required this.adjustY});
 
   final BuildContext context;
   final double height;
@@ -565,10 +514,8 @@ class _TransferLinePainter extends CustomPainter {
     double endY = height - arrowYOffset - adjustY;
 
     Offset arrowHead = Offset(endX, endY);
-    Offset upperTail =
-        Offset(arrowHead.dx - arrowXOffset, arrowHead.dy - arrowYOffset);
-    Offset lowerTail =
-        Offset(arrowHead.dx - arrowXOffset, arrowHead.dy + arrowYOffset);
+    Offset upperTail = Offset(arrowHead.dx - arrowXOffset, arrowHead.dy - arrowYOffset);
+    Offset lowerTail = Offset(arrowHead.dx - arrowXOffset, arrowHead.dy + arrowYOffset);
 
     Offset lineTopBegin = Offset(startX + cornerSize / 2, startY);
     Offset lineTopEnd = Offset(endX - 1, startY);
@@ -578,8 +525,7 @@ class _TransferLinePainter extends CustomPainter {
     Offset lineBottomEnd = Offset(endX - 1, endY);
 
     final corner1 = Rect.fromLTWH(startX, startY, cornerSize, cornerSize);
-    final corner2 =
-        Rect.fromLTWH(startX, endY - cornerSize, cornerSize, cornerSize);
+    final corner2 = Rect.fromLTWH(startX, endY - cornerSize, cornerSize, cornerSize);
     const startAngle1 = math.pi;
     const startAngle2 = math.pi / 2;
     const sweepAngle = math.pi / 2;

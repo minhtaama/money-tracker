@@ -83,8 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCard = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCard.add(DayCard(
@@ -138,18 +137,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         //   setState(() {});
         // });
 
-        ref.listenManual(
-            databaseChangesProvider,
-                (_, __) {
-              transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
-              setState(() {});
-            });
+        ref.listenManual(databaseChangesProvider, (_, __) {
+          transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+          setState(() {});
+        });
 
         return [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Row(
-              children: const [
+              children: [
                 Expanded(child: IncomeExpenseCard(isIncome: true)),
                 Expanded(child: IncomeExpenseCard(isIncome: false)),
               ],

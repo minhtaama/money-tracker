@@ -19,7 +19,7 @@ class CategorySelector extends ConsumerStatefulWidget {
   })  : assert(transactionType != TransactionType.transfer),
         super(key: key);
 
-  final ValueChanged<CategoryIsar> onChangedCategory;
+  final ValueChanged<CategoryIsar?> onChangedCategory;
   final TransactionType transactionType;
 
   @override
@@ -39,15 +39,18 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       iconPath: currentCategory != null
           ? AppIcons.fromCategoryAndIndex(currentCategory!.iconCategory, currentCategory!.iconIndex)
           : AppIcons.add,
-      backgroundColor: currentCategory != null
-          ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][0]
-          : Colors.transparent,
+      backgroundColor:
+          currentCategory != null ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][0] : Colors.transparent,
       color: currentCategory != null
           ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][1]
           : context.appTheme.backgroundNegative.withOpacity(0.5),
       width: null,
       height: null,
-      border: currentCategory != null ? null : Border.all(color: AppColors.darkerGrey),
+      border: currentCategory != null
+          ? null
+          : Border.all(
+              color: context.appTheme.backgroundNegative.withOpacity(0.4),
+            ),
       onTap: () async {
         List<CategoryIsar> categoryList;
 
@@ -56,8 +59,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription(
-              'Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModalBottomSheet<CategoryIsar>(
@@ -81,14 +83,22 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       children: List.generate(categoryList.length, (index) {
                         final category = categoryList[index];
                         return IconWithTextButton(
-                          iconPath:
-                              AppIcons.fromCategoryAndIndex(category.iconCategory, category.iconIndex),
+                          iconPath: AppIcons.fromCategoryAndIndex(category.iconCategory, category.iconIndex),
                           label: category.name,
                           labelSize: 18,
                           borderRadius: BorderRadius.circular(16),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          backgroundColor: AppColors.allColorsUserCanPick[category.colorIndex][0],
-                          color: AppColors.allColorsUserCanPick[category.colorIndex][1],
+                          border: Border.all(
+                            color: currentCategory?.id == category.id
+                                ? AppColors.allColorsUserCanPick[category.colorIndex][0]
+                                : context.appTheme.backgroundNegative.withOpacity(0.4),
+                          ),
+                          backgroundColor: currentCategory?.id == category.id
+                              ? AppColors.allColorsUserCanPick[category.colorIndex][0]
+                              : Colors.transparent,
+                          color: currentCategory?.id == category.id
+                              ? AppColors.allColorsUserCanPick[category.colorIndex][1]
+                              : context.appTheme.backgroundNegative,
                           onTap: () => context.pop<CategoryIsar>(category),
                           height: null,
                           width: null,
@@ -104,8 +114,13 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
 
         setState(() {
           if (returnedValue != null) {
-            currentCategory = returnedValue;
-            widget.onChangedCategory(currentCategory!);
+            if (currentCategory != null && currentCategory!.id == returnedValue.id) {
+              currentCategory = null;
+              widget.onChangedCategory(currentCategory);
+            } else {
+              currentCategory = returnedValue;
+              widget.onChangedCategory(currentCategory);
+            }
           }
         });
       },

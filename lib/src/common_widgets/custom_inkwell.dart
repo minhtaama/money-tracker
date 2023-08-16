@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CustomInkWell extends StatelessWidget {
   const CustomInkWell({
@@ -26,7 +25,8 @@ class CustomInkWell extends StatelessWidget {
       },
       onLongPress: onLongPress,
       splashColor: inkColor.opacity == 1 ? inkColor.withOpacity(0.3) : inkColor,
-      highlightColor: inkColor.opacity == 1 ? inkColor.withOpacity(0.3) : inkColor,
+      highlightColor:
+          inkColor.opacity == 1 ? inkColor.withOpacity(0.3) : inkColor,
       borderRadius: borderRadius,
       child: child,
     );

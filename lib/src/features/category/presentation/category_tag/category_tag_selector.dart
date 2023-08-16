@@ -17,9 +17,7 @@ import '../../domain/category_isar.dart';
 import '../../domain/category_tag_isar.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
-  const CategoryTagSelector(
-      {Key? key, this.category, required this.onTagSelected, this.fading})
-      : super(key: key);
+  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading}) : super(key: key);
   final Color? fading;
   final ValueSetter<CategoryTagIsar?> onTagSelected;
   final CategoryIsar? category;
@@ -36,8 +34,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   late CategoryIsar? currentCategory = widget.category;
 
-  late List<CategoryTagIsar>? _tags =
-      categoryRepo.getTagsSortedByOrder(currentCategory);
+  late List<CategoryTagIsar>? _tags = categoryRepo.getTagsSortedByOrder(currentCategory);
 
   CategoryTagIsar? _chosenTag;
 
@@ -99,7 +96,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             margin: EdgeInsets.zero,
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            color: context.appTheme.primary.withOpacity(0.8),
+            color: context.appTheme.secondary.withOpacity(0.8),
             //alignment: Alignment.center,
             child: Row(
               children: [
@@ -112,7 +109,9 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                   width: _chosenTag != null ? 30 : 0,
                   child: RoundedIconButton(
                     iconPath: AppIcons.minus,
-                    iconColor: context.appTheme.primaryNegative,
+                    iconColor: context.appTheme.isDarkTheme
+                        ? context.appTheme.secondaryNegative
+                        : context.appTheme.primaryNegative,
                     backgroundColor: Colors.transparent,
                     iconPadding: 0,
                     onTap: () {
@@ -157,8 +156,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                               setState(
                                 () {
                                   _chosenTag = tag;
-                                  _tags = categoryRepo
-                                      .getTagsSortedByOrder(widget.category!);
+                                  _tags = categoryRepo.getTagsSortedByOrder(widget.category!);
                                   widget.onTagSelected(_chosenTag);
                                 },
                               );
@@ -180,16 +178,9 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             : Gap.noGap,
         AnimatedContainer(
           duration: k250msDuration,
-          width: _showTextField ||
-                  _chosenTag != null ||
-                  _tags == null ||
-                  _tags!.isEmpty
-              ? 0
-              : 16,
+          width: _showTextField || _chosenTag != null || _tags == null || _tags!.isEmpty ? 0 : 16,
           height: 25,
-          child: _showTextField || _chosenTag != null || _tags == null
-              ? null
-              : const VerticalDivider(),
+          child: _showTextField || _chosenTag != null || _tags == null ? null : const VerticalDivider(),
         ),
         AnimatedContainer(
           duration: k250msDuration,
@@ -206,10 +197,9 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                 onEditingComplete: (tag) {
                   categoryRepo.reorderTagToTop(_tags!, _tags!.length - 1);
                   setState(
-                        () {
+                    () {
                       _chosenTag = tag;
-                      _tags = categoryRepo
-                          .getTagsSortedByOrder(widget.category!);
+                      _tags = categoryRepo.getTagsSortedByOrder(widget.category!);
                       widget.onTagSelected(_chosenTag);
                     },
                   );
@@ -236,7 +226,7 @@ class ChosenTag extends StatelessWidget {
       softWrap: false,
       overflow: TextOverflow.ellipsis,
       defaultStyle: kHeader2TextStyle.copyWith(
-        color: context.appTheme.primaryNegative,
+        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative,
         fontSize: 18,
       ),
       patternList: [
@@ -244,7 +234,7 @@ class ChosenTag extends StatelessWidget {
           targetString: '#',
           hasSpecialCharacters: true,
           style: kHeader4TextStyle.copyWith(
-            color: context.appTheme.primaryNegative,
+            color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative,
             fontSize: 18,
           ),
         )
@@ -254,11 +244,7 @@ class ChosenTag extends StatelessWidget {
 }
 
 class CategoryTag extends StatelessWidget {
-  const CategoryTag(
-      {Key? key,
-      required this.categoryTag,
-      required this.onTap,
-      required this.onLongPress})
+  const CategoryTag({Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
       : super(key: key);
   final CategoryTagIsar categoryTag;
   final ValueSetter<CategoryTagIsar> onTap;
@@ -295,8 +281,7 @@ class CategoryTag extends StatelessWidget {
                     targetString: '#',
                     hasSpecialCharacters: true,
                     style: kHeader4TextStyle.copyWith(
-                      color:
-                          context.appTheme.backgroundNegative.withOpacity(0.5),
+                      color: context.appTheme.backgroundNegative.withOpacity(0.5),
                       fontSize: 13,
                     ),
                   )
@@ -311,19 +296,14 @@ class CategoryTag extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton(
-      {Key? key,
-      this.focusNode,
-      this.category,
-      required this.onEditingComplete})
+  const AddCategoryTagButton({Key? key, this.focusNode, this.category, required this.onEditingComplete})
       : super(key: key);
   final FocusNode? focusNode;
   final CategoryIsar? category;
   final ValueSetter<CategoryTagIsar> onEditingComplete;
 
   @override
-  ConsumerState<AddCategoryTagButton> createState() =>
-      _AddCategoryTagButtonState();
+  ConsumerState<AddCategoryTagButton> createState() => _AddCategoryTagButtonState();
 }
 
 class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
@@ -333,8 +313,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
   late final categoryRepo = ref.read(categoryRepositoryProvider);
 
-  late List<CategoryTagIsar>? _tags =
-      categoryRepo.getTagsSortedByOrder(widget.category);
+  late List<CategoryTagIsar>? _tags = categoryRepo.getTagsSortedByOrder(widget.category);
 
   String? _newTag;
 
@@ -357,14 +336,9 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
         enabled: widget.category == null ? false : true,
         maxLength: 40,
         maxLines: 1,
-        hintText: widget.category == null
-            ? 'Choose a category first'
-            : 'New category tag ...',
+        hintText: widget.category == null ? 'Choose a category first' : 'New category tag ...',
         validator: (value) {
-          if (_tags != null &&
-              _tags!
-                  .map((e) => e.name.toLowerCase())
-                  .contains(value?.toLowerCase())) {
+          if (_tags != null && _tags!.map((e) => e.name.toLowerCase()).contains(value?.toLowerCase())) {
             return 'Already has same tag';
           }
           return null;
@@ -373,8 +347,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           padding: const EdgeInsets.only(left: 12.0, right: 8, bottom: 2),
           child: SvgIcon(
             AppIcons.add,
-            color: context.appTheme.backgroundNegative
-                .withOpacity(widget.category == null ? 0.2 : 0.5),
+            color: context.appTheme.backgroundNegative.withOpacity(widget.category == null ? 0.2 : 0.5),
           ),
         ),
         textInputAction: TextInputAction.done,
@@ -386,14 +359,10 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           _controller.text = '';
         },
         onEditingComplete: () async {
-          if (widget.category != null &&
-              _newTag != null &&
-              _formKey.currentState!.validate()) {
-
+          if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
             final categoryRepo = ref.read(categoryRepositoryProvider);
 
-            CategoryTagIsar? newTag = await categoryRepo.writeNewTag(
-                name: _newTag!, category: widget.category!);
+            CategoryTagIsar? newTag = await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
             //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);
 

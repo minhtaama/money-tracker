@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 import 'custom_tab_bar.dart';
 
@@ -31,8 +29,8 @@ class _CustomTabPageState extends State<CustomTabPage> {
   /// Get AppBar height based on current scroll view offset
   double _getAppBarHeight({required double pixelsOffset}) {
     if (widget.extendedTabBar != null) {
-      double height = (widget.extendedTabBar!.height - pixelsOffset)
-          .clamp(widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
+      double height = (widget.extendedTabBar!.height - pixelsOffset).clamp(
+          widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
       return height;
     } else if (widget.smallTabBar != null) {
       return widget.smallTabBar!.height;
@@ -92,7 +90,8 @@ class CustomTabPageWithPageView extends StatefulWidget {
   final VoidCallback? onDragRight;
 
   @override
-  State<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
+  State<CustomTabPageWithPageView> createState() =>
+      _CustomTabPageWithPageViewState();
 }
 
 class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
@@ -107,8 +106,8 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
   /// Get AppBar height based on current scroll view offset
   double _getAppBarHeight({required double pixelsOffset}) {
     if (widget.extendedTabBar != null) {
-      double height = (widget.extendedTabBar!.height - pixelsOffset)
-          .clamp(widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
+      double height = (widget.extendedTabBar!.height - pixelsOffset).clamp(
+          widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
       return height;
     } else if (widget.smallTabBar != null) {
       return widget.smallTabBar!.height;
@@ -200,7 +199,8 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController(initialScrollOffset: widget.initialOffset);
+    _scrollController =
+        ScrollController(initialScrollOffset: widget.initialOffset);
     _scrollController.addListener(_scrollControllerListener);
   }
 
@@ -225,7 +225,10 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
     return ListView.builder(
       physics: widget.smallTabBar != null && widget.extendedTabBar != null
           ? SnapScrollPhysics(
-              snaps: [Snap.avoidZone(0, widget.extendedTabBar!.height - widget.smallTabBar!.height)],
+              snaps: [
+                Snap.avoidZone(0,
+                    widget.extendedTabBar!.height - widget.smallTabBar!.height)
+              ],
             )
           : const ClampingScrollPhysics(),
       controller: _scrollController,
@@ -233,11 +236,12 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
       itemBuilder: (context, index) {
         return index == 0
             ? SizedBox(
-                height: widget.smallTabBar == null && widget.extendedTabBar == null
-                    ? 0
-                    : widget.extendedTabBar == null
-                        ? widget.smallTabBar!.height
-                        : widget.extendedTabBar!.height + 12,
+                height:
+                    widget.smallTabBar == null && widget.extendedTabBar == null
+                        ? 0
+                        : widget.extendedTabBar == null
+                            ? widget.smallTabBar!.height
+                            : widget.extendedTabBar!.height + 12,
               )
             : index == widget.children.length + 1
                 ? const SizedBox(height: 30)
