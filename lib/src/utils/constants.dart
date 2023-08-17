@@ -32,7 +32,7 @@ const Duration k350msDuration = Duration(milliseconds: 350);
 const double kBottomAppBarHeight = 75.0;
 
 /// Value related to BottomAppBar
-const double kModalBarrierOpacity = 0.9;
+const double kModalBarrierOpacity = 0.95;
 
 /// [Gap] is a quick way to display a [SizedBox] widget
 class Gap {

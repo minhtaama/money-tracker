@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -37,33 +38,52 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       ),
     ];
 
-    final fabItems = <FABItem>[
+    final roundedButtonItems = <FABItem>[
       FABItem(
         icon: AppIcons.income,
         label: 'Income'.hardcoded,
-        color: Color.lerp(context.appTheme.primary, Colors.indigo[400], 0.5)!,
+        color: context.appTheme.onPositive,
+        backgroundColor: context.appTheme.positive,
         onTap: () => context.go(RoutePath.addIncome),
       ),
       FABItem(
         icon: AppIcons.transfer,
         label: 'Transfer'.hardcoded,
-        color: Color.lerp(context.appTheme.secondary, Colors.grey[600], 0.5)!,
+        color: context.appTheme.backgroundNegative,
+        backgroundColor: AppColors.darkerGrey,
         onTap: () => context.go(RoutePath.addTransfer),
       ),
       FABItem(
         icon: AppIcons.expense,
         label: 'Expense'.hardcoded,
-        color: Color.lerp(context.appTheme.accent, Colors.pink[400], 0.5)!,
+        color: context.appTheme.onNegative,
+        backgroundColor: context.appTheme.negative,
         onTap: () => context.go(RoutePath.addExpense),
       ),
       //TODO: Implement Hive icon
+    ];
+
+    final listItems = <FABItem>[
+      FABItem(
+          icon: AppIcons.add,
+          label: 'Add Credit transaction',
+          onTap: () {
+            print('pressed');
+            // TODO: PUSH TO ADD CREDIT TRANSACTION
+          }),
     ];
 
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
-      floatingActionButton: isHomeScreen ? CustomFloatingActionButton(items: fabItems) : null,
+      floatingActionButton: isHomeScreen
+          ? CustomFloatingActionButton(
+              roundedButtonItems: roundedButtonItems,
+              listItems: listItems,
+              label: 'regular transaction',
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBarWithFAB(
         items: tabItems,

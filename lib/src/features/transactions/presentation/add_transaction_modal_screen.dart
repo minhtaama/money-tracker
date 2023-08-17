@@ -205,11 +205,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             ],
           ),
           Gap.h16,
-          CategoryTagSelector(
-              category: category,
-              onTagSelected: (value) {
-                tag = value;
-              }),
+          widget.transactionType != TransactionType.transfer
+              ? CategoryTagSelector(
+                  category: category,
+                  onTagSelected: (value) {
+                    tag = value;
+                  })
+              : Gap.noGap,
           Gap.h16,
           CustomTextFormField(
             autofocus: false,

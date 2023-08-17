@@ -47,9 +47,11 @@ class RoundedIconButton extends StatelessWidget {
                   inkColor: iconColor ?? context.appTheme.primaryNegative,
                   child: Padding(
                     padding: EdgeInsets.all(iconPadding),
-                    child: SvgIcon(
-                      iconPath,
-                      color: iconColor,
+                    child: FittedBox(
+                      child: SvgIcon(
+                        iconPath,
+                        color: iconColor,
+                      ),
                     ),
                   ),
                 ),

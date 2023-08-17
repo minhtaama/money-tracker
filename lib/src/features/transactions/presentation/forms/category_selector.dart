@@ -43,7 +43,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
           currentCategory != null ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][0] : Colors.transparent,
       color: currentCategory != null
           ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][1]
-          : context.appTheme.backgroundNegative.withOpacity(0.5),
+          : context.appTheme.backgroundNegative.withOpacity(0.4),
       width: null,
       height: null,
       border: currentCategory != null

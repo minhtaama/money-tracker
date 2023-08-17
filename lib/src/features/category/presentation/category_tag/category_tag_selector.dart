@@ -30,6 +30,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
   late final categoryRepo = ref.watch(categoryRepositoryProvider);
 
   final _key = GlobalKey();
+
   late final FocusNode _focusNode = FocusNode();
 
   late CategoryIsar? currentCategory = widget.category;

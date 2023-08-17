@@ -1,39 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem({required this.icon, required this.label, required this.color, required this.onTap});
+  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
-  final Color color;
+  final Color? backgroundColor;
+  final Color? color;
   final VoidCallback onTap;
 }
 
 // https://blog.logrocket.com/complete-guide-implementing-overlays-flutter/#example-2-a-floatingactionbutton-showing-three-other-buttons
 // Create a custom FloatingActionButton that expands more buttons when tapped
 class CustomFloatingActionButton extends StatefulWidget {
-  const CustomFloatingActionButton({Key? key, required this.items}) : super(key: key);
-  final List<FABItem> items;
+  const CustomFloatingActionButton(
+      {Key? key, required this.roundedButtonItems, required this.listItems, required this.label})
+      : assert(roundedButtonItems.length == 3),
+        super(key: key);
+  final List<FABItem> roundedButtonItems;
+  final List<FABItem> listItems;
+  final String label;
 
   @override
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
-    with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  late List<Widget> Function(OverlayEntry overlayEntry) _widgets;
+  late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
+  late List<Widget> Function(OverlayEntry overlayEntry) _listWidgets;
   late double overlayBoxWidth;
-  late double overlayBoxHeight;
 
   // GlobalKey is assigned to FloatingActionButton to get the RenderBox object
   // of the returned FloatingActionButton.
-  GlobalKey globalKey = GlobalKey();
+  final _globalKey = GlobalKey();
+  final _globalKey2 = GlobalKey();
 
   @override
   void initState() {
@@ -49,34 +56,71 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   @override
   void didChangeDependencies() {
     overlayBoxWidth = MediaQuery.of(context).size.width / 1.2;
-    overlayBoxHeight = MediaQuery.of(context).size.height / 4.5;
 
-    _widgets = (overlayEntry) {
+    _buttonWidgets = (overlayEntry) {
       return List.generate(
-        widget.items.length,
+        widget.roundedButtonItems.length,
         (index) {
-          return Column(
-            //This is how the overlay buttons is aligned.
-            mainAxisAlignment: index == 0 || index == widget.items.length - 1
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
-            children: [
-              RoundedIconButton(
-                onTap: () {
-                  widget.items[index].onTap();
-                  _removeEntry(overlayEntry);
-                },
-                iconPath: widget.items[index].icon,
-                iconColor: context.appTheme.backgroundNegative,
-                label: widget.items[index].label,
-                backgroundColor: widget.items[index].color,
-                size: overlayBoxWidth / 5.5,
-              ),
-            ],
+          return SizedBox(
+            width: overlayBoxWidth / 3,
+            child: Column(
+              //This is how the overlay buttons is aligned.
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.spaceAround,
+              children: [
+                RoundedIconButton(
+                  onTap: () {
+                    widget.roundedButtonItems[index].onTap();
+                    _removeEntry(overlayEntry);
+                  },
+                  iconPath: widget.roundedButtonItems[index].icon,
+                  iconColor: context.appTheme.backgroundNegative,
+                  label: widget.roundedButtonItems[index].label,
+                  backgroundColor: widget.roundedButtonItems[index].backgroundColor!,
+                  size: overlayBoxWidth / 5.5,
+                ),
+                index == 1
+                    ? Material(
+                        color: Colors.transparent,
+                        child: Center(
+                          child: Text(
+                            widget.label.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: kHeader2TextStyle.copyWith(
+                                fontSize: 12, color: context.appTheme.backgroundNegative.withOpacity(0.6)),
+                          ),
+                        ),
+                      )
+                    : Gap.noGap,
+              ],
+            ),
           );
         },
       );
     };
+
+    _listWidgets = (overlayEntry) {
+      return List.generate(widget.listItems.length, (index) {
+        return IconWithTextButton(
+          onTap: () {
+            widget.listItems[index].onTap();
+            _removeEntry(overlayEntry);
+          },
+          width: null,
+          height: null,
+          iconPath: widget.listItems[index].icon,
+          label: widget.listItems[index].label,
+          padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
+          labelSize: 15,
+          color: context.appTheme.backgroundNegative.withOpacity(0.4),
+          backgroundColor: Colors.transparent,
+          border: Border.all(
+            color: context.appTheme.backgroundNegative.withOpacity(0.3),
+            width: 1.5,
+          ),
+        );
+      });
+    };
+
     super.didChangeDependencies();
   }
 
@@ -87,7 +131,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   }
 
   void _showOverlay() {
-    Offset fabPosition = _getRenderObjectCenterPosition(globalKey, isTopCenterPoint: true);
+    Offset fabPosition = _getRenderObjectCenterPosition(_globalKey, isTopCenterPoint: true);
 
     // Get OverlayState of the closest instance in context
     OverlayState overlayState = Overlay.of(context);
@@ -96,6 +140,12 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(builder: (_) {
+      double overlayBoxHeight = 0;
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          overlayBoxHeight = _globalKey2.currentContext!.size!.height;
+        });
+      });
       return AnimatedBuilder(
         animation: _animation,
         builder: (_, Widget? child) {
@@ -112,14 +162,23 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   scale: _animation,
                   alignment: Alignment.bottomCenter,
                   child: SizedBox(
+                    key: _globalKey2,
                     width: overlayBoxWidth,
-                    height: overlayBoxHeight,
-                    //color: Colors.deepOrangeAccent,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: _widgets(overlayEntry),
+                    child: Column(
+                      verticalDirection: VerticalDirection.up,
+                      children: [
+                        SizedBox(
+                          height: 180,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: _buttonWidgets(overlayEntry),
+                          ),
+                        ),
+                        Gap.h16,
+                        ..._listWidgets(overlayEntry),
+                      ],
                     ),
                     // child: Row(
                     //   children: _widgets,
@@ -166,7 +225,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      key: globalKey,
+      key: _globalKey,
       onPressed: () {},
       shape: const CircleBorder(),
       elevation: 4,
