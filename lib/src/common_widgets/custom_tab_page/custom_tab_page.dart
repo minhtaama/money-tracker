@@ -247,17 +247,6 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
                 ? const SizedBox(height: 30)
                 : widget.children[index - 1];
       },
-      // children: [
-      //   SizedBox(
-      //     height: widget.smallTabBar == null && widget.extendedTabBar == null
-      //         ? 0
-      //         : widget.extendedTabBar == null
-      //             ? widget.smallTabBar!.height
-      //             : widget.extendedTabBar!.height + 12,
-      //   ),
-      //   ...widget.children,
-      //   const SizedBox(height: 30),
-      // ],
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -75,7 +77,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   iconPath: widget.roundedButtonItems[index].icon,
                   iconColor: context.appTheme.backgroundNegative,
                   label: widget.roundedButtonItems[index].label,
-                  backgroundColor: widget.roundedButtonItems[index].backgroundColor!,
+                  backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7) ,
                   size: overlayBoxWidth / 5.5,
                 ),
                 index == 1
@@ -111,10 +113,10 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
           label: widget.listItems[index].label,
           padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
           labelSize: 15,
-          color: context.appTheme.backgroundNegative.withOpacity(0.4),
+          color: context.appTheme.backgroundNegative.withOpacity(0.5),
           backgroundColor: Colors.transparent,
           border: Border.all(
-            color: context.appTheme.backgroundNegative.withOpacity(0.3),
+            color: context.appTheme.backgroundNegative.withOpacity(0.4),
             width: 1.5,
           ),
         );
@@ -153,7 +155,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             children: [
               ModalBarrier(
                 onDismiss: () => _removeEntry(overlayEntry),
-                color: context.appTheme.background.withOpacity(kModalBarrierOpacity * _animation.value),
+                color: context.appTheme.background.withOpacity(0.5 * _animation.value),
               ),
               Positioned(
                 top: fabPosition.dy - overlayBoxHeight,
@@ -161,28 +163,31 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                 child: ScaleTransition(
                   scale: _animation,
                   alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    key: _globalKey2,
-                    width: overlayBoxWidth,
-                    child: Column(
-                      verticalDirection: VerticalDirection.up,
-                      children: [
-                        SizedBox(
-                          height: 180,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: _buttonWidgets(overlayEntry),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+                    child: SizedBox(
+                      key: _globalKey2,
+                      width: overlayBoxWidth,
+                      child: Column(
+                        verticalDirection: VerticalDirection.up,
+                        children: [
+                          SizedBox(
+                            height: 180,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: _buttonWidgets(overlayEntry),
+                            ),
                           ),
-                        ),
-                        Gap.h16,
-                        ..._listWidgets(overlayEntry),
-                      ],
+                          Gap.h16,
+                          ..._listWidgets(overlayEntry),
+                        ],
+                      ),
+                      // child: Row(
+                      //   children: _widgets,
+                      // ),
                     ),
-                    // child: Row(
-                    //   children: _widgets,
-                    // ),
                   ),
                 ),
               ),

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -72,15 +74,27 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
 
     return Theme(
       data: ThemeData(useMaterial3: false),
-      child: BottomAppBar(
-        height: kBottomAppBarHeight,
-        color: context.appTheme.background,
-        surfaceTintColor: null,
-        elevation: 11,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: buttons,
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+          child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: context.appTheme.isDarkTheme ? BorderSide.none : BorderSide(color: Colors.grey.shade200, width: 1.5)
+            ),
+          ),
+            child: BottomAppBar(
+              height: kBottomAppBarHeight,
+              color: context.appTheme.background.withOpacity(0.5),
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: buttons,
+              ),
+            ),
+          ),
         ),
       ),
     );

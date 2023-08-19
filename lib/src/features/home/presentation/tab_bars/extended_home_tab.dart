@@ -25,15 +25,15 @@ class ExtendedHomeTab extends StatelessWidget {
     return ListView(
       physics: const NeverScrollableScrollPhysics(),
       reverse: true,
-      children: [
-        Gap.h8,
-        TotalMoney(
-          hideNumber: hideNumber,
-          onEyeTap: onEyeTap,
-        ),
-        const WelcomeText(),
-      ],
-    );
+      padding: EdgeInsets.zero,
+        children: [
+          TotalMoney(
+            hideNumber: hideNumber,
+            onEyeTap: onEyeTap,
+          ),
+          const WelcomeText(),
+        ],
+      );
   }
 }
 

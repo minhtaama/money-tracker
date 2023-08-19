@@ -92,8 +92,8 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
           isHomeScreen = tabIndex == 0;
         },
       ),
-      extendBody: false,
       backgroundColor: context.appTheme.background,
+      extendBody: true,
       body: widget.child,
     );
   }

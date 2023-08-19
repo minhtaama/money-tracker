@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -82,7 +84,7 @@ class CustomTabBar extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: _isShowDivider(pixelOffset) && !context.appTheme.isDarkTheme
-                  ? BorderSide(color: Colors.grey.shade400, width: 2)
+                  ? BorderSide(color: Colors.grey.shade300, width: 1.5)
                   : BorderSide.none,
             ),
           ),
@@ -94,21 +96,24 @@ class CustomTabBar extends StatelessWidget {
 class SmallTabBar extends StatelessWidget {
   const SmallTabBar({
     Key? key,
-    this.backgroundColor,
     required this.child,
     this.height = kCustomTabBarHeight,
   }) : super(key: key);
-  final Color? backgroundColor;
   final Widget child;
   final double height;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
-      margin: EdgeInsets.zero,
-      color: backgroundColor ?? context.appTheme.background,
-      child: child,
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+        child: Container(
+          padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
+          margin: EdgeInsets.zero,
+          color: context.appTheme.background.withOpacity(0.5),
+          child: child,
+        ),
+      ),
     );
   }
 }
@@ -148,9 +153,10 @@ class ExtendedTabBar extends StatelessWidget {
                 left: 16,
                 right: 16,
                 bottom: outerChild != null ? 22.0 : 0,
-                top: Gap.statusBarHeight(context) + outerChildHeight / 2),
+                top: Gap.statusBarHeight(context) + outerChildHeight / 2,
+            ),
             elevation: context.appTheme.isDarkTheme ? 0 : 2,
-            child: innerChild,
+            child: ClipRect(child: innerChild),
           ),
         ),
         Align(alignment: Alignment.bottomCenter, child: outerChild),

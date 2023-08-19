@@ -136,10 +136,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         });
 
         return [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
-              children: [
+              children: const [
                 Expanded(child: IncomeExpenseCard(isIncome: true)),
                 Expanded(child: IncomeExpenseCard(isIncome: false)),
               ],
