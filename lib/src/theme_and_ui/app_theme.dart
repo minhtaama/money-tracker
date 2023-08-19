@@ -103,7 +103,7 @@ class AppThemeData {
   final Color onNegative;
 
   ///
-  final SystemUiOverlayStyle overlayStyle;
+  final Brightness systemIconBrightness;
 
   AppThemeData({
     required this.isDuoColor,
@@ -122,7 +122,7 @@ class AppThemeData {
     required this.onPositive,
     required this.negative,
     required this.onNegative,
-    required this.overlayStyle,
+    required this.systemIconBrightness,
   });
 }
 

@@ -78,14 +78,15 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
           child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: context.appTheme.isDarkTheme ? BorderSide.none : BorderSide(color: Colors.grey.shade200, width: 1.5)
+            decoration: BoxDecoration(
+              border: Border(
+                  top: context.appTheme.isDarkTheme
+                      ? BorderSide.none
+                      : BorderSide(color: Colors.grey.shade200, width: 1.5)),
             ),
-          ),
             child: BottomAppBar(
               height: kBottomAppBarHeight,
-              color: context.appTheme.background.withOpacity(0.5),
+              color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.8 : 0.5),
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               child: Row(

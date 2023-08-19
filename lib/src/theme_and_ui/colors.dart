@@ -59,7 +59,7 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.white,
       onNegative: AppColors.white,
-      overlayStyle: SystemUiOverlayStyle.light,
+      systemIconBrightness: Brightness.dark,
     ),
     ThemeType.dark: AppThemeData(
       isDuoColor: true,
@@ -78,7 +78,7 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.black,
-      overlayStyle: SystemUiOverlayStyle.light,
+      systemIconBrightness: Brightness.light,
     ),
   };
 
@@ -100,7 +100,7 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      overlayStyle: SystemUiOverlayStyle.light,
+      systemIconBrightness: Brightness.light,
     ),
     ThemeType.dark: AppThemeData(
       isDuoColor: true,
@@ -119,7 +119,7 @@ class AppColors {
       negative: const Color(0xFF1d3557),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      overlayStyle: SystemUiOverlayStyle.light,
+      systemIconBrightness: Brightness.light,
     ),
   };
 
@@ -141,7 +141,7 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      overlayStyle: SystemUiOverlayStyle.light,
+      systemIconBrightness: Brightness.light,
     ),
     ThemeType.dark: AppThemeData(
       isDuoColor: false,
@@ -160,7 +160,7 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      overlayStyle: SystemUiOverlayStyle.light,
+      systemIconBrightness: Brightness.light,
     ),
   };
 

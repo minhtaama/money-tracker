@@ -52,9 +52,13 @@ class MoneyTrackerApp extends ConsumerWidget {
       data: currentTheme!,
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-          value: currentTheme.overlayStyle.copyWith(
-              systemNavigationBarColor: context.appTheme.background,
-              systemNavigationBarIconBrightness: Brightness.dark),
+          value: SystemUiOverlayStyle(
+            systemNavigationBarColor: context.appTheme.background,
+            systemNavigationBarDividerColor: Colors.transparent,
+            systemNavigationBarIconBrightness: context.appTheme.systemIconBrightness,
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: context.appTheme.systemIconBrightness,
+          ),
           child: MaterialApp.router(
             restorationScopeId: 'app',
             localizationsDelegates: AppLocalizations.localizationsDelegates,

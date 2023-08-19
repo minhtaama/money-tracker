@@ -110,7 +110,7 @@ class SmallTabBar extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
           margin: EdgeInsets.zero,
-          color: context.appTheme.background.withOpacity(0.5),
+          color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.8 : 0.5),
           child: child,
         ),
       ),
@@ -150,10 +150,10 @@ class ExtendedTabBar extends StatelessWidget {
             margin: EdgeInsets.zero,
             borderRadius: BorderRadius.zero,
             padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                bottom: outerChild != null ? 22.0 : 0,
-                top: Gap.statusBarHeight(context) + outerChildHeight / 2,
+              left: 16,
+              right: 16,
+              bottom: outerChild != null ? 22.0 : 0,
+              top: Gap.statusBarHeight(context) + outerChildHeight / 2,
             ),
             elevation: context.appTheme.isDarkTheme ? 0 : 2,
             child: ClipRect(child: innerChild),
