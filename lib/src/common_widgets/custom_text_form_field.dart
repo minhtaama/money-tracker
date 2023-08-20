@@ -20,12 +20,17 @@ class CustomTextFormField extends StatelessWidget {
     this.enabled = true,
     this.focusNode,
     this.withOutlineBorder = false,
+    this.disableErrorText = false,
     this.maxLines,
     this.maxLength,
     this.textInputAction,
     this.keyboardType,
     this.prefixIcon,
+    this.suffixIcon,
     this.onTapOutside,
+    this.contentPadding,
+    this.textAlign = TextAlign.start,
+    this.initialValue,
   }) : super(key: key);
   final String hintText;
   final String? helperText;
@@ -40,12 +45,17 @@ class CustomTextFormField extends StatelessWidget {
   final VoidCallback? onEditingComplete;
   final VoidCallback? onTapOutside;
   final bool withOutlineBorder;
+  final bool disableErrorText;
   final AutovalidateMode autovalidateMode;
   final int? maxLines;
   final int? maxLength;
   final TextInputAction? textInputAction;
   final TextInputType? keyboardType;
   final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final EdgeInsets? contentPadding;
+  final TextAlign textAlign;
+  final String? initialValue;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +65,7 @@ class CustomTextFormField extends StatelessWidget {
         controller: controller,
         autofocus: autofocus,
         focusNode: focusNode,
+        textAlign: textAlign,
         autovalidateMode: autovalidateMode,
         onFieldSubmitted: onFieldSubmitted,
         cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
@@ -82,11 +93,15 @@ class CustomTextFormField extends StatelessWidget {
           onEditingComplete?.call();
           FocusManager.instance.primaryFocus?.unfocus();
         },
+        initialValue: initialValue,
         decoration: InputDecoration(
-          contentPadding: withOutlineBorder ? const EdgeInsets.all(12) : null,
+          contentPadding: contentPadding ?? (withOutlineBorder ? const EdgeInsets.all(12) : null),
+          isDense: contentPadding != null ? true : null,
           focusColor: context.appTheme.primary,
           prefixIcon: prefixIcon,
           prefixIconConstraints: const BoxConstraints(minWidth: 0),
+          suffixIcon: suffixIcon,
+          suffixIconConstraints: const BoxConstraints(minWidth: 0),
           focusedErrorBorder: withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -98,10 +113,10 @@ class CustomTextFormField extends StatelessWidget {
           errorBorder: withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
+                  borderSide: BorderSide(color: context.appTheme.negative, width: 1),
                 )
               : UnderlineInputBorder(
-                  borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
+                  borderSide: BorderSide(color: context.appTheme.negative, width: 1),
                 ),
           enabledBorder: withOutlineBorder
               ? OutlineInputBorder(
@@ -131,7 +146,9 @@ class CustomTextFormField extends StatelessWidget {
                   color: context.appTheme.backgroundNegative.withOpacity(0.5),
                   fontSize: 18,
                 ),
-          errorStyle: kHeader4TextStyle.copyWith(fontSize: 12),
+          errorStyle: disableErrorText
+              ? const TextStyle(height: 0.1, color: Colors.transparent, fontSize: 0)
+              : kHeader4TextStyle.copyWith(fontSize: 12, color: context.appTheme.negative),
           helperText: helperText,
         ),
         onChanged: onChanged,

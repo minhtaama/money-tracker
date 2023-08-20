@@ -204,6 +204,17 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
             ],
           ),
           Gap.h16,
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              'OPTIONAL:',
+              style: kHeader2TextStyle.copyWith(
+                fontSize: 11,
+                color: context.appTheme.backgroundNegative.withOpacity(0.4),
+              ),
+            ),
+          ),
+          Gap.h4,
           widget.transactionType != TransactionType.transfer
               ? CategoryTagSelector(
                   category: category,
@@ -211,7 +222,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                     tag = value;
                   })
               : Gap.noGap,
-          Gap.h16,
+          widget.transactionType != TransactionType.transfer ? Gap.h8 : Gap.noGap,
           CustomTextFormField(
             autofocus: false,
             focusColor: context.appTheme.accent,

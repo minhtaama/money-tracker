@@ -9,7 +9,6 @@ import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
-import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -33,11 +32,13 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
   final _formKey = GlobalKey<FormState>();
 
   late DateTime dateTime = DateTime.now();
-  String calculatorOutput = '0';
+  String calculatorOutputSpendAmount = '0';
+  String calculatorOutputCyclePaymentAmount = '0';
   String? note;
   CategoryTagIsar? tag;
   CategoryIsar? category;
   AccountIsar? account;
+  int? paymentCycle = 1;
 
   double? _formatToDouble(String formattedValue) {
     try {
@@ -49,6 +50,14 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  double _getInstallmentPayment() {
+    if (_formatToDouble(calculatorOutputSpendAmount) != null && paymentCycle != null) {
+      return _formatToDouble(calculatorOutputSpendAmount)! / paymentCycle!;
+    } else {
+      return 0;
     }
   }
 
@@ -86,17 +95,19 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
-                  hintText: 'Credit Amount',
+                  hintText: 'Spending Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null || _formatToDouble(calculatorOutput) == 0) {
+                    if (_formatToDouble(calculatorOutputSpendAmount) == null ||
+                        _formatToDouble(calculatorOutputSpendAmount) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
                   },
                   formattedResultOutput: (value) {
                     setState(() {
-                      calculatorOutput = value;
+                      calculatorOutputSpendAmount = value;
+                      calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
                     });
                   },
                 ),
@@ -171,21 +182,121 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
               ),
             ],
           ),
-          Gap.h8,
+          Gap.h4,
           CustomCheckbox(
-            label: 'Installment payment',
-            onChanged: (value) => print(value),
-            optionalWidget: Text(
-              'e',
+              label: 'Installment payment',
+              onChanged: (boolValue) {
+                setState(() {
+                  if (boolValue) {
+                    paymentCycle = 6;
+                    calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                  } else {
+                    paymentCycle = 1;
+                    calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                  }
+                });
+              },
+              optionalWidget: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      const Text(
+                        'Installment Cycle:',
+                        style: kHeader4TextStyle,
+                      ),
+                      Gap.w8,
+                      SizedBox(
+                        width: 50,
+                        child: CustomTextFormField(
+                          hintText: '',
+                          focusColor: context.appTheme.secondary,
+                          autofocus: false,
+                          disableErrorText: true,
+                          maxLength: 3,
+                          initialValue: paymentCycle.toString(),
+                          contentPadding: EdgeInsets.zero,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.end,
+                          validator: (_) => paymentCycle == null ? 'error' : null,
+                          onChanged: (value) {
+                            setState(() {
+                              paymentCycle = int.tryParse(value);
+                              calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                            });
+                          },
+                        ),
+                      ),
+                      Gap.w8,
+                      const Text(
+                        'month(s)',
+                        style: kHeader4TextStyle,
+                      ),
+                    ],
+                  ),
+                  Gap.h8,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      const Text(
+                        'Payment:',
+                        style: kHeader4TextStyle,
+                      ),
+                      Gap.w8,
+                      Expanded(
+                        child: CalculatorInput(
+                            fontSize: 18,
+                            isDense: true,
+                            textAlign: TextAlign.end,
+                            initialValue: _formatToDouble(calculatorOutputCyclePaymentAmount),
+                            validator: (_) {
+                              if (_formatToDouble(calculatorOutputCyclePaymentAmount) == null ||
+                                  _formatToDouble(calculatorOutputCyclePaymentAmount) == 0) {
+                                return 'Invalid Amount';
+                              }
+                              if (_formatToDouble(calculatorOutputCyclePaymentAmount)! >
+                                  _formatToDouble(calculatorOutputSpendAmount)!) {
+                                return 'Higher than spending';
+                              }
+                              return null;
+                            },
+                            formattedResultOutput: (value) {
+                              setState(() {
+                                calculatorOutputCyclePaymentAmount = value;
+                              });
+                            },
+                            focusColor: context.appTheme.secondary,
+                            hintText: ''),
+                      ),
+                      Gap.w8,
+                      Text(
+                        settingsObject.currency.code,
+                        style: kHeader4TextStyle,
+                      ),
+                    ],
+                  ),
+                ],
+              )),
+          Gap.h16,
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              'OPTIONAL:',
+              style: kHeader2TextStyle.copyWith(
+                fontSize: 11,
+                color: context.appTheme.backgroundNegative.withOpacity(0.4),
+              ),
             ),
           ),
-          Gap.h8,
+          Gap.h4,
           CategoryTagSelector(
               category: category,
               onTagSelected: (value) {
                 tag = value;
               }),
-          Gap.h16,
+          Gap.h8,
           CustomTextFormField(
             autofocus: false,
             focusColor: context.appTheme.accent,
@@ -212,13 +323,17 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                 iconPath: AppIcons.add,
                 label: 'Add',
                 backgroundColor: context.appTheme.accent,
-                isDisabled: _formatToDouble(calculatorOutput) == null ||
-                    _formatToDouble(calculatorOutput) == 0 ||
+                isDisabled: _formatToDouble(calculatorOutputSpendAmount) == null ||
+                    _formatToDouble(calculatorOutputSpendAmount) == 0 ||
                     category == null ||
                     account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    // By validating, the _formatToDouble(calculatorOutput) must not null
+                    // By validating, the _formatToDouble(calculatorOutputSpendAmount)
+                    // and _formatToDouble(calculatorOutputCyclePaymentAmount) must not null
+
+                    // TODO: Add repo, statement date, payment due date function
+
                     // final transactionRepository = ref.read(transactionRepositoryProvider);
                     // transactionRepository.writeNew(
                     //   type,
