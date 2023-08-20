@@ -1,9 +1,7 @@
 import 'package:intl/intl.dart';
 
 class CalculatorService {
-  static String formatCurrency(double value,
-      {bool enableDecimalDigits = false, bool hideNumber = false}) {
-    //TODO: add a variable to modify decimal digits
+  static String formatCurrency(double value, {bool enableDecimalDigits = false, bool hideNumber = false}) {
     NumberFormat formatter;
 
     if (value >= 1000000000.0) {

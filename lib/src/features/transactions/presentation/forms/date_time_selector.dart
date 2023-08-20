@@ -122,6 +122,5 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
         ],
       ),
     );
-    // TODO: Implement Date time picker
   }
 }

@@ -60,7 +60,6 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         backgroundColor: context.appTheme.negative,
         onTap: () => context.go(RoutePath.addExpense),
       ),
-      //TODO: Implement Hive icon
     ];
 
     final listItems = <FABItem>[

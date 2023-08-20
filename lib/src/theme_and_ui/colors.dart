@@ -59,7 +59,8 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.white,
       onNegative: AppColors.white,
-      systemIconBrightness: Brightness.dark,
+      systemIconBrightnessOnExtendedTabBar: Brightness.dark,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
     ),
     ThemeType.dark: AppThemeData(
       isDuoColor: true,
@@ -78,7 +79,8 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.black,
-      systemIconBrightness: Brightness.light,
+      systemIconBrightnessOnExtendedTabBar: Brightness.light,
+      systemIconBrightnessOnSmallTabBar: Brightness.light,
     ),
   };
 
@@ -100,7 +102,8 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      systemIconBrightness: Brightness.light,
+      systemIconBrightnessOnExtendedTabBar: Brightness.light,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
     ),
     ThemeType.dark: AppThemeData(
       isDuoColor: true,
@@ -119,7 +122,8 @@ class AppColors {
       negative: const Color(0xFF1d3557),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      systemIconBrightness: Brightness.light,
+      systemIconBrightnessOnExtendedTabBar: Brightness.light,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
     ),
   };
 
@@ -141,7 +145,8 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      systemIconBrightness: Brightness.light,
+      systemIconBrightnessOnExtendedTabBar: Brightness.light,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
     ),
     ThemeType.dark: AppThemeData(
       isDuoColor: false,
@@ -160,7 +165,8 @@ class AppColors {
       negative: const Color(0xFFE76F51),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
-      systemIconBrightness: Brightness.light,
+      systemIconBrightnessOnExtendedTabBar: Brightness.light,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
     ),
   };
 

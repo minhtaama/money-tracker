@@ -62,7 +62,6 @@ final goRouter = GoRouter(
                 hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.income),
               ),
-              //TODO: Implement add transaction widget
             ),
             GoRoute(
               path: 'addExpense',
@@ -73,7 +72,6 @@ final goRouter = GoRouter(
                 hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.expense),
               ),
-              //TODO: Implement add transaction widget
             ),
             GoRoute(
               path: 'addTransfer',
@@ -84,7 +82,6 @@ final goRouter = GoRouter(
                 hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.transfer),
               ),
-              //TODO: Implement add transaction widget
             ),
           ],
         ),

@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 import 'custom_tab_bar.dart';
 
 ////////////////////////////////////////////////////////////////////////
 
-class CustomTabPage extends StatefulWidget {
+class CustomTabPage extends ConsumerStatefulWidget {
   const CustomTabPage({
     Key? key,
-    this.smallTabBar,
+    required this.smallTabBar,
     this.extendedTabBar,
     this.children = const [],
   }) : super(key: key);
-  final SmallTabBar? smallTabBar;
+  final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final List<Widget> children;
 
   @override
-  State<CustomTabPage> createState() => _CustomTabPageState();
+  ConsumerState<CustomTabPage> createState() => _CustomTabPageState();
 }
 
-class _CustomTabPageState extends State<CustomTabPage> {
+class _CustomTabPageState extends ConsumerState<CustomTabPage> {
   double scrollOffset = 0;
 
   late double appBarHeight = _getAppBarHeight(pixelsOffset: scrollOffset);
@@ -30,14 +31,28 @@ class _CustomTabPageState extends State<CustomTabPage> {
   double _getAppBarHeight({required double pixelsOffset}) {
     if (widget.extendedTabBar != null) {
       double height = (widget.extendedTabBar!.height - pixelsOffset)
-          .clamp(widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
+          .clamp(widget.smallTabBar.height, widget.extendedTabBar!.height);
+
+      // change system icon brightness according to the tab bar color
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        if (height == widget.smallTabBar.height || height == 0) {
+          ref.read(systemIconBrightnessProvider.notifier).state =
+              widget.smallTabBar.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnSmallTabBar;
+        } else {
+          ref.read(systemIconBrightnessProvider.notifier).state =
+              widget.extendedTabBar!.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+        }
+      });
+
       return height;
-    } else if (widget.smallTabBar != null) {
-      return widget.smallTabBar!.height;
-    } else if (widget.extendedTabBar != null) {
-      return widget.extendedTabBar!.height;
     } else {
-      return 0;
+      // change system icon brightness according to the tab bar color
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(systemIconBrightnessProvider.notifier).state =
+            widget.smallTabBar.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnSmallTabBar;
+      });
+
+      return widget.smallTabBar.height;
     }
   }
 
@@ -68,10 +83,10 @@ class _CustomTabPageState extends State<CustomTabPage> {
 
 ////////////////////////////////////////////////////////////////////////
 
-class CustomTabPageWithPageView extends StatefulWidget {
+class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   const CustomTabPageWithPageView({
     Key? key,
-    this.smallTabBar,
+    required this.smallTabBar,
     this.extendedTabBar,
     this.controller,
     this.onPageChanged,
@@ -80,7 +95,7 @@ class CustomTabPageWithPageView extends StatefulWidget {
     this.onDragLeft,
     this.onDragRight,
   }) : super(key: key);
-  final SmallTabBar? smallTabBar;
+  final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final PageController? controller;
   final int? pageItemCount;
@@ -90,12 +105,11 @@ class CustomTabPageWithPageView extends StatefulWidget {
   final VoidCallback? onDragRight;
 
   @override
-  State<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
+  ConsumerState<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
 }
 
-class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
-  late final PageController _controller =
-      widget.controller ?? PageController(); // PageController used for PageView
+class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView> {
+  late final PageController _controller = widget.controller ?? PageController(); // PageController used for PageView
 
   double currentPage = 0;
   double scrollOffset = 0;
@@ -106,15 +120,27 @@ class _CustomTabPageWithPageViewState extends State<CustomTabPageWithPageView> {
   double _getAppBarHeight({required double pixelsOffset}) {
     if (widget.extendedTabBar != null) {
       double height = (widget.extendedTabBar!.height - pixelsOffset)
-          .clamp(widget.smallTabBar?.height ?? 0, widget.extendedTabBar!.height);
-      //TODO: ADD A WAY TO KNOW WHEN SMALL TAB BAR IS DISPLAYED
+          .clamp(widget.smallTabBar.height, widget.extendedTabBar!.height);
+
+      // change system icon brightness according to the tab bar color
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        if (height == widget.smallTabBar.height || height == 0) {
+          ref.read(systemIconBrightnessProvider.notifier).state =
+              widget.smallTabBar.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnSmallTabBar;
+        } else {
+          ref.read(systemIconBrightnessProvider.notifier).state =
+              widget.extendedTabBar!.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+        }
+      });
       return height;
-    } else if (widget.smallTabBar != null) {
-      return widget.smallTabBar!.height;
-    } else if (widget.extendedTabBar != null) {
-      return widget.extendedTabBar!.height;
     } else {
-      return 0;
+      // change system icon brightness according to the tab bar color
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(systemIconBrightnessProvider.notifier).state =
+            widget.smallTabBar.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnSmallTabBar;
+      });
+
+      return widget.smallTabBar.height;
     }
   }
 
@@ -245,3 +271,5 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
     );
   }
 }
+
+final systemIconBrightnessProvider = StateProvider<Brightness>((ref) => Brightness.dark);

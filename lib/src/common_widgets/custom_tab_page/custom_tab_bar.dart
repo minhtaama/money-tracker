@@ -37,8 +37,7 @@ class CustomTabBar extends StatelessWidget {
 
   Widget _animateChangingChild(double appBarHeight) {
     double childOpacity = _getAppBarChildOpacity(isExtendedChild: false, appBarHeight: appBarHeight);
-    double extendedChildOpacity =
-        _getAppBarChildOpacity(isExtendedChild: true, appBarHeight: appBarHeight);
+    double extendedChildOpacity = _getAppBarChildOpacity(isExtendedChild: true, appBarHeight: appBarHeight);
 
     return Stack(
       alignment: Alignment.center,
@@ -98,9 +97,11 @@ class SmallTabBar extends StatelessWidget {
     Key? key,
     required this.child,
     this.height = kCustomTabBarHeight,
+    this.systemIconBrightness,
   }) : super(key: key);
   final Widget child;
   final double height;
+  final Brightness? systemIconBrightness;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +111,7 @@ class SmallTabBar extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
           margin: EdgeInsets.zero,
-          color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.8 : 0.5),
+          color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.7 : 0.5),
           child: child,
         ),
       ),
@@ -126,12 +127,14 @@ class ExtendedTabBar extends StatelessWidget {
     this.outerChild,
     this.height = kExtendedCustomTabBarHeight,
     this.outerChildHeight = kExtendedTabBarOuterChildHeight,
+    this.systemIconBrightness,
   });
   final Color? backgroundColor;
   final Widget innerChild;
   final Widget? outerChild;
   final double height;
   final double outerChildHeight;
+  final Brightness? systemIconBrightness;
 
   @override
   Widget build(BuildContext context) {
@@ -144,9 +147,7 @@ class ExtendedTabBar extends StatelessWidget {
             height: double.infinity,
             isGradient: context.appTheme.isDarkTheme ? false : true,
             color: backgroundColor ??
-                (context.appTheme.isDarkTheme
-                    ? context.appTheme.background2
-                    : context.appTheme.secondary),
+                (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary),
             margin: EdgeInsets.zero,
             borderRadius: BorderRadius.zero,
             padding: EdgeInsets.only(

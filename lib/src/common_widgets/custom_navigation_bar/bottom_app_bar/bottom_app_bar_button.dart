@@ -53,12 +53,10 @@ class BottomAppBarButton extends StatelessWidget {
                   child: SvgIcon(
                     item.iconData,
                     color: isSelected
-                        ? (context.appTheme.isDarkTheme
-                            ? context.appTheme.secondary
-                            : context.appTheme.primaryNegative)
+                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primaryNegative)
                         : (context.appTheme.isDarkTheme ? context.appTheme.secondary : backgroundColor),
                   ),
-                ), //TODO: Implement Hive icon
+                ),
                 Gap.w4,
                 Expanded(
                   flex: 5,
@@ -71,9 +69,7 @@ class BottomAppBarButton extends StatelessWidget {
                             ? (context.appTheme.isDarkTheme
                                 ? context.appTheme.secondary
                                 : context.appTheme.primaryNegative)
-                            : (context.appTheme.isDarkTheme
-                                ? context.appTheme.secondary
-                                : backgroundColor),
+                            : (context.appTheme.isDarkTheme ? context.appTheme.secondary : backgroundColor),
                         fontFamily: 'WixMadeforDisplay',
                         fontSize: 14,
                       ),

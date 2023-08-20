@@ -103,7 +103,8 @@ class AppThemeData {
   final Color onNegative;
 
   ///
-  final Brightness systemIconBrightness;
+  final Brightness systemIconBrightnessOnExtendedTabBar;
+  final Brightness systemIconBrightnessOnSmallTabBar;
 
   AppThemeData({
     required this.isDuoColor,
@@ -122,7 +123,8 @@ class AppThemeData {
     required this.onPositive,
     required this.negative,
     required this.onNegative,
-    required this.systemIconBrightness,
+    required this.systemIconBrightnessOnExtendedTabBar,
+    required this.systemIconBrightnessOnSmallTabBar,
   });
 }
 

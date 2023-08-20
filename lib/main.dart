@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/isar_data_store.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,9 +34,7 @@ class MoneyTrackerApp extends ConsumerWidget {
 
   ThemeType getThemeType(BuildContext context, ThemeType currentThemeType) {
     if (currentThemeType == ThemeType.system) {
-      return MediaQuery.of(context).platformBrightness == Brightness.light
-          ? ThemeType.light
-          : ThemeType.dark;
+      return MediaQuery.of(context).platformBrightness == Brightness.light ? ThemeType.light : ThemeType.dark;
     } else {
       return currentThemeType;
     }
@@ -45,8 +44,10 @@ class MoneyTrackerApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsObject = ref.watch(settingsControllerProvider);
 
-    final currentTheme = AppColors.allThemeData[settingsObject.currentThemeIndex]
-        [getThemeType(context, settingsObject.themeType)];
+    final systemIconBrightness = ref.watch(systemIconBrightnessProvider);
+
+    final currentTheme =
+        AppColors.allThemeData[settingsObject.currentThemeIndex][getThemeType(context, settingsObject.themeType)];
 
     return AppTheme(
       data: currentTheme!,
@@ -55,9 +56,9 @@ class MoneyTrackerApp extends ConsumerWidget {
           value: SystemUiOverlayStyle(
             systemNavigationBarColor: context.appTheme.background,
             systemNavigationBarDividerColor: Colors.transparent,
-            systemNavigationBarIconBrightness: context.appTheme.systemIconBrightness,
+            systemNavigationBarIconBrightness: systemIconBrightness,
             statusBarColor: Colors.transparent,
-            statusBarIconBrightness: context.appTheme.systemIconBrightness,
+            statusBarIconBrightness: systemIconBrightness,
           ),
           child: MaterialApp.router(
             restorationScopeId: 'app',
