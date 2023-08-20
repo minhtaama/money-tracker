@@ -34,6 +34,9 @@ class TransactionIsar {
   @Index()
   final toAccount = IsarLink<AccountIsar>();
 
-  /// Only specify this to [true] when first creating new account
+  /// Only specify this to `true` when __first creating new account__
   bool isInitialTransaction = false;
+
+  /// Only specify this to `true` if this transaction is __a payment for a credit debt transaction__.
+  bool isCreditPayment = false;
 }

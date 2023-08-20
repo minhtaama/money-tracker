@@ -64,12 +64,10 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
 
     final listItems = <FABItem>[
       FABItem(
-          icon: AppIcons.add,
-          label: 'Add Credit transaction',
-          onTap: () {
-            print('pressed');
-            // TODO: PUSH TO ADD CREDIT TRANSACTION
-          }),
+        icon: AppIcons.add,
+        label: 'Add Credit transaction',
+        onTap: () => context.go(RoutePath.addCreditTransaction),
+      ),
     ];
 
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
@@ -80,7 +78,6 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
           ? CustomFloatingActionButton(
               roundedButtonItems: roundedButtonItems,
               listItems: listItems,
-              label: 'regular transaction',
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

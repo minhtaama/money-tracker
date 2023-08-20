@@ -10,6 +10,7 @@ import 'package:money_tracker_app/src/features/category/domain/category_tag_isar
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -21,25 +22,22 @@ import '../../calculator_input/presentation/calculator_input.dart';
 import '../../category/domain/category_isar.dart';
 import 'forms/forms.dart';
 
-class AddTransactionModalScreen extends ConsumerStatefulWidget {
-  const AddTransactionModalScreen(this.transactionType, {Key? key}) : super(key: key);
-  final TransactionType transactionType;
+class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
+  const AddCreditTransactionModalScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<AddTransactionModalScreen> createState() => _AddTransactionModalScreenState();
+  ConsumerState<AddCreditTransactionModalScreen> createState() => _AddCreditTransactionModalScreenState();
 }
 
-class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalScreen> {
+class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late TransactionType type = widget.transactionType;
   late DateTime dateTime = DateTime.now();
   String calculatorOutput = '0';
   String? note;
   CategoryTagIsar? tag;
   CategoryIsar? category;
   AccountIsar? account;
-  AccountIsar? toAccount;
 
   double? _formatToDouble(String formattedValue) {
     try {
@@ -61,11 +59,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
     return Form(
       key: _formKey,
       child: CustomSection(
-        title: widget.transactionType == TransactionType.income
-            ? 'Add Income'
-            : widget.transactionType == TransactionType.expense
-                ? 'Add Expense'
-                : 'Transfer between accounts',
+        title: 'Add Credit Transaction',
         crossAxisAlignment: CrossAxisAlignment.start,
         isWrapByCard: false,
         children: [
@@ -92,7 +86,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
-                  hintText: 'Amount',
+                  hintText: 'Credit Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
                     if (_formatToDouble(calculatorOutput) == null || _formatToDouble(calculatorOutput) == 0) {
@@ -133,84 +127,64 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:',
+                      'Expense Category:',
                       style: kHeader2TextStyle.copyWith(
                           fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
                     ),
                     Gap.h4,
-                    widget.transactionType != TransactionType.transfer
-                        ? CategoryFormSelector(
-                            transactionType: widget.transactionType,
-                            validator: (_) {
-                              if (category == null && widget.transactionType != TransactionType.transfer) {
-                                return '!';
-                              }
-                              return null;
-                            },
-                            onChangedCategory: (newCategory) {
-                              setState(() {
-                                category = newCategory;
-                              });
-                            })
-                        : AccountFormSelector(
-                            accountType: AccountType.onHand,
-                            validator: (_) {
-                              if (account == null) {
-                                return '!';
-                              }
-                              return null;
-                            },
-                            onChangedAccount: (newAccount) {
-                              setState(() {
-                                account = newAccount;
-                              });
-                            },
-                            otherSelectedAccount: toAccount,
-                          ),
+                    CategoryFormSelector(
+                        transactionType: TransactionType.expense,
+                        validator: (_) {
+                          if (category == null) {
+                            return '!';
+                          }
+                          return null;
+                        },
+                        onChangedCategory: (newCategory) {
+                          setState(() {
+                            category = newCategory;
+                          });
+                        }),
                     Gap.h16,
                     Text(
-                      widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:',
+                      'Credit Account:',
                       style: kHeader2TextStyle.copyWith(
                           fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
                     ),
                     Gap.h4,
                     AccountFormSelector(
-                      accountType: AccountType.onHand,
+                      accountType: AccountType.credit,
                       validator: (_) {
-                        if (widget.transactionType != TransactionType.transfer && account == null) {
-                          return '!';
-                        }
-                        if (widget.transactionType == TransactionType.transfer && toAccount == null) {
+                        if (account == null) {
                           return '!';
                         }
                         return null;
                       },
                       onChangedAccount: (newAccount) {
-                        if (widget.transactionType != TransactionType.transfer) {
-                          setState(() {
-                            account = newAccount;
-                          });
-                        } else {
-                          setState(() {
-                            toAccount = newAccount;
-                          });
-                        }
+                        setState(() {
+                          account = newAccount;
+                        });
                       },
-                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? account : null,
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          Gap.h16,
-          widget.transactionType != TransactionType.transfer
-              ? CategoryTagSelector(
-                  category: category,
-                  onTagSelected: (value) {
-                    tag = value;
-                  })
-              : Gap.noGap,
+          Gap.h8,
+          CustomCheckbox(
+            label: 'Installment payment',
+            onChanged: (value) => print(value),
+            optionalWidget: Text(
+              'e',
+            ),
+          ),
+          Gap.h8,
+          CategoryTagSelector(
+              category: category,
+              onTagSelected: (value) {
+                tag = value;
+              }),
           Gap.h16,
           CustomTextFormField(
             autofocus: false,
@@ -240,23 +214,22 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                 backgroundColor: context.appTheme.accent,
                 isDisabled: _formatToDouble(calculatorOutput) == null ||
                     _formatToDouble(calculatorOutput) == 0 ||
-                    category == null && widget.transactionType != TransactionType.transfer ||
-                    toAccount == null && widget.transactionType == TransactionType.transfer ||
+                    category == null ||
                     account == null,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     // By validating, the _formatToDouble(calculatorOutput) must not null
-                    final transactionRepository = ref.read(transactionRepositoryProvider);
-                    transactionRepository.writeNew(
-                      type,
-                      dateTime: dateTime,
-                      amount: _formatToDouble(calculatorOutput)!,
-                      tag: tag,
-                      note: note,
-                      category: category,
-                      account: account!,
-                      toAccount: toAccount,
-                    );
+                    // final transactionRepository = ref.read(transactionRepositoryProvider);
+                    // transactionRepository.writeNew(
+                    //   type,
+                    //   dateTime: dateTime,
+                    //   amount: _formatToDouble(calculatorOutput)!,
+                    //   tag: tag,
+                    //   note: note,
+                    //   category: category,
+                    //   account: account!,
+                    //   toAccount: toAccount,
+                    // );
                     context.pop();
                   }
                 },

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:async/async.dart';
 
@@ -15,20 +16,15 @@ class TransactionRepository {
 
   final Isar isar;
 
-  // No need to run async method because user might not have over 100 account (Obviously!)
   List<TransactionIsar> getAll(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query = isar.transactionIsars
-        .filter()
-        .dateTimeBetween(lower, upper)
-        .sortByDateTime()
-        .build();
+    Query<TransactionIsar> query =
+        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build();
     return query.findAllSync();
   }
 
   // Used to watch transaction list changes
   Stream<void> _watchListChanges(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query =
-        isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
+    Query<TransactionIsar> query = isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
     return query.watchLazy(fireImmediately: true);
   }
 
@@ -37,7 +33,8 @@ class TransactionRepository {
     Stream<void> s2 = isar.categoryIsars.watchLazy(fireImmediately: true);
     Stream<void> s3 = isar.categoryTagIsars.watchLazy(fireImmediately: true);
     Stream<void> s4 = isar.transactionIsars.watchLazy(fireImmediately: true);
-    return StreamGroup.merge([s1, s2, s3, s4]);
+    Stream<void> s5 = isar.creditTransactionIsars.watchLazy(fireImmediately: true);
+    return StreamGroup.merge([s1, s2, s3, s4, s5]);
   }
 
   /// Only add value to __`toAccount`__ parameter if transaction type is __Transfer__
@@ -53,8 +50,7 @@ class TransactionRepository {
   }) async {
     // Create a new account
     if (type != TransactionType.transfer && toAccount != null) {
-      throw ErrorDescription(
-          '`toAccount` must be null if transaction type is Transfer');
+      throw ErrorDescription('`toAccount` must be null if transaction type is Transfer');
     }
 
     final newTransaction = TransactionIsar()
@@ -80,23 +76,7 @@ class TransactionRepository {
   }
 }
 
-// class DateTimeRange {
-//   const DateTimeRange({required this.upper, required this.lower});
-//
-//   final DateTime upper;
-//   final DateTime lower;
-//
-//   @override
-//   bool operator ==(Object other) =>
-//       identical(this, other) ||
-//       other is DateTimeRange &&
-//           runtimeType == other.runtimeType &&
-//           upper == other.upper &&
-//           lower == other.lower;
-//
-//   @override
-//   int get hashCode => upper.hashCode ^ lower.hashCode;
-// }
+/////////////////// PROVIDERS //////////////////////////
 
 final transactionRepositoryProvider = Provider<TransactionRepository>(
   (ref) {
@@ -113,7 +93,7 @@ final transactionChangesProvider = StreamProvider.family<void, DateTimeRange>(
 );
 
 final databaseChangesProvider = StreamProvider.autoDispose<void>(
-      (ref) {
+  (ref) {
     final transactionRepo = ref.watch(transactionRepositoryProvider);
     return transactionRepo._watchDatabaseChanges();
   },

@@ -29,10 +29,10 @@ class AccountsScreen extends ConsumerWidget {
     final accountRepository = ref.watch(accountRepositoryProvider);
     final settingsRepository = ref.watch(settingsControllerProvider);
 
-    List<AccountIsar> accountList = accountRepository.getList();
+    List<AccountIsar> accountList = accountRepository.getList(null);
 
     ref.watch(accountsChangesProvider).whenData((_) {
-      accountList = accountRepository.getList();
+      accountList = accountRepository.getList(null);
     });
 
     List<Widget> buildAccountCards(BuildContext context) {
@@ -58,9 +58,8 @@ class AccountsScreen extends ConsumerWidget {
                           origin: const Offset(15, 15),
                           child: Opacity(
                             opacity: 0.45,
-                            child: SvgIcon(
-                                AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
-                                size: 30),
+                            child:
+                                SvgIcon(AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex), size: 30),
                           ),
                         ),
                       ),
@@ -76,8 +75,7 @@ class AccountsScreen extends ConsumerWidget {
                                 child: Text(
                                   model.name,
                                   style: kHeader2TextStyle.copyWith(
-                                      color: AppColors.allColorsUserCanPick[model.colorIndex][1],
-                                      fontSize: 22),
+                                      color: AppColors.allColorsUserCanPick[model.colorIndex][1], fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -94,8 +92,7 @@ class AccountsScreen extends ConsumerWidget {
                                       child: Text(
                                         'Credit',
                                         style: kHeader4TextStyle.copyWith(
-                                            color: AppColors.allColorsUserCanPick[model.colorIndex][0],
-                                            fontSize: 12),
+                                            color: AppColors.allColorsUserCanPick[model.colorIndex][0], fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),
@@ -104,8 +101,8 @@ class AccountsScreen extends ConsumerWidget {
                           const Expanded(child: SizedBox()),
                           Text(
                             'Current Balance:',
-                            style: kHeader4TextStyle.copyWith(
-                                color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
+                            style:
+                                kHeader4TextStyle.copyWith(color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                           ),
                           Row(
                             // Account Current Balance
@@ -119,8 +116,7 @@ class AccountsScreen extends ConsumerWidget {
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  CalculatorService.formatCurrency(
-                                      TransactionService.getAccountBalance(model)),
+                                  CalculatorService.formatCurrency(TransactionService.getAccountBalance(model)),
                                   style: kHeader1TextStyle.copyWith(
                                       color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                                   overflow: TextOverflow.fade,
@@ -164,8 +160,7 @@ class AccountsScreen extends ConsumerWidget {
           CustomSection(
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            onReorder: (oldIndex, newIndex) =>
-                accountRepository.reorder(accountList, oldIndex, newIndex),
+            onReorder: (oldIndex, newIndex) => accountRepository.reorder(accountList, oldIndex, newIndex),
             children: buildAccountCards(context),
           ),
         ],

@@ -20,13 +20,11 @@ class FABItem {
 // https://blog.logrocket.com/complete-guide-implementing-overlays-flutter/#example-2-a-floatingactionbutton-showing-three-other-buttons
 // Create a custom FloatingActionButton that expands more buttons when tapped
 class CustomFloatingActionButton extends StatefulWidget {
-  const CustomFloatingActionButton(
-      {Key? key, required this.roundedButtonItems, required this.listItems, required this.label})
+  const CustomFloatingActionButton({Key? key, required this.roundedButtonItems, required this.listItems})
       : assert(roundedButtonItems.length == 3),
         super(key: key);
   final List<FABItem> roundedButtonItems;
   final List<FABItem> listItems;
-  final String label;
 
   @override
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
@@ -67,7 +65,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.spaceAround,
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () {
@@ -77,22 +75,9 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   iconPath: widget.roundedButtonItems[index].icon,
                   iconColor: context.appTheme.backgroundNegative,
                   label: widget.roundedButtonItems[index].label,
-                  backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7) ,
+                  backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
                   size: overlayBoxWidth / 5.5,
                 ),
-                index == 1
-                    ? Material(
-                        color: Colors.transparent,
-                        child: Center(
-                          child: Text(
-                            widget.label.toUpperCase(),
-                            textAlign: TextAlign.center,
-                            style: kHeader2TextStyle.copyWith(
-                                fontSize: 12, color: context.appTheme.backgroundNegative.withOpacity(0.6)),
-                          ),
-                        ),
-                      )
-                    : Gap.noGap,
               ],
             ),
           );
@@ -172,7 +157,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                         verticalDirection: VerticalDirection.up,
                         children: [
                           SizedBox(
-                            height: 180,
+                            height: 150,
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -180,7 +165,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                               children: _buttonWidgets(overlayEntry),
                             ),
                           ),
-                          Gap.h16,
+                          Gap.h40,
                           ..._listWidgets(overlayEntry),
                         ],
                       ),

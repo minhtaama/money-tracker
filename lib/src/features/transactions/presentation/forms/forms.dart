@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
 import '../../../../utils/constants.dart';
@@ -46,7 +47,7 @@ class CategoryFormSelector extends FormField<CategoryIsar> {
 class AccountFormSelector extends FormField<AccountIsar> {
   AccountFormSelector({
     super.key,
-    required TransactionType transactionType,
+    required AccountType accountType,
     required ValueChanged<AccountIsar?> onChangedAccount,
     AccountIsar? otherSelectedAccount,
     FormFieldSetter<AccountIsar>? onSaved,
@@ -62,7 +63,7 @@ class AccountFormSelector extends FormField<AccountIsar> {
               return Stack(
                 children: [
                   AccountSelector(
-                      transactionType: transactionType,
+                      accountType: accountType,
                       otherSelectedAccount: otherSelectedAccount,
                       onChangedAccount: (newAccount) {
                         state.didChange(newAccount);

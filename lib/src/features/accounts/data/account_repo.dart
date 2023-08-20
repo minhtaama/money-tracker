@@ -11,8 +11,13 @@ class AccountRepository {
   final Isar isar;
 
   // No need to run async method because user might not have over 100 account (Obviously!)
-  List<AccountIsar> getList() {
-    Query<AccountIsar> query = isar.accountIsars.where().sortByOrder().build();
+  List<AccountIsar> getList(AccountType? type) {
+    Query<AccountIsar> query;
+    if (type == null) {
+      query = isar.accountIsars.where().sortByOrder().build();
+    } else {
+      query = isar.accountIsars.filter().typeEqualTo(type!).sortByOrder().build();
+    }
     return query.findAllSync();
   }
 

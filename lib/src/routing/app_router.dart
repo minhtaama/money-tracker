@@ -12,6 +12,7 @@ import '../common_widgets/modal_bottom_sheets.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/transactions/presentation/add_credit_transaction_modal_screen.dart';
 import '../utils/enums.dart';
 
 class RoutePath {
@@ -19,6 +20,7 @@ class RoutePath {
   static String get addIncome => '/home/addIncome';
   static String get addExpense => '/home/addExpense';
   static String get addTransfer => '/home/addTransfer';
+  static String get addCreditTransaction => '/home/addCreditTransaction';
   static String get summary => '/summary';
   static String get settings => '/summary/settings';
   static String get setCurrency => '/summary/settings/setCurrency';
@@ -81,6 +83,16 @@ final goRouter = GoRouter(
                 state,
                 hasHandle: false,
                 child: const AddTransactionModalScreen(TransactionType.transfer),
+              ),
+            ),
+            GoRoute(
+              path: 'addCreditTransaction',
+              parentNavigatorKey: _rootNavKey,
+              pageBuilder: (context, state) => showModalBottomSheetPage(
+                context,
+                state,
+                hasHandle: false,
+                child: const AddCreditTransactionModalScreen(),
               ),
             ),
           ],

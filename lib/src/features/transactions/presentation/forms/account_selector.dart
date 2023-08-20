@@ -14,13 +14,13 @@ import '../../../accounts/domain/account_isar.dart';
 class AccountSelector extends ConsumerStatefulWidget {
   const AccountSelector({
     Key? key,
-    required this.transactionType,
+    required this.accountType,
     required this.onChangedAccount,
     this.otherSelectedAccount,
   }) : super(key: key);
 
   final ValueChanged<AccountIsar?> onChangedAccount;
-  final TransactionType transactionType;
+  final AccountType accountType;
   final AccountIsar? otherSelectedAccount;
 
   @override
@@ -59,7 +59,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
               color: context.appTheme.backgroundNegative.withOpacity(0.4),
             ),
       onTap: () async {
-        List<AccountIsar> accountList = ref.read(accountRepositoryProvider).getList();
+        List<AccountIsar> accountList = ref.read(accountRepositoryProvider).getList(widget.accountType);
 
         final returnedValue = await showCustomModalBottomSheet<AccountIsar>(
           context: context,
