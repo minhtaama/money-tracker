@@ -1,11 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'layout/calculator_layout.dart';
@@ -14,18 +12,20 @@ class CalculatorInput extends StatefulWidget {
   /// This class is the entry point to open a calculator. In this class, the `onFormattedResultOutput`
   /// will return the result (__type String__) formatted with grouping by thousands (separated with ",").
   /// The result is only returned by calculation of the [_Calculator] widget.
-  const CalculatorInput(
-      {Key? key,
-      required this.formattedResultOutput,
-      required this.focusColor,
-      required this.hintText,
-      this.disableErrorText = false,
-      this.isDense = false,
-      this.textAlign = TextAlign.start,
-      this.validator,
-      this.fontSize = 22,
-      this.initialValue})
-      : super(key: key);
+  const CalculatorInput({
+    Key? key,
+    this.controller,
+    required this.formattedResultOutput,
+    required this.focusColor,
+    required this.hintText,
+    this.disableErrorText = false,
+    this.isDense = false,
+    this.textAlign = TextAlign.start,
+    this.validator,
+    this.fontSize = 22,
+    //this.initialValue,
+  }) : super(key: key);
+  final TextEditingController? controller;
   final ValueSetter<String> formattedResultOutput;
   final String? Function(String? value)? validator;
   final Color focusColor;
@@ -34,7 +34,7 @@ class CalculatorInput extends StatefulWidget {
   final bool disableErrorText;
   final bool isDense;
   final TextAlign textAlign;
-  final double? initialValue;
+  //final double? initialValue;
 
   @override
   State<CalculatorInput> createState() => _CalculatorInputState();
@@ -48,45 +48,29 @@ class _CalculatorInputState extends State<CalculatorInput> {
   @override
   void initState() {
     _formattedStringValue = '';
-    _controller = TextEditingController();
+    _controller = widget.controller ?? TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(covariant CalculatorInput oldWidget) {
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (widget.initialValue != null && widget.initialValue != oldWidget.initialValue) {
-        _formattedStringValue = _formatNumberInGroup(widget.initialValue.toString());
-        _controller.text = _formattedStringValue;
-        widget.formattedResultOutput(_formattedStringValue);
-      }
-    });
-    super.didUpdateWidget(oldWidget);
-  }
-
-  /// This function takes the argument only in type __String__. It use Regex to find all
-  /// the number sequences in the String and replace each sequence with the
-  /// grouping thousand formatted sequence, and separate numbers and operators by the space
-  /// character. The returned value will be in type __String__
-  String _formatNumberInGroup(String value) {
-    NumberFormat formatter = NumberFormat("###,###.##");
-
-    if (value == '') {
-      return '0';
-    }
-
-    String newValue = ' $value'.replaceAllMapped(RegExp(r'([0-9.]+)'), (match) {
-      //match[0] returns whole string of this match
-      return formatter.format(double.parse(match[0]!));
-    });
-    return newValue.replaceAllMapped(RegExp(r'[+\-*/]'), (match) => ' ${match[0]} ');
-  }
+  // @override
+  // void didUpdateWidget(covariant CalculatorInput oldWidget) {
+  //   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+  //     if (widget.initialValue != null && widget.initialValue != oldWidget.initialValue) {
+  //       _formattedStringValue = _formatNumberInGroup(widget.initialValue.toString());
+  //       _controller.text = _formattedStringValue;
+  //       widget.formattedResultOutput(_formattedStringValue);
+  //     }
+  //   });
+  //   super.didUpdateWidget(oldWidget);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +115,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
             wrapWithScrollView: true,
             //enableDrag: false,
             child: _Calculator(
-              initialValue: _formattedStringValue,
+              initialValue: _controller.text,
               resultOutput: (value) {
                 setState(() {
                   // Replace '0' value with empty to show hint text

@@ -23,6 +23,24 @@ class CalculatorService {
     }
   }
 
+  /// This function takes the argument only in type __String__. It use Regex to find all
+  /// the number sequences in the String and replace each sequence with the
+  /// grouping thousand formatted sequence, and separate numbers and operators by the space
+  /// character. The returned value will be in type __String__
+  static String formatNumberInGroup(String value) {
+    NumberFormat formatter = NumberFormat("###,###.##");
+
+    if (value == '') {
+      return '0';
+    }
+
+    String newValue = ' $value'.replaceAllMapped(RegExp(r'([0-9.]+)'), (match) {
+      //match[0] returns whole string of this match
+      return formatter.format(double.parse(match[0]!));
+    });
+    return newValue.replaceAllMapped(RegExp(r'[+\-*/]'), (match) => ' ${match[0]} ');
+  }
+
   static String unformatNumberGrouping(String value) {
     return value.split(',').join();
   }

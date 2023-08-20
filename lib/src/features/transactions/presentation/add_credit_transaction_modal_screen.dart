@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
@@ -31,7 +32,10 @@ class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
 class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final _calController = TextEditingController();
+
   late DateTime dateTime = DateTime.now();
+
   String calculatorOutputSpendAmount = '0';
   String calculatorOutputCyclePaymentAmount = '0';
   String? note;
@@ -39,6 +43,12 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
   CategoryIsar? category;
   AccountIsar? account;
   int? paymentCycle = 1;
+
+  @override
+  void dispose() {
+    _calController.dispose();
+    super.dispose();
+  }
 
   double? _formatToDouble(String formattedValue) {
     try {
@@ -108,6 +118,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                     setState(() {
                       calculatorOutputSpendAmount = value;
                       calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                      _calController.text = CalculatorService.formatNumberInGroup(calculatorOutputCyclePaymentAmount);
                     });
                   },
                 ),
@@ -188,12 +199,12 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
               onChanged: (boolValue) {
                 setState(() {
                   if (boolValue) {
-                    paymentCycle = 6;
-                    calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                    paymentCycle = null;
                   } else {
                     paymentCycle = 1;
-                    calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
                   }
+                  calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                  _calController.text = CalculatorService.formatNumberInGroup(calculatorOutputCyclePaymentAmount);
                 });
               },
               optionalWidget: Column(
@@ -215,7 +226,6 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                           autofocus: false,
                           disableErrorText: true,
                           maxLength: 3,
-                          initialValue: paymentCycle.toString(),
                           contentPadding: EdgeInsets.zero,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.end,
@@ -224,6 +234,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                             setState(() {
                               paymentCycle = int.tryParse(value);
                               calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
+                              _calController.text =
+                                  CalculatorService.formatNumberInGroup(calculatorOutputCyclePaymentAmount);
                             });
                           },
                         ),
@@ -241,16 +253,17 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       const Text(
-                        'Payment:',
+                        'Payment amount:',
                         style: kHeader4TextStyle,
                       ),
                       Gap.w8,
                       Expanded(
                         child: CalculatorInput(
+                            controller: _calController,
                             fontSize: 18,
                             isDense: true,
                             textAlign: TextAlign.end,
-                            initialValue: _formatToDouble(calculatorOutputCyclePaymentAmount),
+                            //initialValue: _formatToDouble(calculatorOutputCyclePaymentAmount),
                             validator: (_) {
                               if (_formatToDouble(calculatorOutputCyclePaymentAmount) == null ||
                                   _formatToDouble(calculatorOutputCyclePaymentAmount) == 0) {
