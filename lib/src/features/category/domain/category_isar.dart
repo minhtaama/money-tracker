@@ -12,7 +12,7 @@ class CategoryIsar {
   @enumerated
   late CategoryType type;
 
-  @Backlink(to: 'category')
+  @Backlink(to: 'categoryLink')
   final tags = IsarLinks<CategoryTagIsar>();
 
   late String name;

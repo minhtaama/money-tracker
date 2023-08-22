@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:async/async.dart';
 
@@ -33,45 +32,143 @@ class TransactionRepository {
     Stream<void> s2 = isar.categoryIsars.watchLazy(fireImmediately: true);
     Stream<void> s3 = isar.categoryTagIsars.watchLazy(fireImmediately: true);
     Stream<void> s4 = isar.transactionIsars.watchLazy(fireImmediately: true);
-    Stream<void> s5 = isar.creditTransactionIsars.watchLazy(fireImmediately: true);
-    return StreamGroup.merge([s1, s2, s3, s4, s5]);
+    return StreamGroup.merge([s1, s2, s3, s4]);
   }
 
-  /// Only add value to __`toAccount`__ parameter if transaction type is __Transfer__
-  Future<void> writeNew(
-    TransactionType type, {
+  Future<void> writeNewIncomeTxn({
     required DateTime dateTime,
     required double amount,
-    required CategoryIsar? category,
+    required CategoryIsar category,
+    required CategoryTagIsar? tag,
     required AccountIsar account,
-    CategoryTagIsar? tag,
-    String? note,
-    AccountIsar? toAccount,
+    required String? note,
   }) async {
-    // Create a new account
-    if (type != TransactionType.transfer && toAccount != null) {
-      throw ErrorDescription('`toAccount` must be null if transaction type is Transfer');
-    }
-
     final newTransaction = TransactionIsar()
-      ..transactionType = type
+      ..transactionType = TransactionType.income
       ..dateTime = dateTime
       ..amount = amount
-      ..category.value = category
-      ..account.value = account
-      ..tag.value = tag
-      ..note = note
-      ..toAccount.value = toAccount;
+      ..categoryLink.value = category
+      ..accountLink.value = account
+      ..categoryTagLink.value = tag
+      ..note = note;
 
     await isar.writeTxn(() async {
       // Put the `newTransaction` to the TransactionIsar collection
       await isar.transactionIsars.put(newTransaction);
 
       // Save the links in the `newTransaction`
-      await newTransaction.category.save();
-      await newTransaction.tag.save();
-      await newTransaction.account.save();
-      await newTransaction.toAccount.save();
+      await newTransaction.categoryLink.save();
+      await newTransaction.categoryTagLink.save();
+      await newTransaction.accountLink.save();
+    });
+  }
+
+  Future<void> writeNewExpenseTxn({
+    required DateTime dateTime,
+    required double amount,
+    required CategoryIsar category,
+    required CategoryTagIsar? tag,
+    required AccountIsar account,
+    required String? note,
+  }) async {
+    final newTransaction = TransactionIsar()
+      ..transactionType = TransactionType.expense
+      ..dateTime = dateTime
+      ..amount = amount
+      ..categoryLink.value = category
+      ..accountLink.value = account
+      ..categoryTagLink.value = tag
+      ..note = note;
+
+    await isar.writeTxn(() async {
+      // Put the `newTransaction` to the TransactionIsar collection
+      await isar.transactionIsars.put(newTransaction);
+
+      // Save the links in the `newTransaction`
+      await newTransaction.categoryLink.save();
+      await newTransaction.categoryTagLink.save();
+      await newTransaction.accountLink.save();
+    });
+  }
+
+  Future<void> writeNewTransferTxn({
+    required DateTime dateTime,
+    required double amount,
+    required AccountIsar account,
+    required AccountIsar toAccount,
+    required String? note,
+  }) async {
+    final newTransaction = TransactionIsar()
+      ..transactionType = TransactionType.transfer
+      ..dateTime = dateTime
+      ..amount = amount
+      ..accountLink.value = account
+      ..toAccountLink.value = toAccount
+      ..note = note;
+
+    await isar.writeTxn(() async {
+      // Put the `newTransaction` to the TransactionIsar collection
+      await isar.transactionIsars.put(newTransaction);
+
+      // Save the links in the `newTransaction`
+      await newTransaction.accountLink.save();
+      await newTransaction.toAccountLink.save();
+    });
+  }
+
+  Future<void> writeNewCreditSpendingTxn({
+    required DateTime dateTime,
+    required double amount,
+    required CategoryIsar category,
+    required AccountIsar account,
+    required int paymentPeriod,
+    required double paymentAmount,
+    required CategoryTagIsar? tag,
+    required String? note,
+  }) async {
+    final newTransaction = TransactionIsar()
+      ..transactionType = TransactionType.creditSpending
+      ..dateTime = dateTime
+      ..amount = amount
+      ..accountLink.value = account
+      ..categoryLink.value = category
+      ..categoryTagLink.value = tag
+      ..paymentPeriod = paymentPeriod
+      ..paymentAmount = paymentAmount
+      ..note = note;
+
+    await isar.writeTxn(() async {
+      // Put the `newTransaction` to the TransactionIsar collection
+      await isar.transactionIsars.put(newTransaction);
+
+      // Save the links in the `newTransaction`
+      await newTransaction.accountLink.save();
+      await newTransaction.categoryLink.save();
+      await newTransaction.categoryTagLink.save();
+    });
+  }
+
+  Future<void> writeNewCreditPaymentTxn({
+    required DateTime dateTime,
+    required double amount,
+    required AccountIsar account,
+    required String? note,
+  }) async {
+    final newTransaction = TransactionIsar()
+      ..transactionType = TransactionType.creditPayment
+      ..dateTime = dateTime
+      ..amount = amount
+      ..accountLink.value = account
+      ..note = note;
+
+    await isar.writeTxn(() async {
+      // Put the `newTransaction` to the TransactionIsar collection
+      await isar.transactionIsars.put(newTransaction);
+
+      // Save the links in the `newTransaction`
+      await newTransaction.accountLink.save();
+      await newTransaction.categoryLink.save();
+      await newTransaction.categoryTagLink.save();
     });
   }
 }

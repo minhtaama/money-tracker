@@ -56,19 +56,19 @@ const AccountIsarSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {
-    r'transactions': LinkSchema(
-      id: -5300728375415123032,
-      name: r'transactions',
+    r'txnBacklinks': LinkSchema(
+      id: -1583078061313818692,
+      name: r'txnBacklinks',
       target: r'TransactionIsar',
       single: false,
-      linkName: r'account',
+      linkName: r'accountLink',
     ),
-    r'transactionsTransferredTo': LinkSchema(
-      id: -5006061128410807070,
-      name: r'transactionsTransferredTo',
+    r'txnTransferredToBacklinks': LinkSchema(
+      id: -7181873514457247855,
+      name: r'txnTransferredToBacklinks',
       target: r'TransactionIsar',
       single: false,
-      linkName: r'toAccount',
+      linkName: r'toAccountLink',
     )
   },
   embeddedSchemas: {},
@@ -161,16 +161,16 @@ Id _accountIsarGetId(AccountIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
-  return [object.transactions, object.transactionsTransferredTo];
+  return [object.txnBacklinks, object.txnTransferredToBacklinks];
 }
 
 void _accountIsarAttach(
     IsarCollection<dynamic> col, Id id, AccountIsar object) {
   object.id = id;
-  object.transactions
-      .attach(col, col.isar.collection<TransactionIsar>(), r'transactions', id);
-  object.transactionsTransferredTo.attach(col,
-      col.isar.collection<TransactionIsar>(), r'transactionsTransferredTo', id);
+  object.txnBacklinks
+      .attach(col, col.isar.collection<TransactionIsar>(), r'txnBacklinks', id);
+  object.txnTransferredToBacklinks.attach(col,
+      col.isar.collection<TransactionIsar>(), r'txnTransferredToBacklinks', id);
 }
 
 extension AccountIsarQueryWhereSort
@@ -815,56 +815,56 @@ extension AccountIsarQueryObject
 
 extension AccountIsarQueryLinks
     on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> transactions(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnBacklinks(
       FilterQuery<TransactionIsar> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'transactions');
+      return query.link(q, r'txnBacklinks');
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsLengthEqualTo(int length) {
+      txnBacklinksLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactions', length, true, length, true);
+      return query.linkLength(r'txnBacklinks', length, true, length, true);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsIsEmpty() {
+      txnBacklinksIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactions', 0, true, 0, true);
+      return query.linkLength(r'txnBacklinks', 0, true, 0, true);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsIsNotEmpty() {
+      txnBacklinksIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactions', 0, false, 999999, true);
+      return query.linkLength(r'txnBacklinks', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsLengthLessThan(
+      txnBacklinksLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactions', 0, true, length, include);
+      return query.linkLength(r'txnBacklinks', 0, true, length, include);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsLengthGreaterThan(
+      txnBacklinksLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactions', length, include, 999999, true);
+      return query.linkLength(r'txnBacklinks', length, include, 999999, true);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsLengthBetween(
+      txnBacklinksLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -872,71 +872,71 @@ extension AccountIsarQueryLinks
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
-          r'transactions', lower, includeLower, upper, includeUpper);
+          r'txnBacklinks', lower, includeLower, upper, includeUpper);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredTo(FilterQuery<TransactionIsar> q) {
+      txnTransferredToBacklinks(FilterQuery<TransactionIsar> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'transactionsTransferredTo');
+      return query.link(q, r'txnTransferredToBacklinks');
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredToLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'transactionsTransferredTo', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredToIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactionsTransferredTo', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredToIsNotEmpty() {
+      txnTransferredToBacklinksLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
-          r'transactionsTransferredTo', 0, false, 999999, true);
+          r'txnTransferredToBacklinks', length, true, length, true);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredToLengthLessThan(
+      txnTransferredToBacklinksIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'txnTransferredToBacklinks', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      txnTransferredToBacklinksIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'txnTransferredToBacklinks', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      txnTransferredToBacklinksLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
-          r'transactionsTransferredTo', 0, true, length, include);
+          r'txnTransferredToBacklinks', 0, true, length, include);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredToLengthGreaterThan(
+      txnTransferredToBacklinksLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
-          r'transactionsTransferredTo', length, include, 999999, true);
+          r'txnTransferredToBacklinks', length, include, 999999, true);
     });
   }
 
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      transactionsTransferredToLengthBetween(
+      txnTransferredToBacklinksLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'transactionsTransferredTo', lower, includeLower,
+      return query.linkLength(r'txnTransferredToBacklinks', lower, includeLower,
           upper, includeUpper);
     });
   }

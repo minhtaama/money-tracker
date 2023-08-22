@@ -35,9 +35,9 @@ const CategoryTagIsarSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {
-    r'category': LinkSchema(
-      id: 2476239655520230198,
-      name: r'category',
+    r'categoryLink': LinkSchema(
+      id: -4020726856048006747,
+      name: r'categoryLink',
       target: r'CategoryIsar',
       single: true,
     )
@@ -103,14 +103,14 @@ Id _categoryTagIsarGetId(CategoryTagIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _categoryTagIsarGetLinks(CategoryTagIsar object) {
-  return [object.category];
+  return [object.categoryLink];
 }
 
 void _categoryTagIsarAttach(
     IsarCollection<dynamic> col, Id id, CategoryTagIsar object) {
   object.id = id;
-  object.category
-      .attach(col, col.isar.collection<CategoryIsar>(), r'category', id);
+  object.categoryLink
+      .attach(col, col.isar.collection<CategoryIsar>(), r'categoryLink', id);
 }
 
 extension CategoryTagIsarQueryWhereSort
@@ -468,16 +468,16 @@ extension CategoryTagIsarQueryObject
 extension CategoryTagIsarQueryLinks
     on QueryBuilder<CategoryTagIsar, CategoryTagIsar, QFilterCondition> {
   QueryBuilder<CategoryTagIsar, CategoryTagIsar, QAfterFilterCondition>
-      category(FilterQuery<CategoryIsar> q) {
+      categoryLink(FilterQuery<CategoryIsar> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'category');
+      return query.link(q, r'categoryLink');
     });
   }
 
   QueryBuilder<CategoryTagIsar, CategoryTagIsar, QAfterFilterCondition>
-      categoryIsNull() {
+      categoryLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'category', 0, true, 0, true);
+      return query.linkLength(r'categoryLink', 0, true, 0, true);
     });
   }
 }

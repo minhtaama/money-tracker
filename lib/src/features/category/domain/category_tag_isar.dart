@@ -8,7 +8,7 @@ part 'category_tag_isar.g.dart';
 class CategoryTagIsar {
   Id id = Isar.autoIncrement;
 
-  final category = IsarLink<CategoryIsar>();
+  final categoryLink = IsarLink<CategoryIsar>();
 
   /// name can be `null` by user remove action
   late String name;

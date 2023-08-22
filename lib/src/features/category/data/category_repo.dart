@@ -11,14 +11,12 @@ class CategoryRepository {
   final Isar isar;
 
   List<CategoryIsar> getList(CategoryType type) {
-    Query<CategoryIsar> query =
-        isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
+    Query<CategoryIsar> query = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
     return query.findAllSync();
   }
 
   Stream<void> _watchListChanges(CategoryType type) {
-    Query<CategoryIsar> query =
-        isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
+    Query<CategoryIsar> query = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
     return query.watchLazy(fireImmediately: true);
   }
 
@@ -57,18 +55,15 @@ class CategoryRepository {
       ..iconIndex = iconIndex
       ..name = name
       ..colorIndex = colorIndex;
-    await isar
-        .writeTxn(() async => await isar.categoryIsars.put(currentCategory));
+    await isar.writeTxn(() async => await isar.categoryIsars.put(currentCategory));
   }
 
   Future<void> delete(CategoryIsar category) async {
-    await isar
-        .writeTxn(() async => await isar.categoryIsars.delete(category.id));
+    await isar.writeTxn(() async => await isar.categoryIsars.delete(category.id));
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)
-  Future<void> reorder(
-      List<CategoryIsar> list, int oldIndex, int newIndex) async {
+  Future<void> reorder(List<CategoryIsar> list, int oldIndex, int newIndex) async {
     await isar.writeTxn(
       () async {
         if (newIndex < oldIndex) {
@@ -106,23 +101,21 @@ class CategoryRepository {
 
   Stream<void> _watchTagListChanges(CategoryIsar? category) {
     if (category != null) {
-      Query<CategoryTagIsar> query =
-          category.tags.filter().sortByOrder().build();
+      Query<CategoryTagIsar> query = category.tags.filter().sortByOrder().build();
       return query.watchLazy(fireImmediately: true);
     } else {
       return const Stream.empty();
     }
   }
 
-  Future<CategoryTagIsar?> writeNewTag(
-      {required String name, required CategoryIsar category}) async {
+  Future<CategoryTagIsar?> writeNewTag({required String name, required CategoryIsar category}) async {
     final newTag = CategoryTagIsar()
       ..name = name
-      ..category.value = category;
+      ..categoryLink.value = category;
 
     await isar.writeTxn(() async {
       await isar.categoryTagIsars.put(newTag);
-      await newTag.category.save();
+      await newTag.categoryLink.save();
 
       // If this database is user-reorder-able, then we must
       // assign `order` value equal to its `Isar.autoIncrementID` at the first time
@@ -133,16 +126,13 @@ class CategoryRepository {
     return isar.categoryTagIsars.get(newTag.id);
   }
 
-  Future<void> editTag(CategoryTagIsar currentTag,
-      {required String name}) async {
+  Future<void> editTag(CategoryTagIsar currentTag, {required String name}) async {
     currentTag.name = name;
-    await isar
-        .writeTxn(() async => await isar.categoryTagIsars.put(currentTag));
+    await isar.writeTxn(() async => await isar.categoryTagIsars.put(currentTag));
   }
 
   Future<void> deleteTag(CategoryTagIsar currentTag) async {
-    await isar
-        .writeTxn(() async => await isar.categoryTagIsars.delete(currentTag.id));
+    await isar.writeTxn(() async => await isar.categoryTagIsars.delete(currentTag.id));
   }
 
   /// The list must be the same list displayed in the widget (sorted by order in isar database)
@@ -171,16 +161,14 @@ final categoryRepositoryProvider = Provider<CategoryRepository>(
   },
 );
 
-final categoriesChangesProvider =
-    StreamProvider.autoDispose.family<void, CategoryType>(
+final categoriesChangesProvider = StreamProvider.autoDispose.family<void, CategoryType>(
   (ref, type) {
     final categoryRepo = ref.watch(categoryRepositoryProvider);
     return categoryRepo._watchListChanges(type);
   },
 );
 
-final categoryTagsChangesProvider =
-    StreamProvider.autoDispose.family<void, CategoryIsar?>(
+final categoryTagsChangesProvider = StreamProvider.autoDispose.family<void, CategoryIsar?>(
   (ref, category) {
     final categoryRepo = ref.watch(categoryRepositoryProvider);
     return categoryRepo._watchTagListChanges(category);

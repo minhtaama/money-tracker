@@ -49,7 +49,7 @@ class AccountRepository {
       ..dateTime = DateTime.now()
       ..isInitialTransaction = true
       ..amount = initialBalance
-      ..account.value = newAccount;
+      ..accountLink.value = newAccount;
 
     await isar.writeTxn(() async {
       await isar.accountIsars.put(newAccount);
@@ -63,7 +63,7 @@ class AccountRepository {
       await isar.transactionIsars.put(initialTransaction);
 
       // Save the link to this account in the `initialTransaction`
-      await initialTransaction.account.save();
+      await initialTransaction.accountLink.save();
     });
   }
 
@@ -82,7 +82,7 @@ class AccountRepository {
 
     // Query to find the initial transaction of the current editing account
     TransactionIsar? initialTransaction =
-        await currentAccount.transactions.filter().isInitialTransactionEqualTo(true).findFirst();
+        await currentAccount.txnBacklinks.filter().isInitialTransactionEqualTo(true).findFirst();
 
     if (initialTransaction != null) {
       // If the initial transaction is found
@@ -100,14 +100,14 @@ class AccountRepository {
         ..isInitialTransaction = true
         ..amount = initialBalance
         ..note = 'Initial Balance'
-        ..account.value = currentAccount;
+        ..accountLink.value = currentAccount;
 
       await isar.writeTxn(() async {
         await isar.accountIsars.put(currentAccount);
         await isar.transactionIsars.put(initialTransaction!);
 
         // Save the link to this account in `initialTransaction`
-        await initialTransaction.account.save();
+        await initialTransaction.accountLink.save();
       });
     }
   }

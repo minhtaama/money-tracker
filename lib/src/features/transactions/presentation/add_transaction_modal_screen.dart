@@ -95,7 +95,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   hintText: 'Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null || _formatToDouble(calculatorOutput) == 0) {
+                    if (_formatToDouble(calculatorOutput) == null ||
+                        _formatToDouble(calculatorOutput) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -142,7 +143,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) {
-                              if (category == null && widget.transactionType != TransactionType.transfer) {
+                              if (category == null &&
+                                  widget.transactionType != TransactionType.transfer) {
                                 return '!';
                               }
                               return null;
@@ -196,7 +198,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                           });
                         }
                       },
-                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? account : null,
+                      otherSelectedAccount:
+                          widget.transactionType == TransactionType.transfer ? account : null,
                     ),
                   ],
                 ),
@@ -255,19 +258,38 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                     toAccount == null && widget.transactionType == TransactionType.transfer ||
                     account == null,
                 onTap: () {
+                  // By validating, the _formatToDouble(calculatorOutput), account, category, toAccount must not null
                   if (_formKey.currentState!.validate()) {
-                    // By validating, the _formatToDouble(calculatorOutput) must not null
-                    final transactionRepository = ref.read(transactionRepositoryProvider);
-                    transactionRepository.writeNew(
-                      type,
-                      dateTime: dateTime,
-                      amount: _formatToDouble(calculatorOutput)!,
-                      tag: tag,
-                      note: note,
-                      category: category,
-                      account: account!,
-                      toAccount: toAccount,
-                    );
+                    final transactionRepo = ref.read(transactionRepositoryProvider);
+
+                    if (type == TransactionType.income) {
+                      transactionRepo.writeNewIncomeTxn(
+                        dateTime: dateTime,
+                        amount: _formatToDouble(calculatorOutput)!,
+                        category: category!,
+                        tag: tag,
+                        account: account!,
+                        note: note,
+                      );
+                    }
+                    if (type == TransactionType.expense) {
+                      transactionRepo.writeNewExpenseTxn(
+                        dateTime: dateTime,
+                        amount: _formatToDouble(calculatorOutput)!,
+                        category: category!,
+                        tag: tag,
+                        account: account!,
+                        note: note,
+                      );
+                    }
+                    if (type == TransactionType.transfer) {
+                      transactionRepo.writeNewTransferTxn(
+                          dateTime: dateTime,
+                          amount: _formatToDouble(calculatorOutput)!,
+                          account: account!,
+                          toAccount: toAccount!,
+                          note: note);
+                    }
                     context.pop();
                   }
                 },

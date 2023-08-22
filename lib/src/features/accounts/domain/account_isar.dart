@@ -19,9 +19,9 @@ class AccountIsar {
 
   int? order;
 
-  @Backlink(to: 'account')
-  final transactions = IsarLinks<TransactionIsar>();
+  @Backlink(to: 'accountLink')
+  final txnBacklinks = IsarLinks<TransactionIsar>();
 
-  @Backlink(to: 'toAccount')
-  final transactionsTransferredTo = IsarLinks<TransactionIsar>();
+  @Backlink(to: 'toAccountLink')
+  final txnTransferredToBacklinks = IsarLinks<TransactionIsar>();
 }

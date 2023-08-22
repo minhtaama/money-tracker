@@ -7,7 +7,7 @@ import '../../../utils/enums.dart';
 class TransactionService {
   static double getAccountBalance(AccountIsar accountIsar) {
     double accountBalance = 0;
-    final transactionList = accountIsar.transactions.toList();
+    final transactionList = accountIsar.txnBacklinks.toList();
     for (TransactionIsar transaction in transactionList) {
       if (transaction.transactionType == TransactionType.income) {
         accountBalance += transaction.amount;
@@ -16,7 +16,7 @@ class TransactionService {
         accountBalance -= transaction.amount;
       }
     }
-    final transactionsTransferredToThisAccountList = accountIsar.transactionsTransferredTo.toList();
+    final transactionsTransferredToThisAccountList = accountIsar.txnTransferredToBacklinks.toList();
     for (TransactionIsar transaction in transactionsTransferredToThisAccountList) {
       accountBalance += transaction.amount;
     }

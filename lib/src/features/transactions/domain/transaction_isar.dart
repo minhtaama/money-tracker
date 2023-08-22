@@ -11,32 +11,78 @@ part 'transaction_isar.g.dart';
 class TransactionIsar {
   Id id = Isar.autoIncrement;
 
+  /// Type of this transaction. This is used to distinguish between transactions.
+  ///
+  /// **Must specify**
   @enumerated
   late TransactionType transactionType;
 
+  /// Only specify this to `true` when **first creating new account**
+  bool isInitialTransaction = false;
+
+  /// Date time of this transaction happens
+  ///
+  /// **For all transaction type**
   @Index()
   late DateTime dateTime;
 
+  /// Amount of this transaction
+  ///
+  /// **For all transaction type**
   late double amount;
 
+  /// Note of this transaction
+  ///
+  /// **For all transaction type**
   String? note;
 
+  /// IsarLink to `CategoryIsar` of this transaction
+  ///
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
   @Index()
-  final category = IsarLink<CategoryIsar>();
+  final categoryLink = IsarLink<CategoryIsar>();
 
+  /// IsarLink to `CategoryTagIsar` of this transaction
+  ///
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
   @Index()
-  final tag = IsarLink<CategoryTagIsar>();
+  final categoryTagLink = IsarLink<CategoryTagIsar>();
 
+  /// IsarLink to `AccountIsar` of this transaction
+  ///
+  /// **For all transaction type**
   @Index()
-  final account = IsarLink<AccountIsar>();
+  final accountLink = IsarLink<AccountIsar>();
 
-  /// Only specify this if transaction type is __Transfer__
+  /// IsarLink to `AccountIsar` of this transaction as the account has money transferred to.
+  ///
+  /// **Only specify this if type is [TransactionType.transfer]**
   @Index()
-  final toAccount = IsarLink<AccountIsar>();
+  final toAccountLink = IsarLink<AccountIsar>();
 
-  /// Only specify this to `true` when __first creating new account__
-  bool isInitialTransaction = false;
+  /// The Backlink to payment transaction(s) of this spending transaction
+  ///
+  /// **Only available if type is [TransactionType.creditSpending]**
+  @Backlink(to: 'asPaymentOfCreditTxnLink')
+  final paymentTxnsBacklinks = IsarLinks<TransactionIsar>();
 
-  /// Only specify this to `true` if this transaction is __a payment for a credit debt transaction__.
-  bool isCreditPayment = false;
+  /// Link to the credit spending transaction that this is act as a payment to
+  /// that spending.
+  ///
+  /// **Only specify this if this transaction type is [TransactionType.creditPayment]**
+  ///
+  /// **And value adding must have type [TransactionType.creditSpending]**
+  final asPaymentOfCreditTxnLink = IsarLink<TransactionIsar>();
+
+  /// Indicate months to pay if this transaction has installment payment.
+  /// `1` means no installment (Pay full in next month)
+  ///
+  /// **Only specify if type is [TransactionType.creditSpending]**
+  int? paymentPeriod;
+
+  /// The payment amount of each month if this transaction has installment payment
+  /// This value is equal `amount/paymentPeriod`
+  ///
+  /// **Only specify if type is [TransactionType.creditSpending]**
+  double? paymentAmount;
 }

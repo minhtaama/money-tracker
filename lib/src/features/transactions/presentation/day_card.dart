@@ -56,8 +56,9 @@ class DayCard extends ConsumerWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color:
-                        dateTime.weekday == 6 || dateTime.weekday == 7 ? context.appTheme.accent : AppColors.darkerGrey,
+                    color: dateTime.weekday == 6 || dateTime.weekday == 7
+                        ? context.appTheme.accent
+                        : AppColors.darkerGrey,
                     borderRadius: BorderRadius.circular(8),
                     border: dateTime.year == DateTime.now().year &&
                             dateTime.month == DateTime.now().month &&
@@ -91,7 +92,8 @@ class DayCard extends ConsumerWidget {
                     ),
                     Text(
                       '${dateTime.monthString()} ${dateTime.year}',
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(
+                          color: context.appTheme.backgroundNegative, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -194,7 +196,9 @@ class DayCardTransactions extends StatelessWidget {
                                     ? _ExpandedCategory(transaction: transaction)
                                     : Gap.noGap,
                                 _ExpandedAccount(transaction: transaction),
-                                transaction.transactionType == TransactionType.transfer ? Gap.h4 : Gap.noGap,
+                                transaction.transactionType == TransactionType.transfer
+                                    ? Gap.h4
+                                    : Gap.noGap,
                                 transaction.transactionType == TransactionType.transfer
                                     ? _ExpandedToAccount(transaction: transaction)
                                     : Gap.noGap,
@@ -208,7 +212,9 @@ class DayCardTransactions extends StatelessWidget {
                     ),
                   ],
                 ),
-                transaction.note != null || transaction.tag.value != null ? _Note(transaction: transaction) : Gap.noGap,
+                transaction.note != null || transaction.categoryTagLink.value != null
+                    ? _Note(transaction: transaction)
+                    : Gap.noGap,
               ],
             ),
           ),
@@ -286,19 +292,21 @@ class _ExpandedCategory extends StatelessWidget {
         // Category Icon
         SvgIcon(
           !transaction.isInitialTransaction
-              ? AppIcons.fromCategoryAndIndex(
-                  transaction.category.value!.iconCategory, transaction.category.value!.iconIndex)
+              ? AppIcons.fromCategoryAndIndex(transaction.categoryLink.value!.iconCategory,
+                  transaction.categoryLink.value!.iconIndex)
               : AppIcons.add,
           size: 20,
-          color: context.appTheme.backgroundNegative.withOpacity(transaction.category.value != null ? 1 : 0.5),
+          color: context.appTheme.backgroundNegative
+              .withOpacity(transaction.categoryLink.value != null ? 1 : 0.5),
         ),
         Gap.w4,
         // Category Name
         Expanded(
           child: Text(
-            !transaction.isInitialTransaction ? transaction.category.value!.name : 'Initial Balance',
+            !transaction.isInitialTransaction ? transaction.categoryLink.value!.name : 'Initial Balance',
             style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(transaction.category.value != null ? 1 : 0.5),
+                color: context.appTheme.backgroundNegative
+                    .withOpacity(transaction.categoryLink.value != null ? 1 : 0.5),
                 fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -320,9 +328,10 @@ class _ExpandedAccount extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
-        transaction.account.value != null && transaction.transactionType != TransactionType.transfer
+        transaction.accountLink.value != null && transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
-                transaction.isInitialTransaction || transaction.transactionType == TransactionType.transfer
+                transaction.isInitialTransaction ||
+                        transaction.transactionType == TransactionType.transfer
                     ? AppIcons.download
                     : transaction.transactionType == TransactionType.income
                         ? AppIcons.download
@@ -331,11 +340,11 @@ class _ExpandedAccount extends StatelessWidget {
                 color: context.appTheme.backgroundNegative,
               )
             : Gap.noGap,
-        transaction.account.value != null ? Gap.w4 : Gap.noGap,
+        transaction.accountLink.value != null ? Gap.w4 : Gap.noGap,
         // Category Name
         Expanded(
           child: Text(
-            transaction.account.value != null ? transaction.account.value!.name : ' ',
+            transaction.accountLink.value != null ? transaction.accountLink.value!.name : ' ',
             style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -357,19 +366,20 @@ class _ExpandedToAccount extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
-        transaction.toAccount.value != null && transaction.transactionType != TransactionType.transfer
+        transaction.toAccountLink.value != null &&
+                transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
-                AppIcons.fromCategoryAndIndex(
-                    transaction.toAccount.value!.iconCategory, transaction.toAccount.value!.iconIndex),
+                AppIcons.fromCategoryAndIndex(transaction.toAccountLink.value!.iconCategory,
+                    transaction.toAccountLink.value!.iconIndex),
                 size: 20,
                 color: context.appTheme.backgroundNegative,
               )
             : Gap.noGap,
-        transaction.toAccount.value != null ? Gap.w4 : Gap.noGap,
+        transaction.toAccountLink.value != null ? Gap.w4 : Gap.noGap,
         // Category Name
         Expanded(
           child: Text(
-            transaction.toAccount.value != null ? transaction.toAccount.value!.name : ' ',
+            transaction.toAccountLink.value != null ? transaction.toAccountLink.value!.name : ' ',
             style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -429,29 +439,31 @@ class _Note extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(
+            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius:
+              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            transaction.tag.value != null
+            transaction.categoryTagLink.value != null
                 ? Text(
-                    '# ${transaction.tag.value!.name}',
+                    '# ${transaction.categoryTagLink.value!.name}',
                     style: kHeader2TextStyle.copyWith(
                       color: context.appTheme.backgroundNegative.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   )
                 : Gap.noGap,
-            transaction.tag.value != null && transaction.note != null ? Gap.h4 : Gap.noGap,
+            transaction.categoryTagLink.value != null && transaction.note != null ? Gap.h4 : Gap.noGap,
             transaction.note != null
                 ? Text(
                     transaction.note!,

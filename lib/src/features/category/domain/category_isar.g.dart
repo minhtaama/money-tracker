@@ -57,11 +57,11 @@ const CategoryIsarSchema = CollectionSchema(
   indexes: {},
   links: {
     r'tags': LinkSchema(
-      id: 1553102532887560276,
+      id: 6944493354275395101,
       name: r'tags',
       target: r'CategoryTagIsar',
       single: false,
-      linkName: r'category',
+      linkName: r'categoryLink',
     )
   },
   embeddedSchemas: {},
