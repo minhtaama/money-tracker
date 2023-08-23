@@ -121,11 +121,21 @@ class TransactionRepository {
     required double amount,
     required CategoryIsar category,
     required AccountIsar account,
-    required int paymentPeriod,
-    required double paymentAmount,
     required CategoryTagIsar? tag,
     required String? note,
+    required int paymentPeriod,
+    required double paymentAmountPerMonth,
+    required double monthlyInstallmentInterestRate,
+    required bool rateBasedOnRemainingInstallmentUnpaid,
+    required double fee,
   }) async {
+    final creditSpendingTxnDetails = CreditSpendingTxnDetails()
+      ..paymentPeriod = paymentPeriod
+      ..paymentAmountPerMonth = paymentAmountPerMonth
+      ..monthlyInstallmentInterestRate = monthlyInstallmentInterestRate
+      ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid
+      ..fee = fee;
+
     final newTransaction = TransactionIsar()
       ..transactionType = TransactionType.creditSpending
       ..dateTime = dateTime
@@ -133,9 +143,8 @@ class TransactionRepository {
       ..accountLink.value = account
       ..categoryLink.value = category
       ..categoryTagLink.value = tag
-      ..paymentPeriod = paymentPeriod
-      ..paymentAmount = paymentAmount
-      ..note = note;
+      ..note = note
+      ..creditSpendingTxnDetails = creditSpendingTxnDetails;
 
     await isar.writeTxn(() async {
       // Put the `newTransaction` to the TransactionIsar collection
@@ -167,8 +176,6 @@ class TransactionRepository {
 
       // Save the links in the `newTransaction`
       await newTransaction.accountLink.save();
-      await newTransaction.categoryLink.save();
-      await newTransaction.categoryTagLink.save();
     });
   }
 }

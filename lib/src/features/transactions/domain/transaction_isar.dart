@@ -17,10 +17,7 @@ class TransactionIsar {
   @enumerated
   late TransactionType transactionType;
 
-  /// Only specify this to `true` when **first creating new account**
-  bool isInitialTransaction = false;
-
-  /// Date time of this transaction happens
+  /// Date time when this transaction happens
   ///
   /// **For all transaction type**
   @Index()
@@ -60,29 +57,49 @@ class TransactionIsar {
   @Index()
   final toAccountLink = IsarLink<AccountIsar>();
 
-  /// The Backlink to payment transaction(s) of this spending transaction
+  /// Fee of the transfer transaction.
   ///
-  /// **Only available if type is [TransactionType.creditSpending]**
-  @Backlink(to: 'asPaymentOfCreditTxnLink')
-  final paymentTxnsBacklinks = IsarLinks<TransactionIsar>();
+  /// **Only specify this if type is [TransactionType.transfer]**
+  double transferFee = 0;
 
-  /// Link to the credit spending transaction that this is act as a payment to
-  /// that spending.
-  ///
-  /// **Only specify this if this transaction type is [TransactionType.creditPayment]**
-  ///
-  /// **And value adding must have type [TransactionType.creditSpending]**
-  final asPaymentOfCreditTxnLink = IsarLink<TransactionIsar>();
+  /// Only specify this to `true` when **first creating new account**  and type is [TransactionType.income]**
+  bool isInitialTransaction = false;
 
+  /// **Only specify if type is [TransactionType.creditSpending]**
+  CreditSpendingTxnDetails? creditSpendingTxnDetails;
+
+  // /// **Only specify if type is [TransactionType.creditPayment]**
+  // CreditPaymentTxnDetails? creditPaymentTxnDetails;
+}
+
+@Embedded()
+class CreditSpendingTxnDetails {
   /// Indicate months to pay if this transaction has installment payment.
   /// `1` means no installment (Pay full in next month)
-  ///
-  /// **Only specify if type is [TransactionType.creditSpending]**
-  int? paymentPeriod;
+  late int paymentPeriod;
 
   /// The payment amount of each month if this transaction has installment payment
-  /// This value is equal `amount/paymentPeriod`
+  /// This value is equal `amount/paymentPeriod` (and equal `amount` if `paymentPeriod == 1`)
+  late double paymentAmountPerMonth;
+
+  /// The interest rate of the installment payment. '0' if this transaction
+  /// does not have installment payment or has 0% interest rate
+  late double monthlyInstallmentInterestRate;
+
+  /// `True` if the `monthlyInstallmentInterestRate` is based on the **remaining**
+  /// unpaid amount of this installment. If so, the monthly interest rate will
+  /// decrease as user made an installment payment.
   ///
-  /// **Only specify if type is [TransactionType.creditSpending]**
-  double? paymentAmount;
+  /// `False` if the `monthlyInstallmentInterestRate` is based on the **total** amount
+  /// of this transaction every month in the payment period. If so, the monthly
+  /// interest rate will not changed even user has paid for some months.
+  bool rateBasedOnRemainingInstallmentUnpaid = false;
+
+  /// Any fee that apply to this credit spending transaction. `0` if this transaction
+  /// does not has any fee. The fee will be counted in total amount that user has
+  /// to pay next month.
+  late double fee;
 }
+
+// @Embedded()
+// class CreditPaymentTxnDetails {}

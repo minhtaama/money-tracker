@@ -16,7 +16,7 @@ class AccountRepository {
     if (type == null) {
       query = isar.accountIsars.where().sortByOrder().build();
     } else {
-      query = isar.accountIsars.filter().typeEqualTo(type!).sortByOrder().build();
+      query = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build();
     }
     return query.findAllSync();
   }

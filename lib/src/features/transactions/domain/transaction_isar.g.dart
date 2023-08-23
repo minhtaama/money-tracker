@@ -22,33 +22,29 @@ const TransactionIsarSchema = CollectionSchema(
       name: r'amount',
       type: IsarType.double,
     ),
-    r'dateTime': PropertySchema(
+    r'creditSpendingTxnDetails': PropertySchema(
       id: 1,
+      name: r'creditSpendingTxnDetails',
+      type: IsarType.object,
+      target: r'CreditSpendingTxnDetails',
+    ),
+    r'dateTime': PropertySchema(
+      id: 2,
       name: r'dateTime',
       type: IsarType.dateTime,
     ),
     r'isInitialTransaction': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'isInitialTransaction',
       type: IsarType.bool,
     ),
     r'note': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'note',
       type: IsarType.string,
     ),
-    r'paymentAmount': PropertySchema(
-      id: 4,
-      name: r'paymentAmount',
-      type: IsarType.double,
-    ),
-    r'paymentPeriod': PropertySchema(
-      id: 5,
-      name: r'paymentPeriod',
-      type: IsarType.long,
-    ),
     r'transactionType': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'transactionType',
       type: IsarType.byte,
       enumMap: _TransactionIsartransactionTypeEnumValueMap,
@@ -98,22 +94,11 @@ const TransactionIsarSchema = CollectionSchema(
       name: r'toAccountLink',
       target: r'AccountIsar',
       single: true,
-    ),
-    r'paymentTxnsBacklinks': LinkSchema(
-      id: -7252896500683990276,
-      name: r'paymentTxnsBacklinks',
-      target: r'TransactionIsar',
-      single: false,
-      linkName: r'asPaymentOfCreditTxnLink',
-    ),
-    r'asPaymentOfCreditTxnLink': LinkSchema(
-      id: 8406798734038396204,
-      name: r'asPaymentOfCreditTxnLink',
-      target: r'TransactionIsar',
-      single: true,
     )
   },
-  embeddedSchemas: {},
+  embeddedSchemas: {
+    r'CreditSpendingTxnDetails': CreditSpendingTxnDetailsSchema
+  },
   getId: _transactionIsarGetId,
   getLinks: _transactionIsarGetLinks,
   attach: _transactionIsarAttach,
@@ -126,6 +111,14 @@ int _transactionIsarEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.creditSpendingTxnDetails;
+    if (value != null) {
+      bytesCount += 3 +
+          CreditSpendingTxnDetailsSchema.estimateSize(
+              value, allOffsets[CreditSpendingTxnDetails]!, allOffsets);
+    }
+  }
   {
     final value = object.note;
     if (value != null) {
@@ -142,12 +135,16 @@ void _transactionIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.amount);
-  writer.writeDateTime(offsets[1], object.dateTime);
-  writer.writeBool(offsets[2], object.isInitialTransaction);
-  writer.writeString(offsets[3], object.note);
-  writer.writeDouble(offsets[4], object.paymentAmount);
-  writer.writeLong(offsets[5], object.paymentPeriod);
-  writer.writeByte(offsets[6], object.transactionType.index);
+  writer.writeObject<CreditSpendingTxnDetails>(
+    offsets[1],
+    allOffsets,
+    CreditSpendingTxnDetailsSchema.serialize,
+    object.creditSpendingTxnDetails,
+  );
+  writer.writeDateTime(offsets[2], object.dateTime);
+  writer.writeBool(offsets[3], object.isInitialTransaction);
+  writer.writeString(offsets[4], object.note);
+  writer.writeByte(offsets[5], object.transactionType.index);
 }
 
 TransactionIsar _transactionIsarDeserialize(
@@ -158,14 +155,18 @@ TransactionIsar _transactionIsarDeserialize(
 ) {
   final object = TransactionIsar();
   object.amount = reader.readDouble(offsets[0]);
-  object.dateTime = reader.readDateTime(offsets[1]);
+  object.creditSpendingTxnDetails =
+      reader.readObjectOrNull<CreditSpendingTxnDetails>(
+    offsets[1],
+    CreditSpendingTxnDetailsSchema.deserialize,
+    allOffsets,
+  );
+  object.dateTime = reader.readDateTime(offsets[2]);
   object.id = id;
-  object.isInitialTransaction = reader.readBool(offsets[2]);
-  object.note = reader.readStringOrNull(offsets[3]);
-  object.paymentAmount = reader.readDoubleOrNull(offsets[4]);
-  object.paymentPeriod = reader.readLongOrNull(offsets[5]);
+  object.isInitialTransaction = reader.readBool(offsets[3]);
+  object.note = reader.readStringOrNull(offsets[4]);
   object.transactionType = _TransactionIsartransactionTypeValueEnumMap[
-          reader.readByteOrNull(offsets[6])] ??
+          reader.readByteOrNull(offsets[5])] ??
       TransactionType.income;
   return object;
 }
@@ -180,16 +181,18 @@ P _transactionIsarDeserializeProp<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readObjectOrNull<CreditSpendingTxnDetails>(
+        offset,
+        CreditSpendingTxnDetailsSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readLongOrNull(offset)) as P;
-    case 6:
       return (_TransactionIsartransactionTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           TransactionType.income) as P;
@@ -222,9 +225,7 @@ List<IsarLinkBase<dynamic>> _transactionIsarGetLinks(TransactionIsar object) {
     object.categoryLink,
     object.categoryTagLink,
     object.accountLink,
-    object.toAccountLink,
-    object.paymentTxnsBacklinks,
-    object.asPaymentOfCreditTxnLink
+    object.toAccountLink
   ];
 }
 
@@ -239,10 +240,6 @@ void _transactionIsarAttach(
       .attach(col, col.isar.collection<AccountIsar>(), r'accountLink', id);
   object.toAccountLink
       .attach(col, col.isar.collection<AccountIsar>(), r'toAccountLink', id);
-  object.paymentTxnsBacklinks.attach(
-      col, col.isar.collection<TransactionIsar>(), r'paymentTxnsBacklinks', id);
-  object.asPaymentOfCreditTxnLink.attach(col,
-      col.isar.collection<TransactionIsar>(), r'asPaymentOfCreditTxnLink', id);
 }
 
 extension TransactionIsarQueryWhereSort
@@ -490,6 +487,24 @@ extension TransactionIsarQueryFilter
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      creditSpendingTxnDetailsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'creditSpendingTxnDetails',
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      creditSpendingTxnDetailsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'creditSpendingTxnDetails',
       ));
     });
   }
@@ -771,164 +786,6 @@ extension TransactionIsarQueryFilter
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentAmountIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'paymentAmount',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentAmountIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'paymentAmount',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentAmountEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'paymentAmount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentAmountGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'paymentAmount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentAmountLessThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'paymentAmount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentAmountBetween(
-    double? lower,
-    double? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'paymentAmount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentPeriodIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'paymentPeriod',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentPeriodIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'paymentPeriod',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentPeriodEqualTo(int? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'paymentPeriod',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentPeriodGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'paymentPeriod',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentPeriodLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'paymentPeriod',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentPeriodBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'paymentPeriod',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       transactionTypeEqualTo(TransactionType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -986,7 +843,14 @@ extension TransactionIsarQueryFilter
 }
 
 extension TransactionIsarQueryObject
-    on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {}
+    on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      creditSpendingTxnDetails(FilterQuery<CreditSpendingTxnDetails> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'creditSpendingTxnDetails');
+    });
+  }
+}
 
 extension TransactionIsarQueryLinks
     on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {
@@ -1045,84 +909,6 @@ extension TransactionIsarQueryLinks
       return query.linkLength(r'toAccountLink', 0, true, 0, true);
     });
   }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinks(FilterQuery<TransactionIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'paymentTxnsBacklinks');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinksLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'paymentTxnsBacklinks', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinksIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'paymentTxnsBacklinks', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinksIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'paymentTxnsBacklinks', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinksLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'paymentTxnsBacklinks', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinksLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'paymentTxnsBacklinks', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      paymentTxnsBacklinksLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'paymentTxnsBacklinks', lower, includeLower, upper, includeUpper);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      asPaymentOfCreditTxnLink(FilterQuery<TransactionIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'asPaymentOfCreditTxnLink');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      asPaymentOfCreditTxnLinkIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'asPaymentOfCreditTxnLink', 0, true, 0, true);
-    });
-  }
 }
 
 extension TransactionIsarQuerySortBy
@@ -1178,34 +964,6 @@ extension TransactionIsarQuerySortBy
       sortByNoteDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'note', Sort.desc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      sortByPaymentAmount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentAmount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      sortByPaymentAmountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentAmount', Sort.desc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      sortByPaymentPeriod() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentPeriod', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      sortByPaymentPeriodDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentPeriod', Sort.desc);
     });
   }
 
@@ -1293,34 +1051,6 @@ extension TransactionIsarQuerySortThenBy
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      thenByPaymentAmount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentAmount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      thenByPaymentAmountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentAmount', Sort.desc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      thenByPaymentPeriod() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentPeriod', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
-      thenByPaymentPeriodDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'paymentPeriod', Sort.desc);
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       thenByTransactionType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'transactionType', Sort.asc);
@@ -1365,20 +1095,6 @@ extension TransactionIsarQueryWhereDistinct
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
-      distinctByPaymentAmount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'paymentAmount');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
-      distinctByPaymentPeriod() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'paymentPeriod');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
       distinctByTransactionType() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'transactionType');
@@ -1397,6 +1113,13 @@ extension TransactionIsarQueryProperty
   QueryBuilder<TransactionIsar, double, QQueryOperations> amountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'amount');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, CreditSpendingTxnDetails?, QQueryOperations>
+      creditSpendingTxnDetailsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'creditSpendingTxnDetails');
     });
   }
 
@@ -1419,20 +1142,6 @@ extension TransactionIsarQueryProperty
     });
   }
 
-  QueryBuilder<TransactionIsar, double?, QQueryOperations>
-      paymentAmountProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'paymentAmount');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, int?, QQueryOperations>
-      paymentPeriodProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'paymentPeriod');
-    });
-  }
-
   QueryBuilder<TransactionIsar, TransactionType, QQueryOperations>
       transactionTypeProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -1440,3 +1149,376 @@ extension TransactionIsarQueryProperty
     });
   }
 }
+
+// **************************************************************************
+// IsarEmbeddedGenerator
+// **************************************************************************
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const CreditSpendingTxnDetailsSchema = Schema(
+  name: r'CreditSpendingTxnDetails',
+  id: 4003544480782016616,
+  properties: {
+    r'fee': PropertySchema(
+      id: 0,
+      name: r'fee',
+      type: IsarType.double,
+    ),
+    r'monthlyInstallmentInterestRate': PropertySchema(
+      id: 1,
+      name: r'monthlyInstallmentInterestRate',
+      type: IsarType.double,
+    ),
+    r'paymentAmountPerMonth': PropertySchema(
+      id: 2,
+      name: r'paymentAmountPerMonth',
+      type: IsarType.double,
+    ),
+    r'paymentPeriod': PropertySchema(
+      id: 3,
+      name: r'paymentPeriod',
+      type: IsarType.long,
+    ),
+    r'rateBasedOnRemainingInstallmentUnpaid': PropertySchema(
+      id: 4,
+      name: r'rateBasedOnRemainingInstallmentUnpaid',
+      type: IsarType.bool,
+    )
+  },
+  estimateSize: _creditSpendingTxnDetailsEstimateSize,
+  serialize: _creditSpendingTxnDetailsSerialize,
+  deserialize: _creditSpendingTxnDetailsDeserialize,
+  deserializeProp: _creditSpendingTxnDetailsDeserializeProp,
+);
+
+int _creditSpendingTxnDetailsEstimateSize(
+  CreditSpendingTxnDetails object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  return bytesCount;
+}
+
+void _creditSpendingTxnDetailsSerialize(
+  CreditSpendingTxnDetails object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDouble(offsets[0], object.fee);
+  writer.writeDouble(offsets[1], object.monthlyInstallmentInterestRate);
+  writer.writeDouble(offsets[2], object.paymentAmountPerMonth);
+  writer.writeLong(offsets[3], object.paymentPeriod);
+  writer.writeBool(offsets[4], object.rateBasedOnRemainingInstallmentUnpaid);
+}
+
+CreditSpendingTxnDetails _creditSpendingTxnDetailsDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = CreditSpendingTxnDetails();
+  object.fee = reader.readDouble(offsets[0]);
+  object.monthlyInstallmentInterestRate = reader.readDouble(offsets[1]);
+  object.paymentAmountPerMonth = reader.readDouble(offsets[2]);
+  object.paymentPeriod = reader.readLong(offsets[3]);
+  object.rateBasedOnRemainingInstallmentUnpaid = reader.readBool(offsets[4]);
+  return object;
+}
+
+P _creditSpendingTxnDetailsDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readDouble(offset)) as P;
+    case 1:
+      return (reader.readDouble(offset)) as P;
+    case 2:
+      return (reader.readDouble(offset)) as P;
+    case 3:
+      return (reader.readLong(offset)) as P;
+    case 4:
+      return (reader.readBool(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension CreditSpendingTxnDetailsQueryFilter on QueryBuilder<
+    CreditSpendingTxnDetails, CreditSpendingTxnDetails, QFilterCondition> {
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> feeEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'fee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> feeGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'fee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> feeLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'fee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> feeBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'fee',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> monthlyInstallmentInterestRateEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'monthlyInstallmentInterestRate',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> monthlyInstallmentInterestRateGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'monthlyInstallmentInterestRate',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> monthlyInstallmentInterestRateLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'monthlyInstallmentInterestRate',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> monthlyInstallmentInterestRateBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'monthlyInstallmentInterestRate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentAmountPerMonthEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'paymentAmountPerMonth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentAmountPerMonthGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'paymentAmountPerMonth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentAmountPerMonthLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'paymentAmountPerMonth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentAmountPerMonthBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'paymentAmountPerMonth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentPeriodEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'paymentPeriod',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentPeriodGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'paymentPeriod',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentPeriodLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'paymentPeriod',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+      QAfterFilterCondition> paymentPeriodBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'paymentPeriod',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditSpendingTxnDetails, CreditSpendingTxnDetails,
+          QAfterFilterCondition>
+      rateBasedOnRemainingInstallmentUnpaidEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'rateBasedOnRemainingInstallmentUnpaid',
+        value: value,
+      ));
+    });
+  }
+}
+
+extension CreditSpendingTxnDetailsQueryObject on QueryBuilder<
+    CreditSpendingTxnDetails, CreditSpendingTxnDetails, QFilterCondition> {}
