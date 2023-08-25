@@ -2,14 +2,13 @@ import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/application/transaction_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-import '../../../../../persistent/isar_data_store.dart';
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../settings/data/settings_controller.dart';
@@ -26,14 +25,14 @@ class ExtendedHomeTab extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       reverse: true,
       padding: EdgeInsets.zero,
-        children: [
-          TotalMoney(
-            hideNumber: hideNumber,
-            onEyeTap: onEyeTap,
-          ),
-          const WelcomeText(),
-        ],
-      );
+      children: [
+        TotalMoney(
+          hideNumber: hideNumber,
+          onEyeTap: onEyeTap,
+        ),
+        const WelcomeText(),
+      ],
+    );
   }
 }
 
@@ -175,13 +174,13 @@ class TotalMoney extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isar = ref.watch(isarProvider);
     final settingsRepository = ref.watch(settingsControllerProvider);
+    final accountRepository = ref.watch(accountRepositoryProvider);
 
-    double totalBalance = TransactionService.getTotalBalance(isar);
+    double totalBalance = accountRepository.getTotalBalance();
 
     ref.watch(transactionChangesProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate))).whenData((_) {
-      totalBalance = TransactionService.getTotalBalance(isar);
+      totalBalance = accountRepository.getTotalBalance();
     });
 
     return Row(

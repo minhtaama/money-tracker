@@ -21,6 +21,20 @@ class AccountRepository {
     return query.findAllSync();
   }
 
+  double getTotalBalance({bool includeCreditAccount = false}) {
+    double totalBalance = 0;
+    final List<AccountIsar> accountList;
+    if (includeCreditAccount) {
+      accountList = isar.accountIsars.where().findAllSync();
+    } else {
+      accountList = isar.accountIsars.filter().typeEqualTo(AccountType.onHand).findAllSync();
+    }
+    for (AccountIsar account in accountList) {
+      totalBalance += account.balance;
+    }
+    return totalBalance;
+  }
+
   // Used to watch list changes
   Stream<void> _watchListChanges() {
     Query<AccountIsar> query = isar.accountIsars.where().sortByOrder().build();
@@ -82,7 +96,7 @@ class AccountRepository {
 
     // Query to find the initial transaction of the current editing account
     TransactionIsar? initialTransaction =
-        await currentAccount.txnBacklinks.filter().isInitialTransactionEqualTo(true).findFirst();
+        await currentAccount.txnOfThisAccountBacklinks.filter().isInitialTransactionEqualTo(true).findFirst();
 
     if (initialTransaction != null) {
       // If the initial transaction is found

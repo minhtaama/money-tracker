@@ -10,7 +10,6 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
-import 'package:money_tracker_app/src/features/transactions/application/transaction_service.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -116,7 +115,7 @@ class AccountsScreen extends ConsumerWidget {
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  CalculatorService.formatCurrency(TransactionService.getAccountBalance(model)),
+                                  CalculatorService.formatCurrency(model.balance),
                                   style: kHeader1TextStyle.copyWith(
                                       color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                                   overflow: TextOverflow.fade,

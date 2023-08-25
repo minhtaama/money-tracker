@@ -48,6 +48,11 @@ const TransactionIsarSchema = CollectionSchema(
       name: r'transactionType',
       type: IsarType.byte,
       enumMap: _TransactionIsartransactionTypeEnumValueMap,
+    ),
+    r'transferFee': PropertySchema(
+      id: 6,
+      name: r'transferFee',
+      type: IsarType.double,
     )
   },
   estimateSize: _transactionIsarEstimateSize,
@@ -145,6 +150,7 @@ void _transactionIsarSerialize(
   writer.writeBool(offsets[3], object.isInitialTransaction);
   writer.writeString(offsets[4], object.note);
   writer.writeByte(offsets[5], object.transactionType.index);
+  writer.writeDouble(offsets[6], object.transferFee);
 }
 
 TransactionIsar _transactionIsarDeserialize(
@@ -168,6 +174,7 @@ TransactionIsar _transactionIsarDeserialize(
   object.transactionType = _TransactionIsartransactionTypeValueEnumMap[
           reader.readByteOrNull(offsets[5])] ??
       TransactionType.income;
+  object.transferFee = reader.readDouble(offsets[6]);
   return object;
 }
 
@@ -196,6 +203,8 @@ P _transactionIsarDeserializeProp<P>(
       return (_TransactionIsartransactionTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           TransactionType.income) as P;
+    case 6:
+      return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -840,6 +849,72 @@ extension TransactionIsarQueryFilter
       ));
     });
   }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'transferFee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'transferFee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'transferFee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'transferFee',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
 }
 
 extension TransactionIsarQueryObject
@@ -980,6 +1055,20 @@ extension TransactionIsarQuerySortBy
       return query.addSortBy(r'transactionType', Sort.desc);
     });
   }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByTransferFee() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transferFee', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByTransferFeeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transferFee', Sort.desc);
+    });
+  }
 }
 
 extension TransactionIsarQuerySortThenBy
@@ -1063,6 +1152,20 @@ extension TransactionIsarQuerySortThenBy
       return query.addSortBy(r'transactionType', Sort.desc);
     });
   }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByTransferFee() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transferFee', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByTransferFeeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transferFee', Sort.desc);
+    });
+  }
 }
 
 extension TransactionIsarQueryWhereDistinct
@@ -1098,6 +1201,13 @@ extension TransactionIsarQueryWhereDistinct
       distinctByTransactionType() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'transactionType');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
+      distinctByTransferFee() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'transferFee');
     });
   }
 }
@@ -1146,6 +1256,13 @@ extension TransactionIsarQueryProperty
       transactionTypeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'transactionType');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, double, QQueryOperations>
+      transferFeeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'transferFee');
     });
   }
 }

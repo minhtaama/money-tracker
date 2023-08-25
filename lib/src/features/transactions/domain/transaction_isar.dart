@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/category/domain/category_tag_isar
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 // flutter pub run build_runner build --delete-conflicting-outputs
+// https://www.hsbc.com.vn/en-vn/credit-cards/understanding-your-credit-card-statement/
 part 'transaction_isar.g.dart';
 
 @Collection()
@@ -67,9 +68,6 @@ class TransactionIsar {
 
   /// **Only specify if type is [TransactionType.creditSpending]**
   CreditSpendingTxnDetails? creditSpendingTxnDetails;
-
-  // /// **Only specify if type is [TransactionType.creditPayment]**
-  // CreditPaymentTxnDetails? creditPaymentTxnDetails;
 }
 
 @Embedded()
@@ -97,7 +95,7 @@ class CreditSpendingTxnDetails {
 
   /// Any fee that apply to this credit spending transaction. `0` if this transaction
   /// does not has any fee. The fee will be counted in total amount that user has
-  /// to pay next month.
+  /// to pay.
   late double fee;
 }
 
