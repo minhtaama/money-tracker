@@ -91,19 +91,27 @@ class TransactionRepository {
     });
   }
 
-  Future<void> writeNewTransferTxn({
-    required DateTime dateTime,
-    required double amount,
-    required AccountIsar account,
-    required AccountIsar toAccount,
-    required String? note,
-  }) async {
+  Future<void> writeNewTransferTxn(
+      {required DateTime dateTime,
+      required double amount,
+      required AccountIsar account,
+      required AccountIsar toAccount,
+      required String? note,
+      required double? fee,
+      required bool? isChargeOnDestinationAccount}) async {
+    TransferFeeDetails? feeDetails;
+    if (fee != null && isChargeOnDestinationAccount != null) {
+      feeDetails = TransferFeeDetails()
+        ..transferFee = fee
+        ..isChargeOnDestinationAccount = isChargeOnDestinationAccount;
+    }
     final newTransaction = TransactionIsar()
       ..transactionType = TransactionType.transfer
       ..dateTime = dateTime
       ..amount = amount
       ..accountLink.value = account
       ..toAccountLink.value = toAccount
+      ..transferFeeDetails = feeDetails
       ..note = note;
 
     await isar.writeTxn(() async {
@@ -116,68 +124,46 @@ class TransactionRepository {
     });
   }
 
-  Future<void> writeNewCreditSpendingTxn({
-    required DateTime dateTime,
-    required double amount,
-    required CategoryIsar category,
-    required AccountIsar account,
-    required CategoryTagIsar? tag,
-    required String? note,
-    required int paymentPeriod,
-    required double paymentAmountPerMonth,
-    required double monthlyInstallmentInterestRate,
-    required bool rateBasedOnRemainingInstallmentUnpaid,
-    required double fee,
-  }) async {
-    final creditSpendingTxnDetails = CreditSpendingTxnDetails()
-      ..paymentPeriod = paymentPeriod
-      ..paymentAmountPerMonth = paymentAmountPerMonth
-      ..monthlyInstallmentInterestRate = monthlyInstallmentInterestRate
-      ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid
-      ..fee = fee;
-
-    final newTransaction = TransactionIsar()
-      ..transactionType = TransactionType.creditSpending
-      ..dateTime = dateTime
-      ..amount = amount
-      ..accountLink.value = account
-      ..categoryLink.value = category
-      ..categoryTagLink.value = tag
-      ..note = note
-      ..creditSpendingTxnDetails = creditSpendingTxnDetails;
-
-    await isar.writeTxn(() async {
-      // Put the `newTransaction` to the TransactionIsar collection
-      await isar.transactionIsars.put(newTransaction);
-
-      // Save the links in the `newTransaction`
-      await newTransaction.accountLink.save();
-      await newTransaction.categoryLink.save();
-      await newTransaction.categoryTagLink.save();
-    });
-  }
-
-  Future<void> writeNewCreditPaymentTxn({
-    required DateTime dateTime,
-    required double amount,
-    required AccountIsar account,
-    required String? note,
-  }) async {
-    final newTransaction = TransactionIsar()
-      ..transactionType = TransactionType.creditPayment
-      ..dateTime = dateTime
-      ..amount = amount
-      ..accountLink.value = account
-      ..note = note;
-
-    await isar.writeTxn(() async {
-      // Put the `newTransaction` to the TransactionIsar collection
-      await isar.transactionIsars.put(newTransaction);
-
-      // Save the links in the `newTransaction`
-      await newTransaction.accountLink.save();
-    });
-  }
+  // Future<void> writeNewCreditSpendingTxn({
+  //   required DateTime dateTime,
+  //   required double amount,
+  //   required CategoryIsar category,
+  //   required AccountIsar account,
+  //   required CategoryTagIsar? tag,
+  //   required String? note,
+  //   required int paymentPeriod,
+  //   required double paymentAmountPerMonth,
+  //   required double monthlyInstallmentInterestRate,
+  //   required bool rateBasedOnRemainingInstallmentUnpaid,
+  //   required double fee,
+  // }) async {
+  //   final creditSpendingTxnDetails = CreditSpendingTxnDetails()
+  //     ..paymentPeriod = paymentPeriod
+  //     ..paymentAmountPerMonth = paymentAmountPerMonth
+  //     ..monthlyInstallmentInterestRate = monthlyInstallmentInterestRate
+  //     ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid
+  //     ..fee = fee;
+  //
+  //   final newTransaction = TransactionIsar()
+  //     ..transactionType = TransactionType.creditSpending
+  //     ..dateTime = dateTime
+  //     ..amount = amount
+  //     ..accountLink.value = account
+  //     ..categoryLink.value = category
+  //     ..categoryTagLink.value = tag
+  //     ..note = note
+  //     ..creditSpendingTxnDetails = creditSpendingTxnDetails;
+  //
+  //   await isar.writeTxn(() async {
+  //     // Put the `newTransaction` to the TransactionIsar collection
+  //     await isar.transactionIsars.put(newTransaction);
+  //
+  //     // Save the links in the `newTransaction`
+  //     await newTransaction.accountLink.save();
+  //     await newTransaction.categoryLink.save();
+  //     await newTransaction.categoryTagLink.save();
+  //   });
+  // }
 }
 
 /////////////////// PROVIDERS //////////////////////////

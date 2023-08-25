@@ -75,6 +75,13 @@ const AccountIsarSchema = CollectionSchema(
       target: r'TransactionIsar',
       single: false,
       linkName: r'toAccountLink',
+    ),
+    r'creditSpendingTxnBacklinks': LinkSchema(
+      id: 4137944757663473375,
+      name: r'creditSpendingTxnBacklinks',
+      target: r'CreditSpendingIsar',
+      single: false,
+      linkName: r'accountLink',
     )
   },
   embeddedSchemas: {r'CreditAccountDetails': CreditAccountDetailsSchema},
@@ -192,7 +199,11 @@ Id _accountIsarGetId(AccountIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
-  return [object.txnOfThisAccountBacklinks, object.txnToThisAccountBacklinks];
+  return [
+    object.txnOfThisAccountBacklinks,
+    object.txnToThisAccountBacklinks,
+    object.creditSpendingTxnBacklinks
+  ];
 }
 
 void _accountIsarAttach(
@@ -202,6 +213,11 @@ void _accountIsarAttach(
       col.isar.collection<TransactionIsar>(), r'txnOfThisAccountBacklinks', id);
   object.txnToThisAccountBacklinks.attach(col,
       col.isar.collection<TransactionIsar>(), r'txnToThisAccountBacklinks', id);
+  object.creditSpendingTxnBacklinks.attach(
+      col,
+      col.isar.collection<CreditSpendingIsar>(),
+      r'creditSpendingTxnBacklinks',
+      id);
 }
 
 extension AccountIsarQueryWhereSort
@@ -1000,6 +1016,71 @@ extension AccountIsarQueryLinks
           upper, includeUpper);
     });
   }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinks(FilterQuery<CreditSpendingIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'creditSpendingTxnBacklinks');
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinksLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditSpendingTxnBacklinks', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinksIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'creditSpendingTxnBacklinks', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinksIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditSpendingTxnBacklinks', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinksLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditSpendingTxnBacklinks', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinksLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditSpendingTxnBacklinks', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditSpendingTxnBacklinksLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'creditSpendingTxnBacklinks', lower,
+          includeLower, upper, includeUpper);
+    });
+  }
 }
 
 extension AccountIsarQuerySortBy
@@ -1270,13 +1351,18 @@ const CreditAccountDetailsSchema = Schema(
   name: r'CreditAccountDetails',
   id: -4910354990362885540,
   properties: {
-    r'paymentDueDate': PropertySchema(
+    r'creditBalance': PropertySchema(
       id: 0,
+      name: r'creditBalance',
+      type: IsarType.double,
+    ),
+    r'paymentDueDate': PropertySchema(
+      id: 1,
       name: r'paymentDueDate',
       type: IsarType.dateTime,
     ),
     r'statementDate': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'statementDate',
       type: IsarType.dateTime,
     )
@@ -1302,8 +1388,9 @@ void _creditAccountDetailsSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.paymentDueDate);
-  writer.writeDateTime(offsets[1], object.statementDate);
+  writer.writeDouble(offsets[0], object.creditBalance);
+  writer.writeDateTime(offsets[1], object.paymentDueDate);
+  writer.writeDateTime(offsets[2], object.statementDate);
 }
 
 CreditAccountDetails _creditAccountDetailsDeserialize(
@@ -1313,8 +1400,9 @@ CreditAccountDetails _creditAccountDetailsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = CreditAccountDetails();
-  object.paymentDueDate = reader.readDateTime(offsets[0]);
-  object.statementDate = reader.readDateTime(offsets[1]);
+  object.creditBalance = reader.readDouble(offsets[0]);
+  object.paymentDueDate = reader.readDateTime(offsets[1]);
+  object.statementDate = reader.readDateTime(offsets[2]);
   return object;
 }
 
@@ -1326,8 +1414,10 @@ P _creditAccountDetailsDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 1:
+      return (reader.readDateTime(offset)) as P;
+    case 2:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1336,6 +1426,72 @@ P _creditAccountDetailsDeserializeProp<P>(
 
 extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     CreditAccountDetails, QFilterCondition> {
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> creditBalanceEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'creditBalance',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> creditBalanceGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'creditBalance',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> creditBalanceLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'creditBalance',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> creditBalanceBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'creditBalance',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
       QAfterFilterCondition> paymentDueDateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {

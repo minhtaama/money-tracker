@@ -115,7 +115,7 @@ class AccountsScreen extends ConsumerWidget {
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  CalculatorService.formatCurrency(model.balance),
+                                  CalculatorService.formatCurrency(model.currentBalance),
                                   style: kHeader1TextStyle.copyWith(
                                       color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                                   overflow: TextOverflow.fade,

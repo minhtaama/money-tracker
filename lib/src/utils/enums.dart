@@ -2,8 +2,6 @@ enum TransactionType {
   income,
   expense,
   transfer,
-  creditSpending,
-  creditPayment,
 }
 
 enum CategoryType {

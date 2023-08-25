@@ -30,7 +30,7 @@ class AccountRepository {
       accountList = isar.accountIsars.filter().typeEqualTo(AccountType.onHand).findAllSync();
     }
     for (AccountIsar account in accountList) {
-      totalBalance += account.balance;
+      totalBalance += account.currentBalance;
     }
     return totalBalance;
   }

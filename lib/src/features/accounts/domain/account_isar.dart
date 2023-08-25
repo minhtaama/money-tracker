@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import '../../../utils/enums.dart';
 
@@ -20,10 +22,7 @@ class AccountIsar {
 
   int? order;
 
-  /// Only specify this property if type is [AccountType.credit]
-  CreditAccountDetails? creditAccountDetails;
-
-  /// All transactions of this account.
+  /// All regular transactions of this account. Only for [AccountType.onHand]
   @Backlink(to: 'accountLink')
   final txnOfThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
@@ -31,27 +30,47 @@ class AccountIsar {
   @Backlink(to: 'toAccountLink')
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
-  double get balance {
-    double accountBalance = 0;
-    final transactionList = txnOfThisAccountBacklinks.toList();
-    for (TransactionIsar transaction in transactionList) {
-      if (transaction.transactionType == TransactionType.income) {
-        accountBalance += transaction.amount;
-      } else if (transaction.transactionType == TransactionType.expense ||
-          transaction.transactionType == TransactionType.transfer) {
-        accountBalance -= transaction.amount;
+  /// All credit spending of this account. Only for [AccountType.credit]
+  @Backlink(to: 'accountLink')
+  final creditSpendingTxnBacklinks = IsarLinks<CreditSpendingIsar>();
+
+  /// Only specify this property if type is [AccountType.credit]
+  CreditAccountDetails? creditAccountDetails;
+
+  @Ignore()
+  double get currentBalance {
+    if (type == AccountType.onHand) {
+      double balance = 0;
+      final txnList = txnOfThisAccountBacklinks.toList();
+      for (TransactionIsar txn in txnList) {
+        if (txn.transactionType == TransactionType.income) {
+          balance += txn.amount;
+        } else {
+          balance -= txn.amount;
+        }
       }
+      final txnToThisAccountList = txnToThisAccountBacklinks.toList();
+      for (TransactionIsar txn in txnToThisAccountList) {
+        balance += txn.amount;
+      }
+      return balance;
+    } else {
+      double balance = creditAccountDetails!.creditBalance;
+      final txnList = creditSpendingTxnBacklinks.toList();
+      for (CreditSpendingIsar txn in txnList) {
+        if (!txn.isDone) {
+          balance -= txn.amount - txn.paidAmount;
+        }
+      }
+      return balance;
     }
-    final transactionsTransferredToThisAccountList = txnToThisAccountBacklinks.toList();
-    for (TransactionIsar transaction in transactionsTransferredToThisAccountList) {
-      accountBalance += transaction.amount;
-    }
-    return accountBalance;
   }
 }
 
 @Embedded()
 class CreditAccountDetails {
+  late double creditBalance;
+
   late DateTime statementDate;
 
   late DateTime paymentDueDate;

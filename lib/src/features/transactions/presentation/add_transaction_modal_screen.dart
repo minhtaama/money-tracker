@@ -95,8 +95,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                   hintText: 'Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null ||
-                        _formatToDouble(calculatorOutput) == 0) {
+                    if (_formatToDouble(calculatorOutput) == null || _formatToDouble(calculatorOutput) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -143,8 +142,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) {
-                              if (category == null &&
-                                  widget.transactionType != TransactionType.transfer) {
+                              if (category == null && widget.transactionType != TransactionType.transfer) {
                                 return '!';
                               }
                               return null;
@@ -198,8 +196,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                           });
                         }
                       },
-                      otherSelectedAccount:
-                          widget.transactionType == TransactionType.transfer ? account : null,
+                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? account : null,
                     ),
                   ],
                 ),
@@ -288,7 +285,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                           amount: _formatToDouble(calculatorOutput)!,
                           account: account!,
                           toAccount: toAccount!,
-                          note: note);
+                          note: note,
+                          fee: null,
+                          isChargeOnDestinationAccount: null);
+                      // TODO: do something with fee
                     }
                     context.pop();
                   }

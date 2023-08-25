@@ -4,6 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../src/features/category/domain/category_isar.dart';
@@ -23,6 +24,8 @@ class IsarDataStore {
         SettingsIsarSchema,
         AccountIsarSchema,
         TransactionIsarSchema,
+        CreditSpendingIsarSchema,
+        CreditPaymentIsarSchema
       ],
       directory: _dir.path,
     );
