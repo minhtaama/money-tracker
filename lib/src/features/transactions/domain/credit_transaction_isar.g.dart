@@ -73,9 +73,9 @@ const CreditSpendingIsarSchema = CollectionSchema(
       target: r'CategoryTagIsar',
       single: true,
     ),
-    r'accountLink': LinkSchema(
-      id: -6487556983578928847,
-      name: r'accountLink',
+    r'creditAccountLink': LinkSchema(
+      id: 3063992616581264976,
+      name: r'creditAccountLink',
       target: r'AccountIsar',
       single: true,
     ),
@@ -186,7 +186,7 @@ List<IsarLinkBase<dynamic>> _creditSpendingIsarGetLinks(
   return [
     object.categoryLink,
     object.categoryTagLink,
-    object.accountLink,
+    object.creditAccountLink,
     object.paymentTxnBacklinks
   ];
 }
@@ -198,8 +198,8 @@ void _creditSpendingIsarAttach(
       .attach(col, col.isar.collection<CategoryIsar>(), r'categoryLink', id);
   object.categoryTagLink.attach(
       col, col.isar.collection<CategoryTagIsar>(), r'categoryTagLink', id);
-  object.accountLink
-      .attach(col, col.isar.collection<AccountIsar>(), r'accountLink', id);
+  object.creditAccountLink.attach(
+      col, col.isar.collection<AccountIsar>(), r'creditAccountLink', id);
   object.paymentTxnBacklinks.attach(col,
       col.isar.collection<CreditPaymentIsar>(), r'paymentTxnBacklinks', id);
 }
@@ -780,16 +780,16 @@ extension CreditSpendingIsarQueryLinks
   }
 
   QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
-      accountLink(FilterQuery<AccountIsar> q) {
+      creditAccountLink(FilterQuery<AccountIsar> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'accountLink');
+      return query.link(q, r'creditAccountLink');
     });
   }
 
   QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
-      accountLinkIsNull() {
+      creditAccountLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'accountLink', 0, true, 0, true);
+      return query.linkLength(r'creditAccountLink', 0, true, 0, true);
     });
   }
 
@@ -1049,11 +1049,17 @@ const CreditPaymentIsarSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {
+    r'accountLink': LinkSchema(
+      id: -8315689154929293727,
+      name: r'accountLink',
+      target: r'AccountIsar',
+      single: true,
+    ),
     r'spendingTxnLink': LinkSchema(
       id: -2947234698278629845,
       name: r'spendingTxnLink',
       target: r'CreditSpendingIsar',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -1117,12 +1123,14 @@ Id _creditPaymentIsarGetId(CreditPaymentIsar object) {
 
 List<IsarLinkBase<dynamic>> _creditPaymentIsarGetLinks(
     CreditPaymentIsar object) {
-  return [object.spendingTxnLink];
+  return [object.accountLink, object.spendingTxnLink];
 }
 
 void _creditPaymentIsarAttach(
     IsarCollection<dynamic> col, Id id, CreditPaymentIsar object) {
   object.id = id;
+  object.accountLink
+      .attach(col, col.isar.collection<AccountIsar>(), r'accountLink', id);
   object.spendingTxnLink.attach(
       col, col.isar.collection<CreditSpendingIsar>(), r'spendingTxnLink', id);
 }
@@ -1394,6 +1402,20 @@ extension CreditPaymentIsarQueryObject
 extension CreditPaymentIsarQueryLinks
     on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QFilterCondition> {
   QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
+      accountLink(FilterQuery<AccountIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'accountLink');
+    });
+  }
+
+  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
+      accountLinkIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'accountLink', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
       spendingTxnLink(FilterQuery<CreditSpendingIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'spendingTxnLink');
@@ -1401,57 +1423,9 @@ extension CreditPaymentIsarQueryLinks
   }
 
   QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLinkLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'spendingTxnLink', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLinkIsEmpty() {
+      spendingTxnLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'spendingTxnLink', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLinkIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'spendingTxnLink', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLinkLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'spendingTxnLink', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLinkLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'spendingTxnLink', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLinkLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'spendingTxnLink', lower, includeLower, upper, includeUpper);
     });
   }
 }

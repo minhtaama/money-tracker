@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:async/async.dart';
 
@@ -124,44 +125,65 @@ class TransactionRepository {
     });
   }
 
-  // Future<void> writeNewCreditSpendingTxn({
+  Future<void> writeNewCreditSpendingTxn({
+    required DateTime dateTime,
+    required double amount,
+    required CategoryIsar category,
+    required AccountIsar account,
+    required CategoryTagIsar? tag,
+    required String? note,
+    required int? paymentPeriod,
+    required double? paymentAmountPerMonth,
+    required double? monthlyInstallmentInterestRate,
+    required bool? rateBasedOnRemainingInstallmentUnpaid,
+  }) async {
+    InstallmentDetails? installmentDetails;
+    if (paymentPeriod != null &&
+        paymentAmountPerMonth != null &&
+        monthlyInstallmentInterestRate != null &&
+        rateBasedOnRemainingInstallmentUnpaid != null) {
+      installmentDetails = InstallmentDetails()
+        ..paymentPeriod = paymentPeriod
+        ..paymentAmountPerMonth = paymentAmountPerMonth
+        ..monthlyInstallmentInterestRate = monthlyInstallmentInterestRate
+        ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid;
+    }
+
+    final txn = CreditSpendingIsar()
+      ..dateTime = dateTime
+      ..amount = amount
+      ..creditAccountLink.value = account
+      ..categoryLink.value = category
+      ..categoryTagLink.value = tag
+      ..note = note
+      ..installmentDetails = installmentDetails;
+
+    await isar.writeTxn(() async {
+      // Put the `txn` to the TransactionIsar collection
+      await isar.creditSpendingIsars.put(txn);
+
+      // Save the links in the `txn`
+      await txn.creditAccountLink.save();
+      await txn.categoryLink.save();
+      await txn.categoryTagLink.save();
+    });
+  }
+
+  // Future<void> writeNewCreditPaymentTxn({
   //   required DateTime dateTime,
   //   required double amount,
-  //   required CategoryIsar category,
-  //   required AccountIsar account,
-  //   required CategoryTagIsar? tag,
-  //   required String? note,
-  //   required int paymentPeriod,
-  //   required double paymentAmountPerMonth,
-  //   required double monthlyInstallmentInterestRate,
-  //   required bool rateBasedOnRemainingInstallmentUnpaid,
-  //   required double fee,
   // }) async {
-  //   final creditSpendingTxnDetails = CreditSpendingTxnDetails()
-  //     ..paymentPeriod = paymentPeriod
-  //     ..paymentAmountPerMonth = paymentAmountPerMonth
-  //     ..monthlyInstallmentInterestRate = monthlyInstallmentInterestRate
-  //     ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid
-  //     ..fee = fee;
-  //
-  //   final newTransaction = TransactionIsar()
-  //     ..transactionType = TransactionType.creditSpending
+  //   final txn = CreditPaymentIsar()
   //     ..dateTime = dateTime
   //     ..amount = amount
-  //     ..accountLink.value = account
-  //     ..categoryLink.value = category
-  //     ..categoryTagLink.value = tag
-  //     ..note = note
-  //     ..creditSpendingTxnDetails = creditSpendingTxnDetails;
+  //     ..spendingTxnLinks. = creditSpendingIsar;
   //
   //   await isar.writeTxn(() async {
-  //     // Put the `newTransaction` to the TransactionIsar collection
-  //     await isar.transactionIsars.put(newTransaction);
+  //     // Put the `txn` to the TransactionIsar collection
+  //     await isar.creditPaymentIsars.put(txn);
   //
-  //     // Save the links in the `newTransaction`
-  //     await newTransaction.accountLink.save();
-  //     await newTransaction.categoryLink.save();
-  //     await newTransaction.categoryTagLink.save();
+  //     // Save the links in the `txn`
+  //     await txn.spendingTxnLink.save();
   //   });
   // }
 }

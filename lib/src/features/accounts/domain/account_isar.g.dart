@@ -77,11 +77,11 @@ const AccountIsarSchema = CollectionSchema(
       linkName: r'toAccountLink',
     ),
     r'creditSpendingTxnBacklinks': LinkSchema(
-      id: 4137944757663473375,
+      id: 7189748358704567444,
       name: r'creditSpendingTxnBacklinks',
       target: r'CreditSpendingIsar',
       single: false,
-      linkName: r'accountLink',
+      linkName: r'creditAccountLink',
     )
   },
   embeddedSchemas: {r'CreditAccountDetails': CreditAccountDetailsSchema},

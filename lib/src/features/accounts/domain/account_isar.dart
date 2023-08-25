@@ -31,7 +31,7 @@ class AccountIsar {
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
   /// All credit spending of this account. Only for [AccountType.credit]
-  @Backlink(to: 'accountLink')
+  @Backlink(to: 'creditAccountLink')
   final creditSpendingTxnBacklinks = IsarLinks<CreditSpendingIsar>();
 
   /// Only specify this property if type is [AccountType.credit]
@@ -64,6 +64,21 @@ class AccountIsar {
       }
       return balance;
     }
+  }
+
+  @Ignore()
+  double get totalPendingCreditPayment {
+    if (type == AccountType.onHand) {
+      throw ErrorDescription('Can not use this getter on type `AccountType.onHand`');
+    }
+    double pending = 0;
+    final txnList = creditSpendingTxnBacklinks.toList();
+    for (CreditSpendingIsar txn in txnList) {
+      if (!txn.isDone) {
+        pending += txn.pendingPayment;
+      }
+    }
+    return pending;
   }
 }
 

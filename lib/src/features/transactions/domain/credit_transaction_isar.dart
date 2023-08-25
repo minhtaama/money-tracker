@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
@@ -31,7 +33,7 @@ class CreditSpendingIsar {
 
   /// IsarLink to `AccountIsar` of this transaction
   @Index()
-  final accountLink = IsarLink<AccountIsar>();
+  final creditAccountLink = IsarLink<AccountIsar>();
 
   @Backlink(to: 'spendingTxnLink')
   final paymentTxnBacklinks = IsarLinks<CreditPaymentIsar>();
@@ -52,6 +54,15 @@ class CreditSpendingIsar {
     }
     return paidAmount;
   }
+
+  @Ignore()
+  double get pendingPayment {
+    if (installmentDetails == null) {
+      return amount - paidAmount;
+    } else {
+      return min(amount - paidAmount, installmentDetails!.paymentAmountPerMonth);
+    }
+  }
 }
 
 @Collection()
@@ -62,21 +73,21 @@ class CreditPaymentIsar {
 
   late double amount;
 
-  final spendingTxnLink = IsarLinks<CreditSpendingIsar>();
+  final accountLink = IsarLink<AccountIsar>();
+
+  final spendingTxnLink = IsarLink<CreditSpendingIsar>();
 }
 
 @Embedded()
 class InstallmentDetails {
-  /// Indicate months to pay if this transaction has installment payment.
-  /// `1` means no installment (Pay full in next month)
+  /// Indicate months to pay
   late int paymentPeriod;
 
-  /// The payment amount of each month if this transaction has installment payment
-  /// This value is equal `amount/paymentPeriod` (and equal `amount` if `paymentPeriod == 1`)
+  /// The payment amount of each month
   late double paymentAmountPerMonth;
 
   /// The interest rate of the installment payment. '0' if this transaction
-  /// does not have installment payment or has 0% interest rate
+  /// has 0% interest rate
   late double monthlyInstallmentInterestRate;
 
   /// `True` if the `monthlyInstallmentInterestRate` is based on the **remaining**
