@@ -11,6 +11,7 @@ import 'package:money_tracker_app/src/features/category/domain/category_tag_isar
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -18,8 +19,10 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
+import '../../../common_widgets/inline_text_form_field.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../category/domain/category_isar.dart';
+import '../data/transaction_repo.dart';
 import 'forms/forms.dart';
 
 class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
@@ -32,21 +35,26 @@ class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
 class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _calController = TextEditingController();
+  final _installmentCalController = TextEditingController();
 
   late DateTime dateTime = DateTime.now();
 
-  String calculatorOutputSpendAmount = '0';
-  String calculatorOutputCyclePaymentAmount = '0';
+  String calOutputSpendAmount = '0';
   String? note;
   CategoryTagIsar? tag;
   CategoryIsar? category;
   AccountIsar? account;
-  int? paymentCycle = 1;
+
+  bool hasInstallmentPayment = false;
+
+  int? paymentPeriod;
+  String calOutputInstallmentAmount = '0';
+  String interestRate = '0';
+  bool rateBasedOnRemainingInstallmentUnpaid = false;
 
   @override
   void dispose() {
-    _calController.dispose();
+    _installmentCalController.dispose();
     super.dispose();
   }
 
@@ -64,8 +72,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
   }
 
   double _getInstallmentPayment() {
-    if (_formatToDouble(calculatorOutputSpendAmount) != null && paymentCycle != null) {
-      return _formatToDouble(calculatorOutputSpendAmount)! / paymentCycle!;
+    if (_formatToDouble(calOutputSpendAmount) != null && paymentPeriod != null) {
+      return _formatToDouble(calOutputSpendAmount)! / paymentPeriod!;
     } else {
       return 0;
     }
@@ -108,17 +116,17 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                   hintText: 'Spending Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutputSpendAmount) == null ||
-                        _formatToDouble(calculatorOutputSpendAmount) == 0) {
+                    if (_formatToDouble(calOutputSpendAmount) == null || _formatToDouble(calOutputSpendAmount) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
                   },
                   formattedResultOutput: (value) {
                     setState(() {
-                      calculatorOutputSpendAmount = value;
-                      calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
-                      _calController.text = CalculatorService.formatNumberInGroup(calculatorOutputCyclePaymentAmount);
+                      calOutputSpendAmount = value;
+                      calOutputInstallmentAmount = _getInstallmentPayment().toString();
+                      _installmentCalController.text =
+                          CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
                     });
                   },
                 ),
@@ -195,103 +203,84 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
           ),
           Gap.h4,
           CustomCheckbox(
-              label: 'Installment payment',
-              onChanged: (boolValue) {
-                setState(() {
-                  if (boolValue) {
-                    paymentCycle = null;
-                  } else {
-                    paymentCycle = 1;
-                  }
-                  calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
-                  _calController.text = CalculatorService.formatNumberInGroup(calculatorOutputCyclePaymentAmount);
-                });
-              },
-              optionalWidget: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      const Text(
-                        'Installment Cycle:',
-                        style: kHeader4TextStyle,
-                      ),
-                      Gap.w8,
-                      SizedBox(
-                        width: 50,
-                        child: CustomTextFormField(
-                          hintText: '',
-                          focusColor: context.appTheme.secondary,
-                          autofocus: false,
-                          disableErrorText: true,
-                          maxLength: 3,
-                          contentPadding: EdgeInsets.zero,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.end,
-                          validator: (_) => paymentCycle == null ? 'error' : null,
-                          onChanged: (value) {
-                            setState(() {
-                              paymentCycle = int.tryParse(value);
-                              calculatorOutputCyclePaymentAmount = _getInstallmentPayment().toString();
-                              _calController.text =
-                                  CalculatorService.formatNumberInGroup(calculatorOutputCyclePaymentAmount);
-                            });
-                          },
-                        ),
-                      ),
-                      Gap.w8,
-                      const Text(
-                        'month(s)',
-                        style: kHeader4TextStyle,
-                      ),
-                    ],
-                  ),
-                  Gap.h8,
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      const Text(
-                        'Payment amount:',
-                        style: kHeader4TextStyle,
-                      ),
-                      Gap.w8,
-                      Expanded(
-                        child: CalculatorInput(
-                            controller: _calController,
-                            fontSize: 18,
-                            isDense: true,
-                            textAlign: TextAlign.end,
-                            //initialValue: _formatToDouble(calculatorOutputCyclePaymentAmount),
-                            validator: (_) {
-                              if (_formatToDouble(calculatorOutputCyclePaymentAmount) == null ||
-                                  _formatToDouble(calculatorOutputCyclePaymentAmount) == 0) {
-                                return 'Invalid Amount';
-                              }
-                              if (_formatToDouble(calculatorOutputCyclePaymentAmount)! >
-                                  _formatToDouble(calculatorOutputSpendAmount)!) {
-                                return 'Higher than spending';
-                              }
-                              return null;
-                            },
-                            formattedResultOutput: (value) {
-                              setState(() {
-                                calculatorOutputCyclePaymentAmount = value;
-                              });
-                            },
-                            focusColor: context.appTheme.secondary,
-                            hintText: ''),
-                      ),
-                      Gap.w8,
-                      Text(
-                        settingsObject.currency.code,
-                        style: kHeader4TextStyle,
-                      ),
-                    ],
-                  ),
-                ],
-              )),
+            label: 'Installment payment',
+            onChanged: (boolValue) {
+              setState(() {
+                if (boolValue) {
+                  hasInstallmentPayment = true;
+                } else {
+                  hasInstallmentPayment = false;
+                  paymentPeriod = null;
+                  interestRate = '0';
+                  rateBasedOnRemainingInstallmentUnpaid = false;
+                }
+                calOutputInstallmentAmount = _getInstallmentPayment().toString();
+                _installmentCalController.text = CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
+              });
+            },
+            optionalWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InlineTextFormField(
+                  prefixText: 'Installment Period:',
+                  suffixText: 'month(s)',
+                  validator: (_) => paymentPeriod == null ? 'error' : null,
+                  onChanged: (value) {
+                    paymentPeriod = int.tryParse(value);
+                    calOutputInstallmentAmount = _getInstallmentPayment().toString();
+                    _installmentCalController.text = CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
+                  },
+                ),
+                Gap.h8,
+                InlineTextFormField(
+                  prefixText: 'Payment amount:',
+                  suffixText: settingsObject.currency.code,
+                  widget: CalculatorInput(
+                      controller: _installmentCalController,
+                      fontSize: 18,
+                      isDense: true,
+                      textAlign: TextAlign.end,
+                      validator: (_) {
+                        if (_formatToDouble(calOutputInstallmentAmount) == null ||
+                            _formatToDouble(calOutputInstallmentAmount) == 0) {
+                          return 'Invalid Amount';
+                        }
+                        if (_formatToDouble(calOutputInstallmentAmount)! > _formatToDouble(calOutputSpendAmount)!) {
+                          return 'Too high';
+                        }
+                        return null;
+                      },
+                      formattedResultOutput: (value) {
+                        calOutputInstallmentAmount = value;
+                      },
+                      focusColor: context.appTheme.secondary,
+                      hintText: ''),
+                ),
+                Gap.h8,
+                InlineTextFormField(
+                  prefixText: 'Interest rate:',
+                  suffixText: '%',
+                  initialValue: '0',
+                  width: 40,
+                  validator: (_) {
+                    if (_formatToDouble(interestRate) == null) {
+                      return 'Invalid Amount';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    interestRate = value;
+                  },
+                ),
+                Gap.h8,
+                CustomCheckbox(
+                  label: 'Rate on remaining payment',
+                  labelStyle: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                  onChanged: (value) => rateBasedOnRemainingInstallmentUnpaid = value,
+                ),
+              ],
+            ),
+          ),
           Gap.h16,
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -336,28 +325,33 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                 iconPath: AppIcons.add,
                 label: 'Add',
                 backgroundColor: context.appTheme.accent,
-                isDisabled: _formatToDouble(calculatorOutputSpendAmount) == null ||
-                    _formatToDouble(calculatorOutputSpendAmount) == 0 ||
+                isDisabled: _formatToDouble(calOutputSpendAmount) == null ||
+                    _formatToDouble(calOutputSpendAmount) == 0 ||
                     category == null ||
                     account == null,
                 onTap: () {
+                  InstallmentDetails? installmentDetails;
+
+                  // By validating, no value can be null
                   if (_formKey.currentState!.validate()) {
-                    // By validating, the _formatToDouble(calculatorOutputSpendAmount)
-                    // and _formatToDouble(calculatorOutputCyclePaymentAmount) must not null
+                    if (hasInstallmentPayment) {
+                      installmentDetails = InstallmentDetails()
+                        ..amount = _formatToDouble(calOutputInstallmentAmount)!
+                        ..interestRate = _formatToDouble(interestRate)!
+                        ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid;
+                    } else {
+                      installmentDetails = null;
+                    }
 
-                    // TODO: Add repo, statement date, payment due date function
-
-                    // final transactionRepository = ref.read(transactionRepositoryProvider);
-                    // transactionRepository.writeNew(
-                    //   type,
-                    //   dateTime: dateTime,
-                    //   amount: _formatToDouble(calculatorOutput)!,
-                    //   tag: tag,
-                    //   note: note,
-                    //   category: category,
-                    //   account: account!,
-                    //   toAccount: toAccount,
-                    // );
+                    ref.read(transactionRepositoryProvider).writeNewCreditSpendingTxn(
+                          dateTime: dateTime,
+                          amount: _formatToDouble(calOutputSpendAmount)!,
+                          tag: tag,
+                          note: note,
+                          category: category!,
+                          account: account!,
+                          installmentDetails: installmentDetails,
+                        );
                     context.pop();
                   }
                 },

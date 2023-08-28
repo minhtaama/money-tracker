@@ -82,6 +82,13 @@ const AccountIsarSchema = CollectionSchema(
       target: r'CreditSpendingIsar',
       single: false,
       linkName: r'creditAccountLink',
+    ),
+    r'creditPaymentTxnBacklinks': LinkSchema(
+      id: -1705761800340701863,
+      name: r'creditPaymentTxnBacklinks',
+      target: r'CreditPaymentIsar',
+      single: false,
+      linkName: r'creditAccountLink',
     )
   },
   embeddedSchemas: {r'CreditAccountDetails': CreditAccountDetailsSchema},
@@ -202,7 +209,8 @@ List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
   return [
     object.txnOfThisAccountBacklinks,
     object.txnToThisAccountBacklinks,
-    object.creditSpendingTxnBacklinks
+    object.creditSpendingTxnBacklinks,
+    object.creditPaymentTxnBacklinks
   ];
 }
 
@@ -217,6 +225,11 @@ void _accountIsarAttach(
       col,
       col.isar.collection<CreditSpendingIsar>(),
       r'creditSpendingTxnBacklinks',
+      id);
+  object.creditPaymentTxnBacklinks.attach(
+      col,
+      col.isar.collection<CreditPaymentIsar>(),
+      r'creditPaymentTxnBacklinks',
       id);
 }
 
@@ -1081,6 +1094,71 @@ extension AccountIsarQueryLinks
           includeLower, upper, includeUpper);
     });
   }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinks(FilterQuery<CreditPaymentIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'creditPaymentTxnBacklinks');
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinksLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditPaymentTxnBacklinks', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinksIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'creditPaymentTxnBacklinks', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinksIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditPaymentTxnBacklinks', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinksLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditPaymentTxnBacklinks', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinksLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'creditPaymentTxnBacklinks', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
+      creditPaymentTxnBacklinksLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'creditPaymentTxnBacklinks', lower, includeLower,
+          upper, includeUpper);
+    });
+  }
 }
 
 extension AccountIsarQuerySortBy
@@ -1356,13 +1434,18 @@ const CreditAccountDetailsSchema = Schema(
       name: r'creditBalance',
       type: IsarType.double,
     ),
-    r'paymentDueDate': PropertySchema(
+    r'interestRate': PropertySchema(
       id: 1,
+      name: r'interestRate',
+      type: IsarType.double,
+    ),
+    r'paymentDueDate': PropertySchema(
+      id: 2,
       name: r'paymentDueDate',
       type: IsarType.dateTime,
     ),
     r'statementDate': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'statementDate',
       type: IsarType.dateTime,
     )
@@ -1389,8 +1472,9 @@ void _creditAccountDetailsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.creditBalance);
-  writer.writeDateTime(offsets[1], object.paymentDueDate);
-  writer.writeDateTime(offsets[2], object.statementDate);
+  writer.writeDouble(offsets[1], object.interestRate);
+  writer.writeDateTime(offsets[2], object.paymentDueDate);
+  writer.writeDateTime(offsets[3], object.statementDate);
 }
 
 CreditAccountDetails _creditAccountDetailsDeserialize(
@@ -1401,8 +1485,9 @@ CreditAccountDetails _creditAccountDetailsDeserialize(
 ) {
   final object = CreditAccountDetails();
   object.creditBalance = reader.readDouble(offsets[0]);
-  object.paymentDueDate = reader.readDateTime(offsets[1]);
-  object.statementDate = reader.readDateTime(offsets[2]);
+  object.interestRate = reader.readDouble(offsets[1]);
+  object.paymentDueDate = reader.readDateTime(offsets[2]);
+  object.statementDate = reader.readDateTime(offsets[3]);
   return object;
 }
 
@@ -1416,8 +1501,10 @@ P _creditAccountDetailsDeserializeProp<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 2:
+      return (reader.readDateTime(offset)) as P;
+    case 3:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1483,6 +1570,72 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'creditBalance',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> interestRateEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'interestRate',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> interestRateGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'interestRate',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> interestRateLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'interestRate',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+      QAfterFilterCondition> interestRateBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'interestRate',
         lower: lower,
         includeLower: includeLower,
         upper: upper,

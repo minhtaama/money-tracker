@@ -132,23 +132,8 @@ class TransactionRepository {
     required AccountIsar account,
     required CategoryTagIsar? tag,
     required String? note,
-    required int? paymentPeriod,
-    required double? paymentAmountPerMonth,
-    required double? monthlyInstallmentInterestRate,
-    required bool? rateBasedOnRemainingInstallmentUnpaid,
+    required InstallmentDetails? installmentDetails,
   }) async {
-    InstallmentDetails? installmentDetails;
-    if (paymentPeriod != null &&
-        paymentAmountPerMonth != null &&
-        monthlyInstallmentInterestRate != null &&
-        rateBasedOnRemainingInstallmentUnpaid != null) {
-      installmentDetails = InstallmentDetails()
-        ..paymentPeriod = paymentPeriod
-        ..paymentAmountPerMonth = paymentAmountPerMonth
-        ..monthlyInstallmentInterestRate = monthlyInstallmentInterestRate
-        ..rateBasedOnRemainingInstallmentUnpaid = rateBasedOnRemainingInstallmentUnpaid;
-    }
-
     final txn = CreditSpendingIsar()
       ..dateTime = dateTime
       ..amount = amount

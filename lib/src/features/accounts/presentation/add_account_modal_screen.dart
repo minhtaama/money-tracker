@@ -22,8 +22,7 @@ class AddAccountModalScreen extends ConsumerStatefulWidget {
   const AddAccountModalScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<AddAccountModalScreen> createState() =>
-      _AddAccountModalScreenState();
+  ConsumerState<AddAccountModalScreen> createState() => _AddAccountModalScreenState();
 }
 
 class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
@@ -71,8 +70,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                 borderRadius: BorderRadius.circular(1000),
                 child: FittedBox(
                   child: Text(
-                    settingsObject.currency.symbol ??
-                        settingsObject.currency.code,
+                    settingsObject.currency.symbol ?? settingsObject.currency.code,
                     style: kHeader1TextStyle.copyWith(
                       color: context.appTheme.backgroundNegative,
                     ),
@@ -106,6 +104,9 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               accountType = type;
             },
           ),
+
+          // TODO: ADD INFO FOR ACCOUNT TYPE CREDIT
+
           Gap.h16,
           Row(
             children: [
@@ -153,8 +154,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               iconPath: AppIcons.add,
               label: 'Create',
               backgroundColor: context.appTheme.accent,
-              isDisabled: accountName.isEmpty ||
-                  _formatToDouble(calculatorOutput) == null,
+              isDisabled: accountName.isEmpty || _formatToDouble(calculatorOutput) == null,
               onTap: () {
                 if (_formKey.currentState!.validate()) {
                   // By validating, the _formatToDouble(calculatorOutput) must not null

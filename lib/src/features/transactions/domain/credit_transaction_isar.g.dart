@@ -1049,9 +1049,9 @@ const CreditPaymentIsarSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {
-    r'accountLink': LinkSchema(
-      id: -8315689154929293727,
-      name: r'accountLink',
+    r'creditAccountLink': LinkSchema(
+      id: -994780482880883161,
+      name: r'creditAccountLink',
       target: r'AccountIsar',
       single: true,
     ),
@@ -1123,14 +1123,14 @@ Id _creditPaymentIsarGetId(CreditPaymentIsar object) {
 
 List<IsarLinkBase<dynamic>> _creditPaymentIsarGetLinks(
     CreditPaymentIsar object) {
-  return [object.accountLink, object.spendingTxnLink];
+  return [object.creditAccountLink, object.spendingTxnLink];
 }
 
 void _creditPaymentIsarAttach(
     IsarCollection<dynamic> col, Id id, CreditPaymentIsar object) {
   object.id = id;
-  object.accountLink
-      .attach(col, col.isar.collection<AccountIsar>(), r'accountLink', id);
+  object.creditAccountLink.attach(
+      col, col.isar.collection<AccountIsar>(), r'creditAccountLink', id);
   object.spendingTxnLink.attach(
       col, col.isar.collection<CreditSpendingIsar>(), r'spendingTxnLink', id);
 }
@@ -1402,16 +1402,16 @@ extension CreditPaymentIsarQueryObject
 extension CreditPaymentIsarQueryLinks
     on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QFilterCondition> {
   QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      accountLink(FilterQuery<AccountIsar> q) {
+      creditAccountLink(FilterQuery<AccountIsar> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'accountLink');
+      return query.link(q, r'creditAccountLink');
     });
   }
 
   QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      accountLinkIsNull() {
+      creditAccountLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'accountLink', 0, true, 0, true);
+      return query.linkLength(r'creditAccountLink', 0, true, 0, true);
     });
   }
 
@@ -1555,23 +1555,18 @@ const InstallmentDetailsSchema = Schema(
   name: r'InstallmentDetails',
   id: 978435878101923127,
   properties: {
-    r'monthlyInstallmentInterestRate': PropertySchema(
+    r'amount': PropertySchema(
       id: 0,
-      name: r'monthlyInstallmentInterestRate',
+      name: r'amount',
       type: IsarType.double,
     ),
-    r'paymentAmountPerMonth': PropertySchema(
+    r'interestRate': PropertySchema(
       id: 1,
-      name: r'paymentAmountPerMonth',
+      name: r'interestRate',
       type: IsarType.double,
-    ),
-    r'paymentPeriod': PropertySchema(
-      id: 2,
-      name: r'paymentPeriod',
-      type: IsarType.long,
     ),
     r'rateBasedOnRemainingInstallmentUnpaid': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'rateBasedOnRemainingInstallmentUnpaid',
       type: IsarType.bool,
     )
@@ -1597,10 +1592,9 @@ void _installmentDetailsSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDouble(offsets[0], object.monthlyInstallmentInterestRate);
-  writer.writeDouble(offsets[1], object.paymentAmountPerMonth);
-  writer.writeLong(offsets[2], object.paymentPeriod);
-  writer.writeBool(offsets[3], object.rateBasedOnRemainingInstallmentUnpaid);
+  writer.writeDouble(offsets[0], object.amount);
+  writer.writeDouble(offsets[1], object.interestRate);
+  writer.writeBool(offsets[2], object.rateBasedOnRemainingInstallmentUnpaid);
 }
 
 InstallmentDetails _installmentDetailsDeserialize(
@@ -1610,10 +1604,9 @@ InstallmentDetails _installmentDetailsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = InstallmentDetails();
-  object.monthlyInstallmentInterestRate = reader.readDouble(offsets[0]);
-  object.paymentAmountPerMonth = reader.readDouble(offsets[1]);
-  object.paymentPeriod = reader.readLong(offsets[2]);
-  object.rateBasedOnRemainingInstallmentUnpaid = reader.readBool(offsets[3]);
+  object.amount = reader.readDouble(offsets[0]);
+  object.interestRate = reader.readDouble(offsets[1]);
+  object.rateBasedOnRemainingInstallmentUnpaid = reader.readBool(offsets[2]);
   return object;
 }
 
@@ -1629,8 +1622,6 @@ P _installmentDetailsDeserializeProp<P>(
     case 1:
       return (reader.readDouble(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
-    case 3:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1640,13 +1631,13 @@ P _installmentDetailsDeserializeProp<P>(
 extension InstallmentDetailsQueryFilter
     on QueryBuilder<InstallmentDetails, InstallmentDetails, QFilterCondition> {
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      monthlyInstallmentInterestRateEqualTo(
+      amountEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'monthlyInstallmentInterestRate',
+        property: r'amount',
         value: value,
         epsilon: epsilon,
       ));
@@ -1654,7 +1645,7 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      monthlyInstallmentInterestRateGreaterThan(
+      amountGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1662,7 +1653,7 @@ extension InstallmentDetailsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'monthlyInstallmentInterestRate',
+        property: r'amount',
         value: value,
         epsilon: epsilon,
       ));
@@ -1670,7 +1661,7 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      monthlyInstallmentInterestRateLessThan(
+      amountLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1678,7 +1669,7 @@ extension InstallmentDetailsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'monthlyInstallmentInterestRate',
+        property: r'amount',
         value: value,
         epsilon: epsilon,
       ));
@@ -1686,7 +1677,7 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      monthlyInstallmentInterestRateBetween(
+      amountBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1695,7 +1686,7 @@ extension InstallmentDetailsQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'monthlyInstallmentInterestRate',
+        property: r'amount',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1706,13 +1697,13 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentAmountPerMonthEqualTo(
+      interestRateEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'paymentAmountPerMonth',
+        property: r'interestRate',
         value: value,
         epsilon: epsilon,
       ));
@@ -1720,7 +1711,7 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentAmountPerMonthGreaterThan(
+      interestRateGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1728,7 +1719,7 @@ extension InstallmentDetailsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'paymentAmountPerMonth',
+        property: r'interestRate',
         value: value,
         epsilon: epsilon,
       ));
@@ -1736,7 +1727,7 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentAmountPerMonthLessThan(
+      interestRateLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1744,7 +1735,7 @@ extension InstallmentDetailsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'paymentAmountPerMonth',
+        property: r'interestRate',
         value: value,
         epsilon: epsilon,
       ));
@@ -1752,7 +1743,7 @@ extension InstallmentDetailsQueryFilter
   }
 
   QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentAmountPerMonthBetween(
+      interestRateBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1761,68 +1752,12 @@ extension InstallmentDetailsQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'paymentAmountPerMonth',
+        property: r'interestRate',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentPeriodEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'paymentPeriod',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentPeriodGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'paymentPeriod',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentPeriodLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'paymentPeriod',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      paymentPeriodBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'paymentPeriod',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
       ));
     });
   }

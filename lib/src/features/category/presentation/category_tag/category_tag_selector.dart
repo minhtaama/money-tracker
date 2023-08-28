@@ -97,8 +97,8 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             margin: EdgeInsets.zero,
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            color: context.appTheme.secondary.withOpacity(0.8),
-            //alignment: Alignment.center,
+            color:
+                context.appTheme.isDarkTheme ? context.appTheme.secondary.withOpacity(0.8) : context.appTheme.primary,
             child: Row(
               children: [
                 Expanded(

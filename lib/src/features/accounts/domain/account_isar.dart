@@ -26,7 +26,7 @@ class AccountIsar {
   @Backlink(to: 'accountLink')
   final txnOfThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
-  /// Only for on-hand account transfers. Need for calculating total money of this account.
+  /// Need for calculating total money of this account. Only for [AccountType.onHand]
   @Backlink(to: 'toAccountLink')
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
@@ -34,10 +34,28 @@ class AccountIsar {
   @Backlink(to: 'creditAccountLink')
   final creditSpendingTxnBacklinks = IsarLinks<CreditSpendingIsar>();
 
+  /// All credit payment of this account. Only for [AccountType.credit]
+  @Backlink(to: 'creditAccountLink')
+  final creditPaymentTxnBacklinks = IsarLinks<CreditPaymentIsar>();
+
   /// Only specify this property if type is [AccountType.credit]
   CreditAccountDetails? creditAccountDetails;
+}
 
-  @Ignore()
+@Embedded()
+class CreditAccountDetails {
+  late double creditBalance;
+
+  /// As in percent. This interestRate is only count if payment this month is
+  /// not finish.
+  double interestRate = 5;
+
+  late DateTime statementDate;
+
+  late DateTime paymentDueDate;
+}
+
+extension AccountBalance on AccountIsar {
   double get currentBalance {
     if (type == AccountType.onHand) {
       double balance = 0;
@@ -65,8 +83,9 @@ class AccountIsar {
       return balance;
     }
   }
+}
 
-  @Ignore()
+extension CreditInfo on AccountIsar {
   double get totalPendingCreditPayment {
     if (type == AccountType.onHand) {
       throw ErrorDescription('Can not use this getter on type `AccountType.onHand`');
@@ -80,13 +99,4 @@ class AccountIsar {
     }
     return pending;
   }
-}
-
-@Embedded()
-class CreditAccountDetails {
-  late double creditBalance;
-
-  late DateTime statementDate;
-
-  late DateTime paymentDueDate;
 }
