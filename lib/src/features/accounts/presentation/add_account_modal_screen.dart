@@ -5,7 +5,9 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
+import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
@@ -28,12 +30,17 @@ class AddAccountModalScreen extends ConsumerStatefulWidget {
 class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  AccountType accountType = AccountType.onHand;
   String accountName = '';
   String iconCategory = '';
   int iconIndex = 0;
   int colorIndex = 0;
+
+  AccountType accountType = AccountType.regular;
   String calculatorOutput = '0';
+
+  String statementDay = '';
+  String paymentDueDay = '';
+  String interestRate = '';
 
   double? _formatToDouble(String formattedValue) {
     try {
@@ -45,6 +52,19 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  String? _dateInputValidator(String date, {String error = ''}) {
+    final dateParsed = int.tryParse(date);
+    if (dateParsed != null) {
+      if (dateParsed > 0 && dateParsed < 31) {
+        return null;
+      } else {
+        return error;
+      }
+    } else {
+      return error;
     }
   }
 
@@ -80,7 +100,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
-                  hintText: 'Initial Balance',
+                  hintText: accountType == AccountType.regular ? 'Initial Balance' : 'Credit balance',
                   focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
                   validator: (_) {
                     if (_formatToDouble(calculatorOutput) == null) {
@@ -97,16 +117,15 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           ),
           Gap.h16,
           CustomSliderToggle<AccountType>(
-            values: const [AccountType.onHand, AccountType.credit],
-            labels: const ['On Hand', 'Credit'],
+            values: const [AccountType.regular, AccountType.credit],
+            labels: const ['Regular', 'Credit'],
             height: 42,
             onTap: (type) {
-              accountType = type;
+              setState(() {
+                accountType = type;
+              });
             },
           ),
-
-          // TODO: ADD INFO FOR ACCOUNT TYPE CREDIT
-
           Gap.h16,
           Row(
             children: [
@@ -147,6 +166,37 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               });
             },
           ),
+          HideableContainer(
+            hidden: accountType != AccountType.credit,
+            child: CardItem(
+              margin: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  InlineTextFormField(
+                    prefixText: 'Statement date:',
+                    suffixText: 'of this month',
+                    validator: (_) => _dateInputValidator(statementDay),
+                    onChanged: (value) => statementDay = value,
+                  ),
+                  Gap.h8,
+                  InlineTextFormField(
+                    prefixText: 'Payment date :',
+                    suffixText: 'of next month',
+                    validator: (_) => _dateInputValidator(paymentDueDay),
+                    onChanged: (value) => paymentDueDay = value,
+                  ),
+                  Gap.h8,
+                  InlineTextFormField(
+                    prefixText: 'Interest rate:',
+                    suffixText: '%',
+                    validator: (_) => _formatToDouble(interestRate) == null ? '' : null,
+                    onChanged: (value) => interestRate = value,
+                  ),
+                ],
+              ),
+            ),
+          ),
           Gap.h24,
           Align(
             alignment: Alignment.centerRight,
@@ -159,12 +209,18 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                 if (_formKey.currentState!.validate()) {
                   // By validating, the _formatToDouble(calculatorOutput) must not null
                   final accountRepository = ref.read(accountRepositoryProvider);
-                  accountRepository.writeNew(_formatToDouble(calculatorOutput)!,
-                      type: accountType,
-                      iconCategory: iconCategory,
-                      iconIndex: iconIndex,
-                      name: accountName,
-                      colorIndex: colorIndex);
+
+                  accountRepository.writeNew(
+                    _formatToDouble(calculatorOutput)!,
+                    type: accountType,
+                    iconCategory: iconCategory,
+                    iconIndex: iconIndex,
+                    name: accountName,
+                    colorIndex: colorIndex,
+                    statementDay: int.tryParse(statementDay),
+                    paymentDueDay: int.tryParse(paymentDueDay),
+                    interestRate: _formatToDouble(interestRate),
+                  );
                   context.pop();
                 }
               },

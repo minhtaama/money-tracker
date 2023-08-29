@@ -157,7 +157,7 @@ AccountIsar _accountIsarDeserialize(
   object.order = reader.readLongOrNull(offsets[5]);
   object.type =
       _AccountIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
-          AccountType.onHand;
+          AccountType.regular;
   return object;
 }
 
@@ -186,18 +186,18 @@ P _accountIsarDeserializeProp<P>(
       return (reader.readLongOrNull(offset)) as P;
     case 6:
       return (_AccountIsartypeValueEnumMap[reader.readByteOrNull(offset)] ??
-          AccountType.onHand) as P;
+          AccountType.regular) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
 const _AccountIsartypeEnumValueMap = {
-  'onHand': 0,
+  'regular': 0,
   'credit': 1,
 };
 const _AccountIsartypeValueEnumMap = {
-  0: AccountType.onHand,
+  0: AccountType.regular,
   1: AccountType.credit,
 };
 
@@ -1439,15 +1439,15 @@ const CreditAccountDetailsSchema = Schema(
       name: r'interestRate',
       type: IsarType.double,
     ),
-    r'paymentDueDate': PropertySchema(
+    r'paymentDueDay': PropertySchema(
       id: 2,
-      name: r'paymentDueDate',
-      type: IsarType.dateTime,
+      name: r'paymentDueDay',
+      type: IsarType.long,
     ),
-    r'statementDate': PropertySchema(
+    r'statementDay': PropertySchema(
       id: 3,
-      name: r'statementDate',
-      type: IsarType.dateTime,
+      name: r'statementDay',
+      type: IsarType.long,
     )
   },
   estimateSize: _creditAccountDetailsEstimateSize,
@@ -1473,8 +1473,8 @@ void _creditAccountDetailsSerialize(
 ) {
   writer.writeDouble(offsets[0], object.creditBalance);
   writer.writeDouble(offsets[1], object.interestRate);
-  writer.writeDateTime(offsets[2], object.paymentDueDate);
-  writer.writeDateTime(offsets[3], object.statementDate);
+  writer.writeLong(offsets[2], object.paymentDueDay);
+  writer.writeLong(offsets[3], object.statementDay);
 }
 
 CreditAccountDetails _creditAccountDetailsDeserialize(
@@ -1486,8 +1486,8 @@ CreditAccountDetails _creditAccountDetailsDeserialize(
   final object = CreditAccountDetails();
   object.creditBalance = reader.readDouble(offsets[0]);
   object.interestRate = reader.readDouble(offsets[1]);
-  object.paymentDueDate = reader.readDateTime(offsets[2]);
-  object.statementDate = reader.readDateTime(offsets[3]);
+  object.paymentDueDay = reader.readLong(offsets[2]);
+  object.statementDay = reader.readLong(offsets[3]);
   return object;
 }
 
@@ -1503,9 +1503,9 @@ P _creditAccountDetailsDeserializeProp<P>(
     case 1:
       return (reader.readDouble(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1646,53 +1646,53 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> paymentDueDateEqualTo(DateTime value) {
+      QAfterFilterCondition> paymentDueDayEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'paymentDueDate',
+        property: r'paymentDueDay',
         value: value,
       ));
     });
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> paymentDueDateGreaterThan(
-    DateTime value, {
+      QAfterFilterCondition> paymentDueDayGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'paymentDueDate',
+        property: r'paymentDueDay',
         value: value,
       ));
     });
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> paymentDueDateLessThan(
-    DateTime value, {
+      QAfterFilterCondition> paymentDueDayLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'paymentDueDate',
+        property: r'paymentDueDay',
         value: value,
       ));
     });
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> paymentDueDateBetween(
-    DateTime lower,
-    DateTime upper, {
+      QAfterFilterCondition> paymentDueDayBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'paymentDueDate',
+        property: r'paymentDueDay',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1702,53 +1702,53 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> statementDateEqualTo(DateTime value) {
+      QAfterFilterCondition> statementDayEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'statementDate',
+        property: r'statementDay',
         value: value,
       ));
     });
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> statementDateGreaterThan(
-    DateTime value, {
+      QAfterFilterCondition> statementDayGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'statementDate',
+        property: r'statementDay',
         value: value,
       ));
     });
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> statementDateLessThan(
-    DateTime value, {
+      QAfterFilterCondition> statementDayLessThan(
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'statementDate',
+        property: r'statementDay',
         value: value,
       ));
     });
   }
 
   QueryBuilder<CreditAccountDetails, CreditAccountDetails,
-      QAfterFilterCondition> statementDateBetween(
-    DateTime lower,
-    DateTime upper, {
+      QAfterFilterCondition> statementDayBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'statementDate',
+        property: r'statementDay',
         lower: lower,
         includeLower: includeLower,
         upper: upper,

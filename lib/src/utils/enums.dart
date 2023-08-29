@@ -10,7 +10,7 @@ enum CategoryType {
 }
 
 enum AccountType {
-  onHand,
+  regular,
   credit,
 }
 

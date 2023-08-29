@@ -34,19 +34,17 @@ class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
 
 class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTransactionModalScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final _installmentCalController = TextEditingController();
 
   late DateTime dateTime = DateTime.now();
-
-  String calOutputSpendAmount = '0';
   String? note;
-  CategoryTagIsar? tag;
   CategoryIsar? category;
+  CategoryTagIsar? tag;
   AccountIsar? account;
 
-  bool hasInstallmentPayment = false;
+  String calOutputSpendAmount = '0';
 
+  bool hasInstallmentPayment = false;
   int? paymentPeriod;
   String calOutputInstallmentAmount = '0';
   String interestRate = '0';
@@ -332,7 +330,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                 onTap: () {
                   InstallmentDetails? installmentDetails;
 
-                  // By validating, no value can be null
+                  // By validating, no important value can be null
                   if (_formKey.currentState!.validate()) {
                     if (hasInstallmentPayment) {
                       installmentDetails = InstallmentDetails()

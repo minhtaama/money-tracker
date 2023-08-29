@@ -27,7 +27,7 @@ class AccountRepository {
     if (includeCreditAccount) {
       accountList = isar.accountIsars.where().findAllSync();
     } else {
-      accountList = isar.accountIsars.filter().typeEqualTo(AccountType.onHand).findAllSync();
+      accountList = isar.accountIsars.filter().typeEqualTo(AccountType.regular).findAllSync();
     }
     for (AccountIsar account in accountList) {
       totalBalance += account.currentBalance;
@@ -42,28 +42,43 @@ class AccountRepository {
   }
 
   Future<void> writeNew(
-    double initialBalance, {
+    double balance, {
     required AccountType type,
     required String iconCategory,
     required int iconIndex,
     required String name,
     required int colorIndex,
+    required int? statementDay,
+    required int? paymentDueDay,
+    required double? interestRate,
   }) async {
-    // Create a new account
+    TransactionIsar? initialTransaction;
+    CreditAccountDetails? creditAccountDetails;
+
+    if (type == AccountType.credit) {
+      creditAccountDetails = CreditAccountDetails()
+        ..interestRate = interestRate!
+        ..statementDay = statementDay!
+        ..paymentDueDay = paymentDueDay!
+        ..creditBalance = balance;
+    }
+
     final newAccount = AccountIsar()
       ..type = type
       ..iconCategory = iconCategory
       ..iconIndex = iconIndex
       ..name = name
-      ..colorIndex = colorIndex;
+      ..colorIndex = colorIndex
+      ..creditAccountDetails = creditAccountDetails;
 
-    // Create a new transaction of this account and flag as "initial transaction"
-    final initialTransaction = TransactionIsar()
-      ..transactionType = TransactionType.income
-      ..dateTime = DateTime.now()
-      ..isInitialTransaction = true
-      ..amount = initialBalance
-      ..accountLink.value = newAccount;
+    if (type == AccountType.regular) {
+      initialTransaction = TransactionIsar()
+        ..transactionType = TransactionType.income
+        ..dateTime = DateTime.now()
+        ..isInitialTransaction = true
+        ..amount = balance
+        ..accountLink.value = newAccount;
+    }
 
     await isar.writeTxn(() async {
       await isar.accountIsars.put(newAccount);
@@ -73,11 +88,10 @@ class AccountRepository {
       newAccount.order = newAccount.id;
       await isar.accountIsars.put(newAccount);
 
-      // Put the `initialTransaction` to the TransactionIsar collection
-      await isar.transactionIsars.put(initialTransaction);
-
-      // Save the link to this account in the `initialTransaction`
-      await initialTransaction.accountLink.save();
+      if (type == AccountType.regular) {
+        await isar.transactionIsars.put(initialTransaction!);
+        await initialTransaction.accountLink.save();
+      }
     });
   }
 

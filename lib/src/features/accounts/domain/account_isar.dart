@@ -46,18 +46,18 @@ class AccountIsar {
 class CreditAccountDetails {
   late double creditBalance;
 
-  /// As in percent. This interestRate is only count if payment this month is
-  /// not finish.
+  /// As in percent. This interestRate is only count
+  /// if payment this month is not finish.
   double interestRate = 5;
 
-  late DateTime statementDate;
+  late int statementDay;
 
-  late DateTime paymentDueDate;
+  late int paymentDueDay;
 }
 
 extension AccountBalance on AccountIsar {
   double get currentBalance {
-    if (type == AccountType.onHand) {
+    if (type == AccountType.regular) {
       double balance = 0;
       final txnList = txnOfThisAccountBacklinks.toList();
       for (TransactionIsar txn in txnList) {
@@ -87,7 +87,7 @@ extension AccountBalance on AccountIsar {
 
 extension CreditInfo on AccountIsar {
   double get totalPendingCreditPayment {
-    if (type == AccountType.onHand) {
+    if (type == AccountType.regular) {
       throw ErrorDescription('Can not use this getter on type `AccountType.onHand`');
     }
     double pending = 0;

@@ -153,7 +153,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                               });
                             })
                         : AccountFormSelector(
-                            accountType: AccountType.onHand,
+                            accountType: AccountType.regular,
                             validator: (_) {
                               if (account == null) {
                                 return '!';
@@ -175,7 +175,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                     ),
                     Gap.h4,
                     AccountFormSelector(
-                      accountType: AccountType.onHand,
+                      accountType: AccountType.regular,
                       validator: (_) {
                         if (widget.transactionType != TransactionType.transfer && account == null) {
                           return '!';
