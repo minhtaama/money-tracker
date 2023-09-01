@@ -152,7 +152,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                       children: List.generate(
                         _tags!.length,
                         (index) {
-                          return CategoryTag(
+                          return CategoryTagWidget(
                             categoryTag: _tags![index],
                             onTap: (tag) {
                               categoryRepo.reorderTagToTop(_tags!, index);
@@ -250,8 +250,8 @@ class ChosenTag extends StatelessWidget {
   }
 }
 
-class CategoryTag extends StatelessWidget {
-  const CategoryTag(
+class CategoryTagWidget extends StatelessWidget {
+  const CategoryTagWidget(
       {Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
       : super(key: key);
   final CategoryTagIsar categoryTag;
