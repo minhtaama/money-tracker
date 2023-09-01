@@ -5,7 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -55,8 +55,9 @@ class DayCard extends ConsumerWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color:
-                        dateTime.weekday == 6 || dateTime.weekday == 7 ? context.appTheme.accent : AppColors.darkerGrey,
+                    color: dateTime.weekday == 6 || dateTime.weekday == 7
+                        ? context.appTheme.accent
+                        : AppColors.darkerGrey,
                     borderRadius: BorderRadius.circular(8),
                     border: dateTime.year == DateTime.now().year &&
                             dateTime.month == DateTime.now().month &&
@@ -90,7 +91,8 @@ class DayCard extends ConsumerWidget {
                     ),
                     Text(
                       '${dateTime.monthString()} ${dateTime.year}',
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(
+                          color: context.appTheme.backgroundNegative, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -193,7 +195,9 @@ class DayCardTransactions extends StatelessWidget {
                                     ? _ExpandedCategory(transaction: transaction)
                                     : Gap.noGap,
                                 _ExpandedAccount(transaction: transaction),
-                                transaction.transactionType == TransactionType.transfer ? Gap.h4 : Gap.noGap,
+                                transaction.transactionType == TransactionType.transfer
+                                    ? Gap.h4
+                                    : Gap.noGap,
                                 transaction.transactionType == TransactionType.transfer
                                     ? _ExpandedToAccount(transaction: transaction)
                                     : Gap.noGap,
@@ -287,11 +291,12 @@ class _ExpandedCategory extends StatelessWidget {
         // Category Icon
         SvgIcon(
           !transaction.isInitialTransaction
-              ? AppIcons.fromCategoryAndIndex(
-                  transaction.categoryLink.value!.iconCategory, transaction.categoryLink.value!.iconIndex)
+              ? AppIcons.fromCategoryAndIndex(transaction.categoryLink.value!.iconCategory,
+                  transaction.categoryLink.value!.iconIndex)
               : AppIcons.add,
           size: 20,
-          color: context.appTheme.backgroundNegative.withOpacity(transaction.categoryLink.value != null ? 1 : 0.5),
+          color: context.appTheme.backgroundNegative
+              .withOpacity(transaction.categoryLink.value != null ? 1 : 0.5),
         ),
         Gap.w4,
         // Category Name
@@ -299,8 +304,8 @@ class _ExpandedCategory extends StatelessWidget {
           child: Text(
             !transaction.isInitialTransaction ? transaction.categoryLink.value!.name : 'Initial Balance',
             style: kHeader3TextStyle.copyWith(
-                color:
-                    context.appTheme.backgroundNegative.withOpacity(transaction.categoryLink.value != null ? 1 : 0.5),
+                color: context.appTheme.backgroundNegative
+                    .withOpacity(transaction.categoryLink.value != null ? 1 : 0.5),
                 fontSize: 12),
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -324,7 +329,8 @@ class _ExpandedAccount extends StatelessWidget {
         // Category Icon
         transaction.accountLink.value != null && transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
-                transaction.isInitialTransaction || transaction.transactionType == TransactionType.transfer
+                transaction.isInitialTransaction ||
+                        transaction.transactionType == TransactionType.transfer
                     ? AppIcons.download
                     : transaction.transactionType == TransactionType.income
                         ? AppIcons.download
@@ -359,10 +365,11 @@ class _ExpandedToAccount extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
-        transaction.toAccountLink.value != null && transaction.transactionType != TransactionType.transfer
+        transaction.toAccountLink.value != null &&
+                transaction.transactionType != TransactionType.transfer
             ? SvgIcon(
-                AppIcons.fromCategoryAndIndex(
-                    transaction.toAccountLink.value!.iconCategory, transaction.toAccountLink.value!.iconIndex),
+                AppIcons.fromCategoryAndIndex(transaction.toAccountLink.value!.iconCategory,
+                    transaction.toAccountLink.value!.iconIndex),
                 size: 20,
                 color: context.appTheme.backgroundNegative,
               )
@@ -431,14 +438,16 @@ class _Note extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(
+            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius:
+              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

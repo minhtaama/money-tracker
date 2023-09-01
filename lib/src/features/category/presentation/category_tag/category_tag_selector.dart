@@ -13,11 +13,12 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/custom_text_form_field.dart';
-import '../../domain/category_isar.dart';
-import '../../domain/category_tag_isar.dart';
+import '../../data/isar_dto/category_isar.dart';
+import '../../data/isar_dto/category_tag_isar.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
-  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading}) : super(key: key);
+  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading})
+      : super(key: key);
   final Color? fading;
   final ValueSetter<CategoryTagIsar?> onTagSelected;
   final CategoryIsar? category;
@@ -97,8 +98,9 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             margin: EdgeInsets.zero,
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            color:
-                context.appTheme.isDarkTheme ? context.appTheme.secondary.withOpacity(0.8) : context.appTheme.primary,
+            color: context.appTheme.isDarkTheme
+                ? context.appTheme.secondary.withOpacity(0.8)
+                : context.appTheme.primary,
             child: Row(
               children: [
                 Expanded(
@@ -227,7 +229,9 @@ class ChosenTag extends StatelessWidget {
       softWrap: false,
       overflow: TextOverflow.ellipsis,
       defaultStyle: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative,
+        color: context.appTheme.isDarkTheme
+            ? context.appTheme.secondaryNegative
+            : context.appTheme.primaryNegative,
         fontSize: 18,
       ),
       patternList: [
@@ -235,7 +239,9 @@ class ChosenTag extends StatelessWidget {
           targetString: '#',
           hasSpecialCharacters: true,
           style: kHeader4TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative,
+            color: context.appTheme.isDarkTheme
+                ? context.appTheme.secondaryNegative
+                : context.appTheme.primaryNegative,
             fontSize: 18,
           ),
         )
@@ -245,7 +251,8 @@ class ChosenTag extends StatelessWidget {
 }
 
 class CategoryTag extends StatelessWidget {
-  const CategoryTag({Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
+  const CategoryTag(
+      {Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
       : super(key: key);
   final CategoryTagIsar categoryTag;
   final ValueSetter<CategoryTagIsar> onTap;
@@ -363,7 +370,8 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
             final categoryRepo = ref.read(categoryRepositoryProvider);
 
-            CategoryTagIsar? newTag = await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
+            CategoryTagIsar? newTag =
+                await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
             //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);
 

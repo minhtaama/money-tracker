@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
-import '../../../utils/enums.dart';
+import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
+import '../../../../utils/enums.dart';
 
 // flutter pub run build_runner build --delete-conflicting-outputs
 // https://www.hsbc.com.vn/en-vn/credit-cards/understanding-your-credit-card-statement/
@@ -29,14 +28,6 @@ class AccountIsar {
   /// Need for calculating total money of this account. Only for [AccountType.onHand]
   @Backlink(to: 'toAccountLink')
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
-
-  /// All credit spending of this account. Only for [AccountType.credit]
-  @Backlink(to: 'creditAccountLink')
-  final creditSpendingTxnBacklinks = IsarLinks<CreditSpendingIsar>();
-
-  /// All credit payment of this account. Only for [AccountType.credit]
-  @Backlink(to: 'creditAccountLink')
-  final creditPaymentTxnBacklinks = IsarLinks<CreditPaymentIsar>();
 
   /// Only specify this property if type is [AccountType.credit]
   CreditAccountDetails? creditAccountDetails;
@@ -74,8 +65,8 @@ extension AccountBalance on AccountIsar {
       return balance;
     } else {
       double balance = creditAccountDetails!.creditBalance;
-      final txnList = creditSpendingTxnBacklinks.toList();
-      for (CreditSpendingIsar txn in txnList) {
+      final txnList = txnOfThisAccountBacklinks.toList();
+      for (TransactionIsar txn in txnList) {
         if (!txn.isDone) {
           balance -= txn.amount - txn.paidAmount;
         }
@@ -91,8 +82,8 @@ extension CreditInfo on AccountIsar {
       throw ErrorDescription('Can not use this getter on type `AccountType.onHand`');
     }
     double pending = 0;
-    final txnList = creditSpendingTxnBacklinks.toList();
-    for (CreditSpendingIsar txn in txnList) {
+    final txnList = txnOfThisAccountBacklinks.toList();
+    for (TransactionIsar txn in txnList) {
       if (!txn.isDone) {
         pending += txn.pendingPayment;
       }

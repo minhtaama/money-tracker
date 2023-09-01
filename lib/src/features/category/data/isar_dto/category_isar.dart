@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import '../../../utils/enums.dart';
+import '../../../../utils/enums.dart';
 import 'category_tag_isar.dart';
 
 //// flutter pub run build_runner build --delete-conflicting-outputs

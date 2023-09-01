@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
@@ -19,6 +18,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
+import '../data/isar_dto/account_isar.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({Key? key}) : super(key: key);
@@ -57,8 +57,9 @@ class AccountsScreen extends ConsumerWidget {
                           origin: const Offset(15, 15),
                           child: Opacity(
                             opacity: 0.45,
-                            child:
-                                SvgIcon(AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex), size: 30),
+                            child: SvgIcon(
+                                AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
+                                size: 30),
                           ),
                         ),
                       ),
@@ -74,7 +75,8 @@ class AccountsScreen extends ConsumerWidget {
                                 child: Text(
                                   model.name,
                                   style: kHeader2TextStyle.copyWith(
-                                      color: AppColors.allColorsUserCanPick[model.colorIndex][1], fontSize: 22),
+                                      color: AppColors.allColorsUserCanPick[model.colorIndex][1],
+                                      fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -91,7 +93,8 @@ class AccountsScreen extends ConsumerWidget {
                                       child: Text(
                                         'Credit',
                                         style: kHeader4TextStyle.copyWith(
-                                            color: AppColors.allColorsUserCanPick[model.colorIndex][0], fontSize: 12),
+                                            color: AppColors.allColorsUserCanPick[model.colorIndex][0],
+                                            fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),
@@ -100,8 +103,8 @@ class AccountsScreen extends ConsumerWidget {
                           const Expanded(child: SizedBox()),
                           Text(
                             'Current Balance:',
-                            style:
-                                kHeader4TextStyle.copyWith(color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
+                            style: kHeader4TextStyle.copyWith(
+                                color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
                           ),
                           Row(
                             // Account Current Balance
@@ -159,7 +162,8 @@ class AccountsScreen extends ConsumerWidget {
           CustomSection(
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            onReorder: (oldIndex, newIndex) => accountRepository.reorder(accountList, oldIndex, newIndex),
+            onReorder: (oldIndex, newIndex) =>
+                accountRepository.reorder(accountList, oldIndex, newIndex),
             children: buildAccountCards(context),
           ),
         ],

@@ -12,13 +12,11 @@ import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../data/category_repo.dart';
-import '../../domain/category_isar.dart';
-import '../../domain/category_tag_isar.dart';
-
+import '../../data/isar_dto/category_isar.dart';
+import '../../data/isar_dto/category_tag_isar.dart';
 
 class EditCategoryTag extends ConsumerStatefulWidget {
-  const EditCategoryTag(this.tag, {Key? key, required this.category})
-      : super(key: key);
+  const EditCategoryTag(this.tag, {Key? key, required this.category}) : super(key: key);
 
   final CategoryTagIsar tag;
   final CategoryIsar category;
@@ -32,8 +30,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
 
   late final categoryRepo = ref.watch(categoryRepositoryProvider);
 
-  late final List<CategoryTagIsar> _tags =
-      categoryRepo.getTagsSortedByOrder(widget.category)!;
+  late final List<CategoryTagIsar> _tags = categoryRepo.getTagsSortedByOrder(widget.category)!;
 
   late String _newName = widget.tag.name;
 
@@ -60,9 +57,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
               ),
             ),
             validator: (value) {
-              if (_tags
-                  .map((e) => e.name.toLowerCase())
-                  .contains(value?.toLowerCase())) {
+              if (_tags.map((e) => e.name.toLowerCase()).contains(value?.toLowerCase())) {
                 return 'Already has same tag';
               }
               return null;
@@ -83,8 +78,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                 onTap: () {
                   showConfirmModalBottomSheet(
                     context: context,
-                    label:
-                        'Are you sure that you want to delete tag "${widget.tag.name}"?',
+                    label: 'Are you sure that you want to delete tag "${widget.tag.name}"?',
                     onConfirm: () {
                       categoryRepo.deleteTag(widget.tag);
                       context.pop();

@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
 import 'package:path_provider/path_provider.dart';
-import '../src/features/category/domain/category_isar.dart';
+
+import '../src/features/accounts/data/isar_dto/account_isar.dart';
+import '../src/features/category/data/isar_dto/category_isar.dart';
+import '../src/features/category/data/isar_dto/category_tag_isar.dart';
+import '../src/features/transactions/data/isar_dto/transaction_isar.dart';
 
 class IsarDataStore {
   late final Directory _dir;
@@ -24,8 +24,6 @@ class IsarDataStore {
         SettingsIsarSchema,
         AccountIsarSchema,
         TransactionIsarSchema,
-        CreditSpendingIsarSchema,
-        CreditPaymentIsarSchema
       ],
       directory: _dir.path,
     );

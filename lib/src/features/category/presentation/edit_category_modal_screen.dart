@@ -13,7 +13,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../data/category_repo.dart';
-import '../domain/category_isar.dart';
+import '../data/isar_dto/category_isar.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
   const EditCategoryModalScreen(this.currentCategory, {Key? key}) : super(key: key);

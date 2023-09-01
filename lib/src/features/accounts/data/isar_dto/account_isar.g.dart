@@ -75,20 +75,6 @@ const AccountIsarSchema = CollectionSchema(
       target: r'TransactionIsar',
       single: false,
       linkName: r'toAccountLink',
-    ),
-    r'creditSpendingTxnBacklinks': LinkSchema(
-      id: 7189748358704567444,
-      name: r'creditSpendingTxnBacklinks',
-      target: r'CreditSpendingIsar',
-      single: false,
-      linkName: r'creditAccountLink',
-    ),
-    r'creditPaymentTxnBacklinks': LinkSchema(
-      id: -1705761800340701863,
-      name: r'creditPaymentTxnBacklinks',
-      target: r'CreditPaymentIsar',
-      single: false,
-      linkName: r'creditAccountLink',
     )
   },
   embeddedSchemas: {r'CreditAccountDetails': CreditAccountDetailsSchema},
@@ -206,12 +192,7 @@ Id _accountIsarGetId(AccountIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
-  return [
-    object.txnOfThisAccountBacklinks,
-    object.txnToThisAccountBacklinks,
-    object.creditSpendingTxnBacklinks,
-    object.creditPaymentTxnBacklinks
-  ];
+  return [object.txnOfThisAccountBacklinks, object.txnToThisAccountBacklinks];
 }
 
 void _accountIsarAttach(
@@ -221,16 +202,6 @@ void _accountIsarAttach(
       col.isar.collection<TransactionIsar>(), r'txnOfThisAccountBacklinks', id);
   object.txnToThisAccountBacklinks.attach(col,
       col.isar.collection<TransactionIsar>(), r'txnToThisAccountBacklinks', id);
-  object.creditSpendingTxnBacklinks.attach(
-      col,
-      col.isar.collection<CreditSpendingIsar>(),
-      r'creditSpendingTxnBacklinks',
-      id);
-  object.creditPaymentTxnBacklinks.attach(
-      col,
-      col.isar.collection<CreditPaymentIsar>(),
-      r'creditPaymentTxnBacklinks',
-      id);
 }
 
 extension AccountIsarQueryWhereSort
@@ -1026,136 +997,6 @@ extension AccountIsarQueryLinks
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'txnToThisAccountBacklinks', lower, includeLower,
-          upper, includeUpper);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinks(FilterQuery<CreditSpendingIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'creditSpendingTxnBacklinks');
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinksLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditSpendingTxnBacklinks', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinksIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'creditSpendingTxnBacklinks', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinksIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditSpendingTxnBacklinks', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinksLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditSpendingTxnBacklinks', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinksLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditSpendingTxnBacklinks', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditSpendingTxnBacklinksLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'creditSpendingTxnBacklinks', lower,
-          includeLower, upper, includeUpper);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinks(FilterQuery<CreditPaymentIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'creditPaymentTxnBacklinks');
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinksLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditPaymentTxnBacklinks', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinksIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'creditPaymentTxnBacklinks', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinksIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditPaymentTxnBacklinks', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinksLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditPaymentTxnBacklinks', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinksLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'creditPaymentTxnBacklinks', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditPaymentTxnBacklinksLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'creditPaymentTxnBacklinks', lower, includeLower,
           upper, includeUpper);
     });
   }

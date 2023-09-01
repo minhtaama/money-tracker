@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
-import '../../../accounts/domain/account_isar.dart';
+import '../../../accounts/data/isar_dto/account_isar.dart';
 
 class AccountSelector extends ConsumerStatefulWidget {
   const AccountSelector({
@@ -46,8 +46,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       iconPath: currentAccount != null
           ? AppIcons.fromCategoryAndIndex(currentAccount!.iconCategory, currentAccount!.iconIndex)
           : AppIcons.add,
-      backgroundColor:
-          currentAccount != null ? AppColors.allColorsUserCanPick[currentAccount!.colorIndex][0] : Colors.transparent,
+      backgroundColor: currentAccount != null
+          ? AppColors.allColorsUserCanPick[currentAccount!.colorIndex][0]
+          : Colors.transparent,
       color: currentAccount != null
           ? AppColors.allColorsUserCanPick[currentAccount!.colorIndex][1]
           : context.appTheme.backgroundNegative.withOpacity(0.4),
@@ -84,7 +85,8 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                         return IgnorePointer(
                           ignoring: widget.otherSelectedAccount?.id == account.id,
                           child: IconWithTextButton(
-                            iconPath: AppIcons.fromCategoryAndIndex(account.iconCategory, account.iconIndex),
+                            iconPath:
+                                AppIcons.fromCategoryAndIndex(account.iconCategory, account.iconIndex),
                             label: account.name,
                             isDisabled: widget.otherSelectedAccount?.id == account.id,
                             labelSize: 18,

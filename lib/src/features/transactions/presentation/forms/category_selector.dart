@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
+import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -39,8 +39,9 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       iconPath: currentCategory != null
           ? AppIcons.fromCategoryAndIndex(currentCategory!.iconCategory, currentCategory!.iconIndex)
           : AppIcons.add,
-      backgroundColor:
-          currentCategory != null ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][0] : Colors.transparent,
+      backgroundColor: currentCategory != null
+          ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][0]
+          : Colors.transparent,
       color: currentCategory != null
           ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][1]
           : context.appTheme.backgroundNegative.withOpacity(0.4),
@@ -59,7 +60,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription(
+              'Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModalBottomSheet<CategoryIsar>(
@@ -83,7 +85,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       children: List.generate(categoryList.length, (index) {
                         final category = categoryList[index];
                         return IconWithTextButton(
-                          iconPath: AppIcons.fromCategoryAndIndex(category.iconCategory, category.iconIndex),
+                          iconPath:
+                              AppIcons.fromCategoryAndIndex(category.iconCategory, category.iconIndex),
                           label: category.name,
                           labelSize: 18,
                           borderRadius: BorderRadius.circular(16),

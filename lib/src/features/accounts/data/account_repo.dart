@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/persistent/isar_data_store.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
+import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
 class AccountRepository {
@@ -109,8 +109,10 @@ class AccountRepository {
       ..colorIndex = colorIndex;
 
     // Query to find the initial transaction of the current editing account
-    TransactionIsar? initialTransaction =
-        await currentAccount.txnOfThisAccountBacklinks.filter().isInitialTransactionEqualTo(true).findFirst();
+    TransactionIsar? initialTransaction = await currentAccount.txnOfThisAccountBacklinks
+        .filter()
+        .isInitialTransactionEqualTo(true)
+        .findFirst();
 
     if (initialTransaction != null) {
       // If the initial transaction is found

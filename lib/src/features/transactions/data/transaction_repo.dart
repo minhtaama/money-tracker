@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/credit_transaction_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_isar.dart';
+import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
+import 'package:money_tracker_app/src/features/category/data/isar_dto/category_tag_isar.dart';
+import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:async/async.dart';
 
 import '../../../../persistent/isar_data_store.dart';
 import '../../../utils/enums.dart';
-import '../../accounts/domain/account_isar.dart';
+import '../../accounts/data/isar_dto/account_isar.dart';
 
 class TransactionRepository {
   TransactionRepository(this.isar);
@@ -100,11 +99,11 @@ class TransactionRepository {
       required String? note,
       required double? fee,
       required bool? isChargeOnDestinationAccount}) async {
-    TransferFeeDetails? feeDetails;
+    TransferFeeDetailsIsar? feeDetails;
     if (fee != null && isChargeOnDestinationAccount != null) {
-      feeDetails = TransferFeeDetails()
+      feeDetails = TransferFeeDetailsIsar()
         ..transferFee = fee
-        ..isChargeOnDestinationAccount = isChargeOnDestinationAccount;
+        ..onDestination = isChargeOnDestinationAccount;
     }
     final newTransaction = TransactionIsar()
       ..transactionType = TransactionType.transfer
@@ -132,12 +131,13 @@ class TransactionRepository {
     required AccountIsar account,
     required CategoryTagIsar? tag,
     required String? note,
-    required InstallmentDetails? installmentDetails,
+    required InstallmentDetailsIsar? installmentDetails,
   }) async {
-    final txn = CreditSpendingIsar()
+    final txn = TransactionIsar()
+      ..transactionType = TransactionType.creditSpending
       ..dateTime = dateTime
       ..amount = amount
-      ..creditAccountLink.value = account
+      ..accountLink.value = account
       ..categoryLink.value = category
       ..categoryTagLink.value = tag
       ..note = note
@@ -145,10 +145,10 @@ class TransactionRepository {
 
     await isar.writeTxn(() async {
       // Put the `txn` to the TransactionIsar collection
-      await isar.creditSpendingIsars.put(txn);
+      await isar.transactionIsars.put(txn);
 
       // Save the links in the `txn`
-      await txn.creditAccountLink.save();
+      await txn.accountLink.save();
       await txn.categoryLink.save();
       await txn.categoryTagLink.save();
     });

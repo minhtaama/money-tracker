@@ -14,7 +14,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../domain/category_isar.dart';
+import '../data/isar_dto/category_isar.dart';
 import 'category_list_tile.dart';
 import 'edit_category_modal_screen.dart';
 

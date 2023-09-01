@@ -4,8 +4,8 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
-import '../../../accounts/domain/account_isar.dart';
-import '../../../category/domain/category_isar.dart';
+import '../../../accounts/data/isar_dto/account_isar.dart';
+import '../../../category/data/isar_dto/category_isar.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';
 

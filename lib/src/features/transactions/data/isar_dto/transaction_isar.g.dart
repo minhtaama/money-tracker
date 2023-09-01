@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'credit_transaction_isar.dart';
+part of 'transaction_isar.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,14 +9,13 @@ part of 'credit_transaction_isar.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetCreditSpendingIsarCollection on Isar {
-  IsarCollection<CreditSpendingIsar> get creditSpendingIsars =>
-      this.collection();
+extension GetTransactionIsarCollection on Isar {
+  IsarCollection<TransactionIsar> get transactionIsars => this.collection();
 }
 
-const CreditSpendingIsarSchema = CollectionSchema(
-  name: r'CreditSpendingIsar',
-  id: 8950455411148607152,
+const TransactionIsarSchema = CollectionSchema(
+  name: r'TransactionIsar',
+  id: -3328880118366817659,
   properties: {
     r'amount': PropertySchema(
       id: 0,
@@ -32,18 +31,35 @@ const CreditSpendingIsarSchema = CollectionSchema(
       id: 2,
       name: r'installmentDetails',
       type: IsarType.object,
-      target: r'InstallmentDetails',
+      target: r'InstallmentDetailsIsar',
+    ),
+    r'isInitialTransaction': PropertySchema(
+      id: 3,
+      name: r'isInitialTransaction',
+      type: IsarType.bool,
     ),
     r'note': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'note',
       type: IsarType.string,
+    ),
+    r'transactionType': PropertySchema(
+      id: 5,
+      name: r'transactionType',
+      type: IsarType.byte,
+      enumMap: _TransactionIsartransactionTypeEnumValueMap,
+    ),
+    r'transferFeeDetails': PropertySchema(
+      id: 6,
+      name: r'transferFeeDetails',
+      type: IsarType.object,
+      target: r'TransferFeeDetailsIsar',
     )
   },
-  estimateSize: _creditSpendingIsarEstimateSize,
-  serialize: _creditSpendingIsarSerialize,
-  deserialize: _creditSpendingIsarDeserialize,
-  deserializeProp: _creditSpendingIsarDeserializeProp,
+  estimateSize: _transactionIsarEstimateSize,
+  serialize: _transactionIsarSerialize,
+  deserialize: _transactionIsarDeserialize,
+  deserializeProp: _transactionIsarDeserializeProp,
   idName: r'id',
   indexes: {
     r'dateTime': IndexSchema(
@@ -62,40 +78,55 @@ const CreditSpendingIsarSchema = CollectionSchema(
   },
   links: {
     r'categoryLink': LinkSchema(
-      id: -7229664159589297502,
+      id: 7819912186380829208,
       name: r'categoryLink',
       target: r'CategoryIsar',
       single: true,
     ),
     r'categoryTagLink': LinkSchema(
-      id: -6155028065321962391,
+      id: -9058350721895494417,
       name: r'categoryTagLink',
       target: r'CategoryTagIsar',
       single: true,
     ),
-    r'creditAccountLink': LinkSchema(
-      id: 3063992616581264976,
-      name: r'creditAccountLink',
+    r'accountLink': LinkSchema(
+      id: 2724955280269696873,
+      name: r'accountLink',
+      target: r'AccountIsar',
+      single: true,
+    ),
+    r'toAccountLink': LinkSchema(
+      id: 1505148871931788995,
+      name: r'toAccountLink',
       target: r'AccountIsar',
       single: true,
     ),
     r'paymentTxnBacklinks': LinkSchema(
-      id: 1120369630506754481,
+      id: -4268113236040952822,
       name: r'paymentTxnBacklinks',
-      target: r'CreditPaymentIsar',
+      target: r'TransactionIsar',
       single: false,
       linkName: r'spendingTxnLink',
+    ),
+    r'spendingTxnLink': LinkSchema(
+      id: -3126156985708002684,
+      name: r'spendingTxnLink',
+      target: r'TransactionIsar',
+      single: true,
     )
   },
-  embeddedSchemas: {r'InstallmentDetails': InstallmentDetailsSchema},
-  getId: _creditSpendingIsarGetId,
-  getLinks: _creditSpendingIsarGetLinks,
-  attach: _creditSpendingIsarAttach,
+  embeddedSchemas: {
+    r'TransferFeeDetailsIsar': TransferFeeDetailsIsarSchema,
+    r'InstallmentDetailsIsar': InstallmentDetailsIsarSchema
+  },
+  getId: _transactionIsarGetId,
+  getLinks: _transactionIsarGetLinks,
+  attach: _transactionIsarAttach,
   version: '3.1.0+1',
 );
 
-int _creditSpendingIsarEstimateSize(
-  CreditSpendingIsar object,
+int _transactionIsarEstimateSize(
+  TransactionIsar object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -104,8 +135,8 @@ int _creditSpendingIsarEstimateSize(
     final value = object.installmentDetails;
     if (value != null) {
       bytesCount += 3 +
-          InstallmentDetailsSchema.estimateSize(
-              value, allOffsets[InstallmentDetails]!, allOffsets);
+          InstallmentDetailsIsarSchema.estimateSize(
+              value, allOffsets[InstallmentDetailsIsar]!, allOffsets);
     }
   }
   {
@@ -114,46 +145,71 @@ int _creditSpendingIsarEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.transferFeeDetails;
+    if (value != null) {
+      bytesCount += 3 +
+          TransferFeeDetailsIsarSchema.estimateSize(
+              value, allOffsets[TransferFeeDetailsIsar]!, allOffsets);
+    }
+  }
   return bytesCount;
 }
 
-void _creditSpendingIsarSerialize(
-  CreditSpendingIsar object,
+void _transactionIsarSerialize(
+  TransactionIsar object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.amount);
   writer.writeDateTime(offsets[1], object.dateTime);
-  writer.writeObject<InstallmentDetails>(
+  writer.writeObject<InstallmentDetailsIsar>(
     offsets[2],
     allOffsets,
-    InstallmentDetailsSchema.serialize,
+    InstallmentDetailsIsarSchema.serialize,
     object.installmentDetails,
   );
-  writer.writeString(offsets[3], object.note);
+  writer.writeBool(offsets[3], object.isInitialTransaction);
+  writer.writeString(offsets[4], object.note);
+  writer.writeByte(offsets[5], object.transactionType.index);
+  writer.writeObject<TransferFeeDetailsIsar>(
+    offsets[6],
+    allOffsets,
+    TransferFeeDetailsIsarSchema.serialize,
+    object.transferFeeDetails,
+  );
 }
 
-CreditSpendingIsar _creditSpendingIsarDeserialize(
+TransactionIsar _transactionIsarDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = CreditSpendingIsar();
+  final object = TransactionIsar();
   object.amount = reader.readDouble(offsets[0]);
   object.dateTime = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.installmentDetails = reader.readObjectOrNull<InstallmentDetails>(
+  object.installmentDetails = reader.readObjectOrNull<InstallmentDetailsIsar>(
     offsets[2],
-    InstallmentDetailsSchema.deserialize,
+    InstallmentDetailsIsarSchema.deserialize,
     allOffsets,
   );
-  object.note = reader.readStringOrNull(offsets[3]);
+  object.isInitialTransaction = reader.readBool(offsets[3]);
+  object.note = reader.readStringOrNull(offsets[4]);
+  object.transactionType = _TransactionIsartransactionTypeValueEnumMap[
+          reader.readByteOrNull(offsets[5])] ??
+      TransactionType.income;
+  object.transferFeeDetails = reader.readObjectOrNull<TransferFeeDetailsIsar>(
+    offsets[6],
+    TransferFeeDetailsIsarSchema.deserialize,
+    allOffsets,
+  );
   return object;
 }
 
-P _creditSpendingIsarDeserializeProp<P>(
+P _transactionIsarDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -165,55 +221,86 @@ P _creditSpendingIsarDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readObjectOrNull<InstallmentDetails>(
+      return (reader.readObjectOrNull<InstallmentDetailsIsar>(
         offset,
-        InstallmentDetailsSchema.deserialize,
+        InstallmentDetailsIsarSchema.deserialize,
         allOffsets,
       )) as P;
     case 3:
+      return (reader.readBool(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (_TransactionIsartransactionTypeValueEnumMap[
+              reader.readByteOrNull(offset)] ??
+          TransactionType.income) as P;
+    case 6:
+      return (reader.readObjectOrNull<TransferFeeDetailsIsar>(
+        offset,
+        TransferFeeDetailsIsarSchema.deserialize,
+        allOffsets,
+      )) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _creditSpendingIsarGetId(CreditSpendingIsar object) {
+const _TransactionIsartransactionTypeEnumValueMap = {
+  'income': 0,
+  'expense': 1,
+  'transfer': 2,
+  'creditSpending': 3,
+  'creditPayment': 4,
+};
+const _TransactionIsartransactionTypeValueEnumMap = {
+  0: TransactionType.income,
+  1: TransactionType.expense,
+  2: TransactionType.transfer,
+  3: TransactionType.creditSpending,
+  4: TransactionType.creditPayment,
+};
+
+Id _transactionIsarGetId(TransactionIsar object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _creditSpendingIsarGetLinks(
-    CreditSpendingIsar object) {
+List<IsarLinkBase<dynamic>> _transactionIsarGetLinks(TransactionIsar object) {
   return [
     object.categoryLink,
     object.categoryTagLink,
-    object.creditAccountLink,
-    object.paymentTxnBacklinks
+    object.accountLink,
+    object.toAccountLink,
+    object.paymentTxnBacklinks,
+    object.spendingTxnLink
   ];
 }
 
-void _creditSpendingIsarAttach(
-    IsarCollection<dynamic> col, Id id, CreditSpendingIsar object) {
+void _transactionIsarAttach(
+    IsarCollection<dynamic> col, Id id, TransactionIsar object) {
   object.id = id;
   object.categoryLink
       .attach(col, col.isar.collection<CategoryIsar>(), r'categoryLink', id);
   object.categoryTagLink.attach(
       col, col.isar.collection<CategoryTagIsar>(), r'categoryTagLink', id);
-  object.creditAccountLink.attach(
-      col, col.isar.collection<AccountIsar>(), r'creditAccountLink', id);
-  object.paymentTxnBacklinks.attach(col,
-      col.isar.collection<CreditPaymentIsar>(), r'paymentTxnBacklinks', id);
+  object.accountLink
+      .attach(col, col.isar.collection<AccountIsar>(), r'accountLink', id);
+  object.toAccountLink
+      .attach(col, col.isar.collection<AccountIsar>(), r'toAccountLink', id);
+  object.paymentTxnBacklinks.attach(
+      col, col.isar.collection<TransactionIsar>(), r'paymentTxnBacklinks', id);
+  object.spendingTxnLink.attach(
+      col, col.isar.collection<TransactionIsar>(), r'spendingTxnLink', id);
 }
 
-extension CreditSpendingIsarQueryWhereSort
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QWhere> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhere> anyId() {
+extension TransactionIsarQueryWhereSort
+    on QueryBuilder<TransactionIsar, TransactionIsar, QWhere> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhere>
-      anyDateTime() {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhere> anyDateTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'dateTime'),
@@ -222,10 +309,10 @@ extension CreditSpendingIsarQueryWhereSort
   }
 }
 
-extension CreditSpendingIsarQueryWhere
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QWhereClause> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
-      idEqualTo(Id id) {
+extension TransactionIsarQueryWhere
+    on QueryBuilder<TransactionIsar, TransactionIsar, QWhereClause> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause> idEqualTo(
+      Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -234,7 +321,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -257,7 +344,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -266,8 +353,9 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause> idLessThan(
+      Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -275,8 +363,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
-      idBetween(
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -292,7 +379,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       dateTimeEqualTo(DateTime dateTime) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
@@ -302,7 +389,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       dateTimeNotEqualTo(DateTime dateTime) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -337,7 +424,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       dateTimeGreaterThan(
     DateTime dateTime, {
     bool include = false,
@@ -352,7 +439,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       dateTimeLessThan(
     DateTime dateTime, {
     bool include = false,
@@ -367,7 +454,7 @@ extension CreditSpendingIsarQueryWhere
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterWhereClause>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterWhereClause>
       dateTimeBetween(
     DateTime lowerDateTime,
     DateTime upperDateTime, {
@@ -386,9 +473,9 @@ extension CreditSpendingIsarQueryWhere
   }
 }
 
-extension CreditSpendingIsarQueryFilter
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QFilterCondition> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+extension TransactionIsarQueryFilter
+    on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       amountEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -402,7 +489,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       amountGreaterThan(
     double value, {
     bool include = false,
@@ -418,7 +505,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       amountLessThan(
     double value, {
     bool include = false,
@@ -434,7 +521,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       amountBetween(
     double lower,
     double upper, {
@@ -454,7 +541,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       dateTimeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -464,7 +551,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       dateTimeGreaterThan(
     DateTime value, {
     bool include = false,
@@ -478,7 +565,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       dateTimeLessThan(
     DateTime value, {
     bool include = false,
@@ -492,7 +579,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       dateTimeBetween(
     DateTime lower,
     DateTime upper, {
@@ -510,7 +597,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -520,7 +607,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       idGreaterThan(
     Id value, {
     bool include = false,
@@ -534,7 +621,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       idLessThan(
     Id value, {
     bool include = false,
@@ -548,7 +635,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       idBetween(
     Id lower,
     Id upper, {
@@ -566,7 +653,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       installmentDetailsIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -575,7 +662,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       installmentDetailsIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -584,7 +671,17 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      isInitialTransactionEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isInitialTransaction',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -593,7 +690,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -602,7 +699,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteEqualTo(
     String? value, {
     bool caseSensitive = true,
@@ -616,7 +713,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteGreaterThan(
     String? value, {
     bool include = false,
@@ -632,7 +729,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteLessThan(
     String? value, {
     bool include = false,
@@ -648,7 +745,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteBetween(
     String? lower,
     String? upper, {
@@ -668,7 +765,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -682,7 +779,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -696,7 +793,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -707,7 +804,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -718,7 +815,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -728,7 +825,7 @@ extension CreditSpendingIsarQueryFilter
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       noteIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -737,70 +834,165 @@ extension CreditSpendingIsarQueryFilter
       ));
     });
   }
-}
 
-extension CreditSpendingIsarQueryObject
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QFilterCondition> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
-      installmentDetails(FilterQuery<InstallmentDetails> q) {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transactionTypeEqualTo(TransactionType value) {
     return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'installmentDetails');
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'transactionType',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transactionTypeGreaterThan(
+    TransactionType value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'transactionType',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transactionTypeLessThan(
+    TransactionType value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'transactionType',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transactionTypeBetween(
+    TransactionType lower,
+    TransactionType upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'transactionType',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeDetailsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'transferFeeDetails',
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeDetailsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'transferFeeDetails',
+      ));
     });
   }
 }
 
-extension CreditSpendingIsarQueryLinks
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QFilterCondition> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+extension TransactionIsarQueryObject
+    on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      installmentDetails(FilterQuery<InstallmentDetailsIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'installmentDetails');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      transferFeeDetails(FilterQuery<TransferFeeDetailsIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'transferFeeDetails');
+    });
+  }
+}
+
+extension TransactionIsarQueryLinks
+    on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       categoryLink(FilterQuery<CategoryIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'categoryLink');
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       categoryLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'categoryLink', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       categoryTagLink(FilterQuery<CategoryTagIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'categoryTagLink');
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       categoryTagLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'categoryTagLink', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
-      creditAccountLink(FilterQuery<AccountIsar> q) {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      accountLink(FilterQuery<AccountIsar> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'creditAccountLink');
+      return query.link(q, r'accountLink');
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
-      creditAccountLinkIsNull() {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      accountLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'creditAccountLink', 0, true, 0, true);
+      return query.linkLength(r'accountLink', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
-      paymentTxnBacklinks(FilterQuery<CreditPaymentIsar> q) {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      toAccountLink(FilterQuery<AccountIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'toAccountLink');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      toAccountLinkIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'toAccountLink', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      paymentTxnBacklinks(FilterQuery<TransactionIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'paymentTxnBacklinks');
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       paymentTxnBacklinksLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
@@ -808,21 +1000,21 @@ extension CreditSpendingIsarQueryLinks
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       paymentTxnBacklinksIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'paymentTxnBacklinks', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       paymentTxnBacklinksIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'paymentTxnBacklinks', 0, false, 999999, true);
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       paymentTxnBacklinksLengthLessThan(
     int length, {
     bool include = false,
@@ -832,7 +1024,7 @@ extension CreditSpendingIsarQueryLinks
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       paymentTxnBacklinksLengthGreaterThan(
     int length, {
     bool include = false,
@@ -843,7 +1035,7 @@ extension CreditSpendingIsarQueryLinks
     });
   }
 
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       paymentTxnBacklinksLengthBetween(
     int lower,
     int upper, {
@@ -855,574 +1047,15 @@ extension CreditSpendingIsarQueryLinks
           r'paymentTxnBacklinks', lower, includeLower, upper, includeUpper);
     });
   }
-}
 
-extension CreditSpendingIsarQuerySortBy
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QSortBy> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      sortByAmount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'amount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      sortByAmountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'amount', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      sortByDateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateTime', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      sortByDateTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateTime', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      sortByNote() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      sortByNoteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.desc);
-    });
-  }
-}
-
-extension CreditSpendingIsarQuerySortThenBy
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QSortThenBy> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByAmount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'amount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByAmountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'amount', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByDateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateTime', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByDateTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateTime', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByNote() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QAfterSortBy>
-      thenByNoteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.desc);
-    });
-  }
-}
-
-extension CreditSpendingIsarQueryWhereDistinct
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QDistinct> {
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QDistinct>
-      distinctByAmount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'amount');
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QDistinct>
-      distinctByDateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'dateTime');
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QDistinct>
-      distinctByNote({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'note', caseSensitive: caseSensitive);
-    });
-  }
-}
-
-extension CreditSpendingIsarQueryProperty
-    on QueryBuilder<CreditSpendingIsar, CreditSpendingIsar, QQueryProperty> {
-  QueryBuilder<CreditSpendingIsar, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, double, QQueryOperations> amountProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'amount');
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, DateTime, QQueryOperations>
-      dateTimeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dateTime');
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, InstallmentDetails?, QQueryOperations>
-      installmentDetailsProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'installmentDetails');
-    });
-  }
-
-  QueryBuilder<CreditSpendingIsar, String?, QQueryOperations> noteProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'note');
-    });
-  }
-}
-
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
-
-extension GetCreditPaymentIsarCollection on Isar {
-  IsarCollection<CreditPaymentIsar> get creditPaymentIsars => this.collection();
-}
-
-const CreditPaymentIsarSchema = CollectionSchema(
-  name: r'CreditPaymentIsar',
-  id: 5474839784627677796,
-  properties: {
-    r'amount': PropertySchema(
-      id: 0,
-      name: r'amount',
-      type: IsarType.double,
-    ),
-    r'dateTime': PropertySchema(
-      id: 1,
-      name: r'dateTime',
-      type: IsarType.dateTime,
-    )
-  },
-  estimateSize: _creditPaymentIsarEstimateSize,
-  serialize: _creditPaymentIsarSerialize,
-  deserialize: _creditPaymentIsarDeserialize,
-  deserializeProp: _creditPaymentIsarDeserializeProp,
-  idName: r'id',
-  indexes: {},
-  links: {
-    r'creditAccountLink': LinkSchema(
-      id: -994780482880883161,
-      name: r'creditAccountLink',
-      target: r'AccountIsar',
-      single: true,
-    ),
-    r'spendingTxnLink': LinkSchema(
-      id: -2947234698278629845,
-      name: r'spendingTxnLink',
-      target: r'CreditSpendingIsar',
-      single: true,
-    )
-  },
-  embeddedSchemas: {},
-  getId: _creditPaymentIsarGetId,
-  getLinks: _creditPaymentIsarGetLinks,
-  attach: _creditPaymentIsarAttach,
-  version: '3.1.0+1',
-);
-
-int _creditPaymentIsarEstimateSize(
-  CreditPaymentIsar object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  return bytesCount;
-}
-
-void _creditPaymentIsarSerialize(
-  CreditPaymentIsar object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeDouble(offsets[0], object.amount);
-  writer.writeDateTime(offsets[1], object.dateTime);
-}
-
-CreditPaymentIsar _creditPaymentIsarDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  final object = CreditPaymentIsar();
-  object.amount = reader.readDouble(offsets[0]);
-  object.dateTime = reader.readDateTime(offsets[1]);
-  object.id = id;
-  return object;
-}
-
-P _creditPaymentIsarDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
-    case 0:
-      return (reader.readDouble(offset)) as P;
-    case 1:
-      return (reader.readDateTime(offset)) as P;
-    default:
-      throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-Id _creditPaymentIsarGetId(CreditPaymentIsar object) {
-  return object.id;
-}
-
-List<IsarLinkBase<dynamic>> _creditPaymentIsarGetLinks(
-    CreditPaymentIsar object) {
-  return [object.creditAccountLink, object.spendingTxnLink];
-}
-
-void _creditPaymentIsarAttach(
-    IsarCollection<dynamic> col, Id id, CreditPaymentIsar object) {
-  object.id = id;
-  object.creditAccountLink.attach(
-      col, col.isar.collection<AccountIsar>(), r'creditAccountLink', id);
-  object.spendingTxnLink.attach(
-      col, col.isar.collection<CreditSpendingIsar>(), r'spendingTxnLink', id);
-}
-
-extension CreditPaymentIsarQueryWhereSort
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QWhere> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterWhere> anyId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
-  }
-}
-
-extension CreditPaymentIsarQueryWhere
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QWhereClause> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterWhereClause>
-      idEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterWhereClause>
-      idNotEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterWhereClause>
-      idBetween(
-    Id lowerId,
-    Id upperId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
-extension CreditPaymentIsarQueryFilter
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QFilterCondition> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      amountEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'amount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      amountGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'amount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      amountLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'amount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      amountBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'amount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      dateTimeEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dateTime',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      dateTimeGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dateTime',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      dateTimeLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dateTime',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      dateTimeBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dateTime',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      idEqualTo(Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      idBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
-extension CreditPaymentIsarQueryObject
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QFilterCondition> {}
-
-extension CreditPaymentIsarQueryLinks
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QFilterCondition> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      creditAccountLink(FilterQuery<AccountIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'creditAccountLink');
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      creditAccountLinkIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'creditAccountLink', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
-      spendingTxnLink(FilterQuery<CreditSpendingIsar> q) {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      spendingTxnLink(FilterQuery<TransactionIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'spendingTxnLink');
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterFilterCondition>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       spendingTxnLinkIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'spendingTxnLink', 0, true, 0, true);
@@ -1430,116 +1063,248 @@ extension CreditPaymentIsarQueryLinks
   }
 }
 
-extension CreditPaymentIsarQuerySortBy
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QSortBy> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
-      sortByAmount() {
+extension TransactionIsarQuerySortBy
+    on QueryBuilder<TransactionIsar, TransactionIsar, QSortBy> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> sortByAmount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'amount', Sort.asc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       sortByAmountDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'amount', Sort.desc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       sortByDateTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateTime', Sort.asc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       sortByDateTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateTime', Sort.desc);
     });
   }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByIsInitialTransaction() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByIsInitialTransactionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> sortByNote() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByNoteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByTransactionType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByTransactionTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionType', Sort.desc);
+    });
+  }
 }
 
-extension CreditPaymentIsarQuerySortThenBy
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QSortThenBy> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
-      thenByAmount() {
+extension TransactionIsarQuerySortThenBy
+    on QueryBuilder<TransactionIsar, TransactionIsar, QSortThenBy> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenByAmount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'amount', Sort.asc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       thenByAmountDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'amount', Sort.desc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       thenByDateTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateTime', Sort.asc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       thenByDateTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateTime', Sort.desc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy> thenById() {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QAfterSortBy>
-      thenByIdDesc() {
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByIsInitialTransaction() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByIsInitialTransactionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInitialTransaction', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy> thenByNote() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByNoteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByTransactionType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByTransactionTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionType', Sort.desc);
+    });
+  }
 }
 
-extension CreditPaymentIsarQueryWhereDistinct
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QDistinct> {
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QDistinct>
-      distinctByAmount() {
+extension TransactionIsarQueryWhereDistinct
+    on QueryBuilder<TransactionIsar, TransactionIsar, QDistinct> {
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct> distinctByAmount() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'amount');
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QDistinct>
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
       distinctByDateTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dateTime');
     });
   }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
+      distinctByIsInitialTransaction() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isInitialTransaction');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct> distinctByNote(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'note', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
+      distinctByTransactionType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'transactionType');
+    });
+  }
 }
 
-extension CreditPaymentIsarQueryProperty
-    on QueryBuilder<CreditPaymentIsar, CreditPaymentIsar, QQueryProperty> {
-  QueryBuilder<CreditPaymentIsar, int, QQueryOperations> idProperty() {
+extension TransactionIsarQueryProperty
+    on QueryBuilder<TransactionIsar, TransactionIsar, QQueryProperty> {
+  QueryBuilder<TransactionIsar, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, double, QQueryOperations> amountProperty() {
+  QueryBuilder<TransactionIsar, double, QQueryOperations> amountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'amount');
     });
   }
 
-  QueryBuilder<CreditPaymentIsar, DateTime, QQueryOperations>
-      dateTimeProperty() {
+  QueryBuilder<TransactionIsar, DateTime, QQueryOperations> dateTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dateTime');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, InstallmentDetailsIsar?, QQueryOperations>
+      installmentDetailsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'installmentDetails');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, bool, QQueryOperations>
+      isInitialTransactionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isInitialTransaction');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, String?, QQueryOperations> noteProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'note');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionType, QQueryOperations>
+      transactionTypeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'transactionType');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransferFeeDetailsIsar?, QQueryOperations>
+      transferFeeDetailsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'transferFeeDetails');
     });
   }
 }
@@ -1551,9 +1316,9 @@ extension CreditPaymentIsarQueryProperty
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-const InstallmentDetailsSchema = Schema(
-  name: r'InstallmentDetails',
-  id: 978435878101923127,
+const InstallmentDetailsIsarSchema = Schema(
+  name: r'InstallmentDetailsIsar',
+  id: 8639029811110599612,
   properties: {
     r'amount': PropertySchema(
       id: 0,
@@ -1565,20 +1330,20 @@ const InstallmentDetailsSchema = Schema(
       name: r'interestRate',
       type: IsarType.double,
     ),
-    r'rateBasedOnRemainingInstallmentUnpaid': PropertySchema(
+    r'rateOnRemaining': PropertySchema(
       id: 2,
-      name: r'rateBasedOnRemainingInstallmentUnpaid',
+      name: r'rateOnRemaining',
       type: IsarType.bool,
     )
   },
-  estimateSize: _installmentDetailsEstimateSize,
-  serialize: _installmentDetailsSerialize,
-  deserialize: _installmentDetailsDeserialize,
-  deserializeProp: _installmentDetailsDeserializeProp,
+  estimateSize: _installmentDetailsIsarEstimateSize,
+  serialize: _installmentDetailsIsarSerialize,
+  deserialize: _installmentDetailsIsarDeserialize,
+  deserializeProp: _installmentDetailsIsarDeserializeProp,
 );
 
-int _installmentDetailsEstimateSize(
-  InstallmentDetails object,
+int _installmentDetailsIsarEstimateSize(
+  InstallmentDetailsIsar object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -1586,31 +1351,31 @@ int _installmentDetailsEstimateSize(
   return bytesCount;
 }
 
-void _installmentDetailsSerialize(
-  InstallmentDetails object,
+void _installmentDetailsIsarSerialize(
+  InstallmentDetailsIsar object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.amount);
   writer.writeDouble(offsets[1], object.interestRate);
-  writer.writeBool(offsets[2], object.rateBasedOnRemainingInstallmentUnpaid);
+  writer.writeBool(offsets[2], object.rateOnRemaining);
 }
 
-InstallmentDetails _installmentDetailsDeserialize(
+InstallmentDetailsIsar _installmentDetailsIsarDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = InstallmentDetails();
+  final object = InstallmentDetailsIsar();
   object.amount = reader.readDouble(offsets[0]);
   object.interestRate = reader.readDouble(offsets[1]);
-  object.rateBasedOnRemainingInstallmentUnpaid = reader.readBool(offsets[2]);
+  object.rateOnRemaining = reader.readBool(offsets[2]);
   return object;
 }
 
-P _installmentDetailsDeserializeProp<P>(
+P _installmentDetailsIsarDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -1628,10 +1393,10 @@ P _installmentDetailsDeserializeProp<P>(
   }
 }
 
-extension InstallmentDetailsQueryFilter
-    on QueryBuilder<InstallmentDetails, InstallmentDetails, QFilterCondition> {
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      amountEqualTo(
+extension InstallmentDetailsIsarQueryFilter on QueryBuilder<
+    InstallmentDetailsIsar, InstallmentDetailsIsar, QFilterCondition> {
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> amountEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
@@ -1644,8 +1409,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      amountGreaterThan(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> amountGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1660,8 +1425,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      amountLessThan(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> amountLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1676,8 +1441,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      amountBetween(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> amountBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1696,8 +1461,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      interestRateEqualTo(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> interestRateEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
@@ -1710,8 +1475,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      interestRateGreaterThan(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> interestRateGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1726,8 +1491,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      interestRateLessThan(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> interestRateLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1742,8 +1507,8 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      interestRateBetween(
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> interestRateBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1762,16 +1527,169 @@ extension InstallmentDetailsQueryFilter
     });
   }
 
-  QueryBuilder<InstallmentDetails, InstallmentDetails, QAfterFilterCondition>
-      rateBasedOnRemainingInstallmentUnpaidEqualTo(bool value) {
+  QueryBuilder<InstallmentDetailsIsar, InstallmentDetailsIsar,
+      QAfterFilterCondition> rateOnRemainingEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'rateBasedOnRemainingInstallmentUnpaid',
+        property: r'rateOnRemaining',
         value: value,
       ));
     });
   }
 }
 
-extension InstallmentDetailsQueryObject
-    on QueryBuilder<InstallmentDetails, InstallmentDetails, QFilterCondition> {}
+extension InstallmentDetailsIsarQueryObject on QueryBuilder<
+    InstallmentDetailsIsar, InstallmentDetailsIsar, QFilterCondition> {}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const TransferFeeDetailsIsarSchema = Schema(
+  name: r'TransferFeeDetailsIsar',
+  id: 6163385092036118124,
+  properties: {
+    r'onDestination': PropertySchema(
+      id: 0,
+      name: r'onDestination',
+      type: IsarType.bool,
+    ),
+    r'transferFee': PropertySchema(
+      id: 1,
+      name: r'transferFee',
+      type: IsarType.double,
+    )
+  },
+  estimateSize: _transferFeeDetailsIsarEstimateSize,
+  serialize: _transferFeeDetailsIsarSerialize,
+  deserialize: _transferFeeDetailsIsarDeserialize,
+  deserializeProp: _transferFeeDetailsIsarDeserializeProp,
+);
+
+int _transferFeeDetailsIsarEstimateSize(
+  TransferFeeDetailsIsar object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  return bytesCount;
+}
+
+void _transferFeeDetailsIsarSerialize(
+  TransferFeeDetailsIsar object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeBool(offsets[0], object.onDestination);
+  writer.writeDouble(offsets[1], object.transferFee);
+}
+
+TransferFeeDetailsIsar _transferFeeDetailsIsarDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = TransferFeeDetailsIsar();
+  object.onDestination = reader.readBool(offsets[0]);
+  object.transferFee = reader.readDouble(offsets[1]);
+  return object;
+}
+
+P _transferFeeDetailsIsarDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readBool(offset)) as P;
+    case 1:
+      return (reader.readDouble(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension TransferFeeDetailsIsarQueryFilter on QueryBuilder<
+    TransferFeeDetailsIsar, TransferFeeDetailsIsar, QFilterCondition> {
+  QueryBuilder<TransferFeeDetailsIsar, TransferFeeDetailsIsar,
+      QAfterFilterCondition> onDestinationEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'onDestination',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<TransferFeeDetailsIsar, TransferFeeDetailsIsar,
+      QAfterFilterCondition> transferFeeEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'transferFee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransferFeeDetailsIsar, TransferFeeDetailsIsar,
+      QAfterFilterCondition> transferFeeGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'transferFee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransferFeeDetailsIsar, TransferFeeDetailsIsar,
+      QAfterFilterCondition> transferFeeLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'transferFee',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransferFeeDetailsIsar, TransferFeeDetailsIsar,
+      QAfterFilterCondition> transferFeeBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'transferFee',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+}
+
+extension TransferFeeDetailsIsarQueryObject on QueryBuilder<
+    TransferFeeDetailsIsar, TransferFeeDetailsIsar, QFilterCondition> {}

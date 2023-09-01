@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/persistent/isar_data_store.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_isar.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_tag_isar.dart';
+import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+
+import 'isar_dto/category_tag_isar.dart';
 
 class CategoryRepository {
   CategoryRepository(this.isar);
