@@ -30,11 +30,11 @@ class AccountIsar {
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
   /// Only specify this property if type is [AccountType.credit]
-  CreditAccountDetails? creditAccountDetails;
+  CreditAccountDetailsIsar? creditAccountDetails;
 }
 
 @Embedded()
-class CreditAccountDetails {
+class CreditAccountDetailsIsar {
   late double creditBalance;
 
   /// As in percent. This interestRate is only count

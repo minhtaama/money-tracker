@@ -26,7 +26,7 @@ const AccountIsarSchema = CollectionSchema(
       id: 1,
       name: r'creditAccountDetails',
       type: IsarType.object,
-      target: r'CreditAccountDetails',
+      target: r'CreditAccountDetailsIsar',
     ),
     r'iconCategory': PropertySchema(
       id: 2,
@@ -77,7 +77,9 @@ const AccountIsarSchema = CollectionSchema(
       linkName: r'toAccountLink',
     )
   },
-  embeddedSchemas: {r'CreditAccountDetails': CreditAccountDetailsSchema},
+  embeddedSchemas: {
+    r'CreditAccountDetailsIsar': CreditAccountDetailsIsarSchema
+  },
   getId: _accountIsarGetId,
   getLinks: _accountIsarGetLinks,
   attach: _accountIsarAttach,
@@ -94,8 +96,8 @@ int _accountIsarEstimateSize(
     final value = object.creditAccountDetails;
     if (value != null) {
       bytesCount += 3 +
-          CreditAccountDetailsSchema.estimateSize(
-              value, allOffsets[CreditAccountDetails]!, allOffsets);
+          CreditAccountDetailsIsarSchema.estimateSize(
+              value, allOffsets[CreditAccountDetailsIsar]!, allOffsets);
     }
   }
   bytesCount += 3 + object.iconCategory.length * 3;
@@ -110,10 +112,10 @@ void _accountIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.colorIndex);
-  writer.writeObject<CreditAccountDetails>(
+  writer.writeObject<CreditAccountDetailsIsar>(
     offsets[1],
     allOffsets,
-    CreditAccountDetailsSchema.serialize,
+    CreditAccountDetailsIsarSchema.serialize,
     object.creditAccountDetails,
   );
   writer.writeString(offsets[2], object.iconCategory);
@@ -131,9 +133,10 @@ AccountIsar _accountIsarDeserialize(
 ) {
   final object = AccountIsar();
   object.colorIndex = reader.readLong(offsets[0]);
-  object.creditAccountDetails = reader.readObjectOrNull<CreditAccountDetails>(
+  object.creditAccountDetails =
+      reader.readObjectOrNull<CreditAccountDetailsIsar>(
     offsets[1],
-    CreditAccountDetailsSchema.deserialize,
+    CreditAccountDetailsIsarSchema.deserialize,
     allOffsets,
   );
   object.iconCategory = reader.readString(offsets[2]);
@@ -157,9 +160,9 @@ P _accountIsarDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readObjectOrNull<CreditAccountDetails>(
+      return (reader.readObjectOrNull<CreditAccountDetailsIsar>(
         offset,
-        CreditAccountDetailsSchema.deserialize,
+        CreditAccountDetailsIsarSchema.deserialize,
         allOffsets,
       )) as P;
     case 2:
@@ -862,7 +865,7 @@ extension AccountIsarQueryFilter
 extension AccountIsarQueryObject
     on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
   QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditAccountDetails(FilterQuery<CreditAccountDetails> q) {
+      creditAccountDetails(FilterQuery<CreditAccountDetailsIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'creditAccountDetails');
     });
@@ -1221,7 +1224,7 @@ extension AccountIsarQueryProperty
     });
   }
 
-  QueryBuilder<AccountIsar, CreditAccountDetails?, QQueryOperations>
+  QueryBuilder<AccountIsar, CreditAccountDetailsIsar?, QQueryOperations>
       creditAccountDetailsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'creditAccountDetails');
@@ -1266,9 +1269,9 @@ extension AccountIsarQueryProperty
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-const CreditAccountDetailsSchema = Schema(
-  name: r'CreditAccountDetails',
-  id: -4910354990362885540,
+const CreditAccountDetailsIsarSchema = Schema(
+  name: r'CreditAccountDetailsIsar',
+  id: -2372221120124200923,
   properties: {
     r'creditBalance': PropertySchema(
       id: 0,
@@ -1291,14 +1294,14 @@ const CreditAccountDetailsSchema = Schema(
       type: IsarType.long,
     )
   },
-  estimateSize: _creditAccountDetailsEstimateSize,
-  serialize: _creditAccountDetailsSerialize,
-  deserialize: _creditAccountDetailsDeserialize,
-  deserializeProp: _creditAccountDetailsDeserializeProp,
+  estimateSize: _creditAccountDetailsIsarEstimateSize,
+  serialize: _creditAccountDetailsIsarSerialize,
+  deserialize: _creditAccountDetailsIsarDeserialize,
+  deserializeProp: _creditAccountDetailsIsarDeserializeProp,
 );
 
-int _creditAccountDetailsEstimateSize(
-  CreditAccountDetails object,
+int _creditAccountDetailsIsarEstimateSize(
+  CreditAccountDetailsIsar object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -1306,8 +1309,8 @@ int _creditAccountDetailsEstimateSize(
   return bytesCount;
 }
 
-void _creditAccountDetailsSerialize(
-  CreditAccountDetails object,
+void _creditAccountDetailsIsarSerialize(
+  CreditAccountDetailsIsar object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -1318,13 +1321,13 @@ void _creditAccountDetailsSerialize(
   writer.writeLong(offsets[3], object.statementDay);
 }
 
-CreditAccountDetails _creditAccountDetailsDeserialize(
+CreditAccountDetailsIsar _creditAccountDetailsIsarDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = CreditAccountDetails();
+  final object = CreditAccountDetailsIsar();
   object.creditBalance = reader.readDouble(offsets[0]);
   object.interestRate = reader.readDouble(offsets[1]);
   object.paymentDueDay = reader.readLong(offsets[2]);
@@ -1332,7 +1335,7 @@ CreditAccountDetails _creditAccountDetailsDeserialize(
   return object;
 }
 
-P _creditAccountDetailsDeserializeProp<P>(
+P _creditAccountDetailsIsarDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -1352,9 +1355,9 @@ P _creditAccountDetailsDeserializeProp<P>(
   }
 }
 
-extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
-    CreditAccountDetails, QFilterCondition> {
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
+    CreditAccountDetailsIsar, CreditAccountDetailsIsar, QFilterCondition> {
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> creditBalanceEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -1368,7 +1371,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> creditBalanceGreaterThan(
     double value, {
     bool include = false,
@@ -1384,7 +1387,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> creditBalanceLessThan(
     double value, {
     bool include = false,
@@ -1400,7 +1403,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> creditBalanceBetween(
     double lower,
     double upper, {
@@ -1420,7 +1423,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> interestRateEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -1434,7 +1437,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> interestRateGreaterThan(
     double value, {
     bool include = false,
@@ -1450,7 +1453,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> interestRateLessThan(
     double value, {
     bool include = false,
@@ -1466,7 +1469,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> interestRateBetween(
     double lower,
     double upper, {
@@ -1486,7 +1489,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> paymentDueDayEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1496,7 +1499,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> paymentDueDayGreaterThan(
     int value, {
     bool include = false,
@@ -1510,7 +1513,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> paymentDueDayLessThan(
     int value, {
     bool include = false,
@@ -1524,7 +1527,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> paymentDueDayBetween(
     int lower,
     int upper, {
@@ -1542,7 +1545,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> statementDayEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1552,7 +1555,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> statementDayGreaterThan(
     int value, {
     bool include = false,
@@ -1566,7 +1569,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> statementDayLessThan(
     int value, {
     bool include = false,
@@ -1580,7 +1583,7 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
     });
   }
 
-  QueryBuilder<CreditAccountDetails, CreditAccountDetails,
+  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
       QAfterFilterCondition> statementDayBetween(
     int lower,
     int upper, {
@@ -1599,5 +1602,5 @@ extension CreditAccountDetailsQueryFilter on QueryBuilder<CreditAccountDetails,
   }
 }
 
-extension CreditAccountDetailsQueryObject on QueryBuilder<CreditAccountDetails,
-    CreditAccountDetails, QFilterCondition> {}
+extension CreditAccountDetailsIsarQueryObject on QueryBuilder<
+    CreditAccountDetailsIsar, CreditAccountDetailsIsar, QFilterCondition> {}

@@ -99,10 +99,10 @@ class TransactionRepository {
       required String? note,
       required double? fee,
       required bool? isChargeOnDestinationAccount}) async {
-    TransferFeeDetailsIsar? feeDetails;
+    TransferFeeIsar? feeDetails;
     if (fee != null && isChargeOnDestinationAccount != null) {
-      feeDetails = TransferFeeDetailsIsar()
-        ..transferFee = fee
+      feeDetails = TransferFeeIsar()
+        ..amount = fee
         ..onDestination = isChargeOnDestinationAccount;
     }
     final newTransaction = TransactionIsar()
@@ -111,7 +111,7 @@ class TransactionRepository {
       ..amount = amount
       ..accountLink.value = account
       ..toAccountLink.value = toAccount
-      ..transferFeeDetails = feeDetails
+      ..transferFeeIsar = feeDetails
       ..note = note;
 
     await isar.writeTxn(() async {
@@ -131,7 +131,7 @@ class TransactionRepository {
     required AccountIsar account,
     required CategoryTagIsar? tag,
     required String? note,
-    required InstallmentDetailsIsar? installmentDetails,
+    required InstallmentIsar? installmentDetails,
   }) async {
     final txn = TransactionIsar()
       ..transactionType = TransactionType.creditSpending
@@ -141,7 +141,7 @@ class TransactionRepository {
       ..categoryLink.value = category
       ..categoryTagLink.value = tag
       ..note = note
-      ..installmentDetails = installmentDetails;
+      ..installmentIsar = installmentDetails;
 
     await isar.writeTxn(() async {
       // Put the `txn` to the TransactionIsar collection

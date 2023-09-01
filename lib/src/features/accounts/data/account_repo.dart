@@ -53,10 +53,10 @@ class AccountRepository {
     required double? interestRate,
   }) async {
     TransactionIsar? initialTransaction;
-    CreditAccountDetails? creditAccountDetails;
+    CreditAccountDetailsIsar? creditAccountDetails;
 
     if (type == AccountType.credit) {
-      creditAccountDetails = CreditAccountDetails()
+      creditAccountDetails = CreditAccountDetailsIsar()
         ..interestRate = interestRate!
         ..statementDay = statementDay!
         ..paymentDueDay = paymentDueDay!
