@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/data/isar_dto/account_isar.dart';
+import '../../../accounts/domain/account.dart';
 import '../../../category/data/isar_dto/category_isar.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';
@@ -44,22 +45,22 @@ class CategoryFormSelector extends FormField<CategoryIsar> {
             });
 }
 
-class AccountFormSelector extends FormField<AccountIsar> {
+class AccountFormSelector extends FormField<Account> {
   AccountFormSelector({
     super.key,
     required AccountType accountType,
-    required ValueChanged<AccountIsar?> onChangedAccount,
-    AccountIsar? otherSelectedAccount,
-    FormFieldSetter<AccountIsar>? onSaved,
-    FormFieldValidator<AccountIsar>? validator,
-    AccountIsar? initialValue,
+    required ValueChanged<Account?> onChangedAccount,
+    Account? otherSelectedAccount,
+    FormFieldSetter<Account>? onSaved,
+    FormFieldValidator<Account>? validator,
+    Account? initialValue,
     AutovalidateMode? autovalidateMode = AutovalidateMode.onUserInteraction,
   }) : super(
             onSaved: onSaved,
             validator: validator,
             initialValue: initialValue,
             autovalidateMode: autovalidateMode,
-            builder: (FormFieldState<AccountIsar> state) {
+            builder: (FormFieldState<Account> state) {
               return Stack(
                 children: [
                   AccountSelector(

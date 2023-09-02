@@ -6,7 +6,6 @@ import 'package:money_tracker_app/src/features/category/domain/category.dart';
 @immutable
 class CategoryTag extends IsarDomain {
   final String name;
-  final Category? category;
 
   static CategoryTag? fromIsar(CategoryTagIsar? categoryTagIsar) {
     if (categoryTagIsar == null) {
@@ -16,9 +15,8 @@ class CategoryTag extends IsarDomain {
     return CategoryTag._(
       categoryTagIsar.id,
       categoryTagIsar.name,
-      Category.fromIsar(categoryTagIsar.categoryLink.value),
     );
   }
 
-  const CategoryTag._(super.id, this.name, this.category);
+  const CategoryTag._(super.id, this.name);
 }

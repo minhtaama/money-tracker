@@ -16,6 +16,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
+import '../../accounts/domain/account.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../category/data/isar_dto/category_isar.dart';
 import '../../category/data/isar_dto/category_tag_isar.dart';
@@ -38,8 +39,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
   String? note;
   CategoryTagIsar? tag;
   CategoryIsar? category;
-  AccountIsar? account;
-  AccountIsar? toAccount;
+  Account? account;
+  Account? toAccount;
 
   double? _formatToDouble(String formattedValue) {
     try {

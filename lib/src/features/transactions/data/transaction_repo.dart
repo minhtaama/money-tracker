@@ -9,6 +9,7 @@ import 'package:async/async.dart';
 import '../../../../persistent/isar_data_store.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/data/isar_dto/account_isar.dart';
+import '../../accounts/domain/account.dart';
 
 class TransactionRepository {
   TransactionRepository(this.isar);
@@ -40,7 +41,7 @@ class TransactionRepository {
     required double amount,
     required CategoryIsar category,
     required CategoryTagIsar? tag,
-    required AccountIsar account,
+    required Account account,
     required String? note,
   }) async {
     final newTransaction = TransactionIsar()
@@ -48,7 +49,7 @@ class TransactionRepository {
       ..dateTime = dateTime
       ..amount = amount
       ..categoryLink.value = category
-      ..accountLink.value = account
+      ..accountLink.value = isar.accountIsars.getSync(account.id)
       ..categoryTagLink.value = tag
       ..note = note;
 
@@ -68,7 +69,7 @@ class TransactionRepository {
     required double amount,
     required CategoryIsar category,
     required CategoryTagIsar? tag,
-    required AccountIsar account,
+    required Account account,
     required String? note,
   }) async {
     final newTransaction = TransactionIsar()
@@ -76,7 +77,7 @@ class TransactionRepository {
       ..dateTime = dateTime
       ..amount = amount
       ..categoryLink.value = category
-      ..accountLink.value = account
+      ..accountLink.value = isar.accountIsars.getSync(account.id)
       ..categoryTagLink.value = tag
       ..note = note;
 
@@ -94,8 +95,8 @@ class TransactionRepository {
   Future<void> writeNewTransferTxn(
       {required DateTime dateTime,
       required double amount,
-      required AccountIsar account,
-      required AccountIsar toAccount,
+      required Account account,
+      required Account toAccount,
       required String? note,
       required double? fee,
       required bool? isChargeOnDestinationAccount}) async {
@@ -109,8 +110,8 @@ class TransactionRepository {
       ..transactionType = TransactionType.transfer
       ..dateTime = dateTime
       ..amount = amount
-      ..accountLink.value = account
-      ..toAccountLink.value = toAccount
+      ..accountLink.value = isar.accountIsars.getSync(account.id)
+      ..toAccountLink.value = isar.accountIsars.getSync(toAccount.id)
       ..transferFeeIsar = feeDetails
       ..note = note;
 

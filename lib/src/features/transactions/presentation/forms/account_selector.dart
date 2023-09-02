@@ -4,12 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
-import '../../../accounts/data/isar_dto/account_isar.dart';
+import '../../../accounts/domain/account.dart';
 
 class AccountSelector extends ConsumerStatefulWidget {
   const AccountSelector({
@@ -19,16 +18,16 @@ class AccountSelector extends ConsumerStatefulWidget {
     this.otherSelectedAccount,
   }) : super(key: key);
 
-  final ValueChanged<AccountIsar?> onChangedAccount;
+  final ValueChanged<Account?> onChangedAccount;
   final AccountType accountType;
-  final AccountIsar? otherSelectedAccount;
+  final Account? otherSelectedAccount;
 
   @override
   ConsumerState<AccountSelector> createState() => _AccountSelectorState();
 }
 
 class _AccountSelectorState extends ConsumerState<AccountSelector> {
-  AccountIsar? currentAccount;
+  Account? currentAccount;
 
   @override
   void didChangeDependencies() {
@@ -43,14 +42,10 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       labelSize: 15,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      iconPath: currentAccount != null
-          ? AppIcons.fromCategoryAndIndex(currentAccount!.iconCategory, currentAccount!.iconIndex)
-          : AppIcons.add,
-      backgroundColor: currentAccount != null
-          ? AppColors.allColorsUserCanPick[currentAccount!.colorIndex][0]
-          : Colors.transparent,
+      iconPath: currentAccount != null ? currentAccount!.iconPath : AppIcons.add,
+      backgroundColor: currentAccount != null ? currentAccount!.backgroundColor : Colors.transparent,
       color: currentAccount != null
-          ? AppColors.allColorsUserCanPick[currentAccount!.colorIndex][1]
+          ? currentAccount!.color
           : context.appTheme.backgroundNegative.withOpacity(0.4),
       height: null,
       width: null,
@@ -60,9 +55,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
               color: context.appTheme.backgroundNegative.withOpacity(0.4),
             ),
       onTap: () async {
-        List<AccountIsar> accountList = ref.read(accountRepositoryProvider).getList(widget.accountType);
+        List<Account> accountList = ref.read(accountRepositoryProvider).getList(widget.accountType);
 
-        final returnedValue = await showCustomModalBottomSheet<AccountIsar>(
+        final returnedValue = await showCustomModalBottomSheet<Account>(
           context: context,
           child: accountList.isNotEmpty
               ? Column(
@@ -85,8 +80,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                         return IgnorePointer(
                           ignoring: widget.otherSelectedAccount?.id == account.id,
                           child: IconWithTextButton(
-                            iconPath:
-                                AppIcons.fromCategoryAndIndex(account.iconCategory, account.iconIndex),
+                            iconPath: account.iconPath,
                             label: account.name,
                             isDisabled: widget.otherSelectedAccount?.id == account.id,
                             labelSize: 18,
@@ -94,16 +88,16 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             border: Border.all(
                               color: currentAccount?.id == account.id
-                                  ? AppColors.allColorsUserCanPick[account.colorIndex][0]
+                                  ? account.backgroundColor
                                   : context.appTheme.backgroundNegative.withOpacity(0.4),
                             ),
                             backgroundColor: currentAccount?.id == account.id
-                                ? AppColors.allColorsUserCanPick[account.colorIndex][0]
+                                ? account.backgroundColor
                                 : Colors.transparent,
                             color: currentAccount?.id == account.id
-                                ? AppColors.allColorsUserCanPick[account.colorIndex][1]
+                                ? account.color
                                 : context.appTheme.backgroundNegative,
-                            onTap: () => context.pop<AccountIsar>(account),
+                            onTap: () => context.pop<Account>(account),
                             height: null,
                             width: null,
                           ),
