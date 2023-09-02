@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import '../../../../persistent/isar_domain.dart';
 import '../../../utils/enums.dart';
 import '../../transactions/domain/transaction.dart';
+import '../data/isar_dto/account_isar.dart';
 
 @immutable
 class Account extends IsarDomain {
@@ -10,28 +12,50 @@ class Account extends IsarDomain {
 
   final String name;
   final Color color;
-  final SvgIcon icon;
+  final Color backgroundColor;
+  final String iconPath;
 
   final List<Transaction> txnOfThisAccount;
   final List<Transaction> txnToThisAccount;
   final CreditDetails? creditDetails;
 
-  // factory Account.fromIsar(AccountIsar accountIsar) {
-  //   return Account
-  // }
+  static Account? fromIsar(AccountIsar? accountIsar) {
+    if (accountIsar == null) {
+      return null;
+    }
 
-  Account._(
+    final txnOfThisAccount =
+        accountIsar.txnOfThisAccountBacklinks.map((txn) => Transaction.fromIsar(txn)).toList();
+    final txnToThisAccount =
+        accountIsar.txnToThisAccountBacklinks.map((txn) => Transaction.fromIsar(txn)).toList();
+
+    return Account._(
+      accountIsar.id,
+      type: accountIsar.type,
+      name: accountIsar.name,
+      color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
+      backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
+      iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
+      txnOfThisAccount: txnOfThisAccount,
+      txnToThisAccount: txnToThisAccount,
+      creditDetails: CreditDetails.fromIsar(accountIsar),
+    );
+  }
+
+  const Account._(
     super.id, {
     required this.type,
     required this.name,
     required this.color,
-    required this.icon,
+    required this.backgroundColor,
+    required this.iconPath,
     required this.txnOfThisAccount,
     required this.txnToThisAccount,
     required this.creditDetails,
   });
 }
 
+@immutable
 class CreditDetails {
   final double creditBalance;
 
@@ -42,7 +66,19 @@ class CreditDetails {
 
   final int paymentDueDay;
 
-  CreditDetails({
+  static CreditDetails? fromIsar(AccountIsar accountIsar) {
+    if (accountIsar.creditDetailsIsar == null) {
+      return null;
+    } else {
+      return CreditDetails._(
+          creditBalance: accountIsar.creditDetailsIsar!.creditBalance,
+          interestRate: accountIsar.creditDetailsIsar!.interestRate,
+          statementDay: accountIsar.creditDetailsIsar!.statementDay,
+          paymentDueDay: accountIsar.creditDetailsIsar!.paymentDueDay);
+    }
+  }
+
+  const CreditDetails._({
     required this.creditBalance,
     required this.interestRate,
     required this.statementDay,

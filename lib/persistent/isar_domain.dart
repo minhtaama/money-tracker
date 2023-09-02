@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 abstract class IsarDomain {
-  IsarDomain(this.id);
+  const IsarDomain(this.id);
 
   final int id;
 }

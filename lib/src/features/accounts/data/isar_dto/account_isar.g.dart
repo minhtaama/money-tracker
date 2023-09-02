@@ -77,9 +77,7 @@ const AccountIsarSchema = CollectionSchema(
       linkName: r'toAccountLink',
     )
   },
-  embeddedSchemas: {
-    r'CreditAccountDetailsIsar': CreditAccountDetailsIsarSchema
-  },
+  embeddedSchemas: {r'CreditAccountDetailsIsar': CreditAccountDetailsIsarSchema},
   getId: _accountIsarGetId,
   getLinks: _accountIsarGetLinks,
   attach: _accountIsarAttach,
@@ -93,11 +91,10 @@ int _accountIsarEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.creditAccountDetails;
+    final value = object.creditDetailsIsar;
     if (value != null) {
       bytesCount += 3 +
-          CreditAccountDetailsIsarSchema.estimateSize(
-              value, allOffsets[CreditAccountDetailsIsar]!, allOffsets);
+          CreditAccountDetailsIsarSchema.estimateSize(value, allOffsets[CreditDetailsIsar]!, allOffsets);
     }
   }
   bytesCount += 3 + object.iconCategory.length * 3;
@@ -112,11 +109,11 @@ void _accountIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.colorIndex);
-  writer.writeObject<CreditAccountDetailsIsar>(
+  writer.writeObject<CreditDetailsIsar>(
     offsets[1],
     allOffsets,
     CreditAccountDetailsIsarSchema.serialize,
-    object.creditAccountDetails,
+    object.creditDetailsIsar,
   );
   writer.writeString(offsets[2], object.iconCategory);
   writer.writeLong(offsets[3], object.iconIndex);
@@ -133,8 +130,7 @@ AccountIsar _accountIsarDeserialize(
 ) {
   final object = AccountIsar();
   object.colorIndex = reader.readLong(offsets[0]);
-  object.creditAccountDetails =
-      reader.readObjectOrNull<CreditAccountDetailsIsar>(
+  object.creditDetailsIsar = reader.readObjectOrNull<CreditDetailsIsar>(
     offsets[1],
     CreditAccountDetailsIsarSchema.deserialize,
     allOffsets,
@@ -144,9 +140,7 @@ AccountIsar _accountIsarDeserialize(
   object.id = id;
   object.name = reader.readString(offsets[4]);
   object.order = reader.readLongOrNull(offsets[5]);
-  object.type =
-      _AccountIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
-          AccountType.regular;
+  object.type = _AccountIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ?? AccountType.regular;
   return object;
 }
 
@@ -160,7 +154,7 @@ P _accountIsarDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readObjectOrNull<CreditAccountDetailsIsar>(
+      return (reader.readObjectOrNull<CreditDetailsIsar>(
         offset,
         CreditAccountDetailsIsarSchema.deserialize,
         allOffsets,
@@ -174,8 +168,7 @@ P _accountIsarDeserializeProp<P>(
     case 5:
       return (reader.readLongOrNull(offset)) as P;
     case 6:
-      return (_AccountIsartypeValueEnumMap[reader.readByteOrNull(offset)] ??
-          AccountType.regular) as P;
+      return (_AccountIsartypeValueEnumMap[reader.readByteOrNull(offset)] ?? AccountType.regular) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -198,17 +191,15 @@ List<IsarLinkBase<dynamic>> _accountIsarGetLinks(AccountIsar object) {
   return [object.txnOfThisAccountBacklinks, object.txnToThisAccountBacklinks];
 }
 
-void _accountIsarAttach(
-    IsarCollection<dynamic> col, Id id, AccountIsar object) {
+void _accountIsarAttach(IsarCollection<dynamic> col, Id id, AccountIsar object) {
   object.id = id;
-  object.txnOfThisAccountBacklinks.attach(col,
-      col.isar.collection<TransactionIsar>(), r'txnOfThisAccountBacklinks', id);
-  object.txnToThisAccountBacklinks.attach(col,
-      col.isar.collection<TransactionIsar>(), r'txnToThisAccountBacklinks', id);
+  object.txnOfThisAccountBacklinks
+      .attach(col, col.isar.collection<TransactionIsar>(), r'txnOfThisAccountBacklinks', id);
+  object.txnToThisAccountBacklinks
+      .attach(col, col.isar.collection<TransactionIsar>(), r'txnToThisAccountBacklinks', id);
 }
 
-extension AccountIsarQueryWhereSort
-    on QueryBuilder<AccountIsar, AccountIsar, QWhere> {
+extension AccountIsarQueryWhereSort on QueryBuilder<AccountIsar, AccountIsar, QWhere> {
   QueryBuilder<AccountIsar, AccountIsar, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -216,8 +207,7 @@ extension AccountIsarQueryWhereSort
   }
 }
 
-extension AccountIsarQueryWhere
-    on QueryBuilder<AccountIsar, AccountIsar, QWhereClause> {
+extension AccountIsarQueryWhere on QueryBuilder<AccountIsar, AccountIsar, QWhereClause> {
   QueryBuilder<AccountIsar, AccountIsar, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
@@ -227,8 +217,7 @@ extension AccountIsarQueryWhere
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterWhereClause> idNotEqualTo(
-      Id id) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -259,8 +248,7 @@ extension AccountIsarQueryWhere
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -285,10 +273,8 @@ extension AccountIsarQueryWhere
   }
 }
 
-extension AccountIsarQueryFilter
-    on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      colorIndexEqualTo(int value) {
+extension AccountIsarQueryFilter on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> colorIndexEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'colorIndex',
@@ -297,8 +283,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      colorIndexGreaterThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> colorIndexGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -311,8 +296,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      colorIndexLessThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> colorIndexLessThan(
     int value, {
     bool include = false,
   }) {
@@ -325,8 +309,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      colorIndexBetween(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> colorIndexBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -343,8 +326,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditAccountDetailsIsNull() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> creditAccountDetailsIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'creditAccountDetails',
@@ -352,8 +334,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditAccountDetailsIsNotNull() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> creditAccountDetailsIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'creditAccountDetails',
@@ -361,8 +342,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryEqualTo(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -375,8 +355,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryGreaterThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -391,8 +370,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryLessThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -407,8 +385,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryBetween(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -427,8 +404,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryStartsWith(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -441,8 +417,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryEndsWith(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -455,8 +430,8 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryContains(String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'iconCategory',
@@ -466,8 +441,8 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryMatches(String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'iconCategory',
@@ -477,8 +452,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryIsEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'iconCategory',
@@ -487,8 +461,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconCategoryIsNotEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconCategoryIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'iconCategory',
@@ -497,8 +470,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconIndexEqualTo(int value) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconIndexEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'iconIndex',
@@ -507,8 +479,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconIndexGreaterThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconIndexGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -521,8 +492,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconIndexLessThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconIndexLessThan(
     int value, {
     bool include = false,
   }) {
@@ -535,8 +505,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      iconIndexBetween(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> iconIndexBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -553,8 +522,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> idEqualTo(
-      Id value) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -694,8 +662,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> nameContains(
-      String value,
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> nameContains(String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -706,8 +673,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> nameMatches(
-      String pattern,
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> nameMatches(String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -727,8 +693,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      nameIsNotEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'name',
@@ -745,8 +710,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      orderIsNotNull() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> orderIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'order',
@@ -754,8 +718,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> orderEqualTo(
-      int? value) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> orderEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'order',
@@ -764,8 +727,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      orderGreaterThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> orderGreaterThan(
     int? value, {
     bool include = false,
   }) {
@@ -808,8 +770,7 @@ extension AccountIsarQueryFilter
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> typeEqualTo(
-      AccountType value) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> typeEqualTo(AccountType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'type',
@@ -862,56 +823,48 @@ extension AccountIsarQueryFilter
   }
 }
 
-extension AccountIsarQueryObject
-    on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      creditAccountDetails(FilterQuery<CreditAccountDetailsIsar> q) {
+extension AccountIsarQueryObject on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> creditAccountDetails(
+      FilterQuery<CreditDetailsIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'creditAccountDetails');
     });
   }
 }
 
-extension AccountIsarQueryLinks
-    on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnOfThisAccountBacklinks(FilterQuery<TransactionIsar> q) {
+extension AccountIsarQueryLinks on QueryBuilder<AccountIsar, AccountIsar, QFilterCondition> {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnOfThisAccountBacklinks(
+      FilterQuery<TransactionIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'txnOfThisAccountBacklinks');
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnOfThisAccountBacklinksLengthEqualTo(int length) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnOfThisAccountBacklinksLengthEqualTo(
+      int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnOfThisAccountBacklinks', length, true, length, true);
+      return query.linkLength(r'txnOfThisAccountBacklinks', length, true, length, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnOfThisAccountBacklinksIsEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnOfThisAccountBacklinksIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'txnOfThisAccountBacklinks', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnOfThisAccountBacklinksIsNotEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnOfThisAccountBacklinksIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnOfThisAccountBacklinks', 0, false, 999999, true);
+      return query.linkLength(r'txnOfThisAccountBacklinks', 0, false, 999999, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnOfThisAccountBacklinksLengthLessThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnOfThisAccountBacklinksLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnOfThisAccountBacklinks', 0, true, length, include);
+      return query.linkLength(r'txnOfThisAccountBacklinks', 0, true, length, include);
     });
   }
 
@@ -921,62 +874,53 @@ extension AccountIsarQueryLinks
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnOfThisAccountBacklinks', length, include, 999999, true);
+      return query.linkLength(r'txnOfThisAccountBacklinks', length, include, 999999, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnOfThisAccountBacklinksLengthBetween(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnOfThisAccountBacklinksLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'txnOfThisAccountBacklinks', lower, includeLower,
-          upper, includeUpper);
+      return query.linkLength(r'txnOfThisAccountBacklinks', lower, includeLower, upper, includeUpper);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnToThisAccountBacklinks(FilterQuery<TransactionIsar> q) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnToThisAccountBacklinks(
+      FilterQuery<TransactionIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'txnToThisAccountBacklinks');
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnToThisAccountBacklinksLengthEqualTo(int length) {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnToThisAccountBacklinksLengthEqualTo(
+      int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnToThisAccountBacklinks', length, true, length, true);
+      return query.linkLength(r'txnToThisAccountBacklinks', length, true, length, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnToThisAccountBacklinksIsEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnToThisAccountBacklinksIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'txnToThisAccountBacklinks', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnToThisAccountBacklinksIsNotEmpty() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnToThisAccountBacklinksIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnToThisAccountBacklinks', 0, false, 999999, true);
+      return query.linkLength(r'txnToThisAccountBacklinks', 0, false, 999999, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnToThisAccountBacklinksLengthLessThan(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnToThisAccountBacklinksLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnToThisAccountBacklinks', 0, true, length, include);
+      return query.linkLength(r'txnToThisAccountBacklinks', 0, true, length, include);
     });
   }
 
@@ -986,27 +930,23 @@ extension AccountIsarQueryLinks
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'txnToThisAccountBacklinks', length, include, 999999, true);
+      return query.linkLength(r'txnToThisAccountBacklinks', length, include, 999999, true);
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition>
-      txnToThisAccountBacklinksLengthBetween(
+  QueryBuilder<AccountIsar, AccountIsar, QAfterFilterCondition> txnToThisAccountBacklinksLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'txnToThisAccountBacklinks', lower, includeLower,
-          upper, includeUpper);
+      return query.linkLength(r'txnToThisAccountBacklinks', lower, includeLower, upper, includeUpper);
     });
   }
 }
 
-extension AccountIsarQuerySortBy
-    on QueryBuilder<AccountIsar, AccountIsar, QSortBy> {
+extension AccountIsarQuerySortBy on QueryBuilder<AccountIsar, AccountIsar, QSortBy> {
   QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> sortByColorIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'colorIndex', Sort.asc);
@@ -1025,8 +965,7 @@ extension AccountIsarQuerySortBy
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy>
-      sortByIconCategoryDesc() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> sortByIconCategoryDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'iconCategory', Sort.desc);
     });
@@ -1081,8 +1020,7 @@ extension AccountIsarQuerySortBy
   }
 }
 
-extension AccountIsarQuerySortThenBy
-    on QueryBuilder<AccountIsar, AccountIsar, QSortThenBy> {
+extension AccountIsarQuerySortThenBy on QueryBuilder<AccountIsar, AccountIsar, QSortThenBy> {
   QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> thenByColorIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'colorIndex', Sort.asc);
@@ -1101,8 +1039,7 @@ extension AccountIsarQuerySortThenBy
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy>
-      thenByIconCategoryDesc() {
+  QueryBuilder<AccountIsar, AccountIsar, QAfterSortBy> thenByIconCategoryDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'iconCategory', Sort.desc);
     });
@@ -1169,16 +1106,14 @@ extension AccountIsarQuerySortThenBy
   }
 }
 
-extension AccountIsarQueryWhereDistinct
-    on QueryBuilder<AccountIsar, AccountIsar, QDistinct> {
+extension AccountIsarQueryWhereDistinct on QueryBuilder<AccountIsar, AccountIsar, QDistinct> {
   QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByColorIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'colorIndex');
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByIconCategory(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByIconCategory({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'iconCategory', caseSensitive: caseSensitive);
     });
@@ -1190,8 +1125,7 @@ extension AccountIsarQueryWhereDistinct
     });
   }
 
-  QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AccountIsar, AccountIsar, QDistinct> distinctByName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
@@ -1210,8 +1144,7 @@ extension AccountIsarQueryWhereDistinct
   }
 }
 
-extension AccountIsarQueryProperty
-    on QueryBuilder<AccountIsar, AccountIsar, QQueryProperty> {
+extension AccountIsarQueryProperty on QueryBuilder<AccountIsar, AccountIsar, QQueryProperty> {
   QueryBuilder<AccountIsar, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
@@ -1224,8 +1157,7 @@ extension AccountIsarQueryProperty
     });
   }
 
-  QueryBuilder<AccountIsar, CreditAccountDetailsIsar?, QQueryOperations>
-      creditAccountDetailsProperty() {
+  QueryBuilder<AccountIsar, CreditDetailsIsar?, QQueryOperations> creditAccountDetailsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'creditAccountDetails');
     });
@@ -1301,7 +1233,7 @@ const CreditAccountDetailsIsarSchema = Schema(
 );
 
 int _creditAccountDetailsIsarEstimateSize(
-  CreditAccountDetailsIsar object,
+  CreditDetailsIsar object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -1310,7 +1242,7 @@ int _creditAccountDetailsIsarEstimateSize(
 }
 
 void _creditAccountDetailsIsarSerialize(
-  CreditAccountDetailsIsar object,
+  CreditDetailsIsar object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -1321,13 +1253,13 @@ void _creditAccountDetailsIsarSerialize(
   writer.writeLong(offsets[3], object.statementDay);
 }
 
-CreditAccountDetailsIsar _creditAccountDetailsIsarDeserialize(
+CreditDetailsIsar _creditAccountDetailsIsarDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = CreditAccountDetailsIsar();
+  final object = CreditDetailsIsar();
   object.creditBalance = reader.readDouble(offsets[0]);
   object.interestRate = reader.readDouble(offsets[1]);
   object.paymentDueDay = reader.readLong(offsets[2]);
@@ -1355,10 +1287,9 @@ P _creditAccountDetailsIsarDeserializeProp<P>(
   }
 }
 
-extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
-    CreditAccountDetailsIsar, CreditAccountDetailsIsar, QFilterCondition> {
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> creditBalanceEqualTo(
+extension CreditAccountDetailsIsarQueryFilter
+    on QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QFilterCondition> {
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> creditBalanceEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
@@ -1371,8 +1302,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> creditBalanceGreaterThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> creditBalanceGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1387,8 +1317,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> creditBalanceLessThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> creditBalanceLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1403,8 +1332,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> creditBalanceBetween(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> creditBalanceBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1423,8 +1351,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> interestRateEqualTo(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> interestRateEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
@@ -1437,8 +1364,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> interestRateGreaterThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> interestRateGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1453,8 +1379,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> interestRateLessThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> interestRateLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1469,8 +1394,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> interestRateBetween(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> interestRateBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1489,8 +1413,8 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> paymentDueDayEqualTo(int value) {
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> paymentDueDayEqualTo(
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'paymentDueDay',
@@ -1499,8 +1423,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> paymentDueDayGreaterThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> paymentDueDayGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -1513,8 +1436,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> paymentDueDayLessThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> paymentDueDayLessThan(
     int value, {
     bool include = false,
   }) {
@@ -1527,8 +1449,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> paymentDueDayBetween(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> paymentDueDayBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1545,8 +1466,8 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> statementDayEqualTo(int value) {
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> statementDayEqualTo(
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'statementDay',
@@ -1555,8 +1476,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> statementDayGreaterThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> statementDayGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -1569,8 +1489,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> statementDayLessThan(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> statementDayLessThan(
     int value, {
     bool include = false,
   }) {
@@ -1583,8 +1502,7 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CreditAccountDetailsIsar, CreditAccountDetailsIsar,
-      QAfterFilterCondition> statementDayBetween(
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition> statementDayBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1602,5 +1520,5 @@ extension CreditAccountDetailsIsarQueryFilter on QueryBuilder<
   }
 }
 
-extension CreditAccountDetailsIsarQueryObject on QueryBuilder<
-    CreditAccountDetailsIsar, CreditAccountDetailsIsar, QFilterCondition> {}
+extension CreditAccountDetailsIsarQueryObject
+    on QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QFilterCondition> {}

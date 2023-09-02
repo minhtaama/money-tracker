@@ -14,7 +14,7 @@ abstract class Transaction extends IsarDomain {
   final String? note;
   final Account? account;
 
-  Transaction(
+  const Transaction(
     super.id,
     this.dateTime,
     this.amount,
@@ -25,36 +25,36 @@ abstract class Transaction extends IsarDomain {
   factory Transaction.fromIsar(TransactionIsar txn) {
     switch (txn.transactionType) {
       case TransactionType.income:
-        return Income._internal(
+        return Income._(
           txn.id,
           txn.dateTime,
           txn.amount,
-          txn.accountLink.value,
+          Account.fromIsar(txn.accountLink.value),
           txn.note,
           isInitialTransaction: txn.isInitialTransaction,
-          category: txn.categoryLink.value,
-          categoryTag: txn.categoryTagLink.value,
+          category: Category.fromIsar(txn.categoryLink.value),
+          categoryTag: CategoryTag.fromIsar(txn.categoryTagLink.value),
         );
 
       case TransactionType.expense:
-        return Expense._internal(
+        return Expense._(
           txn.id,
           txn.dateTime,
           txn.amount,
-          txn.accountLink.value,
+          Account.fromIsar(txn.accountLink.value),
           txn.note,
-          category: txn.categoryLink.value,
-          categoryTag: txn.categoryTagLink.value,
+          category: Category.fromIsar(txn.categoryLink.value),
+          categoryTag: CategoryTag.fromIsar(txn.categoryTagLink.value),
         );
 
       case TransactionType.transfer:
-        return Transfer._internal(
+        return Transfer._(
           txn.id,
           txn.dateTime,
           txn.amount,
-          txn.accountLink.value,
+          Account.fromIsar(txn.accountLink.value),
           txn.note,
-          toAccount: txn.toAccountLink.value,
+          toAccount: Account.fromIsar(txn.toAccountLink.value),
           fee: Fee.fromIsar(txn),
         );
 
@@ -63,24 +63,24 @@ abstract class Transaction extends IsarDomain {
         for (TransactionIsar txn in txn.paymentTxnBacklinks.toList()) {
           payments.add(Transaction.fromIsar(txn) as CreditPayment);
         }
-        return CreditSpending._internal(
+        return CreditSpending._(
           txn.id,
           txn.dateTime,
           txn.amount,
-          txn.accountLink.value,
+          Account.fromIsar(txn.accountLink.value),
           txn.note,
-          category: txn.categoryLink.value,
-          categoryTag: txn.categoryTagLink.value,
+          category: Category.fromIsar(txn.categoryLink.value),
+          categoryTag: CategoryTag.fromIsar(txn.categoryTagLink.value),
           payments: payments,
           installment: Installment.fromIsar(txn),
         );
 
       case TransactionType.creditPayment:
-        return CreditPayment._internal(
+        return CreditPayment._(
           txn.id,
           txn.dateTime,
           txn.amount,
-          txn.accountLink.value,
+          Account.fromIsar(txn.accountLink.value),
           txn.note,
           spendingTxn: Transaction.fromIsar(txn.spendingTxnLink.value!) as CreditSpending,
         );
@@ -92,7 +92,7 @@ class Expense extends Transaction {
   final Category? category;
   final CategoryTag? categoryTag;
 
-  Expense._internal(
+  const Expense._(
     super.id,
     super.dateTime,
     super.amount,
@@ -108,7 +108,7 @@ class Income extends Transaction {
   final CategoryTag? categoryTag;
   final bool isInitialTransaction;
 
-  Income._internal(
+  const Income._(
     super.id,
     super.dateTime,
     super.amount,
@@ -124,7 +124,7 @@ class Transfer extends Transaction {
   final Account? toAccount;
   final Fee? fee;
 
-  Transfer._internal(
+  const Transfer._(
     super.id,
     super.dateTime,
     super.amount,
@@ -165,7 +165,7 @@ class CreditSpending extends Transaction {
     }
   }
 
-  CreditSpending._internal(
+  const CreditSpending._(
     super.id,
     super.dateTime,
     super.amount,
@@ -181,7 +181,7 @@ class CreditSpending extends Transaction {
 class CreditPayment extends Transaction {
   final CreditSpending spendingTxn;
 
-  CreditPayment._internal(
+  const CreditPayment._(
     super.id,
     super.dateTime,
     super.amount,
@@ -191,6 +191,7 @@ class CreditPayment extends Transaction {
   });
 }
 
+@immutable
 class Fee {
   final double amount;
   final bool onDestination;
@@ -199,12 +200,13 @@ class Fee {
     if (txn.transferFeeIsar == null) {
       return null;
     }
-    return Fee._internal(txn.transferFeeIsar!.amount, txn.transferFeeIsar!.onDestination);
+    return Fee._(txn.transferFeeIsar!.amount, txn.transferFeeIsar!.onDestination);
   }
 
-  Fee._internal(this.amount, this.onDestination);
+  const Fee._(this.amount, this.onDestination);
 }
 
+@immutable
 class Installment {
   final double amount;
 
@@ -216,9 +218,9 @@ class Installment {
     if (txn.installmentIsar == null) {
       return null;
     }
-    return Installment._internal(txn.installmentIsar!.amount, txn.installmentIsar!.interestRate,
+    return Installment._(txn.installmentIsar!.amount, txn.installmentIsar!.interestRate,
         txn.installmentIsar!.rateOnRemaining);
   }
 
-  Installment._internal(this.amount, this.interestRate, this.rateOnRemaining);
+  const Installment._(this.amount, this.interestRate, this.rateOnRemaining);
 }

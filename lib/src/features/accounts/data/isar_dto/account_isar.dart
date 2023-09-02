@@ -30,11 +30,11 @@ class AccountIsar {
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
   /// Only specify this property if type is [AccountType.credit]
-  CreditAccountDetailsIsar? creditAccountDetails;
+  CreditDetailsIsar? creditDetailsIsar;
 }
 
 @Embedded()
-class CreditAccountDetailsIsar {
+class CreditDetailsIsar {
   late double creditBalance;
 
   /// As in percent. This interestRate is only count
@@ -64,7 +64,7 @@ extension AccountBalance on AccountIsar {
       }
       return balance;
     } else {
-      double balance = creditAccountDetails!.creditBalance;
+      double balance = creditDetailsIsar!.creditBalance;
       final txnList = txnOfThisAccountBacklinks.toList();
       for (TransactionIsar txn in txnList) {
         if (!txn.isDone) {
