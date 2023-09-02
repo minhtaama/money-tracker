@@ -12,17 +12,6 @@ class AccountRepository {
 
   final Isar isar;
 
-  // // No need to run async method because user might not have over 100 account (Obviously!)
-  // List<AccountIsar> getList(AccountType? type) {
-  //   Query<AccountIsar> query;
-  //   if (type == null) {
-  //     query = isar.accountIsars.where().sortByOrder().build();
-  //   } else {
-  //     query = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build();
-  //   }
-  //   return query.findAllSync();
-  // }
-
   // No need to run async method because user might not have over 100 account (Obviously!)
   List<Account> getList(AccountType? type) {
     List<AccountIsar> isarList;
@@ -115,7 +104,7 @@ class AccountRepository {
       required int colorIndex,
       required double initialBalance}) async {
     // Update current account value
-    final accountIsar = isar.accountIsars.getSync(currentAccount.id)!;
+    final accountIsar = currentAccount.isarObject;
 
     accountIsar
       ..iconCategory = iconCategory
@@ -194,6 +183,8 @@ class AccountRepository {
     );
   }
 }
+
+/////////////////////////// PROVIDERS ///////////////////////////
 
 final accountRepositoryProvider = Provider<AccountRepository>(
   (ref) {

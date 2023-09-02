@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
-import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -13,6 +12,8 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+
+import '../domain/transaction.dart';
 
 class DayCard extends ConsumerWidget {
   const DayCard({
@@ -23,15 +24,16 @@ class DayCard extends ConsumerWidget {
   }) : super(key: key);
 
   final DateTime dateTime;
-  final List<TransactionIsar> transactions;
-  final Function(TransactionIsar)? onTransactionTap;
+  final List<Transaction> transactions;
+  final Function(Transaction)? onTransactionTap;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
-    for (TransactionIsar transaction in transactions) {
-      if (transaction.transactionType == TransactionType.income) {
+    for (Transaction transaction in transactions) {
+      if (transaction is Income) {
         cashFlow += transaction.amount;
-      } else if (transaction.transactionType == TransactionType.expense) {
+      }
+      if (transaction is Expense) {
         cashFlow -= transaction.amount;
       }
     }
@@ -156,9 +158,9 @@ class DayCardTransactions extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
 
-  final List<TransactionIsar> transactions;
+  final List<Transaction> transactions;
   final String currencyCode;
-  final Function(TransactionIsar)? onTap;
+  final Function(Transaction)? onTap;
 
   @override
   Widget build(BuildContext context) {

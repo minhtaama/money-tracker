@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/persistent/isar_model.dart';
 import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -12,9 +13,7 @@ import '../../../category/data/isar_dto/category_tag_isar.dart';
 part 'transaction_isar.g.dart';
 
 @Collection()
-class TransactionIsar {
-  Id id = Isar.autoIncrement;
-
+class TransactionIsar extends IsarCollectionObject {
   @enumerated
   late TransactionType transactionType;
 

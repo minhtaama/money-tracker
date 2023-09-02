@@ -4,7 +4,6 @@ import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/transactions//presentation/day_card.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../persistent/isar_data_store.dart';
@@ -12,6 +11,7 @@ import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../utils/constants.dart';
+import '../../transactions/domain/transaction.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -76,7 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   List<DayCard> _buildTransactionWidgetList(
-    List<TransactionIsar> transactionList,
+    List<Transaction> transactionList,
     DateTime dayBeginOfMonth,
     DateTime dayEndOfMonth,
   ) {
@@ -129,7 +129,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<TransactionIsar> transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<Transaction> transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listenManual(databaseChangesProvider, (_, __) {
           transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);

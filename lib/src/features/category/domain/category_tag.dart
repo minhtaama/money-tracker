@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/persistent/isar_domain.dart';
+import 'package:money_tracker_app/persistent/isar_model.dart';
 import 'package:money_tracker_app/src/features/category/data/isar_dto/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 
 @immutable
-class CategoryTag extends IsarDomain {
+class CategoryTag extends IsarModel<CategoryTagIsar> {
   final String name;
 
   static CategoryTag? fromIsar(CategoryTagIsar? categoryTagIsar) {
@@ -13,10 +13,10 @@ class CategoryTag extends IsarDomain {
     }
 
     return CategoryTag._(
-      categoryTagIsar.id,
+      categoryTagIsar,
       categoryTagIsar.name,
     );
   }
 
-  const CategoryTag._(super.id, this.name);
+  const CategoryTag._(super._isarObject, this.name);
 }

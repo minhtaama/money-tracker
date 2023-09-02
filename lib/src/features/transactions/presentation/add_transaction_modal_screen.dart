@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
@@ -18,8 +17,8 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/card_item.dart';
 import '../../accounts/domain/account.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
-import '../../category/data/isar_dto/category_isar.dart';
-import '../../category/data/isar_dto/category_tag_isar.dart';
+import '../../category/domain/category.dart';
+import '../../category/domain/category_tag.dart';
 import 'forms/forms.dart';
 
 class AddTransactionModalScreen extends ConsumerStatefulWidget {
@@ -37,8 +36,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
   late DateTime dateTime = DateTime.now();
   String calculatorOutput = '0';
   String? note;
-  CategoryTagIsar? tag;
-  CategoryIsar? category;
+  CategoryTag? tag;
+  Category? category;
   Account? account;
   Account? toAccount;
 

@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import '../../../../persistent/isar_domain.dart';
+import '../../../../persistent/isar_model.dart';
 import '../../../utils/enums.dart';
 import '../data/isar_dto/account_isar.dart';
 
 @immutable
-class Account extends IsarDomain {
+class Account extends IsarModel<AccountIsar> {
   final AccountType type;
 
   final String name;
   final Color color;
   final Color backgroundColor;
   final String iconPath;
-
   final CreditDetails? creditDetails;
 
-  final AccountIsar _accountIsar;
+  double get currentBalance => isarObject.currentBalance;
 
-  double get currentBalance => _accountIsar.currentBalance;
-
-  double get totalPendingCreditPayment => _accountIsar.totalPendingCreditPayment;
+  double get totalPendingCreditPayment => isarObject.totalPendingCreditPayment;
 
   static Account? fromIsar(AccountIsar? accountIsar) {
     if (accountIsar == null) {
@@ -28,7 +25,6 @@ class Account extends IsarDomain {
     }
 
     return Account._(
-      accountIsar.id,
       accountIsar,
       type: accountIsar.type,
       name: accountIsar.name,
@@ -40,8 +36,7 @@ class Account extends IsarDomain {
   }
 
   const Account._(
-    super.id,
-    this._accountIsar, {
+    super._isarObject, {
     required this.type,
     required this.name,
     required this.color,

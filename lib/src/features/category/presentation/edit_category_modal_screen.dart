@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -13,11 +14,10 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../data/category_repo.dart';
-import '../data/isar_dto/category_isar.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
   const EditCategoryModalScreen(this.currentCategory, {Key? key}) : super(key: key);
-  final CategoryIsar currentCategory;
+  final Category currentCategory;
 
   @override
   ConsumerState<EditCategoryModalScreen> createState() => _EditCategoryModalScreenState();
@@ -32,9 +32,9 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
   @override
   void initState() {
     newName = widget.currentCategory.name;
-    newIconCategory = widget.currentCategory.iconCategory;
-    newIconIndex = widget.currentCategory.iconIndex;
-    newColorIndex = widget.currentCategory.colorIndex;
+    newIconCategory = widget.currentCategory.isarObject.iconCategory;
+    newIconIndex = widget.currentCategory.isarObject.iconIndex;
+    newColorIndex = widget.currentCategory.isarObject.colorIndex;
     super.initState();
   }
 
@@ -49,8 +49,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             IconSelectButton(
               backGroundColor: AppColors.allColorsUserCanPick[newColorIndex][0],
               iconColor: AppColors.allColorsUserCanPick[newColorIndex][1],
-              initialCategory: widget.currentCategory.iconCategory,
-              initialIconIndex: widget.currentCategory.iconIndex,
+              initialIconCategory: widget.currentCategory.isarObject.iconCategory,
+              initialIconIndex: widget.currentCategory.isarObject.iconIndex,
               onTap: (iconC, iconI) {
                 newIconCategory = iconC;
                 newIconIndex = iconI;
@@ -71,7 +71,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
         ),
         Gap.h24,
         ColorSelectListView(
-          initialColorIndex: widget.currentCategory.colorIndex,
+          initialColorIndex: widget.currentCategory.isarObject.colorIndex,
           onColorTap: (index) {
             setState(() {
               newColorIndex = index;

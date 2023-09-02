@@ -1,30 +1,28 @@
 import 'package:flutter/cupertino.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
-import '../../../accounts/data/isar_dto/account_isar.dart';
 import '../../../accounts/domain/account.dart';
-import '../../../category/data/isar_dto/category_isar.dart';
+import '../../../category/domain/category.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';
 
-class CategoryFormSelector extends FormField<CategoryIsar> {
+class CategoryFormSelector extends FormField<Category> {
   CategoryFormSelector(
       {super.key,
       required TransactionType transactionType,
-      required ValueChanged<CategoryIsar?> onChangedCategory,
-      FormFieldSetter<CategoryIsar>? onSaved,
-      FormFieldValidator<CategoryIsar>? validator,
-      CategoryIsar? initialValue,
+      required ValueChanged<Category?> onChangedCategory,
+      FormFieldSetter<Category>? onSaved,
+      FormFieldValidator<Category>? validator,
+      Category? initialValue,
       AutovalidateMode? autovalidateMode = AutovalidateMode.onUserInteraction})
       : super(
             onSaved: onSaved,
             validator: validator,
             initialValue: initialValue,
             autovalidateMode: autovalidateMode,
-            builder: (FormFieldState<CategoryIsar> state) {
+            builder: (FormFieldState<Category> state) {
               return Stack(
                 children: [
                   CategorySelector(

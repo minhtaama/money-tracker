@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/persistent/isar_model.dart';
 import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import '../../../../utils/enums.dart';
 
@@ -8,9 +9,7 @@ import '../../../../utils/enums.dart';
 part 'account_isar.g.dart';
 
 @Collection()
-class AccountIsar {
-  Id id = Isar.autoIncrement;
-
+class AccountIsar extends IsarCollectionObject {
   @enumerated
   late AccountType type;
 

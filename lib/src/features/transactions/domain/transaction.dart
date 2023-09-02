@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/persistent/isar_domain.dart';
+import 'package:money_tracker_app/persistent/isar_model.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account.dart';
 import '../../category/domain/category.dart';
@@ -8,14 +8,14 @@ import '../../category/domain/category_tag.dart';
 import '../data/isar_dto/transaction_isar.dart';
 
 @immutable
-abstract class Transaction extends IsarDomain {
+abstract class Transaction extends IsarModel<TransactionIsar> {
   final DateTime dateTime;
   final double amount;
   final String? note;
   final Account? account;
 
   const Transaction(
-    super.id,
+    super._isarObject,
     this.dateTime,
     this.amount,
     this.account,
@@ -26,7 +26,7 @@ abstract class Transaction extends IsarDomain {
     switch (txn.transactionType) {
       case TransactionType.income:
         return Income._(
-          txn.id,
+          txn,
           txn.dateTime,
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
@@ -38,7 +38,7 @@ abstract class Transaction extends IsarDomain {
 
       case TransactionType.expense:
         return Expense._(
-          txn.id,
+          txn,
           txn.dateTime,
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
@@ -49,7 +49,7 @@ abstract class Transaction extends IsarDomain {
 
       case TransactionType.transfer:
         return Transfer._(
-          txn.id,
+          txn,
           txn.dateTime,
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
@@ -64,7 +64,7 @@ abstract class Transaction extends IsarDomain {
           payments.add(Transaction.fromIsar(txn) as CreditPayment);
         }
         return CreditSpending._(
-          txn.id,
+          txn,
           txn.dateTime,
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
@@ -77,12 +77,11 @@ abstract class Transaction extends IsarDomain {
 
       case TransactionType.creditPayment:
         return CreditPayment._(
-          txn.id,
+          txn,
           txn.dateTime,
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
           txn.note,
-          spendingTxn: Transaction.fromIsar(txn.spendingTxnLink.value!) as CreditSpending,
         );
     }
   }
@@ -93,7 +92,7 @@ class Expense extends Transaction {
   final CategoryTag? categoryTag;
 
   const Expense._(
-    super.id,
+    super._isarObject,
     super.dateTime,
     super.amount,
     super.account,
@@ -109,7 +108,7 @@ class Income extends Transaction {
   final bool isInitialTransaction;
 
   const Income._(
-    super.id,
+    super._isarObject,
     super.dateTime,
     super.amount,
     super.account,
@@ -125,7 +124,7 @@ class Transfer extends Transaction {
   final Fee? fee;
 
   const Transfer._(
-    super.id,
+    super._isarObject,
     super.dateTime,
     super.amount,
     super.account,
@@ -166,7 +165,7 @@ class CreditSpending extends Transaction {
   }
 
   const CreditSpending._(
-    super.id,
+    super._isarObject,
     super.dateTime,
     super.amount,
     super.account,
@@ -179,16 +178,13 @@ class CreditSpending extends Transaction {
 }
 
 class CreditPayment extends Transaction {
-  final CreditSpending spendingTxn;
-
   const CreditPayment._(
-    super.id,
+    super._isarObject,
     super.dateTime,
     super.amount,
     super.account,
-    super.note, {
-    required this.spendingTxn,
-  });
+    super.note,
+  );
 }
 
 @immutable
