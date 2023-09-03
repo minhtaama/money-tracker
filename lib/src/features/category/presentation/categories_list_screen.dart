@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -14,7 +15,6 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../data/isar_dto/category_isar.dart';
 import 'category_list_tile.dart';
 import 'edit_category_modal_screen.dart';
 
@@ -25,8 +25,8 @@ class CategoriesListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoryRepository = ref.watch(categoryRepositoryProvider);
 
-    List<CategoryIsar> incomeList = categoryRepository.getList(CategoryType.income);
-    List<CategoryIsar> expenseList = categoryRepository.getList(CategoryType.expense);
+    List<Category> incomeList = categoryRepository.getList(CategoryType.income);
+    List<Category> expenseList = categoryRepository.getList(CategoryType.expense);
 
     ref.watch(categoriesChangesProvider(CategoryType.income)).whenData((_) {
       incomeList = categoryRepository.getList(CategoryType.income);
@@ -37,17 +37,17 @@ class CategoriesListScreen extends ConsumerWidget {
     });
 
     List<Widget> buildCategoryTiles(BuildContext context, CategoryType type) {
-      List<CategoryIsar> list = type == CategoryType.income ? incomeList : expenseList;
+      List<Category> list = type == CategoryType.income ? incomeList : expenseList;
       return list.isNotEmpty
           ? List.generate(
               list.length,
               (index) {
-                CategoryIsar model = list[index];
+                Category model = list[index];
                 return CategoryListTile(
                   key: ValueKey(index),
-                  iconPath: AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
-                  backgroundColor: AppColors.allColorsUserCanPick[model.colorIndex][0],
-                  iconColor: AppColors.allColorsUserCanPick[model.colorIndex][1],
+                  iconPath: model.iconPath,
+                  backgroundColor: model.backgroundColor,
+                  iconColor: model.color,
                   name: model.name,
                   onMenuTap: () {
                     showCustomModalBottomSheet(
@@ -87,7 +87,7 @@ class CategoriesListScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             title: 'Income',
             onReorder: (oldIndex, newIndex) {
-              categoryRepository.reorder(incomeList, oldIndex, newIndex);
+              categoryRepository.reorder(CategoryType.income, oldIndex, newIndex);
             },
             children: buildCategoryTiles(context, CategoryType.income),
           ),
@@ -95,7 +95,7 @@ class CategoriesListScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             title: 'Expense',
             onReorder: (oldIndex, newIndex) {
-              categoryRepository.reorder(expenseList, oldIndex, newIndex);
+              categoryRepository.reorder(CategoryType.expense, oldIndex, newIndex);
             },
             children: buildCategoryTiles(context, CategoryType.expense),
           )

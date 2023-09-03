@@ -18,7 +18,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
-import '../data/isar_dto/account_isar.dart';
+import '../domain/account.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({Key? key}) : super(key: key);
@@ -28,7 +28,7 @@ class AccountsScreen extends ConsumerWidget {
     final accountRepository = ref.watch(accountRepositoryProvider);
     final settingsRepository = ref.watch(settingsControllerProvider);
 
-    List<AccountIsar> accountList = accountRepository.getList(null);
+    List<Account> accountList = accountRepository.getList(null);
 
     ref.watch(accountsChangesProvider).whenData((_) {
       accountList = accountRepository.getList(null);
@@ -39,12 +39,11 @@ class AccountsScreen extends ConsumerWidget {
           ? List.generate(
               accountList.length,
               (index) {
-                AccountIsar model = accountList[index];
+                Account model = accountList[index];
                 return CardItem(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  color: AppColors.allColorsUserCanPick[model.colorIndex][0]
-                      .addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
+                  color: model.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
                   height: 170,
                   child: Stack(
                     children: [
@@ -57,9 +56,7 @@ class AccountsScreen extends ConsumerWidget {
                           origin: const Offset(15, 15),
                           child: Opacity(
                             opacity: 0.45,
-                            child: SvgIcon(
-                                AppIcons.fromCategoryAndIndex(model.iconCategory, model.iconIndex),
-                                size: 30),
+                            child: SvgIcon(model.iconPath, size: 30),
                           ),
                         ),
                       ),
@@ -74,9 +71,7 @@ class AccountsScreen extends ConsumerWidget {
                                 // Account Name
                                 child: Text(
                                   model.name,
-                                  style: kHeader2TextStyle.copyWith(
-                                      color: AppColors.allColorsUserCanPick[model.colorIndex][1],
-                                      fontSize: 22),
+                                  style: kHeader2TextStyle.copyWith(color: model.color, fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -87,14 +82,13 @@ class AccountsScreen extends ConsumerWidget {
                                   ? Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: AppColors.allColorsUserCanPick[model.colorIndex][1],
+                                        color: model.color,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Text(
                                         'Credit',
                                         style: kHeader4TextStyle.copyWith(
-                                            color: AppColors.allColorsUserCanPick[model.colorIndex][0],
-                                            fontSize: 12),
+                                            color: model.backgroundColor, fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),
@@ -103,8 +97,7 @@ class AccountsScreen extends ConsumerWidget {
                           const Expanded(child: SizedBox()),
                           Text(
                             'Current Balance:',
-                            style: kHeader4TextStyle.copyWith(
-                                color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
+                            style: kHeader4TextStyle.copyWith(color: model.color),
                           ),
                           Row(
                             // Account Current Balance
@@ -112,15 +105,13 @@ class AccountsScreen extends ConsumerWidget {
                               Text(
                                 settingsRepository.currency.code,
                                 style: kHeader4TextStyle.copyWith(
-                                    color: AppColors.allColorsUserCanPick[model.colorIndex][1],
-                                    fontSize: kHeader1TextStyle.fontSize),
+                                    color: model.color, fontSize: kHeader1TextStyle.fontSize),
                               ),
                               Gap.w8,
                               Expanded(
                                 child: Text(
                                   CalculatorService.formatCurrency(model.currentBalance),
-                                  style: kHeader1TextStyle.copyWith(
-                                      color: AppColors.allColorsUserCanPick[model.colorIndex][1]),
+                                  style: kHeader1TextStyle.copyWith(color: model.color),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -162,8 +153,7 @@ class AccountsScreen extends ConsumerWidget {
           CustomSection(
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            onReorder: (oldIndex, newIndex) =>
-                accountRepository.reorder(accountList, oldIndex, newIndex),
+            onReorder: (oldIndex, newIndex) => accountRepository.reorder(null, oldIndex, newIndex),
             children: buildAccountCards(context),
           ),
         ],

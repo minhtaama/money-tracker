@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -12,14 +13,13 @@ import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../data/category_repo.dart';
-import '../../data/isar_dto/category_isar.dart';
-import '../../data/isar_dto/category_tag_isar.dart';
+import '../../domain/category_tag.dart';
 
 class EditCategoryTag extends ConsumerStatefulWidget {
   const EditCategoryTag(this.tag, {Key? key, required this.category}) : super(key: key);
 
-  final CategoryTagIsar tag;
-  final CategoryIsar category;
+  final CategoryTag tag;
+  final Category category;
 
   @override
   ConsumerState<EditCategoryTag> createState() => _EditCategoryTagState();
@@ -30,7 +30,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
 
   late final categoryRepo = ref.watch(categoryRepositoryProvider);
 
-  late final List<CategoryTagIsar> _tags = categoryRepo.getTagsSortedByOrder(widget.category)!;
+  late final List<CategoryTag> _tags = categoryRepo.getTagsSortedByOrder(widget.category)!;
 
   late String _newName = widget.tag.name;
 

@@ -7,21 +7,21 @@ import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/edit_category_tag.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/custom_text_form_field.dart';
-import '../../data/isar_dto/category_isar.dart';
-import '../../data/isar_dto/category_tag_isar.dart';
+import '../../domain/category_tag.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
   const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading})
       : super(key: key);
   final Color? fading;
-  final ValueSetter<CategoryTagIsar?> onTagSelected;
-  final CategoryIsar? category;
+  final ValueSetter<CategoryTag?> onTagSelected;
+  final Category? category;
 
   @override
   ConsumerState<CategoryTagSelector> createState() => _CategoryTagListState();
@@ -34,11 +34,11 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   late final FocusNode _focusNode = FocusNode();
 
-  late CategoryIsar? currentCategory = widget.category;
+  late Category? currentCategory = widget.category;
 
-  late List<CategoryTagIsar>? _tags = categoryRepo.getTagsSortedByOrder(currentCategory);
+  late List<CategoryTag>? _tags = categoryRepo.getTagsSortedByOrder(currentCategory);
 
-  CategoryTagIsar? _chosenTag;
+  CategoryTag? _chosenTag;
 
   bool _showTextField = false;
   double _rowWidth = 1;
@@ -152,10 +152,10 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                       children: List.generate(
                         _tags!.length,
                         (index) {
-                          return CategoryTag(
+                          return CategoryTagWidget(
                             categoryTag: _tags![index],
                             onTap: (tag) {
-                              categoryRepo.reorderTagToTop(_tags!, index);
+                              categoryRepo.reorderTagToTop(widget.category!, index);
                               setState(
                                 () {
                                   _chosenTag = tag;
@@ -198,7 +198,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                 focusNode: _focusNode,
                 category: widget.category,
                 onEditingComplete: (tag) {
-                  categoryRepo.reorderTagToTop(_tags!, _tags!.length - 1);
+                  categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
                   setState(
                     () {
                       _chosenTag = tag;
@@ -250,13 +250,13 @@ class ChosenTag extends StatelessWidget {
   }
 }
 
-class CategoryTag extends StatelessWidget {
-  const CategoryTag(
+class CategoryTagWidget extends StatelessWidget {
+  const CategoryTagWidget(
       {Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
       : super(key: key);
-  final CategoryTagIsar categoryTag;
-  final ValueSetter<CategoryTagIsar> onTap;
-  final ValueSetter<CategoryTagIsar> onLongPress;
+  final CategoryTag categoryTag;
+  final ValueSetter<CategoryTag> onTap;
+  final ValueSetter<CategoryTag> onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -307,8 +307,8 @@ class AddCategoryTagButton extends ConsumerStatefulWidget {
   const AddCategoryTagButton({Key? key, this.focusNode, this.category, required this.onEditingComplete})
       : super(key: key);
   final FocusNode? focusNode;
-  final CategoryIsar? category;
-  final ValueSetter<CategoryTagIsar> onEditingComplete;
+  final Category? category;
+  final ValueSetter<CategoryTag> onEditingComplete;
 
   @override
   ConsumerState<AddCategoryTagButton> createState() => _AddCategoryTagButtonState();
@@ -321,7 +321,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
   late final categoryRepo = ref.read(categoryRepositoryProvider);
 
-  late List<CategoryTagIsar>? _tags = categoryRepo.getTagsSortedByOrder(widget.category);
+  late List<CategoryTag>? _tags = categoryRepo.getTagsSortedByOrder(widget.category);
 
   String? _newTag;
 
@@ -370,7 +370,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
             final categoryRepo = ref.read(categoryRepositoryProvider);
 
-            CategoryTagIsar? newTag =
+            CategoryTag? newTag =
                 await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
             //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);

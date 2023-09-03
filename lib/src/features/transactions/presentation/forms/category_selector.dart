@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
-import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../theme_and_ui/icons.dart';
@@ -19,7 +18,7 @@ class CategorySelector extends ConsumerStatefulWidget {
   })  : assert(transactionType != TransactionType.transfer),
         super(key: key);
 
-  final ValueChanged<CategoryIsar?> onChangedCategory;
+  final ValueChanged<Category?> onChangedCategory;
   final TransactionType transactionType;
 
   @override
@@ -27,7 +26,7 @@ class CategorySelector extends ConsumerStatefulWidget {
 }
 
 class _CategorySelectorState extends ConsumerState<CategorySelector> {
-  CategoryIsar? currentCategory;
+  Category? currentCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +35,10 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       labelSize: 15,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      iconPath: currentCategory != null
-          ? AppIcons.fromCategoryAndIndex(currentCategory!.iconCategory, currentCategory!.iconIndex)
-          : AppIcons.add,
-      backgroundColor: currentCategory != null
-          ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][0]
-          : Colors.transparent,
+      iconPath: currentCategory != null ? currentCategory!.iconPath : AppIcons.add,
+      backgroundColor: currentCategory != null ? currentCategory!.backgroundColor : Colors.transparent,
       color: currentCategory != null
-          ? AppColors.allColorsUserCanPick[currentCategory!.colorIndex][1]
+          ? currentCategory!.color
           : context.appTheme.backgroundNegative.withOpacity(0.4),
       width: null,
       height: null,
@@ -53,7 +48,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
               color: context.appTheme.backgroundNegative.withOpacity(0.4),
             ),
       onTap: () async {
-        List<CategoryIsar> categoryList;
+        List<Category> categoryList;
 
         if (widget.transactionType == TransactionType.income) {
           categoryList = ref.read(categoryRepositoryProvider).getList(CategoryType.income);
@@ -64,7 +59,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
               'Category Selector should not be displayed with Transfer-type Transaction');
         }
 
-        final returnedValue = await showCustomModalBottomSheet<CategoryIsar>(
+        final returnedValue = await showCustomModalBottomSheet<Category>(
           context: context,
           child: categoryList.isNotEmpty
               ? Column(
@@ -85,24 +80,23 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       children: List.generate(categoryList.length, (index) {
                         final category = categoryList[index];
                         return IconWithTextButton(
-                          iconPath:
-                              AppIcons.fromCategoryAndIndex(category.iconCategory, category.iconIndex),
+                          iconPath: category.iconPath,
                           label: category.name,
                           labelSize: 18,
                           borderRadius: BorderRadius.circular(16),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           border: Border.all(
                             color: currentCategory?.id == category.id
-                                ? AppColors.allColorsUserCanPick[category.colorIndex][0]
+                                ? category.backgroundColor
                                 : context.appTheme.backgroundNegative.withOpacity(0.4),
                           ),
                           backgroundColor: currentCategory?.id == category.id
-                              ? AppColors.allColorsUserCanPick[category.colorIndex][0]
+                              ? category.backgroundColor
                               : Colors.transparent,
                           color: currentCategory?.id == category.id
-                              ? AppColors.allColorsUserCanPick[category.colorIndex][1]
+                              ? category.color
                               : context.appTheme.backgroundNegative,
-                          onTap: () => context.pop<CategoryIsar>(category),
+                          onTap: () => context.pop<Category>(category),
                           height: null,
                           width: null,
                         );

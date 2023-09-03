@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/persistent/isar_model.dart';
 import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -12,9 +13,7 @@ import '../../../category/data/isar_dto/category_tag_isar.dart';
 part 'transaction_isar.g.dart';
 
 @Collection()
-class TransactionIsar {
-  Id id = Isar.autoIncrement;
-
+class TransactionIsar extends IsarCollectionObject {
   @enumerated
   late TransactionType transactionType;
 
@@ -44,7 +43,7 @@ class TransactionIsar {
   final toAccountLink = IsarLink<AccountIsar>();
 
   /// **Only specify this if type is [TransactionType.transfer]**
-  TransferFeeDetailsIsar? transferFeeDetails;
+  TransferFeeIsar? transferFeeIsar;
 
   /// Payments of this credit spending
   ///
@@ -53,14 +52,14 @@ class TransactionIsar {
   final paymentTxnBacklinks = IsarLinks<TransactionIsar>();
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
-  InstallmentDetailsIsar? installmentDetails;
+  InstallmentIsar? installmentIsar;
 
   /// **Only specify this if type is [TransactionType.creditPayment]**
   final spendingTxnLink = IsarLink<TransactionIsar>();
 }
 
 @Embedded()
-class InstallmentDetailsIsar {
+class InstallmentIsar {
   /// The payment amount of each month
   late double amount;
 
@@ -79,8 +78,8 @@ class InstallmentDetailsIsar {
 }
 
 @Embedded()
-class TransferFeeDetailsIsar {
-  double transferFee = 0;
+class TransferFeeIsar {
+  double amount = 0;
 
   /// Specify this to `true` if the fee is charged on the destination account
   /// `false` if the fee is charge on the account has money transferred away
@@ -102,10 +101,10 @@ extension CreditInfo on TransactionIsar {
   }
 
   double get pendingPayment {
-    if (installmentDetails == null) {
+    if (installmentIsar == null) {
       return amount - paidAmount;
     } else {
-      return min(amount - paidAmount, installmentDetails!.amount);
+      return min(amount - paidAmount, installmentIsar!.amount);
     }
   }
 }

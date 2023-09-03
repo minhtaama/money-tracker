@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/currency_icon.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
@@ -16,20 +17,19 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/inline_text_form_field.dart';
+import '../../accounts/domain/account.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
-import '../../category/data/isar_dto/category_isar.dart';
-import '../../category/data/isar_dto/category_tag_isar.dart';
+import '../../category/domain/category_tag.dart';
 import '../data/transaction_repo.dart';
+import '../domain/transaction.dart';
 import 'forms/forms.dart';
 
 class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
   const AddCreditTransactionModalScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<AddCreditTransactionModalScreen> createState() =>
-      _AddCreditTransactionModalScreenState();
+  ConsumerState<AddCreditTransactionModalScreen> createState() => _AddCreditTransactionModalScreenState();
 }
 
 class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTransactionModalScreen> {
@@ -38,9 +38,9 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
 
   late DateTime dateTime = DateTime.now();
   String? note;
-  CategoryIsar? category;
-  CategoryTagIsar? tag;
-  AccountIsar? account;
+  Category? category;
+  CategoryTag? tag;
+  Account? account;
 
   String calOutputSpendAmount = '0';
 
@@ -91,31 +91,14 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CardItem(
-                height: 50,
-                width: 50,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                margin: EdgeInsets.zero,
-                color: AppColors.grey,
-                borderRadius: BorderRadius.circular(1000),
-                child: FittedBox(
-                  child: Text(
-                    settingsObject.currency.symbol ?? settingsObject.currency.code,
-                    style: kHeader1TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative,
-                    ),
-                  ),
-                ),
-              ),
+              const CurrencyIcon(),
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
                   hintText: 'Spending Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calOutputSpendAmount) == null ||
-                        _formatToDouble(calOutputSpendAmount) == 0) {
+                    if (_formatToDouble(calOutputSpendAmount) == null || _formatToDouble(calOutputSpendAmount) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -214,8 +197,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                   rateBasedOnRemainingInstallmentUnpaid = false;
                 }
                 calOutputInstallmentAmount = _getInstallmentPayment().toString();
-                _installmentCalController.text =
-                    CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
+                _installmentCalController.text = CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
               });
             },
             optionalWidget: Column(
@@ -228,8 +210,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                   onChanged: (value) {
                     paymentPeriod = int.tryParse(value);
                     calOutputInstallmentAmount = _getInstallmentPayment().toString();
-                    _installmentCalController.text =
-                        CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
+                    _installmentCalController.text = CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
                   },
                 ),
                 Gap.h8,
@@ -246,8 +227,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                             _formatToDouble(calOutputInstallmentAmount) == 0) {
                           return 'Invalid Amount';
                         }
-                        if (_formatToDouble(calOutputInstallmentAmount)! >
-                            _formatToDouble(calOutputSpendAmount)!) {
+                        if (_formatToDouble(calOutputInstallmentAmount)! > _formatToDouble(calOutputSpendAmount)!) {
                           return 'Too high';
                         }
                         return null;
@@ -277,8 +257,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                 Gap.h8,
                 CustomCheckbox(
                   label: 'Rate on remaining payment',
-                  labelStyle: kHeader4TextStyle.copyWith(
-                      fontSize: 15, color: context.appTheme.backgroundNegative),
+                  labelStyle: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
                   onChanged: (value) => rateBasedOnRemainingInstallmentUnpaid = value,
                 ),
               ],
@@ -333,30 +312,28 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                     category == null ||
                     account == null,
                 onTap: () {
-                  // InstallmentDetails? installmentDetails;
-                  //
-                  // // By validating, no important value can be null
-                  // if (_formKey.currentState!.validate()) {
-                  //   if (hasInstallmentPayment) {
-                  //     installmentDetails = InstallmentDetails()
-                  //       ..amount = _formatToDouble(calOutputInstallmentAmount)!
-                  //       ..interestRate = _formatToDouble(interestRate)!
-                  //       ..rateOnRemaining = rateBasedOnRemainingInstallmentUnpaid;
-                  //   } else {
-                  //     installmentDetails = null;
-                  //   }
-                  //
-                  //   ref.read(transactionRepositoryProvider).writeNewCreditSpendingTxn(
-                  //         dateTime: dateTime,
-                  //         amount: _formatToDouble(calOutputSpendAmount)!,
-                  //         tag: tag,
-                  //         note: note,
-                  //         category: category!,
-                  //         account: account!,
-                  //         installmentDetails: installmentDetails,
-                  //       );
-                  //   context.pop();
-                  // }
+                  Installment? installment;
+
+                  // By validating, no important value can be null
+                  if (_formKey.currentState!.validate()) {
+                    if (hasInstallmentPayment) {
+                      installment = Installment(
+                        _formatToDouble(calOutputInstallmentAmount)!,
+                        _formatToDouble(interestRate)!,
+                        rateBasedOnRemainingInstallmentUnpaid,
+                      );
+                    }
+                    ref.read(transactionRepositoryProvider).writeNewCreditSpendingTxn(
+                          dateTime: dateTime,
+                          amount: _formatToDouble(calOutputSpendAmount)!,
+                          tag: tag,
+                          note: note,
+                          category: category!,
+                          account: account!,
+                          installment: installment,
+                        );
+                    context.pop();
+                  }
                 },
               ),
             ],

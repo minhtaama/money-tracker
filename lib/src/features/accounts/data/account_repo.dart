@@ -5,31 +5,33 @@ import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_is
 import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
+import '../domain/account.dart';
+
 class AccountRepository {
   AccountRepository(this.isar);
 
   final Isar isar;
 
   // No need to run async method because user might not have over 100 account (Obviously!)
-  List<AccountIsar> getList(AccountType? type) {
-    Query<AccountIsar> query;
+  List<Account> getList(AccountType? type) {
+    List<AccountIsar> isarList;
     if (type == null) {
-      query = isar.accountIsars.where().sortByOrder().build();
+      isarList = isar.accountIsars.where().sortByOrder().build().findAllSync();
     } else {
-      query = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build();
+      isarList = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
     }
-    return query.findAllSync();
+    return isarList.map((accountIsar) => Account.fromIsar(accountIsar)!).toList();
   }
 
   double getTotalBalance({bool includeCreditAccount = false}) {
     double totalBalance = 0;
-    final List<AccountIsar> accountList;
+    final List<Account> accountList;
     if (includeCreditAccount) {
-      accountList = isar.accountIsars.where().findAllSync();
+      accountList = getList(null);
     } else {
-      accountList = isar.accountIsars.filter().typeEqualTo(AccountType.regular).findAllSync();
+      accountList = getList(AccountType.regular);
     }
-    for (AccountIsar account in accountList) {
+    for (Account account in accountList) {
       totalBalance += account.currentBalance;
     }
     return totalBalance;
@@ -53,10 +55,10 @@ class AccountRepository {
     required double? interestRate,
   }) async {
     TransactionIsar? initialTransaction;
-    CreditAccountDetails? creditAccountDetails;
+    CreditDetailsIsar? creditAccountDetailsIsar;
 
     if (type == AccountType.credit) {
-      creditAccountDetails = CreditAccountDetails()
+      creditAccountDetailsIsar = CreditDetailsIsar()
         ..interestRate = interestRate!
         ..statementDay = statementDay!
         ..paymentDueDay = paymentDueDay!
@@ -69,7 +71,7 @@ class AccountRepository {
       ..iconIndex = iconIndex
       ..name = name
       ..colorIndex = colorIndex
-      ..creditAccountDetails = creditAccountDetails;
+      ..creditDetailsIsar = creditAccountDetailsIsar;
 
     if (type == AccountType.regular) {
       initialTransaction = TransactionIsar()
@@ -95,21 +97,23 @@ class AccountRepository {
     });
   }
 
-  Future<void> edit(AccountIsar currentAccount,
+  Future<void> edit(Account currentAccount,
       {required String name,
       required String iconCategory,
       required int iconIndex,
       required int colorIndex,
       required double initialBalance}) async {
     // Update current account value
-    currentAccount
+    final accountIsar = currentAccount.isarObject;
+
+    accountIsar
       ..iconCategory = iconCategory
       ..iconIndex = iconIndex
       ..name = name
       ..colorIndex = colorIndex;
 
     // Query to find the initial transaction of the current editing account
-    TransactionIsar? initialTransaction = await currentAccount.txnOfThisAccountBacklinks
+    TransactionIsar? initialTransaction = await accountIsar.txnOfThisAccountBacklinks
         .filter()
         .isInitialTransactionEqualTo(true)
         .findFirst();
@@ -119,7 +123,7 @@ class AccountRepository {
       initialTransaction.amount = initialBalance;
 
       await isar.writeTxn(() async {
-        await isar.accountIsars.put(currentAccount);
+        await isar.accountIsars.put(accountIsar);
         await isar.transactionIsars.put(initialTransaction!);
       });
     } else {
@@ -130,10 +134,10 @@ class AccountRepository {
         ..isInitialTransaction = true
         ..amount = initialBalance
         ..note = 'Initial Balance'
-        ..accountLink.value = currentAccount;
+        ..accountLink.value = accountIsar;
 
       await isar.writeTxn(() async {
-        await isar.accountIsars.put(currentAccount);
+        await isar.accountIsars.put(accountIsar);
         await isar.transactionIsars.put(initialTransaction!);
 
         // Save the link to this account in `initialTransaction`
@@ -142,12 +146,18 @@ class AccountRepository {
     }
   }
 
-  Future<void> delete(AccountIsar account) async {
+  Future<void> delete(Account account) async {
     await isar.writeTxn(() async => await isar.accountIsars.delete(account.id));
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)
-  Future<void> reorder(List<AccountIsar> list, int oldIndex, int newIndex) async {
+  Future<void> reorder(AccountType? type, int oldIndex, int newIndex) async {
+    List<AccountIsar> list;
+    if (type == null) {
+      list = isar.accountIsars.where().sortByOrder().build().findAllSync();
+    } else {
+      list = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
+    }
     await isar.writeTxn(
       () async {
         if (newIndex < oldIndex) {
@@ -173,6 +183,8 @@ class AccountRepository {
     );
   }
 }
+
+/////////////////////////// PROVIDERS ///////////////////////////
 
 final accountRepositoryProvider = Provider<AccountRepository>(
   (ref) {

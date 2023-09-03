@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/persistent/isar_model.dart';
 import '../../../../utils/enums.dart';
 import 'category_tag_isar.dart';
 
@@ -6,9 +7,7 @@ import 'category_tag_isar.dart';
 part 'category_isar.g.dart';
 
 @Collection()
-class CategoryIsar {
-  Id id = Isar.autoIncrement;
-
+class CategoryIsar extends IsarCollectionObject {
   @enumerated
   late CategoryType type;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
 import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
 import 'package:money_tracker_app/src/features/category/data/isar_dto/category_tag_isar.dart';
 import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
@@ -8,17 +9,20 @@ import 'package:async/async.dart';
 
 import '../../../../persistent/isar_data_store.dart';
 import '../../../utils/enums.dart';
-import '../../accounts/data/isar_dto/account_isar.dart';
+import '../../accounts/domain/account.dart';
+import '../../category/domain/category.dart';
+import '../../category/domain/category_tag.dart';
+import '../domain/transaction.dart';
 
 class TransactionRepository {
   TransactionRepository(this.isar);
 
   final Isar isar;
 
-  List<TransactionIsar> getAll(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query =
-        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build();
-    return query.findAllSync();
+  List<Transaction> getAll(DateTime lower, DateTime upper) {
+    List<TransactionIsar> list =
+        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build().findAllSync();
+    return list.map((e) => Transaction.fromIsar(e)).toList();
   }
 
   // Used to watch transaction list changes
@@ -38,18 +42,18 @@ class TransactionRepository {
   Future<void> writeNewIncomeTxn({
     required DateTime dateTime,
     required double amount,
-    required CategoryIsar category,
-    required CategoryTagIsar? tag,
-    required AccountIsar account,
+    required Category category,
+    required CategoryTag? tag,
+    required Account account,
     required String? note,
   }) async {
     final newTransaction = TransactionIsar()
       ..transactionType = TransactionType.income
       ..dateTime = dateTime
       ..amount = amount
-      ..categoryLink.value = category
-      ..accountLink.value = account
-      ..categoryTagLink.value = tag
+      ..categoryLink.value = category.isarObject
+      ..accountLink.value = account.isarObject
+      ..categoryTagLink.value = tag?.isarObject
       ..note = note;
 
     await isar.writeTxn(() async {
@@ -66,18 +70,18 @@ class TransactionRepository {
   Future<void> writeNewExpenseTxn({
     required DateTime dateTime,
     required double amount,
-    required CategoryIsar category,
-    required CategoryTagIsar? tag,
-    required AccountIsar account,
+    required Category category,
+    required CategoryTag? tag,
+    required Account account,
     required String? note,
   }) async {
     final newTransaction = TransactionIsar()
       ..transactionType = TransactionType.expense
       ..dateTime = dateTime
       ..amount = amount
-      ..categoryLink.value = category
-      ..accountLink.value = account
-      ..categoryTagLink.value = tag
+      ..categoryLink.value = category.isarObject
+      ..accountLink.value = account.isarObject
+      ..categoryTagLink.value = tag?.isarObject
       ..note = note;
 
     await isar.writeTxn(() async {
@@ -91,27 +95,29 @@ class TransactionRepository {
     });
   }
 
-  Future<void> writeNewTransferTxn(
-      {required DateTime dateTime,
-      required double amount,
-      required AccountIsar account,
-      required AccountIsar toAccount,
-      required String? note,
-      required double? fee,
-      required bool? isChargeOnDestinationAccount}) async {
-    TransferFeeDetailsIsar? feeDetails;
+  Future<void> writeNewTransferTxn({
+    required DateTime dateTime,
+    required double amount,
+    required Account account,
+    required Account toAccount,
+    required String? note,
+    required double? fee,
+    required bool? isChargeOnDestinationAccount,
+  }) async {
+    TransferFeeIsar? feeDetails;
     if (fee != null && isChargeOnDestinationAccount != null) {
-      feeDetails = TransferFeeDetailsIsar()
-        ..transferFee = fee
+      feeDetails = TransferFeeIsar()
+        ..amount = fee
         ..onDestination = isChargeOnDestinationAccount;
     }
+
     final newTransaction = TransactionIsar()
       ..transactionType = TransactionType.transfer
       ..dateTime = dateTime
       ..amount = amount
-      ..accountLink.value = account
-      ..toAccountLink.value = toAccount
-      ..transferFeeDetails = feeDetails
+      ..accountLink.value = account.isarObject
+      ..toAccountLink.value = toAccount.isarObject
+      ..transferFeeIsar = feeDetails
       ..note = note;
 
     await isar.writeTxn(() async {
@@ -127,21 +133,30 @@ class TransactionRepository {
   Future<void> writeNewCreditSpendingTxn({
     required DateTime dateTime,
     required double amount,
-    required CategoryIsar category,
-    required AccountIsar account,
-    required CategoryTagIsar? tag,
+    required Category category,
+    required Account account,
+    required CategoryTag? tag,
     required String? note,
-    required InstallmentDetailsIsar? installmentDetails,
+    required Installment? installment,
   }) async {
+    InstallmentIsar? installmentIsar;
+
+    if (installment != null) {
+      installmentIsar = InstallmentIsar()
+        ..amount = installment.amount
+        ..interestRate = installment.interestRate
+        ..rateOnRemaining = installment.rateOnRemaining;
+    }
+
     final txn = TransactionIsar()
       ..transactionType = TransactionType.creditSpending
       ..dateTime = dateTime
       ..amount = amount
-      ..accountLink.value = account
-      ..categoryLink.value = category
-      ..categoryTagLink.value = tag
+      ..categoryLink.value = category.isarObject
+      ..accountLink.value = account.isarObject
+      ..categoryTagLink.value = tag?.isarObject
       ..note = note
-      ..installmentDetails = installmentDetails;
+      ..installmentIsar = installmentIsar;
 
     await isar.writeTxn(() async {
       // Put the `txn` to the TransactionIsar collection

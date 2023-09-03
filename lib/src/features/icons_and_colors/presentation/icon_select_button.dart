@@ -13,12 +13,12 @@ class IconSelectButton extends StatefulWidget {
     required this.backGroundColor,
     required this.iconColor,
     required this.onTap,
-    this.initialCategory = '',
+    this.initialIconCategory = '',
     this.initialIconIndex = 0,
   }) : super(key: key);
   final Color backGroundColor;
   final Color iconColor;
-  final String initialCategory;
+  final String initialIconCategory;
   final int initialIconIndex;
   final Function(String, int) onTap;
 
@@ -34,7 +34,7 @@ class _IconSelectButtonState extends State<IconSelectButton> {
 
   @override
   void initState() {
-    currentCategory = widget.initialCategory;
+    currentCategory = widget.initialIconCategory;
     currentIconIndex = widget.initialIconIndex;
     super.initState();
   }
