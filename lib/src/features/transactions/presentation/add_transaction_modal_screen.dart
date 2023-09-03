@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/currency_icon.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/forms/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -14,7 +14,6 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../common_widgets/card_item.dart';
 import '../../accounts/domain/account.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../category/domain/category.dart';
@@ -56,8 +55,6 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
 
   @override
   Widget build(BuildContext context) {
-    final settingsObject = ref.watch(settingsControllerProvider);
-
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -72,31 +69,14 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CardItem(
-                height: 50,
-                width: 50,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                margin: EdgeInsets.zero,
-                color: AppColors.grey,
-                borderRadius: BorderRadius.circular(1000),
-                child: FittedBox(
-                  child: Text(
-                    settingsObject.currency.symbol ?? settingsObject.currency.code,
-                    style: kHeader1TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative,
-                    ),
-                  ),
-                ),
-              ),
+              const CurrencyIcon(),
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
                   hintText: 'Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null ||
-                        _formatToDouble(calculatorOutput) == 0) {
+                    if (_formatToDouble(calculatorOutput) == null || _formatToDouble(calculatorOutput) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -143,8 +123,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) {
-                              if (category == null &&
-                                  widget.transactionType != TransactionType.transfer) {
+                              if (category == null && widget.transactionType != TransactionType.transfer) {
                                 return '!';
                               }
                               return null;
@@ -198,8 +177,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddTransactionModalS
                           });
                         }
                       },
-                      otherSelectedAccount:
-                          widget.transactionType == TransactionType.transfer ? account : null,
+                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? account : null,
                     ),
                   ],
                 ),

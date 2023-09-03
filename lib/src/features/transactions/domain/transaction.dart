@@ -8,7 +8,7 @@ import '../../category/domain/category_tag.dart';
 import '../data/isar_dto/transaction_isar.dart';
 
 @immutable
-abstract class Transaction extends IsarModel<TransactionIsar> {
+sealed class Transaction extends IsarModel<TransactionIsar> {
   final DateTime dateTime;
   final double amount;
   final String? note;
@@ -31,9 +31,9 @@ abstract class Transaction extends IsarModel<TransactionIsar> {
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
           txn.note,
+          Category.fromIsar(txn.categoryLink.value),
+          CategoryTag.fromIsar(txn.categoryTagLink.value),
           isInitialTransaction: txn.isInitialTransaction,
-          category: Category.fromIsar(txn.categoryLink.value),
-          categoryTag: CategoryTag.fromIsar(txn.categoryTagLink.value),
         );
 
       case TransactionType.expense:
@@ -43,8 +43,8 @@ abstract class Transaction extends IsarModel<TransactionIsar> {
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
           txn.note,
-          category: Category.fromIsar(txn.categoryLink.value),
-          categoryTag: CategoryTag.fromIsar(txn.categoryTagLink.value),
+          Category.fromIsar(txn.categoryLink.value),
+          CategoryTag.fromIsar(txn.categoryTagLink.value),
         );
 
       case TransactionType.transfer:
@@ -55,7 +55,7 @@ abstract class Transaction extends IsarModel<TransactionIsar> {
           Account.fromIsar(txn.accountLink.value),
           txn.note,
           toAccount: Account.fromIsar(txn.toAccountLink.value),
-          fee: Fee.fromIsar(txn),
+          fee: Fee._fromIsar(txn),
         );
 
       case TransactionType.creditSpending:
@@ -69,10 +69,10 @@ abstract class Transaction extends IsarModel<TransactionIsar> {
           txn.amount,
           Account.fromIsar(txn.accountLink.value),
           txn.note,
-          category: Category.fromIsar(txn.categoryLink.value),
-          categoryTag: CategoryTag.fromIsar(txn.categoryTagLink.value),
+          Category.fromIsar(txn.categoryLink.value),
+          CategoryTag.fromIsar(txn.categoryTagLink.value),
           payments: payments,
-          installment: Installment.fromIsar(txn),
+          installment: Installment._fromIsar(txn),
         );
 
       case TransactionType.creditPayment:
@@ -87,24 +87,37 @@ abstract class Transaction extends IsarModel<TransactionIsar> {
   }
 }
 
-class Expense extends Transaction {
+@immutable
+sealed class TransactionWithCategory extends Transaction {
   final Category? category;
   final CategoryTag? categoryTag;
 
+  const TransactionWithCategory(
+    super._isarObject,
+    super.dateTime,
+    super.amount,
+    super.account,
+    super.note,
+    this.category,
+    this.categoryTag,
+  );
+}
+
+@immutable
+class Expense extends TransactionWithCategory {
   const Expense._(
     super._isarObject,
     super.dateTime,
     super.amount,
     super.account,
-    super.note, {
-    required this.category,
-    required this.categoryTag,
-  });
+    super.note,
+    super.category,
+    super.categoryTag,
+  );
 }
 
-class Income extends Transaction {
-  final Category? category;
-  final CategoryTag? categoryTag;
+@immutable
+class Income extends TransactionWithCategory {
   final bool isInitialTransaction;
 
   const Income._(
@@ -112,13 +125,14 @@ class Income extends Transaction {
     super.dateTime,
     super.amount,
     super.account,
-    super.note, {
+    super.note,
+    super.category,
+    super.categoryTag, {
     required this.isInitialTransaction,
-    required this.category,
-    required this.categoryTag,
   });
 }
 
+@immutable
 class Transfer extends Transaction {
   final Account? toAccount;
   final Fee? fee;
@@ -134,9 +148,8 @@ class Transfer extends Transaction {
   });
 }
 
-class CreditSpending extends Transaction {
-  final Category? category;
-  final CategoryTag? categoryTag;
+@immutable
+class CreditSpending extends TransactionWithCategory {
   final List<CreditPayment> payments;
   final Installment? installment;
 
@@ -169,14 +182,15 @@ class CreditSpending extends Transaction {
     super.dateTime,
     super.amount,
     super.account,
-    super.note, {
-    required this.category,
-    required this.categoryTag,
+    super.note,
+    super.category,
+    super.categoryTag, {
     required this.payments,
     required this.installment,
   });
 }
 
+@immutable
 class CreditPayment extends Transaction {
   const CreditPayment._(
     super._isarObject,
@@ -192,14 +206,14 @@ class Fee {
   final double amount;
   final bool onDestination;
 
-  static Fee? fromIsar(TransactionIsar txn) {
+  static Fee? _fromIsar(TransactionIsar txn) {
     if (txn.transferFeeIsar == null) {
       return null;
     }
-    return Fee._(txn.transferFeeIsar!.amount, txn.transferFeeIsar!.onDestination);
+    return Fee(txn.transferFeeIsar!.amount, txn.transferFeeIsar!.onDestination);
   }
 
-  const Fee._(this.amount, this.onDestination);
+  const Fee(this.amount, this.onDestination);
 }
 
 @immutable
@@ -210,13 +224,13 @@ class Installment {
 
   final bool rateOnRemaining;
 
-  static Installment? fromIsar(TransactionIsar txn) {
+  static Installment? _fromIsar(TransactionIsar txn) {
     if (txn.installmentIsar == null) {
       return null;
     }
-    return Installment._(txn.installmentIsar!.amount, txn.installmentIsar!.interestRate,
-        txn.installmentIsar!.rateOnRemaining);
+    return Installment(
+        txn.installmentIsar!.amount, txn.installmentIsar!.interestRate, txn.installmentIsar!.rateOnRemaining);
   }
 
-  const Installment._(this.amount, this.interestRate, this.rateOnRemaining);
+  const Installment(this.amount, this.interestRate, this.rateOnRemaining);
 }

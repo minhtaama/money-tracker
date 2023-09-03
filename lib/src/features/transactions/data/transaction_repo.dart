@@ -20,12 +20,8 @@ class TransactionRepository {
   final Isar isar;
 
   List<Transaction> getAll(DateTime lower, DateTime upper) {
-    List<TransactionIsar> list = isar.transactionIsars
-        .filter()
-        .dateTimeBetween(lower, upper)
-        .sortByDateTime()
-        .build()
-        .findAllSync();
+    List<TransactionIsar> list =
+        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build().findAllSync();
     return list.map((e) => Transaction.fromIsar(e)).toList();
   }
 
@@ -141,8 +137,17 @@ class TransactionRepository {
     required Account account,
     required CategoryTag? tag,
     required String? note,
-    required InstallmentIsar? installmentDetails,
+    required Installment? installment,
   }) async {
+    InstallmentIsar? installmentIsar;
+
+    if (installment != null) {
+      installmentIsar = InstallmentIsar()
+        ..amount = installment.amount
+        ..interestRate = installment.interestRate
+        ..rateOnRemaining = installment.rateOnRemaining;
+    }
+
     final txn = TransactionIsar()
       ..transactionType = TransactionType.creditSpending
       ..dateTime = dateTime
@@ -151,7 +156,7 @@ class TransactionRepository {
       ..accountLink.value = account.isarObject
       ..categoryTagLink.value = tag?.isarObject
       ..note = note
-      ..installmentIsar = installmentDetails;
+      ..installmentIsar = installmentIsar;
 
     await isar.writeTxn(() async {
       // Put the `txn` to the TransactionIsar collection

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/currency_icon.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
@@ -11,7 +12,6 @@ import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -70,8 +70,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsObject = ref.watch(settingsControllerProvider);
-
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -80,23 +78,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         children: [
           Row(
             children: [
-              CardItem(
-                height: 50,
-                width: 50,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                margin: EdgeInsets.zero,
-                color: AppColors.grey,
-                borderRadius: BorderRadius.circular(1000),
-                child: FittedBox(
-                  child: Text(
-                    settingsObject.currency.symbol ?? settingsObject.currency.code,
-                    style: kHeader1TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative,
-                    ),
-                  ),
-                ),
-              ),
+              const CurrencyIcon(),
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
@@ -169,7 +151,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           HideableContainer(
             hidden: accountType != AccountType.credit,
             child: CardItem(
-              margin: const EdgeInsets.all(2),
+              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
