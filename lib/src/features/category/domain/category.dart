@@ -6,13 +6,8 @@ import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums.dart';
 
 @immutable
-class Category extends IsarModel<CategoryIsar> {
+class Category extends IsarModelWithIcon<CategoryIsar> {
   final CategoryType type;
-
-  final String name;
-  final Color color;
-  final Color backgroundColor;
-  final String iconPath;
 
   static Category? fromIsar(CategoryIsar? categoryIsar) {
     if (categoryIsar == null) {
@@ -31,10 +26,10 @@ class Category extends IsarModel<CategoryIsar> {
 
   const Category._(
     super._isarObject, {
+    required super.name,
+    required super.color,
+    required super.backgroundColor,
+    required super.iconPath,
     required this.type,
-    required this.name,
-    required this.color,
-    required this.backgroundColor,
-    required this.iconPath,
   });
 }

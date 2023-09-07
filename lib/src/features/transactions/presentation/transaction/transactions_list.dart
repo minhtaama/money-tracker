@@ -50,7 +50,9 @@ class TransactionsList extends StatelessWidget {
                     TxnAmount(currencyCode: currencyCode, transaction: transaction),
                   ],
                 ),
-                transaction.note != null ? TxnNote(transaction: transaction) : Gap.noGap,
+                transaction.note != null || (transaction as TransactionWithCategory).categoryTag != null
+                    ? TxnNote(transaction: transaction)
+                    : Gap.noGap,
               ],
             ),
           ),

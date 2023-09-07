@@ -14,7 +14,17 @@ abstract class IsarModel<T extends IsarCollectionObject> {
   T get isarObject => _isarObject;
 }
 
-/// Only extends this object if sub-class is a Collection of Isar Database
+abstract class IsarModelWithIcon<T extends IsarCollectionObject> extends IsarModel<T> {
+  const IsarModelWithIcon(super.isarObject,
+      {required this.name, required this.color, required this.backgroundColor, required this.iconPath});
+
+  final String name;
+  final Color color;
+  final Color backgroundColor;
+  final String iconPath;
+}
+
+/// Only extends this object if sub-class is a [@collection] of Isar Database
 abstract class IsarCollectionObject {
   Id id = Isar.autoIncrement;
 }

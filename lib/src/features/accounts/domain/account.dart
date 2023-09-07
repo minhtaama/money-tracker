@@ -6,13 +6,9 @@ import '../../../utils/enums.dart';
 import '../data/isar_dto/account_isar.dart';
 
 @immutable
-class Account extends IsarModel<AccountIsar> {
+class Account extends IsarModelWithIcon<AccountIsar> {
   final AccountType type;
 
-  final String name;
-  final Color color;
-  final Color backgroundColor;
-  final String iconPath;
   final CreditDetails? creditDetails;
 
   double get currentBalance => isarObject.currentBalance;
@@ -37,11 +33,11 @@ class Account extends IsarModel<AccountIsar> {
 
   const Account._(
     super._isarObject, {
+    required super.name,
+    required super.color,
+    required super.backgroundColor,
+    required super.iconPath,
     required this.type,
-    required this.name,
-    required this.color,
-    required this.backgroundColor,
-    required this.iconPath,
     required this.creditDetails,
   });
 }
