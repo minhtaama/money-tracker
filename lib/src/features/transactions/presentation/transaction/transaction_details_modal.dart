@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/persistent/isar_model.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
+import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -17,6 +15,7 @@ import '../../../../common_widgets/custom_section.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
+import '../../../category/domain/category.dart';
 import '../../domain/transaction.dart';
 
 class TransactionDetails extends ConsumerWidget {
@@ -26,7 +25,7 @@ class TransactionDetails extends ConsumerWidget {
 
   String get _title {
     return switch (transaction) {
-      Income() => 'Income'.hardcoded,
+      Income() => (transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
       CreditSpending() => 'Credit Spending'.hardcoded,
@@ -81,13 +80,19 @@ class TransactionDetails extends ConsumerWidget {
         ),
         Gap.h8,
         Gap.divider(context),
-        _ItemDisplay(model: transaction.account!),
+        _AccountCard(model: transaction.account!),
         switch (transaction) {
-          TransactionWithCategory() => _ItemDisplay(
+          Income() => (transaction as Income).isInitialTransaction
+              ? Gap.noGap
+              : _CategoryCard(
+                  model: (transaction as Income).category!,
+                  categoryTag: (transaction as Income).categoryTag,
+                ),
+          TransactionWithCategory() => _CategoryCard(
               model: (transaction as TransactionWithCategory).category!,
               categoryTag: (transaction as TransactionWithCategory).categoryTag,
             ),
-          Transfer() => Gap.noGap,
+          Transfer() => _AccountCard(model: (transaction as Transfer).toAccount!),
           CreditPayment() => Gap.noGap,
         },
         transaction.note != null ? _Note(note: transaction.note!) : Gap.noGap,
@@ -97,10 +102,9 @@ class TransactionDetails extends ConsumerWidget {
   }
 }
 
-class _ItemDisplay extends StatelessWidget {
-  const _ItemDisplay({required this.model, this.categoryTag});
-  final IsarModelWithIcon model;
-  final CategoryTag? categoryTag;
+class _AccountCard extends StatelessWidget {
+  const _AccountCard({required this.model});
+  final Account model;
 
   @override
   Widget build(BuildContext context) {
@@ -128,13 +132,8 @@ class _ItemDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                model is Account
-                    ? (model as Account).type == AccountType.credit
-                        ? 'CREDIT ACCOUNT:'
-                        : 'ACCOUNT:'
-                    : 'CATEGORY:',
-                style: kHeader2TextStyle.copyWith(
-                    color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+                model.type == AccountType.credit ? 'CREDIT ACCOUNT:' : 'ACCOUNT:',
+                style: kHeader2TextStyle.copyWith(color: model.color.withOpacity(0.6), fontSize: 11),
               ),
               Gap.h4,
               IntrinsicWidth(
@@ -150,20 +149,65 @@ class _ItemDisplay extends StatelessWidget {
                   ],
                 ),
               ),
-              categoryTag != null
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                      margin: const EdgeInsets.only(top: 5),
-                      decoration: BoxDecoration(
-                        color: model.color,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '# ${categoryTag!.name}',
-                        style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 13),
-                      ),
-                    )
-                  : const SizedBox(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryCard extends StatelessWidget {
+  const _CategoryCard({required this.model, this.categoryTag});
+  final Category model;
+  final CategoryTag? categoryTag;
+
+  @override
+  Widget build(BuildContext context) {
+    return CardItem(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: Colors.transparent,
+      border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+      elevation: 0,
+      constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'CATEGORY:',
+            style:
+                kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+          ),
+          Gap.h4,
+          Row(
+            children: [
+              RoundedIconButton(
+                iconPath: model.iconPath,
+                size: 50,
+                iconPadding: 6,
+                backgroundColor: model.backgroundColor,
+                iconColor: model.color,
+              ),
+              Gap.w8,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      model.name,
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 20),
+                    ),
+                    categoryTag != null
+                        ? Text(
+                            '# ${categoryTag!.name}',
+                            style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 15),
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -178,36 +222,29 @@ class _Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 4, top: 6),
-      decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 10)),
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        constraints: const BoxConstraints(minHeight: 50, minWidth: double.infinity),
-        decoration: BoxDecoration(
-          color: context.appTheme.backgroundNegative.withOpacity(0.07),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'NOTE:',
-              style:
-                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+    return CardItem(
+      color: Colors.transparent,
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'NOTE:',
+            style:
+                kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+          ),
+          Gap.h4,
+          Text(
+            note,
+            style: kHeader4TextStyle.copyWith(
+              color: context.appTheme.backgroundNegative,
+              fontSize: 18,
             ),
-            Gap.h4,
-            Text(
-              note,
-              style: kHeader4TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative,
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
