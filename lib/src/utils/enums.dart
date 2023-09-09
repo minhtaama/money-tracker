@@ -22,6 +22,15 @@ enum ThemeType {
   system,
 }
 
+enum DateTimeType {
+  ddmmyyyy,
+  ddmmmyyyy,
+  ddmmmmyyyy,
+  mmddyyyy,
+  mmmddyyyy,
+  mmmmddyyyy,
+}
+
 /// https://www.xe.com/symbols/
 enum Currency {
   all('ALL', 'Albania Lek', symbol: 'Lek'),

@@ -100,7 +100,8 @@ class TxnCategoryName extends StatelessWidget {
 }
 
 class TxnAccountIcon extends StatelessWidget {
-  const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false}) : super(key: key);
+  const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false})
+      : super(key: key);
 
   final Transaction transaction;
 
@@ -247,18 +248,21 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(
+            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius:
+              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             _categoryTag != null
                 ? Text(
@@ -277,6 +281,9 @@ class TxnNote extends StatelessWidget {
                       color: context.appTheme.backgroundNegative.withOpacity(0.7),
                       fontSize: 12,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                    maxLines: 3,
                   )
                 : Gap.noGap,
           ],
@@ -287,11 +294,20 @@ class TxnNote extends StatelessWidget {
 }
 
 class TxnTransferLine extends StatelessWidget {
-  const TxnTransferLine({Key? key, this.height = 27, this.width = 20, this.adjustY = 1}) : super(key: key);
+  const TxnTransferLine(
+      {Key? key,
+      this.height = 27,
+      this.width = 20,
+      this.adjustY = 1,
+      this.strokeWidth = 1,
+      this.opacity = 1})
+      : super(key: key);
 
   final double height;
   final double adjustY;
   final double width;
+  final double strokeWidth;
+  final double opacity;
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +316,8 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity,
+              height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
@@ -313,9 +330,9 @@ Color _color(BuildContext context, Transaction transaction) {
   return switch (transaction) {
     Income() => context.appTheme.positive,
     Expense() => context.appTheme.negative,
-    CreditSpending() => AppColors.darkerGrey.withOpacity(0.85),
+    CreditSpending() => context.appTheme.backgroundNegative.withOpacity(0.5),
     CreditPayment() => context.appTheme.negative,
-    Transfer() => AppColors.darkerGrey.withOpacity(0.85),
+    Transfer() => context.appTheme.backgroundNegative.withOpacity(0.5),
   };
 }
 
@@ -327,12 +344,15 @@ bool _isInitial(TransactionWithCategory transaction) {
 }
 
 class _TransferLinePainter extends CustomPainter {
-  _TransferLinePainter(this.context, {this.height = 30, required this.width, required this.adjustY});
+  _TransferLinePainter(this.context, this.strokeWidth, this.opacity,
+      {this.height = 30, required this.width, required this.adjustY});
 
   final BuildContext context;
   final double height;
   final double width;
   final double adjustY;
+  final double strokeWidth;
+  final double opacity;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -367,9 +387,9 @@ class _TransferLinePainter extends CustomPainter {
     const useCenter = false;
 
     final paint = Paint()
-      ..color = context.appTheme.backgroundNegative
+      ..color = context.appTheme.backgroundNegative.withOpacity(opacity)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = strokeWidth;
 
     canvas.drawArc(corner1, startAngle1, sweepAngle, useCenter, paint);
     canvas.drawArc(corner2, startAngle2, sweepAngle, useCenter, paint);

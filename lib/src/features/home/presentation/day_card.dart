@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/features/settings/data/settings_controller
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transactions_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../transactions/domain/transaction.dart';
@@ -52,8 +53,9 @@ class DayCard extends ConsumerWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color:
-                        dateTime.weekday == 6 || dateTime.weekday == 7 ? context.appTheme.accent : AppColors.darkerGrey,
+                    color: dateTime.weekday == 6 || dateTime.weekday == 7
+                        ? context.appTheme.accent
+                        : AppColors.darkerGrey,
                     borderRadius: BorderRadius.circular(8),
                     border: dateTime.year == DateTime.now().year &&
                             dateTime.month == DateTime.now().month &&
@@ -86,8 +88,9 @@ class DayCard extends ConsumerWidget {
                       textAlign: TextAlign.left,
                     ),
                     Text(
-                      '${dateTime.monthString()} ${dateTime.year}',
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
+                      dateTime.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
+                      style: kHeader4TextStyle.copyWith(
+                          color: context.appTheme.backgroundNegative, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],

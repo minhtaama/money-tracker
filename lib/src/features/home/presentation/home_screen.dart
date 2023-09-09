@@ -14,6 +14,7 @@ import '../../../../persistent/isar_data_store.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/enums.dart';
 import '../../transactions/domain/transaction.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -86,7 +87,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -107,7 +109,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       controller: _controller,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
-          secondaryTitle: '${_displayDate.monthString()}, ${_displayDate.year}',
+          secondaryTitle: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
           hideNumber: _hideTotalBalance,
           onEyeTap: () => setState(() => _hideTotalBalance = !_hideTotalBalance),
         ),
@@ -118,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onEyeTap: () => setState(() => _hideTotalBalance = !_hideTotalBalance),
         ),
         outerChild: DateSelector(
-          dateDisplay: '${_displayDate.monthString()}, ${_displayDate.year}',
+          dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
           onTapGoToCurrentDate: () {
