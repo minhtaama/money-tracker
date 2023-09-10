@@ -64,7 +64,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: AppColors.grey,
+                    color: AppColors.grey(context),
                   ),
                 ),
                 Align(

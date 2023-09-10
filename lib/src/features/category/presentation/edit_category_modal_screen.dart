@@ -85,7 +85,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
               size: 55,
               iconPath: AppIcons.delete,
               iconPadding: 15,
-              backgroundColor: AppColors.grey,
+              backgroundColor: AppColors.lighterGrey(context),
               iconColor: context.appTheme.backgroundNegative,
               onTap: () {
                 showConfirmModalBottomSheet(

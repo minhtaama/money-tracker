@@ -33,17 +33,21 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Transform.translate(
-          offset: Offset(widget.optionalWidget != null ? 0.0 : -10.0, widget.optionalWidget != null ? 10.0 : 0.0),
+          offset: Offset(
+              widget.optionalWidget != null ? 0.0 : -10.0, widget.optionalWidget != null ? 10.0 : 0.0),
           child: AnimatedContainer(
             duration: k150msDuration,
             decoration: BoxDecoration(
               color: widget.optionalWidget != null && _value
-                  ? (widget.checkboxBackgroundColor ?? AppColors.grey)
+                  ? (widget.checkboxBackgroundColor ?? AppColors.grey(context))
                   : Colors.transparent,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
             ),
             child: Padding(
-              padding: widget.optionalWidget != null ? const EdgeInsets.only(bottom: 8.0, right: 12) : EdgeInsets.zero,
+              padding: widget.optionalWidget != null
+                  ? const EdgeInsets.only(bottom: 8.0, right: 12)
+                  : EdgeInsets.zero,
               child: IntrinsicWidth(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -53,12 +57,15 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                       focusColor: context.appTheme.secondary,
                       hoverColor: context.appTheme.secondary,
                       checkColor: context.appTheme.secondaryNegative,
-                      overlayColor: MaterialStatePropertyAll<Color>(context.appTheme.secondary.withOpacity(0.1)),
+                      overlayColor:
+                          MaterialStatePropertyAll<Color>(context.appTheme.secondary.withOpacity(0.1)),
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity:
-                          widget.optionalWidget == null ? const VisualDensity(horizontal: 0, vertical: -3) : null,
+                      visualDensity: widget.optionalWidget == null
+                          ? const VisualDensity(horizontal: 0, vertical: -3)
+                          : null,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                      side: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1.5),
+                      side: BorderSide(
+                          color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1.5),
                       value: _value,
                       onChanged: (value) {
                         setState(() {
@@ -79,7 +86,8 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                           widget.label,
                           style: widget.labelStyle ??
                               kHeader3TextStyle.copyWith(
-                                  fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.6)),
+                                  fontSize: 15,
+                                  color: context.appTheme.backgroundNegative.withOpacity(0.6)),
                         ),
                       ),
                     ),
@@ -97,7 +105,9 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                 padding: _value ? const EdgeInsets.all(16) : EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: widget.optionalWidgetBackgroundColor ??
-                      (context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background),
+                      (context.appTheme.isDarkTheme
+                          ? context.appTheme.background3
+                          : context.appTheme.background),
                   border: Border.all(
                     color: context.appTheme.backgroundNegative.withOpacity(_value ? 0.3 : 0),
                   ),

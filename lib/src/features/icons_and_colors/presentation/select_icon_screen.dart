@@ -119,7 +119,7 @@ class CircleIcon extends StatelessWidget {
               decoration: BoxDecoration(
                 color: context.appTheme.background3,
                 borderRadius: BorderRadius.circular(1000),
-                border: Border.all(width: 2, color: AppColors.grey),
+                border: Border.all(width: 2, color: AppColors.grey(context)),
               ),
             ),
             AnimatedOpacity(

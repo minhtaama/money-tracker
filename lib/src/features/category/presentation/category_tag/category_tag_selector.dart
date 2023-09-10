@@ -266,7 +266,7 @@ class CategoryTagWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: CustomInkWell(
-            inkColor: AppColors.grey,
+            inkColor: AppColors.grey(context),
             borderRadius: BorderRadius.circular(16),
             onTap: () => onTap(categoryTag),
             onLongPress: () => onLongPress(categoryTag),
@@ -274,7 +274,7 @@ class CategoryTagWidget extends StatelessWidget {
               elevation: 0,
               margin: EdgeInsets.zero,
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              color: AppColors.grey.withOpacity(0.15),
+              color: AppColors.grey(context),
               alignment: Alignment.center,
               child: EasyRichText(
                 '# ${categoryTag.name}',

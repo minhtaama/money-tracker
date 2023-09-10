@@ -20,7 +20,7 @@ class CurrencyIcon extends ConsumerWidget {
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       margin: EdgeInsets.zero,
-      color: AppColors.grey,
+      color: AppColors.grey(context),
       borderRadius: BorderRadius.circular(1000),
       child: FittedBox(
         child: Text(

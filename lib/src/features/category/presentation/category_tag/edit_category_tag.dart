@@ -73,7 +73,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                 size: 55,
                 iconPath: AppIcons.delete,
                 iconPadding: 15,
-                backgroundColor: AppColors.grey,
+                backgroundColor: AppColors.grey(context),
                 iconColor: context.appTheme.backgroundNegative,
                 onTap: () {
                   showConfirmModalBottomSheet(

@@ -20,7 +20,9 @@ Future<T?> showConfirmModalBottomSheet<T>({
     enableDrag: false,
     backgroundColor:
         context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-    barrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
+    barrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.6)
+        : AppColors.grey(context).withOpacity(0.6),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -42,7 +44,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                     iconPath: AppIcons.back,
                     label: 'No',
                     color: context.appTheme.backgroundNegative,
-                    backgroundColor: AppColors.grey,
+                    backgroundColor: AppColors.grey(context),
                     onTap: () => context.pop(),
                   ),
                   const Expanded(child: SizedBox()),
@@ -84,7 +86,9 @@ Future<T?> showCustomModalBottomSheet<T>(
     ),
     backgroundColor:
         context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-    barrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
+    barrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.6)
+        : AppColors.grey(context).withOpacity(0.6),
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -116,7 +120,9 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
     hasHandle: hasHandle,
     backgroundColor:
         context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-    modalBarrierColor: context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey,
+    modalBarrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.6)
+        : AppColors.grey(context).withOpacity(0.6),
     child: child,
   );
 }

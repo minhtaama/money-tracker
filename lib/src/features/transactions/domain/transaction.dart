@@ -154,7 +154,7 @@ class CreditSpending extends TransactionWithCategory {
   final Installment? installment;
 
   bool get isDone {
-    return paidAmount <= 0;
+    return paidAmount >= amount;
   }
 
   bool get hasInstallment {
@@ -228,8 +228,8 @@ class Installment {
     if (txn.installmentIsar == null) {
       return null;
     }
-    return Installment(
-        txn.installmentIsar!.amount, txn.installmentIsar!.interestRate, txn.installmentIsar!.rateOnRemaining);
+    return Installment(txn.installmentIsar!.amount, txn.installmentIsar!.interestRate,
+        txn.installmentIsar!.rateOnRemaining);
   }
 
   const Installment(this.amount, this.interestRate, this.rateOnRemaining);

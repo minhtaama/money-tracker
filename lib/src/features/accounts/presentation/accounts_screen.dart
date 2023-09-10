@@ -128,7 +128,7 @@ class AccountsScreen extends ConsumerWidget {
           : [
               Text(
                 'Nothing in here.\nPlease add a new account',
-                style: kHeader2TextStyle.copyWith(color: AppColors.grey),
+                style: kHeader2TextStyle.copyWith(color: AppColors.grey(context)),
                 textAlign: TextAlign.center,
               )
             ];

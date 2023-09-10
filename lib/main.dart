@@ -34,7 +34,9 @@ class MoneyTrackerApp extends ConsumerWidget {
 
   ThemeType getThemeType(BuildContext context, ThemeType currentThemeType) {
     if (currentThemeType == ThemeType.system) {
-      return MediaQuery.of(context).platformBrightness == Brightness.light ? ThemeType.light : ThemeType.dark;
+      return MediaQuery.of(context).platformBrightness == Brightness.light
+          ? ThemeType.light
+          : ThemeType.dark;
     } else {
       return currentThemeType;
     }
@@ -46,8 +48,8 @@ class MoneyTrackerApp extends ConsumerWidget {
 
     final systemIconBrightness = ref.watch(systemIconBrightnessProvider);
 
-    final currentTheme =
-        AppColors.allThemeData[settingsObject.currentThemeIndex][getThemeType(context, settingsObject.themeType)];
+    final currentTheme = AppColors.allThemeData[settingsObject.currentThemeIndex]
+        [getThemeType(context, settingsObject.themeType)];
 
     return AppTheme(
       data: currentTheme!,
@@ -68,6 +70,9 @@ class MoneyTrackerApp extends ConsumerWidget {
             theme: ThemeData(
               useMaterial3: true,
               fontFamily: 'WixMadeforDisplay',
+              // For showDatePicker2 colors
+              colorScheme: ColorScheme.fromSwatch()
+                  .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
             ),
           ),
         ),

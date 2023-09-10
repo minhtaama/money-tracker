@@ -31,7 +31,7 @@ class InlineTextFormField extends StatelessWidget {
         prefixText != null
             ? Text(
                 prefixText!,
-                style: kHeader4TextStyle,
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
               )
             : Gap.noGap,
         prefixText != null ? Gap.w8 : Gap.noGap,
@@ -73,7 +73,7 @@ class InlineTextFormField extends StatelessWidget {
         suffixText != null
             ? Text(
                 suffixText!,
-                style: kHeader4TextStyle,
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
               )
             : Gap.noGap,
       ],

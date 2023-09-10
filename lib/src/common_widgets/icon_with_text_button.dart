@@ -41,10 +41,10 @@ class IconWithTextButton extends StatelessWidget {
     return CardItem(
       height: height,
       width: width,
-      border: isDisabled ? Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.2)) : border,
-      color: isDisabled ? Colors.transparent : backgroundColor,
+      color: isDisabled ? AppColors.grey(context) : backgroundColor,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
+      border: border,
       borderRadius: borderRadius ?? BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,

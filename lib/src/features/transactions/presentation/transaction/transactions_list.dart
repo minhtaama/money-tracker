@@ -25,7 +25,7 @@ class TransactionsList extends StatelessWidget {
         final transaction = transactions[index];
 
         return CustomInkWell(
-          inkColor: AppColors.grey.withOpacity(0.15),
+          inkColor: AppColors.grey(context),
           borderRadius: BorderRadius.circular(12),
           onTap: () => onTransactionTap?.call(transaction),
           child: Padding(

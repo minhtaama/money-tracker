@@ -1,8 +1,11 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -70,21 +73,48 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           ),
           CustomInkWell(
             onTap: () async {
-              final newDate = await showDatePicker(
+              final results = await showCalendarDatePicker2Dialog(
                 context: context,
-                initialDate: currentDateTime,
-                firstDate: Calendar.minDate,
-                lastDate: Calendar.maxDate,
+                dialogSize: const Size(325, 400),
+                dialogBackgroundColor: context.appTheme.isDarkTheme
+                    ? context.appTheme.background3
+                    : context.appTheme.background,
+                borderRadius: BorderRadius.circular(16),
+                value: [DateTime.now()],
+                config: CalendarDatePicker2WithActionButtonsConfig(
+                  firstDayOfWeek: 1,
+                  selectedDayHighlightColor: context.appTheme.primary,
+                  selectedRangeHighlightColor: context.appTheme.primary.withOpacity(0.5),
+                  controlsTextStyle:
+                      kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                  dayTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                  lastMonthIcon: SvgIcon(
+                    AppIcons.arrowLeft,
+                    color: context.appTheme.backgroundNegative,
+                  ),
+                  nextMonthIcon: SvgIcon(
+                    AppIcons.arrowRight,
+                    color: context.appTheme.backgroundNegative,
+                  ),
+                  weekdayLabelTextStyle:
+                      kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                  selectedDayTextStyle:
+                      kHeader4TextStyle.copyWith(color: context.appTheme.primaryNegative),
+                  selectedYearTextStyle:
+                      kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                  yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                ),
               );
-              if (newDate != null) {
+              // TODO: Extract dateTime picker function to a seperate one
+              if (results != null && results[0] != null) {
                 setState(() {
                   currentDateTime =
-                      newDate.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
+                      results[0]!.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
                   widget.onChanged(currentDateTime);
                 });
               }
             },
-            inkColor: AppColors.grey,
+            inkColor: AppColors.grey(context),
             child: CardItem(
               height: 60,
               width: 75,
@@ -101,12 +131,12 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                           : context.appTheme.primary,
                       child: Center(
                         child: Text(
-                          currentDateTime.getFormattedDate(type: DateTimeType.ddmmyyyy, hasDay: false),
-                          style: kHeader4TextStyle.copyWith(
+                          currentDateTime.getFormattedDate(type: DateTimeType.ddmmmyyyy, hasYear: false),
+                          style: kHeader1TextStyle.copyWith(
                               color: context.appTheme.isDarkTheme
                                   ? context.appTheme.secondaryNegative
                                   : context.appTheme.primaryNegative,
-                              fontSize: 14),
+                              fontSize: 15),
                         ),
                       ),
                     ),
@@ -114,7 +144,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                   Expanded(
                     child: Container(
                       width: double.infinity,
-                      color: AppColors.grey,
+                      color: AppColors.grey(context),
                       child: Center(
                         child: Text(
                           currentDateTime.year.toString(),

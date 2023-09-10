@@ -8,6 +8,7 @@ class CustomSection extends StatefulWidget {
   const CustomSection({
     Key? key,
     this.title,
+    this.subTitle,
     this.isWrapByCard = true,
     this.onReorder,
     required this.children,
@@ -15,6 +16,7 @@ class CustomSection extends StatefulWidget {
   }) : super(key: key);
 
   final String? title;
+  final Widget? subTitle;
   final bool isWrapByCard;
   final void Function(int oldIndex, int newIndex)? onReorder;
   final List<Widget> children;
@@ -86,6 +88,7 @@ class _CustomSectionState extends State<CustomSection> {
                   ),
                 )
               : const SizedBox(),
+          widget.subTitle ?? const SizedBox(),
           CardItem(
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
             margin:

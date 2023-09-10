@@ -29,7 +29,8 @@ class AddCreditTransactionModalScreen extends ConsumerStatefulWidget {
   const AddCreditTransactionModalScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<AddCreditTransactionModalScreen> createState() => _AddCreditTransactionModalScreenState();
+  ConsumerState<AddCreditTransactionModalScreen> createState() =>
+      _AddCreditTransactionModalScreenState();
 }
 
 class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTransactionModalScreen> {
@@ -98,7 +99,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                   hintText: 'Spending Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) {
-                    if (_formatToDouble(calOutputSpendAmount) == null || _formatToDouble(calOutputSpendAmount) == 0) {
+                    if (_formatToDouble(calOutputSpendAmount) == null ||
+                        _formatToDouble(calOutputSpendAmount) == 0) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -197,7 +199,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                   rateBasedOnRemainingInstallmentUnpaid = false;
                 }
                 calOutputInstallmentAmount = _getInstallmentPayment().toString();
-                _installmentCalController.text = CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
+                _installmentCalController.text =
+                    CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
               });
             },
             optionalWidget: Column(
@@ -210,7 +213,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                   onChanged: (value) {
                     paymentPeriod = int.tryParse(value);
                     calOutputInstallmentAmount = _getInstallmentPayment().toString();
-                    _installmentCalController.text = CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
+                    _installmentCalController.text =
+                        CalculatorService.formatNumberInGroup(calOutputInstallmentAmount);
                   },
                 ),
                 Gap.h8,
@@ -227,7 +231,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                             _formatToDouble(calOutputInstallmentAmount) == 0) {
                           return 'Invalid Amount';
                         }
-                        if (_formatToDouble(calOutputInstallmentAmount)! > _formatToDouble(calOutputSpendAmount)!) {
+                        if (_formatToDouble(calOutputInstallmentAmount)! >
+                            _formatToDouble(calOutputSpendAmount)!) {
                           return 'Too high';
                         }
                         return null;
@@ -257,7 +262,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
                 Gap.h8,
                 CustomCheckbox(
                   label: 'Rate on remaining payment',
-                  labelStyle: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                  labelStyle: kHeader4TextStyle.copyWith(
+                      fontSize: 15, color: context.appTheme.backgroundNegative),
                   onChanged: (value) => rateBasedOnRemainingInstallmentUnpaid = value,
                 ),
               ],
@@ -297,8 +303,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditTrans
             children: [
               RoundedIconButton(
                 iconPath: AppIcons.back,
-                backgroundColor: AppColors.darkerGrey,
-                iconColor: context.appTheme.backgroundNegative,
+                backgroundColor: context.appTheme.secondary,
+                iconColor: context.appTheme.secondaryNegative,
                 size: 55,
                 onTap: () => context.pop(),
               ),

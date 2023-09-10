@@ -11,6 +11,7 @@ environment:
 
 dependencies:
   async: ^2.10.0
+  calendar_date_picker2: ^0.5.3
   easy_rich_text: ^2.0.0
   flutter:
     sdk: flutter

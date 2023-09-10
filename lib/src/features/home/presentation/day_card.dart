@@ -55,7 +55,7 @@ class DayCard extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: dateTime.weekday == 6 || dateTime.weekday == 7
                         ? context.appTheme.accent
-                        : AppColors.darkerGrey,
+                        : AppColors.darkerGrey(context),
                     borderRadius: BorderRadius.circular(8),
                     border: dateTime.year == DateTime.now().year &&
                             dateTime.month == DateTime.now().month &&

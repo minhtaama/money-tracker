@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:money_tracker_app/src/theme_and_ui/app_theme.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class AppColors {
   static List<Map<ThemeType, AppThemeData>> allThemeData = [
@@ -173,9 +175,17 @@ class AppColors {
   static const white = Color(0xFFFCFCFC);
   static final darkerWhite = Color.lerp(AppColors.white, AppColors.black, 0.05)!;
   static final darkestWhite = Color.lerp(AppColors.white, AppColors.black, 0.12)!;
-  static final grey = const Color(0xFF696969).withOpacity(0.25);
-  static final darkerGrey = const Color(0xFF696969).withOpacity(0.45);
   static final lightestBlack = Color.lerp(AppColors.black, AppColors.white, 0.09)!;
   static final lighterBlack = Color.lerp(AppColors.black, AppColors.white, 0.05)!;
   static const black = Color(0xFF111111);
+
+  static Color lighterGrey(BuildContext context) => context.appTheme.isDarkTheme
+      ? const Color(0xFF696969).addDark(0.25)
+      : const Color(0xFF696969).addWhite(0.85);
+  static Color grey(BuildContext context) => context.appTheme.isDarkTheme
+      ? const Color(0xFF696969).addDark(0.35)
+      : const Color(0xFF696969).addWhite(0.75);
+  static Color darkerGrey(BuildContext context) => context.appTheme.isDarkTheme
+      ? const Color(0xFF696969).addDark(0.4)
+      : const Color(0xFF696969).addWhite(0.6);
 }

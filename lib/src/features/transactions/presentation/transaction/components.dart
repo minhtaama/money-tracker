@@ -34,7 +34,7 @@ class TxnCreditIcon extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.grey,
+        color: AppColors.grey(context),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(

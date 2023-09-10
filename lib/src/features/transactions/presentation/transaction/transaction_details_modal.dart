@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/features/calculator_input/application/calc
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/components.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -39,12 +40,17 @@ class TransactionDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomSection(
       title: _title,
+      subTitle: _DateTime(transaction: transaction),
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
       children: [
-        _DateTimeAmount(transaction: transaction),
+        _Amount(transaction: transaction),
         Gap.h8,
-        Gap.divider(context),
+        transaction is CreditSpending
+            ? _PaymentDetail(transaction: transaction as CreditSpending)
+            : Gap.noGap,
+        transaction is CreditSpending ? Gap.h8 : Gap.noGap,
+        Gap.divider(context, indent: 6),
         Row(
           children: [
             transaction is Transfer
@@ -61,16 +67,13 @@ class TransactionDetails extends StatelessWidget {
                 children: [
                   _AccountCard(model: transaction.account!),
                   switch (transaction) {
-                    Income() => (transaction as Income).isInitialTransaction
-                        ? Gap.noGap
-                        : _CategoryCard(
-                            model: (transaction as Income).category!,
-                            categoryTag: (transaction as Income).categoryTag,
-                          ),
-                    TransactionWithCategory() => _CategoryCard(
-                        model: (transaction as TransactionWithCategory).category!,
-                        categoryTag: (transaction as TransactionWithCategory).categoryTag,
-                      ),
+                    TransactionWithCategory() =>
+                      transaction is Income && (transaction as Income).isInitialTransaction
+                          ? Gap.noGap
+                          : _CategoryCard(
+                              model: (transaction as TransactionWithCategory).category!,
+                              categoryTag: (transaction as TransactionWithCategory).categoryTag,
+                            ),
                     Transfer() => _AccountCard(model: (transaction as Transfer).toAccount!),
                     CreditPayment() => Gap.noGap,
                   },
@@ -86,8 +89,8 @@ class TransactionDetails extends StatelessWidget {
   }
 }
 
-class _DateTimeAmount extends ConsumerWidget {
-  const _DateTimeAmount({required this.transaction});
+class _Amount extends ConsumerWidget {
+  const _Amount({required this.transaction});
 
   final Transaction transaction;
 
@@ -135,47 +138,53 @@ class _DateTimeAmount extends ConsumerWidget {
         ),
         Gap.w16,
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Text(
-                    CalculatorService.formatCurrency(transaction.amount),
-                    style: kHeader1TextStyle.copyWith(
-                      color: _color(context),
-                    ),
-                  ),
-                  Gap.w8,
-                  Text(
-                    settingsObject.currency.code,
-                    style: kHeader4TextStyle.copyWith(
-                        color: _color(context), fontSize: kHeader1TextStyle.fontSize),
-                  ),
-                ],
+              Text(
+                CalculatorService.formatCurrency(transaction.amount),
+                style: kHeader1TextStyle.copyWith(
+                  color: _color(context),
+                ),
               ),
-              Gap.h4,
-              Row(
-                children: [
-                  Text(
-                    '${transaction.dateTime.hour}:${transaction.dateTime.minute}',
-                    style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative,
-                        fontSize: kHeader4TextStyle.fontSize),
-                  ),
-                  Gap.w8,
-                  Text(
-                    transaction.dateTime.getFormattedDate(type: DateTimeType.mmmmddyyyy),
-                    style: kHeader4TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative,
-                    ),
-                  ),
-                ],
+              Gap.w8,
+              Text(
+                settingsObject.currency.code,
+                style: kHeader4TextStyle.copyWith(
+                    color: _color(context), fontSize: kHeader1TextStyle.fontSize),
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DateTime extends StatelessWidget {
+  const _DateTime({required this.transaction});
+
+  final Transaction transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 2.0),
+      child: Row(
+        children: [
+          Text(
+            '${transaction.dateTime.hour}:${transaction.dateTime.minute}',
+            style: kHeader2TextStyle.copyWith(
+                color: context.appTheme.backgroundNegative, fontSize: kHeader4TextStyle.fontSize),
+          ),
+          Gap.w8,
+          Text(
+            transaction.dateTime.getFormattedDate(type: DateTimeType.mmmmddyyyy),
+            style: kHeader4TextStyle.copyWith(
+              color: context.appTheme.backgroundNegative,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -187,7 +196,7 @@ class _AccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CardItem(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: model.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
       constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
@@ -243,10 +252,12 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CardItem(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: model.backgroundColor.withOpacity(0.3),
-      elevation: 0,
+      color: context.appTheme.isDarkTheme
+          ? model.backgroundColor.addDark(0.62)
+          : model.backgroundColor.addWhite(0.7),
+      elevation: 1,
       constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,7 +315,7 @@ class _Note extends StatelessWidget {
     return CardItem(
       color: Colors.transparent,
       elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.5)),
       width: double.infinity,
       child: Column(
@@ -321,6 +332,85 @@ class _Note extends StatelessWidget {
             style: kHeader4TextStyle.copyWith(
               color: context.appTheme.backgroundNegative,
               fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentDetail extends ConsumerWidget {
+  const _PaymentDetail({required this.transaction});
+
+  final CreditSpending transaction;
+
+  double get _paidAmountPercentage {
+    return transaction.paidAmount / transaction.amount;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsObject = ref.read(settingsControllerProvider);
+
+    return CardItem(
+      color: Colors.transparent,
+      elevation: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+      border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.2)),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          !transaction.isDone
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: Text(
+                    '${transaction.account!.isTodayInPaymentPeriod ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
+                    style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+                  ),
+                )
+              : Gap.noGap,
+          !transaction.isDone
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: Text(
+                    transaction.account!.nextPaymentPeriod,
+                    style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.backgroundNegative, fontSize: 16),
+                  ),
+                )
+              : Gap.noGap,
+          !transaction.isDone ? Gap.h16 : Gap.noGap,
+          Padding(
+            padding: const EdgeInsets.only(left: 3.0),
+            child: Text(
+              'PAID AMOUNT:',
+              style: kHeader2TextStyle.copyWith(
+                  color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 3.0),
+            child: Text(
+              '${CalculatorService.formatCurrency(transaction.paidAmount)} ${settingsObject.currency.code}',
+              style:
+                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
+            ),
+          ),
+          Gap.h4,
+          Container(
+            width: double.infinity,
+            height: 20,
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [context.appTheme.primary, AppColors.lighterGrey(context)],
+                stops: [_paidAmountPercentage, _paidAmountPercentage],
+              ),
             ),
           ),
         ],
