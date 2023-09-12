@@ -87,23 +87,28 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
 
     _listWidgets = (overlayEntry) {
       return List.generate(widget.listItems.length, (index) {
-        return IconWithTextButton(
-          onTap: () {
-            widget.listItems[index].onTap();
-            _removeEntry(overlayEntry);
-          },
-          width: null,
-          height: null,
-          iconPath: widget.listItems[index].icon,
-          label: widget.listItems[index].label,
-          padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
-          labelSize: 15,
-          color: context.appTheme.backgroundNegative.withOpacity(0.5),
-          backgroundColor: Colors.transparent,
-          border: Border.all(
-            color: context.appTheme.backgroundNegative.withOpacity(0.4),
-            width: 1.5,
-          ),
+        return Column(
+          children: [
+            IconWithTextButton(
+              onTap: () {
+                widget.listItems[index].onTap();
+                _removeEntry(overlayEntry);
+              },
+              width: null,
+              height: null,
+              iconPath: widget.listItems[index].icon,
+              label: widget.listItems[index].label,
+              padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
+              labelSize: 15,
+              color: context.appTheme.backgroundNegative.withOpacity(0.5),
+              backgroundColor: Colors.transparent,
+              border: Border.all(
+                color: context.appTheme.backgroundNegative.withOpacity(0.4),
+                width: 1.5,
+              ),
+            ),
+            Gap.h16,
+          ],
         );
       });
     };
@@ -165,7 +170,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                               children: _buttonWidgets(overlayEntry),
                             ),
                           ),
-                          Gap.h40,
+                          Gap.h32,
                           ..._listWidgets(overlayEntry),
                         ],
                       ),

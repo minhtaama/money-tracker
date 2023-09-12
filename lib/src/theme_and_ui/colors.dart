@@ -179,13 +179,12 @@ class AppColors {
   static final lighterBlack = Color.lerp(AppColors.black, AppColors.white, 0.05)!;
   static const black = Color(0xFF111111);
 
-  static Color lighterGrey(BuildContext context) => context.appTheme.isDarkTheme
-      ? const Color(0xFF696969).addDark(0.25)
-      : const Color(0xFF696969).addWhite(0.85);
-  static Color grey(BuildContext context) => context.appTheme.isDarkTheme
-      ? const Color(0xFF696969).addDark(0.35)
-      : const Color(0xFF696969).addWhite(0.75);
-  static Color darkerGrey(BuildContext context) => context.appTheme.isDarkTheme
-      ? const Color(0xFF696969).addDark(0.4)
-      : const Color(0xFF696969).addWhite(0.6);
+  static Color lighterGrey(BuildContext context) =>
+      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.25) : const Color(0xFF696969).addWhite(0.85);
+  static Color grey(BuildContext context) =>
+      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.35) : const Color(0xFF696969).addWhite(0.75);
+  static Color darkerGrey(BuildContext context) =>
+      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.4) : const Color(0xFF696969).addWhite(0.6);
+  static Color darkestGrey(BuildContext context) =>
+      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.4) : const Color(0xFF696969).addWhite(0.25);
 }

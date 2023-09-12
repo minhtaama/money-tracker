@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class CalculatorService {
+class CalService {
   static String formatCurrency(double value, {bool enableDecimalDigits = false, bool hideNumber = false}) {
     NumberFormat formatter;
 
@@ -43,5 +43,18 @@ class CalculatorService {
 
   static String unformatNumberGrouping(String value) {
     return value.split(',').join();
+  }
+
+  static double? formatToDouble(String formattedValue) {
+    try {
+      double value = double.parse(formattedValue.split(',').join());
+      if (value == double.infinity || value == double.negativeInfinity) {
+        return null;
+      } else {
+        return value;
+      }
+    } catch (e) {
+      return null;
+    }
   }
 }

@@ -6,7 +6,8 @@ import 'package:money_tracker_app/src/features/category/presentation/add_categor
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/settings/presentation/select_currency_screen.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/add_transaction_modal_screen.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_credit_payment_modal_screen.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transaction_details_modal.dart';
 import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_screen.dart';
 import '../common_widgets/modal_bottom_sheets.dart';
@@ -14,7 +15,7 @@ import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/transactions/domain/transaction.dart';
-import '../features/transactions/presentation/add_credit_transaction_modal_screen.dart';
+import '../features/transactions/presentation/screens/add_credit_spending_modal_screen.dart';
 import '../utils/enums.dart';
 
 class RoutePath {
@@ -22,7 +23,8 @@ class RoutePath {
   static String get addIncome => '/home/addIncome';
   static String get addExpense => '/home/addExpense';
   static String get addTransfer => '/home/addTransfer';
-  static String get addCreditTransaction => '/home/addCreditTransaction';
+  static String get addCreditSpending => '/home/addCreditSpending';
+  static String get addCreditPayment => '/home/addCreditPayment';
   static String get summary => '/summary';
   static String get settings => '/summary/settings';
   static String get setCurrency => '/summary/settings/setCurrency';
@@ -65,7 +67,7 @@ final goRouter = GoRouter(
                 context,
                 state,
                 hasHandle: false,
-                child: const AddTransactionModalScreen(TransactionType.income),
+                child: const AddRegularTxnModalScreen(TransactionType.income),
               ),
             ),
             GoRoute(
@@ -75,7 +77,7 @@ final goRouter = GoRouter(
                 context,
                 state,
                 hasHandle: false,
-                child: const AddTransactionModalScreen(TransactionType.expense),
+                child: const AddRegularTxnModalScreen(TransactionType.expense),
               ),
             ),
             GoRoute(
@@ -85,17 +87,27 @@ final goRouter = GoRouter(
                 context,
                 state,
                 hasHandle: false,
-                child: const AddTransactionModalScreen(TransactionType.transfer),
+                child: const AddRegularTxnModalScreen(TransactionType.transfer),
               ),
             ),
             GoRoute(
-              path: 'addCreditTransaction',
+              path: 'addCreditSpending',
               parentNavigatorKey: _rootNavKey,
               pageBuilder: (context, state) => showModalBottomSheetPage(
                 context,
                 state,
                 hasHandle: false,
-                child: const AddCreditTransactionModalScreen(),
+                child: const AddCreditSpendingModalScreen(),
+              ),
+            ),
+            GoRoute(
+              path: 'addCreditPayment',
+              parentNavigatorKey: _rootNavKey,
+              pageBuilder: (context, state) => showModalBottomSheetPage(
+                context,
+                state,
+                hasHandle: false,
+                child: const AddCreditPaymentModalScreen(),
               ),
             ),
           ],

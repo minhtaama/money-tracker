@@ -89,8 +89,7 @@ class DayCard extends ConsumerWidget {
                     ),
                     Text(
                       dateTime.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-                      style: kHeader4TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative, fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -107,7 +106,7 @@ class DayCard extends ConsumerWidget {
                     Row(
                       children: [
                         Text(
-                          CalculatorService.formatCurrency(_calculateCashFlow.abs()),
+                          CalService.formatCurrency(_calculateCashFlow.abs()),
                           style: kHeader1TextStyle.copyWith(
                               color: _calculateCashFlow > 0
                                   ? context.appTheme.positive

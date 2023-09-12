@@ -100,8 +100,7 @@ class TxnCategoryName extends StatelessWidget {
 }
 
 class TxnAccountIcon extends StatelessWidget {
-  const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false})
-      : super(key: key);
+  const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false}) : super(key: key);
 
   final Transaction transaction;
 
@@ -213,7 +212,7 @@ class TxnAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          CalculatorService.formatCurrency(transaction.amount),
+          CalService.formatCurrency(transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
           style: kHeader2TextStyle.copyWith(color: _color(context, transaction), fontSize: 15),
@@ -248,16 +247,14 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(
-            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius:
-              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,12 +292,7 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {Key? key,
-      this.height = 27,
-      this.width = 20,
-      this.adjustY = 1,
-      this.strokeWidth = 1,
-      this.opacity = 1})
+      {Key? key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1})
       : super(key: key);
 
   final double height;
@@ -316,8 +308,7 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity,
-              height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
         ),
       ),
     );

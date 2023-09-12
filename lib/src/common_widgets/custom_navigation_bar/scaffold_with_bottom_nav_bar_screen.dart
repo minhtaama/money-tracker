@@ -25,6 +25,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
   @override
   Widget build(BuildContext context) {
     bool isHomeScreen = GoRouterState.of(context).location == '/home';
+
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
@@ -65,8 +66,13 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     final listItems = <FABItem>[
       FABItem(
         icon: AppIcons.add,
-        label: 'Add Credit transaction',
-        onTap: () => context.go(RoutePath.addCreditTransaction),
+        label: 'Credit Spending',
+        onTap: () => context.go(RoutePath.addCreditSpending),
+      ),
+      FABItem(
+        icon: AppIcons.add,
+        label: 'Credit Payment',
+        onTap: () => context.go(RoutePath.addCreditPayment),
       ),
     ];
 

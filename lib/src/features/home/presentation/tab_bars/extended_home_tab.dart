@@ -199,7 +199,7 @@ class TotalMoney extends ConsumerWidget {
         Gap.w8,
         Expanded(
           child: EasyRichText(
-            CalculatorService.formatCurrency(totalBalance, hideNumber: hideNumber),
+            CalService.formatCurrency(totalBalance, hideNumber: hideNumber),
             defaultStyle: kHeader2TextStyle.copyWith(
               color: context.appTheme.isDarkTheme
                   ? context.appTheme.backgroundNegative

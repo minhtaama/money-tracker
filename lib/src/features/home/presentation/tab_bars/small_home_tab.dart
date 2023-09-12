@@ -35,7 +35,7 @@ class SmallHomeTab extends ConsumerWidget {
 
     return PageHeading(
       leadingTitle: settingsRepository.currency.code,
-      title: CalculatorService.formatCurrency(
+      title: CalService.formatCurrency(
         totalBalance,
         hideNumber: hideNumber,
       ),

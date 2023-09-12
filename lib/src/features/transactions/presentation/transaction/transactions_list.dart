@@ -4,7 +4,7 @@ import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
 import '../../domain/transaction.dart';
-import 'components.dart';
+import 'txn_components.dart';
 
 class TransactionsList extends StatelessWidget {
   const TransactionsList({
