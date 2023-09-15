@@ -12,13 +12,12 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
   final DateTime dateTime;
   final double amount;
   final String? note;
-  final Account? account;
+  abstract final Account? account;
 
   const Transaction(
     super._isarObject,
     this.dateTime,
     this.amount,
-    this.account,
     this.note,
   );
 
@@ -29,10 +28,10 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn,
           txn.dateTime,
           txn.amount,
-          Account.fromIsar(txn.accountLink.value),
           txn.note,
           Category.fromIsar(txn.categoryLink.value),
           CategoryTag.fromIsar(txn.categoryTagLink.value),
+          account: Account.fromIsar(txn.accountLink.value),
           isInitialTransaction: txn.isInitialTransaction,
         );
 
@@ -41,10 +40,10 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn,
           txn.dateTime,
           txn.amount,
-          Account.fromIsar(txn.accountLink.value),
           txn.note,
           Category.fromIsar(txn.categoryLink.value),
           CategoryTag.fromIsar(txn.categoryTagLink.value),
+          account: Account.fromIsar(txn.accountLink.value),
         );
 
       case TransactionType.transfer:
@@ -52,8 +51,8 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn,
           txn.dateTime,
           txn.amount,
-          Account.fromIsar(txn.accountLink.value),
           txn.note,
+          account: Account.fromIsar(txn.accountLink.value),
           toAccount: Account.fromIsar(txn.toAccountLink.value),
           fee: Fee._fromIsar(txn),
         );
@@ -67,10 +66,10 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn,
           txn.dateTime,
           txn.amount,
-          Account.fromIsar(txn.accountLink.value),
           txn.note,
           Category.fromIsar(txn.categoryLink.value),
           CategoryTag.fromIsar(txn.categoryTagLink.value),
+          account: Account.fromIsar(txn.accountLink.value) as CreditAccount,
           payments: payments,
           installment: Installment._fromIsar(txn),
         );
@@ -80,8 +79,9 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn,
           txn.dateTime,
           txn.amount,
-          Account.fromIsar(txn.accountLink.value),
           txn.note,
+          account: Account.fromIsar(txn.accountLink.value),
+          toCreditAccount: Account.fromIsar(txn.toAccountLink.value) as CreditAccount,
         );
     }
   }
@@ -96,7 +96,6 @@ sealed class TransactionWithCategory extends Transaction {
     super._isarObject,
     super.dateTime,
     super.amount,
-    super.account,
     super.note,
     this.category,
     this.categoryTag,
@@ -105,35 +104,42 @@ sealed class TransactionWithCategory extends Transaction {
 
 @immutable
 class Expense extends TransactionWithCategory {
+  @override
+  final Account? account;
+
   const Expense._(
     super._isarObject,
     super.dateTime,
     super.amount,
-    super.account,
     super.note,
     super.category,
-    super.categoryTag,
-  );
+    super.categoryTag, {
+    required this.account,
+  });
 }
 
 @immutable
 class Income extends TransactionWithCategory {
+  @override
+  final Account? account;
   final bool isInitialTransaction;
 
   const Income._(
     super._isarObject,
     super.dateTime,
     super.amount,
-    super.account,
     super.note,
     super.category,
     super.categoryTag, {
+    required this.account,
     required this.isInitialTransaction,
   });
 }
 
 @immutable
 class Transfer extends Transaction {
+  @override
+  final Account? account;
   final Account? toAccount;
   final Fee? fee;
 
@@ -141,8 +147,8 @@ class Transfer extends Transaction {
     super._isarObject,
     super.dateTime,
     super.amount,
-    super.account,
     super.note, {
+    required this.account,
     required this.toAccount,
     required this.fee,
   });
@@ -150,6 +156,9 @@ class Transfer extends Transaction {
 
 @immutable
 class CreditSpending extends TransactionWithCategory {
+  @override
+  final CreditAccount? account;
+
   final List<CreditPayment> payments;
   final Installment? installment;
 
@@ -181,10 +190,10 @@ class CreditSpending extends TransactionWithCategory {
     super._isarObject,
     super.dateTime,
     super.amount,
-    super.account,
     super.note,
     super.category,
     super.categoryTag, {
+    required this.account,
     required this.payments,
     required this.installment,
   });
@@ -192,13 +201,18 @@ class CreditSpending extends TransactionWithCategory {
 
 @immutable
 class CreditPayment extends Transaction {
+  @override
+  final Account? account;
+  final CreditAccount? toCreditAccount;
+
   const CreditPayment._(
     super._isarObject,
     super.dateTime,
     super.amount,
-    super.account,
-    super.note,
-  );
+    super.note, {
+    required this.account,
+    required this.toCreditAccount,
+  });
 }
 
 @immutable

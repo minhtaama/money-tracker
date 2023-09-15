@@ -95,13 +95,12 @@ class AccountFormSelector extends FormField<Account> {
 class CreditDateTimeFormSelector extends FormField<DateTime?> {
   CreditDateTimeFormSelector({
     super.key,
+    CreditAccount? creditAccount,
     required ValueChanged<DateTime?> onChanged,
     FormFieldSetter<DateTime>? onSaved,
     FormFieldValidator<DateTime>? validator,
     DateTime? initialDate,
     AutovalidateMode? autovalidateMode = AutovalidateMode.onUserInteraction,
-    bool Function(DateTime)? selectableDayPredicate,
-    bool disable = false,
     String? disableText,
   }) : super(
             onSaved: onSaved,
@@ -113,9 +112,8 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                 alignment: Alignment.center,
                 children: [
                   CreditDateTimeSelector(
-                    disable: disable,
+                    creditAccount: creditAccount,
                     disableText: disableText,
-                    selectableDayPredicate: selectableDayPredicate,
                     onChanged: (newDateTime) {
                       state.didChange(newDateTime);
                       onChanged(newDateTime);
@@ -138,7 +136,6 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
 
 class _AlertBox extends StatefulWidget {
   const _AlertBox({
-    super.key,
     required this.errorText,
     this.yOffset = 0,
   });

@@ -38,7 +38,7 @@ class TransactionIsar extends IsarCollectionObject {
   @Index()
   final accountLink = IsarLink<AccountIsar>();
 
-  /// **Only specify this if type is [TransactionType.transfer]**
+  /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
   @Index()
   final toAccountLink = IsarLink<AccountIsar>();
 

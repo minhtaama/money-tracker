@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/features/calculator_input/application/calc
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
@@ -78,7 +77,7 @@ class AccountsScreen extends ConsumerWidget {
                               ),
                               Gap.w16,
                               // Account Type
-                              model.type == AccountType.credit
+                              model is CreditAccount
                                   ? Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                       decoration: BoxDecoration(
@@ -87,7 +86,8 @@ class AccountsScreen extends ConsumerWidget {
                                       ),
                                       child: Text(
                                         'Credit',
-                                        style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
+                                        style: kHeader4TextStyle.copyWith(
+                                            color: model.backgroundColor, fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),

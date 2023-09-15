@@ -25,25 +25,16 @@ class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
 class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late DateTime _dateTime = DateTime.now();
+  DateTime? _dateTime;
   String? _note;
-  Account? _creditAccount;
-  Account? _account;
+  CreditAccount? _creditAccount;
+  Account? _fromRegularAccount;
 
   String _calOutputSpendAmount = '0';
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  bool _selectableDayPredicate(DateTime date) {
-    if (date.day >= _creditAccount!.creditDetails!.statementDay ||
-        date.day <= _creditAccount!.creditDetails!.paymentDueDay) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   void _submit() {
@@ -98,9 +89,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             children: [
               Expanded(
                 child: CreditDateTimeFormSelector(
-                  disable: _creditAccount == null,
+                  creditAccount: _creditAccount,
                   disableText: 'Choose credit account first'.hardcoded,
-                  selectableDayPredicate: _selectableDayPredicate,
                   onChanged: (value) {
                     if (value != null) {
                       _dateTime = value;
@@ -122,7 +112,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                       validator: (_) => _creditAccountValidator(),
                       onChangedAccount: (newAccount) {
                         setState(() {
-                          _creditAccount = newAccount;
+                          _creditAccount = newAccount as CreditAccount?;
                         });
                       },
                     ),
@@ -134,7 +124,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                       validator: (_) => _payingAccountValidator(),
                       onChangedAccount: (newAccount) {
                         setState(() {
-                          _account = newAccount;
+                          _fromRegularAccount = newAccount;
                         });
                       },
                     ),
@@ -148,8 +138,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
               'Payment Period:',
-              style:
-                  kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+              style: kHeader2TextStyle.copyWith(
+                  fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
             ),
           ),
           Gap.h4,
@@ -189,16 +179,13 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   bool get _isButtonDisable =>
       CalService.formatToDouble(_calOutputSpendAmount) == null ||
       CalService.formatToDouble(_calOutputSpendAmount) == 0 ||
-      _account == null;
+      _fromRegularAccount == null;
 
   String? _dateTimeValidator() {
-    if (_creditAccount == null) {
-      return null;
+    if (_dateTime == null) {
+      return 'Please select a date';
     }
-    if (_creditAccount != null && _selectableDayPredicate(_dateTime)) {
-      return null;
-    }
-    return 'Must be between statement day and payment due day';
+    return null;
   }
 
   String? _calculatorValidator() {
@@ -217,7 +204,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   String? _payingAccountValidator() {
-    if (_account == null) {
+    if (_fromRegularAccount == null) {
       return 'Must be specify for payment';
     }
     return null;

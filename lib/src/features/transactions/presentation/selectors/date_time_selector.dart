@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -45,7 +46,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     currentDateTime = newTime.copyWith(
-                        year: currentDateTime.year, month: currentDateTime.month, day: currentDateTime.day);
+                        year: currentDateTime.year,
+                        month: currentDateTime.month,
+                        day: currentDateTime.day);
                   });
                   widget.onChanged(currentDateTime);
                 },
@@ -55,8 +58,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                   final results = await showCustomCalendarDatePicker(context: context);
                   if (results != null && results[0] != null) {
                     setState(() {
-                      currentDateTime =
-                          results[0]!.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
+                      currentDateTime = results[0]!
+                          .copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
                       widget.onChanged(currentDateTime);
                     });
                   }
@@ -94,7 +97,8 @@ class _CustomTimePickSpinner extends StatelessWidget {
               height: 0, color: context.appTheme.backgroundNegative.withOpacity(0.4), fontSize: 15),
           highlightedTextStyle: kHeader1TextStyle.copyWith(
               height: 0.9,
-              color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+              color:
+                  context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
               fontSize: 25),
           isForce2Digits: true,
           onTimeChange: onTimeChange,
@@ -106,44 +110,13 @@ class _CustomTimePickSpinner extends StatelessWidget {
               ':',
               style: kHeader1TextStyle.copyWith(
                   fontSize: 23,
-                  color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+                  color: context.appTheme.isDarkTheme
+                      ? context.appTheme.secondary
+                      : context.appTheme.primary),
             ),
           ),
         )
       ],
-    );
-  }
-}
-
-class _DisableOverlay extends StatelessWidget {
-  const _DisableOverlay({required this.disable, required this.height, required this.width, this.text});
-  final bool disable;
-  final double height;
-  final double width;
-  final String? text;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: !disable,
-      child: AnimatedOpacity(
-        duration: k150msDuration,
-        opacity: disable ? 1 : 0,
-        child: Container(
-          height: height,
-          width: width,
-          padding: const EdgeInsets.all(8),
-          color: context.appTheme.isDarkTheme
-              ? context.appTheme.background3.withOpacity(0.95)
-              : context.appTheme.background.withOpacity(0.95),
-          child: Center(
-              child: Text(
-            text ?? '',
-            textAlign: TextAlign.center,
-            style: kHeader2TextStyle.copyWith(color: AppColors.darkestGrey(context), fontSize: 12),
-          )),
-        ),
-      ),
     );
   }
 }
@@ -166,7 +139,8 @@ class _DateTimeWidget extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+              color:
+                  context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
               child: Center(
                 child: Text(
                   dateTime != null
@@ -189,7 +163,9 @@ class _DateTimeWidget extends StatelessWidget {
                 child: Text(
                   dateTime != null ? dateTime!.year.toString() : DateTime.now().year.toString(),
                   style: kHeader2TextStyle.copyWith(
-                    color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+                    color: context.appTheme.isDarkTheme
+                        ? context.appTheme.secondary
+                        : context.appTheme.primary,
                   ),
                 ),
               ),
@@ -210,7 +186,8 @@ Future<List<DateTime?>?> showCustomCalendarDatePicker(
   return showCalendarDatePicker2Dialog(
     context: context,
     dialogSize: const Size(325, 400),
-    dialogBackgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+    dialogBackgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
     borderRadius: BorderRadius.circular(16),
     value: [DateTime.now()],
     config: _customConfig(context,
@@ -222,7 +199,18 @@ Future<List<DateTime?>?> showCustomCalendarDatePicker(
 }
 
 CalendarDatePicker2WithActionButtonsConfig _customConfig(BuildContext context,
-    {DateTime? firstDate, DateTime? lastDate, int? firstDayOfWeek, bool Function(DateTime)? selectableDayPredicate}) {
+    {DateTime? firstDate,
+    DateTime? lastDate,
+    int? firstDayOfWeek,
+    bool Function(DateTime)? selectableDayPredicate,
+    Widget? Function(
+            {BoxDecoration? decoration,
+            bool? isCurrentYear,
+            bool? isDisabled,
+            bool? isSelected,
+            TextStyle? textStyle,
+            required int year})?
+        yearBuilder}) {
   return CalendarDatePicker2WithActionButtonsConfig(
     firstDate: firstDate,
     lastDate: lastDate,
@@ -237,7 +225,8 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(BuildContext context,
       'Fri'.hardcoded,
       'Sat'.hardcoded
     ],
-    selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+    selectedDayHighlightColor:
+        context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
     selectedRangeHighlightColor: context.appTheme.isDarkTheme
         ? context.appTheme.secondary.withOpacity(0.5)
         : context.appTheme.primary.withOpacity(0.5),
@@ -253,13 +242,20 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(BuildContext context,
     ),
     weekdayLabelTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
     selectedDayTextStyle: kHeader4TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
+        color: context.appTheme.isDarkTheme
+            ? context.appTheme.secondaryNegative
+            : context.appTheme.primaryNegative),
     selectedYearTextStyle: kHeader4TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
+        color: context.appTheme.isDarkTheme
+            ? context.appTheme.secondaryNegative
+            : context.appTheme.primaryNegative),
     yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+    yearBuilder: yearBuilder,
     cancelButtonTextStyle: kHeader2TextStyle.copyWith(
-        fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+        fontSize: 15,
+        color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
     okButtonTextStyle: kHeader2TextStyle.copyWith(
-        fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+        fontSize: 15,
+        color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
   );
 }
