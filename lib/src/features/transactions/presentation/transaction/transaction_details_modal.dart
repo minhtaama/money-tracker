@@ -27,8 +27,7 @@ class TransactionDetails extends StatelessWidget {
 
   String get _title {
     return switch (transaction) {
-      Income() =>
-        (transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
+      Income() => (transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
       CreditSpending() => 'Credit Spending'.hardcoded,
@@ -46,9 +45,7 @@ class TransactionDetails extends StatelessWidget {
       children: [
         _Amount(transaction: transaction),
         Gap.h8,
-        transaction is CreditSpending
-            ? _PaymentDetail(transaction: transaction as CreditSpending)
-            : Gap.noGap,
+        transaction is CreditSpending ? _PaymentDetail(transaction: transaction as CreditSpending) : Gap.noGap,
         transaction is CreditSpending ? Gap.h8 : Gap.noGap,
         Gap.divider(context, indent: 6),
         Row(
@@ -67,13 +64,12 @@ class TransactionDetails extends StatelessWidget {
                 children: [
                   _AccountCard(model: transaction.account!),
                   switch (transaction) {
-                    TransactionWithCategory() =>
-                      transaction is Income && (transaction as Income).isInitialTransaction
-                          ? Gap.noGap
-                          : _CategoryCard(
-                              model: (transaction as TransactionWithCategory).category!,
-                              categoryTag: (transaction as TransactionWithCategory).categoryTag,
-                            ),
+                    TransactionWithCategory() => transaction is Income && (transaction as Income).isInitialTransaction
+                        ? Gap.noGap
+                        : _CategoryCard(
+                            model: (transaction as TransactionWithCategory).category!,
+                            categoryTag: (transaction as TransactionWithCategory).categoryTag,
+                          ),
                     Transfer() => _AccountCard(model: (transaction as Transfer).toAccount!),
                     CreditPayment() => Gap.noGap,
                   },
@@ -149,8 +145,7 @@ class _Amount extends ConsumerWidget {
               Gap.w8,
               Text(
                 settingsObject.currency.code,
-                style: kHeader4TextStyle.copyWith(
-                    color: _color(context), fontSize: kHeader1TextStyle.fontSize),
+                style: kHeader4TextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
               ),
             ],
           ),
@@ -254,9 +249,7 @@ class _CategoryCard extends StatelessWidget {
     return CardItem(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: context.appTheme.isDarkTheme
-          ? model.backgroundColor.addDark(0.62)
-          : model.backgroundColor.addWhite(0.7),
+      color: context.appTheme.isDarkTheme ? model.backgroundColor.addDark(0.62) : model.backgroundColor.addWhite(0.7),
       elevation: 1,
       constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
       child: Column(
@@ -264,8 +257,8 @@ class _CategoryCard extends StatelessWidget {
         children: [
           Text(
             'CATEGORY:',
-            style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+            style:
+                kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
           ),
           Gap.h8,
           Row(
@@ -285,14 +278,12 @@ class _CategoryCard extends StatelessWidget {
                   children: [
                     Text(
                       model.name,
-                      style: kHeader2TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative, fontSize: 20),
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 20),
                     ),
                     categoryTag != null
                         ? Text(
                             '# ${categoryTag!.name}',
-                            style: kHeader3TextStyle.copyWith(
-                                color: context.appTheme.backgroundNegative, fontSize: 15),
+                            style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 15),
                           )
                         : const SizedBox(),
                   ],
@@ -323,8 +314,8 @@ class _Note extends StatelessWidget {
         children: [
           Text(
             'NOTE:',
-            style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+            style:
+                kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
           ),
           Gap.h4,
           Text(
@@ -378,8 +369,7 @@ class _PaymentDetail extends ConsumerWidget {
                   padding: const EdgeInsets.only(left: 3.0),
                   child: Text(
                     transaction.account!.nextPaymentPeriod,
-                    style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative, fontSize: 16),
+                    style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
                   ),
                 )
               : Gap.noGap,
@@ -388,16 +378,15 @@ class _PaymentDetail extends ConsumerWidget {
             padding: const EdgeInsets.only(left: 3.0),
             child: Text(
               'PAID AMOUNT:',
-              style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+              style:
+                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 3.0),
             child: Text(
               '${CalService.formatCurrency(transaction.paidAmount)} ${settingsObject.currency.code}',
-              style:
-                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
+              style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
             ),
           ),
           Gap.h4,
@@ -408,7 +397,7 @@ class _PaymentDetail extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
-                colors: [context.appTheme.primary, AppColors.lighterGrey(context)],
+                colors: [context.appTheme.primary, AppColors.grey(context)],
                 stops: [_paidAmountPercentage, _paidAmountPercentage],
               ),
             ),

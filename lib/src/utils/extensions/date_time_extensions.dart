@@ -6,6 +6,7 @@ extension DateTimeExtensions on DateTime {
   /// Returns [DateTime] without timestamp.
 
   DateTime get onlyYearMonth => DateTime(year, month);
+  DateTime get onlyYearMonthDay => DateTime(year, month, day);
 
   int getMonthsDifferent(DateTime date) {
     if (year == date.year) return ((date.month - month).abs() + 1);

@@ -18,6 +18,8 @@ class SvgIcon extends StatelessWidget {
           child: SvgPicture.asset(
             name,
             colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+            width: size,
+            height: size,
           ),
         ),
       ),

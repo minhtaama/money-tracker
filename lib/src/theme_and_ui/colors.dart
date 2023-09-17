@@ -67,10 +67,10 @@ class AppColors {
     ThemeType.dark: AppThemeData(
       isDuoColor: true,
       isDarkTheme: true,
-      primary: const Color(0xFF14213d).addWhite(0.16),
-      secondary: const Color(0xFFe5e5e5),
+      primary: const Color(0xFFe5e5e5),
+      secondary: const Color(0xff7f93d2),
       accent: const Color(0xFFfca311),
-      primaryNegative: AppColors.white,
+      primaryNegative: AppColors.black,
       secondaryNegative: AppColors.black,
       accentNegative: AppColors.black,
       background: AppColors.black,
@@ -179,12 +179,6 @@ class AppColors {
   static final lighterBlack = Color.lerp(AppColors.black, AppColors.white, 0.05)!;
   static const black = Color(0xFF111111);
 
-  static Color lighterGrey(BuildContext context) =>
-      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.25) : const Color(0xFF696969).addWhite(0.85);
   static Color grey(BuildContext context) =>
-      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.35) : const Color(0xFF696969).addWhite(0.75);
-  static Color darkerGrey(BuildContext context) =>
-      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.4) : const Color(0xFF696969).addWhite(0.6);
-  static Color darkestGrey(BuildContext context) =>
-      context.appTheme.isDarkTheme ? const Color(0xFF696969).addDark(0.4) : const Color(0xFF696969).addWhite(0.25);
+      context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.5) : AppColors.white.addDark(0.5);
 }

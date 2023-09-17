@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
 import '../../../../utils/constants.dart';
@@ -96,7 +97,7 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
   CreditDateTimeFormSelector({
     super.key,
     CreditAccount? creditAccount,
-    required ValueChanged<DateTime?> onChanged,
+    required Function(DateTime?, List<CreditSpending>) onChanged,
     FormFieldSetter<DateTime>? onSaved,
     FormFieldValidator<DateTime>? validator,
     DateTime? initialDate,
@@ -111,12 +112,12 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
               return Stack(
                 alignment: Alignment.center,
                 children: [
-                  CreditDateTimeSelector(
+                  DateTimeSelectorForCreditPayment(
                     creditAccount: creditAccount,
                     disableText: disableText,
-                    onChanged: (newDateTime) {
+                    onChanged: (newDateTime, newList) {
                       state.didChange(newDateTime);
-                      onChanged(newDateTime);
+                      onChanged(newDateTime, newList);
                     },
                   ),
                   AnimatedOpacity(

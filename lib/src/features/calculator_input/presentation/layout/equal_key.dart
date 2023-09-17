@@ -17,7 +17,7 @@ class EqualKey extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
-      color: AppColors.darkerGrey(context),
+      color: AppColors.grey(context),
       width: 70,
       height: 70,
       padding: EdgeInsets.zero,
@@ -30,8 +30,7 @@ class EqualKey extends StatelessWidget {
         highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
-          child:
-              Text('=', style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative)),
+          child: Text('=', style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative)),
         ),
       ),
     );

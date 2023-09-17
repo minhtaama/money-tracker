@@ -51,7 +51,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         icon: AppIcons.transfer,
         label: 'Transfer'.hardcoded,
         color: context.appTheme.backgroundNegative,
-        backgroundColor: AppColors.darkerGrey(context),
+        backgroundColor: AppColors.grey(context),
         onTap: () => context.go(RoutePath.addTransfer),
       ),
       FABItem(

@@ -321,9 +321,9 @@ Color _color(BuildContext context, Transaction transaction) {
   return switch (transaction) {
     Income() => context.appTheme.positive,
     Expense() => context.appTheme.negative,
-    CreditSpending() => context.appTheme.backgroundNegative.withOpacity(0.5),
+    CreditSpending() => AppColors.grey(context),
     CreditPayment() => context.appTheme.negative,
-    Transfer() => context.appTheme.backgroundNegative.withOpacity(0.5),
+    Transfer() => AppColors.grey(context),
   };
 }
 

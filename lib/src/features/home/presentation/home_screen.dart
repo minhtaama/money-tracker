@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
 import 'package:money_tracker_app/src/features/home/summary_card.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transaction_details_modal.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../persistent/isar_data_store.dart';
@@ -26,7 +24,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final isar = ref.read(isarProvider);
-  late final accountRepository = ref.read(transactionRepositoryProvider);
+  late final transactionRepository = ref.read(transactionRepositoryProvider);
 
   late final PageController _controller;
 
@@ -87,8 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -136,10 +133,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<Transaction> transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<Transaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listenManual(databaseChangesProvider, (_, __) {
-          transactionList = accountRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+          transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });
 

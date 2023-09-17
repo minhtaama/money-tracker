@@ -21,9 +21,11 @@ class IconWithTextButton extends StatelessWidget {
     this.isDisabled = false,
     this.onTap,
     this.color,
+    this.iconSize,
   }) : super(key: key);
 
   final String iconPath;
+  final double? iconSize;
   final String label;
   final double? labelSize;
   final Color backgroundColor;
@@ -41,7 +43,7 @@ class IconWithTextButton extends StatelessWidget {
     return CardItem(
       height: height,
       width: width,
-      color: isDisabled ? AppColors.lighterGrey(context) : backgroundColor,
+      color: isDisabled ? AppColors.grey(context) : backgroundColor,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
       border: border,
@@ -59,10 +61,8 @@ class IconWithTextButton extends StatelessWidget {
               children: [
                 SvgIcon(
                   iconPath,
-                  color: isDisabled
-                      ? context.appTheme.backgroundNegative.withOpacity(0.15)
-                      : color ?? context.appTheme.accentNegative,
-                  size: 30,
+                  color: isDisabled ? context.appTheme.backgroundNegative : color ?? context.appTheme.accentNegative,
+                  size: iconSize ?? 30,
                 ),
                 Gap.w8,
                 Expanded(
@@ -70,9 +70,8 @@ class IconWithTextButton extends StatelessWidget {
                     child: Text(
                       label,
                       style: kHeader2TextStyle.copyWith(
-                        color: isDisabled
-                            ? context.appTheme.backgroundNegative.withOpacity(0.15)
-                            : color ?? context.appTheme.accentNegative,
+                        color:
+                            isDisabled ? context.appTheme.backgroundNegative : color ?? context.appTheme.accentNegative,
                         fontSize: labelSize,
                       ),
                     ),

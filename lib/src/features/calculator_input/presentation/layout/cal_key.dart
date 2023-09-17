@@ -19,7 +19,7 @@ class CalKey extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
-      color: AppColors.darkerGrey(context),
+      color: AppColors.grey(context),
       width: 70,
       height: 70,
       padding: EdgeInsets.zero,
