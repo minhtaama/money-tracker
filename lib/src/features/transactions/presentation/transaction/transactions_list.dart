@@ -16,7 +16,7 @@ class TransactionsList extends StatelessWidget {
 
   final List<Transaction> transactions;
   final String currencyCode;
-  final Function(Transaction)? onTransactionTap;
+  final void Function(Transaction)? onTransactionTap;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,7 @@ class TransactionsList extends StatelessWidget {
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
-                        Transfer() =>
-                          _TransferDetails(transaction: transaction, currencyCode: currencyCode),
+                        Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
                         TransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditPayment() => const Placeholder(),
@@ -51,8 +50,7 @@ class TransactionsList extends StatelessWidget {
                     TxnAmount(currencyCode: currencyCode, transaction: transaction),
                   ],
                 ),
-                transaction.note != null ||
-                        transaction is TransactionWithCategory && transaction.categoryTag != null
+                transaction.note != null || transaction is TransactionWithCategory && transaction.categoryTag != null
                     ? TxnNote(transaction: transaction)
                     : Gap.noGap,
               ],

@@ -1,4 +1,4 @@
-part of 'date_time_selector.dart';
+part of 'date_time_selector_components.dart';
 
 class DateTimeSelector extends StatefulWidget {
   const DateTimeSelector({Key? key, required this.onChanged}) : super(key: key);
@@ -58,11 +58,17 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               CustomInkWell(
                 inkColor: AppColors.grey(context),
                 onTap: () async {
-                  final results = await _showCustomCalendarDatePicker(context: context);
-                  if (results != null && results[0] != null) {
+                  //final results = await _showCustomCalendarDatePicker(context: context);
+                  final DateTime? results = await showDialog(
+                    useRootNavigator: false,
+                    context: context,
+                    builder: (_) {
+                      return _CustomCalendarDialog(config: _customConfig(context));
+                    },
+                  );
+                  if (results != null) {
                     setState(() {
-                      currentDateTime =
-                          results[0]!.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
+                      currentDateTime = results.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
                       widget.onChanged(currentDateTime);
                     });
                   }

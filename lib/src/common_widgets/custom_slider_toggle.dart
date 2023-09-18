@@ -64,7 +64,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: AppColors.grey(context),
+                    color: AppColors.greyBgr(context),
                   ),
                 ),
                 Align(
@@ -108,10 +108,8 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                                       style: kHeader2TextStyle.copyWith(
                                         fontSize: 19,
                                         color: currentValueIndex == index
-                                            ? widget.labelsOnToggleColor ??
-                                                context.appTheme.accentNegative
-                                            : widget.labelsOnBackgroundColor ??
-                                                context.appTheme.backgroundNegative,
+                                            ? widget.labelsOnToggleColor ?? context.appTheme.accentNegative
+                                            : widget.labelsOnBackgroundColor ?? context.appTheme.backgroundNegative,
                                       ),
                                     ),
                                   ),

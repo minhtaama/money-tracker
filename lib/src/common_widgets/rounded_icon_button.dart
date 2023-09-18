@@ -10,7 +10,7 @@ class RoundedIconButton extends StatelessWidget {
     Key? key,
     required this.iconPath,
     this.label,
-    required this.backgroundColor,
+    this.backgroundColor,
     this.size,
     this.iconPadding = 12,
     this.onTap,
@@ -19,7 +19,7 @@ class RoundedIconButton extends StatelessWidget {
 
   final String iconPath;
   final String? label;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Color? iconColor;
   final double? size;
   final double iconPadding;
@@ -72,7 +72,7 @@ class RoundedIconButton extends StatelessWidget {
         : CardItem(
             width: size ?? 48,
             height: size ?? 48,
-            color: backgroundColor,
+            color: backgroundColor ?? Colors.transparent,
             padding: EdgeInsets.zero,
             margin: EdgeInsets.zero,
             borderRadius: BorderRadius.circular(1000),

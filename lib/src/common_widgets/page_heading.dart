@@ -33,7 +33,6 @@ class PageHeading extends StatelessWidget {
             hasBackButton
                 ? RoundedIconButton(
                     iconPath: AppIcons.back,
-                    backgroundColor: context.appTheme.background3,
                     iconColor: context.appTheme.backgroundNegative,
                     onTap: () => context.pop(),
                   )

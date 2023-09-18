@@ -5,9 +5,11 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/icon_with_text_button.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../accounts/domain/account.dart';
 import '../../../../utils/constants.dart';
+import '../../../settings/data/settings_controller.dart';
 
 class CreditPaymentPeriodSelector extends ConsumerStatefulWidget {
   const CreditPaymentPeriodSelector({
@@ -51,6 +53,33 @@ class _AccountSelectorState extends ConsumerState<CreditPaymentPeriodSelector> {
   }
 }
 
+class CurrencyIcon extends ConsumerWidget {
+  const CurrencyIcon({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsObject = ref.watch(settingsControllerProvider);
+
+    return CardItem(
+      height: 50,
+      width: 50,
+      elevation: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: EdgeInsets.zero,
+      color: AppColors.greyBgr(context),
+      borderRadius: BorderRadius.circular(1000),
+      child: FittedBox(
+        child: Text(
+          settingsObject.currency.symbol ?? settingsObject.currency.code,
+          style: kHeader1TextStyle.copyWith(
+            color: context.appTheme.backgroundNegative,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class TextHeader extends StatelessWidget {
   const TextHeader(this.text, {super.key, this.fontSize = 15});
   final String text;
@@ -77,8 +106,8 @@ class BottomButtons extends StatelessWidget {
       children: [
         RoundedIconButton(
           iconPath: AppIcons.back,
-          backgroundColor: context.appTheme.secondary,
-          iconColor: context.appTheme.secondaryNegative,
+          backgroundColor: context.appTheme.primary,
+          iconColor: context.appTheme.primaryNegative,
           size: 55,
           onTap: () => context.pop(),
         ),

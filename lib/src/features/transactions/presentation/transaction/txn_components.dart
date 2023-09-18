@@ -9,15 +9,16 @@ import '../../../calculator_input/application/calculator_service.dart';
 import '../../domain/transaction.dart';
 
 class TxnDot extends StatelessWidget {
-  const TxnDot({Key? key, required this.transaction}) : super(key: key);
+  const TxnDot({Key? key, required this.transaction, this.size}) : super(key: key);
 
   final Transaction transaction;
+  final double? size;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 7,
-      width: 7,
+      height: size ?? 7,
+      width: size ?? 7,
       decoration: BoxDecoration(
         color: _color(context, transaction),
         borderRadius: BorderRadius.circular(100),
@@ -34,7 +35,7 @@ class TxnCreditIcon extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.grey(context),
+        color: AppColors.greyBgr(context),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
@@ -71,9 +72,10 @@ class TxnCategoryIcon extends StatelessWidget {
 }
 
 class TxnCategoryName extends StatelessWidget {
-  const TxnCategoryName({Key? key, required this.transaction}) : super(key: key);
+  const TxnCategoryName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
   final TransactionWithCategory transaction;
+  final double? fontSize;
 
   String get _name {
     if (transaction is Income && _isInitial(transaction)) {
@@ -90,7 +92,7 @@ class TxnCategoryName extends StatelessWidget {
     return Text(
       _name,
       style: kHeader3TextStyle.copyWith(
-        fontSize: 12,
+        fontSize: fontSize ?? 12,
         color: context.appTheme.backgroundNegative.withOpacity(_isInitial(transaction) ? 0.5 : 1),
       ),
       softWrap: false,
@@ -103,7 +105,6 @@ class TxnAccountIcon extends StatelessWidget {
   const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false}) : super(key: key);
 
   final Transaction transaction;
-
   final bool useAccountIcon;
 
   String get _iconPath {
@@ -133,9 +134,10 @@ class TxnAccountIcon extends StatelessWidget {
 }
 
 class TxnAccountName extends StatelessWidget {
-  const TxnAccountName({Key? key, required this.transaction}) : super(key: key);
+  const TxnAccountName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
   final Transaction transaction;
+  final double? fontSize;
 
   String get _name {
     if (transaction.account != null) {
@@ -148,7 +150,7 @@ class TxnAccountName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       _name,
-      style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+      style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -201,10 +203,11 @@ class TxnToAccountName extends StatelessWidget {
 }
 
 class TxnAmount extends StatelessWidget {
-  const TxnAmount({Key? key, required this.currencyCode, required this.transaction}) : super(key: key);
+  const TxnAmount({Key? key, required this.currencyCode, required this.transaction, this.fontSize}) : super(key: key);
 
   final String currencyCode;
   final Transaction transaction;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -215,12 +218,12 @@ class TxnAmount extends StatelessWidget {
           CalService.formatCurrency(transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(color: _color(context, transaction), fontSize: 15),
+          style: kHeader2TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(color: _color(context, transaction), fontSize: 15),
+          style: kHeader4TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );

@@ -22,7 +22,6 @@ class SummaryScreen extends StatelessWidget {
           secondaryTitle: 'Cashflow: +900.000 VND',
           trailing: RoundedIconButton(
             iconPath: AppIcons.settings,
-            backgroundColor: context.appTheme.background3,
             iconColor: context.appTheme.backgroundNegative,
             onTap: () => context.push(RoutePath.settings),
           ),

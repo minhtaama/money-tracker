@@ -9,7 +9,8 @@ import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transactions_list.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_info_list.dart';
+import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -93,7 +94,7 @@ class _DateTimeWidget extends StatelessWidget {
           Expanded(
             child: Container(
               width: double.infinity,
-              color: AppColors.grey(context),
+              color: AppColors.greyBgr(context),
               child: Center(
                 child: Text(
                   dateTime != null ? dateTime!.year.toString() : DateTime.now().year.toString(),
@@ -143,146 +144,138 @@ class _DisableOverlay extends StatelessWidget {
   }
 }
 
-class _CreditCalendarDialog extends ConsumerStatefulWidget {
-  const _CreditCalendarDialog({required this.creditAccount});
+// class _CreditCalendarDialog extends ConsumerStatefulWidget {
+//   const _CreditCalendarDialog({required this.creditAccount});
+//
+//   final CreditAccount creditAccount;
+//
+//   @override
+//   ConsumerState<_CreditCalendarDialog> createState() => _CreditCalendarDialogState();
+// }
+//
+// class _CreditCalendarDialogState extends ConsumerState<_CreditCalendarDialog> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return AlertDialog(
+//       surfaceTintColor: Colors.transparent,
+//       backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+//       contentPadding: EdgeInsets.zero,
+//       actions: [
+//         IconWithTextButton(
+//           iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
+//           label: _selectedDay != null ? 'Select'.hardcoded : 'Back'.hardcoded,
+//           height: 30,
+//           width: 100,
+//           labelSize: 13,
+//           iconSize: 20,
+//           isDisabled: _selectedDay == null,
+//           backgroundColor: context.appTheme.primary,
+//           color: context.appTheme.primaryNegative,
+//           onTap: () {
+//             if (_selectedDay != null) {
+//               context.pop([_selectedDay as DateTime, _spendingTransactionsToPay(_selectedDay!)]);
+//             } else {
+//               context.pop();
+//             }
+//           },
+//         ),
+//       ],
+//       content: SingleChildScrollView(
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: AnimatedSize(
+//                 duration: k150msDuration,
+//                 child: _currentMonthView.isAtSameMomentAs(_earliestMonthViewable)
+//                     ? EmptyInfo(
+//                         iconPath: AppIcons.done,
+//                         infoText: 'No spending transaction is needed to pay before this time'.hardcoded,
+//                       )
+//                     : _selectedDay != null
+//                         ? CreditSpendingsInfoList(
+//                             transactions: _spendingTransactionsToPay(_selectedDay!),
+//                             currencyCode: _currencyCode,
+//                             onDateTap: (dateTime) => setState(() {
+//                               _currentMonthView = dateTime;
+//                             }),
+//                             onTap: (txn) => context.push(RoutePath.transaction, extra: txn),
+//                           )
+//                         : EmptyInfo(
+//                             iconPath: AppIcons.today,
+//                             infoText: 'Select a payment day.\n Spending transaction can be paid will be displayed here'
+//                                 .hardcoded,
+//                           ),
+//               ),
+//             ),
+//             SizedBox(
+//               height: 300,
+//               width: 350,
+//               child: CalendarDatePicker2(
+//                   config: _customConfig(
+//                     context,
+//                     firstDate: _earliestMonthViewable,
+//                     selectableDayPredicate: _selectableDayPredicate,
+//                     dayBuilder: _dayBuilder,
+//                   ),
+//                   displayedMonthDate: _currentMonthView,
+//                   value: [_selectedDay],
+//                   onDisplayedMonthChanged: (dateTime) => setState(() {
+//                         _currentMonthView = dateTime;
+//                       }),
+//                   onValueChanged: (date) {
+//                     setState(() {
+//                       if (_selectedDay == date[0]) {
+//                         _selectedDay = null;
+//                       } else {
+//                         _selectedDay = date[0];
+//                       }
+//                     });
+//                   }),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-  final CreditAccount creditAccount;
+class _CustomCalendarDialog extends StatefulWidget {
+  const _CustomCalendarDialog(
+      {required this.config,
+      this.initialDay,
+      this.currentMonthView,
+      this.onDayChange,
+      this.onMonthViewChange,
+      this.onActionButtonTap,
+      this.content});
+
+  final CalendarDatePicker2Config config;
+  final DateTime? initialDay;
+  final DateTime? currentMonthView;
+  final void Function(DateTime?)? onDayChange;
+  final void Function(DateTime)? onMonthViewChange;
+  final VoidCallback? onActionButtonTap;
+  final Widget? content;
 
   @override
-  ConsumerState<_CreditCalendarDialog> createState() => _CreditCalendarDialogState();
+  State<_CustomCalendarDialog> createState() => _CustomCalendarDialogState();
 }
 
-class _CreditCalendarDialogState extends ConsumerState<_CreditCalendarDialog> {
-  late final transactionRepo = ref.read(transactionRepositoryProvider);
+class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
+  late DateTime? _currentMonthView = widget.currentMonthView;
 
-  late final _statementDay = widget.creditAccount.creditDetails.statementDay;
-  late final _paymentDueDay = widget.creditAccount.creditDetails.paymentDueDay;
+  late DateTime? _selectedDay = widget.initialDay;
 
-  late final _spendingTransactionsDateTimeList = transactionRepo
-      .getAll(Calendar.minDate, Calendar.maxDate)
-      .whereType<CreditSpending>()
-      .map((txn) => txn.dateTime.onlyYearMonthDay)
-      .toList();
+  late Widget? _content = widget.content;
 
-  DateTime _currentMonthView = DateTime.now();
-
-  DateTime? _selectedDay;
-
-  String get _currencyCode {
-    final settingsRepo = ref.read(settingsControllerProvider);
-    return settingsRepo.currency.code;
-  }
-
-  DateTime get _earliestPayableDate {
-    DateTime time = DateTime.now();
-    // Get earliest spending transaction un-done
-    for (CreditSpending txn in _spendingTransactionsToPay(DateTime.now())) {
-      if (!txn.isDone && txn.dateTime.isBefore(time)) {
-        time = txn.dateTime;
-      }
-    }
-
-    // Earliest day that payment can happens
-    if (time.day <= _paymentDueDay) {
-      time = time.copyWith(day: _paymentDueDay + 1);
-    }
-    if (time.day >= _statementDay) {
-      time = time.copyWith(day: _paymentDueDay + 1, month: time.month + 1);
-    }
-
-    return time;
-  }
-
-  DateTime get _earliestMonthViewable {
-    return DateTime(_earliestPayableDate.year, _earliestPayableDate.month - 1);
-  }
-
-  bool _hasSpendingTransaction(DateTime dateTime) {
-    final dateTimeYMD = dateTime.onlyYearMonthDay;
-    if (_spendingTransactionsDateTimeList.contains(dateTimeYMD)) {
-      return true;
-    }
-    return false;
-  }
-
-  bool _selectableDayPredicate(DateTime date) {
-    if ((date.day >= _statementDay || date.day <= _paymentDueDay) && date.isAfter(_earliestPayableDate)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  List<CreditSpending> _spendingTransactionsToPay(DateTime selectedDate) {
-    DateTime dayBegin = Calendar.minDate;
-    DateTime dayEnd;
-    if (selectedDate.day >= _statementDay) {
-      dayEnd = selectedDate.copyWith(day: _statementDay);
-    } else if (selectedDate.day <= _paymentDueDay) {
-      dayEnd = selectedDate.copyWith(day: _statementDay, month: selectedDate.month - 1);
-    } else {
-      dayEnd = selectedDate;
-    }
-
-    return transactionRepo.getAll(dayBegin, dayEnd).whereType<CreditSpending>().where((txn) => !txn.isDone).toList();
-  }
-
-  //TODO: move this function into customConfig
-  //TODO: make some tweaks about app color grey
-  Widget _dayBuilder(
-      {required DateTime date,
-      BoxDecoration? decoration,
-      bool? isDisabled,
-      bool? isSelected,
-      bool? isToday,
-      TextStyle? textStyle}) {
-    return CustomInkWell(
-      onTap: () {
-        if (isDisabled != null && !isDisabled) {
-          setState(() {
-            if (_selectedDay == date) {
-              _selectedDay = null;
-            } else {
-              _selectedDay = date;
-            }
-          });
-        }
-      },
-      child: Align(
-        alignment: Alignment.center,
-        child: Container(
-          height: 30,
-          width: 30,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(1000),
-            border: isToday != null && isToday
-                ? Border.all(
-                    color: isDisabled != null && isDisabled ? AppColors.grey(context) : context.appTheme.primary,
-                  )
-                : null,
-            color: isSelected != null && isSelected
-                ? context.appTheme.primary
-                : _hasSpendingTransaction(date)
-                    ? context.appTheme.negative.withOpacity(isDisabled != null && isDisabled ? 0.7 : 1)
-                    : Colors.transparent,
-          ),
-          child: Center(
-            child: Text(
-              date.day.toString(),
-              style: kHeader4TextStyle.copyWith(
-                color: isDisabled != null && isDisabled
-                    ? AppColors.grey(context)
-                    : isSelected != null && isSelected
-                        ? context.appTheme.primaryNegative
-                        : _hasSpendingTransaction(date)
-                            ? context.appTheme.onNegative
-                            : context.appTheme.backgroundNegative,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  @override
+  void didUpdateWidget(covariant _CustomCalendarDialog oldWidget) {
+    _currentMonthView = widget.currentMonthView;
+    _selectedDay = widget.initialDay;
+    _content = widget.content;
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -301,13 +294,8 @@ class _CreditCalendarDialogState extends ConsumerState<_CreditCalendarDialog> {
           iconSize: 20,
           isDisabled: _selectedDay == null,
           backgroundColor: context.appTheme.primary,
-          onTap: () {
-            if (_selectedDay != null) {
-              context.pop([_selectedDay as DateTime, _spendingTransactionsToPay(_selectedDay!)]);
-            } else {
-              context.pop();
-            }
-          },
+          color: context.appTheme.primaryNegative,
+          onTap: widget.onActionButtonTap ?? () => context.pop(_selectedDay),
         ),
       ],
       content: SingleChildScrollView(
@@ -316,37 +304,29 @@ class _CreditCalendarDialogState extends ConsumerState<_CreditCalendarDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: AnimatedSize(
-                duration: k150msDuration,
-                child: _currentMonthView.isAtSameMomentAs(_earliestMonthViewable)
-                    ? EmptyInfo(
-                        iconPath: AppIcons.done,
-                        infoText: 'No spending transaction is needed to pay before this time'.hardcoded,
-                      )
-                    : _selectedDay != null
-                        ? TransactionsList(
-                            transactions: _spendingTransactionsToPay(_selectedDay!), currencyCode: _currencyCode)
-                        : EmptyInfo(
-                            iconPath: AppIcons.today,
-                            infoText: 'Select a payment day.\n Spending transaction can be paid will be displayed here'
-                                .hardcoded,
-                          ),
-              ),
+              child: _content,
             ),
             SizedBox(
               height: 300,
               width: 350,
               child: CalendarDatePicker2(
-                config: _customConfig(
-                  context,
-                  firstDate: _earliestMonthViewable,
-                  selectableDayPredicate: _selectableDayPredicate,
-                  dayBuilder: _dayBuilder,
-                ),
+                config: widget.config,
+                displayedMonthDate: _currentMonthView,
                 value: [_selectedDay],
-                onDisplayedMonthChanged: (dateTime) => setState(() {
-                  _currentMonthView = dateTime;
-                }),
+                onDisplayedMonthChanged: (dateTime) {
+                  setState(() {
+                    _currentMonthView = dateTime;
+                    _content = widget.content;
+                    widget.onMonthViewChange?.call(_currentMonthView!);
+                  });
+                },
+                onValueChanged: (dateList) {
+                  setState(() {
+                    _selectedDay = dateList[0];
+                    _content = widget.content;
+                    widget.onDayChange?.call(_selectedDay);
+                  });
+                },
               ),
             ),
           ],
@@ -382,19 +362,11 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       dayBuilder,
 }) {
   return CalendarDatePicker2WithActionButtonsConfig(
+    calendarType: CalendarDatePicker2Type.single,
     firstDate: firstDate,
     lastDate: lastDate,
     firstDayOfWeek: firstDayOfWeek,
     selectableDayPredicate: selectableDayPredicate,
-    weekdayLabels: [
-      'Sun'.hardcoded,
-      'Mon'.hardcoded,
-      'Tue'.hardcoded,
-      'Wed'.hardcoded,
-      'Thu'.hardcoded,
-      'Fri'.hardcoded,
-      'Sat'.hardcoded
-    ],
     selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
     selectedRangeHighlightColor: context.appTheme.isDarkTheme
         ? context.appTheme.secondary.withOpacity(0.5)
