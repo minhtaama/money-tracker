@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/screens/screen_components.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -247,7 +247,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             },
           ),
           Gap.h16,
-          BottomButtons(isDisabled: _isButtonDisable, onTap: _submit)
+          BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
         ],
       ),
     );

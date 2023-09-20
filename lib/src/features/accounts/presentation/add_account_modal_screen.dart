@@ -18,7 +18,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../calculator_input/presentation/calculator_input.dart';
-import '../../transactions/presentation/screens/screen_components.dart';
+import '../../../common_widgets/modal_screen_components.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
   const AddAccountModalScreen({Key? key}) : super(key: key);

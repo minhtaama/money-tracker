@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/screens/screen_components.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_info_list.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -84,6 +88,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             ],
           ),
           Gap.h16,
+          _PaymentAmount(hidden: false, onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
+          Gap.h8,
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -108,7 +114,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const TextHeader('Pay to credit account:'),
+                    TextHeader('Pay to credit account:'.hardcoded),
                     Gap.h4,
                     AccountFormSelector(
                       accountType: AccountType.credit,
@@ -172,7 +178,54 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             },
           ),
           Gap.h16,
-          BottomButtons(isDisabled: _isButtonDisable, onTap: _submit)
+          BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentAmount extends StatelessWidget {
+  const _PaymentAmount({
+    required this.hidden,
+    required this.onMinimumPaymentTap,
+    required this.onFullPaymentTap,
+  });
+  final bool hidden;
+  final ValueSetter<double> onMinimumPaymentTap;
+  final ValueSetter<double> onFullPaymentTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return HideableContainer(
+      hidden: false,
+      child: Row(
+        children: [
+          Expanded(
+            child: IconWithTextButton(
+              iconPath: AppIcons.coins,
+              label: 'Full payment',
+              labelSize: 12,
+              height: null,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              backgroundColor: context.appTheme.primary,
+              color: context.appTheme.primaryNegative,
+              onTap: () => onFullPaymentTap(2),
+            ),
+          ),
+          Gap.w8,
+          Expanded(
+            child: IconWithTextButton(
+              iconPath: AppIcons.coins,
+              label: 'Min payment',
+              labelSize: 12,
+              height: null,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              backgroundColor: AppColors.greyBgr(context),
+              color: context.appTheme.backgroundNegative,
+              onTap: () => onMinimumPaymentTap(1),
+            ),
+          ),
         ],
       ),
     );

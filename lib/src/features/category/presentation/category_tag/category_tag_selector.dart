@@ -17,8 +17,7 @@ import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../domain/category_tag.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
-  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading})
-      : super(key: key);
+  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading}) : super(key: key);
   final Color? fading;
   final ValueSetter<CategoryTag?> onTagSelected;
   final Category? category;
@@ -98,16 +97,15 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             margin: EdgeInsets.zero,
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.secondary.withOpacity(0.8)
-                : context.appTheme.primary,
+            color:
+                context.appTheme.isDarkTheme ? context.appTheme.secondary.withOpacity(0.8) : context.appTheme.primary,
             child: Row(
               children: [
                 Expanded(
                   child: ChosenTag(chosenTag: _chosenTag?.name),
                 ),
                 AnimatedContainer(
-                  duration: k250msDuration,
+                  duration: _chosenTag != null ? k350msDuration : k150msDuration,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   width: _chosenTag != null ? 30 : 0,
                   child: RoundedIconButton(
@@ -229,9 +227,7 @@ class ChosenTag extends StatelessWidget {
       softWrap: false,
       overflow: TextOverflow.ellipsis,
       defaultStyle: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme
-            ? context.appTheme.secondaryNegative
-            : context.appTheme.primaryNegative,
+        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative,
         fontSize: 18,
       ),
       patternList: [
@@ -239,9 +235,7 @@ class ChosenTag extends StatelessWidget {
           targetString: '#',
           hasSpecialCharacters: true,
           style: kHeader4TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.secondaryNegative
-                : context.appTheme.primaryNegative,
+            color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative,
             fontSize: 18,
           ),
         )
@@ -251,8 +245,7 @@ class ChosenTag extends StatelessWidget {
 }
 
 class CategoryTagWidget extends StatelessWidget {
-  const CategoryTagWidget(
-      {Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
+  const CategoryTagWidget({Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
       : super(key: key);
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
@@ -266,7 +259,7 @@ class CategoryTagWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: CustomInkWell(
-            inkColor: AppColors.grey(context),
+            inkColor: AppColors.greyBgr(context),
             borderRadius: BorderRadius.circular(16),
             onTap: () => onTap(categoryTag),
             onLongPress: () => onLongPress(categoryTag),
@@ -274,7 +267,7 @@ class CategoryTagWidget extends StatelessWidget {
               elevation: 0,
               margin: EdgeInsets.zero,
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              color: AppColors.grey(context),
+              color: AppColors.greyBgr(context),
               alignment: Alignment.center,
               child: EasyRichText(
                 '# ${categoryTag.name}',
@@ -370,8 +363,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
             final categoryRepo = ref.read(categoryRepositoryProvider);
 
-            CategoryTag? newTag =
-                await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
+            CategoryTag? newTag = await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
             //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);
 

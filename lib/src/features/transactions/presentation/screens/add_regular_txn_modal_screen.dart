@@ -6,7 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/screens/screen_components.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -201,7 +201,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             },
           ),
           Gap.h16,
-          BottomButtons(isDisabled: _isButtonDisabled, onTap: _submit),
+          BottomButtons(isBigButtonDisabled: _isButtonDisabled, onBigButtonTap: _submit),
         ],
       ),
     );
