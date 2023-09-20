@@ -38,6 +38,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   String _calOutputSpendAmount = '0';
 
+  bool get _hidePaymentTip => _creditSpendingList.isEmpty;
+
   @override
   void dispose() {
     super.dispose();
@@ -88,7 +90,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             ],
           ),
           Gap.h16,
-          _PaymentAmount(hidden: false, onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
+          _PaymentAmountTip(hidden: _hidePaymentTip, onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
           Gap.h8,
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -185,8 +187,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   }
 }
 
-class _PaymentAmount extends StatelessWidget {
-  const _PaymentAmount({
+class _PaymentAmountTip extends StatelessWidget {
+  const _PaymentAmountTip({
     required this.hidden,
     required this.onMinimumPaymentTap,
     required this.onFullPaymentTap,
@@ -198,34 +200,40 @@ class _PaymentAmount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HideableContainer(
-      hidden: false,
-      child: Row(
+      hidden: hidden,
+      child: Column(
         children: [
-          Expanded(
-            child: IconWithTextButton(
-              iconPath: AppIcons.coins,
-              label: 'Full payment',
-              labelSize: 12,
-              height: null,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              backgroundColor: context.appTheme.primary,
-              color: context.appTheme.primaryNegative,
-              onTap: () => onFullPaymentTap(2),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: IconWithTextButton(
+                  iconPath: AppIcons.coins,
+                  label: 'Full payment',
+                  labelSize: 12,
+                  height: null,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  backgroundColor: context.appTheme.primary,
+                  color: context.appTheme.primaryNegative,
+                  onTap: () => onFullPaymentTap(2),
+                ),
+              ),
+              Gap.w8,
+              Expanded(
+                child: IconWithTextButton(
+                  iconPath: AppIcons.coins,
+                  label: 'Min payment',
+                  labelSize: 12,
+                  height: null,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  backgroundColor: AppColors.greyBgr(context),
+                  color: context.appTheme.backgroundNegative,
+                  onTap: () => onMinimumPaymentTap(1),
+                ),
+              ),
+            ],
           ),
-          Gap.w8,
-          Expanded(
-            child: IconWithTextButton(
-              iconPath: AppIcons.coins,
-              label: 'Min payment',
-              labelSize: 12,
-              height: null,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              backgroundColor: AppColors.greyBgr(context),
-              color: context.appTheme.backgroundNegative,
-              onTap: () => onMinimumPaymentTap(1),
-            ),
-          ),
+          Gap.h8,
+          Gap.divider(context, indent: 20)
         ],
       ),
     );
