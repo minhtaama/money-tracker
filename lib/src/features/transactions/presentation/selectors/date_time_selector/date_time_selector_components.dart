@@ -8,9 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_info_list.dart';
-import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -20,7 +18,6 @@ import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../../../../common_widgets/svg_icon.dart';
 import '../../../../../theme_and_ui/icons.dart';
-import '../../../data/transaction_repo.dart';
 import '../../../domain/transaction.dart';
 
 part 'date_time_selector_for_credit_payment.dart';
@@ -144,137 +141,33 @@ class _DisableOverlay extends StatelessWidget {
   }
 }
 
-// class _CreditCalendarDialog extends ConsumerStatefulWidget {
-//   const _CreditCalendarDialog({required this.creditAccount});
-//
-//   final CreditAccount creditAccount;
-//
-//   @override
-//   ConsumerState<_CreditCalendarDialog> createState() => _CreditCalendarDialogState();
-// }
-//
-// class _CreditCalendarDialogState extends ConsumerState<_CreditCalendarDialog> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       surfaceTintColor: Colors.transparent,
-//       backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-//       contentPadding: EdgeInsets.zero,
-//       actions: [
-//         IconWithTextButton(
-//           iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
-//           label: _selectedDay != null ? 'Select'.hardcoded : 'Back'.hardcoded,
-//           height: 30,
-//           width: 100,
-//           labelSize: 13,
-//           iconSize: 20,
-//           isDisabled: _selectedDay == null,
-//           backgroundColor: context.appTheme.primary,
-//           color: context.appTheme.primaryNegative,
-//           onTap: () {
-//             if (_selectedDay != null) {
-//               context.pop([_selectedDay as DateTime, _spendingTransactionsToPay(_selectedDay!)]);
-//             } else {
-//               context.pop();
-//             }
-//           },
-//         ),
-//       ],
-//       content: SingleChildScrollView(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: AnimatedSize(
-//                 duration: k150msDuration,
-//                 child: _currentMonthView.isAtSameMomentAs(_earliestMonthViewable)
-//                     ? EmptyInfo(
-//                         iconPath: AppIcons.done,
-//                         infoText: 'No spending transaction is needed to pay before this time'.hardcoded,
-//                       )
-//                     : _selectedDay != null
-//                         ? CreditSpendingsInfoList(
-//                             transactions: _spendingTransactionsToPay(_selectedDay!),
-//                             currencyCode: _currencyCode,
-//                             onDateTap: (dateTime) => setState(() {
-//                               _currentMonthView = dateTime;
-//                             }),
-//                             onTap: (txn) => context.push(RoutePath.transaction, extra: txn),
-//                           )
-//                         : EmptyInfo(
-//                             iconPath: AppIcons.today,
-//                             infoText: 'Select a payment day.\n Spending transaction can be paid will be displayed here'
-//                                 .hardcoded,
-//                           ),
-//               ),
-//             ),
-//             SizedBox(
-//               height: 300,
-//               width: 350,
-//               child: CalendarDatePicker2(
-//                   config: _customConfig(
-//                     context,
-//                     firstDate: _earliestMonthViewable,
-//                     selectableDayPredicate: _selectableDayPredicate,
-//                     dayBuilder: _dayBuilder,
-//                   ),
-//                   displayedMonthDate: _currentMonthView,
-//                   value: [_selectedDay],
-//                   onDisplayedMonthChanged: (dateTime) => setState(() {
-//                         _currentMonthView = dateTime;
-//                       }),
-//                   onValueChanged: (date) {
-//                     setState(() {
-//                       if (_selectedDay == date[0]) {
-//                         _selectedDay = null;
-//                       } else {
-//                         _selectedDay = date[0];
-//                       }
-//                     });
-//                   }),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class _CustomCalendarDialog extends StatefulWidget {
   const _CustomCalendarDialog(
       {required this.config,
-      this.initialDay,
+      this.currentDay,
       this.currentMonthView,
-      this.onDayChange,
-      this.onMonthViewChange,
-      this.onActionButtonTap,
-      this.content});
+      required this.onActionButtonTap,
+      this.contentBuilder});
 
   final CalendarDatePicker2Config config;
-  final DateTime? initialDay;
+  final DateTime? currentDay;
   final DateTime? currentMonthView;
-  final void Function(DateTime?)? onDayChange;
-  final void Function(DateTime)? onMonthViewChange;
-  final VoidCallback? onActionButtonTap;
-  final Widget? content;
+  final ValueSetter<DateTime?>? onActionButtonTap;
+  final Widget? Function({required DateTime monthView, DateTime? selectedDay})? contentBuilder;
 
   @override
   State<_CustomCalendarDialog> createState() => _CustomCalendarDialogState();
 }
 
 class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
-  late DateTime? _currentMonthView = widget.currentMonthView;
-
-  late DateTime? _selectedDay = widget.initialDay;
-
-  late Widget? _content = widget.content;
+  late DateTime _currentMonthView = widget.currentMonthView ?? DateTime.now();
+  late DateTime? _selectedDay = widget.currentDay;
 
   @override
   void didUpdateWidget(covariant _CustomCalendarDialog oldWidget) {
-    _currentMonthView = widget.currentMonthView;
-    _selectedDay = widget.initialDay;
-    _content = widget.content;
+    if (widget.currentMonthView != null) {
+      _currentMonthView = widget.currentMonthView!;
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -295,7 +188,10 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           isDisabled: _selectedDay == null,
           backgroundColor: context.appTheme.primary,
           color: context.appTheme.primaryNegative,
-          onTap: widget.onActionButtonTap ?? () => context.pop(_selectedDay),
+          onTap: () {
+            widget.onActionButtonTap?.call(_selectedDay);
+            context.pop();
+          },
         ),
       ],
       content: SingleChildScrollView(
@@ -303,28 +199,25 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _content,
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
+            widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             SizedBox(
               height: 300,
               width: 350,
               child: CalendarDatePicker2(
                 config: widget.config,
-                displayedMonthDate: _currentMonthView,
                 value: [_selectedDay],
+                displayedMonthDate: _currentMonthView,
                 onDisplayedMonthChanged: (dateTime) {
                   setState(() {
                     _currentMonthView = dateTime;
-                    _content = widget.content;
-                    widget.onMonthViewChange?.call(_currentMonthView!);
                   });
                 },
                 onValueChanged: (dateList) {
                   setState(() {
                     _selectedDay = dateList[0];
-                    _content = widget.content;
-                    widget.onDayChange?.call(_selectedDay);
                   });
                 },
               ),
@@ -334,6 +227,18 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
       ),
     );
   }
+}
+
+Future<T?> _showCustomCalendarDialog<T>({
+  required BuildContext context,
+  required Widget Function(BuildContext, StateSetter) builder,
+}) {
+  return showDialog<T>(
+      useRootNavigator: false,
+      context: context,
+      builder: (_) {
+        return StatefulBuilder(builder: builder);
+      });
 }
 
 ////////////////////// CONFIG //////////////////////
@@ -387,11 +292,11 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
     selectedYearTextStyle: kHeader4TextStyle.copyWith(
         color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
     yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-    yearBuilder: yearBuilder,
-    dayBuilder: dayBuilder,
     cancelButtonTextStyle: kHeader2TextStyle.copyWith(
         fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
     okButtonTextStyle: kHeader2TextStyle.copyWith(
         fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+    yearBuilder: yearBuilder,
+    dayBuilder: dayBuilder,
   );
 }

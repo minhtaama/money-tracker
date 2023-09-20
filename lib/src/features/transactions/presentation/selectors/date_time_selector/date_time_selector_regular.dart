@@ -10,25 +10,43 @@ class DateTimeSelector extends StatefulWidget {
 }
 
 class _DateTimeSelectorState extends State<DateTimeSelector> {
-  late DateTime currentDateTime = DateTime.now();
+  late DateTime _outputDateTime = DateTime.now();
+  //late DateTime _selectedDay = DateTime.now();
 
-  Future<List<DateTime?>?> _showCustomCalendarDatePicker(
-      {required BuildContext context,
-      int? firstDayOfWeek,
-      DateTime? firstDate,
-      DateTime? lastDate,
-      bool Function(DateTime)? selectableDayPredicate}) {
-    return showCalendarDatePicker2Dialog(
-      context: context,
-      dialogSize: const Size(325, 400),
-      dialogBackgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-      borderRadius: BorderRadius.circular(16),
-      value: [DateTime.now()],
-      config: _customConfig(context,
-          firstDate: firstDate,
-          lastDate: lastDate,
-          firstDayOfWeek: firstDayOfWeek,
-          selectableDayPredicate: selectableDayPredicate),
+  Widget _dayBuilder(
+      {required DateTime date,
+      BoxDecoration? decoration,
+      bool? isDisabled,
+      bool? isSelected,
+      bool? isToday,
+      TextStyle? textStyle}) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        height: 33,
+        width: 33,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(1000),
+          border: isToday != null && isToday
+              ? Border.all(
+                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+                )
+              : null,
+          color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
+        ),
+        child: Center(
+          child: Text(
+            date.day.toString(),
+            style: kHeader4TextStyle.copyWith(
+              color: isDisabled != null && isDisabled
+                  ? AppColors.greyBgr(context)
+                  : isSelected != null && isSelected
+                      ? context.appTheme.primaryNegative
+                      : context.appTheme.backgroundNegative,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -46,35 +64,45 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           child: Column(
             children: [
               _CustomTimePickSpinner(
-                time: currentDateTime,
+                time: _outputDateTime,
                 onTimeChange: (newTime) {
                   setState(() {
-                    currentDateTime = newTime.copyWith(
-                        year: currentDateTime.year, month: currentDateTime.month, day: currentDateTime.day);
+                    _outputDateTime = newTime.copyWith(
+                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
                   });
-                  widget.onChanged(currentDateTime);
+                  widget.onChanged(_outputDateTime);
                 },
               ),
               CustomInkWell(
                 inkColor: AppColors.grey(context),
                 onTap: () async {
                   //final results = await _showCustomCalendarDatePicker(context: context);
-                  final DateTime? results = await showDialog(
-                    useRootNavigator: false,
+                  final DateTime? result = await _showCustomCalendarDialog(
                     context: context,
-                    builder: (_) {
-                      return _CustomCalendarDialog(config: _customConfig(context));
+                    builder: (_, __) {
+                      return _CustomCalendarDialog(
+                        config: _customConfig(context, dayBuilder: _dayBuilder),
+                        currentDay: _outputDateTime,
+                        //onSelectedDayChange: (date) => _selectedDay = date,
+                        onActionButtonTap: (dateTime) {
+                          if (dateTime != null) {
+                            _outputDateTime = dateTime;
+                            context.pop(_outputDateTime);
+                          }
+                        },
+                      );
                     },
                   );
-                  if (results != null) {
+
+                  if (result != null) {
                     setState(() {
-                      currentDateTime = results.copyWith(hour: currentDateTime.hour, minute: currentDateTime.minute);
-                      widget.onChanged(currentDateTime);
+                      _outputDateTime = result.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                     });
+                    widget.onChanged(_outputDateTime);
                   }
                 },
                 child: _DateTimeWidget(
-                  dateTime: currentDateTime,
+                  dateTime: _outputDateTime,
                 ),
               )
             ],

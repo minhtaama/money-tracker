@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:money_tracker_app/persistent/isar_model.dart';
 import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
@@ -20,11 +19,11 @@ class AccountIsar extends IsarCollectionObject {
 
   int? order;
 
-  /// All regular transactions of this account. Only for [AccountType.onHand]
+  /// All regular transactions of this account.
   @Backlink(to: 'accountLink')
   final txnOfThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
-  /// Need for calculating total money of this account. Only for [AccountType.onHand]
+  /// Need for calculating total money of this account. Only for [AccountType.regular]
   @Backlink(to: 'toAccountLink')
   final txnToThisAccountBacklinks = IsarLinks<TransactionIsar>();
 
@@ -72,21 +71,5 @@ extension AccountBalance on AccountIsar {
       }
       return balance;
     }
-  }
-}
-
-extension CreditInfo on AccountIsar {
-  double get totalPendingCreditPayment {
-    if (type == AccountType.regular) {
-      throw ErrorDescription('Can not use this getter on type `AccountType.onHand`');
-    }
-    double pending = 0;
-    final txnList = txnOfThisAccountBacklinks.toList();
-    for (TransactionIsar txn in txnList) {
-      if (!txn.isDone) {
-        pending += txn.pendingPayment;
-      }
-    }
-    return pending;
   }
 }

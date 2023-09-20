@@ -4,10 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/screen_components.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transactions_list.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_info_list.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -27,7 +26,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   final _formKey = GlobalKey<FormState>();
 
   DateTime? _dateTime;
-  List<CreditSpending> _creditSpendingList = List.empty(growable: true);
+  List<CreditSpending> _creditSpendingList = List.empty();
 
   String? _note;
   CreditAccount? _creditAccount;
@@ -58,8 +57,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   @override
   Widget build(BuildContext context) {
-    final settingsObject = ref.watch(settingsControllerProvider);
-
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -94,6 +91,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 child: CreditDateTimeFormSelector(
                   creditAccount: _creditAccount,
                   disableText: 'Choose credit account first'.hardcoded,
+                  initialDate: _dateTime,
                   onChanged: (dateTime, creditSpendingsList) {
                     if (dateTime != null) {
                       _dateTime = dateTime;
@@ -118,11 +116,15 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                       onChangedAccount: (newAccount) {
                         setState(() {
                           _creditAccount = newAccount as CreditAccount?;
+                          if (_creditAccount == null) {
+                            _creditSpendingList = List.empty();
+                            _dateTime = null;
+                          }
                         });
                       },
                     ),
                     Gap.h8,
-                    const TextHeader('From:'),
+                    const TextHeader('Payment account:'),
                     Gap.h4,
                     AccountFormSelector(
                       accountType: AccountType.regular,
@@ -138,18 +140,14 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               ),
             ],
           ),
-          Gap.h8,
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text(
-              'Credit Spendings:',
-              style:
-                  kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
-            ),
-          ),
-          Gap.h4,
-          //CreditPaymentPeriodSelector(onChangedPeriod: (list) {}),
-          TransactionsList(transactions: _creditSpendingList, currencyCode: settingsObject.currency.code),
+          _creditAccount != null ? Gap.h8 : Gap.noGap,
+          _creditAccount != null
+              ? CreditSpendingsInfoList(
+                  title: 'Transactions require payment:'.hardcoded,
+                  isSimple: false,
+                  transactions: _creditSpendingList,
+                )
+              : Gap.noGap,
           Gap.h16,
           Padding(
             padding: const EdgeInsets.only(left: 8.0),

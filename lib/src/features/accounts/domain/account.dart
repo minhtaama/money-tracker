@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../persistent/isar_model.dart';
+import '../../transactions/domain/transaction.dart';
 import '../data/isar_dto/account_isar.dart';
 
 @immutable
@@ -23,14 +23,7 @@ class Account extends IsarModelWithIcon<AccountIsar> {
           backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
         ),
-      AccountType.credit => CreditAccount._(
-          accountIsar,
-          name: accountIsar.name,
-          color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
-          creditDetails: CreditDetails._fromIsar(accountIsar),
-        ),
+      AccountType.credit => CreditAccount.fromIsar(accountIsar),
     };
   }
 
@@ -45,47 +38,16 @@ class Account extends IsarModelWithIcon<AccountIsar> {
 
 @immutable
 class CreditAccount extends Account {
-  final CreditDetails creditDetails;
+  final double creditBalance;
 
-  double get totalPendingCreditPayment => isarObject.totalPendingCreditPayment;
+  /// As in percent.
+  final double interestRate;
 
-  int get statementDay => creditDetails.statementDay;
-  int get paymentDueDay => creditDetails.paymentDueDay;
+  final int statementDay;
 
-  bool get todayIsAfterStatementDayAndBeforeNextMonth =>
-      DateTime.now().isAfter(DateTime(DateTime.now().year, DateTime.now().month, statementDay));
+  final int paymentDueDay;
 
-  bool get todayIsBeforePaymentDueDayAndAfterPreviousMonth =>
-      DateTime.now().isBefore(DateTime(DateTime.now().year, DateTime.now().month, paymentDueDay));
-
-  bool get isTodayInPaymentPeriod {
-    if (todayIsBeforePaymentDueDayAndAfterPreviousMonth || todayIsAfterStatementDayAndBeforeNextMonth) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  String get nextPaymentPeriod {
-    DateTime statementDate;
-    DateTime paymentDueDate;
-
-    if (todayIsAfterStatementDayAndBeforeNextMonth) {
-      statementDate = DateTime(DateTime.now().year, DateTime.now().month, statementDay);
-      paymentDueDate = DateTime(DateTime.now().year, DateTime.now().month + 1, paymentDueDay);
-    }
-    if (todayIsBeforePaymentDueDayAndAfterPreviousMonth) {
-      statementDate = DateTime(DateTime.now().year, DateTime.now().month - 1, statementDay);
-      paymentDueDate = DateTime(DateTime.now().year, DateTime.now().month, paymentDueDay);
-    } else {
-      statementDate = DateTime(DateTime.now().year, DateTime.now().month, statementDay);
-      paymentDueDate = DateTime(DateTime.now().year, DateTime.now().month + 1, paymentDueDay);
-    }
-
-    return '${statementDate.getFormattedDate()} - ${paymentDueDate.getFormattedDate()}';
-  }
-
-  static Account? fromIsar(AccountIsar? accountIsar) {
+  static CreditAccount? fromIsar(AccountIsar? accountIsar) {
     if (accountIsar == null) {
       return null;
     }
@@ -96,7 +58,10 @@ class CreditAccount extends Account {
       color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
       backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
       iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
-      creditDetails: CreditDetails._fromIsar(accountIsar),
+      creditBalance: accountIsar.creditDetailsIsar!.creditBalance,
+      interestRate: accountIsar.creditDetailsIsar!.interestRate,
+      statementDay: accountIsar.creditDetailsIsar!.statementDay,
+      paymentDueDay: accountIsar.creditDetailsIsar!.paymentDueDay,
     );
   }
 
@@ -106,33 +71,89 @@ class CreditAccount extends Account {
     required super.color,
     required super.backgroundColor,
     required super.iconPath,
-    required this.creditDetails,
-  });
-}
-
-@immutable
-class CreditDetails {
-  final double creditBalance;
-
-  /// As in percent.
-  final double interestRate;
-
-  final int statementDay;
-
-  final int paymentDueDay;
-
-  factory CreditDetails._fromIsar(AccountIsar accountIsar) {
-    return CreditDetails._(
-        creditBalance: accountIsar.creditDetailsIsar!.creditBalance,
-        interestRate: accountIsar.creditDetailsIsar!.interestRate,
-        statementDay: accountIsar.creditDetailsIsar!.statementDay,
-        paymentDueDay: accountIsar.creditDetailsIsar!.paymentDueDay);
-  }
-
-  const CreditDetails._({
     required this.creditBalance,
     required this.interestRate,
     required this.statementDay,
     required this.paymentDueDay,
   });
+}
+
+extension CreditDetails on CreditAccount {
+  List<CreditSpending> get spendingTxns => List.from(
+      isarObject.txnOfThisAccountBacklinks.map<CreditSpending>((e) => Transaction.fromIsar(e) as CreditSpending));
+
+  List<CreditSpending> get allUnpaidSpendingTxns => spendingTxns.where((txn) => !txn.isDone).toList();
+
+  List<CreditSpending> unpaidSpendingTxnsBefore(DateTime dateTime) {
+    DateTime date;
+    if (dateTime.day >= statementDay) {
+      date = dateTime.copyWith(day: statementDay);
+    } else if (dateTime.day <= paymentDueDay) {
+      date = dateTime.copyWith(day: statementDay, month: dateTime.month - 1);
+    } else {
+      date = dateTime;
+    }
+
+    return allUnpaidSpendingTxns.where((txn) => !txn.isDone && txn.dateTime.isBefore(date)).toList();
+  }
+
+  double get totalPendingCreditPayment {
+    double pendingPayment = 0;
+    for (CreditSpending txn in allUnpaidSpendingTxns) {
+      pendingPayment += txn.pendingPayment;
+    }
+    return pendingPayment;
+  }
+
+  DateTime get earliestPayableDate {
+    DateTime time = DateTime.now();
+
+    // Get earliest spending transaction un-done
+    for (CreditSpending txn in spendingTxns) {
+      if (!txn.isDone && txn.dateTime.isBefore(time)) {
+        time = txn.dateTime;
+      }
+    }
+
+    // Earliest day that payment can happens
+    if (time.day <= paymentDueDay) {
+      time = time.copyWith(day: paymentDueDay + 1);
+    }
+    if (time.day >= statementDay) {
+      time = time.copyWith(day: paymentDueDay + 1, month: time.month + 1);
+    }
+
+    return time;
+  }
+
+  bool isAfterOrSameAsStatementDay(DateTime dateTime) => dateTime.day >= statementDay;
+
+  bool isBeforeOrSameAsPaymentDueDay(DateTime dateTime) => dateTime.day <= paymentDueDay;
+
+  bool isInPaymentPeriod(DateTime dateTime) {
+    if (isAfterOrSameAsStatementDay(dateTime) || isBeforeOrSameAsPaymentDueDay(dateTime)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  List<DateTime> nextPaymentPeriod(DateTime dateTime) {
+    DateTime statementDate;
+    DateTime paymentDueDate;
+
+    if (isAfterOrSameAsStatementDay(dateTime)) {
+      statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
+      paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
+    }
+    if (isBeforeOrSameAsPaymentDueDay(dateTime)) {
+      statementDate = DateTime(dateTime.year, dateTime.month - 1, statementDay);
+      paymentDueDate = DateTime(dateTime.year, dateTime.month, paymentDueDay);
+    } else {
+      statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
+      paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
+    }
+
+    return List.from([statementDate, paymentDueDate], growable: false);
+  }
 }

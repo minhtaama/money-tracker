@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -116,6 +117,7 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                   DateTimeSelectorForCreditPayment(
                     creditAccount: creditAccount,
                     disableText: disableText,
+                    initialDate: initialDate,
                     onChanged: (newDateTime, newList) {
                       state.didChange(newDateTime);
                       onChanged(newDateTime, newList);
@@ -165,40 +167,38 @@ class _AlertBoxState extends State<_AlertBox> {
 
     return Transform.translate(
       offset: Offset(0, -_height / 2 + widget.yOffset),
-      child: Stack(
-        children: [
-          Transform(
-            transform: Matrix4.identity()
-              ..translate(_width / 2, _height - 7)
-              ..rotateZ(math.pi / 4),
-            //origin: const Offset(5, 5),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: context.appTheme.negative,
+      child: Container(
+        key: _key,
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        constraints: const BoxConstraints(minWidth: 30, maxWidth: 80),
+        decoration: BoxDecoration(
+          color: context.appTheme.negative,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Stack(
+          children: [
+            Transform(
+              transform: Matrix4.identity()
+                ..translate(_width / 2 - 12, _height - 7 - 8)
+                ..rotateZ(math.pi / 4),
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: context.appTheme.negative,
+                ),
               ),
             ),
-          ),
-          Container(
-            key: _key,
-            padding: const EdgeInsets.all(8),
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            constraints: const BoxConstraints(minWidth: 30, maxWidth: 80),
-            decoration: BoxDecoration(
-              color: context.appTheme.negative,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
+            Text(
               widget.errorText,
               style: widget.errorText.length == 1
                   ? kHeader2TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 17)
                   : kHeader4TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 10),
               textAlign: TextAlign.center,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
