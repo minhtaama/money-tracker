@@ -14,10 +14,16 @@ class HelpButton extends StatefulWidget {
     super.key,
     required this.text,
     this.title,
+    this.size = 22,
+    this.yOffset = 0,
+    this.iconPath,
   });
 
+  final String? iconPath;
   final String? title;
   final String text;
+  final double size;
+  final double yOffset;
 
   @override
   State<HelpButton> createState() => _HelpButtonState();
@@ -28,6 +34,8 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
   late final Animation<double> _animation;
   final _buttonKey = GlobalKey();
   final _boxKey = GlobalKey();
+
+  bool _showBoxUnderButton = false;
 
   @override
   void initState() {
@@ -44,6 +52,7 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
 
   void _showOverlay() {
     Offset buttonOffset = _getRenderObjectCenterPosition(_buttonKey, isTopCenterPoint: true);
+    Size buttonSize = _buttonKey.currentContext!.size!;
 
     double helpBoxWidth = 0;
     double helpBoxHeight = 0;
@@ -61,10 +70,17 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
 
       if (helpBoxWidth / 2 >= Gap.screenWidth(context) - buttonOffset.dx) {
         double offset = helpBoxWidth / 2 - (Gap.screenWidth(context) - buttonOffset.dx);
-        dx = dx - offset;
+        dx = dx - offset - 10;
       } else if (helpBoxWidth / 2 >= buttonOffset.dx) {
         double offset = helpBoxWidth / 2 - buttonOffset.dx;
-        dx = dx + offset;
+        dx = dx + offset + 10;
+      }
+
+      if (helpBoxHeight > buttonOffset.dy) {
+        dy = buttonOffset.dy + buttonSize.height + 10;
+        _showBoxUnderButton = true;
+      } else {
+        _showBoxUnderButton = false;
       }
 
       return Offset(dx, dy);
@@ -83,13 +99,14 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
             return Stack(children: [
               ModalBarrier(
                 onDismiss: () => _removeEntry(overlayEntry),
+                color: AppColors.black.withOpacity(0.2),
               ),
               Positioned(
                 left: buttonOffset.dx,
-                top: buttonOffset.dy - 10,
+                top: _showBoxUnderButton ? buttonOffset.dy + buttonSize.height + 10 : buttonOffset.dy - 10,
                 child: Opacity(
                   opacity: _animation.value,
-                  child: const _DownArrow(),
+                  child: _Arrow(_showBoxUnderButton),
                 ),
               ),
               Positioned(
@@ -139,13 +156,16 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return RoundedIconButton(
-      key: _buttonKey,
-      iconPath: AppIcons.defaultIcon,
-      iconPadding: 0,
-      size: 20,
-      iconColor: AppColors.grey(context),
-      onTap: _showOverlay,
+    return Transform.translate(
+      offset: Offset(0, widget.yOffset),
+      child: RoundedIconButton(
+        key: _buttonKey,
+        iconPath: widget.iconPath ?? AppIcons.defaultIcon,
+        iconPadding: 0,
+        size: widget.size,
+        iconColor: AppColors.grey(context),
+        onTap: _showOverlay,
+      ),
     );
   }
 }
@@ -164,15 +184,15 @@ class _HelpBox extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
           child: Container(
-            padding: const EdgeInsets.all(8),
-            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.all(12),
             constraints: BoxConstraints(minWidth: 30, maxWidth: Gap.screenWidth(context) - 50),
             decoration: BoxDecoration(
-              color: AppColors.grey(context).withOpacity(0.4),
-              borderRadius: BorderRadius.circular(4),
+              color: context.appTheme.background.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,13 +200,14 @@ class _HelpBox extends StatelessWidget {
                 title != null
                     ? Text(
                         title!,
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 13),
+                        style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 14),
                         textAlign: TextAlign.left,
                       )
                     : Gap.noGap,
+                title != null ? Gap.h4 : Gap.noGap,
                 Text(
                   text,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 13),
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 14),
                   textAlign: TextAlign.left,
                 ),
               ],
@@ -198,19 +219,23 @@ class _HelpBox extends StatelessWidget {
   }
 }
 
-class _DownArrow extends StatelessWidget {
-  const _DownArrow();
+class _Arrow extends StatelessWidget {
+  const _Arrow(this.showUnderButton);
+
+  final bool showUnderButton;
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _ArrowPainter(AppColors.grey(context).withOpacity(0.4)),
+      painter: showUnderButton
+          ? _UpArrowPainter(context.appTheme.background.withOpacity(0.6))
+          : _DownArrowPainter(context.appTheme.background.withOpacity(0.6)),
     );
   }
 }
 
-class _ArrowPainter extends CustomPainter {
-  _ArrowPainter(this.color);
+class _DownArrowPainter extends CustomPainter {
+  _DownArrowPainter(this.color);
 
   final Color color;
 
@@ -228,6 +253,36 @@ class _ArrowPainter extends CustomPainter {
     fillPath.moveTo(-6, -0.23);
     fillPath.lineTo(0, 6);
     fillPath.lineTo(6, -0.23);
+    fillPath.close();
+
+    canvas.drawPath(fillPath, paintFill0);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class _UpArrowPainter extends CustomPainter {
+  _UpArrowPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Layer 1
+    Paint paintFill0 = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 0.0
+      ..strokeCap = StrokeCap.butt
+      ..strokeJoin = StrokeJoin.miter;
+
+    Path fillPath = Path();
+    fillPath.moveTo(-6, 0.23);
+    fillPath.lineTo(0, -6);
+    fillPath.lineTo(6, 0.23);
     fillPath.close();
 
     canvas.drawPath(fillPath, paintFill0);

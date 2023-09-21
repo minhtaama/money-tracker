@@ -3,7 +3,8 @@ part of 'transaction_base.dart';
 @immutable
 class CreditPayment extends Transaction {
   @override
-  final Account? creditAccount;
+  final Account? account;
+
   final CreditAccount? toCreditAccount;
 
   const CreditPayment._(
@@ -11,7 +12,7 @@ class CreditPayment extends Transaction {
     super.dateTime,
     super.amount,
     super.note, {
-    required this.creditAccount,
+    required this.account,
     required this.toCreditAccount,
   });
 }

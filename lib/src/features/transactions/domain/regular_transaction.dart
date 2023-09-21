@@ -3,9 +3,9 @@ part of 'transaction_base.dart';
 @immutable
 sealed class RegularTransaction extends Transaction {
   @override
-  final RegularAccount? creditAccount;
+  final RegularAccount? account;
 
-  const RegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, this.creditAccount);
+  const RegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, this.account);
 }
 
 @immutable
@@ -21,7 +21,7 @@ class Expense extends RegularTransaction implements TransactionWithCategory {
     super.dateTime,
     super.amount,
     super.note,
-    super.creditAccount,
+    super.account,
     this.category,
     this.categoryTag,
   );
@@ -42,7 +42,7 @@ class Income extends RegularTransaction implements TransactionWithCategory {
     super.dateTime,
     super.amount,
     super.note,
-    super.creditAccount,
+    super.account,
     this.category,
     this.categoryTag, {
     required this.isInitialTransaction,
@@ -59,7 +59,7 @@ class Transfer extends RegularTransaction {
     super.dateTime,
     super.amount,
     super.note,
-    super.creditAccount, {
+    super.account, {
     required this.toAccount,
     required this.fee,
   });

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/isar_model.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
@@ -16,7 +17,7 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
   final DateTime dateTime;
   final double amount;
   final String? note;
-  abstract final Account? creditAccount;
+  abstract final Account? account;
 
   const Transaction(
     super._isarObject,
@@ -69,7 +70,7 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn.note,
           Category.fromIsar(txn.categoryLink.value),
           CategoryTag.fromIsar(txn.categoryTagLink.value),
-          creditAccount: Account.fromIsar(txn.accountLink.value) as CreditAccount?,
+          account: Account.fromIsar(txn.accountLink.value) as CreditAccount?,
           //payments: payments,
           installmentAmount: txn.installmentAmount,
         );
@@ -80,7 +81,7 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
           txn.dateTime,
           txn.amount,
           txn.note,
-          creditAccount: Account.fromIsar(txn.accountLink.value),
+          account: Account.fromIsar(txn.accountLink.value),
           toCreditAccount: Account.fromIsar(txn.toAccountLink.value) as CreditAccount,
         );
     }

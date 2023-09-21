@@ -62,7 +62,7 @@ class TransactionDetails extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(model: transaction.creditAccount!),
+                  _AccountCard(model: transaction.account!),
                   switch (transaction) {
                     TransactionWithCategory() => transaction is Income && (transaction as Income).isInitialTransaction
                         ? Gap.noGap
@@ -358,7 +358,7 @@ class _PaymentDetail extends ConsumerWidget {
               ? Padding(
                   padding: const EdgeInsets.only(left: 3.0),
                   child: Text(
-                    '${transaction.creditAccount!.isInPaymentPeriod(DateTime.now()) ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
+                    '${transaction.account!.isInPaymentPeriod(DateTime.now()) ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
                     style: kHeader2TextStyle.copyWith(
                         color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
                   ),
@@ -368,7 +368,7 @@ class _PaymentDetail extends ConsumerWidget {
               ? Padding(
                   padding: const EdgeInsets.only(left: 3.0),
                   child: Text(
-                    transaction.creditAccount!.nextPaymentPeriod(DateTime.now()).toString(),
+                    transaction.account!.nextPaymentPeriod(DateTime.now()).toString(),
                     style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
                   ),
                 )

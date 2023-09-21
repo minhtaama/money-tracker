@@ -3,7 +3,7 @@ part of 'transaction_base.dart';
 @immutable
 class CreditSpending extends Transaction implements TransactionWithCategory {
   @override
-  final CreditAccount? creditAccount;
+  final CreditAccount? account;
 
   @override
   final Category? category;
@@ -20,7 +20,7 @@ class CreditSpending extends Transaction implements TransactionWithCategory {
     super.note,
     this.category,
     this.categoryTag, {
-    required this.creditAccount,
+    required this.account,
     required this.installmentAmount,
   });
 }
@@ -32,6 +32,21 @@ extension SpendingDetails on CreditSpending {
       payments.add(Transaction.fromIsar(txn) as CreditPayment);
     }
     return payments;
+  }
+
+  List<DateTime> statementDaysSinceSpending({required DateTime toDate}) {
+    if (account == null) {
+      throw ErrorDescription('Credit Account must be specified');
+    }
+
+    DateTime startDate = dateTime;
+    List<DateTime> list = [];
+    for (int month = startDate.month;
+        DateTime(startDate.year, month, account!.statementDay - 1).isBefore(toDate.onlyYearMonthDay);
+        month++) {
+      list.add(DateTime(startDate.year, month, account!.statementDay - 1));
+    }
+    return list;
   }
 
   bool get isDone {

@@ -24,8 +24,14 @@ class CreditAccount extends Account {
   });
 
   @override
-  List<CreditSpending> get transactionsList => List.from(
-      isarObject.txnOfThisAccountBacklinks.map<CreditSpending>((e) => Transaction.fromIsar(e) as CreditSpending));
+  List<CreditSpending> get transactionsList {
+    final List<CreditSpending> list = List.from(
+        isarObject.txnOfThisAccountBacklinks.map<CreditSpending>((txn) => Transaction.fromIsar(txn) as CreditSpending));
+    list.sort((a, b) {
+      return a.dateTime.isBefore(b.dateTime) ? -1 : 1;
+    });
+    return list;
+  }
 }
 
 extension CreditDetails on CreditAccount {

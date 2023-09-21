@@ -54,6 +54,8 @@ class AppIcons {
   static String get download => 'assets/svg/app/download.svg';
   static String get upload => 'assets/svg/app/upload.svg';
   static String get minus => 'assets/svg/app/minus.svg';
+  static String get installment => 'assets/svg/app/installment.svg';
+  static String get fullPayment => 'assets/svg/app/fullPayment.svg';
 
   static String get defaultIcon => 'assets/svg/app/default.svg';
 

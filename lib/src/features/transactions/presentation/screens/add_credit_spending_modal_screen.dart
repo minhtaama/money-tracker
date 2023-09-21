@@ -108,12 +108,21 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   },
                 ),
               ),
+              Gap.w16,
+              HelpButton(
+                text: 'All fees must be included.'.hardcoded,
+                yOffset: 4,
+              )
             ],
           ),
           Gap.h4,
           CustomCheckbox(
-            label: 'Installment payment',
-            labelSuffix: const HelpButton(text: 'Use for payment which has installment payment'),
+            label: 'Installment payment'.hardcoded,
+            labelSuffix: HelpButton(
+                title: 'Installment payment'.hardcoded,
+                text:
+                    'For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \'Spending Amount\' (Because installment payment is a fixed amount, see more details in your banking contract).'
+                        .hardcoded),
             onChanged: (value) {
               setState(() {
                 if (value) {

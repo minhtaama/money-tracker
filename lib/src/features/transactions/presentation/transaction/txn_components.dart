@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -51,20 +52,21 @@ class TxnCreditIcon extends StatelessWidget {
 }
 
 class TxnInstallmentIcon extends StatelessWidget {
-  const TxnInstallmentIcon({super.key});
+  const TxnInstallmentIcon({
+    super.key,
+    this.size = 18,
+    required this.transaction,
+  });
+
+  final double size;
+  final CreditSpending transaction;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.greyBgr(context),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        'Installment'.hardcoded,
-        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 9),
-      ),
+    return HelpButton(
+      text: transaction.hasInstallment ? 'Installment payment'.hardcoded : 'Full payment'.hardcoded,
+      iconPath: transaction.hasInstallment ? AppIcons.installment : AppIcons.fullPayment,
+      size: size,
     );
   }
 }
@@ -131,9 +133,9 @@ class TxnAccountIcon extends StatelessWidget {
   final bool useAccountIcon;
 
   String get _iconPath {
-    if (transaction.creditAccount != null) {
+    if (transaction.account != null) {
       if (useAccountIcon) {
-        return transaction.creditAccount!.iconPath;
+        return transaction.account!.iconPath;
       }
       return switch (transaction) {
         Transfer() => '',
@@ -163,8 +165,8 @@ class TxnAccountName extends StatelessWidget {
   final double? fontSize;
 
   String get _name {
-    if (transaction.creditAccount != null) {
-      return transaction.creditAccount!.name;
+    if (transaction.account != null) {
+      return transaction.account!.name;
     }
     return ''; //TODO: Implements blank icon and name if transaction has null account
   }

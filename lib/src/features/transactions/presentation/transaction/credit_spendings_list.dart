@@ -132,13 +132,25 @@ class _List extends StatelessWidget {
                                     ),
                                   ),
                                   Gap.w16,
-                                  _AmountDetails(transaction: transaction, currencyCode: currencyCode),
+                                  TxnAmount(
+                                    currencyCode: currencyCode,
+                                    transaction: transaction,
+                                    fontSize: 14,
+                                  ),
                                 ],
                               ),
                               Gap.h4,
-                              TxnSpendingPaidBar(
-                                percentage: 0.6,
-                                height: 10,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TxnSpendingPaidBar(
+                                      percentage: 0.6,
+                                      height: 10,
+                                    ),
+                                  ),
+                                  Gap.w8,
+                                  TxnInstallmentIcon(transaction: transaction),
+                                ],
                               ),
                             ],
                           ),
@@ -194,27 +206,6 @@ class _Details extends StatelessWidget {
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _AmountDetails extends StatelessWidget {
-  const _AmountDetails({required this.transaction, required this.currencyCode});
-
-  final CreditSpending transaction;
-  final String currencyCode;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TxnAmount(
-          currencyCode: currencyCode,
-          transaction: transaction,
-          fontSize: 13,
-        ),
-        transaction.hasInstallment ? const TxnInstallmentIcon() : Gap.noGap,
       ],
     );
   }
