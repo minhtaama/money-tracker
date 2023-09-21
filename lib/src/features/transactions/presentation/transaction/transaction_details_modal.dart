@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
@@ -18,7 +18,7 @@ import '../../../../common_widgets/custom_section.dart';
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../category/domain/category.dart';
-import '../../domain/transaction.dart';
+import '../../domain/transaction_base.dart';
 
 class TransactionDetails extends StatelessWidget {
   const TransactionDetails({super.key, required this.transaction});
@@ -42,7 +42,7 @@ class TransactionDetails extends StatelessWidget {
       subTitle: _DateTime(transaction: transaction),
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
-      children: [
+      sections: [
         _Amount(transaction: transaction),
         Gap.h8,
         transaction is CreditSpending ? _PaymentDetail(transaction: transaction as CreditSpending) : Gap.noGap,
@@ -62,7 +62,7 @@ class TransactionDetails extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(model: transaction.account!),
+                  _AccountCard(model: transaction.creditAccount!),
                   switch (transaction) {
                     TransactionWithCategory() => transaction is Income && (transaction as Income).isInitialTransaction
                         ? Gap.noGap
@@ -358,7 +358,7 @@ class _PaymentDetail extends ConsumerWidget {
               ? Padding(
                   padding: const EdgeInsets.only(left: 3.0),
                   child: Text(
-                    '${transaction.account!.isInPaymentPeriod(DateTime.now()) ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
+                    '${transaction.creditAccount!.isInPaymentPeriod(DateTime.now()) ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
                     style: kHeader2TextStyle.copyWith(
                         color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
                   ),
@@ -368,7 +368,7 @@ class _PaymentDetail extends ConsumerWidget {
               ? Padding(
                   padding: const EdgeInsets.only(left: 3.0),
                   child: Text(
-                    transaction.account!.nextPaymentPeriod(DateTime.now()).toString(),
+                    transaction.creditAccount!.nextPaymentPeriod(DateTime.now()).toString(),
                     style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
                   ),
                 )
@@ -390,18 +390,7 @@ class _PaymentDetail extends ConsumerWidget {
             ),
           ),
           Gap.h4,
-          Container(
-            width: double.infinity,
-            height: 20,
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                colors: [context.appTheme.primary, AppColors.grey(context)],
-                stops: [_paidAmountPercentage, _paidAmountPercentage],
-              ),
-            ),
-          ),
+          TxnSpendingPaidBar(percentage: _paidAmountPercentage),
         ],
       ),
     );

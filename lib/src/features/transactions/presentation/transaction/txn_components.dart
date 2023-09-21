@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'dart:math' as math;
+import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/constants.dart';
+import '../../../../utils/enums.dart';
 import '../../../calculator_input/application/calculator_service.dart';
-import '../../domain/transaction.dart';
+import '../../domain/transaction_base.dart';
 
 class TxnDot extends StatelessWidget {
   const TxnDot({Key? key, required this.transaction, this.size}) : super(key: key);
@@ -40,6 +44,25 @@ class TxnCreditIcon extends StatelessWidget {
       ),
       child: Text(
         'Credit',
+        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 9),
+      ),
+    );
+  }
+}
+
+class TxnInstallmentIcon extends StatelessWidget {
+  const TxnInstallmentIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.greyBgr(context),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        'Installment'.hardcoded,
         style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 9),
       ),
     );
@@ -108,9 +131,9 @@ class TxnAccountIcon extends StatelessWidget {
   final bool useAccountIcon;
 
   String get _iconPath {
-    if (transaction.account != null) {
+    if (transaction.creditAccount != null) {
       if (useAccountIcon) {
-        return transaction.account!.iconPath;
+        return transaction.creditAccount!.iconPath;
       }
       return switch (transaction) {
         Transfer() => '',
@@ -140,8 +163,8 @@ class TxnAccountName extends StatelessWidget {
   final double? fontSize;
 
   String get _name {
-    if (transaction.account != null) {
-      return transaction.account!.name;
+    if (transaction.creditAccount != null) {
+      return transaction.creditAccount!.name;
     }
     return ''; //TODO: Implements blank icon and name if transaction has null account
   }
@@ -239,7 +262,9 @@ class TxnNote extends StatelessWidget {
     final txn = transaction;
     switch (txn) {
       case TransactionWithCategory():
-        return txn.categoryTag != null ? '# ${txn.categoryTag!.name}' : null;
+        return (txn as TransactionWithCategory).categoryTag != null
+            ? '# ${(txn as TransactionWithCategory).categoryTag!.name}'
+            : null;
       case Transfer() || CreditPayment():
         return null;
     }
@@ -312,6 +337,83 @@ class TxnTransferLine extends StatelessWidget {
       child: ClipRect(
         child: CustomPaint(
           painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
+        ),
+      ),
+    );
+  }
+}
+
+class TxnSpendingPaidBar extends StatefulWidget {
+  const TxnSpendingPaidBar({super.key, this.height = 20, required this.percentage})
+      : assert(percentage >= 0 && percentage <= 1);
+
+  final double height;
+  final double percentage;
+
+  @override
+  State<TxnSpendingPaidBar> createState() => _TxnSpendingPaidBarState();
+}
+
+class _TxnSpendingPaidBarState extends State<TxnSpendingPaidBar> {
+  final _key = GlobalKey();
+  double _width = 0;
+
+  @override
+  void didUpdateWidget(covariant TxnSpendingPaidBar oldWidget) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _width = _key.currentContext!.size!.width * widget.percentage;
+      });
+    });
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: _key,
+      width: double.infinity,
+      height: widget.height,
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: AppColors.greyBgr(context),
+        // gradient: LinearGradient(
+        //   colors: [context.appTheme.primary, AppColors.greyBgr(context)],
+        //   stops: [percentage, percentage],
+        // ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: k250msDuration,
+          color: context.appTheme.primary,
+          height: widget.height,
+          width: _width,
+        ),
+      ),
+    );
+  }
+}
+
+class TxnDateTime extends StatelessWidget {
+  const TxnDateTime({super.key, required this.transaction, this.onDateTap});
+
+  final Transaction transaction;
+  final void Function(DateTime)? onDateTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4.0),
+      child: CustomInkWell(
+        inkColor: AppColors.grey(context),
+        borderRadius: BorderRadius.circular(1000),
+        onTap: onDateTap != null ? () => onDateTap!.call(transaction.dateTime.onlyYearMonthDay) : null,
+        child: Text(
+          transaction.dateTime.getFormattedDate(type: DateTimeType.ddmmyyyy),
+          style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
         ),
       ),
     );

@@ -8,12 +8,14 @@ class CustomCheckbox extends StatefulWidget {
       {super.key,
       required this.onChanged,
       required this.label,
+      this.labelSuffix,
       this.optionalWidget,
       this.optionalWidgetBackgroundColor,
       this.checkboxBackgroundColor,
       this.labelStyle});
 
   final String label;
+  final Widget? labelSuffix;
   final TextStyle? labelStyle;
   final ValueChanged<bool> onChanged;
   final Widget? optionalWidget;
@@ -75,11 +77,17 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                             widget.onChanged(_value);
                           });
                         },
-                        child: Text(
-                          widget.label,
-                          style: widget.labelStyle ??
-                              kHeader3TextStyle.copyWith(
-                                  fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.6)),
+                        child: Row(
+                          children: [
+                            Text(
+                              widget.label,
+                              style: widget.labelStyle ??
+                                  kHeader3TextStyle.copyWith(
+                                      fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.6)),
+                            ),
+                            Gap.w8,
+                            widget.labelSuffix ?? Gap.noGap
+                          ],
                         ),
                       ),
                     ),

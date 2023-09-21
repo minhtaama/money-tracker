@@ -10,16 +10,18 @@ class CustomSection extends StatefulWidget {
     this.title,
     this.subTitle,
     this.isWrapByCard = true,
+    this.sectionsClipping = true,
     this.onReorder,
-    required this.children,
+    required this.sections,
     this.crossAxisAlignment = CrossAxisAlignment.center,
   }) : super(key: key);
 
   final String? title;
   final Widget? subTitle;
   final bool isWrapByCard;
+  final bool sectionsClipping;
   final void Function(int oldIndex, int newIndex)? onReorder;
-  final List<Widget> children;
+  final List<Widget> sections;
   final CrossAxisAlignment crossAxisAlignment;
 
   @override
@@ -38,7 +40,7 @@ class _CustomSectionState extends State<CustomSection> {
   @override
   void didUpdateWidget(CustomSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.children != oldWidget.children) {
+    if (widget.sections != oldWidget.sections) {
       _children = _generateTiles();
     }
   }
@@ -51,19 +53,19 @@ class _CustomSectionState extends State<CustomSection> {
   }
 
   List<SectionTile> _generateTiles() => List.generate(
-        widget.children.length,
+        widget.sections.length,
         (index) {
-          if (index != widget.children.length - 1 && widget.isWrapByCard) {
+          if (index != widget.sections.length - 1 && widget.isWrapByCard) {
             return SectionTile(
               key: ValueKey(index),
               isHasDivider: true,
-              child: widget.children[index],
+              child: widget.sections[index],
             );
           } else {
             return SectionTile(
               key: ValueKey(index),
               isHasDivider: false,
-              child: widget.children[index],
+              child: widget.sections[index],
             );
           }
         },
@@ -91,10 +93,10 @@ class _CustomSectionState extends State<CustomSection> {
           widget.subTitle ?? const SizedBox(),
           CardItem(
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
-            margin:
-                widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
+            margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
             elevation: widget.isWrapByCard ? 1 : 0,
             color: widget.isWrapByCard ? null : Colors.transparent,
+            clip: widget.sectionsClipping,
             child: widget.onReorder == null
                 ? Column(
                     crossAxisAlignment: widget.crossAxisAlignment,

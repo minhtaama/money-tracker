@@ -5,7 +5,7 @@ import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_is
 import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 
-import '../domain/account.dart';
+import '../domain/account_base.dart';
 
 class AccountRepository {
   AccountRepository(this.isar);
@@ -59,7 +59,7 @@ class AccountRepository {
 
     if (type == AccountType.credit) {
       creditAccountDetailsIsar = CreditDetailsIsar()
-        ..interestRate = interestRate!
+        ..penaltyInterest = interestRate!
         ..statementDay = statementDay!
         ..paymentDueDay = paymentDueDay!
         ..creditBalance = balance;
@@ -113,10 +113,8 @@ class AccountRepository {
       ..colorIndex = colorIndex;
 
     // Query to find the initial transaction of the current editing account
-    TransactionIsar? initialTransaction = await accountIsar.txnOfThisAccountBacklinks
-        .filter()
-        .isInitialTransactionEqualTo(true)
-        .findFirst();
+    TransactionIsar? initialTransaction =
+        await accountIsar.txnOfThisAccountBacklinks.filter().isInitialTransactionEqualTo(true).findFirst();
 
     if (initialTransaction != null) {
       // If the initial transaction is found

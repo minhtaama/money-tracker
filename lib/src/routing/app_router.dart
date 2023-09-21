@@ -14,7 +14,7 @@ import '../common_widgets/modal_bottom_sheets.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
-import '../features/transactions/domain/transaction.dart';
+import '../features/transactions/domain/transaction_base.dart';
 import '../features/transactions/presentation/screens/add_credit_spending_modal_screen.dart';
 import '../utils/enums.dart';
 

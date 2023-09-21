@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
-import '../../../accounts/domain/account.dart';
+import '../../../accounts/domain/account_base.dart';
 
 class AccountSelector extends ConsumerStatefulWidget {
   const AccountSelector({
@@ -44,9 +44,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentAccount != null ? currentAccount!.iconPath : AppIcons.add,
       backgroundColor: currentAccount != null ? currentAccount!.backgroundColor : Colors.transparent,
-      color: currentAccount != null
-          ? currentAccount!.color
-          : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color: currentAccount != null ? currentAccount!.color : context.appTheme.backgroundNegative.withOpacity(0.4),
       height: null,
       width: null,
       border: currentAccount != null
@@ -91,12 +89,10 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                                   ? account.backgroundColor
                                   : context.appTheme.backgroundNegative.withOpacity(0.4),
                             ),
-                            backgroundColor: currentAccount?.id == account.id
-                                ? account.backgroundColor
-                                : Colors.transparent,
-                            color: currentAccount?.id == account.id
-                                ? account.color
-                                : context.appTheme.backgroundNegative,
+                            backgroundColor:
+                                currentAccount?.id == account.id ? account.backgroundColor : Colors.transparent,
+                            color:
+                                currentAccount?.id == account.id ? account.color : context.appTheme.backgroundNegative,
                             onTap: () => context.pop<Account>(account),
                             height: null,
                             width: null,

@@ -37,7 +37,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
       child: CustomSection(
         title: 'Add Category',
         isWrapByCard: false,
-        children: [
+        sections: [
           CustomSliderToggle<CategoryType>(
             values: const [CategoryType.income, CategoryType.expense],
             labels: const ['Income', 'Expense'],

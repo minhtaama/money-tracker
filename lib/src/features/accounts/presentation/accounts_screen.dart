@@ -17,7 +17,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
-import '../domain/account.dart';
+import '../domain/account_base.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({Key? key}) : super(key: key);
@@ -86,8 +86,7 @@ class AccountsScreen extends ConsumerWidget {
                                       ),
                                       child: Text(
                                         'Credit',
-                                        style: kHeader4TextStyle.copyWith(
-                                            color: model.backgroundColor, fontSize: 12),
+                                        style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),
@@ -153,7 +152,7 @@ class AccountsScreen extends ConsumerWidget {
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             onReorder: (oldIndex, newIndex) => accountRepository.reorder(null, oldIndex, newIndex),
-            children: buildAccountCards(context),
+            sections: buildAccountCards(context),
           ),
         ],
       ),

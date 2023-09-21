@@ -14,8 +14,7 @@ class CategoryRepository {
   final Isar isar;
 
   List<Category> getList(CategoryType type) {
-    List<CategoryIsar> list =
-        isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
+    List<CategoryIsar> list = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
     return list.map((categoryIsar) => Category.fromIsar(categoryIsar)!).toList();
   }
 
@@ -71,8 +70,7 @@ class CategoryRepository {
 
   /// The list must be the same list displayed in the widget (with the same sort order)
   Future<void> reorder(CategoryType type, int oldIndex, int newIndex) async {
-    final List<CategoryIsar> list =
-        isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
+    final List<CategoryIsar> list = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
     await isar.writeTxn(
       () async {
         if (newIndex < oldIndex) {
@@ -149,6 +147,10 @@ class CategoryRepository {
   /// The list must be the same list displayed in the widget (sorted by order in isar database)
   Future<void> reorderTagToTop(Category category, int oldIndex) async {
     final list = category.isarObject.tags.filter().sortByOrder().build().findAllSync();
+    if (list.length <= 1) {
+      return;
+    }
+
     await isar.writeTxn(
       () async {
         // Move item up the list

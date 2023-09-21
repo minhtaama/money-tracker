@@ -89,7 +89,7 @@ class CategoriesListScreen extends ConsumerWidget {
             onReorder: (oldIndex, newIndex) {
               categoryRepository.reorder(CategoryType.income, oldIndex, newIndex);
             },
-            children: buildCategoryTiles(context, CategoryType.income),
+            sections: buildCategoryTiles(context, CategoryType.income),
           ),
           CustomSection(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -97,7 +97,7 @@ class CategoriesListScreen extends ConsumerWidget {
             onReorder: (oldIndex, newIndex) {
               categoryRepository.reorder(CategoryType.expense, oldIndex, newIndex);
             },
-            children: buildCategoryTiles(context, CategoryType.expense),
+            sections: buildCategoryTiles(context, CategoryType.expense),
           )
         ],
       ),

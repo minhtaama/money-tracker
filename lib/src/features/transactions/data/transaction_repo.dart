@@ -9,10 +9,10 @@ import 'package:async/async.dart';
 
 import '../../../../persistent/isar_data_store.dart';
 import '../../../utils/enums.dart';
-import '../../accounts/domain/account.dart';
+import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
-import '../domain/transaction.dart';
+import '../domain/transaction_base.dart';
 
 class TransactionRepository {
   TransactionRepository(this.isar);
@@ -20,12 +20,8 @@ class TransactionRepository {
   final Isar isar;
 
   List<Transaction> getAll(DateTime lower, DateTime upper) {
-    List<TransactionIsar> list = isar.transactionIsars
-        .filter()
-        .dateTimeBetween(lower, upper)
-        .sortByDateTime()
-        .build()
-        .findAllSync();
+    List<TransactionIsar> list =
+        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build().findAllSync();
     return list.map((e) => Transaction.fromIsar(e)).toList();
   }
 
@@ -151,17 +147,8 @@ class TransactionRepository {
     required Account account,
     required CategoryTag? tag,
     required String? note,
-    required Installment? installment,
+    required double? installmentAmount,
   }) async {
-    InstallmentIsar? installmentIsar;
-
-    if (installment != null) {
-      installmentIsar = InstallmentIsar()
-        ..amount = installment.amount
-        ..interestRate = installment.interestRate
-        ..rateOnRemaining = installment.rateOnRemaining;
-    }
-
     final txn = TransactionIsar()
       ..transactionType = TransactionType.creditSpending
       ..dateTime = dateTime
@@ -170,7 +157,7 @@ class TransactionRepository {
       ..accountLink.value = account.isarObject
       ..categoryTagLink.value = tag?.isarObject
       ..note = note
-      ..installmentIsar = installmentIsar;
+      ..installmentAmount = installmentAmount;
 
     await isar.writeTxn(() async {
       // Put the `txn` to the TransactionIsar collection

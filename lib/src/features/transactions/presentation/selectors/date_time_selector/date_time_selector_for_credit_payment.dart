@@ -157,7 +157,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                         infoText: 'No payment is needed before this time'.hardcoded,
                                       )
                                     : selectedDay != null
-                                        ? CreditSpendingsInfoList(
+                                        ? CreditSpendingsList(
                                             title: 'Transactions require payment:'.hardcoded,
                                             transactions: widget.creditAccount!.unpaidSpendingTxnsBefore(selectedDay),
                                             onDateTap: (dateTime) => setState(() {

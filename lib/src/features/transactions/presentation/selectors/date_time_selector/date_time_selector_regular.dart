@@ -76,8 +76,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               CustomInkWell(
                 inkColor: AppColors.grey(context),
                 onTap: () async {
-                  //final results = await _showCustomCalendarDatePicker(context: context);
-                  final DateTime? result = await _showCustomCalendarDialog(
+                  await _showCustomCalendarDialog(
                     context: context,
                     builder: (_, __) {
                       return _CustomCalendarDialog(
@@ -87,19 +86,16 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             _outputDateTime = dateTime;
-                            context.pop(_outputDateTime);
                           }
                         },
                       );
                     },
                   );
-
-                  if (result != null) {
-                    setState(() {
-                      _outputDateTime = result.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
-                    });
-                    widget.onChanged(_outputDateTime);
-                  }
+                  setState(() {
+                    _outputDateTime =
+                        _outputDateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                  });
+                  widget.onChanged(_outputDateTime);
                 },
                 child: _DateTimeWidget(
                   dateTime: _outputDateTime,

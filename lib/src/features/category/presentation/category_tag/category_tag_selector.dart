@@ -105,21 +105,23 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                   child: ChosenTag(chosenTag: _chosenTag?.name),
                 ),
                 AnimatedContainer(
-                  duration: _chosenTag != null ? k350msDuration : k150msDuration,
+                  duration: k250msDuration,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   width: _chosenTag != null ? 30 : 0,
-                  child: RoundedIconButton(
-                    iconPath: AppIcons.minus,
-                    iconColor: context.appTheme.isDarkTheme
-                        ? context.appTheme.secondaryNegative
-                        : context.appTheme.primaryNegative,
-                    backgroundColor: Colors.transparent,
-                    iconPadding: 0,
-                    onTap: () {
-                      setState(() {
-                        _chosenTag = null;
-                      });
-                    },
+                  child: FittedBox(
+                    child: RoundedIconButton(
+                      iconPath: AppIcons.minus,
+                      iconColor: context.appTheme.isDarkTheme
+                          ? context.appTheme.secondaryNegative
+                          : context.appTheme.primaryNegative,
+                      backgroundColor: Colors.transparent,
+                      iconPadding: 0,
+                      onTap: () {
+                        setState(() {
+                          _chosenTag = null;
+                        });
+                      },
+                    ),
                   ),
                 )
               ],

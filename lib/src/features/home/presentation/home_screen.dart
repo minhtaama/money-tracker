@@ -13,7 +13,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
-import '../../transactions/domain/transaction.dart';
+import '../../transactions/domain/transaction_base.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

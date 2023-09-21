@@ -27,11 +27,10 @@ const TransactionIsarSchema = CollectionSchema(
       name: r'dateTime',
       type: IsarType.dateTime,
     ),
-    r'installmentIsar': PropertySchema(
+    r'installmentAmount': PropertySchema(
       id: 2,
-      name: r'installmentIsar',
-      type: IsarType.object,
-      target: r'InstallmentIsar',
+      name: r'installmentAmount',
+      type: IsarType.double,
     ),
     r'isInitialTransaction': PropertySchema(
       id: 3,
@@ -115,10 +114,7 @@ const TransactionIsarSchema = CollectionSchema(
       single: true,
     )
   },
-  embeddedSchemas: {
-    r'TransferFeeIsar': TransferFeeIsarSchema,
-    r'InstallmentIsar': InstallmentIsarSchema
-  },
+  embeddedSchemas: {r'TransferFeeIsar': TransferFeeIsarSchema},
   getId: _transactionIsarGetId,
   getLinks: _transactionIsarGetLinks,
   attach: _transactionIsarAttach,
@@ -131,14 +127,6 @@ int _transactionIsarEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.installmentIsar;
-    if (value != null) {
-      bytesCount += 3 +
-          InstallmentIsarSchema.estimateSize(
-              value, allOffsets[InstallmentIsar]!, allOffsets);
-    }
-  }
   {
     final value = object.note;
     if (value != null) {
@@ -164,12 +152,7 @@ void _transactionIsarSerialize(
 ) {
   writer.writeDouble(offsets[0], object.amount);
   writer.writeDateTime(offsets[1], object.dateTime);
-  writer.writeObject<InstallmentIsar>(
-    offsets[2],
-    allOffsets,
-    InstallmentIsarSchema.serialize,
-    object.installmentIsar,
-  );
+  writer.writeDouble(offsets[2], object.installmentAmount);
   writer.writeBool(offsets[3], object.isInitialTransaction);
   writer.writeString(offsets[4], object.note);
   writer.writeByte(offsets[5], object.transactionType.index);
@@ -191,11 +174,7 @@ TransactionIsar _transactionIsarDeserialize(
   object.amount = reader.readDouble(offsets[0]);
   object.dateTime = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.installmentIsar = reader.readObjectOrNull<InstallmentIsar>(
-    offsets[2],
-    InstallmentIsarSchema.deserialize,
-    allOffsets,
-  );
+  object.installmentAmount = reader.readDoubleOrNull(offsets[2]);
   object.isInitialTransaction = reader.readBool(offsets[3]);
   object.note = reader.readStringOrNull(offsets[4]);
   object.transactionType = _TransactionIsartransactionTypeValueEnumMap[
@@ -221,11 +200,7 @@ P _transactionIsarDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readObjectOrNull<InstallmentIsar>(
-        offset,
-        InstallmentIsarSchema.deserialize,
-        allOffsets,
-      )) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
@@ -654,19 +629,85 @@ extension TransactionIsarQueryFilter
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      installmentIsarIsNull() {
+      installmentAmountIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'installmentIsar',
+        property: r'installmentAmount',
       ));
     });
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      installmentIsarIsNotNull() {
+      installmentAmountIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'installmentIsar',
+        property: r'installmentAmount',
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      installmentAmountEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'installmentAmount',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      installmentAmountGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'installmentAmount',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      installmentAmountLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'installmentAmount',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
+      installmentAmountBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'installmentAmount',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -913,13 +954,6 @@ extension TransactionIsarQueryFilter
 extension TransactionIsarQueryObject
     on QueryBuilder<TransactionIsar, TransactionIsar, QFilterCondition> {
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
-      installmentIsar(FilterQuery<InstallmentIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'installmentIsar');
-    });
-  }
-
-  QueryBuilder<TransactionIsar, TransactionIsar, QAfterFilterCondition>
       transferFeeIsar(FilterQuery<TransferFeeIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'transferFeeIsar');
@@ -1093,6 +1127,20 @@ extension TransactionIsarQuerySortBy
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByInstallmentAmount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installmentAmount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      sortByInstallmentAmountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installmentAmount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       sortByIsInitialTransaction() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isInitialTransaction', Sort.asc);
@@ -1176,6 +1224,20 @@ extension TransactionIsarQuerySortThenBy
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByInstallmentAmount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installmentAmount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
+      thenByInstallmentAmountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installmentAmount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QAfterSortBy>
       thenByIsInitialTransaction() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isInitialTransaction', Sort.asc);
@@ -1233,6 +1295,13 @@ extension TransactionIsarQueryWhereDistinct
   }
 
   QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
+      distinctByInstallmentAmount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'installmentAmount');
+    });
+  }
+
+  QueryBuilder<TransactionIsar, TransactionIsar, QDistinct>
       distinctByIsInitialTransaction() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isInitialTransaction');
@@ -1274,10 +1343,10 @@ extension TransactionIsarQueryProperty
     });
   }
 
-  QueryBuilder<TransactionIsar, InstallmentIsar?, QQueryOperations>
-      installmentIsarProperty() {
+  QueryBuilder<TransactionIsar, double?, QQueryOperations>
+      installmentAmountProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'installmentIsar');
+      return query.addPropertyName(r'installmentAmount');
     });
   }
 
@@ -1312,234 +1381,6 @@ extension TransactionIsarQueryProperty
 // **************************************************************************
 // IsarEmbeddedGenerator
 // **************************************************************************
-
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
-
-const InstallmentIsarSchema = Schema(
-  name: r'InstallmentIsar',
-  id: -7546922404696347303,
-  properties: {
-    r'amount': PropertySchema(
-      id: 0,
-      name: r'amount',
-      type: IsarType.double,
-    ),
-    r'interestRate': PropertySchema(
-      id: 1,
-      name: r'interestRate',
-      type: IsarType.double,
-    ),
-    r'rateOnRemaining': PropertySchema(
-      id: 2,
-      name: r'rateOnRemaining',
-      type: IsarType.bool,
-    )
-  },
-  estimateSize: _installmentIsarEstimateSize,
-  serialize: _installmentIsarSerialize,
-  deserialize: _installmentIsarDeserialize,
-  deserializeProp: _installmentIsarDeserializeProp,
-);
-
-int _installmentIsarEstimateSize(
-  InstallmentIsar object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  return bytesCount;
-}
-
-void _installmentIsarSerialize(
-  InstallmentIsar object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeDouble(offsets[0], object.amount);
-  writer.writeDouble(offsets[1], object.interestRate);
-  writer.writeBool(offsets[2], object.rateOnRemaining);
-}
-
-InstallmentIsar _installmentIsarDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  final object = InstallmentIsar();
-  object.amount = reader.readDouble(offsets[0]);
-  object.interestRate = reader.readDouble(offsets[1]);
-  object.rateOnRemaining = reader.readBool(offsets[2]);
-  return object;
-}
-
-P _installmentIsarDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
-    case 0:
-      return (reader.readDouble(offset)) as P;
-    case 1:
-      return (reader.readDouble(offset)) as P;
-    case 2:
-      return (reader.readBool(offset)) as P;
-    default:
-      throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-extension InstallmentIsarQueryFilter
-    on QueryBuilder<InstallmentIsar, InstallmentIsar, QFilterCondition> {
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      amountEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'amount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      amountGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'amount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      amountLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'amount',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      amountBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'amount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      interestRateEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'interestRate',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      interestRateGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'interestRate',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      interestRateLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'interestRate',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      interestRateBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'interestRate',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<InstallmentIsar, InstallmentIsar, QAfterFilterCondition>
-      rateOnRemainingEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'rateOnRemaining',
-        value: value,
-      ));
-    });
-  }
-}
-
-extension InstallmentIsarQueryObject
-    on QueryBuilder<InstallmentIsar, InstallmentIsar, QFilterCondition> {}
 
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types

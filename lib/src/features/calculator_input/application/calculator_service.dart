@@ -45,7 +45,11 @@ class CalService {
     return value.split(',').join();
   }
 
-  static double? formatToDouble(String formattedValue) {
+  static double? formatToDouble(String? formattedValue) {
+    if (formattedValue == null) {
+      return null;
+    }
+
     try {
       double value = double.parse(formattedValue.split(',').join());
       if (value == double.infinity || value == double.negativeInfinity) {

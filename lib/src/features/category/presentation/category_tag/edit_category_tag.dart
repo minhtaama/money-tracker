@@ -41,7 +41,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
       child: CustomSection(
         title: 'Edit Tag',
         isWrapByCard: false,
-        children: [
+        sections: [
           CustomTextFormField(
             autofocus: false,
             focusColor: context.appTheme.primary,

@@ -43,7 +43,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
     return CustomSection(
       title: 'Edit Category',
       isWrapByCard: false,
-      children: [
+      sections: [
         Row(
           children: [
             IconSelectButton(

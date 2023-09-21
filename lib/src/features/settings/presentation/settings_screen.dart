@@ -35,7 +35,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         children: [
-          CustomSection(children: [
+          CustomSection(sections: [
             CustomTile(
               title: 'Set currency',
               secondaryTitle: settingsObject.currency.name,
@@ -62,7 +62,7 @@ class SettingsScreen extends ConsumerWidget {
           ]),
           CustomSection(
             title: 'Theme',
-            children: [
+            sections: [
               ColorPicker(
                 currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
                 colorsList: AppColors.allThemeData,

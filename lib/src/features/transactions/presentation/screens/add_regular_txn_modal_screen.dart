@@ -12,7 +12,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
-import '../../../accounts/domain/account.dart';
+import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
 import '../../../category/domain/category.dart';
 import '../../../category/domain/category_tag.dart';
@@ -93,7 +93,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         title: _title,
         crossAxisAlignment: CrossAxisAlignment.start,
         isWrapByCard: false,
-        children: [
+        sections: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

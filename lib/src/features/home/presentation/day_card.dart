@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../transactions/domain/transaction.dart';
+import '../../transactions/domain/transaction_base.dart';
 
 class DayCard extends ConsumerWidget {
   const DayCard({

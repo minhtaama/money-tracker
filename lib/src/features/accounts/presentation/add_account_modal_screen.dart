@@ -75,7 +75,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       child: CustomSection(
         title: 'Add Account',
         isWrapByCard: false,
-        children: [
+        sections: [
           Row(
             children: [
               const CurrencyIcon(),

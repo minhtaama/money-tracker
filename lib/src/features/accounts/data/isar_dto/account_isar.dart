@@ -37,39 +37,9 @@ class CreditDetailsIsar {
 
   /// As in percent. This interestRate is only count
   /// if payment this month is not finish.
-  double interestRate = 5;
+  double penaltyInterest = 5;
 
   late int statementDay;
 
   late int paymentDueDay;
-}
-
-extension AccountBalance on AccountIsar {
-  double get currentBalance {
-    if (type == AccountType.regular) {
-      double balance = 0;
-      final txnList = txnOfThisAccountBacklinks.toList();
-      for (TransactionIsar txn in txnList) {
-        if (txn.transactionType == TransactionType.income) {
-          balance += txn.amount;
-        } else {
-          balance -= txn.amount;
-        }
-      }
-      final txnToThisAccountList = txnToThisAccountBacklinks.toList();
-      for (TransactionIsar txn in txnToThisAccountList) {
-        balance += txn.amount;
-      }
-      return balance;
-    } else {
-      double balance = creditDetailsIsar!.creditBalance;
-      final txnList = txnOfThisAccountBacklinks.toList();
-      for (TransactionIsar txn in txnList) {
-        if (!txn.isDone) {
-          balance -= txn.amount - txn.paidAmount;
-        }
-      }
-      return balance;
-    }
-  }
 }

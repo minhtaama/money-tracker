@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
-import '../../domain/transaction.dart';
+import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
 class TransactionsList extends StatelessWidget {
@@ -50,7 +50,9 @@ class TransactionsList extends StatelessWidget {
                     TxnAmount(currencyCode: currencyCode, transaction: transaction),
                   ],
                 ),
-                transaction.note != null || transaction is TransactionWithCategory && transaction.categoryTag != null
+                transaction.note != null ||
+                        transaction is TransactionWithCategory &&
+                            (transaction as TransactionWithCategory).categoryTag != null
                     ? TxnNote(transaction: transaction)
                     : Gap.noGap,
               ],
@@ -65,7 +67,7 @@ class TransactionsList extends StatelessWidget {
 class _WithCategoryDetails extends StatelessWidget {
   const _WithCategoryDetails({required this.transaction, required this.currencyCode});
 
-  final TransactionWithCategory transaction;
+  final Transaction transaction;
   final String currencyCode;
 
   @override
@@ -77,9 +79,9 @@ class _WithCategoryDetails extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TxnCategoryIcon(transaction: transaction),
+              TxnCategoryIcon(transaction: transaction as TransactionWithCategory),
               Gap.w4,
-              Expanded(child: TxnCategoryName(transaction: transaction)),
+              Expanded(child: TxnCategoryName(transaction: transaction as TransactionWithCategory)),
             ],
           ),
         ),

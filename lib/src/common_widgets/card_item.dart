@@ -16,6 +16,7 @@ class CardItem extends StatelessWidget {
       this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
       this.elevation = 1,
+      this.clip = true,
       this.alignment})
       : super(key: key);
   final Color? color;
@@ -30,6 +31,7 @@ class CardItem extends StatelessWidget {
   final bool isGradient;
   final Widget? child;
   final Alignment? alignment;
+  final bool clip;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +76,7 @@ class CardItem extends StatelessWidget {
             : null,
       ),
       child: ClipRRect(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
+        clipBehavior: clip ? Clip.antiAliasWithSaveLayer : Clip.none,
         borderRadius: borderRadius?.subtract(BorderRadius.circular(1)) ?? BorderRadius.circular(15),
         child: Material(
           color: Colors.transparent,

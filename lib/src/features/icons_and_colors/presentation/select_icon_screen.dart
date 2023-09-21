@@ -58,7 +58,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
             return CustomSection(
               crossAxisAlignment: CrossAxisAlignment.center,
               title: keyList[keyIndex],
-              children: [
+              sections: [
                 Wrap(
                   spacing: 13,
                   runSpacing: 13,
@@ -66,8 +66,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
                     AppIcons.iconsWithCategories[keyList[keyIndex]]!.length,
                     (iconIndex) {
                       return CircleIcon(
-                        isSelected:
-                            currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
+                        isSelected: currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
                         onTap: (newIconCategory, newIconIndex) {
                           setState(
                             () {
@@ -93,11 +92,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
 
 class CircleIcon extends StatelessWidget {
   const CircleIcon(
-      {Key? key,
-      required this.isSelected,
-      required this.onTap,
-      required this.iconCategory,
-      required this.iconIndex})
+      {Key? key, required this.isSelected, required this.onTap, required this.iconCategory, required this.iconIndex})
       : super(key: key);
   final String iconCategory;
   final int iconIndex;
@@ -137,8 +132,7 @@ class CircleIcon extends StatelessWidget {
             Center(
               child: SvgIcon(
                 AppIcons.fromCategoryAndIndex(iconCategory, iconIndex),
-                color:
-                    isSelected ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                color: isSelected ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
               ),
             )
           ],

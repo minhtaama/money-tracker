@@ -7,8 +7,8 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_info_list.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -18,7 +18,7 @@ import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../../../../common_widgets/svg_icon.dart';
 import '../../../../../theme_and_ui/icons.dart';
-import '../../../domain/transaction.dart';
+import '../../../domain/transaction_base.dart';
 
 part 'date_time_selector_for_credit_payment.dart';
 part 'date_time_selector_regular.dart';

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
@@ -15,11 +16,10 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../common_widgets/inline_text_form_field.dart';
-import '../../../accounts/domain/account.dart';
+import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
 import '../../../category/domain/category_tag.dart';
 import '../../data/transaction_repo.dart';
-import '../../domain/transaction.dart';
 import '../selectors/forms.dart';
 
 class AddCreditSpendingModalScreen extends ConsumerStatefulWidget {
@@ -44,36 +44,22 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
 
   String _calOutputSpendAmount = '0';
 
-  String _interestRate = '0';
-  bool _rateOnRemaining = false;
-
-  String get _installmentPaymentAmount {
+  String? get _installmentPaymentAmount {
     if (CalService.formatToDouble(_calOutputSpendAmount) != null && _installmentPaymentPeriod != null) {
       return CalService.formatNumberInGroup(
           (CalService.formatToDouble(_calOutputSpendAmount)! / _installmentPaymentPeriod!).toString());
     } else {
-      return '0';
+      return null;
     }
   }
 
   void _resetInstallmentDetails() {
     _installmentPaymentPeriod = null;
-    _interestRate = '0';
-    _rateOnRemaining = false;
   }
 
   void _submit() {
-    Installment? installment;
-
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
-      if (_hasInstallmentPayment) {
-        installment = Installment(
-          CalService.formatToDouble(_installmentPaymentAmount)!,
-          CalService.formatToDouble(_interestRate)!,
-          _rateOnRemaining,
-        );
-      }
       ref.read(transactionRepositoryProvider).writeNewCreditSpendingTxn(
             dateTime: _dateTime,
             amount: CalService.formatToDouble(_calOutputSpendAmount)!,
@@ -81,7 +67,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             note: _note,
             category: _category!,
             account: _account!,
-            installment: installment,
+            installmentAmount: CalService.formatToDouble(_installmentPaymentAmount),
           );
       context.pop();
     }
@@ -103,7 +89,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
         title: 'Add Credit Transaction'.hardcoded,
         crossAxisAlignment: CrossAxisAlignment.start,
         isWrapByCard: false,
-        children: [
+        sections: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -117,14 +103,58 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   formattedResultOutput: (value) {
                     setState(() {
                       _calOutputSpendAmount = value;
-                      _installmentPaymentController.text = _installmentPaymentAmount;
+                      _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
                     });
                   },
                 ),
               ),
             ],
           ),
-          Gap.h16,
+          Gap.h4,
+          CustomCheckbox(
+            label: 'Installment payment',
+            labelSuffix: const HelpButton(text: 'Use for payment which has installment payment'),
+            onChanged: (value) {
+              setState(() {
+                if (value) {
+                  _hasInstallmentPayment = true;
+                } else {
+                  _hasInstallmentPayment = false;
+                  _resetInstallmentDetails();
+                }
+                _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
+              });
+            },
+            optionalWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InlineTextFormField(
+                  prefixText: 'Installment Period:',
+                  suffixText: 'month(s)',
+                  validator: (_) => _installmentPaymentPeriod == null ? 'error' : null,
+                  onChanged: (value) {
+                    _installmentPaymentPeriod = int.tryParse(value);
+                    _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
+                  },
+                ),
+                Gap.h8,
+                InlineTextFormField(
+                  prefixText: 'Payment amount:',
+                  suffixText: settingsObject.currency.code,
+                  widget: CalculatorInput(
+                      controller: _installmentPaymentController,
+                      fontSize: 18,
+                      isDense: true,
+                      textAlign: TextAlign.end,
+                      validator: (_) => _installmentPaymentValidator(),
+                      formattedResultOutput: (value) => _installmentPaymentController.text = value,
+                      focusColor: context.appTheme.secondary,
+                      hintText: ''),
+                ),
+              ],
+            ),
+          ),
+          Gap.h8,
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -162,64 +192,6 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                 ),
               ),
             ],
-          ),
-          Gap.h4,
-          CustomCheckbox(
-            label: 'Installment payment',
-            onChanged: (value) {
-              setState(() {
-                if (value) {
-                  _hasInstallmentPayment = true;
-                } else {
-                  _hasInstallmentPayment = false;
-                  _resetInstallmentDetails();
-                }
-                _installmentPaymentController.text = _installmentPaymentAmount;
-              });
-            },
-            optionalWidget: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InlineTextFormField(
-                  prefixText: 'Installment Period:',
-                  suffixText: 'month(s)',
-                  validator: (_) => _installmentPaymentPeriod == null ? 'error' : null,
-                  onChanged: (value) {
-                    _installmentPaymentPeriod = int.tryParse(value);
-                    _installmentPaymentController.text = _installmentPaymentAmount;
-                  },
-                ),
-                Gap.h8,
-                InlineTextFormField(
-                  prefixText: 'Payment amount:',
-                  suffixText: settingsObject.currency.code,
-                  widget: CalculatorInput(
-                      controller: _installmentPaymentController,
-                      fontSize: 18,
-                      isDense: true,
-                      textAlign: TextAlign.end,
-                      validator: (_) => _installmentPaymentValidator(),
-                      formattedResultOutput: (value) => _installmentPaymentController.text = value,
-                      focusColor: context.appTheme.secondary,
-                      hintText: ''),
-                ),
-                Gap.h8,
-                InlineTextFormField(
-                  prefixText: 'Interest rate:',
-                  suffixText: '%',
-                  initialValue: '0',
-                  width: 40,
-                  validator: (_) => _interestRateValidator(),
-                  onChanged: (value) => _interestRate = value,
-                ),
-                Gap.h8,
-                CustomCheckbox(
-                  label: 'Rate on remaining payment',
-                  labelStyle: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
-                  onChanged: (value) => _rateOnRemaining = value,
-                ),
-              ],
-            ),
           ),
           Gap.h16,
           const Padding(
@@ -276,13 +248,6 @@ extension _Validators on _AddCreditTransactionModalScreenState {
     }
     if (CalService.formatToDouble(_installmentPaymentAmount)! > CalService.formatToDouble(_calOutputSpendAmount)!) {
       return 'Too high';
-    }
-    return null;
-  }
-
-  String? _interestRateValidator() {
-    if (CalService.formatToDouble(_interestRate) == null) {
-      return 'Invalid Amount';
     }
     return null;
   }

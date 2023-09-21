@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
@@ -13,11 +11,11 @@ import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
 import '../../../settings/data/settings_controller.dart';
-import '../../domain/transaction.dart';
+import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
-class CreditSpendingsInfoList extends ConsumerWidget {
-  const CreditSpendingsInfoList({
+class CreditSpendingsList extends ConsumerWidget {
+  const CreditSpendingsList({
     Key? key,
     required this.title,
     this.isSimple = true,
@@ -103,11 +101,13 @@ class _List extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: transactions.isEmpty
                 ? [
+                    Gap.h8,
                     EmptyInfo(
                       infoText: 'Please select a valid date'.hardcoded,
                       iconPath: AppIcons.today,
                       iconSize: 30,
-                    )
+                    ),
+                    Gap.h8,
                   ]
                 : List.generate(transactions.length, (index) {
                     final transaction = transactions[index];
@@ -121,36 +121,24 @@ class _List extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
-                                child: CustomInkWell(
-                                  inkColor: AppColors.grey(context),
-                                  borderRadius: BorderRadius.circular(1000),
-                                  onTap: onDateTap != null
-                                      ? () => onDateTap?.call(transaction.dateTime.onlyYearMonthDay)
-                                      : null,
-                                  child: Text(
-                                    transaction.dateTime.getFormattedDate(type: DateTimeType.ddmmyyyy),
-                                    style: kHeader2TextStyle.copyWith(
-                                        color: context.appTheme.backgroundNegative, fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                              Gap.w8,
                               Row(
                                 children: [
                                   Expanded(
-                                    child: _Details(transaction: transaction, currencyCode: currencyCode),
+                                    child: _Details(
+                                      transaction: transaction,
+                                      currencyCode: currencyCode,
+                                      onDateTap: onDateTap,
+                                    ),
                                   ),
                                   Gap.w16,
-                                  TxnAmount(
-                                    currencyCode: currencyCode,
-                                    transaction: transaction,
-                                    fontSize: 13,
-                                  ),
+                                  _AmountDetails(transaction: transaction, currencyCode: currencyCode),
                                 ],
+                              ),
+                              Gap.h4,
+                              TxnSpendingPaidBar(
+                                percentage: 0.6,
+                                height: 10,
                               ),
                             ],
                           ),
@@ -164,16 +152,34 @@ class _List extends StatelessWidget {
 }
 
 class _Details extends StatelessWidget {
-  const _Details({required this.transaction, required this.currencyCode});
+  const _Details({required this.transaction, required this.currencyCode, this.onDateTap});
 
   final CreditSpending transaction;
   final String currencyCode;
+  final void Function(DateTime)? onDateTap;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        IntrinsicWidth(
+          child: Row(
+            children: [
+              TxnDateTime(
+                transaction: transaction,
+                onDateTap: onDateTap,
+              ),
+              Gap.w8,
+              Expanded(
+                  child: TxnAccountName(
+                transaction: transaction,
+                fontSize: 11,
+              )),
+              Gap.w4,
+            ],
+          ),
+        ),
         IntrinsicWidth(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -188,21 +194,27 @@ class _Details extends StatelessWidget {
             ],
           ),
         ),
-        IntrinsicWidth(
-          child: Row(
-            children: [
-              TxnAccountIcon(transaction: transaction),
-              Gap.w4,
-              Expanded(
-                  child: TxnAccountName(
-                transaction: transaction,
-                fontSize: 11,
-              )),
-              Gap.w4,
-              const TxnCreditIcon(),
-            ],
-          ),
+      ],
+    );
+  }
+}
+
+class _AmountDetails extends StatelessWidget {
+  const _AmountDetails({required this.transaction, required this.currencyCode});
+
+  final CreditSpending transaction;
+  final String currencyCode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TxnAmount(
+          currencyCode: currencyCode,
+          transaction: transaction,
+          fontSize: 13,
         ),
+        transaction.hasInstallment ? const TxnInstallmentIcon() : Gap.noGap,
       ],
     );
   }
