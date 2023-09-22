@@ -25,16 +25,6 @@ class TransactionRepository {
     return list.map((e) => Transaction.fromIsar(e)).toList();
   }
 
-  // List<Transaction> getFromAccount(Account account) {
-  //   List<TransactionIsar> list = isar.transactionIsars
-  //       .filter()
-  //       .dateTimeBetween(lower, upper)
-  //       .sortByDateTime()
-  //       .build()
-  //       .findAllSync();
-  //   return list.map((e) => Transaction.fromIsar(e)).toList();
-  // }
-
   // Used to watch transaction list changes
   Stream<void> _watchListChanges(DateTime lower, DateTime upper) {
     Query<TransactionIsar> query = isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();

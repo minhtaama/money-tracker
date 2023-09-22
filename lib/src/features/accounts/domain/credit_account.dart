@@ -4,7 +4,7 @@ part of 'account_base.dart';
 class CreditAccount extends Account {
   final double creditBalance;
 
-  /// As in percent.
+  /// (APR) As in percent.
   final double penaltyInterest;
 
   final int statementDay;

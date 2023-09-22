@@ -25,6 +25,16 @@ class CreditSpending extends Transaction implements TransactionWithCategory {
   });
 }
 
+final class PaymentPeriod {
+  const PaymentPeriod({required this.statementDay, required this.paymentDueDay, required this.payments});
+
+  final DateTime statementDay;
+
+  final DateTime paymentDueDay;
+
+  final List<CreditPayment> payments;
+}
+
 extension SpendingDetails on CreditSpending {
   List<CreditPayment> get paymentTransactions {
     final payments = <CreditPayment>[];
@@ -34,7 +44,11 @@ extension SpendingDetails on CreditSpending {
     return payments;
   }
 
-  List<DateTime> statementDaysSinceSpending({required DateTime toDate}) {
+  // List<PaymentPeriod> get paymentPeriods {
+  //   final list = <PaymentPeriod>[];
+  // }
+
+  List<DateTime> statementDaysUntil({required DateTime toDate}) {
     if (account == null) {
       throw ErrorDescription('Credit Account must be specified');
     }
@@ -48,6 +62,8 @@ extension SpendingDetails on CreditSpending {
     }
     return list;
   }
+
+  // bool interestToPayAt(DateTime dateTime) {}
 
   bool get isDone {
     return paidAmount >= amount;
