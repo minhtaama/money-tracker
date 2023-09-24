@@ -33,7 +33,6 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   final _formKey = GlobalKey<FormState>();
   final _installmentPaymentController = TextEditingController();
 
-  bool _hasInstallmentPayment = false;
   int? _installmentPaymentPeriod;
 
   late DateTime _dateTime = DateTime.now();
@@ -125,10 +124,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                         .hardcoded),
             onChanged: (value) {
               setState(() {
-                if (value) {
-                  _hasInstallmentPayment = true;
-                } else {
-                  _hasInstallmentPayment = false;
+                if (!value) {
                   _resetInstallmentDetails();
                 }
                 _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
