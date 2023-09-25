@@ -1270,20 +1270,20 @@ const CreditDetailsIsarSchema = Schema(
   name: r'CreditDetailsIsar',
   id: 7583549756525632327,
   properties: {
-    r'creditBalance': PropertySchema(
+    r'apr': PropertySchema(
       id: 0,
+      name: r'apr',
+      type: IsarType.double,
+    ),
+    r'creditBalance': PropertySchema(
+      id: 1,
       name: r'creditBalance',
       type: IsarType.double,
     ),
     r'paymentDueDay': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'paymentDueDay',
       type: IsarType.long,
-    ),
-    r'penaltyInterest': PropertySchema(
-      id: 2,
-      name: r'penaltyInterest',
-      type: IsarType.double,
     ),
     r'statementDay': PropertySchema(
       id: 3,
@@ -1312,9 +1312,9 @@ void _creditDetailsIsarSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDouble(offsets[0], object.creditBalance);
-  writer.writeLong(offsets[1], object.paymentDueDay);
-  writer.writeDouble(offsets[2], object.penaltyInterest);
+  writer.writeDouble(offsets[0], object.apr);
+  writer.writeDouble(offsets[1], object.creditBalance);
+  writer.writeLong(offsets[2], object.paymentDueDay);
   writer.writeLong(offsets[3], object.statementDay);
 }
 
@@ -1325,9 +1325,9 @@ CreditDetailsIsar _creditDetailsIsarDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = CreditDetailsIsar();
-  object.creditBalance = reader.readDouble(offsets[0]);
-  object.paymentDueDay = reader.readLong(offsets[1]);
-  object.penaltyInterest = reader.readDouble(offsets[2]);
+  object.apr = reader.readDouble(offsets[0]);
+  object.creditBalance = reader.readDouble(offsets[1]);
+  object.paymentDueDay = reader.readLong(offsets[2]);
   object.statementDay = reader.readLong(offsets[3]);
   return object;
 }
@@ -1342,9 +1342,9 @@ P _creditDetailsIsarDeserializeProp<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
-    case 2:
       return (reader.readDouble(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readLong(offset)) as P;
     default:
@@ -1354,6 +1354,72 @@ P _creditDetailsIsarDeserializeProp<P>(
 
 extension CreditDetailsIsarQueryFilter
     on QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QFilterCondition> {
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
+      aprEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'apr',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
+      aprGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'apr',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
+      aprLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'apr',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
+      aprBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'apr',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
   QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
       creditBalanceEqualTo(
     double value, {
@@ -1472,72 +1538,6 @@ extension CreditDetailsIsarQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
-      penaltyInterestEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'penaltyInterest',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
-      penaltyInterestGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'penaltyInterest',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
-      penaltyInterestLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'penaltyInterest',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<CreditDetailsIsar, CreditDetailsIsar, QAfterFilterCondition>
-      penaltyInterestBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'penaltyInterest',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
       ));
     });
   }

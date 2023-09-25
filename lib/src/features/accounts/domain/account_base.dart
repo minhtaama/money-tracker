@@ -32,7 +32,7 @@ sealed class Account extends IsarModelWithIcon<AccountIsar> {
           backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
           creditBalance: accountIsar.creditDetailsIsar!.creditBalance,
-          penaltyInterest: accountIsar.creditDetailsIsar!.penaltyInterest,
+          penaltyInterest: accountIsar.creditDetailsIsar!.apr,
           statementDay: accountIsar.creditDetailsIsar!.statementDay,
           paymentDueDay: accountIsar.creditDetailsIsar!.paymentDueDay)
     };

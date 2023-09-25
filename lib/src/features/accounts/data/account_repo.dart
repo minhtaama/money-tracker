@@ -59,7 +59,7 @@ class AccountRepository {
 
     if (type == AccountType.credit) {
       creditAccountDetailsIsar = CreditDetailsIsar()
-        ..penaltyInterest = interestRate!
+        ..apr = interestRate!
         ..statementDay = statementDay!
         ..paymentDueDay = paymentDueDay!
         ..creditBalance = balance;

@@ -89,7 +89,7 @@ sealed class Transaction extends IsarModel<TransactionIsar> {
 }
 
 @immutable
-sealed class TransactionWithCategory {
+interface class TransactionWithCategory {
   final Category? category;
   final CategoryTag? categoryTag;
 

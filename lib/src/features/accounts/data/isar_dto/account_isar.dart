@@ -37,7 +37,7 @@ class CreditDetailsIsar {
 
   /// As in percent. This interestRate is only count
   /// if payment this month is not finish.
-  double penaltyInterest = 5;
+  double apr = 5;
 
   late int statementDay;
 
