@@ -5,9 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -112,8 +110,6 @@ class _Amount extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsObject = ref.read(settingsControllerProvider);
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -144,7 +140,7 @@ class _Amount extends ConsumerWidget {
               ),
               Gap.w8,
               Text(
-                settingsObject.currency.code,
+                context.currentSettings.currency.code,
                 style: kHeader4TextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
               ),
             ],
@@ -331,7 +327,7 @@ class _Note extends StatelessWidget {
   }
 }
 
-class _PaymentDetail extends ConsumerWidget {
+class _PaymentDetail extends StatelessWidget {
   const _PaymentDetail({required this.transaction});
 
   final CreditSpending transaction;
@@ -341,9 +337,7 @@ class _PaymentDetail extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settingsObject = ref.read(settingsControllerProvider);
-
+  Widget build(BuildContext context) {
     return CardItem(
       color: Colors.transparent,
       elevation: 0,
@@ -385,7 +379,7 @@ class _PaymentDetail extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: 3.0),
             child: Text(
-              '${CalService.formatCurrency(transaction.paidAmount)} ${settingsObject.currency.code}',
+              '${CalService.formatCurrency(transaction.paidAmount)} ${context.currentSettings.currency.code}',
               style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
             ),
           ),

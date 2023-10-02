@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
-import '../../../settings/data/settings_controller.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
 class ExtendedHomeTab extends StatelessWidget {
@@ -174,7 +173,6 @@ class TotalMoney extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsRepository = ref.watch(settingsControllerProvider);
     final accountRepository = ref.watch(accountRepositoryProvider);
 
     double totalBalance = accountRepository.getTotalBalance();
@@ -187,7 +185,7 @@ class TotalMoney extends ConsumerWidget {
       textBaseline: TextBaseline.alphabetic,
       children: [
         Text(
-          settingsRepository.currency.code,
+          context.currentSettings.currency.code,
           style: kHeader4TextStyle.copyWith(
             fontWeight: FontWeight.w100,
             color:

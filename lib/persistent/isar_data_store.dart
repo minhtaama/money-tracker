@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
+//import 'package:money_tracker_app/src/features/settings/domain/settings_isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../src/features/accounts/data/isar_dto/account_isar.dart';
@@ -21,17 +21,17 @@ class IsarDataStore {
       [
         CategoryIsarSchema,
         CategoryTagIsarSchema,
-        SettingsIsarSchema,
+        //SettingsIsarSchema,
         AccountIsarSchema,
         TransactionIsarSchema,
       ],
       directory: _dir.path,
     );
 
-    // Init settingsObject
-    if (await _isar.settingsIsars.get(0) == null) {
-      _isar.writeTxn(() async => await _isar.settingsIsars.put(SettingsIsar()));
-    }
+    // // Init settingsObject
+    // if (await _isar.settingsIsars.get(0) == null) {
+    //   _isar.writeTxn(() async => await _isar.settingsIsars.put(SettingsIsar()));
+    // }
   }
 }
 

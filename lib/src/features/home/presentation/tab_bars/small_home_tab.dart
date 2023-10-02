@@ -7,7 +7,6 @@ import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/constants.dart';
 import '../../../accounts/data/account_repo.dart';
 import '../../../calculator_input/application/calculator_service.dart';
-import '../../../settings/data/settings_controller.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
 class SmallHomeTab extends ConsumerWidget {
@@ -24,7 +23,6 @@ class SmallHomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsRepository = ref.read(settingsControllerProvider);
     final accountRepository = ref.watch(accountRepositoryProvider);
 
     double totalBalance = accountRepository.getTotalBalance();
@@ -34,7 +32,7 @@ class SmallHomeTab extends ConsumerWidget {
     });
 
     return PageHeading(
-      leadingTitle: settingsRepository.currency.code,
+      leadingTitle: context.currentSettings.currency.code,
       title: CalService.formatCurrency(
         totalBalance,
         hideNumber: hideNumber,

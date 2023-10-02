@@ -10,7 +10,6 @@ import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
-import '../../../settings/data/settings_controller.dart';
 import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
@@ -30,8 +29,6 @@ class CreditSpendingsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyCode = ref.read(settingsControllerProvider).currency.code;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,14 +67,14 @@ class CreditSpendingsList extends ConsumerWidget {
                   duration: k150msDuration,
                   child: _List(
                     transactions: transactions,
-                    currencyCode: currencyCode,
+                    currencyCode: context.currentSettings.currency.code,
                     onDateTap: onDateTap,
                   ),
                 ),
               )
             : _List(
                 transactions: transactions,
-                currencyCode: currencyCode,
+                currencyCode: context.currentSettings.currency.code,
                 onDateTap: onDateTap,
               ),
       ],

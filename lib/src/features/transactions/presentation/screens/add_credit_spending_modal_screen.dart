@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
@@ -80,8 +79,6 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
 
   @override
   Widget build(BuildContext context) {
-    final settingsObject = ref.watch(settingsControllerProvider);
-
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -145,7 +142,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                 Gap.h8,
                 InlineTextFormField(
                   prefixText: 'Payment amount:',
-                  suffixText: settingsObject.currency.code,
+                  suffixText: context.currentSettings.currency.code,
                   widget: CalculatorInput(
                       controller: _installmentPaymentController,
                       fontSize: 18,

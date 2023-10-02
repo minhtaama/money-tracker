@@ -1,5 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_tracker_app/persistent/realm_dto.dart';
+
+import '../utils/enums.dart';
+
+/// Class for reading AppThemeData via InheritedWidget
+class AppSettings extends InheritedWidget {
+  const AppSettings({
+    Key? key,
+    required this.data,
+    required Widget child,
+  }) : super(key: key, child: child);
+
+  final SettingsData data;
+
+  static SettingsData of(BuildContext context) {
+    final settings = context.dependOnInheritedWidgetOfExactType<AppSettings>();
+    if (settings != null) {
+      return settings.data;
+    } else {
+      throw StateError('Could not find ancestor widget of type `AppTheme`');
+    }
+  }
+
+  @override
+  bool updateShouldNotify(AppSettings oldWidget) => data != oldWidget.data;
+}
+
+class SettingsData {
+  final int themeIndex;
+
+  final ThemeType themeType;
+
+  final Currency currency;
+
+  factory SettingsData.fromRealmDatabase(SettingsRealm settingsRealm) {
+    ThemeType themeType = switch (settingsRealm.themeType) {
+      0 => ThemeType.light,
+      1 => ThemeType.dark,
+      _ => ThemeType.system,
+    };
+
+    Currency currency = Currency.values[settingsRealm.currencyIndex];
+
+    return SettingsData._(themeIndex: settingsRealm.themeIndex, themeType: themeType, currency: currency);
+  }
+
+  SettingsData copyWith({
+    int? themeIndex,
+    ThemeType? themeType,
+    Currency? currency,
+  }) {
+    return SettingsData._(
+      themeIndex: themeIndex ?? this.themeIndex,
+      themeType: themeType ?? this.themeType,
+      currency: currency ?? this.currency,
+    );
+  }
+
+  SettingsRealm toRealm() {
+    int themeTypeRealmData = switch (themeType) {
+      ThemeType.light => 0,
+      ThemeType.dark => 1,
+      ThemeType.system => 2,
+    };
+
+    int currencyRealmData = Currency.values.indexOf(currency);
+
+    return SettingsRealm(0, themeIndex: themeIndex, themeType: themeTypeRealmData, currencyIndex: currencyRealmData);
+  }
+
+  SettingsData._({required this.themeIndex, required this.themeType, required this.currency});
+}
 
 class AppThemeData {
   final bool isDuoColor;
@@ -126,27 +198,4 @@ class AppThemeData {
     required this.systemIconBrightnessOnExtendedTabBar,
     required this.systemIconBrightnessOnSmallTabBar,
   });
-}
-
-/// Class for reading AppThemeData via InheritedWidget
-class AppTheme extends InheritedWidget {
-  const AppTheme({
-    Key? key,
-    required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
-
-  final AppThemeData data;
-
-  static AppThemeData of(BuildContext context) {
-    final theme = context.dependOnInheritedWidgetOfExactType<AppTheme>();
-    if (theme != null) {
-      return theme.data;
-    } else {
-      throw StateError('Could not find ancestor widget of type `AppTheme`');
-    }
-  }
-
-  @override
-  bool updateShouldNotify(AppTheme oldWidget) => data != oldWidget.data;
 }

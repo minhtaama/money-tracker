@@ -10,7 +10,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../common_widgets/page_heading.dart';
 import '../../../utils/constants.dart';
-import '../data/settings_controller.dart';
+import '../data/settings_repo.dart';
 
 class SelectCurrencyScreen extends ConsumerWidget {
   const SelectCurrencyScreen({Key? key}) : super(key: key);
