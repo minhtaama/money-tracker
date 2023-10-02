@@ -28,22 +28,3 @@ abstract class IsarModelWithIcon<T extends IsarCollectionObject> extends IsarMod
 abstract class IsarCollectionObject {
   Id id = Isar.autoIncrement;
 }
-
-/////////// FOR V2 HERE /////////////////////////
-
-abstract interface class IsarCollectionColorAndIcon {
-  late String name;
-  late int colorIndex;
-  late String iconCategory;
-  late int iconIndex;
-}
-
-abstract interface class IsarCollectionWithCategory {}
-
-abstract interface class IsarCollectionDateTime {
-  late DateTime dateTime;
-}
-
-abstract interface class IsarCollectionOrderable {
-  int? order;
-}

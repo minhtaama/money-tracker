@@ -19,7 +19,7 @@ abstract interface class _IColorAndIcon {
 @RealmModel()
 class _AccountRealm implements _IColorAndIcon, _IOrderable {
   @PrimaryKey()
-  late int id;
+  late ObjectId id;
 
   /// Currently, Realm do not support Dart Enum
   ///
@@ -71,7 +71,7 @@ class _CreditDetailsRealm {
 @RealmModel()
 class _CategoryRealm implements _IOrderable, _IColorAndIcon {
   @PrimaryKey()
-  late int id;
+  late ObjectId id;
 
   /// Currently, Realm do not support Dart Enum
   ///
@@ -92,13 +92,20 @@ class _CategoryRealm implements _IOrderable, _IColorAndIcon {
   @override
   int? order;
 
-  late List<_CategoryTagRealm> tags;
+  @Backlink(#category)
+  late Iterable<_CategoryTagRealm> tags;
 }
 
-@RealmModel(ObjectType.embeddedObject)
-class _CategoryTagRealm {
+@RealmModel()
+class _CategoryTagRealm implements _IOrderable {
+  @PrimaryKey()
+  late ObjectId id;
+
   late String name;
 
+  _CategoryRealm? category;
+
+  @override
   int? order;
 }
 
@@ -107,7 +114,7 @@ class _CategoryTagRealm {
 @RealmModel()
 class _TransactionRealm {
   @PrimaryKey()
-  late int id;
+  late ObjectId id;
 
   /// Currently, Realm do not support Dart Enum
   ///

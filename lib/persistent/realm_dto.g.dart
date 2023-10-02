@@ -9,7 +9,7 @@ part of 'realm_dto.dart';
 class AccountRealm extends _AccountRealm
     with RealmEntity, RealmObjectBase, RealmObject {
   AccountRealm(
-    int id,
+    ObjectId id,
     int type,
     String name,
     int colorIndex,
@@ -31,9 +31,9 @@ class AccountRealm extends _AccountRealm
   AccountRealm._();
 
   @override
-  int get id => RealmObjectBase.get<int>(this, 'id') as int;
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
   @override
-  set id(int value) => RealmObjectBase.set(this, 'id', value);
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
 
   @override
   int get type => RealmObjectBase.get<int>(this, 'type') as int;
@@ -115,7 +115,7 @@ class AccountRealm extends _AccountRealm
     RealmObjectBase.registerFactory(AccountRealm._);
     return const SchemaObject(
         ObjectType.realmObject, AccountRealm, 'AccountRealm', [
-      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('colorIndex', RealmPropertyType.int),
@@ -210,14 +210,13 @@ class CreditDetailsRealm extends _CreditDetailsRealm
 class CategoryRealm extends _CategoryRealm
     with RealmEntity, RealmObjectBase, RealmObject {
   CategoryRealm(
-    int id,
+    ObjectId id,
     int type,
     String name,
     int colorIndex,
     String iconCategory,
     int iconIndex, {
     int? order,
-    Iterable<CategoryTagRealm> tags = const [],
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'type', type);
@@ -226,16 +225,14 @@ class CategoryRealm extends _CategoryRealm
     RealmObjectBase.set(this, 'iconCategory', iconCategory);
     RealmObjectBase.set(this, 'iconIndex', iconIndex);
     RealmObjectBase.set(this, 'order', order);
-    RealmObjectBase.set<RealmList<CategoryTagRealm>>(
-        this, 'tags', RealmList<CategoryTagRealm>(tags));
   }
 
   CategoryRealm._();
 
   @override
-  int get id => RealmObjectBase.get<int>(this, 'id') as int;
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
   @override
-  set id(int value) => RealmObjectBase.set(this, 'id', value);
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
 
   @override
   int get type => RealmObjectBase.get<int>(this, 'type') as int;
@@ -270,11 +267,16 @@ class CategoryRealm extends _CategoryRealm
   set order(int? value) => RealmObjectBase.set(this, 'order', value);
 
   @override
-  RealmList<CategoryTagRealm> get tags =>
-      RealmObjectBase.get<CategoryTagRealm>(this, 'tags')
-          as RealmList<CategoryTagRealm>;
+  RealmResults<CategoryTagRealm> get tags {
+    if (!isManaged) {
+      throw RealmError('Using backlinks is only possible for managed objects.');
+    }
+    return RealmObjectBase.get<CategoryTagRealm>(this, 'tags')
+        as RealmResults<CategoryTagRealm>;
+  }
+
   @override
-  set tags(covariant RealmList<CategoryTagRealm> value) =>
+  set tags(covariant RealmResults<CategoryTagRealm> value) =>
       throw RealmUnsupportedSetError();
 
   @override
@@ -290,36 +292,53 @@ class CategoryRealm extends _CategoryRealm
     RealmObjectBase.registerFactory(CategoryRealm._);
     return const SchemaObject(
         ObjectType.realmObject, CategoryRealm, 'CategoryRealm', [
-      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('colorIndex', RealmPropertyType.int),
       SchemaProperty('iconCategory', RealmPropertyType.string),
       SchemaProperty('iconIndex', RealmPropertyType.int),
       SchemaProperty('order', RealmPropertyType.int, optional: true),
-      SchemaProperty('tags', RealmPropertyType.object,
-          linkTarget: 'CategoryTagRealm',
-          collectionType: RealmCollectionType.list),
+      SchemaProperty('tags', RealmPropertyType.linkingObjects,
+          linkOriginProperty: 'category',
+          collectionType: RealmCollectionType.list,
+          linkTarget: 'CategoryTagRealm'),
     ]);
   }
 }
 
 class CategoryTagRealm extends _CategoryTagRealm
-    with RealmEntity, RealmObjectBase, EmbeddedObject {
+    with RealmEntity, RealmObjectBase, RealmObject {
   CategoryTagRealm(
+    ObjectId id,
     String name, {
+    CategoryRealm? category,
     int? order,
   }) {
+    RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'category', category);
     RealmObjectBase.set(this, 'order', order);
   }
 
   CategoryTagRealm._();
 
   @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  CategoryRealm? get category =>
+      RealmObjectBase.get<CategoryRealm>(this, 'category') as CategoryRealm?;
+  @override
+  set category(covariant CategoryRealm? value) =>
+      RealmObjectBase.set(this, 'category', value);
 
   @override
   int? get order => RealmObjectBase.get<int>(this, 'order') as int?;
@@ -339,8 +358,11 @@ class CategoryTagRealm extends _CategoryTagRealm
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(CategoryTagRealm._);
     return const SchemaObject(
-        ObjectType.embeddedObject, CategoryTagRealm, 'CategoryTagRealm', [
+        ObjectType.realmObject, CategoryTagRealm, 'CategoryTagRealm', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('category', RealmPropertyType.object,
+          optional: true, linkTarget: 'CategoryRealm'),
       SchemaProperty('order', RealmPropertyType.int, optional: true),
     ]);
   }
@@ -351,7 +373,7 @@ class TransactionRealm extends _TransactionRealm
   static var _defaultsSet = false;
 
   TransactionRealm(
-    int id,
+    ObjectId id,
     int type,
     DateTime dateTime,
     double amount, {
@@ -388,9 +410,9 @@ class TransactionRealm extends _TransactionRealm
   TransactionRealm._();
 
   @override
-  int get id => RealmObjectBase.get<int>(this, 'id') as int;
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
   @override
-  set id(int value) => RealmObjectBase.set(this, 'id', value);
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
 
   @override
   int get type => RealmObjectBase.get<int>(this, 'type') as int;
@@ -499,7 +521,7 @@ class TransactionRealm extends _TransactionRealm
     RealmObjectBase.registerFactory(TransactionRealm._);
     return const SchemaObject(
         ObjectType.realmObject, TransactionRealm, 'TransactionRealm', [
-      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
       SchemaProperty('dateTime', RealmPropertyType.timestamp),
       SchemaProperty('amount', RealmPropertyType.double),
