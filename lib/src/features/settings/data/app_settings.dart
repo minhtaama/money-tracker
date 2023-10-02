@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 
-import '../utils/enums.dart';
+import '../../../utils/enums.dart';
 
-/// Class for reading AppThemeData via InheritedWidget
+/// Class for reading SettingsData via InheritedWidget
 class AppSettings extends InheritedWidget {
   const AppSettings({
     Key? key,
@@ -27,6 +27,7 @@ class AppSettings extends InheritedWidget {
   bool updateShouldNotify(AppSettings oldWidget) => data != oldWidget.data;
 }
 
+// Access this class through `context.currentSettings`
 class SettingsData {
   final int themeIndex;
 
@@ -34,7 +35,7 @@ class SettingsData {
 
   final Currency currency;
 
-  factory SettingsData.fromRealmDatabase(SettingsRealm settingsRealm) {
+  factory SettingsData.fromRealm(SettingsRealm settingsRealm) {
     ThemeType themeType = switch (settingsRealm.themeType) {
       0 => ThemeType.light,
       1 => ThemeType.dark,
@@ -44,18 +45,6 @@ class SettingsData {
     Currency currency = Currency.values[settingsRealm.currencyIndex];
 
     return SettingsData._(themeIndex: settingsRealm.themeIndex, themeType: themeType, currency: currency);
-  }
-
-  SettingsData copyWith({
-    int? themeIndex,
-    ThemeType? themeType,
-    Currency? currency,
-  }) {
-    return SettingsData._(
-      themeIndex: themeIndex ?? this.themeIndex,
-      themeType: themeType ?? this.themeType,
-      currency: currency ?? this.currency,
-    );
   }
 
   SettingsRealm toRealm() {
@@ -68,6 +57,18 @@ class SettingsData {
     int currencyRealmData = Currency.values.indexOf(currency);
 
     return SettingsRealm(0, themeIndex: themeIndex, themeType: themeTypeRealmData, currencyIndex: currencyRealmData);
+  }
+
+  SettingsData copyWith({
+    int? themeIndex,
+    ThemeType? themeType,
+    Currency? currency,
+  }) {
+    return SettingsData._(
+      themeIndex: themeIndex ?? this.themeIndex,
+      themeType: themeType ?? this.themeType,
+      currency: currency ?? this.currency,
+    );
   }
 
   SettingsData._({required this.themeIndex, required this.themeType, required this.currency});

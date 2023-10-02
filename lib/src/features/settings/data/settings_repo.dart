@@ -2,11 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
-import '../../../theme_and_ui/app_theme.dart';
+import 'app_settings.dart';
 import '../../../utils/enums.dart';
 
 class SettingsController extends StateNotifier<SettingsData> {
-  SettingsController(this.realm) : super(SettingsData.fromRealmDatabase(realm.find<SettingsRealm>(0)!));
+  SettingsController(this.realm) : super(SettingsData.fromRealm(realm.find<SettingsRealm>(0)!));
 
   final Realm realm;
 
@@ -21,7 +21,7 @@ class SettingsController extends StateNotifier<SettingsData> {
 }
 
 /// This provider should be call only at the root widget to provide data for `AppSettings`
-/// and to use `set()` function.
+/// and to use `set()` function in setting features.
 ///
 /// Use **`context.currentSettings`** rather than this provider in child widgets to get
 /// current settings state.
