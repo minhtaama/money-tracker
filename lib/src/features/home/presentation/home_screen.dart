@@ -8,8 +8,11 @@ import 'package:money_tracker_app/src/features/home/summary_card.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/empty_info.dart';
+import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
 import '../../transactions/domain/transaction_base.dart';
@@ -75,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  List<DayCard> _buildTransactionWidgetList(
+  List<Widget> _buildTransactionWidgetList(
     List<BaseTransaction> transactionList,
     DateTime dayBeginOfMonth,
     DateTime dayEndOfMonth,
@@ -95,6 +98,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         );
       }
     }
+
+    if (dayCards.isEmpty) {
+      return [
+        Gap.h16,
+        EmptyInfo(
+          infoText:
+              'You don\'t have any transactions in ${dayBeginOfMonth.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false, hasYear: false)}.\nCreate a new one by tapping \'+\' button'
+                  .hardcoded,
+          textSize: 14,
+          iconPath: AppIcons.budgets,
+        ),
+        Gap.h48,
+      ];
+    }
+
     return dayCards;
   }
 
