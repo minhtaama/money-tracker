@@ -83,7 +83,7 @@ class TxnCategoryIcon extends StatelessWidget {
     if (transaction.category != null) {
       return transaction.category!.iconPath;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null category
+    return AppIcons.defaultIcon;
   }
 
   @override
@@ -109,7 +109,7 @@ class TxnCategoryName extends StatelessWidget {
     if (transaction.category != null) {
       return transaction.category!.name;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null category
+    return 'No Category';
   }
 
   @override
@@ -145,7 +145,7 @@ class TxnAccountIcon extends StatelessWidget {
         CreditSpending() => AppIcons.upload
       };
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null account
+    return AppIcons.defaultIcon;
   }
 
   @override
@@ -168,7 +168,7 @@ class TxnAccountName extends StatelessWidget {
     if (transaction.account != null) {
       return transaction.account!.name;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null account
+    return 'No account assigned';
   }
 
   @override
@@ -191,7 +191,7 @@ class TxnToAccountIcon extends StatelessWidget {
     if (transaction.toAccount != null) {
       return transaction.toAccount!.iconPath;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null account
+    return AppIcons.defaultIcon;
   }
 
   @override
@@ -213,7 +213,7 @@ class TxnToAccountName extends StatelessWidget {
     if (transaction.toAccount != null) {
       return transaction.toAccount!.name;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null category and account
+    return 'Empty';
   }
 
   @override

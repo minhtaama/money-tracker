@@ -34,7 +34,7 @@ class RealmDataStore {
   }
 
   void _initialDataCallback(Realm realm) {
-    //TODO: add default settings object
+    //add default settings object
     realm.add(SettingsDb(0));
   }
 }

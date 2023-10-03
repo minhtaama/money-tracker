@@ -11,7 +11,6 @@ class RegularAccount extends Account {
   });
 
   @override
-  // TODO: implement transactionsList
   List<RegularTransaction> get transactionsList => List.from(databaseObject.transactions
       .map<RegularTransaction>((txn) => BaseTransaction.fromIsar(txn) as RegularTransaction));
 

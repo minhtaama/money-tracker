@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
-// TODO: change to realm
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -48,7 +47,6 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
             ),
       onTap: () async {
         List<Category> categoryList;
-        // TODO: change to realm
         if (widget.transactionType == TransactionType.income) {
           categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.income);
         } else if (widget.transactionType == TransactionType.expense) {

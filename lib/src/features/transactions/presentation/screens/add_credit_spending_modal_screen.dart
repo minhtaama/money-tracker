@@ -177,8 +177,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       transactionType: TransactionType.expense,
                       validator: (_) => _categoryValidator(),
                       onChangedCategory: (newCategory) => setState(() {
-                        // TODO: change to realm
-                        //_category = newCategory;
+                        _category = newCategory;
                       }),
                     ),
                     Gap.h16,
