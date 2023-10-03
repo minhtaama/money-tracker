@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
-import 'package:money_tracker_app/persistent/isar_data_store.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
-import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/features/settings/data/app_settings.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -18,10 +15,6 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy(); //remove # character in web link
-
-  // initialize ISAR database
-  final isarDataStore = IsarDataStore();
-  await isarDataStore.init();
 
   // initialize REALM database
   final realmDataStore = RealmDataStore();
@@ -33,7 +26,6 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [
-        isarDataStoreProvider.overrideWithValue(isarDataStore),
         realmDataStoreProvider.overrideWithValue(realmDataStore),
       ],
       child: const MaterialApp(home: MoneyTrackerApp()),

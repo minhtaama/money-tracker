@@ -6,8 +6,7 @@ import 'dart:math' as math;
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
-// TODO: change to realm
-import '../../../category/domain/category_x.dart';
+import '../../../category/domain/category.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';
 

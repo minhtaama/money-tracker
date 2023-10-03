@@ -1,7 +1,7 @@
 part of 'transaction_base.dart';
 
 @immutable
-class CreditPayment extends Transaction {
+class CreditPayment extends BaseTransaction {
   @override
   final Account? account;
 

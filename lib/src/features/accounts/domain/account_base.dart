@@ -1,40 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
-import '../../../../persistent/isar_model.dart';
+import '../../../../persistent/model_from_realm.dart';
+import '../../../../persistent/realm_dto.dart';
 import '../../transactions/domain/transaction_base.dart';
-import '../data/isar_dto/account_isar.dart';
 
 part 'regular_account.dart';
 part 'credit_account.dart';
 
 @immutable
-sealed class Account extends IsarModelWithIcon<AccountIsar> {
+sealed class Account extends BaseModelWithIcon<AccountDb> {
   List get transactionsList;
 
-  static Account? fromIsar(AccountIsar? accountIsar) {
-    if (accountIsar == null) {
+  static Account? fromDatabase(AccountDb? accountDb) {
+    if (accountDb == null) {
       return null;
     }
 
-    return switch (accountIsar.type) {
-      AccountType.regular => RegularAccount._(
-          accountIsar,
-          name: accountIsar.name,
-          color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
+    return switch (accountDb.type) {
+      0 => RegularAccount._(
+          accountDb,
+          name: accountDb.name,
+          color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
         ),
-      AccountType.credit => CreditAccount._(accountIsar,
-          name: accountIsar.name,
-          color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
-          creditBalance: accountIsar.creditDetailsIsar!.creditBalance,
-          penaltyInterest: accountIsar.creditDetailsIsar!.apr,
-          statementDay: accountIsar.creditDetailsIsar!.statementDay,
-          paymentDueDay: accountIsar.creditDetailsIsar!.paymentDueDay)
+      _ => CreditAccount._(accountDb,
+          name: accountDb.name,
+          color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+          creditBalance: accountDb.creditDetails!.creditBalance,
+          penaltyInterest: accountDb.creditDetails!.apr,
+          statementDay: accountDb.creditDetails!.statementDay,
+          paymentDueDay: accountDb.creditDetails!.paymentDueDay)
     };
   }
 

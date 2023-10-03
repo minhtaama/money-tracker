@@ -76,23 +76,25 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       children: List.generate(accountList.length, (index) {
                         final account = accountList[index];
                         return IgnorePointer(
-                          ignoring: widget.otherSelectedAccount?.id == account.id,
+                          ignoring: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
                           child: IconWithTextButton(
                             iconPath: account.iconPath,
                             label: account.name,
-                            isDisabled: widget.otherSelectedAccount?.id == account.id,
+                            isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
                             labelSize: 18,
                             borderRadius: BorderRadius.circular(16),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             border: Border.all(
-                              color: currentAccount?.id == account.id
+                              color: currentAccount?.databaseObject.id == account.databaseObject.id
                                   ? account.backgroundColor
                                   : context.appTheme.backgroundNegative.withOpacity(0.4),
                             ),
-                            backgroundColor:
-                                currentAccount?.id == account.id ? account.backgroundColor : Colors.transparent,
-                            color:
-                                currentAccount?.id == account.id ? account.color : context.appTheme.backgroundNegative,
+                            backgroundColor: currentAccount?.databaseObject.id == account.databaseObject.id
+                                ? account.backgroundColor
+                                : Colors.transparent,
+                            color: currentAccount?.databaseObject.id == account.databaseObject.id
+                                ? account.color
+                                : context.appTheme.backgroundNegative,
                             onTap: () => context.pop<Account>(account),
                             height: null,
                             width: null,
@@ -109,7 +111,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (currentAccount != null && currentAccount!.id == returnedValue.id) {
+            if (currentAccount != null && currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               currentAccount = null;
               widget.onChangedAccount(currentAccount);
             } else {

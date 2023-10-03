@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
 
 @immutable
-abstract class ModelFromRealm<T extends RealmObject> {
-  const ModelFromRealm(this._realmObject);
+abstract class BaseModel<T extends RealmObject> {
+  const BaseModel(this._databaseObject);
 
-  final T _realmObject;
+  final T _databaseObject;
 
-  T get realmObject => _realmObject;
+  T get databaseObject => _databaseObject;
 }
 
-abstract class EmbeddedModelFromRealm<T extends EmbeddedObject> {
-  const EmbeddedModelFromRealm(this._realmObject);
+abstract class BaseEmbeddedModel<T extends EmbeddedObject> {
+  const BaseEmbeddedModel(this._databaseObject);
 
-  final T _realmObject;
+  final T _databaseObject;
 
-  T get realmObject => _realmObject;
+  T get databaseObject => _databaseObject;
 }
 
 @immutable
-abstract class ModelFromRealmWithIcon<T extends RealmObject> extends ModelFromRealm<T> {
-  const ModelFromRealmWithIcon(super._realmObject,
+abstract class BaseModelWithIcon<T extends RealmObject> extends BaseModel<T> {
+  const BaseModelWithIcon(super._databaseObject,
       {required this.name, required this.color, required this.backgroundColor, required this.iconPath});
 
   final String name;

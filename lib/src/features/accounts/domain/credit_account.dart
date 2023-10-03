@@ -26,7 +26,7 @@ class CreditAccount extends Account {
   @override
   List<CreditSpending> get transactionsList {
     final List<CreditSpending> list = List.from(
-        isarObject.txnOfThisAccountBacklinks.map<CreditSpending>((txn) => Transaction.fromIsar(txn) as CreditSpending));
+        databaseObject.transactions.map<CreditSpending>((txn) => BaseTransaction.fromIsar(txn) as CreditSpending));
     list.sort((a, b) {
       return a.dateTime.isBefore(b.dateTime) ? -1 : 1;
     });

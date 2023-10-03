@@ -6,9 +6,9 @@ part of 'realm_dto.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class AccountRealm extends _AccountRealm
+class AccountDb extends _AccountDb
     with RealmEntity, RealmObjectBase, RealmObject {
-  AccountRealm(
+  AccountDb(
     ObjectId id,
     int type,
     String name,
@@ -16,7 +16,7 @@ class AccountRealm extends _AccountRealm
     String iconCategory,
     int iconIndex, {
     int? order,
-    CreditDetailsRealm? creditDetails,
+    CreditDetailsDb? creditDetails,
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'type', type);
@@ -28,7 +28,7 @@ class AccountRealm extends _AccountRealm
     RealmObjectBase.set(this, 'creditDetails', creditDetails);
   }
 
-  AccountRealm._();
+  AccountDb._();
 
   @override
   ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
@@ -68,53 +68,51 @@ class AccountRealm extends _AccountRealm
   set order(int? value) => RealmObjectBase.set(this, 'order', value);
 
   @override
-  CreditDetailsRealm? get creditDetails =>
-      RealmObjectBase.get<CreditDetailsRealm>(this, 'creditDetails')
-          as CreditDetailsRealm?;
+  CreditDetailsDb? get creditDetails =>
+      RealmObjectBase.get<CreditDetailsDb>(this, 'creditDetails')
+          as CreditDetailsDb?;
   @override
-  set creditDetails(covariant CreditDetailsRealm? value) =>
+  set creditDetails(covariant CreditDetailsDb? value) =>
       RealmObjectBase.set(this, 'creditDetails', value);
 
   @override
-  RealmResults<TransactionRealm> get transactions {
+  RealmResults<TransactionDb> get transactions {
     if (!isManaged) {
       throw RealmError('Using backlinks is only possible for managed objects.');
     }
-    return RealmObjectBase.get<TransactionRealm>(this, 'transactions')
-        as RealmResults<TransactionRealm>;
+    return RealmObjectBase.get<TransactionDb>(this, 'transactions')
+        as RealmResults<TransactionDb>;
   }
 
   @override
-  set transactions(covariant RealmResults<TransactionRealm> value) =>
+  set transactions(covariant RealmResults<TransactionDb> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  RealmResults<TransactionRealm> get transactionsToThisAccount {
+  RealmResults<TransactionDb> get transactionsToThisAccount {
     if (!isManaged) {
       throw RealmError('Using backlinks is only possible for managed objects.');
     }
-    return RealmObjectBase.get<TransactionRealm>(
-        this, 'transactionsToThisAccount') as RealmResults<TransactionRealm>;
+    return RealmObjectBase.get<TransactionDb>(this, 'transactionsToThisAccount')
+        as RealmResults<TransactionDb>;
   }
 
   @override
-  set transactionsToThisAccount(
-          covariant RealmResults<TransactionRealm> value) =>
+  set transactionsToThisAccount(covariant RealmResults<TransactionDb> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  Stream<RealmObjectChanges<AccountRealm>> get changes =>
-      RealmObjectBase.getChanges<AccountRealm>(this);
+  Stream<RealmObjectChanges<AccountDb>> get changes =>
+      RealmObjectBase.getChanges<AccountDb>(this);
 
   @override
-  AccountRealm freeze() => RealmObjectBase.freezeObject<AccountRealm>(this);
+  AccountDb freeze() => RealmObjectBase.freezeObject<AccountDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(AccountRealm._);
-    return const SchemaObject(
-        ObjectType.realmObject, AccountRealm, 'AccountRealm', [
+    RealmObjectBase.registerFactory(AccountDb._);
+    return const SchemaObject(ObjectType.realmObject, AccountDb, 'AccountDb', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
@@ -123,32 +121,32 @@ class AccountRealm extends _AccountRealm
       SchemaProperty('iconIndex', RealmPropertyType.int),
       SchemaProperty('order', RealmPropertyType.int, optional: true),
       SchemaProperty('creditDetails', RealmPropertyType.object,
-          optional: true, linkTarget: 'CreditDetailsRealm'),
+          optional: true, linkTarget: 'CreditDetailsDb'),
       SchemaProperty('transactions', RealmPropertyType.linkingObjects,
           linkOriginProperty: 'account',
           collectionType: RealmCollectionType.list,
-          linkTarget: 'TransactionRealm'),
+          linkTarget: 'TransactionDb'),
       SchemaProperty(
           'transactionsToThisAccount', RealmPropertyType.linkingObjects,
           linkOriginProperty: 'transferTo',
           collectionType: RealmCollectionType.list,
-          linkTarget: 'TransactionRealm'),
+          linkTarget: 'TransactionDb'),
     ]);
   }
 }
 
-class CreditDetailsRealm extends _CreditDetailsRealm
+class CreditDetailsDb extends _CreditDetailsDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
   static var _defaultsSet = false;
 
-  CreditDetailsRealm(
+  CreditDetailsDb(
     double creditBalance,
     int statementDay,
     int paymentDueDay, {
     double apr = 5,
   }) {
     if (!_defaultsSet) {
-      _defaultsSet = RealmObjectBase.setDefaults<CreditDetailsRealm>({
+      _defaultsSet = RealmObjectBase.setDefaults<CreditDetailsDb>({
         'apr': 5,
       });
     }
@@ -158,7 +156,7 @@ class CreditDetailsRealm extends _CreditDetailsRealm
     RealmObjectBase.set(this, 'paymentDueDay', paymentDueDay);
   }
 
-  CreditDetailsRealm._();
+  CreditDetailsDb._();
 
   @override
   double get creditBalance =>
@@ -186,19 +184,19 @@ class CreditDetailsRealm extends _CreditDetailsRealm
       RealmObjectBase.set(this, 'paymentDueDay', value);
 
   @override
-  Stream<RealmObjectChanges<CreditDetailsRealm>> get changes =>
-      RealmObjectBase.getChanges<CreditDetailsRealm>(this);
+  Stream<RealmObjectChanges<CreditDetailsDb>> get changes =>
+      RealmObjectBase.getChanges<CreditDetailsDb>(this);
 
   @override
-  CreditDetailsRealm freeze() =>
-      RealmObjectBase.freezeObject<CreditDetailsRealm>(this);
+  CreditDetailsDb freeze() =>
+      RealmObjectBase.freezeObject<CreditDetailsDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(CreditDetailsRealm._);
+    RealmObjectBase.registerFactory(CreditDetailsDb._);
     return const SchemaObject(
-        ObjectType.embeddedObject, CreditDetailsRealm, 'CreditDetailsRealm', [
+        ObjectType.embeddedObject, CreditDetailsDb, 'CreditDetailsDb', [
       SchemaProperty('creditBalance', RealmPropertyType.double),
       SchemaProperty('apr', RealmPropertyType.double),
       SchemaProperty('statementDay', RealmPropertyType.int),
@@ -207,9 +205,9 @@ class CreditDetailsRealm extends _CreditDetailsRealm
   }
 }
 
-class CategoryRealm extends _CategoryRealm
+class CategoryDb extends _CategoryDb
     with RealmEntity, RealmObjectBase, RealmObject {
-  CategoryRealm(
+  CategoryDb(
     ObjectId id,
     int type,
     String name,
@@ -227,7 +225,7 @@ class CategoryRealm extends _CategoryRealm
     RealmObjectBase.set(this, 'order', order);
   }
 
-  CategoryRealm._();
+  CategoryDb._();
 
   @override
   ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
@@ -267,31 +265,31 @@ class CategoryRealm extends _CategoryRealm
   set order(int? value) => RealmObjectBase.set(this, 'order', value);
 
   @override
-  RealmResults<CategoryTagRealm> get tags {
+  RealmResults<CategoryTagDb> get tags {
     if (!isManaged) {
       throw RealmError('Using backlinks is only possible for managed objects.');
     }
-    return RealmObjectBase.get<CategoryTagRealm>(this, 'tags')
-        as RealmResults<CategoryTagRealm>;
+    return RealmObjectBase.get<CategoryTagDb>(this, 'tags')
+        as RealmResults<CategoryTagDb>;
   }
 
   @override
-  set tags(covariant RealmResults<CategoryTagRealm> value) =>
+  set tags(covariant RealmResults<CategoryTagDb> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  Stream<RealmObjectChanges<CategoryRealm>> get changes =>
-      RealmObjectBase.getChanges<CategoryRealm>(this);
+  Stream<RealmObjectChanges<CategoryDb>> get changes =>
+      RealmObjectBase.getChanges<CategoryDb>(this);
 
   @override
-  CategoryRealm freeze() => RealmObjectBase.freezeObject<CategoryRealm>(this);
+  CategoryDb freeze() => RealmObjectBase.freezeObject<CategoryDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(CategoryRealm._);
+    RealmObjectBase.registerFactory(CategoryDb._);
     return const SchemaObject(
-        ObjectType.realmObject, CategoryRealm, 'CategoryRealm', [
+        ObjectType.realmObject, CategoryDb, 'CategoryDb', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
@@ -302,17 +300,17 @@ class CategoryRealm extends _CategoryRealm
       SchemaProperty('tags', RealmPropertyType.linkingObjects,
           linkOriginProperty: 'category',
           collectionType: RealmCollectionType.list,
-          linkTarget: 'CategoryTagRealm'),
+          linkTarget: 'CategoryTagDb'),
     ]);
   }
 }
 
-class CategoryTagRealm extends _CategoryTagRealm
+class CategoryTagDb extends _CategoryTagDb
     with RealmEntity, RealmObjectBase, RealmObject {
-  CategoryTagRealm(
+  CategoryTagDb(
     ObjectId id,
     String name, {
-    CategoryRealm? category,
+    CategoryDb? category,
     int? order,
   }) {
     RealmObjectBase.set(this, 'id', id);
@@ -321,7 +319,7 @@ class CategoryTagRealm extends _CategoryTagRealm
     RealmObjectBase.set(this, 'order', order);
   }
 
-  CategoryTagRealm._();
+  CategoryTagDb._();
 
   @override
   ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
@@ -334,10 +332,10 @@ class CategoryTagRealm extends _CategoryTagRealm
   set name(String value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  CategoryRealm? get category =>
-      RealmObjectBase.get<CategoryRealm>(this, 'category') as CategoryRealm?;
+  CategoryDb? get category =>
+      RealmObjectBase.get<CategoryDb>(this, 'category') as CategoryDb?;
   @override
-  set category(covariant CategoryRealm? value) =>
+  set category(covariant CategoryDb? value) =>
       RealmObjectBase.set(this, 'category', value);
 
   @override
@@ -346,49 +344,48 @@ class CategoryTagRealm extends _CategoryTagRealm
   set order(int? value) => RealmObjectBase.set(this, 'order', value);
 
   @override
-  Stream<RealmObjectChanges<CategoryTagRealm>> get changes =>
-      RealmObjectBase.getChanges<CategoryTagRealm>(this);
+  Stream<RealmObjectChanges<CategoryTagDb>> get changes =>
+      RealmObjectBase.getChanges<CategoryTagDb>(this);
 
   @override
-  CategoryTagRealm freeze() =>
-      RealmObjectBase.freezeObject<CategoryTagRealm>(this);
+  CategoryTagDb freeze() => RealmObjectBase.freezeObject<CategoryTagDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(CategoryTagRealm._);
+    RealmObjectBase.registerFactory(CategoryTagDb._);
     return const SchemaObject(
-        ObjectType.realmObject, CategoryTagRealm, 'CategoryTagRealm', [
+        ObjectType.realmObject, CategoryTagDb, 'CategoryTagDb', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('category', RealmPropertyType.object,
-          optional: true, linkTarget: 'CategoryRealm'),
+          optional: true, linkTarget: 'CategoryDb'),
       SchemaProperty('order', RealmPropertyType.int, optional: true),
     ]);
   }
 }
 
-class TransactionRealm extends _TransactionRealm
+class TransactionDb extends _TransactionDb
     with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;
 
-  TransactionRealm(
+  TransactionDb(
     ObjectId id,
     int type,
     DateTime dateTime,
     double amount, {
     String? note,
-    AccountRealm? account,
-    CategoryRealm? category,
-    CategoryTagRealm? categoryTag,
+    AccountDb? account,
+    CategoryDb? category,
+    CategoryTagDb? categoryTag,
     bool isInitialTransaction = false,
-    AccountRealm? transferTo,
-    TransferFeeRealm? transferFee,
+    AccountDb? transferTo,
+    TransferFeeDb? transferFee,
     double? installmentAmount,
-    TransactionRealm? spendingTransactions,
+    TransactionDb? spendingTransactions,
   }) {
     if (!_defaultsSet) {
-      _defaultsSet = RealmObjectBase.setDefaults<TransactionRealm>({
+      _defaultsSet = RealmObjectBase.setDefaults<TransactionDb>({
         'isInitialTransaction': false,
       });
     }
@@ -407,7 +404,7 @@ class TransactionRealm extends _TransactionRealm
     RealmObjectBase.set(this, 'spendingTransactions', spendingTransactions);
   }
 
-  TransactionRealm._();
+  TransactionDb._();
 
   @override
   ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
@@ -436,25 +433,24 @@ class TransactionRealm extends _TransactionRealm
   set note(String? value) => RealmObjectBase.set(this, 'note', value);
 
   @override
-  AccountRealm? get account =>
-      RealmObjectBase.get<AccountRealm>(this, 'account') as AccountRealm?;
+  AccountDb? get account =>
+      RealmObjectBase.get<AccountDb>(this, 'account') as AccountDb?;
   @override
-  set account(covariant AccountRealm? value) =>
+  set account(covariant AccountDb? value) =>
       RealmObjectBase.set(this, 'account', value);
 
   @override
-  CategoryRealm? get category =>
-      RealmObjectBase.get<CategoryRealm>(this, 'category') as CategoryRealm?;
+  CategoryDb? get category =>
+      RealmObjectBase.get<CategoryDb>(this, 'category') as CategoryDb?;
   @override
-  set category(covariant CategoryRealm? value) =>
+  set category(covariant CategoryDb? value) =>
       RealmObjectBase.set(this, 'category', value);
 
   @override
-  CategoryTagRealm? get categoryTag =>
-      RealmObjectBase.get<CategoryTagRealm>(this, 'categoryTag')
-          as CategoryTagRealm?;
+  CategoryTagDb? get categoryTag =>
+      RealmObjectBase.get<CategoryTagDb>(this, 'categoryTag') as CategoryTagDb?;
   @override
-  set categoryTag(covariant CategoryTagRealm? value) =>
+  set categoryTag(covariant CategoryTagDb? value) =>
       RealmObjectBase.set(this, 'categoryTag', value);
 
   @override
@@ -465,18 +461,17 @@ class TransactionRealm extends _TransactionRealm
       RealmObjectBase.set(this, 'isInitialTransaction', value);
 
   @override
-  AccountRealm? get transferTo =>
-      RealmObjectBase.get<AccountRealm>(this, 'transferTo') as AccountRealm?;
+  AccountDb? get transferTo =>
+      RealmObjectBase.get<AccountDb>(this, 'transferTo') as AccountDb?;
   @override
-  set transferTo(covariant AccountRealm? value) =>
+  set transferTo(covariant AccountDb? value) =>
       RealmObjectBase.set(this, 'transferTo', value);
 
   @override
-  TransferFeeRealm? get transferFee =>
-      RealmObjectBase.get<TransferFeeRealm>(this, 'transferFee')
-          as TransferFeeRealm?;
+  TransferFeeDb? get transferFee =>
+      RealmObjectBase.get<TransferFeeDb>(this, 'transferFee') as TransferFeeDb?;
   @override
-  set transferFee(covariant TransferFeeRealm? value) =>
+  set transferFee(covariant TransferFeeDb? value) =>
       RealmObjectBase.set(this, 'transferFee', value);
 
   @override
@@ -487,78 +482,77 @@ class TransactionRealm extends _TransactionRealm
       RealmObjectBase.set(this, 'installmentAmount', value);
 
   @override
-  TransactionRealm? get spendingTransactions =>
-      RealmObjectBase.get<TransactionRealm>(this, 'spendingTransactions')
-          as TransactionRealm?;
+  TransactionDb? get spendingTransactions =>
+      RealmObjectBase.get<TransactionDb>(this, 'spendingTransactions')
+          as TransactionDb?;
   @override
-  set spendingTransactions(covariant TransactionRealm? value) =>
+  set spendingTransactions(covariant TransactionDb? value) =>
       RealmObjectBase.set(this, 'spendingTransactions', value);
 
   @override
-  RealmResults<TransactionRealm> get paymentTransactions {
+  RealmResults<TransactionDb> get paymentTransactions {
     if (!isManaged) {
       throw RealmError('Using backlinks is only possible for managed objects.');
     }
-    return RealmObjectBase.get<TransactionRealm>(this, 'paymentTransactions')
-        as RealmResults<TransactionRealm>;
+    return RealmObjectBase.get<TransactionDb>(this, 'paymentTransactions')
+        as RealmResults<TransactionDb>;
   }
 
   @override
-  set paymentTransactions(covariant RealmResults<TransactionRealm> value) =>
+  set paymentTransactions(covariant RealmResults<TransactionDb> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  Stream<RealmObjectChanges<TransactionRealm>> get changes =>
-      RealmObjectBase.getChanges<TransactionRealm>(this);
+  Stream<RealmObjectChanges<TransactionDb>> get changes =>
+      RealmObjectBase.getChanges<TransactionDb>(this);
 
   @override
-  TransactionRealm freeze() =>
-      RealmObjectBase.freezeObject<TransactionRealm>(this);
+  TransactionDb freeze() => RealmObjectBase.freezeObject<TransactionDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(TransactionRealm._);
+    RealmObjectBase.registerFactory(TransactionDb._);
     return const SchemaObject(
-        ObjectType.realmObject, TransactionRealm, 'TransactionRealm', [
+        ObjectType.realmObject, TransactionDb, 'TransactionDb', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
       SchemaProperty('dateTime', RealmPropertyType.timestamp),
       SchemaProperty('amount', RealmPropertyType.double),
       SchemaProperty('note', RealmPropertyType.string, optional: true),
       SchemaProperty('account', RealmPropertyType.object,
-          optional: true, linkTarget: 'AccountRealm'),
+          optional: true, linkTarget: 'AccountDb'),
       SchemaProperty('category', RealmPropertyType.object,
-          optional: true, linkTarget: 'CategoryRealm'),
+          optional: true, linkTarget: 'CategoryDb'),
       SchemaProperty('categoryTag', RealmPropertyType.object,
-          optional: true, linkTarget: 'CategoryTagRealm'),
+          optional: true, linkTarget: 'CategoryTagDb'),
       SchemaProperty('isInitialTransaction', RealmPropertyType.bool),
       SchemaProperty('transferTo', RealmPropertyType.object,
-          optional: true, linkTarget: 'AccountRealm'),
+          optional: true, linkTarget: 'AccountDb'),
       SchemaProperty('transferFee', RealmPropertyType.object,
-          optional: true, linkTarget: 'TransferFeeRealm'),
+          optional: true, linkTarget: 'TransferFeeDb'),
       SchemaProperty('installmentAmount', RealmPropertyType.double,
           optional: true),
       SchemaProperty('spendingTransactions', RealmPropertyType.object,
-          optional: true, linkTarget: 'TransactionRealm'),
+          optional: true, linkTarget: 'TransactionDb'),
       SchemaProperty('paymentTransactions', RealmPropertyType.linkingObjects,
           linkOriginProperty: 'spendingTransactions',
           collectionType: RealmCollectionType.list,
-          linkTarget: 'TransactionRealm'),
+          linkTarget: 'TransactionDb'),
     ]);
   }
 }
 
-class TransferFeeRealm extends _TransferFeeRealm
+class TransferFeeDb extends _TransferFeeDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
   static var _defaultsSet = false;
 
-  TransferFeeRealm({
+  TransferFeeDb({
     double amount = 0,
     bool chargeOnDestination = false,
   }) {
     if (!_defaultsSet) {
-      _defaultsSet = RealmObjectBase.setDefaults<TransferFeeRealm>({
+      _defaultsSet = RealmObjectBase.setDefaults<TransferFeeDb>({
         'amount': 0,
         'chargeOnDestination': false,
       });
@@ -567,7 +561,7 @@ class TransferFeeRealm extends _TransferFeeRealm
     RealmObjectBase.set(this, 'chargeOnDestination', chargeOnDestination);
   }
 
-  TransferFeeRealm._();
+  TransferFeeDb._();
 
   @override
   double get amount => RealmObjectBase.get<double>(this, 'amount') as double;
@@ -582,37 +576,36 @@ class TransferFeeRealm extends _TransferFeeRealm
       RealmObjectBase.set(this, 'chargeOnDestination', value);
 
   @override
-  Stream<RealmObjectChanges<TransferFeeRealm>> get changes =>
-      RealmObjectBase.getChanges<TransferFeeRealm>(this);
+  Stream<RealmObjectChanges<TransferFeeDb>> get changes =>
+      RealmObjectBase.getChanges<TransferFeeDb>(this);
 
   @override
-  TransferFeeRealm freeze() =>
-      RealmObjectBase.freezeObject<TransferFeeRealm>(this);
+  TransferFeeDb freeze() => RealmObjectBase.freezeObject<TransferFeeDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(TransferFeeRealm._);
+    RealmObjectBase.registerFactory(TransferFeeDb._);
     return const SchemaObject(
-        ObjectType.embeddedObject, TransferFeeRealm, 'TransferFeeRealm', [
+        ObjectType.embeddedObject, TransferFeeDb, 'TransferFeeDb', [
       SchemaProperty('amount', RealmPropertyType.double),
       SchemaProperty('chargeOnDestination', RealmPropertyType.bool),
     ]);
   }
 }
 
-class SettingsRealm extends _SettingsRealm
+class SettingsDb extends _SettingsDb
     with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;
 
-  SettingsRealm(
+  SettingsDb(
     int id, {
     int themeIndex = 0,
     int themeType = 0,
     int currencyIndex = 101,
   }) {
     if (!_defaultsSet) {
-      _defaultsSet = RealmObjectBase.setDefaults<SettingsRealm>({
+      _defaultsSet = RealmObjectBase.setDefaults<SettingsDb>({
         'id': 0,
         'themeIndex': 0,
         'themeType': 0,
@@ -625,7 +618,7 @@ class SettingsRealm extends _SettingsRealm
     RealmObjectBase.set(this, 'currencyIndex', currencyIndex);
   }
 
-  SettingsRealm._();
+  SettingsDb._();
 
   @override
   int get id => RealmObjectBase.get<int>(this, 'id') as int;
@@ -648,18 +641,18 @@ class SettingsRealm extends _SettingsRealm
       RealmObjectBase.set(this, 'currencyIndex', value);
 
   @override
-  Stream<RealmObjectChanges<SettingsRealm>> get changes =>
-      RealmObjectBase.getChanges<SettingsRealm>(this);
+  Stream<RealmObjectChanges<SettingsDb>> get changes =>
+      RealmObjectBase.getChanges<SettingsDb>(this);
 
   @override
-  SettingsRealm freeze() => RealmObjectBase.freezeObject<SettingsRealm>(this);
+  SettingsDb freeze() => RealmObjectBase.freezeObject<SettingsDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(SettingsRealm._);
+    RealmObjectBase.registerFactory(SettingsDb._);
     return const SchemaObject(
-        ObjectType.realmObject, SettingsRealm, 'SettingsRealm', [
+        ObjectType.realmObject, SettingsDb, 'SettingsDb', [
       SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
       SchemaProperty('themeIndex', RealmPropertyType.int),
       SchemaProperty('themeType', RealmPropertyType.int),

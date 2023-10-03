@@ -1,101 +1,100 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/persistent/isar_model.dart';
+import 'package:money_tracker_app/persistent/model_from_realm.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../../utils/enums.dart';
+import '../../../../persistent/realm_dto.dart';
 import '../../accounts/domain/account_base.dart';
 
 // TODO: Change to realm
-import '../../category/domain/category_x.dart';
-import '../../category/domain/category_tag_x.dart';
-import '../data/isar_dto/transaction_isar.dart';
+import '../../category/domain/category.dart';
+import '../../category/domain/category_tag.dart';
 
 part 'regular_transaction.dart';
 part 'credit_payment_transaction.dart';
 part 'credit_spending_transaction.dart';
 
 @immutable
-sealed class Transaction extends IsarModel<TransactionIsar> {
+sealed class BaseTransaction extends BaseModel<TransactionDb> {
   final DateTime dateTime;
   final double amount;
   final String? note;
   abstract final Account? account;
 
-  const Transaction(
-    super._isarObject,
+  const BaseTransaction(
+    super._databaseObject,
     this.dateTime,
     this.amount,
     this.note,
   );
 
-  factory Transaction.fromIsar(TransactionIsar txn) {
-    switch (txn.transactionType) {
-      case TransactionType.income:
+  factory BaseTransaction.fromIsar(TransactionDb txn) {
+    switch (txn.type) {
+      case 1:
         return Income._(
           txn,
           txn.dateTime,
           txn.amount,
           txn.note,
-          Account.fromIsar(txn.accountLink.value) as RegularAccount?,
-          Category.fromIsar(txn.categoryLink.value),
-          CategoryTag.fromIsar(txn.categoryTagLink.value),
+          Account.fromDatabase(txn.account) as RegularAccount?,
+          Category.fromDatabase(txn.category),
+          CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
         );
 
-      case TransactionType.expense:
+      case 0:
         return Expense._(
           txn,
           txn.dateTime,
           txn.amount,
           txn.note,
-          Account.fromIsar(txn.accountLink.value) as RegularAccount?,
-          Category.fromIsar(txn.categoryLink.value),
-          CategoryTag.fromIsar(txn.categoryTagLink.value),
+          Account.fromDatabase(txn.account) as RegularAccount?,
+          Category.fromDatabase(txn.category),
+          CategoryTag.fromDatabase(txn.categoryTag),
         );
 
-      case TransactionType.transfer:
+      case 2:
         return Transfer._(
           txn,
           txn.dateTime,
           txn.amount,
           txn.note,
-          Account.fromIsar(txn.accountLink.value) as RegularAccount?,
-          toAccount: Account.fromIsar(txn.toAccountLink.value) as RegularAccount?,
-          fee: Fee._fromIsar(txn),
+          Account.fromDatabase(txn.account) as RegularAccount?,
+          toAccount: Account.fromDatabase(txn.transferTo) as RegularAccount?,
+          fee: Fee._fromDatabase(txn),
         );
 
-      case TransactionType.creditSpending:
+      case 3:
         return CreditSpending._(
           txn,
           txn.dateTime,
           txn.amount,
           txn.note,
-          Category.fromIsar(txn.categoryLink.value),
-          CategoryTag.fromIsar(txn.categoryTagLink.value),
-          account: Account.fromIsar(txn.accountLink.value) as CreditAccount?,
+          account: Account.fromDatabase(txn.account) as CreditAccount?,
+          Category.fromDatabase(txn.category),
+          CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
           installmentAmount: txn.installmentAmount,
         );
 
-      case TransactionType.creditPayment:
+      default:
         return CreditPayment._(
           txn,
           txn.dateTime,
           txn.amount,
           txn.note,
-          account: Account.fromIsar(txn.accountLink.value),
-          toCreditAccount: Account.fromIsar(txn.toAccountLink.value) as CreditAccount,
+          account: Account.fromDatabase(txn.account),
+          toCreditAccount: Account.fromDatabase(txn.transferTo) as CreditAccount,
         );
     }
   }
 }
 
 @immutable
-interface class TransactionWithCategory {
+interface class BaseTransactionWithCategory {
   final Category? category;
   final CategoryTag? categoryTag;
 
-  const TransactionWithCategory(
+  const BaseTransactionWithCategory(
     this.category,
     this.categoryTag,
   );

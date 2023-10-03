@@ -1,202 +1,37 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:realm/realm.dart';
-
-import '../../../../persistent/isar_data_store.dart';
 import '../domain/category_tag.dart';
-import 'isar_dto/category_isar.dart';
-import 'isar_dto/category_tag_isar.dart';
 
-// class CategoryRepository {
-//   CategoryRepository(this.isar);
-//
-//   final Isar isar;
-//
-//   List<Category> getList(CategoryType type) {
-//     List<CategoryIsar> list = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
-//     return list.map((categoryIsar) => Category.fromIsar(categoryIsar)!).toList();
-//   }
-//
-//   Stream<void> _watchListChanges(CategoryType type) {
-//     Query<CategoryIsar> query = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build();
-//     return query.watchLazy(fireImmediately: true);
-//   }
-//
-//   Future<void> writeNew({
-//     required CategoryType type,
-//     required String iconCategory,
-//     required int iconIndex,
-//     required String name,
-//     required int colorIndex,
-//   }) async {
-//     final newCategory = CategoryIsar()
-//       ..type = type
-//       ..iconCategory = iconCategory
-//       ..iconIndex = iconIndex
-//       ..name = name
-//       ..colorIndex = colorIndex;
-//     await isar.writeTxn(() async {
-//       await isar.categoryIsars.put(newCategory);
-//       // If this database is user-reorder-able, then we must
-//       // assign `order` value equal to its `Isar.autoIncrementID` at the first time
-//       // then update it
-//       newCategory.order = newCategory.id;
-//       await isar.categoryIsars.put(newCategory);
-//     });
-//   }
-//
-//   Future<void> edit(
-//     Category currentCategory, {
-//     required String iconCategory,
-//     required int iconIndex,
-//     required String name,
-//     required int colorIndex,
-//   }) async {
-//     final categoryIsar = currentCategory.isarObject;
-//
-//     categoryIsar
-//       ..iconCategory = iconCategory
-//       ..iconIndex = iconIndex
-//       ..name = name
-//       ..colorIndex = colorIndex;
-//
-//     await isar.writeTxn(() async => await isar.categoryIsars.put(categoryIsar));
-//   }
-//
-//   Future<void> delete(Category category) async {
-//     await isar.writeTxn(() async => await isar.categoryIsars.delete(category.id));
-//   }
-//
-//   /// The list must be the same list displayed in the widget (with the same sort order)
-//   Future<void> reorder(CategoryType type, int oldIndex, int newIndex) async {
-//     final List<CategoryIsar> list = isar.categoryIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
-//     await isar.writeTxn(
-//       () async {
-//         if (newIndex < oldIndex) {
-//           // Move item up the list
-//           int temp = list[newIndex].order!;
-//           for (int i = newIndex; i < oldIndex; i++) {
-//             list[i].order = list[i + 1].order;
-//             isar.categoryIsars.put(list[i]);
-//           }
-//           list[oldIndex].order = temp;
-//           isar.categoryIsars.put(list[oldIndex]);
-//         } else {
-//           // Move item down the list
-//           int temp = list[newIndex].order!;
-//           for (int i = newIndex; i > oldIndex; i--) {
-//             list[i].order = list[i - 1].order;
-//             isar.categoryIsars.put(list[i]);
-//           }
-//           list[oldIndex].order = temp;
-//           isar.categoryIsars.put(list[oldIndex]);
-//         }
-//       },
-//     );
-//   }
-//
-//   ////////////////// CATEGORY TAG //////////////
-//
-//   List<CategoryTag>? getTagsSortedByOrder(Category? category) {
-//     if (category != null) {
-//       List<CategoryTagIsar> list = category.isarObject.tags.filter().sortByOrder().build().findAllSync();
-//       return list.map((e) => CategoryTag.fromIsar(e)!).toList();
-//     } else {
-//       return null;
-//     }
-//   }
-//
-//   Stream<void> _watchTagListChanges(Category? category) {
-//     if (category != null) {
-//       Query<CategoryTagIsar> query = category.isarObject.tags.filter().sortByOrder().build();
-//       return query.watchLazy(fireImmediately: true);
-//     } else {
-//       return const Stream.empty();
-//     }
-//   }
-//
-//   Future<CategoryTag?> writeNewTag({required String name, required Category category}) async {
-//     final newTag = CategoryTagIsar()
-//       ..name = name
-//       ..categoryLink.value = category.isarObject;
-//
-//     await isar.writeTxn(() async {
-//       await isar.categoryTagIsars.put(newTag);
-//       await newTag.categoryLink.save();
-//
-//       // If this database is user-reorder-able, then we must
-//       // assign `order` value equal to its `Isar.autoIncrementID` at the first time
-//       // then update it
-//       newTag.order = newTag.id;
-//       await isar.categoryTagIsars.put(newTag);
-//     });
-//     return CategoryTag.fromIsar(isar.categoryTagIsars.getSync(newTag.id));
-//   }
-//
-//   Future<void> editTag(CategoryTag currentTag, {required String name}) async {
-//     final categoryTagIsar = currentTag.isarObject;
-//     categoryTagIsar.name = name;
-//     await isar.writeTxn(() async => await isar.categoryTagIsars.put(categoryTagIsar));
-//   }
-//
-//   Future<void> deleteTag(CategoryTag currentTag) async {
-//     await isar.writeTxn(() async => await isar.categoryTagIsars.delete(currentTag.id));
-//   }
-//
-//   /// The list must be the same list displayed in the widget (sorted by order in isar database)
-//   Future<void> reorderTagToTop(Category category, int oldIndex) async {
-//     final list = category.isarObject.tags.filter().sortByOrder().build().findAllSync();
-//     if (list.length <= 1) {
-//       return;
-//     }
-//
-//     await isar.writeTxn(
-//       () async {
-//         // Move item up the list
-//         int temp = list[0].order!;
-//         for (int i = 0; i < oldIndex; i++) {
-//           list[i].order = list[i + 1].order;
-//           isar.categoryTagIsars.put(list[i]);
-//         }
-//         list[oldIndex].order = temp;
-//         isar.categoryTagIsars.put(list[oldIndex]);
-//       },
-//     );
-//   }
-// }
-
-////////////////////////////////////////// REALM REPOSITORY //////////////////////////////
-
-class CategoryRepositoryV2 {
-  CategoryRepositoryV2(this.realm);
+class CategoryRepositoryRealmDb {
+  CategoryRepositoryRealmDb(this.realm);
 
   final Realm realm;
 
-  int _categoryTypeInRealm(CategoryType type) => switch (type) {
+  int _categoryTypeInDb(CategoryType type) => switch (type) {
         CategoryType.expense => 0,
         CategoryType.income => 1,
       };
 
-  RealmResults<CategoryRealm> _realmResults(CategoryType type) {
-    return realm.all<CategoryRealm>().query('type == \$0 SORT(order ASC)', [_categoryTypeInRealm(type)]);
+  RealmResults<CategoryDb> _realmResults(CategoryType type) {
+    return realm.all<CategoryDb>().query('type == \$0 SORT(order ASC)', [_categoryTypeInDb(type)]);
   }
 
-  RealmResults<CategoryTagRealm> _tagRealmResults(Category category) {
-    return realm.all<CategoryTagRealm>().query('category == \$0 SORT(order ASC)', [category.realmObject]);
+  RealmResults<CategoryTagDb> _tagRealmResults(Category category) {
+    return realm.all<CategoryTagDb>().query('category == \$0 SORT(order ASC)', [category.databaseObject]);
   }
 
   //// CATEGORY ////
 
   List<Category> getList(CategoryType type) {
-    return _realmResults(type).map((categoryRealm) => Category.fromRealm(categoryRealm)!).toList();
+    return _realmResults(type).map((categoryDb) => Category.fromDatabase(categoryDb)!).toList();
   }
 
-  Stream<RealmResultsChanges<CategoryRealm>> _watchListChanges(CategoryType type) {
-    return realm.all<CategoryRealm>().changes;
+  Stream<RealmResultsChanges<CategoryDb>> _watchListChanges(CategoryType type) {
+    return realm.all<CategoryDb>().changes;
   }
 
   void writeNew({
@@ -208,9 +43,9 @@ class CategoryRepositoryV2 {
   }) {
     final order = getList(type).length;
 
-    final newCategory = CategoryRealm(
+    final newCategory = CategoryDb(
       ObjectId(),
-      _categoryTypeInRealm(type),
+      _categoryTypeInDb(type),
       name,
       colorIndex,
       iconCategory,
@@ -230,19 +65,19 @@ class CategoryRepositoryV2 {
     required String name,
     required int colorIndex,
   }) {
-    final categoryRealm = currentCategory.realmObject;
+    final categoryDb = currentCategory.databaseObject;
 
-    categoryRealm
-      ..iconCategory = iconCategory
-      ..iconIndex = iconIndex
-      ..name = name
-      ..colorIndex = colorIndex;
-
-    realm.write(() => realm.add(categoryRealm, update: true));
+    realm.write(
+      () => categoryDb
+        ..iconCategory = iconCategory
+        ..iconIndex = iconIndex
+        ..name = name
+        ..colorIndex = colorIndex,
+    );
   }
 
   void delete(Category category) {
-    realm.write(() async => realm.delete(category.realmObject));
+    realm.write(() async => realm.delete(category.databaseObject));
   }
 
   void reorder(CategoryType type, int oldIndex, int newIndex) {
@@ -271,39 +106,39 @@ class CategoryRepositoryV2 {
       return null;
     }
 
-    return _tagRealmResults(category).map((tagRealm) => CategoryTag.fromRealm(tagRealm)!).toList();
+    return _tagRealmResults(category).map((tagRealm) => CategoryTag.fromDatabase(tagRealm)!).toList();
   }
 
-  Stream<RealmResultsChanges<CategoryTagRealm>> _watchTagListChanges(Category? category) {
+  Stream<RealmResultsChanges<CategoryTagDb>> _watchTagListChanges(Category? category) {
     if (category == null) {
       return const Stream.empty();
     }
 
-    return realm.all<CategoryTagRealm>().query('category == \$0', [category.realmObject]).changes;
+    return realm.all<CategoryTagDb>().query('category == \$0', [category.databaseObject]).changes;
   }
 
   CategoryTag? writeNewTag({required String name, required Category category}) {
     final tagsList = getTagList(category)!;
 
-    final newTag = CategoryTagRealm(ObjectId(), name, order: tagsList.length, category: category.realmObject);
+    final newTag = CategoryTagDb(ObjectId(), name, order: tagsList.length, category: category.databaseObject);
 
     realm.write(() {
-      realm.add<CategoryTagRealm>(newTag);
+      realm.add<CategoryTagDb>(newTag);
     });
 
-    return CategoryTag.fromRealm(newTag);
+    return CategoryTag.fromDatabase(newTag);
   }
 
   void editTag(CategoryTag currentTag, {required String name}) {
-    realm.write(() => currentTag.realmObject.name = name);
+    realm.write(() => currentTag.databaseObject.name = name);
   }
 
   void deleteTag(CategoryTag currentTag) {
-    realm.write(() => realm.delete(currentTag.realmObject));
+    realm.write(() => realm.delete(currentTag.databaseObject));
   }
 
   /// The list must be the same list displayed in the widget (sorted by order in isar database)
-  Future<void> reorderTagToTop(Category category, int oldIndex) async {
+  void reorderTagToTop(Category category, int oldIndex) {
     final list = _tagRealmResults(category).toList();
 
     realm.write(
@@ -322,44 +157,24 @@ class CategoryRepositoryV2 {
 
 //////////////////////////// PROVIDERS ////////////////////////
 
-// final categoryRepositoryProvider = Provider<CategoryRepository>(
-//   (ref) {
-//     final isar = ref.watch(isarProvider);
-//     return CategoryRepository(isar);
-//   },
-// );
-//
-// final categoriesChangesProvider = StreamProvider.autoDispose.family<void, CategoryType>(
-//   (ref, type) {
-//     final categoryRepo = ref.watch(categoryRepositoryProvider);
-//     return categoryRepo._watchListChanges(type);
-//   },
-// );
-//
-// final categoryTagsChangesProvider = StreamProvider.autoDispose.family<void, Category?>(
-//   (ref, category) {
-//     final categoryRepo = ref.watch(categoryRepositoryProvider);
-//     return categoryRepo._watchTagListChanges(category);
-//   },
-// );
-
-final categoryRepositoryProvider = Provider<CategoryRepositoryV2>(
+final categoryRepositoryRealmProvider = Provider<CategoryRepositoryRealmDb>(
   (ref) {
     final realm = ref.watch(realmProvider);
-    return CategoryRepositoryV2(realm);
+    return CategoryRepositoryRealmDb(realm);
   },
 );
 
-final categoriesChangesProvider = StreamProvider.autoDispose.family<RealmResultsChanges<CategoryRealm>, CategoryType>(
+final categoriesChangesRealmProvider = StreamProvider.autoDispose.family<RealmResultsChanges<CategoryDb>, CategoryType>(
   (ref, type) {
-    final categoryRepo = ref.watch(categoryRepositoryProvider);
+    final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
     return categoryRepo._watchListChanges(type);
   },
 );
 
-final categoryTagsChangesProvider = StreamProvider.autoDispose.family<RealmResultsChanges<CategoryTagRealm>, Category?>(
+final categoryTagsChangesRealmProvider =
+    StreamProvider.autoDispose.family<RealmResultsChanges<CategoryTagDb>, Category?>(
   (ref, category) {
-    final categoryRepo = ref.watch(categoryRepositoryProvider);
+    final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
     return categoryRepo._watchTagListChanges(category);
   },
 );

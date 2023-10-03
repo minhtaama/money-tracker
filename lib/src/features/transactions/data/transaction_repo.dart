@@ -1,42 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
-import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
-import 'package:money_tracker_app/src/features/category/data/isar_dto/category_isar.dart';
-import 'package:money_tracker_app/src/features/category/data/isar_dto/category_tag_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
 import 'package:async/async.dart';
-
-import '../../../../persistent/isar_data_store.dart';
+import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:realm/realm.dart';
+import '../../../../persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account_base.dart';
-//TODO: Change to realm
-import '../../category/domain/category_x.dart';
-import '../../category/domain/category_tag_x.dart';
+import '../../category/domain/category.dart';
+import '../../category/domain/category_tag.dart';
 import '../domain/transaction_base.dart';
 
 class TransactionRepository {
-  TransactionRepository(this.isar);
+  TransactionRepository(this.realm);
 
-  final Isar isar;
+  final Realm realm;
 
-  List<Transaction> getAll(DateTime lower, DateTime upper) {
-    List<TransactionIsar> list =
-        isar.transactionIsars.filter().dateTimeBetween(lower, upper).sortByDateTime().build().findAllSync();
-    return list.map((e) => Transaction.fromIsar(e)).toList();
+  int _transactionTypeInDb(TransactionType type) => switch (type) {
+        TransactionType.expense => 0,
+        TransactionType.income => 1,
+        TransactionType.transfer => 2,
+        TransactionType.creditSpending => 3,
+        TransactionType.creditPayment => 4,
+      };
+
+  List<BaseTransaction> getAll(DateTime lower, DateTime upper) {
+    List<TransactionDb> list =
+        realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).toList();
+    return list.map((txn) => BaseTransaction.fromIsar(txn)).toList();
   }
 
-  // Used to watch transaction list changes
-  Stream<void> _watchListChanges(DateTime lower, DateTime upper) {
-    Query<TransactionIsar> query = isar.transactionIsars.filter().dateTimeBetween(lower, upper).build();
-    return query.watchLazy(fireImmediately: true);
+  Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   Stream<void> _watchDatabaseChanges() {
-    Stream<void> s1 = isar.accountIsars.watchLazy(fireImmediately: true);
-    Stream<void> s2 = isar.categoryIsars.watchLazy(fireImmediately: true);
-    Stream<void> s3 = isar.categoryTagIsars.watchLazy(fireImmediately: true);
-    Stream<void> s4 = isar.transactionIsars.watchLazy(fireImmediately: true);
+    Stream<void> s1 = realm.all<CategoryDb>().changes;
+    Stream<void> s2 = realm.all<CategoryTagDb>().changes;
+    Stream<void> s3 = realm.all<AccountDb>().changes;
+    Stream<void> s4 = realm.all<TransactionDb>().changes;
     return StreamGroup.merge([s1, s2, s3, s4]);
   }
 
@@ -48,23 +49,14 @@ class TransactionRepository {
     required Account account,
     required String? note,
   }) async {
-    final newTransaction = TransactionIsar()
-      ..transactionType = TransactionType.income
-      ..dateTime = dateTime
-      ..amount = amount
-      ..categoryLink.value = category.isarObject
-      ..accountLink.value = account.isarObject
-      ..categoryTagLink.value = tag?.isarObject
-      ..note = note;
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+        note: note,
+        category: category.databaseObject,
+        categoryTag: tag?.databaseObject,
+        account: account.databaseObject);
 
-    await isar.writeTxn(() async {
-      // Put the `newTransaction` to the TransactionIsar collection
-      await isar.transactionIsars.put(newTransaction);
-
-      // Save the links in the `newTransaction`
-      await newTransaction.categoryLink.save();
-      await newTransaction.categoryTagLink.save();
-      await newTransaction.accountLink.save();
+    realm.write(() {
+      realm.add(newTransaction);
     });
   }
 
@@ -76,23 +68,14 @@ class TransactionRepository {
     required Account account,
     required String? note,
   }) async {
-    final newTransaction = TransactionIsar()
-      ..transactionType = TransactionType.expense
-      ..dateTime = dateTime
-      ..amount = amount
-      ..categoryLink.value = category.isarObject
-      ..accountLink.value = account.isarObject
-      ..categoryTagLink.value = tag?.isarObject
-      ..note = note;
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+        note: note,
+        category: category.databaseObject,
+        categoryTag: tag?.databaseObject,
+        account: account.databaseObject);
 
-    await isar.writeTxn(() async {
-      // Put the `newTransaction` to the TransactionIsar collection
-      await isar.transactionIsars.put(newTransaction);
-
-      // Save the links in the `newTransaction`
-      await newTransaction.categoryLink.save();
-      await newTransaction.categoryTagLink.save();
-      await newTransaction.accountLink.save();
+    realm.write(() {
+      realm.add(newTransaction);
     });
   }
 
@@ -105,29 +88,16 @@ class TransactionRepository {
     required double? fee,
     required bool? isChargeOnDestinationAccount,
   }) async {
-    TransferFeeIsar? feeDetails;
+    TransferFeeDb? transferFee;
     if (fee != null && isChargeOnDestinationAccount != null) {
-      feeDetails = TransferFeeIsar()
-        ..amount = fee
-        ..onDestination = isChargeOnDestinationAccount;
+      transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionIsar()
-      ..transactionType = TransactionType.transfer
-      ..dateTime = dateTime
-      ..amount = amount
-      ..accountLink.value = account.isarObject
-      ..toAccountLink.value = toAccount.isarObject
-      ..transferFeeIsar = feeDetails
-      ..note = note;
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+        note: note, account: account.databaseObject, transferTo: toAccount.databaseObject, transferFee: transferFee);
 
-    await isar.writeTxn(() async {
-      // Put the `newTransaction` to the TransactionIsar collection
-      await isar.transactionIsars.put(newTransaction);
-
-      // Save the links in the `newTransaction`
-      await newTransaction.accountLink.save();
-      await newTransaction.toAccountLink.save();
+    realm.write(() {
+      realm.add(newTransaction);
     });
   }
 
@@ -140,24 +110,16 @@ class TransactionRepository {
     required String? note,
     required double? installmentAmount,
   }) async {
-    final txn = TransactionIsar()
-      ..transactionType = TransactionType.creditSpending
-      ..dateTime = dateTime
-      ..amount = amount
-      ..categoryLink.value = category.isarObject
-      ..accountLink.value = account.isarObject
-      ..categoryTagLink.value = tag?.isarObject
-      ..note = note
-      ..installmentAmount = installmentAmount;
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.creditSpending), dateTime, amount,
+        note: note,
+        category: category.databaseObject,
+        categoryTag: tag?.databaseObject,
+        account: account.databaseObject,
+        installmentAmount: installmentAmount);
 
-    await isar.writeTxn(() async {
-      // Put the `txn` to the TransactionIsar collection
-      await isar.transactionIsars.put(txn);
-
-      // Save the links in the `txn`
-      await txn.accountLink.save();
-      await txn.categoryLink.save();
-      await txn.categoryTagLink.save();
+    realm.write(() {
+      realm.add(newTransaction);
     });
   }
 
@@ -182,23 +144,23 @@ class TransactionRepository {
 
 /////////////////// PROVIDERS //////////////////////////
 
-final transactionRepositoryProvider = Provider<TransactionRepository>(
+final transactionRepositoryRealmProvider = Provider<TransactionRepository>(
   (ref) {
-    final isar = ref.watch(isarProvider);
-    return TransactionRepository(isar);
+    final realm = ref.watch(realmProvider);
+    return TransactionRepository(realm);
   },
 );
 
-final transactionChangesProvider = StreamProvider.family<void, DateTimeRange>(
+final transactionChangesRealmProvider = StreamProvider.family<void, DateTimeRange>(
   (ref, range) {
-    final transactionRepo = ref.watch(transactionRepositoryProvider);
+    final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges(range.start, range.end);
   },
 );
 
-final databaseChangesProvider = StreamProvider.autoDispose<void>(
+final databaseChangesRealmProvider = StreamProvider.autoDispose<void>(
   (ref) {
-    final transactionRepo = ref.watch(transactionRepositoryProvider);
+    final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
     return transactionRepo._watchDatabaseChanges();
   },
 );

@@ -27,7 +27,7 @@ class CategoryTagSelector extends ConsumerStatefulWidget {
 }
 
 class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
-  late final categoryRepo = ref.watch(categoryRepositoryProvider);
+  late final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
 
   final _key = GlobalKey();
 
@@ -80,7 +80,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(categoryTagsChangesProvider(currentCategory)).whenData((_) {
+    ref.watch(categoryTagsChangesRealmProvider(currentCategory)).whenData((_) {
       _tags = categoryRepo.getTagList(currentCategory);
     });
 
@@ -314,7 +314,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
   final _formKey = GlobalKey<FormState>();
 
-  late final categoryRepo = ref.read(categoryRepositoryProvider);
+  late final categoryRepo = ref.read(categoryRepositoryRealmProvider);
 
   late List<CategoryTag>? _tags = categoryRepo.getTagList(widget.category);
 
@@ -363,7 +363,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
         },
         onEditingComplete: () {
           if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
-            final categoryRepo = ref.read(categoryRepositoryProvider);
+            final categoryRepo = ref.read(categoryRepositoryRealmProvider);
 
             CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 

@@ -32,9 +32,9 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
   @override
   void initState() {
     newName = widget.currentCategory.name;
-    newIconCategory = widget.currentCategory.realmObject.iconCategory;
-    newIconIndex = widget.currentCategory.realmObject.iconIndex;
-    newColorIndex = widget.currentCategory.realmObject.colorIndex;
+    newIconCategory = widget.currentCategory.databaseObject.iconCategory;
+    newIconIndex = widget.currentCategory.databaseObject.iconIndex;
+    newColorIndex = widget.currentCategory.databaseObject.colorIndex;
     super.initState();
   }
 
@@ -49,8 +49,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             IconSelectButton(
               backGroundColor: AppColors.allColorsUserCanPick[newColorIndex][0],
               iconColor: AppColors.allColorsUserCanPick[newColorIndex][1],
-              initialIconCategory: widget.currentCategory.realmObject.iconCategory,
-              initialIconIndex: widget.currentCategory.realmObject.iconIndex,
+              initialIconCategory: widget.currentCategory.databaseObject.iconCategory,
+              initialIconIndex: widget.currentCategory.databaseObject.iconIndex,
               onTap: (iconC, iconI) {
                 newIconCategory = iconC;
                 newIconIndex = iconI;
@@ -71,7 +71,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
         ),
         Gap.h24,
         ColorSelectListView(
-          initialColorIndex: widget.currentCategory.realmObject.colorIndex,
+          initialColorIndex: widget.currentCategory.databaseObject.colorIndex,
           onColorTap: (index) {
             setState(() {
               newColorIndex = index;
@@ -92,7 +92,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
                   context: context,
                   label: 'Are you sure that you want to delete "${widget.currentCategory.name}"?',
                   onConfirm: () {
-                    final categoryRepository = ref.read(categoryRepositoryProvider);
+                    final categoryRepository = ref.read(categoryRepositoryRealmProvider);
                     categoryRepository.delete(widget.currentCategory);
                     context.pop();
                   },
@@ -105,7 +105,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
               label: 'Done',
               backgroundColor: context.appTheme.accent,
               onTap: () async {
-                final categoryRepository = ref.read(categoryRepositoryProvider);
+                final categoryRepository = ref.read(categoryRepositoryRealmProvider);
                 categoryRepository.edit(
                   widget.currentCategory,
                   iconCategory: newIconCategory,

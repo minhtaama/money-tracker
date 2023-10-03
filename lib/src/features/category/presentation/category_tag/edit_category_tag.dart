@@ -28,7 +28,7 @@ class EditCategoryTag extends ConsumerStatefulWidget {
 class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
   final _formKey = GlobalKey<FormState>();
 
-  late final categoryRepo = ref.watch(categoryRepositoryProvider);
+  late final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
 
   late final List<CategoryTag> _tags = categoryRepo.getTagList(widget.category)!;
 

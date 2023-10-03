@@ -12,9 +12,9 @@ class RegularAccount extends Account {
 
   @override
   // TODO: implement transactionsList
-  List<RegularTransaction> get transactionsList => List.from(isarObject.txnOfThisAccountBacklinks
-      .map<RegularTransaction>((e) => Transaction.fromIsar(e) as RegularTransaction));
+  List<RegularTransaction> get transactionsList => List.from(databaseObject.transactions
+      .map<RegularTransaction>((txn) => BaseTransaction.fromIsar(txn) as RegularTransaction));
 
-  List<Transfer> get transferTransactionsToThisAccountList =>
-      List.from(isarObject.txnToThisAccountBacklinks.map<Transfer>((e) => Transaction.fromIsar(e) as Transfer));
+  List<Transfer> get transferTransactionsToThisAccountList => List.from(
+      databaseObject.transactionsToThisAccount.map<Transfer>((txn) => BaseTransaction.fromIsar(txn) as Transfer));
 }

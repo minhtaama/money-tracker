@@ -1,7 +1,7 @@
 part of 'transaction_base.dart';
 
 @immutable
-class CreditSpending extends Transaction implements TransactionWithCategory {
+class CreditSpending extends BaseTransaction implements BaseTransactionWithCategory {
   @override
   final CreditAccount? account;
 
@@ -38,8 +38,8 @@ final class PaymentPeriod {
 extension SpendingDetails on CreditSpending {
   List<CreditPayment> get paymentTransactions {
     final payments = <CreditPayment>[];
-    for (TransactionIsar txn in isarObject.paymentTxnBacklinks.toList()) {
-      payments.add(Transaction.fromIsar(txn) as CreditPayment);
+    for (TransactionDb txn in databaseObject.paymentTransactions.toList()) {
+      payments.add(BaseTransaction.fromIsar(txn) as CreditPayment);
     }
     return payments;
   }

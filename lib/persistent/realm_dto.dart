@@ -17,7 +17,7 @@ abstract interface class _IColorAndIcon {
 /////////////////////////////////////// ACCOUNT ////////////////////////////////////
 
 @RealmModel()
-class _AccountRealm implements _IColorAndIcon, _IOrderable {
+class _AccountDb implements _IColorAndIcon, _IOrderable {
   @PrimaryKey()
   late ObjectId id;
 
@@ -42,19 +42,19 @@ class _AccountRealm implements _IColorAndIcon, _IOrderable {
 
   /// All transactions made from this account.
   @Backlink(#account)
-  late Iterable<_TransactionRealm> transactions;
+  late Iterable<_TransactionDb> transactions;
 
   /// Transactions that transfer to this account (need for calculating total money).
   /// Only for type [AccountType.regular].
   @Backlink(#transferTo)
-  late Iterable<_TransactionRealm> transactionsToThisAccount;
+  late Iterable<_TransactionDb> transactionsToThisAccount;
 
   /// Only specify this property if type is [AccountType.credit]
-  late _CreditDetailsRealm? creditDetails;
+  late _CreditDetailsDb? creditDetails;
 }
 
 @RealmModel(ObjectType.embeddedObject)
-class _CreditDetailsRealm {
+class _CreditDetailsDb {
   late double creditBalance;
 
   /// As in percent. This interestRate is only count
@@ -69,7 +69,7 @@ class _CreditDetailsRealm {
 /////////////////////////////////////// CATEGORY ////////////////////////////////////
 
 @RealmModel()
-class _CategoryRealm implements _IOrderable, _IColorAndIcon {
+class _CategoryDb implements _IOrderable, _IColorAndIcon {
   @PrimaryKey()
   late ObjectId id;
 
@@ -93,17 +93,17 @@ class _CategoryRealm implements _IOrderable, _IColorAndIcon {
   int? order;
 
   @Backlink(#category)
-  late Iterable<_CategoryTagRealm> tags;
+  late Iterable<_CategoryTagDb> tags;
 }
 
 @RealmModel()
-class _CategoryTagRealm implements _IOrderable {
+class _CategoryTagDb implements _IOrderable {
   @PrimaryKey()
   late ObjectId id;
 
   late String name;
 
-  _CategoryRealm? category;
+  _CategoryDb? category;
 
   @override
   int? order;
@@ -112,7 +112,7 @@ class _CategoryTagRealm implements _IOrderable {
 /////////////////////////////////////// TRANSACTION ////////////////////////////////////
 
 @RealmModel()
-class _TransactionRealm {
+class _TransactionDb {
   @PrimaryKey()
   late ObjectId id;
 
@@ -135,36 +135,36 @@ class _TransactionRealm {
 
   String? note;
 
-  late _AccountRealm? account;
+  late _AccountDb? account;
 
   /// **Only specify this if type is NOT [TransactionType.transfer]**
-  late _CategoryRealm? category;
+  late _CategoryDb? category;
 
   /// **Only specify this if type is NOT [TransactionType.transfer]**
-  late _CategoryTagRealm? categoryTag;
+  late _CategoryTagDb? categoryTag;
 
   /// Only specify this to `true` when **first creating new account**  and type is [TransactionType.income]**
   bool isInitialTransaction = false;
 
   /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
-  late _AccountRealm? transferTo;
+  late _AccountDb? transferTo;
 
   /// **Only specify this if type is [TransactionType.transfer]**
-  _TransferFeeRealm? transferFee;
+  _TransferFeeDb? transferFee;
 
   /// Payments of this credit spending. **Only available if type is [TransactionType.creditSpending]**
   @Backlink(#spendingTransactions)
-  late Iterable<_TransactionRealm> paymentTransactions;
+  late Iterable<_TransactionDb> paymentTransactions;
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
   double? installmentAmount;
 
   /// **Only specify this if type is [TransactionType.creditPayment]**
-  late _TransactionRealm? spendingTransactions;
+  late _TransactionDb? spendingTransactions;
 }
 
 @RealmModel(ObjectType.embeddedObject)
-class _TransferFeeRealm {
+class _TransferFeeDb {
   double amount = 0;
 
   /// Specify this to `true` if the fee is charged on the destination account
@@ -174,7 +174,7 @@ class _TransferFeeRealm {
 
 /////////////////////////////////////////////// SETTINGS ////////////////////////////////////////////////
 @RealmModel()
-class _SettingsRealm {
+class _SettingsDb {
   @PrimaryKey()
   final int id = 0;
 

@@ -201,7 +201,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     colorIndex: colorIndex,
                     statementDay: int.tryParse(statementDay),
                     paymentDueDay: int.tryParse(paymentDueDay),
-                    interestRate: _formatToDouble(interestRate),
+                    apr: _formatToDouble(interestRate),
                   );
                   context.pop();
                 }

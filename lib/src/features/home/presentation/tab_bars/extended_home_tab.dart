@@ -177,7 +177,9 @@ class TotalMoney extends ConsumerWidget {
 
     double totalBalance = accountRepository.getTotalBalance();
 
-    ref.watch(transactionChangesProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate))).whenData((_) {
+    ref
+        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
 

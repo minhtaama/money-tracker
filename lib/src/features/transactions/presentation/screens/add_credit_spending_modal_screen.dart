@@ -16,9 +16,8 @@ import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../common_widgets/inline_text_form_field.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
-// TODO: change to realm
-import '../../../category/domain/category_tag_x.dart';
-import '../../../category/domain/category_x.dart';
+import '../../../category/domain/category_tag.dart';
+import '../../../category/domain/category.dart';
 import '../../data/transaction_repo.dart';
 import '../selectors/forms.dart';
 
@@ -59,7 +58,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   void _submit() {
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
-      ref.read(transactionRepositoryProvider).writeNewCreditSpendingTxn(
+      ref.read(transactionRepositoryRealmProvider).writeNewCreditSpendingTxn(
             dateTime: _dateTime,
             amount: CalService.formatToDouble(_calOutputSpendAmount)!,
             tag: _tag,
@@ -205,12 +204,11 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                 fontSize: 11,
               )),
           Gap.h4,
-          // TODO: change to realm
-          // CategoryTagSelector(
-          //     category: _category,
-          //     onTagSelected: (value) {
-          //       _tag = value;
-          //     }),
+          CategoryTagSelector(
+              category: _category,
+              onTagSelected: (value) {
+                _tag = value;
+              }),
           Gap.h8,
           CustomTextFormField(
             autofocus: false,

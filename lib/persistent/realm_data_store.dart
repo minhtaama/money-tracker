@@ -10,13 +10,13 @@ class RealmDataStore {
   void init() {
     _config = Configuration.local(
       [
-        AccountRealm.schema,
-        CreditDetailsRealm.schema,
-        CategoryRealm.schema,
-        CategoryTagRealm.schema,
-        TransactionRealm.schema,
-        TransferFeeRealm.schema,
-        SettingsRealm.schema,
+        AccountDb.schema,
+        CreditDetailsDb.schema,
+        CategoryDb.schema,
+        CategoryTagDb.schema,
+        TransactionDb.schema,
+        TransferFeeDb.schema,
+        SettingsDb.schema,
       ],
       initialDataCallback: _initialDataCallback,
       shouldDeleteIfMigrationNeeded: true,
@@ -35,7 +35,7 @@ class RealmDataStore {
 
   void _initialDataCallback(Realm realm) {
     //TODO: add default settings object
-    realm.add(SettingsRealm(0));
+    realm.add(SettingsDb(0));
   }
 }
 

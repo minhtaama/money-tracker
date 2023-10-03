@@ -4,8 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-// TODO: change to realm
-import 'package:money_tracker_app/src/features/category/domain/category_tag_x.dart';
+import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -16,14 +15,13 @@ import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_section.dart';
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
-// TODO: change to realm
-import '../../../category/domain/category_x.dart';
+import '../../../category/domain/category.dart';
 import '../../domain/transaction_base.dart';
 
 class TransactionDetails extends StatelessWidget {
   const TransactionDetails({super.key, required this.transaction});
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
 
   String get _title {
     return switch (transaction) {
@@ -64,12 +62,13 @@ class TransactionDetails extends StatelessWidget {
                 children: [
                   _AccountCard(model: transaction.account!),
                   switch (transaction) {
-                    TransactionWithCategory() => transaction is Income && (transaction as Income).isInitialTransaction
-                        ? Gap.noGap
-                        : _CategoryCard(
-                            model: (transaction as TransactionWithCategory).category!,
-                            categoryTag: (transaction as TransactionWithCategory).categoryTag,
-                          ),
+                    BaseTransactionWithCategory() =>
+                      transaction is Income && (transaction as Income).isInitialTransaction
+                          ? Gap.noGap
+                          : _CategoryCard(
+                              model: (transaction as BaseTransactionWithCategory).category!,
+                              categoryTag: (transaction as BaseTransactionWithCategory).categoryTag,
+                            ),
                     Transfer() => _AccountCard(model: (transaction as Transfer).toAccount!),
                     CreditPayment() => Gap.noGap,
                   },
@@ -88,7 +87,7 @@ class TransactionDetails extends StatelessWidget {
 class _Amount extends ConsumerWidget {
   const _Amount({required this.transaction});
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
 
   String get _iconPath {
     return switch (transaction) {
@@ -156,7 +155,7 @@ class _Amount extends ConsumerWidget {
 class _DateTime extends StatelessWidget {
   const _DateTime({required this.transaction});
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
 
   @override
   Widget build(BuildContext context) {

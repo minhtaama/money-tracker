@@ -18,12 +18,12 @@ class DayCard extends StatelessWidget {
   }) : super(key: key);
 
   final DateTime dateTime;
-  final List<Transaction> transactions;
-  final Function(Transaction)? onTransactionTap;
+  final List<BaseTransaction> transactions;
+  final Function(BaseTransaction)? onTransactionTap;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
-    for (Transaction transaction in transactions) {
+    for (BaseTransaction transaction in transactions) {
       if (transaction is Income) {
         cashFlow += transaction.amount;
       }

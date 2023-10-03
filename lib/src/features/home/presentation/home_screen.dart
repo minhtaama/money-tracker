@@ -8,7 +8,6 @@ import 'package:money_tracker_app/src/features/home/summary_card.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../../../persistent/isar_data_store.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../utils/constants.dart';
@@ -23,8 +22,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late final isar = ref.read(isarProvider);
-  late final transactionRepository = ref.read(transactionRepositoryProvider);
+  late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
 
   late final PageController _controller;
 
@@ -78,7 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   List<DayCard> _buildTransactionWidgetList(
-    List<Transaction> transactionList,
+    List<BaseTransaction> transactionList,
     DateTime dayBeginOfMonth,
     DateTime dayEndOfMonth,
   ) {
@@ -133,9 +131,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<Transaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.listenManual(databaseChangesProvider, (_, __) {
+        ref.listenManual(databaseChangesRealmProvider, (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });

@@ -16,7 +16,7 @@ import '../../domain/transaction_base.dart';
 class TxnDot extends StatelessWidget {
   const TxnDot({Key? key, required this.transaction, this.size}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final double? size;
 
   @override
@@ -74,7 +74,7 @@ class TxnInstallmentIcon extends StatelessWidget {
 class TxnCategoryIcon extends StatelessWidget {
   const TxnCategoryIcon({Key? key, required this.transaction}) : super(key: key);
 
-  final TransactionWithCategory transaction;
+  final BaseTransactionWithCategory transaction;
 
   String get _iconPath {
     if (transaction is Income && _isInitial(transaction)) {
@@ -99,7 +99,7 @@ class TxnCategoryIcon extends StatelessWidget {
 class TxnCategoryName extends StatelessWidget {
   const TxnCategoryName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
-  final TransactionWithCategory transaction;
+  final BaseTransactionWithCategory transaction;
   final double? fontSize;
 
   String get _name {
@@ -129,7 +129,7 @@ class TxnCategoryName extends StatelessWidget {
 class TxnAccountIcon extends StatelessWidget {
   const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final bool useAccountIcon;
 
   String get _iconPath {
@@ -161,7 +161,7 @@ class TxnAccountIcon extends StatelessWidget {
 class TxnAccountName extends StatelessWidget {
   const TxnAccountName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final double? fontSize;
 
   String get _name {
@@ -231,7 +231,7 @@ class TxnAmount extends StatelessWidget {
   const TxnAmount({Key? key, required this.currencyCode, required this.transaction, this.fontSize}) : super(key: key);
 
   final String currencyCode;
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final double? fontSize;
 
   @override
@@ -258,14 +258,14 @@ class TxnAmount extends StatelessWidget {
 class TxnNote extends StatelessWidget {
   const TxnNote({Key? key, required this.transaction}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
 
   String? get _categoryTag {
     final txn = transaction;
     switch (txn) {
-      case TransactionWithCategory():
-        return (txn as TransactionWithCategory).categoryTag != null
-            ? '# ${(txn as TransactionWithCategory).categoryTag!.name}'
+      case BaseTransactionWithCategory():
+        return (txn as BaseTransactionWithCategory).categoryTag != null
+            ? '# ${(txn as BaseTransactionWithCategory).categoryTag!.name}'
             : null;
       case Transfer() || CreditPayment():
         return null;
@@ -402,7 +402,7 @@ class _TxnSpendingPaidBarState extends State<TxnSpendingPaidBar> {
 class TxnDateTime extends StatelessWidget {
   const TxnDateTime({super.key, required this.transaction, this.onDateTap});
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final void Function(DateTime)? onDateTap;
 
   @override
@@ -424,7 +424,7 @@ class TxnDateTime extends StatelessWidget {
 
 ///////////////////////////////////////////////////////////////////
 
-Color _color(BuildContext context, Transaction transaction) {
+Color _color(BuildContext context, BaseTransaction transaction) {
   return switch (transaction) {
     Income() => context.appTheme.positive,
     Expense() => context.appTheme.negative,
@@ -434,7 +434,7 @@ Color _color(BuildContext context, Transaction transaction) {
   };
 }
 
-bool _isInitial(TransactionWithCategory transaction) {
+bool _isInitial(BaseTransactionWithCategory transaction) {
   if (transaction is Income && transaction.isInitialTransaction) {
     return true;
   }

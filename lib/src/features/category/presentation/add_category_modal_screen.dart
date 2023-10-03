@@ -97,7 +97,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
               isDisabled: categoryName == '',
               onTap: () {
                 if (_formKey.currentState!.validate()) {
-                  final categoryRepository = ref.read(categoryRepositoryProvider);
+                  final categoryRepository = ref.read(categoryRepositoryRealmProvider);
                   categoryRepository.writeNew(
                     type: categoryType,
                     iconCategory: iconCategory,

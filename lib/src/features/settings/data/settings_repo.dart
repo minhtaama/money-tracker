@@ -6,7 +6,7 @@ import 'app_settings.dart';
 import '../../../utils/enums.dart';
 
 class SettingsController extends StateNotifier<SettingsData> {
-  SettingsController(this.realm) : super(SettingsData.fromRealm(realm.find<SettingsRealm>(0)!));
+  SettingsController(this.realm) : super(SettingsData.fromDatabase(realm.find<SettingsDb>(0)!));
 
   final Realm realm;
 
@@ -16,7 +16,7 @@ class SettingsController extends StateNotifier<SettingsData> {
       themeIndex: themeIndex,
       currency: currency,
     );
-    realm.write(() => realm.add<SettingsRealm>(state.toRealm(), update: true));
+    realm.write(() => realm.add<SettingsDb>(state.toDatabase(), update: true));
   }
 }
 

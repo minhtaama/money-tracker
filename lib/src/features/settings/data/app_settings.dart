@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 
 import '../../../utils/enums.dart';
@@ -35,7 +34,7 @@ class SettingsData {
 
   final Currency currency;
 
-  factory SettingsData.fromRealm(SettingsRealm settingsRealm) {
+  factory SettingsData.fromDatabase(SettingsDb settingsRealm) {
     ThemeType themeType = switch (settingsRealm.themeType) {
       0 => ThemeType.light,
       1 => ThemeType.dark,
@@ -47,7 +46,7 @@ class SettingsData {
     return SettingsData._(themeIndex: settingsRealm.themeIndex, themeType: themeType, currency: currency);
   }
 
-  SettingsRealm toRealm() {
+  SettingsDb toDatabase() {
     int themeTypeRealmData = switch (themeType) {
       ThemeType.light => 0,
       ThemeType.dark => 1,
@@ -56,7 +55,7 @@ class SettingsData {
 
     int currencyRealmData = Currency.values.indexOf(currency);
 
-    return SettingsRealm(0, themeIndex: themeIndex, themeType: themeTypeRealmData, currencyIndex: currencyRealmData);
+    return SettingsDb(0, themeIndex: themeIndex, themeType: themeTypeRealmData, currencyIndex: currencyRealmData);
   }
 
   SettingsData copyWith({

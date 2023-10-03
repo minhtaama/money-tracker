@@ -6,10 +6,10 @@ import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums.dart';
 
 @immutable
-class Category extends ModelFromRealmWithIcon<CategoryRealm> {
+class Category extends BaseModelWithIcon<CategoryDb> {
   final CategoryType type;
 
-  static Category? fromRealm(CategoryRealm? categoryRealm) {
+  static Category? fromDatabase(CategoryDb? categoryRealm) {
     if (categoryRealm == null) {
       return null;
     }
