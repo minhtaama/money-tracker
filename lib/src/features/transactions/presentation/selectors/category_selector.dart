@@ -6,7 +6,10 @@ import 'package:money_tracker_app/src/features/category/data/category_repo.dart'
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import '../../../../common_widgets/empty_info.dart';
 import '../../../../common_widgets/modal_bottom_sheets.dart';
+import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
 
@@ -99,9 +102,23 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       }),
                     ),
                     Gap.h32,
+                    Gap.h32,
                   ],
                 )
-              : Text('NO CATEGORY'),
+              : Column(
+                  children: [
+                    Gap.h8,
+                    EmptyInfo(
+                      infoText:
+                          'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
+                              .hardcoded,
+                      textSize: 14,
+                      iconPath: AppIcons.accounts,
+                      onTap: () => context.push(RoutePath.addCategory),
+                    ),
+                    Gap.h48,
+                  ],
+                ),
           //TODO: Create an empty list widget
         );
 

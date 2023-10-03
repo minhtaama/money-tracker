@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
@@ -103,10 +106,23 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       }),
                     ),
                     Gap.h32,
+                    Gap.h32,
                   ],
                 )
-              : Text('NO ACCOUNT'),
-          //TODO: Create an empty list widget
+              : Column(
+                  children: [
+                    Gap.h8,
+                    EmptyInfo(
+                      infoText:
+                          'No${widget.accountType == AccountType.credit ? ' credit' : ''} account.\n Tap here to create a first one'
+                              .hardcoded,
+                      textSize: 14,
+                      iconPath: AppIcons.accounts,
+                      onTap: () => context.push(RoutePath.addAccount),
+                    ),
+                    Gap.h48,
+                  ],
+                ),
         );
 
         setState(() {
