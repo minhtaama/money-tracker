@@ -10,13 +10,13 @@ abstract class BaseModel<T extends RealmObject> {
   T get databaseObject => _databaseObject;
 }
 
-abstract class BaseEmbeddedModel<T extends EmbeddedObject> {
-  const BaseEmbeddedModel(this._databaseObject);
-
-  final T _databaseObject;
-
-  T get databaseObject => _databaseObject;
-}
+// abstract class BaseEmbeddedModel<T extends EmbeddedObject> {
+//   const BaseEmbeddedModel(this._databaseObject);
+//
+//   final T _databaseObject;
+//
+//   T get databaseObject => _databaseObject;
+// }
 
 @immutable
 abstract class BaseModelWithIcon<T extends RealmObject> extends BaseModel<T> {
