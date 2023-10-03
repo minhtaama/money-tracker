@@ -181,14 +181,18 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             : Gap.noGap,
         AnimatedContainer(
           duration: k250msDuration,
-          width: _showTextField || _chosenTag != null || _tags == null || _tags!.isEmpty ? 0 : 16,
+          width: _showTextField || _chosenTag != null || _tags == null || currentCategory == null || _tags!.isEmpty
+              ? 0
+              : 16,
           height: 25,
-          child: _showTextField || _chosenTag != null || _tags == null ? null : const VerticalDivider(),
+          child: _showTextField || _chosenTag != null || _tags == null || currentCategory == null
+              ? null
+              : const VerticalDivider(),
         ),
         AnimatedContainer(
           duration: k250msDuration,
           curve: Curves.easeOut,
-          width: _tags == null || _tags!.isEmpty || _showTextField
+          width: _tags == null || currentCategory == null || _tags!.isEmpty || _showTextField
               ? _rowWidth
               : _chosenTag != null
                   ? 0
@@ -367,7 +371,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
             CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
-            //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);
+            categoryRepo.reorderTagToTop(widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
 
             widget.onEditingComplete(newTag!);
 

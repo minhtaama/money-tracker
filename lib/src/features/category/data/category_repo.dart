@@ -83,14 +83,11 @@ class CategoryRepositoryRealmDb {
   void reorder(CategoryType type, int oldIndex, int newIndex) {
     final list = _realmResults(type).toList();
 
+    final item = list.removeAt(oldIndex);
+    list.insert(newIndex, item);
+
     realm.write(
       () {
-        if (oldIndex < newIndex) {
-          newIndex -= 1;
-        }
-        final item = list.removeAt(oldIndex);
-        list.insert(newIndex, item);
-
         // Recreate order to query sort by this property
         for (int i = 0; i < list.length; i++) {
           list[i].order = i;
@@ -141,11 +138,11 @@ class CategoryRepositoryRealmDb {
   void reorderTagToTop(Category category, int oldIndex) {
     final list = _tagRealmResults(category).toList();
 
+    final item = list.removeAt(oldIndex);
+    list.insert(0, item);
+
     realm.write(
       () {
-        final item = list.removeAt(oldIndex);
-        list.insert(0, item);
-
         // Recreate order to query sort by this property
         for (int i = 0; i < list.length; i++) {
           list[i].order = i;
