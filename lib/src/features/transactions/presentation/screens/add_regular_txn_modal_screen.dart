@@ -47,42 +47,43 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   }
 
   void _submit() {
-    if (_formKey.currentState!.validate()) {
-      final transactionRepo = ref.read(transactionRepositoryProvider);
-
-      if (_type == TransactionType.income) {
-        transactionRepo.writeNewIncomeTxn(
-          dateTime: _dateTime,
-          amount: CalService.formatToDouble(_calculatorOutput)!,
-          category: _category!,
-          tag: _tag,
-          account: _account!,
-          note: _note,
-        );
-      }
-      if (_type == TransactionType.expense) {
-        transactionRepo.writeNewExpenseTxn(
-          dateTime: _dateTime,
-          amount: CalService.formatToDouble(_calculatorOutput)!,
-          category: _category!,
-          tag: _tag,
-          account: _account!,
-          note: _note,
-        );
-      }
-      if (_type == TransactionType.transfer) {
-        transactionRepo.writeNewTransferTxn(
-            dateTime: _dateTime,
-            amount: CalService.formatToDouble(_calculatorOutput)!,
-            account: _account!,
-            toAccount: _toAccount!,
-            note: _note,
-            fee: null,
-            isChargeOnDestinationAccount: null);
-        // TODO: add transfer fee logic
-      }
-      context.pop();
-    }
+    // TODO: change to realm
+    // if (_formKey.currentState!.validate()) {
+    //   final transactionRepo = ref.read(transactionRepositoryProvider);
+    //
+    //   if (_type == TransactionType.income) {
+    //     transactionRepo.writeNewIncomeTxn(
+    //       dateTime: _dateTime,
+    //       amount: CalService.formatToDouble(_calculatorOutput)!,
+    //       category: _category!,
+    //       tag: _tag,
+    //       account: _account!,
+    //       note: _note,
+    //     );
+    //   }
+    //   if (_type == TransactionType.expense) {
+    //     transactionRepo.writeNewExpenseTxn(
+    //       dateTime: _dateTime,
+    //       amount: CalService.formatToDouble(_calculatorOutput)!,
+    //       category: _category!,
+    //       tag: _tag,
+    //       account: _account!,
+    //       note: _note,
+    //     );
+    //   }
+    //   if (_type == TransactionType.transfer) {
+    //     transactionRepo.writeNewTransferTxn(
+    //         dateTime: _dateTime,
+    //         amount: CalService.formatToDouble(_calculatorOutput)!,
+    //         account: _account!,
+    //         toAccount: _toAccount!,
+    //         note: _note,
+    //         fee: null,
+    //         isChargeOnDestinationAccount: null);
+    //     // TODO: add transfer fee logic
+    //   }
+    //   context.pop();
+    // }
   }
 
   @override
@@ -137,9 +138,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             transactionType: widget.transactionType,
                             validator: (_) => _categoryValidator(),
                             onChangedCategory: (newCategory) {
-                              setState(() {
-                                _category = newCategory;
-                              });
+                              // TODO: change to realm
+                              // setState(() {
+                              //   _category = newCategory;
+                              // });
                             })
                         : AccountFormSelector(
                             accountType: AccountType.regular,

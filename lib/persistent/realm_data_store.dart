@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import 'realm_dto.dart';
@@ -18,7 +19,17 @@ class RealmDataStore {
         SettingsRealm.schema,
       ],
       initialDataCallback: _initialDataCallback,
+      shouldDeleteIfMigrationNeeded: true,
     );
+
+    // Get on-disk location of the default Realm
+    // Must add android-sdk/platform-tools to PATH environment variables, then run in terminal:
+    // adb root
+    // adb pull /data/data/com.minhtaama.money_tracker_app/files/default.realm C:\Users\Admin\OneDrive\Desktop
+    if (kDebugMode) {
+      print(Configuration.defaultStoragePath);
+    }
+
     _realm = Realm(_config);
   }
 

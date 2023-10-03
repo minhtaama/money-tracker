@@ -4,7 +4,8 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
+// TODO: change to realm
+import 'package:money_tracker_app/src/features/category/domain/category_tag_x.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -15,7 +16,8 @@ import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_section.dart';
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
-import '../../../category/domain/category.dart';
+// TODO: change to realm
+import '../../../category/domain/category_x.dart';
 import '../../domain/transaction_base.dart';
 
 class TransactionDetails extends StatelessWidget {

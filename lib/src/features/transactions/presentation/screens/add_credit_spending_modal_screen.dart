@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -17,7 +16,9 @@ import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../common_widgets/inline_text_form_field.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
-import '../../../category/domain/category_tag.dart';
+// TODO: change to realm
+import '../../../category/domain/category_tag_x.dart';
+import '../../../category/domain/category_x.dart';
 import '../../data/transaction_repo.dart';
 import '../selectors/forms.dart';
 
@@ -177,7 +178,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       transactionType: TransactionType.expense,
                       validator: (_) => _categoryValidator(),
                       onChangedCategory: (newCategory) => setState(() {
-                        _category = newCategory;
+                        // TODO: change to realm
+                        //_category = newCategory;
                       }),
                     ),
                     Gap.h16,
@@ -203,11 +205,12 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                 fontSize: 11,
               )),
           Gap.h4,
-          CategoryTagSelector(
-              category: _category,
-              onTagSelected: (value) {
-                _tag = value;
-              }),
+          // TODO: change to realm
+          // CategoryTagSelector(
+          //     category: _category,
+          //     onTagSelected: (value) {
+          //       _tag = value;
+          //     }),
           Gap.h8,
           CustomTextFormField(
             autofocus: false,

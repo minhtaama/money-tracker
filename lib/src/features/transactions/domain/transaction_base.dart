@@ -4,8 +4,10 @@ import 'package:money_tracker_app/persistent/isar_model.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account_base.dart';
-import '../../category/domain/category.dart';
-import '../../category/domain/category_tag.dart';
+
+// TODO: Change to realm
+import '../../category/domain/category_x.dart';
+import '../../category/domain/category_tag_x.dart';
 import '../data/isar_dto/transaction_isar.dart';
 
 part 'regular_transaction.dart';

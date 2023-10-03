@@ -1,22 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:money_tracker_app/persistent/isar_model.dart';
-import 'package:money_tracker_app/src/features/category/data/isar_dto/category_tag_isar.dart';
-import 'package:money_tracker_app/src/features/category/domain/category.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:money_tracker_app/persistent/realm_dto.dart';
+
+import '../../../../persistent/model_from_realm.dart';
 
 @immutable
-class CategoryTag extends IsarModel<CategoryTagIsar> {
+class CategoryTag extends ModelFromRealm<CategoryTagRealm> {
   final String name;
 
-  static CategoryTag? fromIsar(CategoryTagIsar? categoryTagIsar) {
-    if (categoryTagIsar == null) {
+  static CategoryTag? fromRealm(CategoryTagRealm? tagRealm) {
+    if (tagRealm == null) {
       return null;
     }
 
     return CategoryTag._(
-      categoryTagIsar,
-      categoryTagIsar.name,
+      tagRealm,
+      tagRealm.name,
     );
   }
 
-  const CategoryTag._(super._isarObject, this.name);
+  const CategoryTag._(super.realmObject, this.name);
 }

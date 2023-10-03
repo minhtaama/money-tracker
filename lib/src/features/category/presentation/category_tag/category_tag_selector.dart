@@ -35,7 +35,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   late Category? currentCategory = widget.category;
 
-  late List<CategoryTag>? _tags = categoryRepo.getTagsSortedByOrder(currentCategory);
+  late List<CategoryTag>? _tags = categoryRepo.getTagList(currentCategory);
 
   CategoryTag? _chosenTag;
 
@@ -81,7 +81,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
   @override
   Widget build(BuildContext context) {
     ref.watch(categoryTagsChangesProvider(currentCategory)).whenData((_) {
-      _tags = categoryRepo.getTagsSortedByOrder(currentCategory);
+      _tags = categoryRepo.getTagList(currentCategory);
     });
 
     return Row(
@@ -159,7 +159,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                               setState(
                                 () {
                                   _chosenTag = tag;
-                                  _tags = categoryRepo.getTagsSortedByOrder(widget.category!);
+                                  _tags = categoryRepo.getTagList(widget.category!);
                                   widget.onTagSelected(_chosenTag);
                                 },
                               );
@@ -202,7 +202,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                   setState(
                     () {
                       _chosenTag = tag;
-                      _tags = categoryRepo.getTagsSortedByOrder(widget.category!);
+                      _tags = categoryRepo.getTagList(widget.category!);
                       widget.onTagSelected(_chosenTag);
                     },
                   );
@@ -316,13 +316,13 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
   late final categoryRepo = ref.read(categoryRepositoryProvider);
 
-  late List<CategoryTag>? _tags = categoryRepo.getTagsSortedByOrder(widget.category);
+  late List<CategoryTag>? _tags = categoryRepo.getTagList(widget.category);
 
   String? _newTag;
 
   @override
   void didUpdateWidget(covariant AddCategoryTagButton oldWidget) {
-    _tags = categoryRepo.getTagsSortedByOrder(widget.category);
+    _tags = categoryRepo.getTagList(widget.category);
     super.didUpdateWidget(oldWidget);
   }
 
@@ -361,11 +361,11 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
           _newTag = null;
           _controller.text = '';
         },
-        onEditingComplete: () async {
+        onEditingComplete: () {
           if (widget.category != null && _newTag != null && _formKey.currentState!.validate()) {
             final categoryRepo = ref.read(categoryRepositoryProvider);
 
-            CategoryTag? newTag = await categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
+            CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
             //categoryRepo.reorderTagToTop(categoryRepo.getTagsSortedByOrder(widget.category)!.toList(), categoryRepo.getTagsSortedByOrder(widget.category)!.length);
 

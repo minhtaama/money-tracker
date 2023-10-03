@@ -32,9 +32,9 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
   @override
   void initState() {
     newName = widget.currentCategory.name;
-    newIconCategory = widget.currentCategory.isarObject.iconCategory;
-    newIconIndex = widget.currentCategory.isarObject.iconIndex;
-    newColorIndex = widget.currentCategory.isarObject.colorIndex;
+    newIconCategory = widget.currentCategory.realmObject.iconCategory;
+    newIconIndex = widget.currentCategory.realmObject.iconIndex;
+    newColorIndex = widget.currentCategory.realmObject.colorIndex;
     super.initState();
   }
 
@@ -49,8 +49,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             IconSelectButton(
               backGroundColor: AppColors.allColorsUserCanPick[newColorIndex][0],
               iconColor: AppColors.allColorsUserCanPick[newColorIndex][1],
-              initialIconCategory: widget.currentCategory.isarObject.iconCategory,
-              initialIconIndex: widget.currentCategory.isarObject.iconIndex,
+              initialIconCategory: widget.currentCategory.realmObject.iconCategory,
+              initialIconIndex: widget.currentCategory.realmObject.iconIndex,
               onTap: (iconC, iconI) {
                 newIconCategory = iconC;
                 newIconIndex = iconI;
@@ -71,7 +71,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
         ),
         Gap.h24,
         ColorSelectListView(
-          initialColorIndex: widget.currentCategory.isarObject.colorIndex,
+          initialColorIndex: widget.currentCategory.realmObject.colorIndex,
           onColorTap: (index) {
             setState(() {
               newColorIndex = index;
@@ -106,7 +106,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
               backgroundColor: context.appTheme.accent,
               onTap: () async {
                 final categoryRepository = ref.read(categoryRepositoryProvider);
-                await categoryRepository.edit(
+                categoryRepository.edit(
                   widget.currentCategory,
                   iconCategory: newIconCategory,
                   iconIndex: newIconIndex,

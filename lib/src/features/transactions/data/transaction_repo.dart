@@ -10,8 +10,9 @@ import 'package:async/async.dart';
 import '../../../../persistent/isar_data_store.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account_base.dart';
-import '../../category/domain/category.dart';
-import '../../category/domain/category_tag.dart';
+//TODO: Change to realm
+import '../../category/domain/category_x.dart';
+import '../../category/domain/category_tag_x.dart';
 import '../domain/transaction_base.dart';
 
 class TransactionRepository {
