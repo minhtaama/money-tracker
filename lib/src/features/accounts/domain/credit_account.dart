@@ -5,7 +5,7 @@ class CreditAccount extends Account {
   final double creditBalance;
 
   /// (APR) As in percent.
-  final double penaltyInterest;
+  final double apr;
 
   final int statementDay;
 
@@ -18,7 +18,7 @@ class CreditAccount extends Account {
     required super.backgroundColor,
     required super.iconPath,
     required this.creditBalance,
-    required this.penaltyInterest,
+    required this.apr,
     required this.statementDay,
     required this.paymentDueDay,
   });
@@ -58,22 +58,27 @@ extension CreditDetails on CreditAccount {
     return pendingPayment;
   }
 
-  DateTime get earliestPayableDate {
+  DateTime? get earliestPayableDate {
     DateTime time = DateTime.now();
 
+    final list = transactionsList.where((txn) => !txn.isDone).toList();
+
+    if (list.isEmpty) {
+      return null;
+    }
+
     // Get earliest spending transaction un-done
-    for (CreditSpending txn in transactionsList) {
-      if (!txn.isDone && txn.dateTime.isBefore(time)) {
+    for (CreditSpending txn in list) {
+      if (txn.dateTime.isBefore(time)) {
         time = txn.dateTime;
       }
     }
 
     // Earliest day that payment can happens
     if (time.day <= paymentDueDay) {
-      time = time.copyWith(day: paymentDueDay + 1);
-    }
-    if (time.day >= statementDay) {
-      time = time.copyWith(day: paymentDueDay + 1, month: time.month + 1);
+      time = time.copyWith(day: paymentDueDay + 1).onlyYearMonthDay;
+    } else if (time.day >= statementDay) {
+      time = time.copyWith(day: paymentDueDay + 1, month: time.month + 1).onlyYearMonthDay;
     }
 
     return time;

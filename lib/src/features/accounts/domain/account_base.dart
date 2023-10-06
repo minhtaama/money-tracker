@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../transactions/domain/transaction_base.dart';
@@ -31,7 +33,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
           creditBalance: accountDb.creditDetails!.creditBalance,
-          penaltyInterest: accountDb.creditDetails!.apr,
+          apr: accountDb.creditDetails!.apr,
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay)
     };
@@ -47,7 +49,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
 }
 
 extension Details on Account {
-  double get currentBalance {
+  double get currentAmount {
     switch (this) {
       case RegularAccount():
         double balance = 0;

@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart';
@@ -16,6 +17,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../../common_widgets/modal_screen_components.dart';
@@ -40,7 +42,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
 
   String statementDay = '';
   String paymentDueDay = '';
-  String interestRate = '';
+  String apr = '';
 
   double? _formatToDouble(String formattedValue) {
     try {
@@ -150,30 +152,42 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           ),
           HideableContainer(
             hidden: accountType != AccountType.credit,
-            child: CardItem(
-              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.greyBorder(context)),
+              ),
+              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   InlineTextFormField(
                     prefixText: 'Statement date:',
-                    suffixText: 'of this month',
+                    width: 30,
+                    maxLength: 2,
                     validator: (_) => _dateInputValidator(statementDay),
                     onChanged: (value) => statementDay = value,
                   ),
                   Gap.h8,
                   InlineTextFormField(
-                    prefixText: 'Payment date :',
-                    suffixText: 'of next month',
+                    prefixText: 'Payment due date :',
+                    width: 30,
+                    maxLength: 2,
                     validator: (_) => _dateInputValidator(paymentDueDay),
                     onChanged: (value) => paymentDueDay = value,
                   ),
                   Gap.h8,
                   InlineTextFormField(
-                    prefixText: 'Interest rate:',
+                    prefixText: 'APR:',
+                    width: 60,
                     suffixText: '%',
-                    validator: (_) => _formatToDouble(interestRate) == null ? '' : null,
-                    onChanged: (value) => interestRate = value,
+                    suffixWidget: HelpButton(
+                      title: 'APR (Annual Percentage Rate)',
+                      text: 'APR'.hardcoded,
+                      yOffset: 4,
+                    ),
+                    validator: (_) => _formatToDouble(apr) == null ? '' : null,
+                    onChanged: (value) => apr = value,
                   ),
                 ],
               ),
@@ -201,7 +215,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     colorIndex: colorIndex,
                     statementDay: int.tryParse(statementDay),
                     paymentDueDay: int.tryParse(paymentDueDay),
-                    apr: _formatToDouble(interestRate),
+                    apr: _formatToDouble(apr),
                   );
                   context.pop();
                 }

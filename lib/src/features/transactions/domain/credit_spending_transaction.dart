@@ -44,26 +44,51 @@ extension SpendingDetails on CreditSpending {
     return payments;
   }
 
-  // List<PaymentPeriod> get paymentPeriods {
-  //   final list = <PaymentPeriod>[];
-  // }
-
-  List<DateTime> statementDaysUntil({required DateTime toDate}) {
+  DateTime get firstDueDate {
     if (account == null) {
-      throw ErrorDescription('Credit Account must be specified');
+      throw ErrorDescription('No credit account is associated with this transaction');
     }
 
-    DateTime startDate = dateTime;
-    List<DateTime> list = [];
-    for (int month = startDate.month;
-        DateTime(startDate.year, month, account!.statementDay - 1).isBefore(toDate.onlyYearMonthDay);
-        month++) {
-      list.add(DateTime(startDate.year, month, account!.statementDay - 1));
+    if (dateTime.day >= account!.statementDay) {
+      return dateTime.copyWith(day: account!.paymentDueDay, month: dateTime.month + 2).onlyYearMonthDay;
     }
-    return list;
+
+    return dateTime.copyWith(day: account!.paymentDueDay, month: dateTime.month + 1).onlyYearMonthDay;
   }
 
-  // bool interestToPayAt(DateTime dateTime) {}
+  double interestAt(DateTime date) {
+    if (account == null) {
+      throw ErrorDescription('No credit account is associated with this transaction');
+    }
+
+    if (date.onlyYearMonthDay.isBefore(firstDueDate) || date.onlyYearMonthDay.isAtSameMomentAs(firstDueDate)) {
+      return 0;
+    }
+
+    final daysDifference = dateTime.getDaysDifferent(date);
+    final aprInDay = account!.apr / (365 * 100);
+    double interest = 0;
+    for (int i = 1; i <= daysDifference; i++) {
+      interest += (remainingAmount + interest) * aprInDay;
+    }
+
+    return interest;
+  }
+
+  // List<DateTime> statementDaysUntil({required DateTime toDate}) {
+  //   if (account == null) {
+  //     throw ErrorDescription('Credit Account must be specified');
+  //   }
+  //
+  //   DateTime startDate = dateTime;
+  //   List<DateTime> list = [];
+  //   for (int month = startDate.month;
+  //       DateTime(startDate.year, month, account!.statementDay - 1).isBefore(toDate.onlyYearMonthDay);
+  //       month++) {
+  //     list.add(DateTime(startDate.year, month, account!.statementDay - 1));
+  //   }
+  //   return list;
+  // }
 
   bool get isDone {
     return paidAmount >= amount;
@@ -80,6 +105,8 @@ extension SpendingDetails on CreditSpending {
     }
     return paidAmount;
   }
+
+  double get remainingAmount => amount - paidAmount;
 
   double get minimumPaymentAmount {
     if (hasInstallment) {

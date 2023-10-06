@@ -138,8 +138,10 @@ class CategoryRepositoryRealmDb {
   void reorderTagToTop(Category category, int oldIndex) {
     final list = _tagRealmResults(category).toList();
 
-    final item = list.removeAt(oldIndex);
-    list.insert(0, item);
+    if (list.length >= 2) {
+      final item = list.removeAt(oldIndex);
+      list.insert(0, item);
+    }
 
     realm.write(
       () {

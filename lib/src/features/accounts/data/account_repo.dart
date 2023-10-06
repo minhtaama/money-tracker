@@ -41,7 +41,7 @@ class AccountRepositoryRealmDb {
       accountList = getList(AccountType.regular);
     }
     for (Account account in accountList) {
-      totalBalance += account.currentBalance;
+      totalBalance += account.currentAmount;
     }
     return totalBalance;
   }

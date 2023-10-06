@@ -19,6 +19,7 @@ class CreditSpendingsList extends ConsumerWidget {
     required this.title,
     this.isSimple = true,
     required this.transactions,
+    this.atDate,
     this.onDateTap,
   }) : super(key: key);
 
@@ -26,6 +27,7 @@ class CreditSpendingsList extends ConsumerWidget {
   final bool isSimple;
   final List<CreditSpending> transactions;
   final void Function(DateTime)? onDateTap;
+  final DateTime? atDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,6 +71,7 @@ class CreditSpendingsList extends ConsumerWidget {
                     transactions: transactions,
                     currencyCode: context.currentSettings.currency.code,
                     onDateTap: onDateTap,
+                    atDate: atDate,
                   ),
                 ),
               )
@@ -76,6 +79,7 @@ class CreditSpendingsList extends ConsumerWidget {
                 transactions: transactions,
                 currencyCode: context.currentSettings.currency.code,
                 onDateTap: onDateTap,
+                atDate: atDate,
               ),
       ],
     );
@@ -83,11 +87,12 @@ class CreditSpendingsList extends ConsumerWidget {
 }
 
 class _List extends StatelessWidget {
-  const _List({required this.transactions, required this.currencyCode, this.onDateTap});
+  const _List({required this.transactions, required this.currencyCode, this.onDateTap, this.atDate});
 
   final List<CreditSpending> transactions;
   final String currencyCode;
   final void Function(DateTime)? onDateTap;
+  final DateTime? atDate;
 
   @override
   Widget build(BuildContext context) {
@@ -117,36 +122,27 @@ class _List extends StatelessWidget {
                         onTap: () => context.push(RoutePath.transaction, extra: transaction),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
-                          child: Column(
+                          child: Row(
                             children: [
-                              Row(
+                              Expanded(
+                                child: _Details(
+                                  transaction: transaction,
+                                  currencyCode: currencyCode,
+                                  onDateTap: onDateTap,
+                                ),
+                              ),
+                              Gap.w16,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Expanded(
-                                    child: _Details(
-                                      transaction: transaction,
-                                      currencyCode: currencyCode,
-                                      onDateTap: onDateTap,
-                                    ),
-                                  ),
-                                  Gap.w16,
                                   TxnAmount(
                                     currencyCode: currencyCode,
                                     transaction: transaction,
                                     fontSize: 14,
                                   ),
-                                ],
-                              ),
-                              Gap.h4,
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TxnSpendingPaidBar(
-                                      percentage: 0.6,
-                                      height: 10,
-                                    ),
-                                  ),
-                                  Gap.w8,
-                                  TxnInstallmentIcon(transaction: transaction),
+                                  atDate != null
+                                      ? TxnCreditInterest(transaction: transaction, atDate: atDate!)
+                                      : Gap.noGap,
                                 ],
                               ),
                             ],

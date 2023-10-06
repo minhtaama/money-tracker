@@ -22,6 +22,15 @@ extension DateTimeExtensions on DateTime {
     return months;
   }
 
+  int getDaysDifferent(DateTime date) {
+    final current = onlyYearMonthDay;
+    final until = date.onlyYearMonthDay;
+
+    Duration diff = current.difference(until);
+
+    return diff.inDays.abs();
+  }
+
   String getFormattedDate({
     DateTimeType type = DateTimeType.ddmmyyyy,
     bool hasDay = true,

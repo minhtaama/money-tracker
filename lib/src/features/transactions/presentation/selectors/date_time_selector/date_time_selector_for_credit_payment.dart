@@ -49,49 +49,6 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
     super.didUpdateWidget(oldWidget);
   }
 
-  Widget _dayBuilder(
-      {required DateTime date,
-      BoxDecoration? decoration,
-      bool? isDisabled,
-      bool? isSelected,
-      bool? isToday,
-      TextStyle? textStyle}) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        height: 33,
-        width: 33,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(1000),
-          border: isToday != null && isToday
-              ? Border.all(
-                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
-                )
-              : null,
-          color: isSelected != null && isSelected
-              ? context.appTheme.primary
-              : _hasUnpaidSpendingTransaction(date)
-                  ? context.appTheme.negative.withOpacity(isDisabled != null && isDisabled ? 0.7 : 1)
-                  : Colors.transparent,
-        ),
-        child: Center(
-          child: Text(
-            date.day.toString(),
-            style: kHeader4TextStyle.copyWith(
-              color: isDisabled != null && isDisabled
-                  ? AppColors.greyBgr(context)
-                  : isSelected != null && isSelected
-                      ? context.appTheme.primaryNegative
-                      : _hasUnpaidSpendingTransaction(date)
-                          ? context.appTheme.onNegative
-                          : context.appTheme.backgroundNegative,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -151,25 +108,35 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) => AnimatedSize(
                                 duration: k150msDuration,
-                                child: monthView.isAtSameMomentAs(_earliestMonthViewable)
+                                child: widget.creditAccount!.earliestPayableDate == null
                                     ? EmptyInfo(
                                         iconPath: AppIcons.done,
-                                        infoText: 'No payment is needed before this time'.hardcoded,
+                                        infoText:
+                                            'This credit account currently has no credit/BNPL transaction needed to pay'
+                                                .hardcoded,
                                       )
-                                    : selectedDay != null
-                                        ? CreditSpendingsList(
-                                            title: 'Transactions require payment:'.hardcoded,
-                                            transactions: widget.creditAccount!.unpaidSpendingTxnsBefore(selectedDay),
-                                            onDateTap: (dateTime) => setState(() {
-                                              _currentMonthView = dateTime;
-                                            }),
+                                    : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
+                                            .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
+                                        ? EmptyInfo(
+                                            iconPath: AppIcons.done,
+                                            infoText: 'No payment is needed before this time'.hardcoded,
                                           )
-                                        : EmptyInfo(
-                                            iconPath: AppIcons.today,
-                                            infoText:
-                                                'Select a payment day.\n Spending transaction can be paid will be displayed here'
-                                                    .hardcoded,
-                                          ),
+                                        : selectedDay != null
+                                            ? CreditSpendingsList(
+                                                title: 'Transactions require payment:'.hardcoded,
+                                                transactions:
+                                                    widget.creditAccount!.unpaidSpendingTxnsBefore(selectedDay),
+                                                onDateTap: (dateTime) => setState(() {
+                                                  _currentMonthView = dateTime;
+                                                }),
+                                                atDate: selectedDay,
+                                              )
+                                            : EmptyInfo(
+                                                iconPath: AppIcons.today,
+                                                infoText:
+                                                    'Select a payment day.\n Spending transaction can be paid will be displayed here'
+                                                        .hardcoded,
+                                              ),
                               ),
                             );
                           },
@@ -196,13 +163,61 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
   }
 }
 
-extension _CreditDetails on _DateTimeSelectorForCreditPaymentState {
+extension _Details on _DateTimeSelectorForCreditPaymentState {
+  Widget _dayBuilder(
+      {required DateTime date,
+      BoxDecoration? decoration,
+      bool? isDisabled,
+      bool? isSelected,
+      bool? isToday,
+      TextStyle? textStyle}) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        height: 33,
+        width: 33,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(1000),
+          border: isToday != null && isToday
+              ? Border.all(
+                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+                )
+              : null,
+          color: isSelected != null && isSelected
+              ? context.appTheme.primary
+              : _hasUnpaidSpendingTransaction(date)
+                  ? context.appTheme.negative.withOpacity(isDisabled != null && isDisabled ? 0.7 : 1)
+                  : Colors.transparent,
+        ),
+        child: Center(
+          child: Text(
+            date.day.toString(),
+            style: kHeader4TextStyle.copyWith(
+              color: isDisabled != null && isDisabled
+                  ? AppColors.greyBgr(context)
+                  : isSelected != null && isSelected
+                      ? context.appTheme.primaryNegative
+                      : _hasUnpaidSpendingTransaction(date)
+                          ? context.appTheme.onNegative
+                          : context.appTheme.backgroundNegative,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   DateTime get _earliestMonthViewable {
     if (widget.creditAccount == null) {
       throw ErrorDescription('Must specify a credit account first');
     }
+
+    if (widget.creditAccount!.earliestPayableDate == null) {
+      return DateTime(DateTime.now().year, DateTime.now().month);
+    }
+
     return DateTime(
-        widget.creditAccount!.earliestPayableDate.year, widget.creditAccount!.earliestPayableDate.month - 1);
+        widget.creditAccount!.earliestPayableDate!.year, widget.creditAccount!.earliestPayableDate!.month - 1);
   }
 
   bool _hasUnpaidSpendingTransaction(DateTime dateTime) {
@@ -222,8 +237,12 @@ extension _CreditDetails on _DateTimeSelectorForCreditPaymentState {
       throw ErrorDescription('Must specify a credit account first');
     }
 
-    if ((date.day >= _statementDay! || date.day <= _paymentDueDay!) &&
-        date.isAfter(widget.creditAccount!.earliestPayableDate)) {
+    if (widget.creditAccount!.earliestPayableDate == null) {
+      return false;
+    }
+
+    if (date.isAfter(widget.creditAccount!.earliestPayableDate!) ||
+        date.isAtSameMomentAs(widget.creditAccount!.earliestPayableDate!)) {
       return true;
     } else {
       return false;
