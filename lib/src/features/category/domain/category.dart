@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/persistent/model_from_realm.dart';
+import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';

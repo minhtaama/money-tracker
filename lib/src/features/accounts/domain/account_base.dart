@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import '../../../../persistent/model_from_realm.dart';
+import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../transactions/domain/transaction_base.dart';
 
