@@ -24,8 +24,8 @@ class RealmDataStore {
 
     // Get on-disk location of the default Realm
     // Must add android-sdk/platform-tools to PATH environment variables, then run in terminal:
-    // adb root
-    // adb pull /data/data/com.minhtaama.money_tracker_app/files/default.realm C:\Users\Admin\OneDrive\Desktop
+    // $ adb root
+    // $ adb pull /data/data/com.minhtaama.money_tracker_app/files/default.realm C:\Users\Admin\OneDrive\Desktop
     if (kDebugMode) {
       print(Configuration.defaultStoragePath);
     }

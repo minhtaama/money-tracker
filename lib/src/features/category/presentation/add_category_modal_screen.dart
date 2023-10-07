@@ -68,6 +68,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
                     }
                     return null;
                   },
+                  maxLines: 1,
                   onFieldSubmitted: (_) => _formKey.currentState!.validate(),
                   hintText: 'Category Name',
                   onChanged: (value) {

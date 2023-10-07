@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
@@ -126,6 +125,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                 child: CustomTextFormField(
                   autofocus: false,
                   focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
+                  maxLines: 1,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Account name must not empty';
