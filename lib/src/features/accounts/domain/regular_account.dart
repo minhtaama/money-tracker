@@ -11,9 +11,16 @@ class RegularAccount extends Account {
   });
 
   @override
-  List<RegularTransaction> get transactionsList => List.from(databaseObject.transactions
-      .map<RegularTransaction>((txn) => BaseTransaction.fromIsar(txn) as RegularTransaction));
+  List<BaseRegularTransaction> get transactionsList {
+    final List<BaseRegularTransaction> list = List.from(databaseObject.transactions
+        .query('SORT(dateTime ASC)')
+        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromIsar(txn) as BaseRegularTransaction));
+    // list.sort((a, b) {
+    //   return a.dateTime.compareTo(b.dateTime);
+    // });
+    return list;
+  }
 
-  List<Transfer> get transferTransactionsToThisAccountList => List.from(
-      databaseObject.transactionsToThisAccount.map<Transfer>((txn) => BaseTransaction.fromIsar(txn) as Transfer));
+  List<Transfer> get transferTransactionsList =>
+      List.from(databaseObject.transferTransactions.map<Transfer>((txn) => BaseTransaction.fromIsar(txn) as Transfer));
 }

@@ -1,17 +1,12 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../accounts/domain/account_base.dart';
-
-// TODO: Change to realm
 import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
 
 part 'regular_transaction.dart';
-part 'credit_payment_transaction.dart';
-part 'credit_spending_transaction.dart';
+part 'credit_transaction.dart';
 
 @immutable
 sealed class BaseTransaction extends BaseModel<TransactionDb> {
@@ -59,7 +54,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabase(txn.account) as RegularAccount?,
-          toAccount: Account.fromDatabase(txn.transferTo) as RegularAccount?,
+          toAccount: Account.fromDatabase(txn.transferAccount) as RegularAccount?,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -69,7 +64,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime,
           txn.amount,
           txn.note,
-          account: Account.fromDatabase(txn.account) as CreditAccount?,
+          Account.fromDatabase(txn.account) as CreditAccount?,
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
@@ -82,8 +77,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime,
           txn.amount,
           txn.note,
-          account: Account.fromDatabase(txn.account),
-          toCreditAccount: Account.fromDatabase(txn.transferTo) as CreditAccount,
+          Account.fromDatabase(txn.account) as CreditAccount?,
+          fromRegularAccount: Account.fromDatabase(txn.transferAccount) as CreditAccount,
         );
     }
   }

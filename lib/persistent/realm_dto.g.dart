@@ -89,16 +89,16 @@ class AccountDb extends _AccountDb
       throw RealmUnsupportedSetError();
 
   @override
-  RealmResults<TransactionDb> get transactionsToThisAccount {
+  RealmResults<TransactionDb> get transferTransactions {
     if (!isManaged) {
       throw RealmError('Using backlinks is only possible for managed objects.');
     }
-    return RealmObjectBase.get<TransactionDb>(this, 'transactionsToThisAccount')
+    return RealmObjectBase.get<TransactionDb>(this, 'transferTransactions')
         as RealmResults<TransactionDb>;
   }
 
   @override
-  set transactionsToThisAccount(covariant RealmResults<TransactionDb> value) =>
+  set transferTransactions(covariant RealmResults<TransactionDb> value) =>
       throw RealmUnsupportedSetError();
 
   @override
@@ -126,9 +126,8 @@ class AccountDb extends _AccountDb
           linkOriginProperty: 'account',
           collectionType: RealmCollectionType.list,
           linkTarget: 'TransactionDb'),
-      SchemaProperty(
-          'transactionsToThisAccount', RealmPropertyType.linkingObjects,
-          linkOriginProperty: 'transferTo',
+      SchemaProperty('transferTransactions', RealmPropertyType.linkingObjects,
+          linkOriginProperty: 'transferAccount',
           collectionType: RealmCollectionType.list,
           linkTarget: 'TransactionDb'),
     ]);
@@ -379,10 +378,9 @@ class TransactionDb extends _TransactionDb
     CategoryDb? category,
     CategoryTagDb? categoryTag,
     bool isInitialTransaction = false,
-    AccountDb? transferTo,
+    AccountDb? transferAccount,
     TransferFeeDb? transferFee,
     double? installmentAmount,
-    TransactionDb? spendingTransactions,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<TransactionDb>({
@@ -398,10 +396,9 @@ class TransactionDb extends _TransactionDb
     RealmObjectBase.set(this, 'category', category);
     RealmObjectBase.set(this, 'categoryTag', categoryTag);
     RealmObjectBase.set(this, 'isInitialTransaction', isInitialTransaction);
-    RealmObjectBase.set(this, 'transferTo', transferTo);
+    RealmObjectBase.set(this, 'transferAccount', transferAccount);
     RealmObjectBase.set(this, 'transferFee', transferFee);
     RealmObjectBase.set(this, 'installmentAmount', installmentAmount);
-    RealmObjectBase.set(this, 'spendingTransactions', spendingTransactions);
   }
 
   TransactionDb._();
@@ -461,11 +458,11 @@ class TransactionDb extends _TransactionDb
       RealmObjectBase.set(this, 'isInitialTransaction', value);
 
   @override
-  AccountDb? get transferTo =>
-      RealmObjectBase.get<AccountDb>(this, 'transferTo') as AccountDb?;
+  AccountDb? get transferAccount =>
+      RealmObjectBase.get<AccountDb>(this, 'transferAccount') as AccountDb?;
   @override
-  set transferTo(covariant AccountDb? value) =>
-      RealmObjectBase.set(this, 'transferTo', value);
+  set transferAccount(covariant AccountDb? value) =>
+      RealmObjectBase.set(this, 'transferAccount', value);
 
   @override
   TransferFeeDb? get transferFee =>
@@ -482,27 +479,6 @@ class TransactionDb extends _TransactionDb
       RealmObjectBase.set(this, 'installmentAmount', value);
 
   @override
-  TransactionDb? get spendingTransactions =>
-      RealmObjectBase.get<TransactionDb>(this, 'spendingTransactions')
-          as TransactionDb?;
-  @override
-  set spendingTransactions(covariant TransactionDb? value) =>
-      RealmObjectBase.set(this, 'spendingTransactions', value);
-
-  @override
-  RealmResults<TransactionDb> get paymentTransactions {
-    if (!isManaged) {
-      throw RealmError('Using backlinks is only possible for managed objects.');
-    }
-    return RealmObjectBase.get<TransactionDb>(this, 'paymentTransactions')
-        as RealmResults<TransactionDb>;
-  }
-
-  @override
-  set paymentTransactions(covariant RealmResults<TransactionDb> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
   Stream<RealmObjectChanges<TransactionDb>> get changes =>
       RealmObjectBase.getChanges<TransactionDb>(this);
 
@@ -517,7 +493,8 @@ class TransactionDb extends _TransactionDb
         ObjectType.realmObject, TransactionDb, 'TransactionDb', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('type', RealmPropertyType.int),
-      SchemaProperty('dateTime', RealmPropertyType.timestamp),
+      SchemaProperty('dateTime', RealmPropertyType.timestamp,
+          indexType: RealmIndexType.regular),
       SchemaProperty('amount', RealmPropertyType.double),
       SchemaProperty('note', RealmPropertyType.string, optional: true),
       SchemaProperty('account', RealmPropertyType.object,
@@ -527,18 +504,12 @@ class TransactionDb extends _TransactionDb
       SchemaProperty('categoryTag', RealmPropertyType.object,
           optional: true, linkTarget: 'CategoryTagDb'),
       SchemaProperty('isInitialTransaction', RealmPropertyType.bool),
-      SchemaProperty('transferTo', RealmPropertyType.object,
+      SchemaProperty('transferAccount', RealmPropertyType.object,
           optional: true, linkTarget: 'AccountDb'),
       SchemaProperty('transferFee', RealmPropertyType.object,
           optional: true, linkTarget: 'TransferFeeDb'),
       SchemaProperty('installmentAmount', RealmPropertyType.double,
           optional: true),
-      SchemaProperty('spendingTransactions', RealmPropertyType.object,
-          optional: true, linkTarget: 'TransactionDb'),
-      SchemaProperty('paymentTransactions', RealmPropertyType.linkingObjects,
-          linkOriginProperty: 'spendingTransactions',
-          collectionType: RealmCollectionType.list,
-          linkTarget: 'TransactionDb'),
     ]);
   }
 }

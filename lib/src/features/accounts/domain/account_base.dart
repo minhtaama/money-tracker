@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:realm/realm.dart';
 import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 part 'regular_account.dart';
 part 'credit_account.dart';
+part 'credit_statement.dart';
 
 @immutable
 sealed class Account extends BaseModelWithIcon<AccountDb> {
@@ -48,12 +49,12 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   });
 }
 
-extension Details on Account {
-  double get currentAmount {
+extension AccountDetails on Account {
+  double get availableAmount {
     switch (this) {
       case RegularAccount():
         double balance = 0;
-        for (RegularTransaction txn in transactionsList) {
+        for (BaseRegularTransaction txn in transactionsList) {
           switch (txn) {
             case Expense() || Transfer():
               balance -= txn.amount;
@@ -63,17 +64,20 @@ extension Details on Account {
               break;
           }
         }
-        for (Transfer txn in (this as RegularAccount).transferTransactionsToThisAccountList) {
+        for (Transfer txn in (this as RegularAccount).transferTransactionsList) {
           balance += txn.amount;
         }
         return balance;
+
       case CreditAccount():
         double balance = (this as CreditAccount).creditBalance;
-        for (CreditSpending txn in transactionsList) {
-          if (!txn.isDone) {
-            balance -= txn.amount - txn.paidAmount;
-          }
-        }
+        //TODO: Calculate credit balance
+        // for (BaseCreditTransaction txn in transactionsList) {
+        //
+        //   if (!txn.isDone) {
+        //     balance -= txn.amount - txn.paidAmount;
+        //   }
+        // }
         return balance;
     }
   }

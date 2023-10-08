@@ -41,13 +41,16 @@ class _AccountDb implements _IColorAndIcon, _IOrderable {
   int? order;
 
   /// All transactions made from this account.
+  /// If type is [AccountType.credit], then this property will only carry [TransactionType.creditSpending] and [TransactionType.creditPayment]
+  /// If type is [AccountType.regular], then this property will only carry [TransactionType.expense], [TransactionType.income] and [TransactionType.transfer]
   @Backlink(#account)
   late Iterable<_TransactionDb> transactions;
 
   /// Transactions that transfer to this account (need for calculating total money).
-  /// Only for type [AccountType.regular].
-  @Backlink(#transferTo)
-  late Iterable<_TransactionDb> transactionsToThisAccount;
+  /// If type [AccountType.regular], only carry type [TransactionType.transfer]
+  /// If type [AccountType.credit], only carry type [TransactionType.creditPayment]
+  @Backlink(#transferAccount)
+  late Iterable<_TransactionDb> transferTransactions;
 
   /// Only specify this property if type is [AccountType.credit]
   late _CreditDetailsDb? creditDetails;
@@ -57,8 +60,6 @@ class _AccountDb implements _IColorAndIcon, _IOrderable {
 class _CreditDetailsDb {
   late double creditBalance;
 
-  /// As in percent. This interestRate is only count
-  /// if payment this month is not finish.
   double apr = 5;
 
   late int statementDay;
@@ -129,6 +130,7 @@ class _TransactionDb {
   /// 4, else == TransactionType.creditPayment
   late int type;
 
+  @Indexed()
   late DateTime dateTime;
 
   late double amount;
@@ -147,20 +149,13 @@ class _TransactionDb {
   bool isInitialTransaction = false;
 
   /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
-  late _AccountDb? transferTo;
+  late _AccountDb? transferAccount;
 
   /// **Only specify this if type is [TransactionType.transfer]**
   _TransferFeeDb? transferFee;
 
-  /// Payments of this credit spending. **Only available if type is [TransactionType.creditSpending]**
-  @Backlink(#spendingTransactions)
-  late Iterable<_TransactionDb> paymentTransactions;
-
   /// **Only specify this if type is [TransactionType.creditSpending]**
   double? installmentAmount;
-
-  /// **Only specify this if type is [TransactionType.creditPayment]**
-  late _TransactionDb? spendingTransactions;
 }
 
 @RealmModel(ObjectType.embeddedObject)

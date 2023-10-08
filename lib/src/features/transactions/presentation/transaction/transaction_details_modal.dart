@@ -43,7 +43,8 @@ class TransactionDetails extends StatelessWidget {
       sections: [
         _Amount(transaction: transaction),
         Gap.h8,
-        transaction is CreditSpending ? _PaymentDetail(transaction: transaction as CreditSpending) : Gap.noGap,
+        //TODO: Keep or remove
+        // transaction is CreditSpending ? _PaymentDetail(transaction: transaction as CreditSpending) : Gap.noGap,
         transaction is CreditSpending ? Gap.h8 : Gap.noGap,
         Gap.divider(context, indent: 6),
         Row(
@@ -328,66 +329,67 @@ class _Note extends StatelessWidget {
   }
 }
 
-class _PaymentDetail extends StatelessWidget {
-  const _PaymentDetail({required this.transaction});
-
-  final CreditSpending transaction;
-
-  double get _paidAmountPercentage {
-    return transaction.paidAmount / transaction.amount;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CardItem(
-      color: Colors.transparent,
-      elevation: 0,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-      border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.2)),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          !transaction.isDone
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 3.0),
-                  child: Text(
-                    '${transaction.account!.isInPaymentPeriod(DateTime.now()) ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
-                    style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
-                  ),
-                )
-              : Gap.noGap,
-          !transaction.isDone
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 3.0),
-                  child: Text(
-                    transaction.account!.nextPaymentPeriod(DateTime.now()).toString(),
-                    style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
-                  ),
-                )
-              : Gap.noGap,
-          !transaction.isDone ? Gap.h16 : Gap.noGap,
-          Padding(
-            padding: const EdgeInsets.only(left: 3.0),
-            child: Text(
-              'PAID AMOUNT:',
-              style:
-                  kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 3.0),
-            child: Text(
-              '${CalService.formatCurrency(transaction.paidAmount)} ${context.currentSettings.currency.code}',
-              style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
-            ),
-          ),
-          Gap.h4,
-          TxnSpendingPaidBar(percentage: _paidAmountPercentage),
-        ],
-      ),
-    );
-  }
-}
+//TODO: keep or remove
+// class _PaymentDetail extends StatelessWidget {
+//   const _PaymentDetail({required this.transaction});
+//
+//   final CreditSpending transaction;
+//
+//   double get _paidAmountPercentage {
+//     return transaction.paidAmount / transaction.amount;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return CardItem(
+//       color: Colors.transparent,
+//       elevation: 0,
+//       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+//       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+//       border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.2)),
+//       width: double.infinity,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           !transaction.isDone
+//               ? Padding(
+//                   padding: const EdgeInsets.only(left: 3.0),
+//                   child: Text(
+//                     '${transaction.account!.isInPaymentPeriod(DateTime.now()) ? 'CURRENT' : 'UPCOMING'} PAYMENT PERIOD:',
+//                     style: kHeader2TextStyle.copyWith(
+//                         color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+//                   ),
+//                 )
+//               : Gap.noGap,
+//           !transaction.isDone
+//               ? Padding(
+//                   padding: const EdgeInsets.only(left: 3.0),
+//                   child: Text(
+//                     transaction.account!.nextPaymentPeriod(DateTime.now()).toString(),
+//                     style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
+//                   ),
+//                 )
+//               : Gap.noGap,
+//           !transaction.isDone ? Gap.h16 : Gap.noGap,
+//           Padding(
+//             padding: const EdgeInsets.only(left: 3.0),
+//             child: Text(
+//               'PAID AMOUNT:',
+//               style:
+//                   kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.only(left: 3.0),
+//             child: Text(
+//               '${CalService.formatCurrency(transaction.paidAmount)} ${context.currentSettings.currency.code}',
+//               style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 16),
+//             ),
+//           ),
+//           Gap.h4,
+//           TxnSpendingPaidBar(percentage: _paidAmountPercentage),
+//         ],
+//       ),
+//     );
+//   }
+// }

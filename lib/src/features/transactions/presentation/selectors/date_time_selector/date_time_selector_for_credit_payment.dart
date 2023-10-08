@@ -101,7 +101,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
 
                                   _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
                                   _outputSpendingTxnList =
-                                      widget.creditAccount!.unpaidSpendingTxnsBefore(_outputDateTime!);
+                                      widget.creditAccount!.spendingTxnsInThisStatementBefore(_outputDateTime!);
 
                                   widget.onChanged(_outputDateTime!, _outputSpendingTxnList);
                                 }
@@ -124,12 +124,11 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                         : selectedDay != null
                                             ? CreditSpendingsList(
                                                 title: 'Transactions require payment:'.hardcoded,
-                                                transactions:
-                                                    widget.creditAccount!.unpaidSpendingTxnsBefore(selectedDay),
+                                                transactions: widget.creditAccount!
+                                                    .spendingTxnsInThisStatementBefore(selectedDay),
                                                 onDateTap: (dateTime) => setState(() {
                                                   _currentMonthView = dateTime;
                                                 }),
-                                                atDate: selectedDay,
                                               )
                                             : EmptyInfo(
                                                 iconPath: AppIcons.today,
@@ -224,7 +223,7 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
     if (widget.creditAccount == null) {
       throw ErrorDescription('Must specify a credit account first');
     }
-    final list = widget.creditAccount!.allUnpaidSpendingTxns.map((e) => e.dateTime.onlyYearMonthDay);
+    final list = widget.creditAccount!.spendingTransactionsList.map((e) => e.dateTime.onlyYearMonthDay);
     final dateTimeYMD = dateTime.onlyYearMonthDay;
     if (list.contains(dateTimeYMD)) {
       return true;

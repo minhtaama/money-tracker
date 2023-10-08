@@ -94,7 +94,10 @@ class TransactionRepository {
     }
 
     final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
-        note: note, account: account.databaseObject, transferTo: toAccount.databaseObject, transferFee: transferFee);
+        note: note,
+        account: account.databaseObject,
+        transferAccount: toAccount.databaseObject,
+        transferFee: transferFee);
 
     realm.write(() {
       realm.add(newTransaction);

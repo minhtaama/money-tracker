@@ -1,15 +1,15 @@
 part of 'transaction_base.dart';
 
 @immutable
-sealed class RegularTransaction extends BaseTransaction {
+sealed class BaseRegularTransaction extends BaseTransaction {
+  const BaseRegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, this.account);
+
   @override
   final RegularAccount? account;
-
-  const RegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, this.account);
 }
 
 @immutable
-class Expense extends RegularTransaction implements BaseTransactionWithCategory {
+class Expense extends BaseRegularTransaction implements BaseTransactionWithCategory {
   @override
   final Category? category;
 
@@ -28,7 +28,7 @@ class Expense extends RegularTransaction implements BaseTransactionWithCategory 
 }
 
 @immutable
-class Income extends RegularTransaction implements BaseTransactionWithCategory {
+class Income extends BaseRegularTransaction implements BaseTransactionWithCategory {
   @override
   final Category? category;
 
@@ -50,7 +50,7 @@ class Income extends RegularTransaction implements BaseTransactionWithCategory {
 }
 
 @immutable
-class Transfer extends RegularTransaction {
+class Transfer extends BaseRegularTransaction {
   final RegularAccount? toAccount;
   final Fee? fee;
 

@@ -106,7 +106,7 @@ class AccountsScreen extends ConsumerWidget {
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  CalService.formatCurrency(model.currentAmount),
+                                  CalService.formatCurrency(model.availableAmount),
                                   style: kHeader1TextStyle.copyWith(color: model.color),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,

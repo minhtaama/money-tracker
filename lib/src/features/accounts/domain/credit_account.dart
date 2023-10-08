@@ -24,77 +24,45 @@ class CreditAccount extends Account {
   });
 
   @override
-  List<CreditSpending> get transactionsList {
-    final List<CreditSpending> list = List.from(
-        databaseObject.transactions.map<CreditSpending>((txn) => BaseTransaction.fromIsar(txn) as CreditSpending));
-    list.sort((a, b) {
-      return a.dateTime.isBefore(b.dateTime) ? -1 : 1;
-    });
+  List<BaseCreditTransaction> get transactionsList {
+    final List<BaseCreditTransaction> list = List.from(databaseObject.transactions
+        .query('SORT(dateTime ASC)')
+        .map<BaseCreditTransaction>((txn) => BaseTransaction.fromIsar(txn) as BaseCreditTransaction));
+    // list.sort((a, b) {
+    //   return a.dateTime.compareTo(b.dateTime);
+    // });
     return list;
   }
 }
 
-extension CreditDetails on CreditAccount {
-  List<CreditSpending> get allUnpaidSpendingTxns => transactionsList.where((txn) => !txn.isDone).toList();
-
-  List<CreditSpending> unpaidSpendingTxnsBefore(DateTime dateTime) {
-    DateTime date;
-    if (dateTime.day >= statementDay) {
-      date = dateTime.copyWith(day: statementDay);
-    } else if (dateTime.day <= paymentDueDay) {
-      date = dateTime.copyWith(day: statementDay, month: dateTime.month - 1);
-    } else {
-      date = dateTime;
-    }
-
-    return allUnpaidSpendingTxns.where((txn) => !txn.isDone && txn.dateTime.isBefore(date)).toList();
-  }
-
-  double get totalPendingCreditPayment {
-    double pendingPayment = 0;
-    for (CreditSpending txn in allUnpaidSpendingTxns) {
-      pendingPayment += txn.paymentAmount;
-    }
-    return pendingPayment;
-  }
-
+extension CreditAccountDateTimeDetails on CreditAccount {
   DateTime? get earliestPayableDate {
-    DateTime time = DateTime.now();
-
-    final list = transactionsList.where((txn) => !txn.isDone).toList();
-
-    if (list.isEmpty) {
+    if (transactionsList.isEmpty) {
       return null;
     }
 
-    // Get earliest spending transaction un-done
-    for (CreditSpending txn in list) {
-      if (txn.dateTime.isBefore(time)) {
-        time = txn.dateTime;
-      }
+    return transactionsList[0].dateTime;
+  }
+
+  DateTime? get earliestStatementDate {
+    if (transactionsList.isEmpty || earliestPayableDate == null) {
+      return null;
     }
 
-    // Earliest day that payment can happens
-    if (time.day <= paymentDueDay) {
-      time = time.copyWith(day: paymentDueDay + 1).onlyYearMonthDay;
-    } else if (time.day >= statementDay) {
-      time = time.copyWith(day: paymentDueDay + 1, month: time.month + 1).onlyYearMonthDay;
+    if (statementDay > earliestPayableDate!.day) {
+      return DateTime(earliestPayableDate!.year, earliestPayableDate!.month - 1, statementDay);
     }
 
-    return time;
+    if (statementDay <= earliestPayableDate!.day) {
+      return earliestPayableDate!.copyWith(day: statementDay).onlyYearMonthDay;
+    }
+
+    return null;
   }
 
   bool isAfterOrSameAsStatementDay(DateTime dateTime) => dateTime.day >= statementDay;
 
   bool isBeforeOrSameAsPaymentDueDay(DateTime dateTime) => dateTime.day <= paymentDueDay;
-
-  bool isInPaymentPeriod(DateTime dateTime) {
-    if (isAfterOrSameAsStatementDay(dateTime) || isBeforeOrSameAsPaymentDueDay(dateTime)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   List<DateTime> nextPaymentPeriod(DateTime dateTime) {
     DateTime statementDate;
@@ -113,5 +81,36 @@ extension CreditDetails on CreditAccount {
     }
 
     return List.from([statementDate, paymentDueDate], growable: false);
+  }
+}
+
+extension CreditAccountDetails on CreditAccount {
+  List<CreditSpending> get spendingTransactionsList => transactionsList.whereType<CreditSpending>().toList();
+
+  List<CreditSpending> spendingTxnsInThisStatementBefore(DateTime dateTime) {
+    DateTime date;
+    if (dateTime.day >= statementDay) {
+      date = dateTime.copyWith(day: statementDay);
+    } else if (dateTime.day <= paymentDueDay) {
+      date = dateTime.copyWith(day: statementDay, month: dateTime.month - 1);
+    } else {
+      date = dateTime;
+    }
+
+    return spendingTransactionsList.where((txn) => !txn.isDone && txn.dateTime.isBefore(date)).toList();
+  }
+
+  // double get carryAmount
+
+  double get outstandingBalance {
+    double pendingPayment = 0;
+    for (CreditSpending txn in spendingTransactionsList) {
+      pendingPayment += txn.paymentAmount;
+    }
+    return pendingPayment;
+  }
+
+  List<Statement> get statementsList {
+    final List<Statement> list = List.empty(growable: true);
   }
 }

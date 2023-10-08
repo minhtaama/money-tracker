@@ -345,33 +345,6 @@ class TxnTransferLine extends StatelessWidget {
   }
 }
 
-class TxnCreditInterest extends StatelessWidget {
-  const TxnCreditInterest({Key? key, required this.transaction, required this.atDate}) : super(key: key);
-
-  final CreditSpending transaction;
-  final DateTime atDate;
-
-  @override
-  Widget build(BuildContext context) {
-    final amount = transaction.interestAt(atDate);
-    return Row(
-      children: [
-        Text(
-          '${amount == 0 ? '' : '+'}${CalService.formatCurrency(amount, enableDecimalDigits: true)}',
-          softWrap: false,
-          overflow: TextOverflow.fade,
-          style: kHeader3TextStyle.copyWith(
-              color: amount == 0 ? context.appTheme.positive : context.appTheme.negative, fontSize: 11),
-        ),
-        Gap.w8,
-        HelpButton(
-          text: 'This amount represent the interest you have to pay at the selected time'.hardcoded,
-        ),
-      ],
-    );
-  }
-}
-
 class TxnSpendingPaidBar extends StatefulWidget {
   const TxnSpendingPaidBar({super.key, this.height = 20, required this.percentage})
       : assert(percentage >= 0 && percentage <= 1);
