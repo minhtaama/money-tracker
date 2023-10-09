@@ -97,7 +97,7 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
   CreditDateTimeFormSelector({
     super.key,
     CreditAccount? creditAccount,
-    required Function(DateTime?, List<CreditSpending>) onChanged,
+    required Function(DateTime?, Statement?) onChanged,
     FormFieldSetter<DateTime>? onSaved,
     FormFieldValidator<DateTime>? validator,
     DateTime? initialDate,
@@ -117,9 +117,9 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                     creditAccount: creditAccount,
                     disableText: disableText,
                     initialDate: initialDate,
-                    onChanged: (newDateTime, newList) {
+                    onChanged: (newDateTime, newStatement) {
                       state.didChange(newDateTime);
-                      onChanged(newDateTime, newList);
+                      onChanged(newDateTime, newStatement);
                     },
                   ),
                   AnimatedOpacity(

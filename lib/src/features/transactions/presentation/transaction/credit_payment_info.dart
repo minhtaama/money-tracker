@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -10,22 +11,37 @@ import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
+import '../../../accounts/domain/account_base.dart';
 import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
-class CreditSpendingsList extends ConsumerWidget {
-  const CreditSpendingsList({
+class CreditPaymentInfo extends ConsumerWidget {
+  const CreditPaymentInfo({
     Key? key,
     required this.title,
     this.isSimple = true,
-    required this.transactions,
+    required this.statement,
     this.onDateTap,
   }) : super(key: key);
 
   final String title;
   final bool isSimple;
-  final List<CreditSpending> transactions;
+  final Statement? statement;
   final void Function(DateTime)? onDateTap;
+
+  List<BaseCreditTransaction> get transactions {
+    if (statement == null) {
+      return <BaseCreditTransaction>[];
+    }
+    return statement!.transactionsUntilDueDateList;
+  }
+
+  String? get carryOverAmount {
+    if (statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(statement!.carryingOver);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,17 +81,27 @@ class CreditSpendingsList extends ConsumerWidget {
                 ),
                 child: AnimatedSize(
                   duration: k150msDuration,
-                  child: _List(
+                  child: Column(
+                    children: [
+                      Text('Carry over amount: $carryOverAmount'),
+                      _List(
+                        transactions: transactions,
+                        currencyCode: context.currentSettings.currency.code,
+                        onDateTap: onDateTap,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : Column(
+                children: [
+                  Text('Carry over amount: $carryOverAmount'),
+                  _List(
                     transactions: transactions,
                     currencyCode: context.currentSettings.currency.code,
                     onDateTap: onDateTap,
                   ),
-                ),
-              )
-            : _List(
-                transactions: transactions,
-                currencyCode: context.currentSettings.currency.code,
-                onDateTap: onDateTap,
+                ],
               ),
       ],
     );
@@ -85,7 +111,7 @@ class CreditSpendingsList extends ConsumerWidget {
 class _List extends StatelessWidget {
   const _List({required this.transactions, required this.currencyCode, this.onDateTap});
 
-  final List<CreditSpending> transactions;
+  final List<BaseCreditTransaction> transactions;
   final String currencyCode;
   final void Function(DateTime)? onDateTap;
 
@@ -95,49 +121,50 @@ class _List extends StatelessWidget {
       constraints: const BoxConstraints(maxHeight: 180),
       child: SingleChildScrollView(
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: transactions.isEmpty
-                ? [
-                    Gap.h8,
-                    EmptyInfo(
-                      infoText: 'Please select a valid date'.hardcoded,
-                      iconPath: AppIcons.today,
-                      iconSize: 30,
-                    ),
-                    Gap.h8,
-                  ]
-                : List.generate(transactions.length, (index) {
-                    final transaction = transactions[index];
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: transactions.isEmpty
+              ? [
+                  Gap.h8,
+                  EmptyInfo(
+                    infoText: 'Please select a valid date'.hardcoded,
+                    iconPath: AppIcons.today,
+                    iconSize: 30,
+                  ),
+                  Gap.h8,
+                ]
+              : List.generate(transactions.length, (index) {
+                  final transaction = transactions[index];
 
-                    return Material(
-                      color: Colors.transparent,
-                      child: CustomInkWell(
-                        inkColor: AppColors.grey(context),
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () => context.push(RoutePath.transaction, extra: transaction),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _Details(
-                                  transaction: transaction,
-                                  currencyCode: currencyCode,
-                                  onDateTap: onDateTap,
-                                ),
-                              ),
-                              Gap.w16,
-                              TxnAmount(
-                                currencyCode: currencyCode,
+                  return Material(
+                    color: Colors.transparent,
+                    child: CustomInkWell(
+                      inkColor: AppColors.grey(context),
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => context.push(RoutePath.transaction, extra: transaction),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _Details(
                                 transaction: transaction,
-                                fontSize: 14,
+                                currencyCode: currencyCode,
+                                onDateTap: onDateTap,
                               ),
-                            ],
-                          ),
+                            ),
+                            Gap.w16,
+                            TxnAmount(
+                              currencyCode: currencyCode,
+                              transaction: transaction,
+                              fontSize: 14,
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  })),
+                    ),
+                  );
+                }),
+        ),
       ),
     );
   }
@@ -146,7 +173,7 @@ class _List extends StatelessWidget {
 class _Details extends StatelessWidget {
   const _Details({required this.transaction, required this.currencyCode, this.onDateTap});
 
-  final CreditSpending transaction;
+  final BaseCreditTransaction transaction;
   final String currencyCode;
   final void Function(DateTime)? onDateTap;
 
@@ -172,20 +199,22 @@ class _Details extends StatelessWidget {
             ],
           ),
         ),
-        IntrinsicWidth(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TxnCategoryIcon(transaction: transaction),
-              Gap.w4,
-              Expanded(
-                  child: TxnCategoryName(
-                transaction: transaction,
-                fontSize: 11,
-              )),
-            ],
-          ),
-        ),
+        transaction is CreditSpending
+            ? IntrinsicWidth(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TxnCategoryIcon(transaction: transaction as CreditSpending),
+                    Gap.w4,
+                    Expanded(
+                        child: TxnCategoryName(
+                      transaction: transaction as CreditSpending,
+                      fontSize: 11,
+                    )),
+                  ],
+                ),
+              )
+            : Gap.noGap,
       ],
     );
   }

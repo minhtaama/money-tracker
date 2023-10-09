@@ -27,6 +27,11 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
     this.categoryTag, {
     required this.installmentAmount,
   });
+
+  @override
+  String toString() {
+    return 'CreditSpending{dateTime: ${dateTime.onlyYearMonthDay}, amount: $amount}';
+  }
 }
 
 @immutable

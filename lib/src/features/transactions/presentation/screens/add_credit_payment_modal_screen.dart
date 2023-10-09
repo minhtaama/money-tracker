@@ -6,9 +6,8 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_spendings_list.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -30,7 +29,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   final _formKey = GlobalKey<FormState>();
 
   DateTime? _dateTime;
-  List<CreditSpending> _creditSpendingList = List.empty();
+  Statement? _statement;
 
   String? _note;
   CreditAccount? _creditAccount;
@@ -38,7 +37,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   String _calOutputSpendAmount = '0';
 
-  bool get _hidePayment => _creditSpendingList.isEmpty;
+  bool get _hidePayment => _statement == null;
 
   @override
   void dispose() {
@@ -79,11 +78,11 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   creditAccount: _creditAccount,
                   disableText: 'Choose credit account first'.hardcoded,
                   initialDate: _dateTime,
-                  onChanged: (dateTime, creditSpendingsList) {
+                  onChanged: (dateTime, statement) {
                     if (dateTime != null) {
                       _dateTime = dateTime;
                     }
-                    _creditSpendingList = List.from(creditSpendingsList);
+                    _statement = statement;
                     setState(() {});
                   },
                   validator: (_) => _dateTimeValidator(),
@@ -104,7 +103,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         setState(() {
                           _creditAccount = newAccount as CreditAccount?;
                           if (_creditAccount == null) {
-                            _creditSpendingList = List.empty();
+                            _statement = null;
                             _dateTime = null;
                           }
                         });
@@ -155,10 +154,10 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 Gap.h16,
                 _PaymentAmountTip(onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
                 Gap.h8,
-                CreditSpendingsList(
+                CreditPaymentInfo(
                   title: 'Transactions require payment:'.hardcoded,
                   isSimple: false,
-                  transactions: _creditSpendingList,
+                  statement: _statement,
                 )
               ],
             ),
