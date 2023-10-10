@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -126,16 +128,16 @@ class TxnCategoryName extends StatelessWidget {
   }
 }
 
-class TxnAccountIcon extends StatelessWidget {
+class TxnAccountIcon extends ConsumerWidget {
   const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false}) : super(key: key);
 
   final BaseTransaction transaction;
   final bool useAccountIcon;
 
-  String get _iconPath {
+  String _iconPath(WidgetRef ref) {
     if (transaction.account != null) {
       if (useAccountIcon) {
-        return transaction.account!.iconPath;
+        return ref.watch(accountRepositoryProvider).getAccount(transaction.account!)!.iconPath;
       }
       return switch (transaction) {
         Transfer() => '',
@@ -149,32 +151,32 @@ class TxnAccountIcon extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SvgIcon(
-      _iconPath,
+      _iconPath(ref),
       size: 20,
       color: context.appTheme.backgroundNegative,
     );
   }
 }
 
-class TxnAccountName extends StatelessWidget {
+class TxnAccountName extends ConsumerWidget {
   const TxnAccountName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
   final BaseTransaction transaction;
   final double? fontSize;
 
-  String get _name {
+  String _name(WidgetRef ref) {
     if (transaction.account != null) {
-      return transaction.account!.name;
+      return ref.watch(accountRepositoryProvider).getAccount(transaction.account!)!.name;
     }
     return 'No account assigned';
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Text(
-      _name,
+      _name(ref),
       style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,

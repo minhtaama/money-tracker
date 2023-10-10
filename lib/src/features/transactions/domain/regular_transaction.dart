@@ -2,10 +2,7 @@ part of 'transaction_base.dart';
 
 @immutable
 sealed class BaseRegularTransaction extends BaseTransaction {
-  const BaseRegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, this.account);
-
-  @override
-  final RegularAccount? account;
+  const BaseRegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable

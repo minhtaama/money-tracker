@@ -14,12 +14,17 @@ part 'credit_statement.dart';
 
 @immutable
 sealed class Account extends BaseModelWithIcon<AccountDb> {
-  List get transactionsList;
+  abstract final List transactionsList;
 
   static Account? fromDatabase(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
+
+    final RealmResults<TransactionDb> transactionListQuery =
+        accountDb.transactions.query('TRUEPREDICATE SORT(dateTime ASC)');
+    final RealmResults<TransactionDb> transferTransactionsQuery =
+        accountDb.transferTransactions.query('TRUEPREDICATE SORT(dateTime ASC)');
 
     return switch (accountDb.type) {
       0 => RegularAccount._(
@@ -28,8 +33,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+          transactionsList: transactionListQuery
+              .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+              .toList(growable: false),
+          transferTransactionsList:
+              transferTransactionsQuery.map<Transfer>((txn) => BaseTransaction.fromDatabase(txn) as Transfer).toList(),
         ),
-      _ => CreditAccount._(accountDb,
+      _ => CreditAccount._(
+          accountDb,
           name: accountDb.name,
           color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
@@ -37,7 +48,11 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           creditBalance: accountDb.creditDetails!.creditBalance,
           apr: accountDb.creditDetails!.apr,
           statementDay: accountDb.creditDetails!.statementDay,
-          paymentDueDay: accountDb.creditDetails!.paymentDueDay)
+          paymentDueDay: accountDb.creditDetails!.paymentDueDay,
+          transactionsList: transactionListQuery
+              .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+              .toList(),
+        ),
     };
   }
 

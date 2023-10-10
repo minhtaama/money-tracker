@@ -1,10 +1,7 @@
 part of 'transaction_base.dart';
 
 sealed class BaseCreditTransaction extends BaseTransaction {
-  const BaseCreditTransaction(super.databaseObject, super.dateTime, super.amount, super.note, this.account);
-
-  @override
-  final CreditAccount? account;
+  const BaseCreditTransaction(super.databaseObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable

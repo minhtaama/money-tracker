@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
@@ -18,7 +19,7 @@ import '../../../../utils/enums.dart';
 import '../../../category/domain/category.dart';
 import '../../domain/transaction_base.dart';
 
-class TransactionDetails extends StatelessWidget {
+class TransactionDetails extends ConsumerWidget {
   const TransactionDetails({super.key, required this.transaction});
 
   final BaseTransaction transaction;
@@ -34,7 +35,9 @@ class TransactionDetails extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accountRepo = ref.watch(accountRepositoryProvider);
+
     return CustomSection(
       title: _title,
       subTitle: _DateTime(transaction: transaction),
@@ -61,7 +64,7 @@ class TransactionDetails extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(model: transaction.account!),
+                  _AccountCard(model: accountRepo.getAccount(transaction.account!)!),
                   switch (transaction) {
                     BaseTransactionWithCategory() =>
                       transaction is Income && (transaction as Income).isInitialTransaction

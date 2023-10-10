@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../persistent/realm_dto.dart';
+import '../../transactions/domain/transaction_base.dart';
 import '../domain/account_base.dart';
 
 class AccountRepositoryRealmDb {
@@ -27,6 +28,24 @@ class AccountRepositoryRealmDb {
   List<Account> getList(AccountType? type) {
     return _realmResults(type).map((accountDb) => Account.fromDatabase(accountDb)!).toList();
   }
+
+  Account? getAccount(ObjectId objectId) {
+    AccountDb? accountDb = realm.find<AccountDb>(objectId);
+    return Account.fromDatabase(accountDb);
+  }
+
+  // List<BaseTransaction> getTransactionList(Account account) {
+  //   final RealmResults<TransactionDb> transactionListQuery =
+  //       account.databaseObject.transactions.query('TRUEPREDICATE SORT(dateTime ASC)');
+  //   return switch (account) {
+  //     RegularAccount() => transactionListQuery
+  //         .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+  //         .toList(growable: false),
+  //     CreditAccount() => transactionListQuery
+  //         .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+  //         .toList(),
+  //   };
+  // }
 
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
     return realm.all<AccountDb>().changes;

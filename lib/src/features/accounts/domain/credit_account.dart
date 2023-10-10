@@ -2,6 +2,9 @@ part of 'account_base.dart';
 
 @immutable
 class CreditAccount extends Account {
+  @override
+  final List<BaseCreditTransaction> transactionsList;
+
   final double creditBalance;
 
   /// (APR) As in percent.
@@ -21,18 +24,16 @@ class CreditAccount extends Account {
     required this.apr,
     required this.statementDay,
     required this.paymentDueDay,
+    required this.transactionsList,
   });
 
-  @override
-  List<BaseCreditTransaction> get transactionsList {
-    final List<BaseCreditTransaction> list = List.from(databaseObject.transactions
-        .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseCreditTransaction>((txn) => BaseTransaction.fromIsar(txn) as BaseCreditTransaction));
-    // list.sort((a, b) {
-    //   return a.dateTime.compareTo(b.dateTime);
-    // });
-    return list;
-  }
+  // @override
+  // List<BaseCreditTransaction> get transactionsList {
+  //   final List<BaseCreditTransaction> list = List.from(databaseObject.transactions
+  //       .query('TRUEPREDICATE SORT(dateTime ASC)')
+  //       .map<BaseCreditTransaction>((txn) => BaseTransaction.fromIsar(txn) as BaseCreditTransaction));
+  //   return list;
+  // }
 }
 
 extension CreditAccountDateTimeDetails on CreditAccount {
@@ -41,7 +42,7 @@ extension CreditAccountDateTimeDetails on CreditAccount {
       return null;
     }
 
-    return transactionsList[0].dateTime;
+    return transactionsList.first.dateTime;
   }
 
   /// only year, month and day
@@ -66,7 +67,7 @@ extension CreditAccountDateTimeDetails on CreditAccount {
       return null;
     }
 
-    return transactionsList[transactionsList.length - 1].dateTime;
+    return transactionsList.last.dateTime;
   }
 
   /// only year, month and day

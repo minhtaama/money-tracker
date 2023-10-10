@@ -26,7 +26,7 @@ class TransactionRepository {
   List<BaseTransaction> getAll(DateTime lower, DateTime upper) {
     List<TransactionDb> list =
         realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).toList();
-    return list.map((txn) => BaseTransaction.fromIsar(txn)).toList();
+    return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
