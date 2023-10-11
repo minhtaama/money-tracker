@@ -104,8 +104,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
 
                                   _outputDateTime =
                                       dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
-                                  _outputStatement =
-                                      widget.creditAccount!.getStatementAt(_outputDateTime!);
+                                  _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
 
                                   widget.onChanged(_outputDateTime!, _outputStatement);
                                 }
@@ -143,10 +142,9 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                             )
                                           : selectedDay != null
                                               ? CreditPaymentInfo(
-                                                  title: 'Transactions require payment:'.hardcoded,
                                                   chosenDateTime: selectedDay,
                                                   statement:
-                                                      widget.creditAccount!.getStatementAt(selectedDay),
+                                                      widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
                                                   }),
@@ -247,7 +245,7 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
     if (widget.creditAccount == null) {
       throw ErrorDescription('Must specify a credit account first');
     }
-    final list = widget.creditAccount!.spendingTransactionsList.map((e) => e.dateTime.onlyYearMonthDay);
+    final list = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
     final dateTimeYMD = dateTime.onlyYearMonthDay;
     if (list.contains(dateTimeYMD)) {
       return true;

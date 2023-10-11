@@ -155,7 +155,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 _PaymentAmountTip(onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
                 Gap.h8,
                 CreditPaymentInfo(
-                  title: 'Transactions require payment:'.hardcoded,
                   chosenDateTime: _dateTime,
                   isSimple: false,
                   statement: _statement,

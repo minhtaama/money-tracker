@@ -2,13 +2,13 @@ part of 'account_base.dart';
 
 @immutable
 class Statement {
-  const Statement(this._creditAccount, {required this.carryingOver, required this.beginDate});
+  const Statement(this._creditAccount, {required this.carryingOver, required this.startDate});
 
   final CreditAccount _creditAccount;
 
   final double carryingOver;
 
-  final DateTime beginDate;
+  final DateTime startDate;
 
   Statement copyWith({
     CreditAccount? creditAccount,
@@ -18,7 +18,7 @@ class Statement {
     return Statement(
       creditAccount ?? _creditAccount,
       carryingOver: carryingOver ?? this.carryingOver,
-      beginDate: beginDate ?? this.beginDate,
+      startDate: beginDate ?? this.startDate,
     );
   }
 }
@@ -26,18 +26,18 @@ class Statement {
 // https://www.youtube.com/watch?v=SnlHbMIWJak
 
 extension StatementDetails on Statement {
-  DateTime get endDate => beginDate.copyWith(month: beginDate.month + 1);
+  DateTime get endDate => startDate.copyWith(month: startDate.month + 1);
   DateTime get dueDate => endDate.copyWith(month: endDate.month + 1, day: _creditAccount.paymentDueDay);
 
-  /// Because transactions list of account is sorted by dateTime
-  /// so this list will be sorted by dateTime too.
-  List<BaseCreditTransaction> get transactionsUntilDueDate {
+  /// Include CreditSpending of next statement, but happens between
+  /// this statement `endDate` and `dueDate`.
+  List<BaseCreditTransaction> get txnsFromBeginToDueDate {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
       final transaction = _creditAccount.transactionsList[i];
 
-      if (transaction.dateTime.isBefore(beginDate)) {
+      if (transaction.dateTime.isBefore(startDate)) {
         continue;
       }
 
@@ -54,21 +54,36 @@ extension StatementDetails on Statement {
     return list;
   }
 
-  List<BaseCreditTransaction> transactionsUntil(DateTime dateTime) {
-    List<BaseCreditTransaction> list = <BaseCreditTransaction>[];
-    for (BaseCreditTransaction transaction in transactionsUntilDueDate) {
-      if (transaction.dateTime.compareTo(dateTime.toLocal()) < 0) {
+  List<BaseCreditTransaction> txnsFromBeginTo(DateTime dateTime) {
+    final List<BaseCreditTransaction> list = List.empty(growable: true);
+
+    for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
+      final transaction = _creditAccount.transactionsList[i];
+
+      if (transaction.dateTime.isBefore(startDate)) {
+        continue;
+      }
+
+      if (transaction.dateTime.isAfter(dueDate)) {
+        break;
+      }
+
+      if (transaction.dateTime.isBefore(dateTime)) {
         list.add(transaction);
+        continue;
       }
     }
+
     return list;
   }
 
-  List<BaseCreditTransaction> get transactionsOfThisStatementOnly {
+  /// Returns CreditSpending between `startDate` and `endDate`
+  /// Returns CreditPayment between `startDate` and `dueDate`
+  List<BaseCreditTransaction> get transactions {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    for (int i = 0; i <= transactionsUntilDueDate.length - 1; i++) {
-      final transaction = transactionsUntilDueDate[i];
+    for (int i = 0; i <= txnsFromBeginToDueDate.length - 1; i++) {
+      final transaction = txnsFromBeginToDueDate[i];
 
       if (transaction is CreditSpending && transaction.dateTime.isBefore(endDate)) {
         list.add(transaction);
@@ -86,7 +101,7 @@ extension StatementDetails on Statement {
 
   double get spendingAmount {
     double spending = 0;
-    for (BaseCreditTransaction transaction in transactionsOfThisStatementOnly) {
+    for (BaseCreditTransaction transaction in transactions) {
       if (transaction is CreditSpending) {
         spending += transaction.amount;
       }
@@ -96,7 +111,7 @@ extension StatementDetails on Statement {
 
   double get paymentAmount {
     double payment = 0;
-    for (BaseCreditTransaction transaction in transactionsOfThisStatementOnly) {
+    for (BaseCreditTransaction transaction in transactions) {
       if (transaction is CreditPayment) {
         payment += transaction.amount;
       }
@@ -106,11 +121,11 @@ extension StatementDetails on Statement {
 
   double get averageDailyBalance {
     double sum = 0;
-    DateTime prvDateTime = beginDate;
+    DateTime prvDateTime = startDate;
     double balance = carryingOver;
 
-    for (int i = 0; i <= transactionsUntilDueDate.length - 1; i++) {
-      final transaction = transactionsUntilDueDate[i];
+    for (int i = 0; i <= txnsFromBeginToDueDate.length - 1; i++) {
+      final transaction = txnsFromBeginToDueDate[i];
 
       sum += balance * prvDateTime.getDaysDifferent(transaction.dateTime);
 
@@ -124,13 +139,13 @@ extension StatementDetails on Statement {
       prvDateTime = transaction.dateTime;
     }
 
-    if (transactionsUntilDueDate.isNotEmpty) {
-      sum += balance * transactionsUntilDueDate.last.dateTime.getDaysDifferent(endDate);
+    if (txnsFromBeginToDueDate.isNotEmpty) {
+      sum += balance * txnsFromBeginToDueDate.last.dateTime.getDaysDifferent(endDate);
     } else {
-      sum += balance * beginDate.getDaysDifferent(endDate);
+      sum += balance * startDate.getDaysDifferent(endDate);
     }
 
-    return sum / beginDate.getDaysDifferent(endDate);
+    return sum / startDate.getDaysDifferent(endDate);
   }
 
   double get interest {
@@ -138,7 +153,7 @@ extension StatementDetails on Statement {
       return 0;
     }
     final interest =
-        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * beginDate.getDaysDifferent(endDate);
+        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
     return interest;
   }
 

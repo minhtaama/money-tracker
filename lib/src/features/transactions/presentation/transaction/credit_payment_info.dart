@@ -18,24 +18,22 @@ import 'txn_components.dart';
 class CreditPaymentInfo extends ConsumerWidget {
   const CreditPaymentInfo({
     Key? key,
-    required this.title,
     this.isSimple = true,
     required this.statement,
     this.chosenDateTime,
     this.onDateTap,
   }) : super(key: key);
 
-  final String title;
   final bool isSimple;
   final Statement? statement;
   final DateTime? chosenDateTime;
   final void Function(DateTime)? onDateTap;
 
-  List<BaseCreditTransaction> transactionsUntil(DateTime? dateTime) {
+  List<BaseCreditTransaction> transactions(DateTime? dateTime) {
     if (statement == null || dateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.transactionsUntil(dateTime);
+    return statement!.txnsFromBeginTo(dateTime);
   }
 
   String? get carryOverAmount {
@@ -63,7 +61,7 @@ class CreditPaymentInfo extends ConsumerWidget {
             child: Transform.translate(
               offset: Offset(!isSimple ? 0.0 : 4, !isSimple ? -3.0 : 0.0),
               child: Text(
-                title,
+                'Carry over amount: $carryOverAmount',
                 style: kHeader3TextStyle.copyWith(
                     color: context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
                     fontSize: 13),
@@ -89,10 +87,17 @@ class CreditPaymentInfo extends ConsumerWidget {
                 child: AnimatedSize(
                   duration: k150msDuration,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Carry over amount: $carryOverAmount'),
+                      Text(
+                        'Carry over amount: $carryOverAmount',
+                        style: kHeader3TextStyle.copyWith(
+                            color:
+                                context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
+                            fontSize: 13),
+                      ),
                       _List(
-                        transactions: transactionsUntil(chosenDateTime),
+                        transactions: transactions(chosenDateTime),
                         currencyCode: context.currentSettings.currency.code,
                         onDateTap: onDateTap,
                       ),
@@ -101,10 +106,19 @@ class CreditPaymentInfo extends ConsumerWidget {
                 ),
               )
             : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Carry over amount: $carryOverAmount'),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: Text(
+                      'Carry over amount: $carryOverAmount',
+                      style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
+                          fontSize: 13),
+                    ),
+                  ),
                   _List(
-                    transactions: transactionsUntil(chosenDateTime),
+                    transactions: transactions(chosenDateTime),
                     currencyCode: context.currentSettings.currency.code,
                     onDateTap: onDateTap,
                   ),
@@ -133,7 +147,7 @@ class _List extends StatelessWidget {
               ? [
                   Gap.h8,
                   EmptyInfo(
-                    infoText: 'Please select a valid date'.hardcoded,
+                    infoText: 'No transaction is made in this statement'.hardcoded,
                     iconPath: AppIcons.today,
                     iconSize: 30,
                   ),

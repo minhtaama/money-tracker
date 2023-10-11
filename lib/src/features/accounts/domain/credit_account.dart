@@ -87,35 +87,34 @@ extension CreditAccountDateTimeDetails on CreditAccount {
     return null;
   }
 
-  bool isAfterOrSameAsStatementDay(DateTime dateTime) => dateTime.day >= statementDay;
+  //bool isAfterOrSameAsStatementDay(DateTime dateTime) => dateTime.day >= statementDay;
 
-  bool isBeforeOrSameAsPaymentDueDay(DateTime dateTime) => dateTime.day <= paymentDueDay;
+  //bool isBeforeOrSameAsPaymentDueDay(DateTime dateTime) => dateTime.day <= paymentDueDay;
 
-  List<DateTime> nextPaymentPeriod(DateTime dateTime) {
-    DateTime statementDate;
-    DateTime paymentDueDate;
-
-    if (isAfterOrSameAsStatementDay(dateTime)) {
-      statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
-      paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
-    }
-    if (isBeforeOrSameAsPaymentDueDay(dateTime)) {
-      statementDate = DateTime(dateTime.year, dateTime.month - 1, statementDay);
-      paymentDueDate = DateTime(dateTime.year, dateTime.month, paymentDueDay);
-    } else {
-      statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
-      paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
-    }
-
-    return List.from([statementDate, paymentDueDate], growable: false);
-  }
+  // List<DateTime> nextPaymentPeriod(DateTime dateTime) {
+  //   DateTime statementDate;
+  //   DateTime paymentDueDate;
+  //
+  //   if (isAfterOrSameAsStatementDay(dateTime)) {
+  //     statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
+  //     paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
+  //   }
+  //   if (isBeforeOrSameAsPaymentDueDay(dateTime)) {
+  //     statementDate = DateTime(dateTime.year, dateTime.month - 1, statementDay);
+  //     paymentDueDate = DateTime(dateTime.year, dateTime.month, paymentDueDay);
+  //   } else {
+  //     statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
+  //     paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
+  //   }
+  //
+  //   return List.from([statementDate, paymentDueDate], growable: false);
+  // }
 }
 
 extension CreditAccountDetails on CreditAccount {
-  List<CreditSpending> get spendingTransactionsList =>
-      transactionsList.whereType<CreditSpending>().toList();
+  List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
 
-  List<Statement> get statementsList {
+  List<Statement> get statements {
     final List<Statement> list = List.empty(growable: true);
 
     if (earliestStatementDate == null || latestStatementDate == null) {
@@ -129,39 +128,40 @@ extension CreditAccountDetails on CreditAccount {
       if (begin != earliestStatementDate!) {
         carryingOver = list[list.length - 1].carryToNextStatement;
       }
-      Statement statement = Statement(this, carryingOver: carryingOver, beginDate: begin);
+      Statement statement = Statement(this, carryingOver: carryingOver, startDate: begin);
       list.add(statement);
     }
 
     return list;
   }
 
-  /// Return `null` if no statement is found
-  /// Get whole statement object contains the dateTime
-  Statement? getStatementAt(DateTime dateTime) {
-    if (statementsList.isEmpty) {
+  /// Return `null` if no statement is found.
+  ///
+  /// Get whole `Statement` object contains the `dateTime`
+  Statement? statementAt(DateTime dateTime) {
+    if (statements.isEmpty) {
       return null;
     }
 
     final date = dateTime.onlyYearMonthDay;
-    final latestStatement = statementsList[statementsList.length - 1];
+    final latestStatement = statements[statements.length - 1];
 
     // If statement is already in credit account statements list
-    for (Statement statement in statementsList) {
-      if (date.compareTo(statement.beginDate) >= 0 && date.compareTo(statement.dueDate) < 0) {
+    for (Statement statement in statements) {
+      if (date.compareTo(statement.startDate) >= 0 && date.compareTo(statement.dueDate) <= 0) {
         return statement;
       }
     }
 
     // Get future statement
-    if (date.compareTo(latestStatement.dueDate) >= 0) {
+    if (date.compareTo(latestStatement.dueDate) > 0) {
       final list = [latestStatement];
 
       for (DateTime begin = latestStatement.endDate;
           begin.compareTo(date) <= 0;
           begin = begin.copyWith(month: begin.month + 1)) {
         double carryingOver = list.last.carryToNextStatement;
-        Statement statement = Statement(this, carryingOver: carryingOver, beginDate: begin);
+        Statement statement = Statement(this, carryingOver: carryingOver, startDate: begin);
         list.add(statement);
       }
       return list.last;
