@@ -21,19 +21,21 @@ class CreditPaymentInfo extends ConsumerWidget {
     required this.title,
     this.isSimple = true,
     required this.statement,
+    this.chosenDateTime,
     this.onDateTap,
   }) : super(key: key);
 
   final String title;
   final bool isSimple;
   final Statement? statement;
+  final DateTime? chosenDateTime;
   final void Function(DateTime)? onDateTap;
 
-  List<BaseCreditTransaction> get transactions {
-    if (statement == null) {
+  List<BaseCreditTransaction> transactionsUntil(DateTime? dateTime) {
+    if (statement == null || dateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.transactionsUntilDueDateList;
+    return statement!.transactionsUntil(dateTime);
   }
 
   String? get carryOverAmount {
@@ -51,17 +53,20 @@ class CreditPaymentInfo extends ConsumerWidget {
         Transform.translate(
           offset: Offset(0.0, !isSimple ? 10.0 : 0.0),
           child: Container(
-            padding: !isSimple ? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10) : EdgeInsets.zero,
+            padding:
+                !isSimple ? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10) : EdgeInsets.zero,
             decoration: BoxDecoration(
               color: !isSimple ? AppColors.greyBgr(context) : Colors.transparent,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
             ),
             child: Transform.translate(
               offset: Offset(!isSimple ? 0.0 : 4, !isSimple ? -3.0 : 0.0),
               child: Text(
                 title,
                 style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6), fontSize: 13),
+                    color: context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
+                    fontSize: 13),
               ),
             ),
           ),
@@ -73,7 +78,9 @@ class CreditPaymentInfo extends ConsumerWidget {
                 margin: EdgeInsets.zero,
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+                  color: context.appTheme.isDarkTheme
+                      ? context.appTheme.background3
+                      : context.appTheme.background,
                   border: Border.all(
                     color: context.appTheme.backgroundNegative.withOpacity(0.3),
                   ),
@@ -85,7 +92,7 @@ class CreditPaymentInfo extends ConsumerWidget {
                     children: [
                       Text('Carry over amount: $carryOverAmount'),
                       _List(
-                        transactions: transactions,
+                        transactions: transactionsUntil(chosenDateTime),
                         currencyCode: context.currentSettings.currency.code,
                         onDateTap: onDateTap,
                       ),
@@ -97,7 +104,7 @@ class CreditPaymentInfo extends ConsumerWidget {
                 children: [
                   Text('Carry over amount: $carryOverAmount'),
                   _List(
-                    transactions: transactions,
+                    transactions: transactionsUntil(chosenDateTime),
                     currencyCode: context.currentSettings.currency.code,
                     onDateTap: onDateTap,
                   ),

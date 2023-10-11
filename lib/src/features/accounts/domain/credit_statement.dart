@@ -9,6 +9,18 @@ class Statement {
   final double carryingOver;
 
   final DateTime beginDate;
+
+  Statement copyWith({
+    CreditAccount? creditAccount,
+    double? carryingOver,
+    DateTime? beginDate,
+  }) {
+    return Statement(
+      creditAccount ?? _creditAccount,
+      carryingOver: carryingOver ?? this.carryingOver,
+      beginDate: beginDate ?? this.beginDate,
+    );
+  }
 }
 
 // https://www.youtube.com/watch?v=SnlHbMIWJak
@@ -19,7 +31,7 @@ extension StatementDetails on Statement {
 
   /// Because transactions list of account is sorted by dateTime
   /// so this list will be sorted by dateTime too.
-  List<BaseCreditTransaction> get transactionsUntilDueDateList {
+  List<BaseCreditTransaction> get transactionsUntilDueDate {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
@@ -42,11 +54,21 @@ extension StatementDetails on Statement {
     return list;
   }
 
-  List<BaseCreditTransaction> get transactionsOfThisStatementList {
+  List<BaseCreditTransaction> transactionsUntil(DateTime dateTime) {
+    List<BaseCreditTransaction> list = <BaseCreditTransaction>[];
+    for (BaseCreditTransaction transaction in transactionsUntilDueDate) {
+      if (transaction.dateTime.compareTo(dateTime.toLocal()) < 0) {
+        list.add(transaction);
+      }
+    }
+    return list;
+  }
+
+  List<BaseCreditTransaction> get transactionsOfThisStatementOnly {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    for (int i = 0; i <= transactionsUntilDueDateList.length - 1; i++) {
-      final transaction = transactionsUntilDueDateList[i];
+    for (int i = 0; i <= transactionsUntilDueDate.length - 1; i++) {
+      final transaction = transactionsUntilDueDate[i];
 
       if (transaction is CreditSpending && transaction.dateTime.isBefore(endDate)) {
         list.add(transaction);
@@ -64,7 +86,7 @@ extension StatementDetails on Statement {
 
   double get spendingAmount {
     double spending = 0;
-    for (BaseCreditTransaction transaction in transactionsOfThisStatementList) {
+    for (BaseCreditTransaction transaction in transactionsOfThisStatementOnly) {
       if (transaction is CreditSpending) {
         spending += transaction.amount;
       }
@@ -74,7 +96,7 @@ extension StatementDetails on Statement {
 
   double get paymentAmount {
     double payment = 0;
-    for (BaseCreditTransaction transaction in transactionsOfThisStatementList) {
+    for (BaseCreditTransaction transaction in transactionsOfThisStatementOnly) {
       if (transaction is CreditPayment) {
         payment += transaction.amount;
       }
@@ -87,8 +109,8 @@ extension StatementDetails on Statement {
     DateTime prvDateTime = beginDate;
     double balance = carryingOver;
 
-    for (int i = 0; i <= transactionsUntilDueDateList.length - 1; i++) {
-      final transaction = transactionsUntilDueDateList[i];
+    for (int i = 0; i <= transactionsUntilDueDate.length - 1; i++) {
+      final transaction = transactionsUntilDueDate[i];
 
       sum += balance * prvDateTime.getDaysDifferent(transaction.dateTime);
 
@@ -102,8 +124,8 @@ extension StatementDetails on Statement {
       prvDateTime = transaction.dateTime;
     }
 
-    if (transactionsUntilDueDateList.isNotEmpty) {
-      sum += balance * transactionsUntilDueDateList.last.dateTime.getDaysDifferent(endDate);
+    if (transactionsUntilDueDate.isNotEmpty) {
+      sum += balance * transactionsUntilDueDate.last.dateTime.getDaysDifferent(endDate);
     } else {
       sum += balance * beginDate.getDaysDifferent(endDate);
     }
@@ -115,7 +137,8 @@ extension StatementDetails on Statement {
     if (outstandingBalance <= 0) {
       return 0;
     }
-    final interest = averageDailyBalance * (_creditAccount.apr / (365 * 100)) * beginDate.getDaysDifferent(endDate);
+    final interest =
+        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * beginDate.getDaysDifferent(endDate);
     return interest;
   }
 
@@ -127,8 +150,6 @@ extension StatementDetails on Statement {
     return result;
   }
 
-  /// Tiền nợ cộng dồn sang kỳ sau
-  ///
   /// Assign to `carryingOver` of the next Statement object
   double get carryToNextStatement => outstandingBalance + interest;
 }

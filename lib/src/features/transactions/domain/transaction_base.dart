@@ -29,7 +29,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
       case 1:
         return Income._(
           txn,
-          txn.dateTime,
+          txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
           txn.account?.id,
@@ -41,7 +41,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
       case 0:
         return Expense._(
           txn,
-          txn.dateTime,
+          txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
           txn.account?.id,
@@ -52,18 +52,18 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
       case 2:
         return Transfer._(
           txn,
-          txn.dateTime,
+          txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
           txn.account?.id,
-          toAccount: Account.fromDatabase(txn.transferAccount) as RegularAccount?,
+          toAccount: txn.transferAccount?.id,
           fee: Fee._fromDatabase(txn),
         );
 
       case 3:
         return CreditSpending._(
           txn,
-          txn.dateTime,
+          txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
           txn.account?.id,
@@ -76,7 +76,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
       default:
         return CreditPayment._(
           txn,
-          txn.dateTime,
+          txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
           txn.account?.id,

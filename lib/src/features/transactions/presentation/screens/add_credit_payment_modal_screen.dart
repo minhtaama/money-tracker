@@ -156,6 +156,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 Gap.h8,
                 CreditPaymentInfo(
                   title: 'Transactions require payment:'.hardcoded,
+                  chosenDateTime: _dateTime,
                   isSimple: false,
                   statement: _statement,
                 )

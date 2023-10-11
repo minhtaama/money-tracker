@@ -29,7 +29,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           borderRadius: BorderRadius.circular(1000),
           border: isToday != null && isToday
               ? Border.all(
-                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+                  color: isDisabled != null && isDisabled
+                      ? AppColors.greyBgr(context)
+                      : context.appTheme.primary,
                 )
               : null,
           color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
@@ -68,7 +70,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
+                        year: _outputDateTime.year,
+                        month: _outputDateTime.month,
+                        day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -82,19 +86,17 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                       return _CustomCalendarDialog(
                         config: _customConfig(context, dayBuilder: _dayBuilder),
                         currentDay: _outputDateTime,
-                        //onSelectedDayChange: (date) => _selectedDay = date,
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
-                            _outputDateTime = dateTime;
+                            setState(() {
+                              _outputDateTime = dateTime.copyWith(
+                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                            });
                           }
                         },
                       );
                     },
                   );
-                  setState(() {
-                    _outputDateTime =
-                        _outputDateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
-                  });
                   widget.onChanged(_outputDateTime);
                 },
                 child: _DateTimeWidget(

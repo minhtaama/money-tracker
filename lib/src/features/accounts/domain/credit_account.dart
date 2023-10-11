@@ -112,20 +112,8 @@ extension CreditAccountDateTimeDetails on CreditAccount {
 }
 
 extension CreditAccountDetails on CreditAccount {
-  List<CreditSpending> get spendingTransactionsList => transactionsList.whereType<CreditSpending>().toList();
-
-  // List<CreditSpending> spendingTxnsInThisStatementBefore(DateTime dateTime) {
-  //   DateTime date;
-  //   if (dateTime.day >= statementDay) {
-  //     date = dateTime.copyWith(day: statementDay);
-  //   } else if (dateTime.day <= paymentDueDay) {
-  //     date = dateTime.copyWith(day: statementDay, month: dateTime.month - 1);
-  //   } else {
-  //     date = dateTime;
-  //   }
-  //
-  //   return spendingTransactionsList.where((txn) => !txn.isDone && txn.dateTime.isBefore(date)).toList();
-  // }
+  List<CreditSpending> get spendingTransactionsList =>
+      transactionsList.whereType<CreditSpending>().toList();
 
   List<Statement> get statementsList {
     final List<Statement> list = List.empty(growable: true);
@@ -149,7 +137,8 @@ extension CreditAccountDetails on CreditAccount {
   }
 
   /// Return `null` if no statement is found
-  Statement? statementAt(DateTime dateTime) {
+  /// Get whole statement object contains the dateTime
+  Statement? getStatementAt(DateTime dateTime) {
     if (statementsList.isEmpty) {
       return null;
     }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -34,10 +35,12 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
           transactionsList: transactionListQuery
-              .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+              .map<BaseRegularTransaction>(
+                  (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
               .toList(growable: false),
-          transferTransactionsList:
-              transferTransactionsQuery.map<Transfer>((txn) => BaseTransaction.fromDatabase(txn) as Transfer).toList(),
+          transferTransactionsList: transferTransactionsQuery
+              .map<Transfer>((txn) => BaseTransaction.fromDatabase(txn) as Transfer)
+              .toList(),
         ),
       _ => CreditAccount._(
           accountDb,
@@ -50,7 +53,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
           transactionsList: transactionListQuery
-              .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+              .map<BaseCreditTransaction>(
+                  (txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
               .toList(),
         ),
     };
