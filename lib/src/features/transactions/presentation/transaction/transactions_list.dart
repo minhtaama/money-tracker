@@ -14,9 +14,9 @@ class TransactionsList extends StatelessWidget {
     this.onTransactionTap,
   }) : super(key: key);
 
-  final List<Transaction> transactions;
+  final List<BaseTransaction> transactions;
   final String currencyCode;
-  final void Function(Transaction)? onTransactionTap;
+  final void Function(BaseTransaction)? onTransactionTap;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class TransactionsList extends StatelessWidget {
                     Expanded(
                       child: switch (transaction) {
                         Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
-                        TransactionWithCategory() =>
+                        BaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditPayment() => const Placeholder(),
                       },
@@ -51,8 +51,8 @@ class TransactionsList extends StatelessWidget {
                   ],
                 ),
                 transaction.note != null ||
-                        transaction is TransactionWithCategory &&
-                            (transaction as TransactionWithCategory).categoryTag != null
+                        transaction is BaseTransactionWithCategory &&
+                            (transaction as BaseTransactionWithCategory).categoryTag != null
                     ? TxnNote(transaction: transaction)
                     : Gap.noGap,
               ],
@@ -67,7 +67,7 @@ class TransactionsList extends StatelessWidget {
 class _WithCategoryDetails extends StatelessWidget {
   const _WithCategoryDetails({required this.transaction, required this.currencyCode});
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final String currencyCode;
 
   @override
@@ -79,9 +79,9 @@ class _WithCategoryDetails extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TxnCategoryIcon(transaction: transaction as TransactionWithCategory),
+              TxnCategoryIcon(transaction: transaction as BaseTransactionWithCategory),
               Gap.w4,
-              Expanded(child: TxnCategoryName(transaction: transaction as TransactionWithCategory)),
+              Expanded(child: TxnCategoryName(transaction: transaction as BaseTransactionWithCategory)),
             ],
           ),
         ),

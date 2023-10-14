@@ -8,15 +8,12 @@ import 'rounded_icon_button.dart';
 import '../theme_and_ui/colors.dart';
 import '../theme_and_ui/icons.dart';
 import '../utils/constants.dart';
-import '../features/settings/data/settings_controller.dart';
 
-class CurrencyIcon extends ConsumerWidget {
+class CurrencyIcon extends StatelessWidget {
   const CurrencyIcon({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settingsObject = ref.watch(settingsControllerProvider);
-
+  Widget build(BuildContext context) {
     return CardItem(
       height: 50,
       width: 50,
@@ -27,7 +24,7 @@ class CurrencyIcon extends ConsumerWidget {
       borderRadius: BorderRadius.circular(1000),
       child: FittedBox(
         child: Text(
-          settingsObject.currency.symbol ?? settingsObject.currency.code,
+          context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,
           style: kHeader1TextStyle.copyWith(
             color: context.appTheme.backgroundNegative,
           ),

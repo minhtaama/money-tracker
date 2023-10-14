@@ -28,9 +28,9 @@ class EditCategoryTag extends ConsumerStatefulWidget {
 class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
   final _formKey = GlobalKey<FormState>();
 
-  late final categoryRepo = ref.watch(categoryRepositoryProvider);
+  late final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
 
-  late final List<CategoryTag> _tags = categoryRepo.getTagsSortedByOrder(widget.category)!;
+  late final List<CategoryTag> _tags = categoryRepo.getTagList(widget.category)!;
 
   late String _newName = widget.tag.name;
 
@@ -91,11 +91,9 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                 iconPath: AppIcons.edit,
                 label: 'Done',
                 backgroundColor: context.appTheme.accent,
-                onTap: () async {
-                  await categoryRepo.editTag(widget.tag, name: _newName);
-                  if (mounted) {
-                    context.pop();
-                  }
+                onTap: () {
+                  categoryRepo.editTag(widget.tag, name: _newName);
+                  context.pop();
                 },
               ),
             ],

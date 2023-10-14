@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../theme_and_ui/app_theme.dart';
+import '../data/app_settings.dart';
 
 class ColorPicker extends StatelessWidget {
   const ColorPicker(
@@ -26,9 +26,8 @@ class ColorPicker extends StatelessWidget {
         children: List.generate(colorsList.length, (index) {
           return CircleColor(
             color1: colorsList[index][currentThemeType]!.accent,
-            color2: colorsList[index][currentThemeType]!.isDuoColor
-                ? colorsList[index][currentThemeType]!.primary
-                : null,
+            color2:
+                colorsList[index][currentThemeType]!.isDuoColor ? colorsList[index][currentThemeType]!.primary : null,
             isSelected: currentColorIndex == index,
             onTap: onColorTap,
             index: index,
@@ -41,12 +40,7 @@ class ColorPicker extends StatelessWidget {
 
 class CircleColor extends StatelessWidget {
   const CircleColor(
-      {Key? key,
-      required this.color1,
-      this.color2,
-      required this.isSelected,
-      required this.onTap,
-      required this.index})
+      {Key? key, required this.color1, this.color2, required this.isSelected, required this.onTap, required this.index})
       : super(key: key);
   final int index;
   final Color color1;

@@ -179,7 +179,7 @@ final goRouter = GoRouter(
         context,
         state,
         hasHandle: true,
-        child: TransactionDetails(transaction: state.extra as Transaction),
+        child: TransactionDetails(transaction: state.extra as BaseTransaction),
       ),
     ),
   ],

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
@@ -44,7 +47,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentAccount != null ? currentAccount!.iconPath : AppIcons.add,
       backgroundColor: currentAccount != null ? currentAccount!.backgroundColor : Colors.transparent,
-      color: currentAccount != null ? currentAccount!.color : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color: currentAccount != null
+          ? currentAccount!.color
+          : context.appTheme.backgroundNegative.withOpacity(0.4),
       height: null,
       width: null,
       border: currentAccount != null
@@ -76,23 +81,28 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       children: List.generate(accountList.length, (index) {
                         final account = accountList[index];
                         return IgnorePointer(
-                          ignoring: widget.otherSelectedAccount?.id == account.id,
+                          ignoring: widget.otherSelectedAccount?.databaseObject.id ==
+                              account.databaseObject.id,
                           child: IconWithTextButton(
                             iconPath: account.iconPath,
                             label: account.name,
-                            isDisabled: widget.otherSelectedAccount?.id == account.id,
+                            isDisabled: widget.otherSelectedAccount?.databaseObject.id ==
+                                account.databaseObject.id,
                             labelSize: 18,
                             borderRadius: BorderRadius.circular(16),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             border: Border.all(
-                              color: currentAccount?.id == account.id
+                              color: currentAccount?.databaseObject.id == account.databaseObject.id
                                   ? account.backgroundColor
                                   : context.appTheme.backgroundNegative.withOpacity(0.4),
                             ),
                             backgroundColor:
-                                currentAccount?.id == account.id ? account.backgroundColor : Colors.transparent,
-                            color:
-                                currentAccount?.id == account.id ? account.color : context.appTheme.backgroundNegative,
+                                currentAccount?.databaseObject.id == account.databaseObject.id
+                                    ? account.backgroundColor
+                                    : Colors.transparent,
+                            color: currentAccount?.databaseObject.id == account.databaseObject.id
+                                ? account.color
+                                : context.appTheme.backgroundNegative,
                             onTap: () => context.pop<Account>(account),
                             height: null,
                             width: null,
@@ -101,15 +111,32 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       }),
                     ),
                     Gap.h32,
+                    Gap.h32,
                   ],
                 )
-              : Text('NO ACCOUNT'),
-          //TODO: Create an empty list widget
+              : Column(
+                  children: [
+                    Gap.h8,
+                    EmptyInfo(
+                      infoText:
+                          'No${widget.accountType == AccountType.credit ? ' credit' : ''} account.\n Tap here to create a first one'
+                              .hardcoded,
+                      textSize: 14,
+                      iconPath: AppIcons.accounts,
+                      onTap: () {
+                        context.pop();
+                        context.push(RoutePath.addAccount);
+                      },
+                    ),
+                    Gap.h48,
+                  ],
+                ),
         );
 
         setState(() {
           if (returnedValue != null) {
-            if (currentAccount != null && currentAccount!.id == returnedValue.id) {
+            if (currentAccount != null &&
+                currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               currentAccount = null;
               widget.onChangedAccount(currentAccount);
             } else {

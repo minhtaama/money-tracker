@@ -11,13 +11,17 @@ class InlineTextFormField extends StatelessWidget {
       this.onChanged,
       this.prefixText,
       this.suffixText,
+      this.suffixWidget,
       this.widget,
-      this.width = 50,
+      this.width,
+      this.maxLength = 3,
       this.initialValue});
   final String? prefixText;
   final String? suffixText;
+  final Widget? suffixWidget;
   final Widget? widget;
   final double? width;
+  final int? maxLength;
   final String? initialValue;
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
@@ -45,7 +49,8 @@ class InlineTextFormField extends StatelessWidget {
                       focusColor: context.appTheme.secondary,
                       autofocus: false,
                       disableErrorText: true,
-                      maxLength: 3,
+                      maxLength: maxLength,
+                      maxLines: 1,
                       initialValue: initialValue,
                       contentPadding: EdgeInsets.zero,
                       keyboardType: TextInputType.number,
@@ -76,6 +81,8 @@ class InlineTextFormField extends StatelessWidget {
                 style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
               )
             : Gap.noGap,
+        suffixWidget != null ? Gap.w16 : Gap.noGap,
+        suffixWidget ?? Gap.noGap,
       ],
     );
   }

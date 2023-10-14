@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 extension DateTimeExtensions on DateTime {
   /// Returns [DateTime] without timestamp.
-
   DateTime get onlyYearMonth => DateTime(year, month);
+
+  /// Returns [DateTime] without timestamp.
   DateTime get onlyYearMonthDay => DateTime(year, month, day);
 
   int getMonthsDifferent(DateTime date) {
@@ -20,6 +22,15 @@ extension DateTimeExtensions on DateTime {
     }
 
     return months;
+  }
+
+  int getDaysDifferent(DateTime date) {
+    final current = onlyYearMonthDay;
+    final until = date.onlyYearMonthDay;
+
+    Duration diff = current.difference(until);
+
+    return diff.inDays.abs();
   }
 
   String getFormattedDate({

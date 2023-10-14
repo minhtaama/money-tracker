@@ -48,7 +48,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      final transactionRepo = ref.read(transactionRepositoryProvider);
+      final transactionRepo = ref.read(transactionRepositoryRealmProvider);
 
       if (_type == TransactionType.income) {
         transactionRepo.writeNewIncomeTxn(

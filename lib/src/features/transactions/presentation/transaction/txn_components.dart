@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -16,7 +18,7 @@ import '../../domain/transaction_base.dart';
 class TxnDot extends StatelessWidget {
   const TxnDot({Key? key, required this.transaction, this.size}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final double? size;
 
   @override
@@ -74,7 +76,7 @@ class TxnInstallmentIcon extends StatelessWidget {
 class TxnCategoryIcon extends StatelessWidget {
   const TxnCategoryIcon({Key? key, required this.transaction}) : super(key: key);
 
-  final TransactionWithCategory transaction;
+  final BaseTransactionWithCategory transaction;
 
   String get _iconPath {
     if (transaction is Income && _isInitial(transaction)) {
@@ -83,7 +85,7 @@ class TxnCategoryIcon extends StatelessWidget {
     if (transaction.category != null) {
       return transaction.category!.iconPath;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null category
+    return AppIcons.defaultIcon;
   }
 
   @override
@@ -99,7 +101,7 @@ class TxnCategoryIcon extends StatelessWidget {
 class TxnCategoryName extends StatelessWidget {
   const TxnCategoryName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
-  final TransactionWithCategory transaction;
+  final BaseTransactionWithCategory transaction;
   final double? fontSize;
 
   String get _name {
@@ -109,7 +111,7 @@ class TxnCategoryName extends StatelessWidget {
     if (transaction.category != null) {
       return transaction.category!.name;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null category
+    return 'No Category';
   }
 
   @override
@@ -126,16 +128,17 @@ class TxnCategoryName extends StatelessWidget {
   }
 }
 
-class TxnAccountIcon extends StatelessWidget {
-  const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false}) : super(key: key);
+class TxnAccountIcon extends ConsumerWidget {
+  const TxnAccountIcon({Key? key, required this.transaction, this.useAccountIcon = false})
+      : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final bool useAccountIcon;
 
-  String get _iconPath {
+  String _iconPath(WidgetRef ref) {
     if (transaction.account != null) {
       if (useAccountIcon) {
-        return transaction.account!.iconPath;
+        return ref.watch(accountRepositoryProvider).getAccount(transaction.account!)!.iconPath;
       }
       return switch (transaction) {
         Transfer() => '',
@@ -145,81 +148,82 @@ class TxnAccountIcon extends StatelessWidget {
         CreditSpending() => AppIcons.upload
       };
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null account
+    return AppIcons.defaultIcon;
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SvgIcon(
-      _iconPath,
+      _iconPath(ref),
       size: 20,
       color: context.appTheme.backgroundNegative,
     );
   }
 }
 
-class TxnAccountName extends StatelessWidget {
+class TxnAccountName extends ConsumerWidget {
   const TxnAccountName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final double? fontSize;
 
-  String get _name {
+  String _name(WidgetRef ref) {
     if (transaction.account != null) {
-      return transaction.account!.name;
+      return ref.watch(accountRepositoryProvider).getAccount(transaction.account!)!.name;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null account
+    return 'No account assigned';
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Text(
-      _name,
-      style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
+      _name(ref),
+      style: kHeader3TextStyle.copyWith(
+          color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
   }
 }
 
-class TxnToAccountIcon extends StatelessWidget {
+class TxnToAccountIcon extends ConsumerWidget {
   const TxnToAccountIcon({Key? key, required this.transaction}) : super(key: key);
 
   final Transfer transaction;
 
-  String get _iconPath {
+  String _iconPath(WidgetRef ref) {
     if (transaction.toAccount != null) {
-      return transaction.toAccount!.iconPath;
+      return ref.read(accountRepositoryProvider).getAccount(transaction.toAccount!)!.iconPath;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null account
+    return AppIcons.defaultIcon;
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SvgIcon(
-      _iconPath,
+      _iconPath(ref),
       size: 20,
       color: context.appTheme.backgroundNegative,
     );
   }
 }
 
-class TxnToAccountName extends StatelessWidget {
+class TxnToAccountName extends ConsumerWidget {
   const TxnToAccountName({Key? key, required this.transaction}) : super(key: key);
 
   final Transfer transaction;
 
-  String get _name {
+  String _name(WidgetRef ref) {
     if (transaction.toAccount != null) {
-      return transaction.toAccount!.name;
+      return ref.read(accountRepositoryProvider).getAccount(transaction.toAccount!)!.name;
     }
-    return ''; //TODO: Implements blank icon and name if transaction has null category and account
+    return 'Empty';
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Text(
-      _name,
+      _name(ref),
       style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -228,10 +232,11 @@ class TxnToAccountName extends StatelessWidget {
 }
 
 class TxnAmount extends StatelessWidget {
-  const TxnAmount({Key? key, required this.currencyCode, required this.transaction, this.fontSize}) : super(key: key);
+  const TxnAmount({Key? key, required this.currencyCode, required this.transaction, this.fontSize})
+      : super(key: key);
 
   final String currencyCode;
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final double? fontSize;
 
   @override
@@ -243,12 +248,14 @@ class TxnAmount extends StatelessWidget {
           CalService.formatCurrency(transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),
+          style:
+              kHeader2TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),
+          style:
+              kHeader4TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );
@@ -258,14 +265,14 @@ class TxnAmount extends StatelessWidget {
 class TxnNote extends StatelessWidget {
   const TxnNote({Key? key, required this.transaction}) : super(key: key);
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
 
   String? get _categoryTag {
     final txn = transaction;
     switch (txn) {
-      case TransactionWithCategory():
-        return (txn as TransactionWithCategory).categoryTag != null
-            ? '# ${(txn as TransactionWithCategory).categoryTag!.name}'
+      case BaseTransactionWithCategory():
+        return (txn as BaseTransactionWithCategory).categoryTag != null
+            ? '# ${(txn as BaseTransactionWithCategory).categoryTag!.name}'
             : null;
       case Transfer() || CreditPayment():
         return null;
@@ -277,14 +284,16 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(
+            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius:
+              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +331,12 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {Key? key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1})
+      {Key? key,
+      this.height = 27,
+      this.width = 20,
+      this.adjustY = 1,
+      this.strokeWidth = 1,
+      this.opacity = 1})
       : super(key: key);
 
   final double height;
@@ -338,7 +352,8 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity,
+              height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
@@ -402,7 +417,7 @@ class _TxnSpendingPaidBarState extends State<TxnSpendingPaidBar> {
 class TxnDateTime extends StatelessWidget {
   const TxnDateTime({super.key, required this.transaction, this.onDateTap});
 
-  final Transaction transaction;
+  final BaseTransaction transaction;
   final void Function(DateTime)? onDateTap;
 
   @override
@@ -424,7 +439,7 @@ class TxnDateTime extends StatelessWidget {
 
 ///////////////////////////////////////////////////////////////////
 
-Color _color(BuildContext context, Transaction transaction) {
+Color _color(BuildContext context, BaseTransaction transaction) {
   return switch (transaction) {
     Income() => context.appTheme.positive,
     Expense() => context.appTheme.negative,
@@ -434,7 +449,7 @@ Color _color(BuildContext context, Transaction transaction) {
   };
 }
 
-bool _isInitial(TransactionWithCategory transaction) {
+bool _isInitial(BaseTransactionWithCategory transaction) {
   if (transaction is Income && transaction.isInitialTransaction) {
     return true;
   }

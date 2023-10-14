@@ -8,7 +8,6 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -25,7 +24,6 @@ class AccountsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accountRepository = ref.watch(accountRepositoryProvider);
-    final settingsRepository = ref.watch(settingsControllerProvider);
 
     List<Account> accountList = accountRepository.getList(null);
 
@@ -101,14 +99,14 @@ class AccountsScreen extends ConsumerWidget {
                             // Account Current Balance
                             children: [
                               Text(
-                                settingsRepository.currency.code,
+                                context.currentSettings.currency.code,
                                 style: kHeader4TextStyle.copyWith(
                                     color: model.color, fontSize: kHeader1TextStyle.fontSize),
                               ),
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  CalService.formatCurrency(model.currentBalance),
+                                  CalService.formatCurrency(model.availableAmount),
                                   style: kHeader1TextStyle.copyWith(color: model.color),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,

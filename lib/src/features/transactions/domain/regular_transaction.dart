@@ -1,15 +1,13 @@
 part of 'transaction_base.dart';
 
 @immutable
-sealed class RegularTransaction extends Transaction {
-  @override
-  final RegularAccount? account;
-
-  const RegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, this.account);
+sealed class BaseRegularTransaction extends BaseTransaction {
+  const BaseRegularTransaction(
+      super.isarObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable
-class Expense extends RegularTransaction implements TransactionWithCategory {
+class Expense extends BaseRegularTransaction implements BaseTransactionWithCategory {
   @override
   final Category? category;
 
@@ -28,7 +26,7 @@ class Expense extends RegularTransaction implements TransactionWithCategory {
 }
 
 @immutable
-class Income extends RegularTransaction implements TransactionWithCategory {
+class Income extends BaseRegularTransaction implements BaseTransactionWithCategory {
   @override
   final Category? category;
 
@@ -50,8 +48,8 @@ class Income extends RegularTransaction implements TransactionWithCategory {
 }
 
 @immutable
-class Transfer extends RegularTransaction {
-  final RegularAccount? toAccount;
+class Transfer extends BaseRegularTransaction {
+  final ObjectId? toAccount;
   final Fee? fee;
 
   const Transfer._(
@@ -70,11 +68,11 @@ class Fee {
   final double amount;
   final bool onDestination;
 
-  static Fee? _fromIsar(TransactionIsar txn) {
-    if (txn.transferFeeIsar == null) {
+  static Fee? _fromDatabase(TransactionDb txn) {
+    if (txn.transferFee == null) {
       return null;
     }
-    return Fee(txn.transferFeeIsar!.amount, txn.transferFeeIsar!.onDestination);
+    return Fee(txn.transferFee!.amount, txn.transferFee!.chargeOnDestination);
   }
 
   const Fee(this.amount, this.onDestination);

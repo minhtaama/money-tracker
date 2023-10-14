@@ -1,26 +1,54 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
-import 'package:money_tracker_app/persistent/isar_data_store.dart';
-import 'package:money_tracker_app/src/features/accounts/data/isar_dto/account_isar.dart';
-import 'package:money_tracker_app/src/features/transactions/data/isar_dto/transaction_isar.dart';
+import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:realm/realm.dart';
 
+import '../../../../persistent/realm_dto.dart';
+import '../../transactions/domain/transaction_base.dart';
 import '../domain/account_base.dart';
 
-class AccountRepository {
-  AccountRepository(this.isar);
+class AccountRepositoryRealmDb {
+  AccountRepositoryRealmDb(this.realm);
 
-  final Isar isar;
+  final Realm realm;
 
-  // No need to run async method because user might not have over 100 account (Obviously!)
-  List<Account> getList(AccountType? type) {
-    List<AccountIsar> isarList;
+  int _accountTypeInDb(AccountType type) => switch (type) {
+        AccountType.regular => 0,
+        AccountType.credit => 1,
+      };
+
+  RealmResults<AccountDb> _realmResults(AccountType? type) {
     if (type == null) {
-      isarList = isar.accountIsars.where().sortByOrder().build().findAllSync();
-    } else {
-      isarList = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
+      return realm.all<AccountDb>();
     }
-    return isarList.map((accountIsar) => Account.fromIsar(accountIsar)!).toList();
+
+    return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [_accountTypeInDb(type)]);
+  }
+
+  List<Account> getList(AccountType? type) {
+    return _realmResults(type).map((accountDb) => Account.fromDatabase(accountDb)!).toList();
+  }
+
+  Account? getAccount(ObjectId objectId) {
+    AccountDb? accountDb = realm.find<AccountDb>(objectId);
+    return Account.fromDatabase(accountDb);
+  }
+
+  // List<BaseTransaction> getTransactionList(Account account) {
+  //   final RealmResults<TransactionDb> transactionListQuery =
+  //       account.databaseObject.transactions.query('TRUEPREDICATE SORT(dateTime ASC)');
+  //   return switch (account) {
+  //     RegularAccount() => transactionListQuery
+  //         .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+  //         .toList(growable: false),
+  //     CreditAccount() => transactionListQuery
+  //         .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+  //         .toList(),
+  //   };
+  // }
+
+  Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
+    return realm.all<AccountDb>().changes;
   }
 
   double getTotalBalance({bool includeCreditAccount = false}) {
@@ -32,18 +60,12 @@ class AccountRepository {
       accountList = getList(AccountType.regular);
     }
     for (Account account in accountList) {
-      totalBalance += account.currentBalance;
+      totalBalance += account.availableAmount;
     }
     return totalBalance;
   }
 
-  // Used to watch list changes
-  Stream<void> _watchListChanges() {
-    Query<AccountIsar> query = isar.accountIsars.where().sortByOrder().build();
-    return query.watchLazy(fireImmediately: true);
-  }
-
-  Future<void> writeNew(
+  void writeNew(
     double balance, {
     required AccountType type,
     required String iconCategory,
@@ -52,130 +74,90 @@ class AccountRepository {
     required int colorIndex,
     required int? statementDay,
     required int? paymentDueDay,
-    required double? interestRate,
+    required double? apr,
   }) async {
-    TransactionIsar? initialTransaction;
-    CreditDetailsIsar? creditAccountDetailsIsar;
+    TransactionDb? initialTransaction;
+    CreditDetailsDb? creditDetailsDb;
 
     if (type == AccountType.credit) {
-      creditAccountDetailsIsar = CreditDetailsIsar()
-        ..apr = interestRate!
-        ..statementDay = statementDay!
-        ..paymentDueDay = paymentDueDay!
-        ..creditBalance = balance;
+      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
     }
 
-    final newAccount = AccountIsar()
-      ..type = type
-      ..iconCategory = iconCategory
-      ..iconIndex = iconIndex
-      ..name = name
-      ..colorIndex = colorIndex
-      ..creditDetailsIsar = creditAccountDetailsIsar;
+    final order = getList(null).length;
+
+    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+        order: order, creditDetails: creditDetailsDb);
 
     if (type == AccountType.regular) {
-      initialTransaction = TransactionIsar()
-        ..transactionType = TransactionType.income
-        ..dateTime = DateTime.now()
-        ..isInitialTransaction = true
-        ..amount = balance
-        ..accountLink.value = newAccount;
+      initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), balance,
+          account: newAccount, isInitialTransaction: true); // transaction type 1 == TransactionType.income
     }
 
-    await isar.writeTxn(() async {
-      await isar.accountIsars.put(newAccount);
-      // If this database is user-reorderable, then we must
-      // assign `order` value equal to its `Isar.autoIncrementID` at the first time
-      // then update it again
-      newAccount.order = newAccount.id;
-      await isar.accountIsars.put(newAccount);
+    realm.write(() {
+      realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        await isar.transactionIsars.put(initialTransaction!);
-        await initialTransaction.accountLink.save();
+        realm.add(initialTransaction!);
       }
     });
   }
 
-  Future<void> edit(Account currentAccount,
+  void edit(Account currentAccount,
       {required String name,
       required String iconCategory,
       required int iconIndex,
       required int colorIndex,
       required double initialBalance}) async {
     // Update current account value
-    final accountIsar = currentAccount.isarObject;
-
-    accountIsar
-      ..iconCategory = iconCategory
-      ..iconIndex = iconIndex
-      ..name = name
-      ..colorIndex = colorIndex;
+    final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionIsar? initialTransaction =
-        await accountIsar.txnOfThisAccountBacklinks.filter().isInitialTransactionEqualTo(true).findFirst();
+    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
-      // If the initial transaction is found
-      initialTransaction.amount = initialBalance;
+      realm.write(() {
+        accountDb
+          ..iconCategory = iconCategory
+          ..iconIndex = iconIndex
+          ..name = name
+          ..colorIndex = colorIndex;
 
-      await isar.writeTxn(() async {
-        await isar.accountIsars.put(accountIsar);
-        await isar.transactionIsars.put(initialTransaction!);
+        // If the initial transaction is found
+        initialTransaction!.amount = initialBalance;
       });
     } else {
       // In case user delete the initial transaction of the current editing account
-      initialTransaction = TransactionIsar()
-        ..transactionType = TransactionType.income
-        ..dateTime = DateTime.now()
-        ..isInitialTransaction = true
-        ..amount = initialBalance
-        ..note = 'Initial Balance'
-        ..accountLink.value = accountIsar;
+      initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), initialBalance,
+          account: currentAccount.databaseObject, isInitialTransaction: true);
 
-      await isar.writeTxn(() async {
-        await isar.accountIsars.put(accountIsar);
-        await isar.transactionIsars.put(initialTransaction!);
+      realm.write(() {
+        accountDb
+          ..iconCategory = iconCategory
+          ..iconIndex = iconIndex
+          ..name = name
+          ..colorIndex = colorIndex;
 
-        // Save the link to this account in `initialTransaction`
-        await initialTransaction.accountLink.save();
+        realm.add(initialTransaction!);
       });
     }
   }
 
-  Future<void> delete(Account account) async {
-    await isar.writeTxn(() async => await isar.accountIsars.delete(account.id));
+  void delete(Account account) {
+    realm.write(() => realm.delete(account.databaseObject));
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)
-  Future<void> reorder(AccountType? type, int oldIndex, int newIndex) async {
-    List<AccountIsar> list;
-    if (type == null) {
-      list = isar.accountIsars.where().sortByOrder().build().findAllSync();
-    } else {
-      list = isar.accountIsars.filter().typeEqualTo(type).sortByOrder().build().findAllSync();
-    }
-    await isar.writeTxn(
-      () async {
-        if (newIndex < oldIndex) {
-          // Move item up the list
-          int temp = list[newIndex].order!;
-          for (int i = newIndex; i < oldIndex; i++) {
-            list[i].order = list[i + 1].order;
-            isar.accountIsars.put(list[i]);
-          }
-          list[oldIndex].order = temp;
-          isar.accountIsars.put(list[oldIndex]);
-        } else {
-          // Move item down the list
-          int temp = list[newIndex].order!;
-          for (int i = newIndex; i > oldIndex; i--) {
-            list[i].order = list[i - 1].order;
-            isar.accountIsars.put(list[i]);
-          }
-          list[oldIndex].order = temp;
-          isar.accountIsars.put(list[oldIndex]);
+  void reorder(AccountType? type, int oldIndex, int newIndex) {
+    final list = _realmResults(type).toList();
+
+    final item = list.removeAt(oldIndex);
+    list.insert(newIndex, item);
+
+    realm.write(
+      () {
+        // Recreate order to query sort by this property
+        for (int i = 0; i < list.length; i++) {
+          list[i].order = i;
         }
       },
     );
@@ -184,10 +166,10 @@ class AccountRepository {
 
 /////////////////////////// PROVIDERS ///////////////////////////
 
-final accountRepositoryProvider = Provider<AccountRepository>(
+final accountRepositoryProvider = Provider<AccountRepositoryRealmDb>(
   (ref) {
-    final isar = ref.watch(isarProvider);
-    return AccountRepository(isar);
+    final realm = ref.watch(realmProvider);
+    return AccountRepositoryRealmDb(realm);
   },
 );
 

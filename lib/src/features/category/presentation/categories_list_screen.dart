@@ -23,16 +23,16 @@ class CategoriesListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoryRepository = ref.watch(categoryRepositoryProvider);
+    final categoryRepository = ref.watch(categoryRepositoryRealmProvider);
 
     List<Category> incomeList = categoryRepository.getList(CategoryType.income);
     List<Category> expenseList = categoryRepository.getList(CategoryType.expense);
 
-    ref.watch(categoriesChangesProvider(CategoryType.income)).whenData((_) {
+    ref.watch(categoriesChangesRealmProvider(CategoryType.income)).whenData((_) {
       incomeList = categoryRepository.getList(CategoryType.income);
     });
 
-    ref.watch(categoriesChangesProvider(CategoryType.expense)).whenData((_) {
+    ref.watch(categoriesChangesRealmProvider(CategoryType.expense)).whenData((_) {
       expenseList = categoryRepository.getList(CategoryType.expense);
     });
 

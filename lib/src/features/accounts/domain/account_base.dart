@@ -1,40 +1,62 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
-import '../../../../persistent/isar_model.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:realm/realm.dart';
+import '../../../../persistent/base_model.dart';
+import '../../../../persistent/realm_dto.dart';
 import '../../transactions/domain/transaction_base.dart';
-import '../data/isar_dto/account_isar.dart';
 
 part 'regular_account.dart';
 part 'credit_account.dart';
+part 'credit_statement.dart';
 
 @immutable
-sealed class Account extends IsarModelWithIcon<AccountIsar> {
-  List get transactionsList;
+sealed class Account extends BaseModelWithIcon<AccountDb> {
+  abstract final List transactionsList;
 
-  static Account? fromIsar(AccountIsar? accountIsar) {
-    if (accountIsar == null) {
+  static Account? fromDatabase(AccountDb? accountDb) {
+    if (accountDb == null) {
       return null;
     }
 
-    return switch (accountIsar.type) {
-      AccountType.regular => RegularAccount._(
-          accountIsar,
-          name: accountIsar.name,
-          color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
+    final RealmResults<TransactionDb> transactionListQuery =
+        accountDb.transactions.query('TRUEPREDICATE SORT(dateTime ASC)');
+    final RealmResults<TransactionDb> transferTransactionsQuery =
+        accountDb.transferTransactions.query('TRUEPREDICATE SORT(dateTime ASC)');
+
+    return switch (accountDb.type) {
+      0 => RegularAccount._(
+          accountDb,
+          name: accountDb.name,
+          color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+          transactionsList: transactionListQuery
+              .map<BaseRegularTransaction>(
+                  (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+              .toList(growable: false),
+          transferTransactionsList: transferTransactionsQuery
+              .map<Transfer>((txn) => BaseTransaction.fromDatabase(txn) as Transfer)
+              .toList(),
         ),
-      AccountType.credit => CreditAccount._(accountIsar,
-          name: accountIsar.name,
-          color: AppColors.allColorsUserCanPick[accountIsar.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountIsar.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountIsar.iconCategory, accountIsar.iconIndex),
-          creditBalance: accountIsar.creditDetailsIsar!.creditBalance,
-          penaltyInterest: accountIsar.creditDetailsIsar!.apr,
-          statementDay: accountIsar.creditDetailsIsar!.statementDay,
-          paymentDueDay: accountIsar.creditDetailsIsar!.paymentDueDay)
+      _ => CreditAccount._(
+          accountDb,
+          name: accountDb.name,
+          color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+          creditBalance: accountDb.creditDetails!.creditBalance,
+          apr: accountDb.creditDetails!.apr,
+          statementDay: accountDb.creditDetails!.statementDay,
+          paymentDueDay: accountDb.creditDetails!.paymentDueDay,
+          transactionsList: transactionListQuery
+              .map<BaseCreditTransaction>(
+                  (txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+              .toList(),
+        ),
     };
   }
 
@@ -47,12 +69,12 @@ sealed class Account extends IsarModelWithIcon<AccountIsar> {
   });
 }
 
-extension Details on Account {
-  double get currentBalance {
+extension AccountDetails on Account {
+  double get availableAmount {
     switch (this) {
       case RegularAccount():
         double balance = 0;
-        for (RegularTransaction txn in transactionsList) {
+        for (BaseRegularTransaction txn in transactionsList) {
           switch (txn) {
             case Expense() || Transfer():
               balance -= txn.amount;
@@ -62,17 +84,20 @@ extension Details on Account {
               break;
           }
         }
-        for (Transfer txn in (this as RegularAccount).transferTransactionsToThisAccountList) {
+        for (Transfer txn in (this as RegularAccount).transferTransactionsList) {
           balance += txn.amount;
         }
         return balance;
+
       case CreditAccount():
         double balance = (this as CreditAccount).creditBalance;
-        for (CreditSpending txn in transactionsList) {
-          if (!txn.isDone) {
-            balance -= txn.amount - txn.paidAmount;
-          }
-        }
+        //TODO: Calculate credit balance
+        // for (BaseCreditTransaction txn in transactionsList) {
+        //
+        //   if (!txn.isDone) {
+        //     balance -= txn.amount - txn.paidAmount;
+        //   }
+        // }
         return balance;
     }
   }

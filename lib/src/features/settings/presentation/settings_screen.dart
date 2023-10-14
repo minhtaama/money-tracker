@@ -15,7 +15,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../data/settings_controller.dart';
+import '../data/settings_repo.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
               ColorPicker(
                 currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
                 colorsList: AppColors.allThemeData,
-                currentColorIndex: settingsObject.currentThemeIndex,
+                currentColorIndex: context.currentSettings.themeIndex,
                 onColorTap: (int value) {
                   settingsController.set(themeIndex: value);
                 },

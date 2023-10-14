@@ -68,6 +68,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
                     }
                     return null;
                   },
+                  maxLines: 1,
                   onFieldSubmitted: (_) => _formKey.currentState!.validate(),
                   hintText: 'Category Name',
                   onChanged: (value) {
@@ -97,7 +98,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
               isDisabled: categoryName == '',
               onTap: () {
                 if (_formKey.currentState!.validate()) {
-                  final categoryRepository = ref.read(categoryRepositoryProvider);
+                  final categoryRepository = ref.read(categoryRepositoryRealmProvider);
                   categoryRepository.writeNew(
                     type: categoryType,
                     iconCategory: iconCategory,

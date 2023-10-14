@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import '../../../../common_widgets/empty_info.dart';
+import '../../../../common_widgets/modal_bottom_sheets.dart';
+import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
 
@@ -49,11 +52,10 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
             ),
       onTap: () async {
         List<Category> categoryList;
-
         if (widget.transactionType == TransactionType.income) {
-          categoryList = ref.read(categoryRepositoryProvider).getList(CategoryType.income);
+          categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.income);
         } else if (widget.transactionType == TransactionType.expense) {
-          categoryList = ref.read(categoryRepositoryProvider).getList(CategoryType.expense);
+          categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense);
         } else {
           throw ErrorDescription(
               'Category Selector should not be displayed with Transfer-type Transaction');
@@ -86,14 +88,15 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                           borderRadius: BorderRadius.circular(16),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           border: Border.all(
-                            color: currentCategory?.id == category.id
+                            color: currentCategory?.databaseObject.id == category.databaseObject.id
                                 ? category.backgroundColor
                                 : context.appTheme.backgroundNegative.withOpacity(0.4),
                           ),
-                          backgroundColor: currentCategory?.id == category.id
-                              ? category.backgroundColor
-                              : Colors.transparent,
-                          color: currentCategory?.id == category.id
+                          backgroundColor:
+                              currentCategory?.databaseObject.id == category.databaseObject.id
+                                  ? category.backgroundColor
+                                  : Colors.transparent,
+                          color: currentCategory?.databaseObject.id == category.databaseObject.id
                               ? category.color
                               : context.appTheme.backgroundNegative,
                           onTap: () => context.pop<Category>(category),
@@ -103,15 +106,32 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       }),
                     ),
                     Gap.h32,
+                    Gap.h32,
                   ],
                 )
-              : Text('NO CATEGORY'),
+              : Column(
+                  children: [
+                    Gap.h8,
+                    EmptyInfo(
+                        infoText:
+                            'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
+                                .hardcoded,
+                        textSize: 14,
+                        iconPath: AppIcons.accounts,
+                        onTap: () {
+                          context.pop();
+                          context.push(RoutePath.addCategory);
+                        }),
+                    Gap.h48,
+                  ],
+                ),
           //TODO: Create an empty list widget
         );
 
         setState(() {
           if (returnedValue != null) {
-            if (currentCategory != null && currentCategory!.id == returnedValue.id) {
+            if (currentCategory != null &&
+                currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
               currentCategory = null;
               widget.onChangedCategory(currentCategory);
             } else {

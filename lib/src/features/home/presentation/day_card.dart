@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transactions_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -11,7 +9,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../transactions/domain/transaction_base.dart';
 
-class DayCard extends ConsumerWidget {
+class DayCard extends StatelessWidget {
   const DayCard({
     Key? key,
     required this.dateTime,
@@ -20,12 +18,12 @@ class DayCard extends ConsumerWidget {
   }) : super(key: key);
 
   final DateTime dateTime;
-  final List<Transaction> transactions;
-  final Function(Transaction)? onTransactionTap;
+  final List<BaseTransaction> transactions;
+  final Function(BaseTransaction)? onTransactionTap;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
-    for (Transaction transaction in transactions) {
+    for (BaseTransaction transaction in transactions) {
       if (transaction is Income) {
         cashFlow += transaction.amount;
       }
@@ -37,9 +35,7 @@ class DayCard extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settingsRepo = ref.watch(settingsControllerProvider);
-
+  Widget build(BuildContext context) {
     return CardItem(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -117,7 +113,7 @@ class DayCard extends ConsumerWidget {
                         ),
                         Gap.w4,
                         Text(
-                          settingsRepo.currency.code,
+                          context.currentSettings.currency.code,
                           style: kHeader4TextStyle.copyWith(
                               color: _calculateCashFlow > 0
                                   ? context.appTheme.positive
@@ -136,7 +132,7 @@ class DayCard extends ConsumerWidget {
           Gap.divider(context),
           TransactionsList(
             transactions: transactions,
-            currencyCode: settingsRepo.currency.code,
+            currencyCode: context.currentSettings.currency.code,
             onTransactionTap: onTransactionTap,
           ),
         ],
