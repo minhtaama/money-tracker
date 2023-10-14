@@ -11,8 +11,7 @@ class DateTimeSelectorForCreditPayment extends ConsumerStatefulWidget {
   final String? disableText;
 
   @override
-  ConsumerState<DateTimeSelectorForCreditPayment> createState() =>
-      _DateTimeSelectorForCreditPaymentState();
+  ConsumerState<DateTimeSelectorForCreditPayment> createState() => _DateTimeSelectorForCreditPaymentState();
 }
 
 class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelectorForCreditPayment> {
@@ -24,8 +23,8 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
 
   DateTime _currentMonthView = DateTime.now();
 
-  late int? _statementDay;
-  late int? _paymentDueDay;
+  late int? _statementDay = widget.creditAccount?.statementDay;
+  late int? _paymentDueDay = widget.creditAccount?.paymentDueDay;
 
   final _key = GlobalKey();
   Size _size = const Size(0.0, 0.0);
@@ -60,8 +59,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
           padding: EdgeInsets.zero,
           elevation: 0,
           border: Border.all(
-              color: context.appTheme.backgroundNegative
-                  .withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+              color: context.appTheme.backgroundNegative.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -75,8 +73,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
 
                       if (_outputDateTime != null) {
                         setState(() {
-                          _outputDateTime =
-                              _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                          _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
                         });
                         widget.onChanged(_outputDateTime!, _outputStatement);
                       }
@@ -102,8 +99,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                 if (dateTime != null) {
                                   _currentMonthView = dateTime;
 
-                                  _outputDateTime =
-                                      dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                                  _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
                                   _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
 
                                   widget.onChanged(_outputDateTime!, _outputStatement);
@@ -131,20 +127,15 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                                   .hardcoded,
                                         )
                                       : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
-                                              .copyWith(
-                                                  month:
-                                                      widget.creditAccount!.earliestPayableDate!.month -
-                                                          1))
+                                              .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
                                           ? EmptyInfo(
                                               iconPath: AppIcons.done,
-                                              infoText:
-                                                  'No payment is needed before this time'.hardcoded,
+                                              infoText: 'No payment is needed before this time'.hardcoded,
                                             )
                                           : selectedDay != null
                                               ? CreditPaymentInfo(
                                                   chosenDateTime: selectedDay,
-                                                  statement:
-                                                      widget.creditAccount!.statementAt(selectedDay),
+                                                  statement: widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
                                                   }),
@@ -190,41 +181,57 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
       bool? isSelected,
       bool? isToday,
       TextStyle? textStyle}) {
-    return Align(
+    final foregroundColor = isDisabled != null && isDisabled
+        ? AppColors.greyBgr(context)
+        : isSelected != null && isSelected
+            ? context.appTheme.primaryNegative
+            : context.appTheme.backgroundNegative;
+
+    final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
+    final bgrBorder = isToday != null && isToday
+        ? Border.all(
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+          )
+        : null;
+
+    Widget icon(String path, {Color? color}) =>
+        Expanded(child: SvgIcon(path, color: color ?? foregroundColor, size: 23));
+
+    final latestPaymentDueDate =
+        date.onlyYearMonthDay.isAtSameMomentAs(widget.creditAccount!.latestAvailablePaymentDueDate);
+
+    return Stack(
       alignment: Alignment.center,
-      child: Container(
-        height: 33,
-        width: 33,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(1000),
-          border: isToday != null && isToday
-              ? Border.all(
-                  color: isDisabled != null && isDisabled
-                      ? AppColors.greyBgr(context)
-                      : context.appTheme.primary,
-                )
-              : null,
-          color: isSelected != null && isSelected
-              ? context.appTheme.primary
-              : _hasSpendingTransaction(date)
-                  ? context.appTheme.negative.withOpacity(isDisabled != null && isDisabled ? 0.7 : 1)
-                  : Colors.transparent,
-        ),
-        child: Center(
-          child: Text(
-            date.day.toString(),
-            style: kHeader4TextStyle.copyWith(
-              color: isDisabled != null && isDisabled
-                  ? AppColors.greyBgr(context)
-                  : isSelected != null && isSelected
-                      ? context.appTheme.primaryNegative
-                      : _hasSpendingTransaction(date)
-                          ? context.appTheme.onNegative
-                          : context.appTheme.backgroundNegative,
-            ),
+      children: [
+        Container(
+          height: 33,
+          width: 33,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(1000),
+            border: bgrBorder,
+            color: bgrColor,
           ),
         ),
-      ),
+        date.day != _statementDay && !latestPaymentDueDate && !_hasSpendingTransaction(date) || isSelected!
+            ? Text(
+                date.day.toString(),
+                style: kHeader3TextStyle.copyWith(
+                    color: foregroundColor, height: 0.99, fontSize: kHeader4TextStyle.fontSize),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  date.day == _statementDay ? icon(AppIcons.budgets) : Gap.noGap,
+                  latestPaymentDueDate ? icon(AppIcons.handCoin) : Gap.noGap,
+                  _hasSpendingTransaction(date)
+                      ? icon(AppIcons.receiptDollar, color: context.appTheme.negative)
+                      : Gap.noGap,
+                  _hasPaymentTransaction(date)
+                      ? icon(AppIcons.receiptCheck, color: context.appTheme.positive)
+                      : Gap.noGap,
+                ],
+              ),
+      ],
     );
   }
 
@@ -237,8 +244,8 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
       return DateTime(DateTime.now().year, DateTime.now().month);
     }
 
-    return DateTime(widget.creditAccount!.earliestPayableDate!.year,
-        widget.creditAccount!.earliestPayableDate!.month - 1);
+    return DateTime(
+        widget.creditAccount!.earliestPayableDate!.year, widget.creditAccount!.earliestPayableDate!.month - 1);
   }
 
   bool _hasSpendingTransaction(DateTime dateTime) {
@@ -246,6 +253,18 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
       throw ErrorDescription('Must specify a credit account first');
     }
     final list = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+    final dateTimeYMD = dateTime.onlyYearMonthDay;
+    if (list.contains(dateTimeYMD)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool _hasPaymentTransaction(DateTime dateTime) {
+    if (widget.creditAccount == null) {
+      throw ErrorDescription('Must specify a credit account first');
+    }
+    final list = widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
     final dateTimeYMD = dateTime.onlyYearMonthDay;
     if (list.contains(dateTimeYMD)) {
       return true;

@@ -26,8 +26,14 @@ class Statement {
 // https://www.youtube.com/watch?v=SnlHbMIWJak
 
 extension StatementDetails on Statement {
-  DateTime get endDate => startDate.copyWith(month: startDate.month + 1);
-  DateTime get dueDate => endDate.copyWith(month: endDate.month + 1, day: _creditAccount.paymentDueDay);
+  DateTime get endDate => startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1);
+  DateTime get dueDate {
+    if (_creditAccount.statementDay >= _creditAccount.paymentDueDay) {
+      return startDate.copyWith(month: startDate.month + 2, day: _creditAccount.paymentDueDay);
+    } else {
+      return startDate.copyWith(month: startDate.month + 1, day: _creditAccount.paymentDueDay);
+    }
+  }
 
   /// Include CreditSpending of next statement, but happens between
   /// this statement `endDate` and `dueDate`.
@@ -41,7 +47,7 @@ extension StatementDetails on Statement {
         continue;
       }
 
-      if (transaction.dateTime.isAfter(dueDate)) {
+      if (transaction.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
         break;
       }
 
@@ -54,7 +60,7 @@ extension StatementDetails on Statement {
     return list;
   }
 
-  List<BaseCreditTransaction> txnsFromBeginTo(DateTime dateTime) {
+  List<BaseCreditTransaction> txnsFromStartDateOfThisStatement(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
@@ -64,7 +70,34 @@ extension StatementDetails on Statement {
         continue;
       }
 
-      if (transaction.dateTime.isAfter(dueDate)) {
+      if (transaction.dateTime.isAfter(endDate.copyWith(day: endDate.day + 1))) {
+        break;
+      }
+
+      if (transaction.dateTime.isBefore(dateTime)) {
+        list.add(transaction);
+        continue;
+      }
+    }
+
+    return list;
+  }
+
+  List<BaseCreditTransaction> txnsFromEndDateOfNextStatement(DateTime dateTime) {
+    final List<BaseCreditTransaction> list = List.empty(growable: true);
+
+    if (!dateTime.isAfter(endDate)) {
+      return list;
+    }
+
+    for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
+      final transaction = _creditAccount.transactionsList[i];
+
+      if (transaction.dateTime.isBefore(endDate)) {
+        continue;
+      }
+
+      if (transaction.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
         break;
       }
 
@@ -152,8 +185,7 @@ extension StatementDetails on Statement {
     if (outstandingBalance <= 0) {
       return 0;
     }
-    final interest =
-        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+    final interest = averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
     return interest;
   }
 

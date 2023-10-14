@@ -87,32 +87,27 @@ extension CreditAccountDateTimeDetails on CreditAccount {
     return null;
   }
 
-  //bool isAfterOrSameAsStatementDay(DateTime dateTime) => dateTime.day >= statementDay;
+  // TODO: Actually the latest due date should be the due date of statement before the statement has payment under minimum amount
+  /// Find due date of latest statement with 0 carry over amount.
+  /// Return `Calendar.minDate` if credit account statement list is empty or no DateTime is found
+  DateTime get latestAvailablePaymentDueDate {
+    if (statements.isEmpty) {
+      return Calendar.minDate;
+    }
 
-  //bool isBeforeOrSameAsPaymentDueDay(DateTime dateTime) => dateTime.day <= paymentDueDay;
+    for (int i = statements.length - 1; i >= 0; i--) {
+      if (statements[i].carryingOver <= 0) {
+        return statements[i].dueDate;
+      }
+    }
 
-  // List<DateTime> nextPaymentPeriod(DateTime dateTime) {
-  //   DateTime statementDate;
-  //   DateTime paymentDueDate;
-  //
-  //   if (isAfterOrSameAsStatementDay(dateTime)) {
-  //     statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
-  //     paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
-  //   }
-  //   if (isBeforeOrSameAsPaymentDueDay(dateTime)) {
-  //     statementDate = DateTime(dateTime.year, dateTime.month - 1, statementDay);
-  //     paymentDueDate = DateTime(dateTime.year, dateTime.month, paymentDueDay);
-  //   } else {
-  //     statementDate = DateTime(dateTime.year, dateTime.month, statementDay);
-  //     paymentDueDate = DateTime(dateTime.year, dateTime.month + 1, paymentDueDay);
-  //   }
-  //
-  //   return List.from([statementDate, paymentDueDate], growable: false);
-  // }
+    return Calendar.minDate;
+  }
 }
 
 extension CreditAccountDetails on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
+  List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
 
   List<Statement> get statements {
     final List<Statement> list = List.empty(growable: true);
@@ -157,7 +152,7 @@ extension CreditAccountDetails on CreditAccount {
     if (date.compareTo(latestStatement.dueDate) > 0) {
       final list = [latestStatement];
 
-      for (DateTime begin = latestStatement.endDate;
+      for (DateTime begin = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
           begin.compareTo(date) <= 0;
           begin = begin.copyWith(month: begin.month + 1)) {
         double carryingOver = list.last.carryToNextStatement;

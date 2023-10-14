@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
@@ -18,22 +19,69 @@ import 'txn_components.dart';
 class CreditPaymentInfo extends ConsumerWidget {
   const CreditPaymentInfo({
     Key? key,
-    this.isSimple = true,
     required this.statement,
+    this.noBorder = true,
     this.chosenDateTime,
     this.onDateTap,
   }) : super(key: key);
 
-  final bool isSimple;
   final Statement? statement;
+
+  final bool noBorder;
   final DateTime? chosenDateTime;
   final void Function(DateTime)? onDateTap;
 
-  List<BaseCreditTransaction> transactions(DateTime? dateTime) {
-    if (statement == null || dateTime == null) {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return !noBorder
+        ? AnimatedContainer(
+            duration: k150msDuration,
+            width: double.infinity,
+            margin: EdgeInsets.zero,
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+              border: Border.all(
+                color: context.appTheme.backgroundNegative.withOpacity(0.3),
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: AnimatedSize(
+              duration: k150msDuration,
+              child: _List(
+                statement: statement,
+                onDateTap: onDateTap,
+                chosenDateTime: chosenDateTime,
+              ),
+            ),
+          )
+        : _List(
+            statement: statement,
+            onDateTap: onDateTap,
+            chosenDateTime: chosenDateTime,
+          );
+  }
+}
+
+class _List extends StatelessWidget {
+  const _List({this.statement, this.onDateTap, this.chosenDateTime});
+
+  final Statement? statement;
+  final void Function(DateTime)? onDateTap;
+  final DateTime? chosenDateTime;
+
+  List<BaseCreditTransaction> get thisStatementTxns {
+    if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsFromBeginTo(dateTime);
+    return statement!.txnsFromStartDateOfThisStatement(chosenDateTime!);
+  }
+
+  List<BaseCreditTransaction> get ofNextStatementTxns {
+    if (statement == null || chosenDateTime == null) {
+      return <BaseCreditTransaction>[];
+    }
+    return statement!.txnsFromEndDateOfNextStatement(chosenDateTime!);
   }
 
   String? get carryOverAmount {
@@ -43,98 +91,60 @@ class CreditPaymentInfo extends ConsumerWidget {
     return CalService.formatCurrency(statement!.carryingOver);
   }
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Transform.translate(
-          offset: Offset(0.0, !isSimple ? 10.0 : 0.0),
-          child: Container(
-            padding:
-                !isSimple ? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10) : EdgeInsets.zero,
-            decoration: BoxDecoration(
-              color: !isSimple ? AppColors.greyBgr(context) : Colors.transparent,
-              borderRadius:
-                  const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-            ),
-            child: Transform.translate(
-              offset: Offset(!isSimple ? 0.0 : 4, !isSimple ? -3.0 : 0.0),
-              child: Text(
-                'Carry over amount: $carryOverAmount',
-                style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
-                    fontSize: 13),
-              ),
-            ),
+  Widget buildHeader(BuildContext context, {required String h1, String? h2}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            h1,
+            style: kHeader4TextStyle.copyWith(color: AppColors.grey(context), fontSize: 12),
+            textAlign: TextAlign.center,
           ),
-        ),
-        !isSimple
-            ? AnimatedContainer(
-                duration: k150msDuration,
-                width: double.infinity,
-                margin: EdgeInsets.zero,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: context.appTheme.isDarkTheme
-                      ? context.appTheme.background3
-                      : context.appTheme.background,
-                  border: Border.all(
-                    color: context.appTheme.backgroundNegative.withOpacity(0.3),
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: AnimatedSize(
-                  duration: k150msDuration,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Carry over amount: $carryOverAmount',
-                        style: kHeader3TextStyle.copyWith(
-                            color:
-                                context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
-                            fontSize: 13),
-                      ),
-                      _List(
-                        transactions: transactions(chosenDateTime),
-                        currencyCode: context.currentSettings.currency.code,
-                        onDateTap: onDateTap,
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: Text(
-                      'Carry over amount: $carryOverAmount',
-                      style: kHeader3TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative.withOpacity(!isSimple ? 1.0 : 0.6),
-                          fontSize: 13),
-                    ),
-                  ),
-                  _List(
-                    transactions: transactions(chosenDateTime),
-                    currencyCode: context.currentSettings.currency.code,
-                    onDateTap: onDateTap,
-                  ),
-                ],
-              ),
-      ],
+          h2 != null
+              ? Text(
+                  h2,
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+                  textAlign: TextAlign.center,
+                )
+              : Gap.noGap,
+        ],
+      ),
     );
   }
-}
 
-class _List extends StatelessWidget {
-  const _List({required this.transactions, required this.currencyCode, this.onDateTap});
-
-  final List<BaseCreditTransaction> transactions;
-  final String currencyCode;
-  final void Function(DateTime)? onDateTap;
+  Widget buildTransactionTile(BuildContext context, BaseCreditTransaction transaction) {
+    return Material(
+      color: Colors.transparent,
+      child: CustomInkWell(
+        inkColor: AppColors.grey(context),
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.push(RoutePath.transaction, extra: transaction),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: Row(
+            children: [
+              Expanded(
+                child: _Details(
+                  transaction: transaction,
+                  currencyCode: context.currentSettings.currency.code,
+                  onDateTap: onDateTap,
+                ),
+              ),
+              Gap.w16,
+              TxnAmount(
+                currencyCode: context.currentSettings.currency.code,
+                transaction: transaction,
+                fontSize: 14,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,48 +153,25 @@ class _List extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: transactions.isEmpty
-              ? [
-                  Gap.h8,
-                  EmptyInfo(
-                    infoText: 'No transaction is made in this statement'.hardcoded,
-                    iconPath: AppIcons.today,
-                    iconSize: 30,
-                  ),
-                  Gap.h8,
-                ]
-              : List.generate(transactions.length, (index) {
-                  final transaction = transactions[index];
-
-                  return Material(
-                    color: Colors.transparent,
-                    child: CustomInkWell(
-                      inkColor: AppColors.grey(context),
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () => context.push(RoutePath.transaction, extra: transaction),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _Details(
-                                transaction: transaction,
-                                currencyCode: currencyCode,
-                                onDateTap: onDateTap,
-                              ),
-                            ),
-                            Gap.w16,
-                            TxnAmount(
-                              currencyCode: currencyCode,
-                              transaction: transaction,
-                              fontSize: 14,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
+          children: [
+            buildHeader(context,
+                h1: 'Last statement carry over:', h2: '$carryOverAmount ${context.currentSettings.currency.code}'),
+            Gap.h8,
+            buildHeader(
+              context,
+              h1: '${statement?.startDate.getFormattedDate()} - ${statement?.endDate.getFormattedDate()}',
+            ),
+            ...List.generate(
+                thisStatementTxns.length, (index) => buildTransactionTile(context, thisStatementTxns[index])),
+            ofNextStatementTxns.isNotEmpty
+                ? buildHeader(
+                    context,
+                    h1: 'Payable of next statement'.hardcoded,
+                  )
+                : Gap.noGap,
+            ...List.generate(
+                ofNextStatementTxns.length, (index) => buildTransactionTile(context, ofNextStatementTxns[index])),
+          ],
         ),
       ),
     );
@@ -200,43 +187,27 @@ class _Details extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        IntrinsicWidth(
-          child: Row(
-            children: [
-              TxnDateTime(
-                transaction: transaction,
-                onDateTap: onDateTap,
-              ),
-              Gap.w8,
-              Expanded(
-                  child: TxnAccountName(
-                transaction: transaction,
-                fontSize: 11,
-              )),
-              Gap.w4,
-            ],
-          ),
-        ),
-        transaction is CreditSpending
-            ? IntrinsicWidth(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TxnCategoryIcon(transaction: transaction as CreditSpending),
-                    Gap.w4,
-                    Expanded(
-                        child: TxnCategoryName(
-                      transaction: transaction as CreditSpending,
-                      fontSize: 11,
-                    )),
-                  ],
+    return transaction is CreditSpending
+        ? IntrinsicWidth(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TxnDateTime(
+                  transaction: transaction,
+                  onDateTap: onDateTap,
                 ),
-              )
-            : Gap.noGap,
-      ],
-    );
+                Gap.w4,
+                TxnCategoryIcon(transaction: transaction as CreditSpending),
+                Gap.w4,
+                Expanded(
+                  child: TxnCategoryName(
+                    transaction: transaction as CreditSpending,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Gap.noGap;
   }
 }

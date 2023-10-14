@@ -36,6 +36,15 @@ class RealmDataStore {
   void _initialDataCallback(Realm realm) {
     //add default settings object
     realm.add(SettingsDb(0));
+
+    // objects
+    realm.add(AccountDb(ObjectId(), 0, 'Cash', 0, 'Business', 3, order: 0));
+    realm.add(AccountDb(ObjectId(), 1, 'VPBank Credit', 0, 'Business', 5,
+        order: 1, creditDetails: CreditDetailsDb(2000, 25, 6, apr: 20)));
+    realm.add(AccountDb(ObjectId(), 1, 'Vietcombank Credit', 0, 'Business', 2,
+        order: 2, creditDetails: CreditDetailsDb(3000, 1, 15, apr: 20)));
+    realm.add(CategoryDb(ObjectId(), 0, 'Salary', 5, 'Food', 4, order: 0));
+    realm.add(CategoryDb(ObjectId(), 1, 'Food and Beverage', 4, 'Food', 4, order: 1));
   }
 }
 

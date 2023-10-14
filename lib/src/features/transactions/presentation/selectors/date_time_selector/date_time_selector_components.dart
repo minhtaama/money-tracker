@@ -268,36 +268,36 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       dayBuilder,
 }) {
   return CalendarDatePicker2WithActionButtonsConfig(
-    calendarType: CalendarDatePicker2Type.single,
-    firstDate: firstDate,
-    lastDate: lastDate,
-    firstDayOfWeek: firstDayOfWeek,
-    selectableDayPredicate: selectableDayPredicate,
-    selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
-    selectedRangeHighlightColor: context.appTheme.isDarkTheme
-        ? context.appTheme.secondary.withOpacity(0.5)
-        : context.appTheme.primary.withOpacity(0.5),
-    controlsTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-    dayTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-    lastMonthIcon: SvgIcon(
-      AppIcons.arrowLeft,
-      color: context.appTheme.backgroundNegative,
-    ),
-    nextMonthIcon: SvgIcon(
-      AppIcons.arrowRight,
-      color: context.appTheme.backgroundNegative,
-    ),
-    weekdayLabelTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-    selectedDayTextStyle: kHeader4TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
-    selectedYearTextStyle: kHeader4TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
-    yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-    cancelButtonTextStyle: kHeader2TextStyle.copyWith(
-        fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
-    okButtonTextStyle: kHeader2TextStyle.copyWith(
-        fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
-    yearBuilder: yearBuilder,
-    dayBuilder: dayBuilder,
-  );
+      calendarType: CalendarDatePicker2Type.single,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      firstDayOfWeek: firstDayOfWeek,
+      selectableDayPredicate: selectableDayPredicate,
+      selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+      selectedRangeHighlightColor: context.appTheme.isDarkTheme
+          ? context.appTheme.secondary.withOpacity(0.5)
+          : context.appTheme.primary.withOpacity(0.5),
+      controlsTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+      dayTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+      lastMonthIcon: SvgIcon(
+        AppIcons.arrowLeft,
+        color: context.appTheme.backgroundNegative,
+      ),
+      nextMonthIcon: SvgIcon(
+        AppIcons.arrowRight,
+        color: context.appTheme.backgroundNegative,
+      ),
+      weekdayLabelTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+      selectedDayTextStyle: kHeader4TextStyle.copyWith(
+          color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
+      selectedYearTextStyle: kHeader4TextStyle.copyWith(
+          color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
+      yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+      cancelButtonTextStyle: kHeader2TextStyle.copyWith(
+          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+      okButtonTextStyle: kHeader2TextStyle.copyWith(
+          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+      yearBuilder: yearBuilder,
+      dayBuilder: dayBuilder,
+      controlsHeight: 40);
 }

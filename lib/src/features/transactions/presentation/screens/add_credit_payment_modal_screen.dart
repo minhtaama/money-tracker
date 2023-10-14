@@ -156,7 +156,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 Gap.h8,
                 CreditPaymentInfo(
                   chosenDateTime: _dateTime,
-                  isSimple: false,
+                  noBorder: false,
                   statement: _statement,
                 )
               ],

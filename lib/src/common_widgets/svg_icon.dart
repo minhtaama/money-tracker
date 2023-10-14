@@ -12,15 +12,13 @@ class SvgIcon extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: Center(
-          child: SvgPicture.asset(
-            name,
-            colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
-            width: size,
-            height: size,
-          ),
+      child: Center(
+        child: SvgPicture.asset(
+          name,
+          colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+          fit: BoxFit.contain,
+          width: size,
+          height: size,
         ),
       ),
     );

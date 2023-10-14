@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../common_widgets/card_item.dart';
-import '../../utils/constants.dart';
+import '../../../common_widgets/card_item.dart';
+import '../../../utils/constants.dart';
 
 class SummaryCard extends StatelessWidget {
   const SummaryCard({
