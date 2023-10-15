@@ -79,7 +79,7 @@ class _List extends StatelessWidget {
     return statement!.txnsFromStartDateOfThisStatementUntil(chosenDateTime!);
   }
 
-  List<BaseCreditTransaction> get ofNextStatementTxns {
+  List<BaseCreditTransaction> get txnsOfNextStatement {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
@@ -93,18 +93,27 @@ class _List extends StatelessWidget {
     return CalService.formatCurrency(statement!.lastStatement.interest);
   }
 
-  String? get lastOutstandingBalance {
-    if (statement == null) {
-      return null;
-    }
-    return CalService.formatCurrency(statement!.lastStatement.remainingBalance);
-  }
-
   String? get carryingOver {
     if (statement == null) {
       return null;
     }
     return CalService.formatCurrency(statement!.lastStatement.carryToThisStatement);
+  }
+
+  String? get spentAmountOfThisStatement {
+    if (statement == null || chosenDateTime == null) {
+      return null;
+    }
+    return CalService.formatCurrency(
+        statement!.spentAmountFromStartDateOfThisStatementUntil(chosenDateTime!));
+  }
+
+  String? get spentAmountOfNextStatement {
+    if (statement == null || chosenDateTime == null) {
+      return null;
+    }
+    return CalService.formatCurrency(
+        statement!.spentAmountFromEndDateOfNextStatementUntil(chosenDateTime!));
   }
 
   Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
@@ -182,23 +191,28 @@ class _List extends StatelessWidget {
             buildHeader(context,
                 h1: 'Last statement carry over:'.hardcoded,
                 h2: '$carryingOver ${context.currentSettings.currency.code}',
-                h3: '(included $lastInterest ${context.currentSettings.currency.code} interest)'
-                    .hardcoded),
+                h3: statement?.lastStatement.interest == 0
+                    ? null
+                    : '(included $lastInterest ${context.currentSettings.currency.code} interest)'
+                        .hardcoded),
             Gap.h16,
             buildHeader(
               context,
-              h1: '${statement?.startDate.getFormattedDate()} - ${statement?.endDate.getFormattedDate()}',
+              h1: 'Total spending of this statement:',
+              h2: '$spentAmountOfThisStatement ${context.currentSettings.currency.code}',
+              h3: '(${statement?.startDate.getFormattedDate()} - ${statement?.endDate.getFormattedDate()})',
             ),
             ...List.generate(thisStatementTxns.length,
                 (index) => buildTransactionTile(context, thisStatementTxns[index])),
-            ofNextStatementTxns.isNotEmpty
+            txnsOfNextStatement.isNotEmpty
                 ? buildHeader(
                     context,
                     h1: 'Payable of next statement'.hardcoded,
+                    h2: '$spentAmountOfNextStatement ${context.currentSettings.currency.code}',
                   )
                 : Gap.noGap,
-            ...List.generate(ofNextStatementTxns.length,
-                (index) => buildTransactionTile(context, ofNextStatementTxns[index])),
+            ...List.generate(txnsOfNextStatement.length,
+                (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
           ],
         ),
       ),

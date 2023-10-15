@@ -28,7 +28,7 @@ class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
 
 class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _calOutputFormattedAmount = '0';
+  final _controller = TextEditingController();
   Statement? _statement;
 
   ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
@@ -40,6 +40,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   double? get _outputAmount => CalService.formatToDouble(_calOutputFormattedAmount);
   ///////////////////////////////////////////////////////////////////////
+
+  String get _calOutputFormattedAmount => _controller.text;
 
   double get _fullPaymentAmount =>
       _statement == null || _dateTime == null ? 0 : _statement!.paymentAmountAt(_dateTime!);
@@ -137,6 +139,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             hidden: _hidePayment,
             child: Column(
               children: [
+                CreditPaymentInfo(
+                  chosenDateTime: _dateTime,
+                  noBorder: false,
+                  statement: _statement,
+                ),
+                Gap.h16,
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -145,11 +153,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                     Expanded(
                       child: CalculatorInput(
                         hintText: 'Payment Amount',
+                        controller: _controller,
                         focusColor: context.appTheme.primary,
                         validator: (_) => _calculatorValidator(),
                         formattedResultOutput: (value) {
                           setState(() {
-                            _calOutputFormattedAmount = value;
+                            _controller.text = value;
                           });
                         },
                       ),
@@ -159,12 +168,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 ),
                 Gap.h16,
                 _PaymentAmountTip(onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
-                Gap.h8,
-                CreditPaymentInfo(
-                  chosenDateTime: _dateTime,
-                  noBorder: false,
-                  statement: _statement,
-                )
               ],
             ),
           ),
@@ -216,6 +219,7 @@ class _PaymentAmountTip extends StatelessWidget {
             iconPath: AppIcons.coins,
             label: 'Full payment',
             labelSize: 12,
+            iconSize: 25,
             height: null,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             backgroundColor: context.appTheme.primary,
@@ -229,6 +233,7 @@ class _PaymentAmountTip extends StatelessWidget {
             iconPath: AppIcons.coins,
             label: 'Min payment',
             labelSize: 12,
+            iconSize: 25,
             height: null,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             backgroundColor: AppColors.greyBgr(context),
@@ -265,7 +270,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
       return 'This statement has paid in full'.hardcoded;
     }
     if (_outputAmount! > _fullPaymentAmount) {
-      return 'Payment is higher full payment amount ($_fullPaymentAmount)';
+      return 'Value is higher than $_fullPaymentFormattedAmount';
     }
     return null;
   }

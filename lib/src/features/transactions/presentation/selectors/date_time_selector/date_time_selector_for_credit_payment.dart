@@ -110,16 +110,16 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
-                                if (selectedDay != null) {
-                                  final statement = widget.creditAccount!.statementAt(selectedDay)!;
-                                  // print('beginDate ${statement.startDate}');
-                                  // print('endDate ${statement.endDate}');
-                                  // print('ADB ${statement.averageDailyBalance}');
-                                  // print('carryover ${statement.lastStatement.carryToThisStatement}');
-                                  // print('interest ${statement.interest}');
-                                  print('${statement.paymentAmountAt(selectedDay)}');
-                                  print(statement.lastStatement.toString());
-                                }
+                                // if (selectedDay != null) {
+                                //   final statement = widget.creditAccount!.statementAt(selectedDay)!;
+                                //   // print('beginDate ${statement.startDate}');
+                                //   // print('endDate ${statement.endDate}');
+                                //   // print('ADB ${statement.averageDailyBalance}');
+                                //   // print('carryover ${statement.lastStatement.carryToThisStatement}');
+                                //   // print('interest ${statement.interest}');
+                                //   print('${statement.paymentAmountAt(selectedDay)}');
+                                //   print(statement.lastStatement.toString());
+                                // }
                                 return AnimatedSize(
                                   duration: k150msDuration,
                                   child: widget.creditAccount!.earliestPayableDate == null
@@ -232,6 +232,7 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
                   _hasSpendingTransaction(date)
                       ? icon(AppIcons.receiptDollar, color: context.appTheme.negative)
                       : Gap.noGap,
+                  // TODO: Some how date has payment is not show icon
                   _hasPaymentTransaction(date)
                       ? icon(AppIcons.receiptCheck, color: context.appTheme.positive)
                       : Gap.noGap,
