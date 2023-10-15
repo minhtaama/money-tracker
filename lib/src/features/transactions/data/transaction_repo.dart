@@ -30,7 +30,9 @@ class TransactionRepository {
   }
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   Stream<void> _watchDatabaseChanges() {
@@ -41,15 +43,16 @@ class TransactionRepository {
     return StreamGroup.merge([s1, s2, s3, s4]);
   }
 
-  Future<void> writeNewIncomeTxn({
+  void writeNewIncome({
     required DateTime dateTime,
     required double amount,
     required Category category,
     required CategoryTag? tag,
-    required Account account,
+    required RegularAccount account,
     required String? note,
-  }) async {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+  }) {
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -60,15 +63,16 @@ class TransactionRepository {
     });
   }
 
-  Future<void> writeNewExpenseTxn({
+  void writeNewExpense({
     required DateTime dateTime,
     required double amount,
     required Category category,
     required CategoryTag? tag,
-    required Account account,
+    required RegularAccount account,
     required String? note,
-  }) async {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+  }) {
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -79,21 +83,22 @@ class TransactionRepository {
     });
   }
 
-  Future<void> writeNewTransferTxn({
+  void writeNewTransfer({
     required DateTime dateTime,
     required double amount,
-    required Account account,
-    required Account toAccount,
+    required RegularAccount account,
+    required RegularAccount toAccount,
     required String? note,
     required double? fee,
     required bool? isChargeOnDestinationAccount,
-  }) async {
+  }) {
     TransferFeeDb? transferFee;
     if (fee != null && isChargeOnDestinationAccount != null) {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -104,15 +109,15 @@ class TransactionRepository {
     });
   }
 
-  Future<void> writeNewCreditSpendingTxn({
+  void writeNewCreditSpending({
     required DateTime dateTime,
     required double amount,
     required Category category,
-    required Account account,
+    required CreditAccount account,
     required CategoryTag? tag,
     required String? note,
     required double? installmentAmount,
-  }) async {
+  }) {
     final newTransaction = TransactionDb(
         ObjectId(), _transactionTypeInDb(TransactionType.creditSpending), dateTime, amount,
         note: note,
@@ -120,6 +125,28 @@ class TransactionRepository {
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
         installmentAmount: installmentAmount);
+
+    realm.write(() {
+      realm.add(newTransaction);
+    });
+  }
+
+  void writeNewCreditPayment({
+    required DateTime dateTime,
+    required double amount,
+    required CreditAccount account,
+    required RegularAccount fromAccount,
+    required String? note,
+  }) {
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      _transactionTypeInDb(TransactionType.creditPayment),
+      dateTime,
+      amount,
+      note: note,
+      account: account.databaseObject,
+      transferAccount: fromAccount.databaseObject,
+    );
 
     realm.write(() {
       realm.add(newTransaction);

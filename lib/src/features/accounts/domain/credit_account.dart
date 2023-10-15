@@ -119,11 +119,11 @@ extension CreditAccountDetails on CreditAccount {
     for (DateTime begin = earliestStatementDate!;
         begin.compareTo(latestStatementDate!) <= 0;
         begin = begin.copyWith(month: begin.month + 1)) {
-      double carryingOver = 0;
+      CarryingOverDetails lastStatementDetails = const CarryingOverDetails(0, 0);
       if (begin != earliestStatementDate!) {
-        carryingOver = list[list.length - 1].carryToNextStatement;
+        lastStatementDetails = list[list.length - 1].carryToNextStatement;
       }
-      Statement statement = Statement(this, carryingOver: carryingOver, startDate: begin);
+      Statement statement = Statement(this, lastStatement: lastStatementDetails, startDate: begin);
       list.add(statement);
     }
 
@@ -155,8 +155,8 @@ extension CreditAccountDetails on CreditAccount {
       for (DateTime begin = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
           begin.compareTo(date) <= 0;
           begin = begin.copyWith(month: begin.month + 1)) {
-        double carryingOver = list.last.carryToNextStatement;
-        Statement statement = Statement(this, carryingOver: carryingOver, startDate: begin);
+        CarryingOverDetails lastStatement = list.last.carryToNextStatement;
+        Statement statement = Statement(this, lastStatement: lastStatement, startDate: begin);
         list.add(statement);
       }
       return list.last;

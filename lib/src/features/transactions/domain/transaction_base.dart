@@ -9,6 +9,12 @@ import '../../category/domain/category_tag.dart';
 part 'regular_transaction.dart';
 part 'credit_transaction.dart';
 
+abstract interface class ITransferable {
+  final ObjectId? transferAccount;
+
+  ITransferable(this.transferAccount);
+}
+
 @immutable
 sealed class BaseTransaction extends BaseModel<TransactionDb> {
   final DateTime dateTime;
@@ -56,7 +62,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           txn.account?.id,
-          toRegularAccount: txn.transferAccount?.id,
+          transferAccount: txn.transferAccount?.id,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -80,7 +86,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           txn.account?.id,
-          fromRegularAccount: txn.transferAccount?.id,
+          transferAccount: txn.transferAccount?.id,
         );
     }
   }

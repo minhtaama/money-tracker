@@ -75,7 +75,7 @@ class TransactionDetails extends ConsumerWidget {
                               categoryTag: (transaction as BaseTransactionWithCategory).categoryTag,
                             ),
                     Transfer() => _AccountCard(
-                        model: accountRepo.getAccount((transaction as Transfer).toRegularAccount!)!),
+                        model: accountRepo.getAccount((transaction as Transfer).transferAccount!)!),
                     CreditPayment() => Gap.noGap,
                   },
                 ],

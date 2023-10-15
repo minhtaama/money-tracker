@@ -38,7 +38,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   String? _note;
   Category? _category;
   CategoryTag? _tag;
-  Account? _account;
+  CreditAccount? _account;
 
   String _calOutputSpendAmount = '0';
 
@@ -58,7 +58,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   void _submit() {
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
-      ref.read(transactionRepositoryRealmProvider).writeNewCreditSpendingTxn(
+      ref.read(transactionRepositoryRealmProvider).writeNewCreditSpending(
             dateTime: _dateTime,
             amount: CalService.formatToDouble(_calOutputSpendAmount)!,
             tag: _tag,
@@ -187,7 +187,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       accountType: AccountType.credit,
                       validator: (_) => _creditAccountValidator(),
                       onChangedAccount: (newAccount) => setState(() {
-                        _account = newAccount;
+                        _account = newAccount as CreditAccount;
                       }),
                     ),
                   ],
@@ -248,7 +248,8 @@ extension _Validators on _AddCreditTransactionModalScreenState {
         CalService.formatToDouble(_installmentPaymentAmount) == 0) {
       return 'Invalid Amount';
     }
-    if (CalService.formatToDouble(_installmentPaymentAmount)! > CalService.formatToDouble(_calOutputSpendAmount)!) {
+    if (CalService.formatToDouble(_installmentPaymentAmount)! >
+        CalService.formatToDouble(_calOutputSpendAmount)!) {
       return 'Too high';
     }
     return null;

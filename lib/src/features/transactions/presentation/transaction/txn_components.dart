@@ -192,8 +192,8 @@ class TxnToAccountIcon extends ConsumerWidget {
   final Transfer transaction;
 
   String _iconPath(WidgetRef ref) {
-    if (transaction.toRegularAccount != null) {
-      return ref.read(accountRepositoryProvider).getAccount(transaction.toRegularAccount!)!.iconPath;
+    if (transaction.transferAccount != null) {
+      return ref.read(accountRepositoryProvider).getAccount(transaction.transferAccount!)!.iconPath;
     }
     return AppIcons.defaultIcon;
   }
@@ -214,8 +214,8 @@ class TxnToAccountName extends ConsumerWidget {
   final Transfer transaction;
 
   String _name(WidgetRef ref) {
-    if (transaction.toRegularAccount != null) {
-      return ref.read(accountRepositoryProvider).getAccount(transaction.toRegularAccount!)!.name;
+    if (transaction.transferAccount != null) {
+      return ref.read(accountRepositoryProvider).getAccount(transaction.transferAccount!)!.name;
     }
     return 'Empty';
   }

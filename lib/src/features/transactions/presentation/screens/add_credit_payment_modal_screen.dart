@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -27,15 +28,23 @@ class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
 
 class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentModalScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  DateTime? _dateTime;
+  String _calOutputFormattedAmount = '0';
   Statement? _statement;
+
+  ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
+  DateTime? _dateTime;
 
   String? _note;
   CreditAccount? _creditAccount;
-  Account? _fromRegularAccount;
+  RegularAccount? _fromRegularAccount;
 
-  String _calOutputSpendAmount = '0';
+  double? get _outputAmount => CalService.formatToDouble(_calOutputFormattedAmount);
+  ///////////////////////////////////////////////////////////////////////
+
+  double get _fullPaymentAmount =>
+      _statement == null || _dateTime == null ? 0 : _statement!.paymentAmountAt(_dateTime!);
+
+  String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount);
 
   bool get _hidePayment => _statement == null;
 
@@ -47,15 +56,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   void _submit() {
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
-      // ref.read(transactionRepositoryProvider).writeNewCreditSpendingTxn(
-      //       dateTime: dateTime,
-      //       amount: _formatToDouble(calOutputSpendAmount)!,
-      //       tag: tag,
-      //       note: note,
-      //       category: category!,
-      //       account: account!,
-      //       installment: installment,
-      //     );
+      ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
+          dateTime: _dateTime!,
+          amount: _outputAmount!,
+          account: _creditAccount!,
+          fromAccount: _fromRegularAccount!,
+          note: _note);
       context.pop();
     }
   }
@@ -114,10 +120,10 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                     Gap.h4,
                     AccountFormSelector(
                       accountType: AccountType.regular,
-                      validator: (_) => _payingAccountValidator(),
+                      validator: (_) => _fromRegularAccountValidator(),
                       onChangedAccount: (newAccount) {
                         setState(() {
-                          _fromRegularAccount = newAccount;
+                          _fromRegularAccount = newAccount as RegularAccount;
                         });
                       },
                     ),
@@ -143,7 +149,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         validator: (_) => _calculatorValidator(),
                         formattedResultOutput: (value) {
                           setState(() {
-                            _calOutputSpendAmount = value;
+                            _calOutputFormattedAmount = value;
                           });
                         },
                       ),
@@ -237,8 +243,8 @@ class _PaymentAmountTip extends StatelessWidget {
 
 extension _Validators on _AddCreditPaymentModalScreenState {
   bool get _isButtonDisable =>
-      CalService.formatToDouble(_calOutputSpendAmount) == null ||
-      CalService.formatToDouble(_calOutputSpendAmount) == 0 ||
+      CalService.formatToDouble(_calOutputFormattedAmount) == null ||
+      CalService.formatToDouble(_calOutputFormattedAmount) == 0 ||
       _fromRegularAccount == null;
 
   String? _dateTimeValidator() {
@@ -249,9 +255,17 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   String? _calculatorValidator() {
-    if (CalService.formatToDouble(_calOutputSpendAmount) == null ||
-        CalService.formatToDouble(_calOutputSpendAmount) == 0) {
-      return 'Invalid amount';
+    if (_outputAmount == null || _outputAmount == 0) {
+      return 'Invalid amount'.hardcoded;
+    }
+    if (_statement == null) {
+      return 'No statement found in selected day'.hardcoded;
+    }
+    if (_statement!.remainingBalance <= 0) {
+      return 'This statement has paid in full'.hardcoded;
+    }
+    if (_outputAmount! > _fullPaymentAmount) {
+      return 'Payment is higher full payment amount ($_fullPaymentAmount)';
     }
     return null;
   }
@@ -263,7 +277,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     return null;
   }
 
-  String? _payingAccountValidator() {
+  String? _fromRegularAccountValidator() {
     if (_fromRegularAccount == null) {
       return 'Must be specify for payment';
     }

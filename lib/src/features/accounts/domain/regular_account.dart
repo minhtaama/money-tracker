@@ -6,7 +6,7 @@ class RegularAccount extends Account {
   final List<BaseRegularTransaction> transactionsList;
 
   // TODO: MAKE AN INTERFACE OF TRANSFER TRANSACTION (include Transfer and Credit Payment)
-  final List<Transfer> transferTransactionsList;
+  final List<ITransferable> transferTransactionsList;
 
   const RegularAccount._(
     super.databaseObject, {

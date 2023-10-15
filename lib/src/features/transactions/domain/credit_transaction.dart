@@ -33,8 +33,9 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
 }
 
 @immutable
-class CreditPayment extends BaseCreditTransaction {
-  final ObjectId? fromRegularAccount;
+class CreditPayment extends BaseCreditTransaction implements ITransferable {
+  @override
+  final ObjectId? transferAccount;
 
   const CreditPayment._(
     super._isarObject,
@@ -42,7 +43,7 @@ class CreditPayment extends BaseCreditTransaction {
     super.amount,
     super.note,
     super.account, {
-    required this.fromRegularAccount,
+    required this.transferAccount,
   });
 }
 

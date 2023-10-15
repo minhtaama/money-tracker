@@ -35,8 +35,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   String? _note;
   CategoryTag? _tag;
   Category? _category;
-  Account? _account;
-  Account? _toAccount;
+  RegularAccount? _account;
+  RegularAccount? _toAccount;
 
   String get _title {
     return widget.transactionType == TransactionType.income
@@ -51,7 +51,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
       final transactionRepo = ref.read(transactionRepositoryRealmProvider);
 
       if (_type == TransactionType.income) {
-        transactionRepo.writeNewIncomeTxn(
+        transactionRepo.writeNewIncome(
           dateTime: _dateTime,
           amount: CalService.formatToDouble(_calculatorOutput)!,
           category: _category!,
@@ -61,7 +61,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         );
       }
       if (_type == TransactionType.expense) {
-        transactionRepo.writeNewExpenseTxn(
+        transactionRepo.writeNewExpense(
           dateTime: _dateTime,
           amount: CalService.formatToDouble(_calculatorOutput)!,
           category: _category!,
@@ -71,7 +71,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         );
       }
       if (_type == TransactionType.transfer) {
-        transactionRepo.writeNewTransferTxn(
+        transactionRepo.writeNewTransfer(
             dateTime: _dateTime,
             amount: CalService.formatToDouble(_calculatorOutput)!,
             account: _account!,
@@ -130,7 +130,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(
+                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
@@ -146,7 +147,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             validator: (_) => _sendingAccountValidator(),
                             onChangedAccount: (newAccount) {
                               setState(() {
-                                _account = newAccount;
+                                _account = newAccount as RegularAccount;
                               });
                             },
                             otherSelectedAccount: _toAccount,
@@ -160,15 +161,16 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                       onChangedAccount: (newAccount) {
                         if (widget.transactionType != TransactionType.transfer) {
                           setState(() {
-                            _account = newAccount;
+                            _account = newAccount as RegularAccount;
                           });
                         } else {
                           setState(() {
-                            _toAccount = newAccount;
+                            _toAccount = newAccount as RegularAccount;
                           });
                         }
                       },
-                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? _account : null,
+                      otherSelectedAccount:
+                          widget.transactionType == TransactionType.transfer ? _account : null,
                     ),
                   ],
                 ),
@@ -217,7 +219,8 @@ extension _Validators on _AddTransactionModalScreenState {
       _account == null;
 
   String? _calculatorValidator() {
-    if (CalService.formatToDouble(_calculatorOutput) == null || CalService.formatToDouble(_calculatorOutput) == 0) {
+    if (CalService.formatToDouble(_calculatorOutput) == null ||
+        CalService.formatToDouble(_calculatorOutput) == 0) {
       return 'Invalid amount';
     }
     return null;

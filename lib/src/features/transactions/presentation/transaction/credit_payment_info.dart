@@ -40,7 +40,9 @@ class CreditPaymentInfo extends ConsumerWidget {
             margin: EdgeInsets.zero,
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.background3
+                  : context.appTheme.background,
               border: Border.all(
                 color: context.appTheme.backgroundNegative.withOpacity(0.3),
               ),
@@ -84,14 +86,28 @@ class _List extends StatelessWidget {
     return statement!.txnsFromEndDateOfNextStatement(chosenDateTime!);
   }
 
-  String? get carryOverAmount {
+  String? get lastInterest {
     if (statement == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.carryingOver);
+    return CalService.formatCurrency(statement!.lastStatement.interest);
   }
 
-  Widget buildHeader(BuildContext context, {required String h1, String? h2}) {
+  String? get lastOutstandingBalance {
+    if (statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(statement!.lastStatement.outstandingBalance);
+  }
+
+  String? get carryingOver {
+    if (statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(statement!.lastStatement.carryToThisStatement);
+  }
+
+  Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: Column(
@@ -106,7 +122,16 @@ class _List extends StatelessWidget {
           h2 != null
               ? Text(
                   h2,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative, fontSize: 12),
+                  textAlign: TextAlign.center,
+                )
+              : Gap.noGap,
+          h3 != null
+              ? Text(
+                  h3,
+                  style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
@@ -155,22 +180,25 @@ class _List extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildHeader(context,
-                h1: 'Last statement carry over:', h2: '$carryOverAmount ${context.currentSettings.currency.code}'),
-            Gap.h8,
+                h1: 'Last statement carry over:'.hardcoded,
+                h2: '$carryingOver ${context.currentSettings.currency.code}',
+                h3: '(included $lastInterest ${context.currentSettings.currency.code} interest)'
+                    .hardcoded),
+            Gap.h16,
             buildHeader(
               context,
               h1: '${statement?.startDate.getFormattedDate()} - ${statement?.endDate.getFormattedDate()}',
             ),
-            ...List.generate(
-                thisStatementTxns.length, (index) => buildTransactionTile(context, thisStatementTxns[index])),
+            ...List.generate(thisStatementTxns.length,
+                (index) => buildTransactionTile(context, thisStatementTxns[index])),
             ofNextStatementTxns.isNotEmpty
                 ? buildHeader(
                     context,
                     h1: 'Payable of next statement'.hardcoded,
                   )
                 : Gap.noGap,
-            ...List.generate(
-                ofNextStatementTxns.length, (index) => buildTransactionTile(context, ofNextStatementTxns[index])),
+            ...List.generate(ofNextStatementTxns.length,
+                (index) => buildTransactionTile(context, ofNextStatementTxns[index])),
           ],
         ),
       ),
