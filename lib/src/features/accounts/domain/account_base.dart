@@ -7,7 +7,7 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:realm/realm.dart';
 import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
-import '../../../utils/constants.dart';
+import 'dart:math' as math;
 import '../../transactions/domain/transaction_base.dart';
 
 part 'regular_account.dart';

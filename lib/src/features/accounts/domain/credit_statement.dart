@@ -25,12 +25,17 @@ class Statement {
 
 @immutable
 class CarryingOverDetails {
-  const CarryingOverDetails(this.outstandingBalance, this.interest);
+  const CarryingOverDetails(this.remainingBalance, this.interest);
 
-  final double outstandingBalance;
+  final double remainingBalance;
   final double interest;
 
-  double get carryToThisStatement => outstandingBalance + interest;
+  double get carryToThisStatement => remainingBalance + interest;
+
+  @override
+  String toString() {
+    return 'CarryingOverDetails{outstandingBalance: $remainingBalance, interest: $interest}';
+  }
 }
 
 // https://www.youtube.com/watch?v=SnlHbMIWJak
@@ -115,26 +120,31 @@ extension StatementDetails on Statement {
   /// payments transactions happens "not after [lastStatementDueDate]" and "after [endDate]"
   /// of this statement.
   double get paidAmount {
-    double amountNotAfterLastStatementDueDate = 0; // Might include last statement payment
-    double amountAfterThisStatementEndDate = 0; // Might include next statement payment
+    double totalAmountNotAfterLastStatementDueDate = 0; // Might include last statement payment
+    double totalAmountAfterThisStatementEndDate = 0; // Might include next statement payment
     double amountOnlyForThisStatement = 0;
 
     final list = txnsOfThisStatement.whereType<CreditPayment>();
 
     for (CreditPayment payment in list) {
       if (!payment.dateTime.onlyYearMonthDay.isAfter(lastStatementDueDate)) {
-        amountNotAfterLastStatementDueDate += payment.amount;
+        totalAmountNotAfterLastStatementDueDate += payment.amount;
       }
       if (payment.dateTime.onlyYearMonthDay.isAfter(endDate)) {
-        amountAfterThisStatementEndDate += payment.amount;
+        totalAmountAfterThisStatementEndDate += payment.amount;
       } else {
         amountOnlyForThisStatement += payment.amount;
       }
     }
 
+    double amountNotAfterLastStatementDueDateForThisStatement =
+        math.max(0, totalAmountNotAfterLastStatementDueDate - lastStatement.remainingBalance);
+    double amountAfterThisStatementEndDateForThisStatement = math.max(
+        0, totalAmountAfterThisStatementEndDate - spentAmountFromEndDateOfNextStatementUntil(dueDate));
+
     return amountOnlyForThisStatement +
-        (amountNotAfterLastStatementDueDate - lastStatement.outstandingBalance) +
-        (amountAfterThisStatementEndDate - spentAmountOfNextStatementUntil(dueDate));
+        amountNotAfterLastStatementDueDateForThisStatement +
+        amountAfterThisStatementEndDateForThisStatement;
   }
 
   double get averageDailyBalance {
@@ -189,7 +199,7 @@ extension StatementDetails on Statement {
 
 extension NextStatementDetails on Statement {
   /// Hard upper gap at this statement [endDate]
-  List<BaseCreditTransaction> txnsFromStartDateOfThisStatement(DateTime dateTime) {
+  List<BaseCreditTransaction> txnsFromStartDateOfThisStatementUntil(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
@@ -213,7 +223,7 @@ extension NextStatementDetails on Statement {
   }
 
   /// Hard upper gap at this statement [dueDate]
-  List<BaseCreditTransaction> txnsFromEndDateOfNextStatement(DateTime dateTime) {
+  List<BaseCreditTransaction> txnsFromEndDateOfNextStatementUntil(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     if (!dateTime.isAfter(endDate)) {
@@ -240,9 +250,18 @@ extension NextStatementDetails on Statement {
     return list;
   }
 
-  double spentAmountOfNextStatementUntil(DateTime dateTime) {
+  double spentAmountFromEndDateOfNextStatementUntil(DateTime dateTime) {
     double amount = 0;
-    final list = txnsFromEndDateOfNextStatement(dateTime).whereType<CreditSpending>();
+    final list = txnsFromEndDateOfNextStatementUntil(dateTime).whereType<CreditSpending>();
+    for (CreditSpending txn in list) {
+      amount += txn.amount;
+    }
+    return amount;
+  }
+
+  double spentAmountFromStartDateOfThisStatementUntil(DateTime dateTime) {
+    double amount = lastStatement.carryToThisStatement;
+    final list = txnsFromStartDateOfThisStatementUntil(dateTime).whereType<CreditSpending>();
     for (CreditSpending txn in list) {
       amount += txn.amount;
     }
@@ -250,6 +269,7 @@ extension NextStatementDetails on Statement {
   }
 
   double paymentAmountAt(DateTime dateTime) {
-    return remainingBalance + spentAmountOfNextStatementUntil(dateTime);
+    return spentAmountFromStartDateOfThisStatementUntil(dateTime) +
+        spentAmountFromEndDateOfNextStatementUntil(dateTime);
   }
 }

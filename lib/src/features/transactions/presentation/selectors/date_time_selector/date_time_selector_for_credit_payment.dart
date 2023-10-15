@@ -110,17 +110,16 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
-                                // if (selectedDay != null && kDebugMode) {
-                                //   if (kDebugMode) {
-                                //     final statement = widget.creditAccount!.statementAt(selectedDay)!;
-                                //     print('beginDate ${statement.beginDate}');
-                                //     print('endDate ${statement.endDate}');
-                                //     print('ADB ${statement.averageDailyBalance}');
-                                //     print('carryover ${statement.carryingOver}');
-                                //     print('interest ${statement.interest}');
-                                //     print('list ${statement.transactionsUntilDueDateList}');
-                                //   }
-                                // }
+                                if (selectedDay != null) {
+                                  final statement = widget.creditAccount!.statementAt(selectedDay)!;
+                                  // print('beginDate ${statement.startDate}');
+                                  // print('endDate ${statement.endDate}');
+                                  // print('ADB ${statement.averageDailyBalance}');
+                                  // print('carryover ${statement.lastStatement.carryToThisStatement}');
+                                  // print('interest ${statement.interest}');
+                                  print('${statement.paymentAmountAt(selectedDay)}');
+                                  print(statement.lastStatement.toString());
+                                }
                                 return AnimatedSize(
                                   duration: k150msDuration,
                                   child: widget.creditAccount!.earliestPayableDate == null

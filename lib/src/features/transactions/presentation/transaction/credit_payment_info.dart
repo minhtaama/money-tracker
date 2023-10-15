@@ -76,14 +76,14 @@ class _List extends StatelessWidget {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsFromStartDateOfThisStatement(chosenDateTime!);
+    return statement!.txnsFromStartDateOfThisStatementUntil(chosenDateTime!);
   }
 
   List<BaseCreditTransaction> get ofNextStatementTxns {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsFromEndDateOfNextStatement(chosenDateTime!);
+    return statement!.txnsFromEndDateOfNextStatementUntil(chosenDateTime!);
   }
 
   String? get lastInterest {
@@ -97,7 +97,7 @@ class _List extends StatelessWidget {
     if (statement == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.lastStatement.outstandingBalance);
+    return CalService.formatCurrency(statement!.lastStatement.remainingBalance);
   }
 
   String? get carryingOver {
