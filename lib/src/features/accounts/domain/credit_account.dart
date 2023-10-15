@@ -87,22 +87,22 @@ extension CreditAccountDateTimeDetails on CreditAccount {
     return null;
   }
 
-  // TODO: Actually the latest due date should be the due date of statement before the statement has payment under minimum amount
-  /// Find due date of latest statement with 0 carry over amount.
-  /// Return `Calendar.minDate` if credit account statement list is empty or no DateTime is found
-  DateTime get latestAvailablePaymentDueDate {
-    if (statements.isEmpty) {
-      return Calendar.minDate;
-    }
-
-    for (int i = statements.length - 1; i >= 0; i--) {
-      if (statements[i].carryingOver <= 0) {
-        return statements[i].dueDate;
-      }
-    }
-
-    return Calendar.minDate;
-  }
+  // // Actually the latest due date should be the due date of statement before the statement has payment under minimum amount
+  // /// Find due date of latest statement with 0 carry over amount.
+  // /// Return `Calendar.minDate` if credit account statement list is empty or no DateTime is found
+  // DateTime get latestAvailablePaymentDueDate {
+  //   if (statements.isEmpty) {
+  //     return Calendar.minDate;
+  //   }
+  //
+  //   for (int i = statements.length - 1; i >= 0; i--) {
+  //     if (statements[i].carryingOver <= 0) {
+  //       return statements[i].dueDate;
+  //     }
+  //   }
+  //
+  //   return Calendar.minDate;
+  // }
 }
 
 extension CreditAccountDetails on CreditAccount {

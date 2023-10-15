@@ -13,12 +13,12 @@ class Statement {
   Statement copyWith({
     CreditAccount? creditAccount,
     double? carryingOver,
-    DateTime? beginDate,
+    DateTime? startDate,
   }) {
     return Statement(
       creditAccount ?? _creditAccount,
       carryingOver: carryingOver ?? this.carryingOver,
-      startDate: beginDate ?? this.startDate,
+      startDate: startDate ?? this.startDate,
     );
   }
 }
@@ -185,7 +185,8 @@ extension StatementDetails on Statement {
     if (outstandingBalance <= 0) {
       return 0;
     }
-    final interest = averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+    final interest =
+        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
     return interest;
   }
 

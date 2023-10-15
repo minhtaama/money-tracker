@@ -34,7 +34,7 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
 
 @immutable
 class CreditPayment extends BaseCreditTransaction {
-  final Account? fromRegularAccount;
+  final ObjectId? fromRegularAccount;
 
   const CreditPayment._(
     super._isarObject,

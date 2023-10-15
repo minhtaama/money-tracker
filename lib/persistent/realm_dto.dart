@@ -139,16 +139,17 @@ class _TransactionDb {
 
   late _AccountDb? account;
 
-  /// **Only specify this if type is NOT [TransactionType.transfer]**
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
   late _CategoryDb? category;
 
-  /// **Only specify this if type is NOT [TransactionType.transfer]**
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
   late _CategoryTagDb? categoryTag;
 
-  /// Only specify this to `true` when **first creating new account**  and type is [TransactionType.income]**
+  /// Only specify this to `true` when **first creating new Regular account**  and type is [TransactionType.income]**
   bool isInitialTransaction = false;
 
   /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
+  /// add value to account if Transaction is Transfer, minus value if creditPayment
   late _AccountDb? transferAccount;
 
   /// **Only specify this if type is [TransactionType.transfer]**

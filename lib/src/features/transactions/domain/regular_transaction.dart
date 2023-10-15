@@ -49,7 +49,7 @@ class Income extends BaseRegularTransaction implements BaseTransactionWithCatego
 
 @immutable
 class Transfer extends BaseRegularTransaction {
-  final ObjectId? toAccount;
+  final ObjectId? toRegularAccount;
   final Fee? fee;
 
   const Transfer._(
@@ -58,7 +58,7 @@ class Transfer extends BaseRegularTransaction {
     super.amount,
     super.note,
     super.account, {
-    required this.toAccount,
+    required this.toRegularAccount,
     required this.fee,
   });
 }

@@ -56,7 +56,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           txn.account?.id,
-          toAccount: txn.transferAccount?.id,
+          toRegularAccount: txn.transferAccount?.id,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -80,7 +80,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           txn.account?.id,
-          fromRegularAccount: Account.fromDatabase(txn.transferAccount) as CreditAccount,
+          fromRegularAccount: txn.transferAccount?.id,
         );
     }
   }
