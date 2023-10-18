@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -40,9 +41,7 @@ class CreditPaymentInfo extends ConsumerWidget {
             margin: EdgeInsets.zero,
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.background3
-                  : context.appTheme.background,
+              color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
               border: Border.all(
                 color: context.appTheme.backgroundNegative.withOpacity(0.3),
               ),
@@ -50,17 +49,23 @@ class CreditPaymentInfo extends ConsumerWidget {
             ),
             child: AnimatedSize(
               duration: k150msDuration,
-              child: _List(
-                statement: statement,
-                onDateTap: onDateTap,
-                chosenDateTime: chosenDateTime,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: _List(
+                  statement: statement,
+                  onDateTap: onDateTap,
+                  chosenDateTime: chosenDateTime,
+                ),
               ),
             ),
           )
-        : _List(
-            statement: statement,
-            onDateTap: onDateTap,
-            chosenDateTime: chosenDateTime,
+        : SizedBox(
+            height: 200,
+            child: _List(
+              statement: statement,
+              onDateTap: onDateTap,
+              chosenDateTime: chosenDateTime,
+            ),
           );
   }
 }
@@ -100,20 +105,20 @@ class _List extends StatelessWidget {
     return CalService.formatCurrency(statement!.lastStatement.carryToThisStatement);
   }
 
-  String? get spentAmountOfThisStatement {
+  String? get remainingBalanceOfThisStatement {
     if (statement == null || chosenDateTime == null) {
       return null;
     }
-    return CalService.formatCurrency(
-        statement!.spentAmountFromStartDateOfThisStatementUntil(chosenDateTime!));
+    return CalService.formatCurrency(statement!.getSpentAmountFromStartDateOfThisStatementUntil(chosenDateTime!) -
+        statement!.getPaidAmountFromStartDateOfThisStatementUntil(chosenDateTime!));
   }
 
-  String? get spentAmountOfNextStatement {
+  String? get remainingBalanceInNextStatement {
     if (statement == null || chosenDateTime == null) {
       return null;
     }
-    return CalService.formatCurrency(
-        statement!.spentAmountFromEndDateOfNextStatementUntil(chosenDateTime!));
+    return CalService.formatCurrency(statement!.getSpentAmountFromEndDateOfNextStatementUntil(chosenDateTime!) -
+        statement!.getPaidAmountFromEndDateOfNextStatementUntil(chosenDateTime!));
   }
 
   Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
@@ -131,16 +136,14 @@ class _List extends StatelessWidget {
           h2 != null
               ? Text(
                   h2,
-                  style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
           h3 != null
               ? Text(
                   h3,
-                  style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
@@ -182,39 +185,33 @@ class _List extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 180),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildHeader(context,
-                h1: 'Last statement carry over:'.hardcoded,
-                h2: '$carryingOver ${context.currentSettings.currency.code}',
-                h3: statement?.lastStatement.interest == 0
-                    ? null
-                    : '(included $lastInterest ${context.currentSettings.currency.code} interest)'
-                        .hardcoded),
-            Gap.h16,
-            buildHeader(
-              context,
-              h1: 'Total spending of this statement:',
-              h2: '$spentAmountOfThisStatement ${context.currentSettings.currency.code}',
-              h3: '(${statement?.startDate.getFormattedDate()} - ${statement?.endDate.getFormattedDate()})',
-            ),
-            ...List.generate(thisStatementTxns.length,
-                (index) => buildTransactionTile(context, thisStatementTxns[index])),
-            txnsOfNextStatement.isNotEmpty
-                ? buildHeader(
-                    context,
-                    h1: 'Payable of next statement'.hardcoded,
-                    h2: '$spentAmountOfNextStatement ${context.currentSettings.currency.code}',
-                  )
-                : Gap.noGap,
-            ...List.generate(txnsOfNextStatement.length,
-                (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildHeader(context,
+              h1: 'Last statement carry over:'.hardcoded,
+              h2: '$carryingOver ${context.currentSettings.currency.code}',
+              h3: statement?.lastStatement.interest == 0
+                  ? null
+                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'.hardcoded),
+          buildHeader(
+            context,
+            h1: 'Transactions before selected day:',
+            h2: '$remainingBalanceOfThisStatement ${context.currentSettings.currency.code}',
+          ),
+          ...List.generate(
+              thisStatementTxns.length, (index) => buildTransactionTile(context, thisStatementTxns[index])),
+          txnsOfNextStatement.isNotEmpty
+              ? buildHeader(
+                  context,
+                  h1: 'Transactions in next statement'.hardcoded,
+                  h2: '$remainingBalanceInNextStatement ${context.currentSettings.currency.code}',
+                )
+              : Gap.noGap,
+          ...List.generate(
+              txnsOfNextStatement.length, (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
+        ],
       ),
     );
   }
@@ -230,26 +227,44 @@ class _Details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return transaction is CreditSpending
-        ? IntrinsicWidth(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TxnDateTime(
-                  transaction: transaction,
-                  onDateTap: onDateTap,
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TxnDateTime(
+                transaction: transaction,
+                onDateTap: onDateTap,
+              ),
+              Gap.w4,
+              TxnCategoryIcon(transaction: transaction as CreditSpending),
+              Gap.w4,
+              Expanded(
+                child: TxnCategoryName(
+                  transaction: transaction as CreditSpending,
+                  fontSize: 11,
                 ),
-                Gap.w4,
-                TxnCategoryIcon(transaction: transaction as CreditSpending),
-                Gap.w4,
-                Expanded(
-                  child: TxnCategoryName(
-                    transaction: transaction as CreditSpending,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           )
-        : Gap.noGap;
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TxnDateTime(
+                transaction: transaction,
+                onDateTap: onDateTap,
+              ),
+              Gap.w4,
+              SvgIcon(
+                AppIcons.receiptCheck,
+                size: 20,
+              ),
+              Gap.w4,
+              Expanded(
+                child: Text(
+                  'Payment'.hardcoded,
+                  style: kHeader3TextStyle.copyWith(fontSize: 11, color: AppColors.grey(context)),
+                ),
+              ),
+            ],
+          );
   }
 }

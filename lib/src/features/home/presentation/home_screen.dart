@@ -112,11 +112,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    late DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, _currentPageIndex);
-    late DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, _currentPageIndex + 1, 0, 23, 59, 59);
-
-    List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
-
     return CustomTabPageWithPageView(
       controller: _controller,
       smallTabBar: SmallTabBar(
@@ -145,6 +140,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       onDragRight: _nextPage,
       onPageChanged: _onPageChange,
       itemBuilder: (context, pageIndex) {
+        late DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
+        late DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
+
+        List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+
         ref.listenManual(databaseChangesRealmProvider, (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});

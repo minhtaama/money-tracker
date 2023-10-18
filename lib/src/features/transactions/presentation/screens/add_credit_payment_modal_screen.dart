@@ -44,7 +44,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   String get _calOutputFormattedAmount => _controller.text;
 
   double get _fullPaymentAmount =>
-      _statement == null || _dateTime == null ? 0 : _statement!.paymentAmountAt(_dateTime!);
+      _statement == null || _dateTime == null ? 0 : _statement!.getPaymentAmountAt(_dateTime!);
 
   String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount);
 
