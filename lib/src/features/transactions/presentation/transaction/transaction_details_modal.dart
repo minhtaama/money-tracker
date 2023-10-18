@@ -26,8 +26,7 @@ class TransactionDetails extends ConsumerWidget {
 
   String get _title {
     return switch (transaction) {
-      Income() =>
-        (transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
+      Income() => (transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
       CreditSpending() => 'Credit Spending'.hardcoded,
@@ -65,7 +64,7 @@ class TransactionDetails extends ConsumerWidget {
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(model: accountRepo.getAccount(transaction.account!)!),
+                  _AccountCard(model: transaction.account!),
                   switch (transaction) {
                     BaseTransactionWithCategory() =>
                       transaction is Income && (transaction as Income).isInitialTransaction
@@ -74,8 +73,7 @@ class TransactionDetails extends ConsumerWidget {
                               model: (transaction as BaseTransactionWithCategory).category!,
                               categoryTag: (transaction as BaseTransactionWithCategory).categoryTag,
                             ),
-                    Transfer() => _AccountCard(
-                        model: accountRepo.getAccount((transaction as Transfer).transferAccount!)!),
+                    Transfer() => _AccountCard(model: (transaction as Transfer).transferAccount!),
                     CreditPayment() => Gap.noGap,
                   },
                 ],
@@ -148,8 +146,7 @@ class _Amount extends ConsumerWidget {
               Gap.w8,
               Text(
                 context.currentSettings.currency.code,
-                style: kHeader4TextStyle.copyWith(
-                    color: _color(context), fontSize: kHeader1TextStyle.fontSize),
+                style: kHeader4TextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
               ),
             ],
           ),
@@ -253,9 +250,7 @@ class _CategoryCard extends StatelessWidget {
     return CardItem(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: context.appTheme.isDarkTheme
-          ? model.backgroundColor.addDark(0.62)
-          : model.backgroundColor.addWhite(0.7),
+      color: context.appTheme.isDarkTheme ? model.backgroundColor.addDark(0.62) : model.backgroundColor.addWhite(0.7),
       elevation: 1,
       constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
       child: Column(
@@ -263,8 +258,8 @@ class _CategoryCard extends StatelessWidget {
         children: [
           Text(
             'CATEGORY:',
-            style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+            style:
+                kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
           ),
           Gap.h8,
           Row(
@@ -284,14 +279,12 @@ class _CategoryCard extends StatelessWidget {
                   children: [
                     Text(
                       model.name,
-                      style: kHeader2TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative, fontSize: 20),
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 20),
                     ),
                     categoryTag != null
                         ? Text(
                             '# ${categoryTag!.name}',
-                            style: kHeader3TextStyle.copyWith(
-                                color: context.appTheme.backgroundNegative, fontSize: 15),
+                            style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 15),
                           )
                         : const SizedBox(),
                   ],
@@ -322,8 +315,8 @@ class _Note extends StatelessWidget {
         children: [
           Text(
             'NOTE:',
-            style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
+            style:
+                kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative.withOpacity(0.6), fontSize: 11),
           ),
           Gap.h4,
           Text(

@@ -137,7 +137,7 @@ class TxnAccountIcon extends ConsumerWidget {
   String _iconPath(WidgetRef ref) {
     if (transaction.account != null) {
       if (useAccountIcon) {
-        return ref.watch(accountRepositoryProvider).getAccount(transaction.account!)!.iconPath;
+        return transaction.account!.iconPath;
       }
       return switch (transaction) {
         Transfer() => '',
@@ -166,17 +166,17 @@ class TxnAccountName extends ConsumerWidget {
   final BaseTransaction transaction;
   final double? fontSize;
 
-  String _name(WidgetRef ref) {
-    if (transaction.account != null) {
-      return ref.read(accountRepositoryProvider).getAccount(transaction.account!)!.name;
-    }
-    return 'No account assigned';
-  }
+  // String _name(WidgetRef ref) {
+  //   if (transaction.account != null) {
+  //     return ref.read(accountRepositoryProvider).getAccount(transaction.account!)!.name;
+  //   }
+  //   return 'No account assigned';
+  // }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
-      _name(ref),
+      transaction.account!.name,
       style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -191,7 +191,7 @@ class TxnToAccountIcon extends ConsumerWidget {
 
   String _iconPath(WidgetRef ref) {
     if (transaction.transferAccount != null) {
-      return ref.read(accountRepositoryProvider).getAccount(transaction.transferAccount!)!.iconPath;
+      return transaction.transferAccount!.iconPath;
     }
     return AppIcons.defaultIcon;
   }
@@ -213,7 +213,7 @@ class TxnToAccountName extends ConsumerWidget {
 
   String _name(WidgetRef ref) {
     if (transaction.transferAccount != null) {
-      return ref.read(accountRepositoryProvider).getAccount(transaction.transferAccount!)!.name;
+      return transaction.transferAccount!.name;
     }
     return 'Empty';
   }

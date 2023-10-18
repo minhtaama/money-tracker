@@ -10,7 +10,7 @@ part 'regular_transaction.dart';
 part 'credit_transaction.dart';
 
 abstract interface class ITransferable {
-  final ObjectId? transferAccount;
+  final Account? transferAccount;
 
   ITransferable(this.transferAccount);
 }
@@ -20,7 +20,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
   final DateTime dateTime;
   final double amount;
   final String? note;
-  final ObjectId? account;
+  final Account? account;
 
   const BaseTransaction(
     super._databaseObject,
@@ -38,7 +38,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
+          Account.fromDatabase(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
@@ -50,7 +50,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
+          Account.fromDatabase(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
         );
@@ -61,8 +61,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
-          transferAccount: txn.transferAccount?.id,
+          Account.fromDatabase(txn.account),
+          transferAccount: Account.fromDatabase(txn.transferAccount) as RegularAccount,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -72,7 +72,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
+          Account.fromDatabase(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
@@ -85,8 +85,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
-          transferAccount: txn.transferAccount?.id,
+          Account.fromDatabase(txn.account),
+          transferAccount: Account.fromDatabase(txn.transferAccount) as RegularAccount,
         );
     }
   }
