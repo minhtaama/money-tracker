@@ -59,6 +59,35 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     };
   }
 
+  static Account? fromDatabaseWithNoTransactionsList(AccountDb? accountDb) {
+    if (accountDb == null) {
+      return null;
+    }
+    return switch (accountDb.type) {
+      0 => RegularAccount._(
+          accountDb,
+          name: accountDb.name,
+          color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+          transactionsList: const [],
+          transferTransactionsList: const [],
+        ),
+      _ => CreditAccount._(
+          accountDb,
+          name: accountDb.name,
+          color: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+          creditBalance: accountDb.creditDetails!.creditBalance,
+          apr: accountDb.creditDetails!.apr,
+          statementDay: accountDb.creditDetails!.statementDay,
+          paymentDueDay: accountDb.creditDetails!.paymentDueDay,
+          transactionsList: const [],
+        ),
+    };
+  }
+
   const Account(
     super._isarObject, {
     required super.name,

@@ -29,10 +29,10 @@ class AccountRepositoryRealmDb {
     return _realmResults(type).map((accountDb) => Account.fromDatabase(accountDb)!).toList();
   }
 
-  Account? getAccount(ObjectId objectId) {
-    AccountDb? accountDb = realm.find<AccountDb>(objectId);
-    return Account.fromDatabase(accountDb);
-  }
+  // Account? getAccount(ObjectId objectId) {
+  //   AccountDb? accountDb = realm.find<AccountDb>(objectId);
+  //   return Account.fromDatabase(accountDb);
+  // }
 
   // List<BaseTransaction> getTransactionList(Account account) {
   //   final RealmResults<TransactionDb> transactionListQuery =

@@ -26,14 +26,6 @@ class CreditAccount extends Account {
     required this.paymentDueDay,
     required this.transactionsList,
   });
-
-  // @override
-  // List<BaseCreditTransaction> get transactionsList {
-  //   final List<BaseCreditTransaction> list = List.from(databaseObject.transactions
-  //       .query('TRUEPREDICATE SORT(dateTime ASC)')
-  //       .map<BaseCreditTransaction>((txn) => BaseTransaction.fromIsar(txn) as BaseCreditTransaction));
-  //   return list;
-  // }
 }
 
 extension CreditAccountDateTimeDetails on CreditAccount {

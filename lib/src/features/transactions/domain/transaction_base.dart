@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
@@ -10,7 +8,7 @@ part 'regular_transaction.dart';
 part 'credit_transaction.dart';
 
 abstract interface class ITransferable {
-  final Account? transferAccount;
+  final RegularAccount? transferAccount;
 
   ITransferable(this.transferAccount);
 }
@@ -38,7 +36,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabase(txn.account),
+          Account.fromDatabaseWithNoTransactionsList(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
@@ -50,7 +48,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabase(txn.account),
+          Account.fromDatabaseWithNoTransactionsList(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
         );
@@ -61,8 +59,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabase(txn.account),
-          transferAccount: Account.fromDatabase(txn.transferAccount) as RegularAccount,
+          Account.fromDatabaseWithNoTransactionsList(txn.account),
+          transferAccount: Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -72,7 +70,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabase(txn.account),
+          Account.fromDatabaseWithNoTransactionsList(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
@@ -85,8 +83,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabase(txn.account),
-          transferAccount: Account.fromDatabase(txn.transferAccount) as RegularAccount,
+          Account.fromDatabaseWithNoTransactionsList(txn.account),
+          transferAccount: Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
         );
     }
   }
