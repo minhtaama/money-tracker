@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../theme_and_ui/colors.dart';
@@ -40,10 +41,12 @@ class TransactionsList extends StatelessWidget {
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
-                        Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
+                        Transfer() =>
+                          _TransferDetails(transaction: transaction, currencyCode: currencyCode),
                         BaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
-                        CreditPayment() => const Placeholder(),
+                        CreditPayment() =>
+                          _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
                       },
                     ),
                     Gap.w16,
@@ -75,18 +78,17 @@ class _WithCategoryDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IntrinsicWidth(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TxnCategoryIcon(transaction: transaction as BaseTransactionWithCategory),
-              Gap.w4,
-              Expanded(child: TxnCategoryName(transaction: transaction as BaseTransactionWithCategory)),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TxnCategoryIcon(transaction: transaction as BaseTransactionWithCategory),
+            Gap.w4,
+            Expanded(child: TxnCategoryName(transaction: transaction as BaseTransactionWithCategory)),
+          ],
         ),
         IntrinsicWidth(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               TxnAccountIcon(transaction: transaction),
               Gap.w4,
@@ -117,8 +119,51 @@ class _TransferDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TxnAccountName(transaction: transaction),
-              TxnToAccountName(transaction: transaction),
+              Row(
+                children: [
+                  TxnAccountName(transaction: transaction),
+                  TxnInfo('Transfer'.hardcoded),
+                ],
+              ),
+              TxnTransferAccountName(transaction: transaction),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaymentDetails extends StatelessWidget {
+  const _PaymentDetails({required this.transaction, required this.currencyCode});
+
+  final CreditPayment transaction;
+  final String currencyCode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const TxnTransferLine(),
+        Gap.w4,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  TxnTransferAccountName(transaction: transaction),
+                  Gap.w4,
+                  TxnInfo('Payment'.hardcoded),
+                ],
+              ),
+              Row(
+                children: [
+                  TxnAccountName(transaction: transaction),
+                  Gap.w4,
+                  const TxnCreditIcon(),
+                ],
+              ),
             ],
           ),
         ),

@@ -60,7 +60,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseWithNoTransactionsList(txn.account),
-          transferAccount: Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
+          transferAccount:
+              Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -84,7 +85,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseWithNoTransactionsList(txn.account),
-          transferAccount: Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
+          transferAccount:
+              Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
         );
     }
   }
@@ -94,8 +96,6 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
 interface class BaseTransactionWithCategory {
   final Category? category;
   final CategoryTag? categoryTag;
-
-  // TODO: Change all to ObjectID, prevent stack overflow, must get model from repository
 
   const BaseTransactionWithCategory(
     this.category,

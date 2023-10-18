@@ -140,7 +140,7 @@ extension StatementDetails on Statement {
     double amountNotAfterLastStatementDueDateForThisStatement =
         math.max(0, totalAmountNotAfterLastStatementDueDate - lastStatement.remainingBalance);
     double amountAfterThisStatementEndDateForThisStatement =
-        math.max(0, totalAmountAfterThisStatementEndDate - getSpentAmountFromEndDateOfNextStatementUntil(dueDate));
+        math.max(0, totalAmountAfterThisStatementEndDate - spentAmountFromEndDateBefore(dueDate));
 
     return amountOnlyForThisStatement +
         amountNotAfterLastStatementDueDateForThisStatement +
@@ -180,7 +180,8 @@ extension StatementDetails on Statement {
     if (remainingBalance <= 0) {
       return 0;
     }
-    final interest = averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+    final interest =
+        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
     return interest;
   }
 
@@ -196,9 +197,9 @@ extension StatementDetails on Statement {
   CarryingOverDetails get carryToNextStatement => CarryingOverDetails(remainingBalance, interest);
 }
 
-extension IncludeNextStatementDetails on Statement {
-  /// Hard upper gap at this statement [endDate]
-  List<BaseCreditTransaction> txnsFromStartDateOfThisStatementUntil(DateTime dateTime) {
+extension StatementAtDateTimeDetails on Statement {
+  /// Hard upper gap at this statement [endDate].
+  List<BaseCreditTransaction> txnsFromStartDateBefore(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
@@ -222,7 +223,7 @@ extension IncludeNextStatementDetails on Statement {
   }
 
   /// Hard upper gap at this statement [dueDate]
-  List<BaseCreditTransaction> txnsFromEndDateOfNextStatementUntil(DateTime dateTime) {
+  List<BaseCreditTransaction> txnsFromEndDateBefore(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
     if (!dateTime.isAfter(endDate)) {
@@ -249,45 +250,73 @@ extension IncludeNextStatementDetails on Statement {
     return list;
   }
 
-  double getSpentAmountFromEndDateOfNextStatementUntil(DateTime dateTime) {
+  List<BaseCreditTransaction> txnsIn(DateTime dateTime) {
+    final List<BaseCreditTransaction> list = List.empty(growable: true);
+
+    for (int i = 0; i <= _creditAccount.transactionsList.length - 1; i++) {
+      final transaction = _creditAccount.transactionsList[i];
+
+      if (transaction.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
+        list.add(transaction);
+      }
+    }
+
+    return list;
+  }
+
+  double spentAmountFromEndDateBefore(DateTime dateTime) {
     double amount = 0;
-    final list = txnsFromEndDateOfNextStatementUntil(dateTime).whereType<CreditSpending>();
+    final list = txnsFromEndDateBefore(dateTime).whereType<CreditSpending>();
     for (CreditSpending txn in list) {
       amount += txn.amount;
     }
     return amount;
   }
 
-  double getPaidAmountFromEndDateOfNextStatementUntil(DateTime dateTime) {
+  double spentAmountFromStartDateBefore(DateTime dateTime) {
     double amount = 0;
-    final list = txnsFromEndDateOfNextStatementUntil(dateTime).whereType<CreditPayment>();
-    for (CreditPayment txn in list) {
-      amount += txn.amount;
-    }
-    return amount;
-  }
-
-  double getSpentAmountFromStartDateOfThisStatementUntil(DateTime dateTime) {
-    double amount = 0;
-    final list = txnsFromStartDateOfThisStatementUntil(dateTime).whereType<CreditSpending>();
+    final list = txnsFromStartDateBefore(dateTime).whereType<CreditSpending>();
     for (CreditSpending txn in list) {
       amount += txn.amount;
     }
     return amount;
   }
 
-  double getPaidAmountFromStartDateOfThisStatementUntil(DateTime dateTime) {
+  double paidAmountFromEndDateBefore(DateTime dateTime) {
     double amount = 0;
-    final list = txnsFromStartDateOfThisStatementUntil(dateTime).whereType<CreditPayment>();
+    final list = txnsFromEndDateBefore(dateTime).whereType<CreditPayment>();
     for (CreditPayment txn in list) {
       amount += txn.amount;
     }
     return amount;
   }
 
-  double getPaymentAmountAt(DateTime dateTime) {
-    return lastStatement.carryToThisStatement +
-        getSpentAmountFromStartDateOfThisStatementUntil(dateTime) +
-        getSpentAmountFromEndDateOfNextStatementUntil(dateTime);
+  double paidAmountFromStartDateBefore(DateTime dateTime) {
+    double amount = 0;
+    final list = txnsFromStartDateBefore(dateTime).whereType<CreditPayment>();
+    for (CreditPayment txn in list) {
+      amount += txn.amount;
+    }
+    return amount;
+  }
+
+  double paidAmountIn(DateTime dateTime) {
+    double amount = 0;
+    final list = txnsIn(dateTime).whereType<CreditPayment>();
+    for (CreditPayment txn in list) {
+      amount += txn.amount;
+    }
+    return amount;
+  }
+
+  double getFullPaymentAmountAt(DateTime dateTime) {
+    final x = lastStatement.carryToThisStatement +
+        spentAmountFromStartDateBefore(dateTime) +
+        spentAmountFromEndDateBefore(dateTime) -
+        paidAmountFromEndDateBefore(dateTime) -
+        paidAmountFromStartDateBefore(dateTime) -
+        paidAmountIn(dateTime);
+
+    return math.min(x, remainingBalance);
   }
 }

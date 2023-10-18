@@ -44,7 +44,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   String get _calOutputFormattedAmount => _controller.text;
 
   double get _fullPaymentAmount =>
-      _statement == null || _dateTime == null ? 0 : _statement!.getPaymentAmountAt(_dateTime!);
+      _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
 
   String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount);
 
@@ -167,7 +167,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   ],
                 ),
                 Gap.h16,
-                _PaymentAmountTip(onMinimumPaymentTap: (value) {}, onFullPaymentTap: (value) {}),
+                Text('${_statement?.getFullPaymentAmountAt(_dateTime ?? DateTime.now()) ?? 0}'),
+                _PaymentAmountTip(
+                    onMinimumPaymentTap: () {},
+                    onFullPaymentTap: () {
+                      _controller.text = _fullPaymentFormattedAmount;
+                    }),
               ],
             ),
           ),
@@ -207,8 +212,8 @@ class _PaymentAmountTip extends StatelessWidget {
     required this.onMinimumPaymentTap,
     required this.onFullPaymentTap,
   });
-  final ValueSetter<double> onMinimumPaymentTap;
-  final ValueSetter<double> onFullPaymentTap;
+  final VoidCallback onMinimumPaymentTap;
+  final VoidCallback onFullPaymentTap;
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +229,7 @@ class _PaymentAmountTip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             backgroundColor: context.appTheme.primary,
             color: context.appTheme.primaryNegative,
-            onTap: () => onFullPaymentTap(2),
+            onTap: onFullPaymentTap,
           ),
         ),
         Gap.w8,
@@ -238,7 +243,7 @@ class _PaymentAmountTip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             backgroundColor: AppColors.greyBgr(context),
             color: context.appTheme.backgroundNegative,
-            onTap: () => onMinimumPaymentTap(1),
+            onTap: onMinimumPaymentTap,
           ),
         ),
       ],
@@ -270,7 +275,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
       return 'This statement has paid in full'.hardcoded;
     }
     if (_outputAmount! > _fullPaymentAmount) {
-      return 'Value is higher than $_fullPaymentFormattedAmount';
+      return 'Value is higher than full payment amount'.hardcoded;
     }
     return null;
   }

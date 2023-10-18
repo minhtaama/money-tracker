@@ -41,7 +41,9 @@ class CreditPaymentInfo extends ConsumerWidget {
             margin: EdgeInsets.zero,
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.background3
+                  : context.appTheme.background,
               border: Border.all(
                 color: context.appTheme.backgroundNegative.withOpacity(0.3),
               ),
@@ -81,14 +83,14 @@ class _List extends StatelessWidget {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsFromStartDateOfThisStatementUntil(chosenDateTime!);
+    return statement!.txnsFromStartDateBefore(chosenDateTime!);
   }
 
   List<BaseCreditTransaction> get txnsOfNextStatement {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsFromEndDateOfNextStatementUntil(chosenDateTime!);
+    return statement!.txnsFromEndDateBefore(chosenDateTime!);
   }
 
   String? get lastInterest {
@@ -109,16 +111,16 @@ class _List extends StatelessWidget {
     if (statement == null || chosenDateTime == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.getSpentAmountFromStartDateOfThisStatementUntil(chosenDateTime!) -
-        statement!.getPaidAmountFromStartDateOfThisStatementUntil(chosenDateTime!));
+    return CalService.formatCurrency(statement!.spentAmountFromStartDateBefore(chosenDateTime!) -
+        statement!.paidAmountFromStartDateBefore(chosenDateTime!));
   }
 
   String? get remainingBalanceInNextStatement {
     if (statement == null || chosenDateTime == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.getSpentAmountFromEndDateOfNextStatementUntil(chosenDateTime!) -
-        statement!.getPaidAmountFromEndDateOfNextStatementUntil(chosenDateTime!));
+    return CalService.formatCurrency(statement!.spentAmountFromEndDateBefore(chosenDateTime!) -
+        statement!.paidAmountFromEndDateBefore(chosenDateTime!));
   }
 
   Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
@@ -136,14 +138,16 @@ class _List extends StatelessWidget {
           h2 != null
               ? Text(
                   h2,
-                  style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
           h3 != null
               ? Text(
                   h3,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
@@ -194,14 +198,15 @@ class _List extends StatelessWidget {
               h2: '$carryingOver ${context.currentSettings.currency.code}',
               h3: statement?.lastStatement.interest == 0
                   ? null
-                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'.hardcoded),
+                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'
+                      .hardcoded),
           buildHeader(
             context,
             h1: 'Transactions before selected day:',
             h2: '$remainingBalanceOfThisStatement ${context.currentSettings.currency.code}',
           ),
-          ...List.generate(
-              thisStatementTxns.length, (index) => buildTransactionTile(context, thisStatementTxns[index])),
+          ...List.generate(thisStatementTxns.length,
+              (index) => buildTransactionTile(context, thisStatementTxns[index])),
           txnsOfNextStatement.isNotEmpty
               ? buildHeader(
                   context,
@@ -209,8 +214,8 @@ class _List extends StatelessWidget {
                   h2: '$remainingBalanceInNextStatement ${context.currentSettings.currency.code}',
                 )
               : Gap.noGap,
-          ...List.generate(
-              txnsOfNextStatement.length, (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
+          ...List.generate(txnsOfNextStatement.length,
+              (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
         ],
       ),
     );
