@@ -19,7 +19,7 @@ class AccountRepositoryRealmDb {
 
   RealmResults<AccountDb> _realmResults(AccountType? type) {
     if (type == null) {
-      return realm.all<AccountDb>();
+      return realm.all<AccountDb>().query('TRUEPREDICATE SORT(order ASC)');
     }
 
     return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [_accountTypeInDb(type)]);
@@ -85,12 +85,14 @@ class AccountRepositoryRealmDb {
 
     final order = getList(null).length;
 
-    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(
+        ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     if (type == AccountType.regular) {
       initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), balance,
-          account: newAccount, isInitialTransaction: true); // transaction type 1 == TransactionType.income
+          account: newAccount,
+          isInitialTransaction: true); // transaction type 1 == TransactionType.income
     }
 
     realm.write(() {
@@ -112,7 +114,8 @@ class AccountRepositoryRealmDb {
     final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    TransactionDb? initialTransaction =
+        accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
       realm.write(() {

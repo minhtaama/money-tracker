@@ -59,7 +59,7 @@ extension CreditAccountDateTimeDetails on CreditAccount {
       return null;
     }
 
-    return transactionsList.last.dateTime;
+    return transactionsList.whereType<CreditSpending>().last.dateTime;
   }
 
   /// only year, month and day
@@ -69,11 +69,11 @@ extension CreditAccountDateTimeDetails on CreditAccount {
     }
 
     if (statementDay > latestSpendingDate!.day) {
-      return DateTime(earliestPayableDate!.year, earliestPayableDate!.month - 1, statementDay);
+      return DateTime(latestSpendingDate!.year, latestSpendingDate!.month - 1, statementDay);
     }
 
     if (statementDay <= latestSpendingDate!.day) {
-      return earliestPayableDate!.copyWith(day: statementDay).onlyYearMonthDay;
+      return latestSpendingDate!.copyWith(day: statementDay).onlyYearMonthDay;
     }
 
     return null;

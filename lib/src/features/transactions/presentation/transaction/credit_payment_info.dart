@@ -93,6 +93,13 @@ class _List extends StatelessWidget {
     return statement!.txnsFromEndDateBefore(chosenDateTime!);
   }
 
+  List<BaseCreditTransaction> get txnsInChosenDateTime {
+    if (statement == null || chosenDateTime == null) {
+      return <BaseCreditTransaction>[];
+    }
+    return statement!.txnsIn(chosenDateTime!);
+  }
+
   String? get lastInterest {
     if (statement == null) {
       return null;
@@ -122,6 +129,9 @@ class _List extends StatelessWidget {
     return CalService.formatCurrency(statement!.spentAmountFromEndDateBefore(chosenDateTime!) -
         statement!.paidAmountFromEndDateBefore(chosenDateTime!));
   }
+
+  DateTime get nextStatementDateTime =>
+      statement!.startDate.copyWith(month: statement!.startDate.month + 1);
 
   Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
     return Padding(
@@ -200,22 +210,32 @@ class _List extends StatelessWidget {
                   ? null
                   : '(included $lastInterest ${context.currentSettings.currency.code} interest)'
                       .hardcoded),
+          Gap.h4,
           buildHeader(
             context,
-            h1: 'Transactions before selected day:',
-            h2: '$remainingBalanceOfThisStatement ${context.currentSettings.currency.code}',
+            h1: 'Statement start:',
+            h3: statement!.startDate.getFormattedDate(),
           ),
           ...List.generate(thisStatementTxns.length,
               (index) => buildTransactionTile(context, thisStatementTxns[index])),
           txnsOfNextStatement.isNotEmpty
               ? buildHeader(
                   context,
-                  h1: 'Transactions in next statement'.hardcoded,
-                  h2: '$remainingBalanceInNextStatement ${context.currentSettings.currency.code}',
+                  h1: 'Next statement start:'.hardcoded,
+                  h3: nextStatementDateTime.getFormattedDate(),
                 )
               : Gap.noGap,
           ...List.generate(txnsOfNextStatement.length,
               (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
+          txnsInChosenDateTime.isNotEmpty
+              ? buildHeader(
+                  context,
+                  h1: 'Selected day:',
+                  h3: chosenDateTime!.getFormattedDate(),
+                )
+              : Gap.noGap,
+          ...List.generate(txnsInChosenDateTime.length,
+              (index) => buildTransactionTile(context, txnsInChosenDateTime[index])),
         ],
       ),
     );
@@ -228,6 +248,16 @@ class _Details extends StatelessWidget {
   final BaseCreditTransaction transaction;
   final String currencyCode;
   final void Function(DateTime)? onDateTap;
+
+  String? get _categoryTag {
+    final txn = transaction;
+    switch (txn) {
+      case CreditSpending():
+        return txn.categoryTag != null ? '#${txn.categoryTag!.name}' : null;
+      case CreditPayment():
+        return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,12 +272,18 @@ class _Details extends StatelessWidget {
               Gap.w4,
               TxnCategoryIcon(transaction: transaction as CreditSpending),
               Gap.w4,
-              Expanded(
-                child: TxnCategoryName(
-                  transaction: transaction as CreditSpending,
-                  fontSize: 11,
-                ),
+              TxnCategoryName(
+                transaction: transaction as CreditSpending,
+                fontSize: 11,
               ),
+              Gap.w4,
+              _categoryTag != null
+                  ? Text(
+                      _categoryTag!,
+                      style: kHeader4TextStyle.copyWith(
+                          fontSize: 11, color: context.appTheme.backgroundNegative),
+                    )
+                  : Gap.noGap,
             ],
           )
         : Row(
@@ -260,6 +296,7 @@ class _Details extends StatelessWidget {
               Gap.w4,
               SvgIcon(
                 AppIcons.receiptCheck,
+                color: context.appTheme.positive,
                 size: 20,
               ),
               Gap.w4,

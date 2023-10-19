@@ -122,9 +122,11 @@ class _TransferDetails extends StatelessWidget {
               Row(
                 children: [
                   TxnAccountName(transaction: transaction),
+                  Gap.w4,
                   TxnInfo('Transfer'.hardcoded),
                 ],
               ),
+              Gap.h4,
               TxnTransferAccountName(transaction: transaction),
             ],
           ),
@@ -157,6 +159,7 @@ class _PaymentDetails extends StatelessWidget {
                   TxnInfo('Payment'.hardcoded),
                 ],
               ),
+              Gap.h4,
               Row(
                 children: [
                   TxnAccountName(transaction: transaction),

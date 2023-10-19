@@ -8,6 +8,7 @@ import 'package:realm/realm.dart';
 import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
 import 'dart:math' as math;
+import '../../../utils/constants.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 part 'regular_account.dart';
@@ -36,7 +37,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
           transactionsList: transactionListQuery
-              .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+              .map<BaseRegularTransaction>(
+                  (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
               .toList(growable: false),
           transferTransactionsList: transferTransactionsQuery
               .map<ITransferable>((txn) => BaseTransaction.fromDatabase(txn) as ITransferable)
@@ -53,7 +55,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
           transactionsList: transactionListQuery
-              .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+              .map<BaseCreditTransaction>(
+                  (txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
               .toList(),
         ),
     };

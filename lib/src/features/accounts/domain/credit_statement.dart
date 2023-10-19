@@ -50,7 +50,7 @@ extension StatementDetails on Statement {
     }
   }
 
-  DateTime get lastStatementDueDate {
+  DateTime get previousStatementDueDate {
     if (_creditAccount.statementDay >= _creditAccount.paymentDueDay) {
       return startDate.copyWith(month: startDate.month + 1, day: _creditAccount.paymentDueDay);
     } else {
@@ -117,7 +117,7 @@ extension StatementDetails on Statement {
   }
 
   /// Excluded surplus payment amount of last statement and next statement if there are
-  /// payments transactions happens "not after [lastStatementDueDate]" and "after [endDate]"
+  /// payments transactions happens "not after [previousStatementDueDate]" and "after [endDate]"
   /// of this statement.
   double get paidAmount {
     double totalAmountNotAfterLastStatementDueDate = 0; // Might include last statement payment
@@ -127,7 +127,7 @@ extension StatementDetails on Statement {
     final list = txnsOfThisStatement.whereType<CreditPayment>();
 
     for (CreditPayment payment in list) {
-      if (!payment.dateTime.onlyYearMonthDay.isAfter(lastStatementDueDate)) {
+      if (!payment.dateTime.onlyYearMonthDay.isAfter(previousStatementDueDate)) {
         totalAmountNotAfterLastStatementDueDate += payment.amount;
       }
       if (payment.dateTime.onlyYearMonthDay.isAfter(endDate)) {
@@ -310,6 +310,7 @@ extension StatementAtDateTimeDetails on Statement {
   }
 
   double getFullPaymentAmountAt(DateTime dateTime) {
+    // Remaining balance before chosen dateTime
     final x = lastStatement.carryToThisStatement +
         spentAmountFromStartDateBefore(dateTime) +
         spentAmountFromEndDateBefore(dateTime) -
@@ -317,6 +318,16 @@ extension StatementAtDateTimeDetails on Statement {
         paidAmountFromStartDateBefore(dateTime) -
         paidAmountIn(dateTime);
 
-    return math.min(x, remainingBalance);
+    // When dateTime is inside this statement
+    if (!dateTime.isAfter(dueDate)) {
+      return math.min(x, remainingBalance);
+    }
+    // When dateTime is inside next statement (before this statement due date)
+    else {
+      final remainingBalanceInNextStatement =
+          spentAmountFromEndDateBefore(dueDate) - paidAmountFromEndDateBefore(dueDate);
+
+      return math.min(x, remainingBalance + remainingBalanceInNextStatement);
+    }
   }
 }
