@@ -96,6 +96,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                               currentDay: _outputDateTime,
                               currentMonthView: _currentMonthView,
                               onActionButtonTap: (dateTime) {
+                                //TODO: Add some logic to prevent adding payment and spending at the same day
                                 if (dateTime != null) {
                                   _currentMonthView = dateTime;
 

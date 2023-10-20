@@ -29,9 +29,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           borderRadius: BorderRadius.circular(1000),
           border: isToday != null && isToday
               ? Border.all(
-                  color: isDisabled != null && isDisabled
-                      ? AppColors.greyBgr(context)
-                      : context.appTheme.primary,
+                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
                 )
               : null,
           color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
@@ -70,9 +68,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year,
-                        month: _outputDateTime.month,
-                        day: _outputDateTime.day);
+                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -89,9 +85,10 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             setState(() {
-                              _outputDateTime = dateTime.copyWith(
-                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                              _outputDateTime =
+                                  dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                             });
+                            context.pop();
                           }
                         },
                       );

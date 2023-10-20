@@ -41,9 +41,7 @@ class CreditPaymentInfo extends ConsumerWidget {
             margin: EdgeInsets.zero,
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.background3
-                  : context.appTheme.background,
+              color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
               border: Border.all(
                 color: context.appTheme.backgroundNegative.withOpacity(0.3),
               ),
@@ -130,8 +128,7 @@ class _List extends StatelessWidget {
         statement!.paidAmountFromEndDateBefore(chosenDateTime!));
   }
 
-  DateTime get nextStatementDateTime =>
-      statement!.startDate.copyWith(month: statement!.startDate.month + 1);
+  DateTime get nextStatementDateTime => statement!.startDate.copyWith(month: statement!.startDate.month + 1);
 
   Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
     return Padding(
@@ -148,16 +145,14 @@ class _List extends StatelessWidget {
           h2 != null
               ? Text(
                   h2,
-                  style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
           h3 != null
               ? Text(
                   h3,
-                  style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
@@ -208,16 +203,15 @@ class _List extends StatelessWidget {
               h2: '$carryingOver ${context.currentSettings.currency.code}',
               h3: statement?.lastStatement.interest == 0
                   ? null
-                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'
-                      .hardcoded),
+                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'.hardcoded),
           Gap.h4,
           buildHeader(
             context,
             h1: 'Statement start:',
             h3: statement!.startDate.getFormattedDate(),
           ),
-          ...List.generate(thisStatementTxns.length,
-              (index) => buildTransactionTile(context, thisStatementTxns[index])),
+          ...List.generate(
+              thisStatementTxns.length, (index) => buildTransactionTile(context, thisStatementTxns[index])),
           txnsOfNextStatement.isNotEmpty
               ? buildHeader(
                   context,
@@ -225,8 +219,8 @@ class _List extends StatelessWidget {
                   h3: nextStatementDateTime.getFormattedDate(),
                 )
               : Gap.noGap,
-          ...List.generate(txnsOfNextStatement.length,
-              (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
+          ...List.generate(
+              txnsOfNextStatement.length, (index) => buildTransactionTile(context, txnsOfNextStatement[index])),
           txnsInChosenDateTime.isNotEmpty
               ? buildHeader(
                   context,
@@ -234,8 +228,8 @@ class _List extends StatelessWidget {
                   h3: chosenDateTime!.getFormattedDate(),
                 )
               : Gap.noGap,
-          ...List.generate(txnsInChosenDateTime.length,
-              (index) => buildTransactionTile(context, txnsInChosenDateTime[index])),
+          ...List.generate(
+              txnsInChosenDateTime.length, (index) => buildTransactionTile(context, txnsInChosenDateTime[index])),
         ],
       ),
     );
@@ -272,18 +266,26 @@ class _Details extends StatelessWidget {
               Gap.w4,
               TxnCategoryIcon(transaction: transaction as CreditSpending),
               Gap.w4,
-              TxnCategoryName(
-                transaction: transaction as CreditSpending,
-                fontSize: 11,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TxnCategoryName(
+                      transaction: transaction as CreditSpending,
+                      fontSize: 11,
+                    ),
+                    _categoryTag != null
+                        ? Text(
+                            _categoryTag!,
+                            style: kHeader3TextStyle.copyWith(
+                                fontSize: 10, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : Gap.noGap,
+                  ],
+                ),
               ),
-              Gap.w4,
-              _categoryTag != null
-                  ? Text(
-                      _categoryTag!,
-                      style: kHeader4TextStyle.copyWith(
-                          fontSize: 11, color: context.appTheme.backgroundNegative),
-                    )
-                  : Gap.noGap,
             ],
           )
         : Row(
