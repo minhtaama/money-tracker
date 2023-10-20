@@ -44,7 +44,9 @@ class _CustomTimePickSpinner extends StatelessWidget {
               height: 0, color: context.appTheme.backgroundNegative.withOpacity(0.4), fontSize: 15),
           highlightedTextStyle: kHeader1TextStyle.copyWith(height: 0.9, color: context.appTheme.primary, fontSize: 25),
           isForce2Digits: true,
-          onTimeChange: onTimeChange,
+          onTimeChange: (value) {
+            onTimeChange?.call(value.toLocal());
+          },
         ),
         Positioned.fill(
           child: Align(

@@ -14,6 +14,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
@@ -140,7 +141,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             child: Column(
               children: [
                 CreditPaymentInfo(
-                  chosenDateTime: _dateTime,
+                  chosenDateTime: _dateTime?.onlyYearMonthDay,
                   noBorder: false,
                   statement: _statement,
                 ),

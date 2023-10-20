@@ -74,7 +74,7 @@ extension StatementDetails on Statement {
         break;
       }
 
-      if (transaction.dateTime.isBefore(dueDate)) {
+      if (!transaction.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
         list.add(transaction);
         continue;
       }
@@ -180,8 +180,7 @@ extension StatementDetails on Statement {
     if (remainingBalance <= 0) {
       return 0;
     }
-    final interest =
-        averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+    final interest = averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
     return interest;
   }
 
@@ -241,7 +240,7 @@ extension StatementAtDateTimeDetails on Statement {
         break;
       }
 
-      if (transaction.dateTime.isBefore(dateTime)) {
+      if (transaction.dateTime.isBefore(dateTime.onlyYearMonthDay)) {
         list.add(transaction);
         continue;
       }
@@ -314,20 +313,13 @@ extension StatementAtDateTimeDetails on Statement {
     final x = lastStatement.carryToThisStatement +
         spentAmountFromStartDateBefore(dateTime) +
         spentAmountFromEndDateBefore(dateTime) -
-        paidAmountFromEndDateBefore(dateTime) -
-        paidAmountFromStartDateBefore(dateTime) -
-        paidAmountIn(dateTime);
+        paidAmountFromEndDateBefore(dueDate) -
+        paidAmountFromStartDateBefore(dueDate);
 
-    // When dateTime is inside this statement
-    if (!dateTime.isAfter(dueDate)) {
-      return math.min(x, remainingBalance);
-    }
-    // When dateTime is inside next statement (before this statement due date)
-    else {
-      final remainingBalanceInNextStatement =
-          spentAmountFromEndDateBefore(dueDate) - paidAmountFromEndDateBefore(dueDate);
-
-      return math.min(x, remainingBalance + remainingBalanceInNextStatement);
+    if (x < 0) {
+      return 0;
+    } else {
+      return x;
     }
   }
 }
