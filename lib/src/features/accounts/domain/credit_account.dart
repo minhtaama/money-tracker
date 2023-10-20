@@ -78,23 +78,6 @@ extension CreditAccountDateTimeDetails on CreditAccount {
 
     return null;
   }
-
-  // // Actually the latest due date should be the due date of statement before the statement has payment under minimum amount
-  // /// Find due date of latest statement with 0 carry over amount.
-  // /// Return `Calendar.minDate` if credit account statement list is empty or no DateTime is found
-  // DateTime get latestAvailablePaymentDueDate {
-  //   if (statements.isEmpty) {
-  //     return Calendar.minDate;
-  //   }
-  //
-  //   for (int i = statements.length - 1; i >= 0; i--) {
-  //     if (statements[i].carryingOver <= 0) {
-  //       return statements[i].dueDate;
-  //     }
-  //   }
-  //
-  //   return Calendar.minDate;
-  // }
 }
 
 extension CreditAccountDetails on CreditAccount {
@@ -111,11 +94,12 @@ extension CreditAccountDetails on CreditAccount {
     for (DateTime begin = earliestStatementDate!;
         begin.compareTo(latestStatementDate!) <= 0;
         begin = begin.copyWith(month: begin.month + 1)) {
-      CarryingOverDetails lastStatementDetails = const CarryingOverDetails(0, 0);
+      PreviousStatement lastStatementDetails = PreviousStatement.noData();
       if (begin != earliestStatementDate!) {
         lastStatementDetails = list[list.length - 1].carryToNextStatement;
       }
-      Statement statement = Statement(this, lastStatement: lastStatementDetails, startDate: begin);
+      Statement statement =
+          Statement.create(this, previousStatement: lastStatementDetails, startDate: begin);
       list.add(statement);
     }
 
@@ -147,8 +131,8 @@ extension CreditAccountDetails on CreditAccount {
       for (DateTime begin = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
           begin.compareTo(date) <= 0;
           begin = begin.copyWith(month: begin.month + 1)) {
-        CarryingOverDetails lastStatement = list.last.carryToNextStatement;
-        Statement statement = Statement(this, lastStatement: lastStatement, startDate: begin);
+        PreviousStatement lastStatement = list.last.carryToNextStatement;
+        Statement statement = Statement.create(this, previousStatement: lastStatement, startDate: begin);
         list.add(statement);
       }
       return list.last;

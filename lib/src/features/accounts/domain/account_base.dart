@@ -7,13 +7,12 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:realm/realm.dart';
 import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
-import 'dart:math' as math;
-import '../../../utils/constants.dart';
 import '../../transactions/domain/transaction_base.dart';
+
+import 'statement.dart';
 
 part 'regular_account.dart';
 part 'credit_account.dart';
-part 'credit_statement.dart';
 
 @immutable
 sealed class Account extends BaseModelWithIcon<AccountDb> {
