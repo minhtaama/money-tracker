@@ -193,7 +193,6 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           color: context.appTheme.primaryNegative,
           onTap: () {
             widget.onActionButtonTap?.call(_selectedDay);
-            context.pop();
           },
         ),
       ],

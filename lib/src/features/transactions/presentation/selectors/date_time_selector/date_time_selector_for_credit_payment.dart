@@ -103,6 +103,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                   _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
 
                                   widget.onChanged(_outputDateTime!, _outputStatement);
+                                  context.pop();
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
