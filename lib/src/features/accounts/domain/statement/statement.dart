@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'dart:math' as math;
 
 import '../../../../utils/constants.dart';
 import '../../../transactions/domain/transaction_base.dart';
@@ -9,8 +10,23 @@ part 'previous_statement.dart';
 
 @immutable
 class Statement {
-  const Statement._(this._creditAccount, this.previousStatement, this.startDate, this.endDate, this.dueDate,
-      this.transactions, this.balanceAfterPreviousDueDateUntilDueDate, this.averageDailyBalance);
+  const Statement._(
+    this._creditAccount, {
+    required this.previousStatement,
+    required this.startDate,
+    required this.endDate,
+    required this.dueDate,
+    required this.transactionsInBillingCycle,
+    required this.transactionsInGracePeriod,
+    required this.averageDailyBalance,
+    required this.spentInPreviousGracePeriod,
+    required this.spentInBillingCycleAfterPreviousGracePeriod,
+    required this.spentInGracePeriod,
+    required this.paidInPreviousGracePeriodForThisStatement,
+    required this.paidInPreviousGracePeriodForPreviousPending,
+    required this.paidInBillingCycleAfterPreviousGracePeriod,
+    required this.paidInGracePeriod,
+  });
 
   final CreditAccount _creditAccount;
 
@@ -22,19 +38,26 @@ class Statement {
 
   final DateTime dueDate;
 
-  /// Include all [BaseCreditTransaction] happens in both:
-  ///
   /// **Billing cycle**: From [startDate] to [endDate]
-  ///
-  /// and **Grace Period**: From the day after [endDate] to [dueDate]
-  final List<BaseCreditTransaction> transactions;
+  final List<BaseCreditTransaction> transactionsInBillingCycle;
 
-  /// Excluded surplus payment amount of previous statement if there are
-  /// payments transactions happens "not after [previousStatement.dueDate]"
-  /// Because these payments will be counted in GracePeriod of previous statement
-  ///
-  /// Counts [CreditPayment] and [CreditSpending] between/in [previousStatement.dueDate] to/and in [dueDate]
-  final double balanceAfterPreviousDueDateUntilDueDate;
+  /// **Grace Period**: From the day after [endDate] to [dueDate]
+  final List<BaseCreditTransaction> transactionsInGracePeriod;
+
+  final double spentInPreviousGracePeriod;
+  final double spentInBillingCycleAfterPreviousGracePeriod;
+  final double spentInGracePeriod;
+  final double paidInPreviousGracePeriodForThisStatement;
+  final double paidInPreviousGracePeriodForPreviousPending;
+  final double paidInBillingCycleAfterPreviousGracePeriod;
+  final double paidInGracePeriod;
+
+  // /// Excluded surplus payment amount of previous statement if there are
+  // /// payments transactions happens "not after [previousStatement.dueDate]"
+  // /// Because these payments will be counted in GracePeriod of previous statement
+  // ///
+  // /// Counts [CreditPayment] and [CreditSpending] between/in [previousStatement.dueDate] to/and in [dueDate]
+  // final double balanceAfterPreviousDueDateUntilDueDate;
 
   final double averageDailyBalance;
 
@@ -47,22 +70,28 @@ class Statement {
     final DateTime dueDate = creditAccount.statementDay >= creditAccount.paymentDueDay
         ? startDate.copyWith(month: startDate.month + 2, day: creditAccount.paymentDueDay).onlyYearMonthDay
         : startDate.copyWith(month: startDate.month + 1, day: creditAccount.paymentDueDay).onlyYearMonthDay;
-    List<BaseCreditTransaction> transactions = List.empty(growable: true);
-    double balanceAfterPreviousDueDateUntilDueDate = 0;
 
-    // Calculate sum of daily balance from `checkpoint` to current Txn DateTime
-    // If this is the first Txn in the list, `checkpoint` is `Statement.startDate`
+    List<BaseCreditTransaction> txnsInBillingCycle = List.empty(growable: true);
+    List<BaseCreditTransaction> txnsInGracePeriod = List.empty(growable: true);
+    double spentInBillingCycleInPreviousGracePeriod = 0;
+    double spentInBillingCycleAfterPreviousGracePeriod = 0;
+    double spentInGracePeriod = 0;
+    double paidInPreviousGracePeriodForThisStatement = 0;
+    double paidInPreviousGracePeriodForPreviousStatement = 0;
+    double paidInBillingCycleAfterPreviousGracePeriod = 0;
+    double paidInGracePeriod = 0;
+
+    double pendingOfPreviousStatement = previousStatement.pendingForGracePeriod;
+
+    // Calculate sum of daily balance from `tCheckpointDateTime` to current Txn DateTime
+    // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
     double tDailyBalanceSum = 0;
-
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.balanceAfterEndDate;
+    double tCurrentBalance = previousStatement.carryOverWithInterest;
 
-    DateTime tLastSpendingInBillingCycleDateTime = startDate;
+    DateTime tCheckpointDateTime = startDate;
 
     for (int i = 0; i <= creditAccount.transactionsList.length - 1; i++) {
-      // Previous transaction dateTime
-      final checkpoint = i == 0 ? startDate : creditAccount.transactionsList[i - 1].dateTime;
-
       final txn = creditAccount.transactionsList[i];
 
       if (txn.dateTime.isBefore(startDate)) {
@@ -70,74 +99,126 @@ class Statement {
       }
 
       if (txn.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
+        if (i >= 1) {
+          tCheckpointDateTime = creditAccount.transactionsList[i - 1].dateTime;
+        }
         break;
       }
 
-      transactions.add(txn);
-
       if (txn is CreditSpending) {
-        if (txn.dateTime.isAfter(previousStatement.dueDate)) {
-          balanceAfterPreviousDueDateUntilDueDate += txn.amount;
-        }
+        if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
+          spentInGracePeriod += txn.amount;
+          txnsInGracePeriod.add(txn);
+        } else {
+          if (txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
+            spentInBillingCycleAfterPreviousGracePeriod += txn.amount;
+          } else {
+            spentInBillingCycleInPreviousGracePeriod += txn.amount;
+          }
+          txnsInBillingCycle.add(txn);
 
-        // Calculate tDailyBalanceSum before this txn happens
-        tLastSpendingInBillingCycleDateTime = txn.dateTime.onlyYearMonthDay;
-        tDailyBalanceSum += tCurrentBalance * checkpoint.getDaysDifferent(txn.dateTime);
-        tCurrentBalance += txn.amount;
+          // Calculate tDailyBalanceSum before this txn happens
+          tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(txn.dateTime);
+          tCurrentBalance += txn.amount;
+        }
       }
 
       if (txn is CreditPayment) {
-        // We don't count payments before `previousStatement.dueDate` because these are already
-        // counted in grace period of previous statement.
-        if (txn.dateTime.isAfter(previousStatement.dueDate)) {
-          balanceAfterPreviousDueDateUntilDueDate -= txn.amount;
-        }
+        if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
+          paidInGracePeriod += txn.amount;
+          txnsInGracePeriod.add(txn);
+        } else {
+          txnsInBillingCycle.add(txn);
+          tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(txn.dateTime);
 
-        if (!txn.dateTime.isAfter(endDate)) {
-          // - Only calculate tDailyBalanceSum before this txn if this txn is made not after `endDate`.
-          // - The point is that any payment happens in grace period (from `endDate` to `dueDate`) will
-          // not be counted in averageDailyBalance. These payments will only to count
-          // carry over balance of previous statement.
-          tDailyBalanceSum += tCurrentBalance * checkpoint.getDaysDifferent(txn.dateTime);
-          tCurrentBalance -= txn.amount;
+          if (txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
+            paidInBillingCycleAfterPreviousGracePeriod += txn.amount;
+
+            tCurrentBalance -= txn.amount;
+          } else {
+            paidInPreviousGracePeriodForPreviousStatement += math.min(txn.amount, pendingOfPreviousStatement);
+            paidInPreviousGracePeriodForThisStatement += math.max(0, txn.amount - pendingOfPreviousStatement);
+            pendingOfPreviousStatement =
+                math.max(0, pendingOfPreviousStatement - paidInPreviousGracePeriodForPreviousStatement);
+
+            tCurrentBalance -= paidInPreviousGracePeriodForThisStatement;
+          }
         }
+      }
+
+      if (i >= 1) {
+        tCheckpointDateTime = creditAccount.transactionsList[i - 1].dateTime;
       }
     }
 
-    tDailyBalanceSum += tCurrentBalance * tLastSpendingInBillingCycleDateTime.getDaysDifferent(endDate);
+    tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(endDate);
+
     double averageDailyBalance = tDailyBalanceSum / startDate.getDaysDifferent(endDate);
 
-    return Statement._(creditAccount, previousStatement, startDate, endDate, dueDate, transactions,
-        balanceAfterPreviousDueDateUntilDueDate, averageDailyBalance);
-  }
-
-  bool get isFullPaid {
-    double result = previousStatement.totalCarryToThisStatement + balanceAfterPreviousDueDateUntilDueDate;
-    if (result <= 0) {
-      return true;
-    }
-    return false;
+    return Statement._(
+      creditAccount,
+      previousStatement: previousStatement,
+      startDate: startDate,
+      endDate: endDate,
+      dueDate: dueDate,
+      transactionsInBillingCycle: txnsInBillingCycle,
+      transactionsInGracePeriod: txnsInGracePeriod,
+      averageDailyBalance: averageDailyBalance,
+      spentInPreviousGracePeriod: spentInBillingCycleInPreviousGracePeriod,
+      spentInBillingCycleAfterPreviousGracePeriod: spentInBillingCycleAfterPreviousGracePeriod,
+      spentInGracePeriod: spentInGracePeriod,
+      paidInPreviousGracePeriodForThisStatement: paidInPreviousGracePeriodForThisStatement,
+      paidInPreviousGracePeriodForPreviousPending: paidInPreviousGracePeriodForPreviousStatement,
+      paidInBillingCycleAfterPreviousGracePeriod: paidInBillingCycleAfterPreviousGracePeriod,
+      paidInGracePeriod: paidInGracePeriod,
+    );
   }
 
   double get thisStatementInterest {
-    if (previousStatement.totalCarryToThisStatement <= 0) {
+    if (previousStatement.carryOverWithInterest <= 0) {
       return 0;
     }
 
     return averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
   }
 
-  double get interestCarryToNextStatement =>
-      isFullPaid ? 0 : averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+  double get _remainingSpentInPreviousGracePeriod =>
+      math.max(0, spentInPreviousGracePeriod - paidInPreviousGracePeriodForThisStatement);
+
+  double get _remainingPaidInPreviousGracePeriod =>
+      math.max(0, paidInPreviousGracePeriodForThisStatement - spentInPreviousGracePeriod);
+
+  double get _totalSpent =>
+      previousStatement.carryOverWithInterest +
+      _remainingSpentInPreviousGracePeriod +
+      spentInBillingCycleAfterPreviousGracePeriod;
+
+  double get _totalPaidBeforeEndDate =>
+      paidInPreviousGracePeriodForThisStatement + paidInBillingCycleAfterPreviousGracePeriod;
+
+  // Can be negative because of payment in grace period
+  double get _totalPaid =>
+      _remainingPaidInPreviousGracePeriod + paidInBillingCycleAfterPreviousGracePeriod + paidInGracePeriod;
+
+  double get _interest =>
+      averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+
+  double get _balanceCarryToNextStatement => math.max(0, _totalSpent - _totalPaid);
+
+  double get _pendingForGracePeriod =>
+      previousStatement.carryOverWithInterest +
+      spentInPreviousGracePeriod +
+      spentInBillingCycleAfterPreviousGracePeriod -
+      _totalPaidBeforeEndDate;
+
+  double get _interestCarryToNextStatement => _balanceCarryToNextStatement <= 0 ? 0 : _interest;
 
   /// Assign to `carryingOver` of the next Statement object
   PreviousStatement get carryToNextStatement {
-    double balanceCarryToNextStatement =
-        previousStatement.totalCarryToThisStatement + balanceAfterPreviousDueDateUntilDueDate;
     return PreviousStatement._(
-      balanceCarryToThisStatement: balanceCarryToNextStatement,
-      balanceAfterEndDate: 0,
-      interest: interestCarryToNextStatement,
+      balance: _balanceCarryToNextStatement,
+      pendingForGracePeriod: _pendingForGracePeriod,
+      interest: _interestCarryToNextStatement,
       dueDate: dueDate,
     );
   }
@@ -148,16 +229,9 @@ extension StatementWithDateTimeDetails on Statement {
   List<BaseCreditTransaction> txnsInBillingCycleBefore(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    for (int i = 0; i <= transactions.length - 1; i++) {
-      final txn = transactions[i];
-
-      if (txn.dateTime.isAfter(endDate.copyWith(day: endDate.day + 1))) {
-        break;
-      }
-
+    for (BaseCreditTransaction txn in transactionsInBillingCycle) {
       if (txn.dateTime.isBefore(dateTime.onlyYearMonthDay)) {
         list.add(txn);
-        continue;
       }
     }
 
@@ -168,14 +242,9 @@ extension StatementWithDateTimeDetails on Statement {
   List<BaseCreditTransaction> txnsInGracePeriodBefore(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    for (BaseCreditTransaction txn in transactions) {
-      if (txn.dateTime.isBefore(endDate)) {
-        continue;
-      }
-
+    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
       if (txn.dateTime.isBefore(dateTime.onlyYearMonthDay)) {
         list.add(txn);
-        continue;
       }
     }
 
@@ -184,7 +253,10 @@ extension StatementWithDateTimeDetails on Statement {
 
   List<BaseCreditTransaction> txnsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
-    for (BaseCreditTransaction txn in transactions) {
+
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
+
+    for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
         list.add(txn);
       }
@@ -222,7 +294,7 @@ extension StatementWithDateTimeDetails on Statement {
   }
 
   /// Because all [CreditPayment] that happens before [PreviousStatement.dueDate] will
-  /// be counted in [PreviousStatement.balanceCarryToThisStatement].
+  /// be counted in [PreviousStatement.balance].
   double _paidAmountAfterPreviousDueDateBefore(DateTime dateTime) {
     double amount = 0;
     final list = txnsInBillingCycleBefore(dateTime).whereType<CreditPayment>();
@@ -236,18 +308,34 @@ extension StatementWithDateTimeDetails on Statement {
 
   double getFullPaymentAmountAt(DateTime dateTime) {
     // Remaining balance before chosen dateTime
-    final x = previousStatement.totalCarryToThisStatement +
+    final x = previousStatement.carryOverWithInterest +
+        _remainingSpentInPreviousGracePeriod +
         thisStatementInterest +
         _spentAmountAfterPreviousDueDateBefore(dateTime) +
         _spentAmountFromEndDateBefore(dateTime) -
         _paidAmountFromEndDateBefore(dueDate) -
         _paidAmountAfterPreviousDueDateBefore(dueDate);
 
-    print(previousStatement.balanceCarryToThisStatement);
-    print(previousStatement.interest);
-    print(thisStatementInterest);
-    print('this');
-    print(interestCarryToNextStatement);
+    // print(
+    //     'total paid in previousGracePeriod: ${paidInPreviousGracePeriodForThisStatement + paidInBillingCycleInPreviousGracePeriodForPreviousPending}');
+    // print('paidInBillingCycleInPreviousGracePeriodForThisStatement $paidInPreviousGracePeriodForThisStatement');
+    // print(
+    //     'paidInBillingCycleInPreviousGracePeriodForPreviousPending $paidInBillingCycleInPreviousGracePeriodForPreviousPending');
+    // print('TOTAL PAID: $_totalPaid');
+    //
+    // print('spentInBillingCycleInPreviousGracePeriod $spentInPreviousGracePeriod');
+    // print('spentInBillingCycleAfterPreviousGracePeriod $spentInBillingCycleAfterPreviousGracePeriod');
+    //
+    // print('REMAINING SPENT InPreviousGracePeriod $_remainingSpentInPreviousGracePeriod');
+    // print('paidInBillingCycleAfterPreviousGracePeriod $paidInBillingCycleAfterPreviousGracePeriod');
+    // print('paidInGracePeriod $paidInGracePeriod');
+    // print('previous.carryWithInterest ${previousStatement.carryOverWithInterest}');
+    // print('TOTAL SPEND: $_totalSpent');
+    //
+    // print('interest $_interest');
+    //
+    // print('averageDailyBalance $averageDailyBalance');
+    // print('balance carry to next: $_balanceCarryToNextStatement');
 
     if (x < 0) {
       return 0;

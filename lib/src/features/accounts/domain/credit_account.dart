@@ -96,7 +96,7 @@ extension CreditAccountDetails on CreditAccount {
         begin = begin.copyWith(month: begin.month + 1)) {
       PreviousStatement lastStatementDetails = PreviousStatement.noData();
       if (begin != earliestStatementDate!) {
-        lastStatementDetails = list.last.carryToNextStatement;
+        lastStatementDetails = list[list.length - 1].carryToNextStatement;
       }
       Statement statement = Statement.create(this, previousStatement: lastStatementDetails, startDate: begin);
       list.add(statement);

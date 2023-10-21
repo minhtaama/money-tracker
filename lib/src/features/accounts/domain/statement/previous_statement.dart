@@ -6,31 +6,30 @@ class PreviousStatement {
   ///
   /// This class is not meant to be created outside of this library
   const PreviousStatement._({
-    required this.balanceCarryToThisStatement,
-    required this.balanceAfterEndDate,
+    required this.balance,
+    required this.pendingForGracePeriod,
     required this.interest,
     required this.dueDate,
   });
 
-  /// Could be **negative** if payments after [endDate] is also
-  /// paid for [CreditSpending] of next statement.
+  /// Can't be **negative**. This is the remaining amount of money that haven't been paid.
   ///
-  /// In other words, all [CreditPayment] that happens before [PreviousStatement.dueDate]
-  /// of current [Statement] will be counted in [PreviousStatement.balanceCarryToThisStatement].
-  final double balanceCarryToThisStatement;
+  /// Use to calculate interest and carry over amount to next statement
+  final double balance;
 
-  final double balanceAfterEndDate;
+  /// Use to calculate what left to pay or has paid in next statement
+  /// if more than 0, then there is balance (spending amount) left for grace period in next statement to pay.
+  final double pendingForGracePeriod;
 
   final double interest;
 
   final DateTime dueDate;
 
   /// **Can't be negative**
-  double get totalCarryToThisStatement => balanceCarryToThisStatement <= 0 ? 0 : balanceCarryToThisStatement + interest;
+  double get carryOverWithInterest => balance <= 0 ? 0 : balance + interest;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(
-        balanceCarryToThisStatement: 0, balanceAfterEndDate: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(balance: 0, pendingForGracePeriod: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   @override
@@ -38,10 +37,11 @@ class PreviousStatement {
       identical(this, other) ||
       other is PreviousStatement &&
           runtimeType == other.runtimeType &&
-          balanceCarryToThisStatement == other.balanceCarryToThisStatement &&
+          balance == other.balance &&
+          pendingForGracePeriod == other.pendingForGracePeriod &&
           interest == other.interest &&
           dueDate == other.dueDate;
 
   @override
-  int get hashCode => balanceCarryToThisStatement.hashCode ^ interest.hashCode ^ dueDate.hashCode;
+  int get hashCode => balance.hashCode ^ pendingForGracePeriod.hashCode ^ interest.hashCode ^ dueDate.hashCode;
 }

@@ -208,14 +208,14 @@ extension _ListGetters on _List {
     if (statement == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.previousStatement.interest);
+    return CalService.formatCurrency(statement!.previousStatement.interest, enableDecimalDigits: true);
   }
 
   String? get carryingOver {
     if (statement == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.previousStatement.totalCarryToThisStatement);
+    return CalService.formatCurrency(statement!.previousStatement.carryOverWithInterest, enableDecimalDigits: true);
   }
 
   DateTime get nextStatementDateTime => statement!.startDate.copyWith(month: statement!.startDate.month + 1);
