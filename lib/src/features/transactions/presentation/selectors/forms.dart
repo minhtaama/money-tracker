@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
-import '../../../accounts/domain/statement.dart';
+import '../../../accounts/domain/statement/statement.dart';
 import '../../../category/domain/category.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';

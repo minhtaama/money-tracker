@@ -17,7 +17,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../accounts/domain/account_base.dart';
-import '../../../accounts/domain/statement.dart';
+import '../../../accounts/domain/statement/statement.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
 import '../selectors/forms.dart';
 
@@ -273,9 +273,9 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     if (_statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
-    if (_statement!.remainingBalance <= 0) {
-      return 'This statement has paid in full'.hardcoded;
-    }
+    // if (_statement!.balanceAtTheEndOfGracePeriod <= 0) {
+    //   return 'This statement has paid in full'.hardcoded;
+    // }
     if (_outputAmount! > _fullPaymentAmount) {
       return 'Value is higher than full payment amount'.hardcoded;
     }
