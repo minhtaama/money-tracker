@@ -11,7 +11,14 @@ part 'previous_statement.dart';
 @immutable
 class Statement {
   const Statement._(
-    this._creditAccount, {
+    this._creditAccount,
+    this._spentInPreviousGracePeriod,
+    this._spentInBillingCycleAfterPreviousGracePeriod,
+    this._spentInGracePeriod,
+    this._paidInPreviousGracePeriodForThisStatement,
+    this._paidInPreviousGracePeriodForPreviousPending,
+    this._paidInBillingCycleAfterPreviousGracePeriod,
+    this._paidInGracePeriod, {
     required this.previousStatement,
     required this.startDate,
     required this.endDate,
@@ -19,13 +26,6 @@ class Statement {
     required this.transactionsInBillingCycle,
     required this.transactionsInGracePeriod,
     required this.averageDailyBalance,
-    required this.spentInPreviousGracePeriod,
-    required this.spentInBillingCycleAfterPreviousGracePeriod,
-    required this.spentInGracePeriod,
-    required this.paidInPreviousGracePeriodForThisStatement,
-    required this.paidInPreviousGracePeriodForPreviousPending,
-    required this.paidInBillingCycleAfterPreviousGracePeriod,
-    required this.paidInGracePeriod,
   });
 
   final CreditAccount _creditAccount;
@@ -44,13 +44,13 @@ class Statement {
   /// **Grace Period**: From the day after [endDate] to [dueDate]
   final List<BaseCreditTransaction> transactionsInGracePeriod;
 
-  final double spentInPreviousGracePeriod;
-  final double spentInBillingCycleAfterPreviousGracePeriod;
-  final double spentInGracePeriod;
-  final double paidInPreviousGracePeriodForThisStatement;
-  final double paidInPreviousGracePeriodForPreviousPending;
-  final double paidInBillingCycleAfterPreviousGracePeriod;
-  final double paidInGracePeriod;
+  final double _spentInPreviousGracePeriod;
+  final double _spentInBillingCycleAfterPreviousGracePeriod;
+  final double _spentInGracePeriod;
+  final double _paidInPreviousGracePeriodForThisStatement;
+  final double _paidInPreviousGracePeriodForPreviousPending;
+  final double _paidInBillingCycleAfterPreviousGracePeriod;
+  final double _paidInGracePeriod;
 
   // /// Excluded surplus payment amount of previous statement if there are
   // /// payments transactions happens "not after [previousStatement.dueDate]"
@@ -157,6 +157,13 @@ class Statement {
 
     return Statement._(
       creditAccount,
+      spentInBillingCycleInPreviousGracePeriod,
+      spentInBillingCycleAfterPreviousGracePeriod,
+      spentInGracePeriod,
+      paidInPreviousGracePeriodForThisStatement,
+      paidInPreviousGracePeriodForPreviousStatement,
+      paidInBillingCycleAfterPreviousGracePeriod,
+      paidInGracePeriod,
       previousStatement: previousStatement,
       startDate: startDate,
       endDate: endDate,
@@ -164,54 +171,16 @@ class Statement {
       transactionsInBillingCycle: txnsInBillingCycle,
       transactionsInGracePeriod: txnsInGracePeriod,
       averageDailyBalance: averageDailyBalance,
-      spentInPreviousGracePeriod: spentInBillingCycleInPreviousGracePeriod,
-      spentInBillingCycleAfterPreviousGracePeriod: spentInBillingCycleAfterPreviousGracePeriod,
-      spentInGracePeriod: spentInGracePeriod,
-      paidInPreviousGracePeriodForThisStatement: paidInPreviousGracePeriodForThisStatement,
-      paidInPreviousGracePeriodForPreviousPending: paidInPreviousGracePeriodForPreviousStatement,
-      paidInBillingCycleAfterPreviousGracePeriod: paidInBillingCycleAfterPreviousGracePeriod,
-      paidInGracePeriod: paidInGracePeriod,
     );
   }
 
-  double get thisStatementInterest {
+  double get currentInterest {
     if (previousStatement.carryOverWithInterest <= 0) {
       return 0;
     }
 
     return averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
   }
-
-  double get _remainingSpentInPreviousGracePeriod =>
-      math.max(0, spentInPreviousGracePeriod - paidInPreviousGracePeriodForThisStatement);
-
-  double get _remainingPaidInPreviousGracePeriod =>
-      math.max(0, paidInPreviousGracePeriodForThisStatement - spentInPreviousGracePeriod);
-
-  double get _totalSpent =>
-      previousStatement.carryOverWithInterest +
-      _remainingSpentInPreviousGracePeriod +
-      spentInBillingCycleAfterPreviousGracePeriod;
-
-  double get _totalPaidBeforeEndDate =>
-      paidInPreviousGracePeriodForThisStatement + paidInBillingCycleAfterPreviousGracePeriod;
-
-  // Can be negative because of payment in grace period
-  double get _totalPaid =>
-      _remainingPaidInPreviousGracePeriod + paidInBillingCycleAfterPreviousGracePeriod + paidInGracePeriod;
-
-  double get _interest =>
-      averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
-
-  double get _balanceCarryToNextStatement => math.max(0, _totalSpent - _totalPaid);
-
-  double get _pendingForGracePeriod =>
-      previousStatement.carryOverWithInterest +
-      spentInPreviousGracePeriod +
-      spentInBillingCycleAfterPreviousGracePeriod -
-      _totalPaidBeforeEndDate;
-
-  double get _interestCarryToNextStatement => _balanceCarryToNextStatement <= 0 ? 0 : _interest;
 
   /// Assign to `carryingOver` of the next Statement object
   PreviousStatement get carryToNextStatement {
@@ -222,6 +191,39 @@ class Statement {
       dueDate: dueDate,
     );
   }
+}
+
+extension _StatementPaymentDetails on Statement {
+  double get _remainingSpentInPreviousGracePeriod =>
+      math.max(0, _spentInPreviousGracePeriod - _paidInPreviousGracePeriodForThisStatement);
+
+  double get _remainingPaidInPreviousGracePeriod =>
+      math.max(0, _paidInPreviousGracePeriodForThisStatement - _spentInPreviousGracePeriod);
+
+  double get _totalSpent =>
+      previousStatement.carryOverWithInterest +
+      _remainingSpentInPreviousGracePeriod +
+      _spentInBillingCycleAfterPreviousGracePeriod;
+
+  double get _totalPaidBeforeEndDate =>
+      _paidInPreviousGracePeriodForThisStatement + _paidInBillingCycleAfterPreviousGracePeriod;
+
+  // Can be negative because of payment in grace period
+  double get _totalPaid =>
+      _remainingPaidInPreviousGracePeriod + _paidInBillingCycleAfterPreviousGracePeriod + _paidInGracePeriod;
+
+  double get _interest =>
+      averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+
+  double get _balanceCarryToNextStatement => math.max(0, _totalSpent - _totalPaid);
+
+  double get _pendingForGracePeriod =>
+      previousStatement.carryOverWithInterest +
+      _spentInPreviousGracePeriod +
+      _spentInBillingCycleAfterPreviousGracePeriod -
+      _totalPaidBeforeEndDate;
+
+  double get _interestCarryToNextStatement => _balanceCarryToNextStatement <= 0 ? 0 : _interest;
 }
 
 extension StatementWithDateTimeDetails on Statement {
@@ -310,7 +312,7 @@ extension StatementWithDateTimeDetails on Statement {
     // Remaining balance before chosen dateTime
     final x = previousStatement.carryOverWithInterest +
         _remainingSpentInPreviousGracePeriod +
-        thisStatementInterest +
+        currentInterest +
         _spentAmountAfterPreviousDueDateBefore(dateTime) +
         _spentAmountFromEndDateBefore(dateTime) -
         _paidAmountFromEndDateBefore(dueDate) -

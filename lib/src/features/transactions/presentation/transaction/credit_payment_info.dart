@@ -58,8 +58,8 @@ class CreditPaymentInfo extends ConsumerWidget {
               ),
             ),
           )
-        : SizedBox(
-            height: 200,
+        : ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 200),
             child: _List(
               statement: statement,
               onDateTap: onDateTap,
@@ -76,18 +76,20 @@ class _List extends StatelessWidget {
   final void Function(DateTime)? onDateTap;
   final DateTime? chosenDateTime;
 
-  Widget buildHeader(BuildContext context, {required String h1, String? h2, String? h3}) {
+  Widget buildHeader(BuildContext context, {String? h1, String? h2, String? h3}) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            h1,
-            style: kHeader4TextStyle.copyWith(color: AppColors.grey(context), fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
+          h1 != null
+              ? Text(
+                  h1,
+                  style: kHeader4TextStyle.copyWith(color: AppColors.grey(context), fontSize: 12),
+                  textAlign: TextAlign.center,
+                )
+              : Gap.noGap,
           h2 != null
               ? Text(
                   h2,
@@ -141,6 +143,7 @@ class _List extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      reverse: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -150,14 +153,19 @@ class _List extends StatelessWidget {
               h3: statement?.previousStatement.interest == 0
                   ? null
                   : '(included $lastInterest ${context.currentSettings.currency.code} interest)'.hardcoded),
-          Gap.h4,
+          Gap.h8,
           buildHeader(
             context,
             h1: 'Start of billing cycle:',
             h3: statement!.startDate.getFormattedDate(),
           ),
+          statement?.currentInterest != 0
+              ? buildHeader(context,
+                  h3: '(+$currentInterest ${context.currentSettings.currency.code} interest)'.hardcoded)
+              : Gap.noGap,
           ...List.generate(
               txnsInBillingCycle.length, (index) => buildTransactionTile(context, txnsInBillingCycle[index])),
+          txnsInGracePeriod.isNotEmpty ? Gap.h8 : Gap.noGap,
           txnsInGracePeriod.isNotEmpty
               ? buildHeader(
                   context,
@@ -167,6 +175,7 @@ class _List extends StatelessWidget {
               : Gap.noGap,
           ...List.generate(
               txnsInGracePeriod.length, (index) => buildTransactionTile(context, txnsInGracePeriod[index])),
+          txnsInChosenDateTime.isNotEmpty ? Gap.h8 : Gap.noGap,
           txnsInChosenDateTime.isNotEmpty
               ? buildHeader(
                   context,
@@ -209,6 +218,13 @@ extension _ListGetters on _List {
       return null;
     }
     return CalService.formatCurrency(statement!.previousStatement.interest, enableDecimalDigits: true);
+  }
+
+  String? get currentInterest {
+    if (statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(statement!.currentInterest, enableDecimalDigits: true);
   }
 
   String? get carryingOver {

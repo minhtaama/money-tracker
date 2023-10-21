@@ -48,7 +48,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   double get _fullPaymentAmount =>
       _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
 
-  String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount);
+  String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount, enableDecimalDigits: true);
 
   bool get _hidePayment => _statement == null;
 
@@ -276,7 +276,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     // if (_statement!.balanceAtTheEndOfGracePeriod <= 0) {
     //   return 'This statement has paid in full'.hardcoded;
     // }
-    if (_outputAmount! > _fullPaymentAmount) {
+    if (_outputAmount! > CalService.formatToDouble(_fullPaymentFormattedAmount)!) {
       return 'Value is higher than full payment amount'.hardcoded;
     }
     return null;
