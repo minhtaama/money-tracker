@@ -40,7 +40,9 @@ class CreditPaymentInfo extends ConsumerWidget {
             margin: EdgeInsets.zero,
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.background3
+                  : context.appTheme.background,
               border: Border.all(
                 color: context.appTheme.backgroundNegative.withOpacity(0.3),
               ),
@@ -93,14 +95,16 @@ class _List extends StatelessWidget {
           h2 != null
               ? Text(
                   h2,
-                  style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
           h3 != null
               ? Text(
                   h3,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+                  style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative, fontSize: 12),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
@@ -152,7 +156,8 @@ class _List extends StatelessWidget {
               h2: '$carryingOver ${context.currentSettings.currency.code}',
               h3: statement?.previousStatement.interest == 0
                   ? null
-                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'.hardcoded),
+                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'
+                      .hardcoded),
           Gap.h8,
           buildHeader(
             context,
@@ -163,8 +168,8 @@ class _List extends StatelessWidget {
               ? buildHeader(context,
                   h3: '(+$currentInterest ${context.currentSettings.currency.code} interest)'.hardcoded)
               : Gap.noGap,
-          ...List.generate(
-              txnsInBillingCycle.length, (index) => buildTransactionTile(context, txnsInBillingCycle[index])),
+          ...List.generate(txnsInBillingCycle.length,
+              (index) => buildTransactionTile(context, txnsInBillingCycle[index])),
           txnsInGracePeriod.isNotEmpty ? Gap.h8 : Gap.noGap,
           txnsInGracePeriod.isNotEmpty
               ? buildHeader(
@@ -173,8 +178,8 @@ class _List extends StatelessWidget {
                   h3: nextStatementDateTime.getFormattedDate(),
                 )
               : Gap.noGap,
-          ...List.generate(
-              txnsInGracePeriod.length, (index) => buildTransactionTile(context, txnsInGracePeriod[index])),
+          ...List.generate(txnsInGracePeriod.length,
+              (index) => buildTransactionTile(context, txnsInGracePeriod[index])),
           txnsInChosenDateTime.isNotEmpty ? Gap.h8 : Gap.noGap,
           txnsInChosenDateTime.isNotEmpty
               ? buildHeader(
@@ -183,8 +188,8 @@ class _List extends StatelessWidget {
                   h3: chosenDateTime!.getFormattedDate(),
                 )
               : Gap.noGap,
-          ...List.generate(
-              txnsInChosenDateTime.length, (index) => buildTransactionTile(context, txnsInChosenDateTime[index])),
+          ...List.generate(txnsInChosenDateTime.length,
+              (index) => buildTransactionTile(context, txnsInChosenDateTime[index])),
         ],
       ),
     );
@@ -196,21 +201,21 @@ extension _ListGetters on _List {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsInBillingCycleBefore(chosenDateTime!);
+    return statement!.transactionsInBillingCycleBefore(chosenDateTime!);
   }
 
   List<BaseCreditTransaction> get txnsInGracePeriod {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsInGracePeriodBefore(chosenDateTime!);
+    return statement!.transactionsInGracePeriodBefore(chosenDateTime!);
   }
 
   List<BaseCreditTransaction> get txnsInChosenDateTime {
     if (statement == null || chosenDateTime == null) {
       return <BaseCreditTransaction>[];
     }
-    return statement!.txnsIn(chosenDateTime!);
+    return statement!.transactionsIn(chosenDateTime!);
   }
 
   String? get lastInterest {
@@ -231,10 +236,12 @@ extension _ListGetters on _List {
     if (statement == null) {
       return null;
     }
-    return CalService.formatCurrency(statement!.previousStatement.carryOverWithInterest, enableDecimalDigits: true);
+    return CalService.formatCurrency(statement!.previousStatement.carryOverWithInterest,
+        enableDecimalDigits: true);
   }
 
-  DateTime get nextStatementDateTime => statement!.startDate.copyWith(month: statement!.startDate.month + 1);
+  DateTime get nextStatementDateTime =>
+      statement!.startDate.copyWith(month: statement!.startDate.month + 1);
 }
 
 class _Details extends StatelessWidget {
@@ -279,7 +286,8 @@ class _Details extends StatelessWidget {
                         ? Text(
                             _categoryTag!,
                             style: kHeader3TextStyle.copyWith(
-                                fontSize: 10, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                                fontSize: 10,
+                                color: context.appTheme.backgroundNegative.withOpacity(0.7)),
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
                           )

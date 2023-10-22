@@ -21,10 +21,13 @@ abstract class BaseModel<T extends RealmObject> {
 @immutable
 abstract class BaseModelWithIcon<T extends RealmObject> extends BaseModel<T> {
   const BaseModelWithIcon(super._databaseObject,
-      {required this.name, required this.color, required this.backgroundColor, required this.iconPath});
+      {required this.name,
+      required this.iconColor,
+      required this.backgroundColor,
+      required this.iconPath});
 
   final String name;
-  final Color color;
+  final Color iconColor;
   final Color backgroundColor;
   final String iconPath;
 }

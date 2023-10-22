@@ -2,8 +2,11 @@ part of 'account_base.dart';
 
 @immutable
 class CreditAccount extends Account {
+  /// Already sorted by transactions dateTime when created
   @override
   final List<BaseCreditTransaction> transactionsList;
+
+  final List<Statement> statementsList;
 
   final double creditBalance;
 
@@ -17,7 +20,7 @@ class CreditAccount extends Account {
   const CreditAccount._(
     super._isarObject, {
     required super.name,
-    required super.color,
+    required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
     required this.creditBalance,
@@ -25,6 +28,7 @@ class CreditAccount extends Account {
     required this.statementDay,
     required this.paymentDueDay,
     required this.transactionsList,
+    required this.statementsList,
   });
 }
 
@@ -84,40 +88,41 @@ extension CreditAccountDetails on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
 
-  List<Statement> get statements {
-    final List<Statement> list = List.empty(growable: true);
-
-    if (earliestStatementDate == null || latestStatementDate == null) {
-      return list;
-    }
-
-    for (DateTime begin = earliestStatementDate!;
-        begin.compareTo(latestStatementDate!) <= 0;
-        begin = begin.copyWith(month: begin.month + 1)) {
-      PreviousStatement lastStatementDetails = PreviousStatement.noData();
-      if (begin != earliestStatementDate!) {
-        lastStatementDetails = list[list.length - 1].carryToNextStatement;
-      }
-      Statement statement = Statement.create(this, previousStatement: lastStatementDetails, startDate: begin);
-      list.add(statement);
-    }
-
-    return list;
-  }
+  // List<Statement> get statementsList {
+  //   final List<Statement> list = List.empty(growable: true);
+  //
+  //   if (earliestStatementDate == null || latestStatementDate == null) {
+  //     return list;
+  //   }
+  //
+  //   for (DateTime begin = earliestStatementDate!;
+  //       begin.compareTo(latestStatementDate!) <= 0;
+  //       begin = begin.copyWith(month: begin.month + 1)) {
+  //     PreviousStatement lastStatementDetails = PreviousStatement.noData();
+  //     if (begin != earliestStatementDate!) {
+  //       lastStatementDetails = list[list.length - 1].carryToNextStatement;
+  //     }
+  //     Statement statement = Statement.create(StatementType.withAverageDailyBalance, this,
+  //         previousStatement: lastStatementDetails, startDate: begin);
+  //     list.add(statement);
+  //   }
+  //
+  //   return list;
+  // }
 
   /// Return `null` if no statement is found.
   ///
   /// Get whole `Statement` object contains the `dateTime`
   Statement? statementAt(DateTime dateTime) {
-    if (statements.isEmpty) {
+    if (statementsList.isEmpty) {
       return null;
     }
 
     final date = dateTime.onlyYearMonthDay;
-    final latestStatement = statements[statements.length - 1];
+    final latestStatement = statementsList[statementsList.length - 1];
 
     // If statement is already in credit account statements list
-    for (Statement statement in statements) {
+    for (Statement statement in statementsList) {
       if (date.compareTo(statement.startDate) >= 0 && date.compareTo(statement.dueDate) <= 0) {
         return statement;
       }
@@ -131,7 +136,8 @@ extension CreditAccountDetails on CreditAccount {
           begin.compareTo(date) <= 0;
           begin = begin.copyWith(month: begin.month + 1)) {
         PreviousStatement lastStatement = list.last.carryToNextStatement;
-        Statement statement = Statement.create(this, previousStatement: lastStatement, startDate: begin);
+        Statement statement = Statement.create(StatementType.withAverageDailyBalance, this,
+            previousStatement: lastStatement, startDate: begin);
         list.add(statement);
       }
       return list.last;

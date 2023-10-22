@@ -16,6 +16,10 @@ enum AccountType {
   credit,
 }
 
+enum StatementType {
+  withAverageDailyBalance,
+}
+
 enum ThemeType {
   light,
   dark,

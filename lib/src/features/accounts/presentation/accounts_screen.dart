@@ -68,7 +68,8 @@ class AccountsScreen extends ConsumerWidget {
                                 // Account Name
                                 child: Text(
                                   model.name,
-                                  style: kHeader2TextStyle.copyWith(color: model.color, fontSize: 22),
+                                  style:
+                                      kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -79,12 +80,13 @@ class AccountsScreen extends ConsumerWidget {
                                   ? Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: model.color,
+                                        color: model.iconColor,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Text(
                                         'Credit',
-                                        style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
+                                        style: kHeader4TextStyle.copyWith(
+                                            color: model.backgroundColor, fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),
@@ -93,7 +95,7 @@ class AccountsScreen extends ConsumerWidget {
                           const Expanded(child: SizedBox()),
                           Text(
                             'Current Balance:',
-                            style: kHeader4TextStyle.copyWith(color: model.color),
+                            style: kHeader4TextStyle.copyWith(color: model.iconColor),
                           ),
                           Row(
                             // Account Current Balance
@@ -101,13 +103,13 @@ class AccountsScreen extends ConsumerWidget {
                               Text(
                                 context.currentSettings.currency.code,
                                 style: kHeader4TextStyle.copyWith(
-                                    color: model.color, fontSize: kHeader1TextStyle.fontSize),
+                                    color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
                               ),
                               Gap.w8,
                               Expanded(
                                 child: Text(
                                   CalService.formatCurrency(model.availableAmount),
-                                  style: kHeader1TextStyle.copyWith(color: model.color),
+                                  style: kHeader1TextStyle.copyWith(color: model.iconColor),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),

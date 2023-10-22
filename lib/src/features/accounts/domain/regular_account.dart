@@ -10,7 +10,7 @@ class RegularAccount extends Account {
   const RegularAccount._(
     super.databaseObject, {
     required super.name,
-    required super.color,
+    required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
     required this.transactionsList,
