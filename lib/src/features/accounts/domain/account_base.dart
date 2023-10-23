@@ -20,75 +20,131 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   /// Already sorted by transactions dateTime when created
   abstract final List transactionsList;
 
+  static CreditAccount _creditAccountFromDatabase(AccountDb accountDb) {
+    final List<BaseCreditTransaction> transactionsList = accountDb.transactions
+        .query('TRUEPREDICATE SORT(dateTime ASC)')
+        .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
+        .toList(growable: false);
+
+    final int statementDay = accountDb.creditDetails!.statementDay;
+    final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
+
+    // only year, month and day
+    DateTime? earliestPayableDate =
+        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+
+    // only year, month and day
+    DateTime? earliestStatementDate;
+    if (transactionsList.isNotEmpty && earliestPayableDate != null) {
+      if (statementDay > earliestPayableDate.day) {
+        earliestStatementDate =
+            DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+      }
+
+      if (statementDay <= earliestPayableDate.day) {
+        earliestStatementDate = earliestPayableDate.copyWith(day: statementDay).onlyYearMonthDay;
+      }
+    }
+
+    DateTime? latestSpendingDate = transactionsList.isEmpty
+        ? null
+        : transactionsList.whereType<CreditSpending>().last.dateTime.onlyYearMonthDay;
+
+    DateTime? latestStatementDate;
+    if (transactionsList.isNotEmpty && latestSpendingDate != null) {
+      if (statementDay > latestSpendingDate.day) {
+        latestStatementDate =
+            DateTime(latestSpendingDate.year, latestSpendingDate.month - 1, statementDay);
+      }
+
+      if (statementDay <= latestSpendingDate.day) {
+        latestStatementDate = latestSpendingDate.copyWith(day: statementDay).onlyYearMonthDay;
+      }
+    }
+
+    // ADD STATEMENTS
+    final statementsList = <Statement>[];
+    if (earliestStatementDate != null && latestStatementDate != null) {
+      for (DateTime startDate = earliestStatementDate;
+          startDate.compareTo(latestStatementDate) <= 0;
+          startDate = startDate.copyWith(month: startDate.month + 1)) {
+        PreviousStatement previousStatement = PreviousStatement.noData();
+
+        if (startDate != earliestStatementDate) {
+          previousStatement = statementsList.last.carryToNextStatement;
+        }
+
+        Statement statement = Statement.create(StatementType.withAverageDailyBalance,
+            previousStatement: previousStatement,
+            startDate: startDate,
+            statementDay: statementDay,
+            paymentDueDay: paymentDueDay,
+            apr: accountDb.creditDetails!.apr,
+            transactionsList: transactionsList);
+
+        statementsList.add(statement);
+      }
+    }
+
+    return CreditAccount._(
+      accountDb,
+      name: accountDb.name,
+      iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+      backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+      iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+      creditBalance: accountDb.creditDetails!.creditBalance,
+      apr: accountDb.creditDetails!.apr,
+      statementDay: accountDb.creditDetails!.statementDay,
+      paymentDueDay: accountDb.creditDetails!.paymentDueDay,
+      transactionsList: transactionsList,
+      statementsList: statementsList,
+      earliestStatementDate: earliestStatementDate,
+      earliestPayableDate: earliestPayableDate,
+    );
+  }
+
+  static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
+    final List<BaseRegularTransaction> transactionsList = accountDb.transactions
+        .query('TRUEPREDICATE SORT(dateTime ASC)')
+        .map<BaseRegularTransaction>(
+            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .toList(growable: false);
+
+    final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
+        .query('TRUEPREDICATE SORT(dateTime ASC)')
+        .map<ITransferable>((txn) => BaseTransaction.fromDatabase(txn) as ITransferable)
+        .toList();
+
+    return RegularAccount._(
+      accountDb,
+      name: accountDb.name,
+      iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+      backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+      iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+      transactionsList: transactionsList,
+      transferTransactionsList: transferTransactionsList,
+    );
+  }
+
   static Account? fromDatabase(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
 
-    final RealmResults<TransactionDb> transactionListQuery =
-        accountDb.transactions.query('TRUEPREDICATE SORT(dateTime ASC)');
-    final RealmResults<TransactionDb> transferTransactionsQuery =
-        accountDb.transferTransactions.query('TRUEPREDICATE SORT(dateTime ASC)');
+    // AccountType.regular
+    if (accountDb.type == 0) {
+      return _regularAccountFromDatabase(accountDb);
+    }
 
-    final statementsList = <Statement>[];
+    // AccountType.credit
+    if (accountDb.type != 0) {
+      return _creditAccountFromDatabase(accountDb);
+    }
 
-    // if(accountDb.type != 0) {
-    //   final List<Statement> list = List.empty(growable: true);
-    //
-    //   if (earliestStatementDate == null || latestStatementDate == null) {
-    //     return list;
-    //   }
-    //
-    //   for (DateTime begin = earliestStatementDate!;
-    //   begin.compareTo(latestStatementDate!) <= 0;
-    //   begin = begin.copyWith(month: begin.month + 1)) {
-    //     PreviousStatement lastStatementDetails = PreviousStatement.noData();
-    //     if (begin != earliestStatementDate!) {
-    //       lastStatementDetails = list[list.length - 1].carryToNextStatement;
-    //     }
-    //     Statement statement = Statement.create(StatementType.withAverageDailyBalance, this,
-    //         previousStatement: lastStatementDetails, startDate: begin);
-    //     list.add(statement);
-    //   }
-    //
-    //   return list;
-    // }
-
-    return switch (accountDb.type) {
-      0 => RegularAccount._(
-          accountDb,
-          name: accountDb.name,
-          iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
-          transactionsList: transactionListQuery
-              .map<BaseRegularTransaction>(
-                  (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
-              .toList(growable: false),
-          transferTransactionsList: transferTransactionsQuery
-              .map<ITransferable>((txn) => BaseTransaction.fromDatabase(txn) as ITransferable)
-              .toList(),
-        ),
-      _ => CreditAccount._(
-          accountDb,
-          name: accountDb.name,
-          iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
-          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
-          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
-          creditBalance: accountDb.creditDetails!.creditBalance,
-          apr: accountDb.creditDetails!.apr,
-          statementDay: accountDb.creditDetails!.statementDay,
-          paymentDueDay: accountDb.creditDetails!.paymentDueDay,
-          transactionsList: transactionListQuery
-              .map<BaseCreditTransaction>(
-                  (txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
-              .toList(),
-          statementsList: const [],
-        ),
-    };
+    return null;
   }
 
-  static Account? fromDatabaseWithNoTransactionsList(AccountDb? accountDb) {
+  static Account? fromDatabaseWithNoDetails(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
@@ -114,6 +170,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
           transactionsList: const [],
           statementsList: const [],
+          earliestStatementDate: null,
+          earliestPayableDate: null,
         ),
     };
   }
@@ -127,7 +185,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   });
 }
 
-extension AccountDetails on Account {
+extension AccountGetters on Account {
   double get availableAmount {
     switch (this) {
       case RegularAccount():

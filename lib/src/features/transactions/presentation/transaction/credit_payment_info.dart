@@ -162,7 +162,7 @@ class _List extends StatelessWidget {
           buildHeader(
             context,
             h1: 'Start of billing cycle:',
-            h3: statement!.startDate.getFormattedDate(),
+            h3: statement?.startDate.getFormattedDate(),
           ),
           statement?.currentInterest != 0
               ? buildHeader(context,

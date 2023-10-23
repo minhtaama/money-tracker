@@ -5,13 +5,12 @@ import 'dart:math' as math;
 
 import '../../../../utils/constants.dart';
 import '../../../transactions/domain/transaction_base.dart';
-import '../account_base.dart';
 
 part 'statement_for_interest_by_ADB.dart';
 
 @immutable
 abstract class Statement {
-  final CreditAccount _creditAccount;
+  final double apr;
 
   final PreviousStatement previousStatement;
 
@@ -77,24 +76,28 @@ abstract class Statement {
     return list;
   }
 
-  bool canAddPaymentAt(DateTime dateTime) {
-    if (_creditAccount.transactionsList.last.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  factory Statement.create(StatementType type, CreditAccount creditAccount,
-      {required PreviousStatement previousStatement, required DateTime startDate}) {
+  factory Statement.create(
+    StatementType type, {
+    required PreviousStatement previousStatement,
+    required DateTime startDate,
+    required int statementDay,
+    required int paymentDueDay,
+    required double apr,
+    required List<BaseCreditTransaction> transactionsList,
+  }) {
     return switch (type) {
-      StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(creditAccount,
-          previousStatement: previousStatement, startDate: startDate),
+      StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(
+          previousStatement: previousStatement,
+          startDate: startDate,
+          statementDay: statementDay,
+          paymentDueDay: paymentDueDay,
+          apr: apr,
+          transactionsList: transactionsList),
     };
   }
 
-  const Statement(
-    this._creditAccount, {
+  const Statement({
+    required this.apr,
     required this.previousStatement,
     required this.startDate,
     required this.endDate,

@@ -36,7 +36,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoTransactionsList(txn.account),
+          Account.fromDatabaseWithNoDetails(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
@@ -48,7 +48,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoTransactionsList(txn.account),
+          Account.fromDatabaseWithNoDetails(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
         );
@@ -59,9 +59,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoTransactionsList(txn.account),
-          transferAccount:
-              Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
+          Account.fromDatabaseWithNoDetails(txn.account),
+          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -71,7 +70,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoTransactionsList(txn.account),
+          Account.fromDatabaseWithNoDetails(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
@@ -84,9 +83,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoTransactionsList(txn.account),
-          transferAccount:
-              Account.fromDatabaseWithNoTransactionsList(txn.transferAccount) as RegularAccount,
+          Account.fromDatabaseWithNoDetails(txn.account),
+          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
         );
     }
   }

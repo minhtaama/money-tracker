@@ -17,6 +17,10 @@ class CreditAccount extends Account {
 
   final int paymentDueDay;
 
+  final DateTime? earliestPayableDate;
+
+  final DateTime? earliestStatementDate;
+
   const CreditAccount._(
     super._isarObject, {
     required super.name,
@@ -27,88 +31,24 @@ class CreditAccount extends Account {
     required this.apr,
     required this.statementDay,
     required this.paymentDueDay,
+    required this.earliestStatementDate,
+    required this.earliestPayableDate,
     required this.transactionsList,
     required this.statementsList,
   });
 }
 
-extension CreditAccountDateTimeDetails on CreditAccount {
-  DateTime? get earliestPayableDate {
-    if (transactionsList.isEmpty) {
-      return null;
-    }
-
-    return transactionsList.first.dateTime;
-  }
-
-  /// only year, month and day
-  DateTime? get earliestStatementDate {
-    if (transactionsList.isEmpty || earliestPayableDate == null) {
-      return null;
-    }
-
-    if (statementDay > earliestPayableDate!.day) {
-      return DateTime(earliestPayableDate!.year, earliestPayableDate!.month - 1, statementDay);
-    }
-
-    if (statementDay <= earliestPayableDate!.day) {
-      return earliestPayableDate!.copyWith(day: statementDay).onlyYearMonthDay;
-    }
-
-    return null;
-  }
-
-  DateTime? get latestSpendingDate {
-    if (transactionsList.isEmpty) {
-      return null;
-    }
-
-    return transactionsList.whereType<CreditSpending>().last.dateTime;
-  }
-
-  /// only year, month and day
-  DateTime? get latestStatementDate {
-    if (transactionsList.isEmpty || latestSpendingDate == null) {
-      return null;
-    }
-
-    if (statementDay > latestSpendingDate!.day) {
-      return DateTime(latestSpendingDate!.year, latestSpendingDate!.month - 1, statementDay);
-    }
-
-    if (statementDay <= latestSpendingDate!.day) {
-      return latestSpendingDate!.copyWith(day: statementDay).onlyYearMonthDay;
-    }
-
-    return null;
-  }
-}
-
-extension CreditAccountDetails on CreditAccount {
+extension CreditAccountMethods on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
 
-  // List<Statement> get statementsList {
-  //   final List<Statement> list = List.empty(growable: true);
-  //
-  //   if (earliestStatementDate == null || latestStatementDate == null) {
-  //     return list;
-  //   }
-  //
-  //   for (DateTime begin = earliestStatementDate!;
-  //       begin.compareTo(latestStatementDate!) <= 0;
-  //       begin = begin.copyWith(month: begin.month + 1)) {
-  //     PreviousStatement lastStatementDetails = PreviousStatement.noData();
-  //     if (begin != earliestStatementDate!) {
-  //       lastStatementDetails = list[list.length - 1].carryToNextStatement;
-  //     }
-  //     Statement statement = Statement.create(StatementType.withAverageDailyBalance, this,
-  //         previousStatement: lastStatementDetails, startDate: begin);
-  //     list.add(statement);
-  //   }
-  //
-  //   return list;
-  // }
+  bool canAddPaymentAt(DateTime dateTime) {
+    if (transactionsList.last.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   /// Return `null` if no statement is found.
   ///
@@ -132,12 +72,19 @@ extension CreditAccountDetails on CreditAccount {
     if (date.compareTo(latestStatement.dueDate) > 0) {
       final list = [latestStatement];
 
-      for (DateTime begin = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
-          begin.compareTo(date) <= 0;
-          begin = begin.copyWith(month: begin.month + 1)) {
-        PreviousStatement lastStatement = list.last.carryToNextStatement;
-        Statement statement = Statement.create(StatementType.withAverageDailyBalance, this,
-            previousStatement: lastStatement, startDate: begin);
+      for (DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
+          startDate.compareTo(date) <= 0;
+          startDate = startDate.copyWith(month: startDate.month + 1)) {
+        PreviousStatement previousStatement = list.last.carryToNextStatement;
+
+        Statement statement = Statement.create(StatementType.withAverageDailyBalance,
+            previousStatement: previousStatement,
+            startDate: startDate,
+            statementDay: statementDay,
+            paymentDueDay: paymentDueDay,
+            apr: apr,
+            transactionsList: transactionsList);
+
         list.add(statement);
       }
       return list.last;

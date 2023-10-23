@@ -3,7 +3,6 @@ part of 'statement.dart';
 @immutable
 class StatementWithAverageDailyBalance extends Statement {
   const StatementWithAverageDailyBalance._(
-    super._creditAccount,
     this._spentInPrvGracePeriod,
     this._spentInBillingCycleAfterPrvGracePeriod,
     this._spentInGracePeriod,
@@ -12,6 +11,7 @@ class StatementWithAverageDailyBalance extends Statement {
     this._paidInBillingCycleAfterPrvGracePeriod,
     this._paidInGracePeriod,
     this._averageDailyBalance, {
+    required super.apr,
     required super.previousStatement,
     required super.startDate,
     required super.endDate,
@@ -63,25 +63,22 @@ class StatementWithAverageDailyBalance extends Statement {
       return 0;
     }
 
-    return _averageDailyBalance *
-        (_creditAccount.apr / (365 * 100)) *
-        startDate.getDaysDifferent(endDate);
+    return _averageDailyBalance * (apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
   }
 
-  factory StatementWithAverageDailyBalance._create(
-    CreditAccount creditAccount, {
+  factory StatementWithAverageDailyBalance._create({
     required PreviousStatement previousStatement,
     required DateTime startDate,
+    required int statementDay,
+    required int paymentDueDay,
+    required double apr,
+    required List<BaseCreditTransaction> transactionsList,
   }) {
     final DateTime endDate =
         startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
-    final DateTime dueDate = creditAccount.statementDay >= creditAccount.paymentDueDay
-        ? startDate
-            .copyWith(month: startDate.month + 2, day: creditAccount.paymentDueDay)
-            .onlyYearMonthDay
-        : startDate
-            .copyWith(month: startDate.month + 1, day: creditAccount.paymentDueDay)
-            .onlyYearMonthDay;
+    final DateTime dueDate = statementDay >= paymentDueDay
+        ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
+        : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
     List<BaseCreditTransaction> txnsInBillingCycle = List.empty(growable: true);
     List<BaseCreditTransaction> txnsInGracePeriod = List.empty(growable: true);
@@ -102,8 +99,8 @@ class StatementWithAverageDailyBalance extends Statement {
     double tCurrentBalance = previousStatement.carryOverWithInterest;
     DateTime tCheckpointDateTime = startDate;
 
-    for (int i = 0; i <= creditAccount.transactionsList.length - 1; i++) {
-      final txn = creditAccount.transactionsList[i];
+    for (int i = 0; i <= transactionsList.length - 1; i++) {
+      final txn = transactionsList[i];
 
       if (txn.dateTime.isBefore(startDate)) {
         continue;
@@ -111,7 +108,7 @@ class StatementWithAverageDailyBalance extends Statement {
 
       if (txn.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
         if (i >= 1) {
-          tCheckpointDateTime = creditAccount.transactionsList[i - 1].dateTime;
+          tCheckpointDateTime = transactionsList[i - 1].dateTime;
         }
         break;
       }
@@ -158,7 +155,7 @@ class StatementWithAverageDailyBalance extends Statement {
       }
 
       if (i >= 1) {
-        tCheckpointDateTime = creditAccount.transactionsList[i - 1].dateTime;
+        tCheckpointDateTime = transactionsList[i - 1].dateTime;
       }
     }
 
@@ -167,7 +164,6 @@ class StatementWithAverageDailyBalance extends Statement {
     double averageDailyBalance = tDailyBalanceSum / startDate.getDaysDifferent(endDate);
 
     return StatementWithAverageDailyBalance._(
-      creditAccount,
       spentInPreviousGracePeriod,
       spentInBillingCycleAfterPreviousGracePeriod,
       spentInGracePeriod,
@@ -182,6 +178,7 @@ class StatementWithAverageDailyBalance extends Statement {
       dueDate: dueDate,
       transactionsInBillingCycle: txnsInBillingCycle,
       transactionsInGracePeriod: txnsInGracePeriod,
+      apr: apr,
     );
   }
 }
@@ -214,7 +211,7 @@ extension _CalculateBalanceAndInterest on StatementWithAverageDailyBalance {
 
   /// The interest of this statement
   double get _interest =>
-      _averageDailyBalance * (_creditAccount.apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+      _averageDailyBalance * (apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
 
   /// The spent amount that will be carried over to next statement.
   ///
