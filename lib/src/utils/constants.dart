@@ -17,13 +17,14 @@ const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 const double kCustomTabBarHeight = 80;
 
 /// Value related to CustomTabBar and CustomTabPage
-const double kExtendedCustomTabBarHeight = 230;
+const double kExtendedCustomTabBarHeight = 250;
 
 /// Value related to OuterChild of ExtendedTabBar
 const double kExtendedTabBarOuterChildHeight = 35;
 
 // Durations
 const Duration kNoDuration = Duration(milliseconds: 0);
+const Duration k1msDuration = Duration(milliseconds: 1);
 const Duration k150msDuration = Duration(milliseconds: 150);
 const Duration k250msDuration = Duration(milliseconds: 250);
 const Duration k350msDuration = Duration(milliseconds: 350);
