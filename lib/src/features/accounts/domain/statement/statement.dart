@@ -29,8 +29,6 @@ abstract class Statement {
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement;
 
-  double get currentInterest;
-
   double getFullPaymentAmountAt(DateTime dateTime);
 
   /// BillingCycle is only from [startDate] to [endDate].
@@ -64,9 +62,7 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
-        ? transactionsInGracePeriod
-        : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -137,8 +133,7 @@ class PreviousStatement {
   double get carryOverWithInterest => balance <= 0 ? 0 : balance + interest;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(
-        balance: 0, pendingForGracePeriod: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(balance: 0, pendingForGracePeriod: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   @override
@@ -152,6 +147,5 @@ class PreviousStatement {
           dueDate == other.dueDate;
 
   @override
-  int get hashCode =>
-      balance.hashCode ^ pendingForGracePeriod.hashCode ^ interest.hashCode ^ dueDate.hashCode;
+  int get hashCode => balance.hashCode ^ pendingForGracePeriod.hashCode ^ interest.hashCode ^ dueDate.hashCode;
 }

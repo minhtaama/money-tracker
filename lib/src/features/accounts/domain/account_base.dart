@@ -30,15 +30,13 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
     // only year, month and day
-    DateTime? earliestPayableDate =
-        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
       if (statementDay > earliestPayableDate.day) {
-        earliestStatementDate =
-            DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+        earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
       }
 
       if (statementDay <= earliestPayableDate.day) {
@@ -46,19 +44,16 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       }
     }
 
-    DateTime? latestSpendingDate = transactionsList.isEmpty
-        ? null
-        : transactionsList.whereType<CreditSpending>().last.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     DateTime? latestStatementDate;
-    if (transactionsList.isNotEmpty && latestSpendingDate != null) {
-      if (statementDay > latestSpendingDate.day) {
-        latestStatementDate =
-            DateTime(latestSpendingDate.year, latestSpendingDate.month - 1, statementDay);
+    if (transactionsList.isNotEmpty && latestTransactionDate != null) {
+      if (statementDay > latestTransactionDate.day) {
+        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
-      if (statementDay <= latestSpendingDate.day) {
-        latestStatementDate = latestSpendingDate.copyWith(day: statementDay).onlyYearMonthDay;
+      if (statementDay <= latestTransactionDate.day) {
+        latestStatementDate = latestTransactionDate.copyWith(day: statementDay).onlyYearMonthDay;
       }
     }
 
@@ -106,8 +101,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>(
-            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions

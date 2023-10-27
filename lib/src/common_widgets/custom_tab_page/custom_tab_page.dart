@@ -303,6 +303,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
     return ListView.builder(
       physics: widget.smallTabBar != null && widget.extendedTabBar != null
           ? SnapScrollPhysics(
+              parent: const AlwaysScrollableScrollPhysics(),
               snaps: [Snap.avoidZone(0, widget.extendedTabBar!.height - widget.smallTabBar!.height)],
             )
           : const ClampingScrollPhysics(),

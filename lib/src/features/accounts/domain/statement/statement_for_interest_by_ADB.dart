@@ -44,7 +44,6 @@ class StatementWithAverageDailyBalance extends Statement {
     // Remaining balance before chosen dateTime
     final x = previousStatement.carryOverWithInterest +
         _remainingSpentInPrvGracePeriod +
-        currentInterest +
         _spentAmountInBillingCycleAfterPreviousGracePeriodBefore(dateTime) +
         _spentAmountInGracePeriodBefore(dateTime) -
         _paidAmountFromEndDateBefore(dueDate) -
@@ -57,15 +56,6 @@ class StatementWithAverageDailyBalance extends Statement {
     }
   }
 
-  @override
-  double get currentInterest {
-    if (previousStatement.carryOverWithInterest <= 0 || _balanceCarryToNextStatement <= 0) {
-      return 0;
-    }
-
-    return _averageDailyBalance * (apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
-  }
-
   factory StatementWithAverageDailyBalance._create({
     required PreviousStatement previousStatement,
     required DateTime startDate,
@@ -74,8 +64,7 @@ class StatementWithAverageDailyBalance extends Statement {
     required double apr,
     required List<BaseCreditTransaction> transactionsList,
   }) {
-    final DateTime endDate =
-        startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+    final DateTime endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
     final DateTime dueDate = statementDay >= paymentDueDay
         ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
         : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
@@ -146,8 +135,7 @@ class StatementWithAverageDailyBalance extends Statement {
           } else {
             paidInPreviousGracePeriodForPrevious += math.min(txn.amount, pendingOfPreviousStatement);
             paidInPreviousGracePeriodForThis += math.max(0, txn.amount - pendingOfPreviousStatement);
-            pendingOfPreviousStatement =
-                math.max(0, pendingOfPreviousStatement - paidInPreviousGracePeriodForPrevious);
+            pendingOfPreviousStatement = math.max(0, pendingOfPreviousStatement - paidInPreviousGracePeriodForPrevious);
 
             tCurrentBalance -= paidInPreviousGracePeriodForThis;
           }
@@ -199,8 +187,7 @@ extension _CalculateBalanceAndInterest on StatementWithAverageDailyBalance {
       _spentInBillingCycleAfterPrvGracePeriod;
 
   /// Total payment amount until this statement billing cycle end (until endDate)
-  double get _totalPaidBeforeEndDate =>
-      _paidInPrvGracePeriodForCurStatement + _paidInBillingCycleAfterPrvGracePeriod;
+  double get _totalPaidBeforeEndDate => _paidInPrvGracePeriodForCurStatement + _paidInBillingCycleAfterPrvGracePeriod;
 
   /// Total payment amount in this billing cycle and the grace period
   ///
@@ -210,8 +197,7 @@ extension _CalculateBalanceAndInterest on StatementWithAverageDailyBalance {
       _remainingPaidInPreviousGracePeriod + _paidInBillingCycleAfterPrvGracePeriod + _paidInGracePeriod;
 
   /// The interest of this statement
-  double get _interest =>
-      _averageDailyBalance * (apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+  double get _interest => _averageDailyBalance * (apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
 
   /// The spent amount that will be carried over to next statement.
   ///
@@ -224,7 +210,8 @@ extension _CalculateBalanceAndInterest on StatementWithAverageDailyBalance {
       _spentInBillingCycleAfterPrvGracePeriod -
       _totalPaidBeforeEndDate;
 
-  double get _interestCarryToNextStatement => _balanceCarryToNextStatement <= 0 ? 0 : _interest;
+  double get _interestCarryToNextStatement =>
+      _balanceCarryToNextStatement > 0 || previousStatement.carryOverWithInterest > 0 ? _interest : 0;
 
   double _spentAmountInGracePeriodBefore(DateTime dateTime) {
     double amount = 0;
