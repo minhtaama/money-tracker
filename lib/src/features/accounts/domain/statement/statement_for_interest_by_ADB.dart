@@ -3,14 +3,14 @@ part of 'statement.dart';
 @immutable
 class StatementWithAverageDailyBalance extends Statement {
   const StatementWithAverageDailyBalance._(
+    this._interest,
     super._spentInPrvGracePeriod,
     super._spentInBillingCycleAfterPrvGracePeriod,
     super._spentInGracePeriod,
     super._paidInPrvGracePeriodForCurStatement,
     super._paidInPrvGracePeriodForPrvStatement,
     super._paidInBillingCycleAfterPrvGracePeriod,
-    super._paidInGracePeriod,
-    super._averageDailyBalance, {
+    super._paidInGracePeriod, {
     required super.apr,
     required super.previousStatement,
     required super.startDate,
@@ -20,6 +20,9 @@ class StatementWithAverageDailyBalance extends Statement {
     required super.transactionsInGracePeriod,
   });
 
+  @override
+  final double _interest;
+
   factory StatementWithAverageDailyBalance._create({
     required PreviousStatement previousStatement,
     required DateTime startDate,
@@ -28,29 +31,31 @@ class StatementWithAverageDailyBalance extends Statement {
     required double apr,
     required List<BaseCreditTransaction> transactionsList,
   }) {
-    final DateTime endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+    final DateTime endDate =
+        startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
     final DateTime dueDate = statementDay >= paymentDueDay
         ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
         : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
     List<BaseCreditTransaction> txnsInBillingCycle = List.empty(growable: true);
     List<BaseCreditTransaction> txnsInGracePeriod = List.empty(growable: true);
-    double spentInPreviousGracePeriod = 0;
-    double spentInBillingCycleAfterPreviousGracePeriod = 0;
+    double spentInPrvGracePeriod = 0;
+    double spentInBillingCycleAfterPrvGracePeriod = 0;
     double spentInGracePeriod = 0;
-    double paidInPreviousGracePeriodForThis = 0;
-    double paidInPreviousGracePeriodForPrevious = 0;
-    double paidInBillingCycleAfterPreviousGracePeriod = 0;
+    double paidInPrvGracePeriodForCurStatement = 0;
+    double paidInPrvGracePeriodForPrvStatement = 0;
+    double paidInBillingCycleAfterPrvGracePeriod = 0;
     double paidInGracePeriod = 0;
 
-    double pendingOfPreviousStatement = previousStatement.pendingForGracePeriod;
-
+    //////////// TEMPORARY VARIABLES FOR THE LOOP /////////////////
+    double tPendingOfPreviousStatement = previousStatement.balanceAtEndDate;
     // Calculate sum of daily balance from `tCheckpointDateTime` to current Txn DateTime
     // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.carryOverWithInterest;
+    double tCurrentBalance = previousStatement.carryOver;
     DateTime tCheckpointDateTime = startDate;
+    //////////////////////////////////////////////////////////////
 
     for (int i = 0; i <= transactionsList.length - 1; i++) {
       final txn = transactionsList[i];
@@ -72,9 +77,9 @@ class StatementWithAverageDailyBalance extends Statement {
           txnsInGracePeriod.add(txn);
         } else {
           if (txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
-            spentInBillingCycleAfterPreviousGracePeriod += txn.amount;
+            spentInBillingCycleAfterPrvGracePeriod += txn.amount;
           } else {
-            spentInPreviousGracePeriod += txn.amount;
+            spentInPrvGracePeriod += txn.amount;
           }
           txnsInBillingCycle.add(txn);
 
@@ -93,15 +98,16 @@ class StatementWithAverageDailyBalance extends Statement {
           tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(txn.dateTime);
 
           if (txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
-            paidInBillingCycleAfterPreviousGracePeriod += txn.amount;
+            paidInBillingCycleAfterPrvGracePeriod += txn.amount;
 
             tCurrentBalance -= txn.amount;
           } else {
-            paidInPreviousGracePeriodForPrevious += math.min(txn.amount, pendingOfPreviousStatement);
-            paidInPreviousGracePeriodForThis += math.max(0, txn.amount - pendingOfPreviousStatement);
-            pendingOfPreviousStatement = math.max(0, pendingOfPreviousStatement - paidInPreviousGracePeriodForPrevious);
+            paidInPrvGracePeriodForPrvStatement += math.min(txn.amount, tPendingOfPreviousStatement);
+            paidInPrvGracePeriodForCurStatement += math.max(0, txn.amount - tPendingOfPreviousStatement);
+            tPendingOfPreviousStatement =
+                math.max(0, tPendingOfPreviousStatement - paidInPrvGracePeriodForPrvStatement);
 
-            tCurrentBalance -= paidInPreviousGracePeriodForThis;
+            tCurrentBalance -= paidInPrvGracePeriodForCurStatement;
           }
         }
       }
@@ -112,18 +118,20 @@ class StatementWithAverageDailyBalance extends Statement {
     }
 
     tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(endDate);
-
     double averageDailyBalance = tDailyBalanceSum / startDate.getDaysDifferent(endDate);
 
+    // The interest of this statement
+    double interest = averageDailyBalance * (apr / (365 * 100)) * startDate.getDaysDifferent(endDate);
+
     return StatementWithAverageDailyBalance._(
-      spentInPreviousGracePeriod,
-      spentInBillingCycleAfterPreviousGracePeriod,
+      interest,
+      spentInPrvGracePeriod,
+      spentInBillingCycleAfterPrvGracePeriod,
       spentInGracePeriod,
-      paidInPreviousGracePeriodForThis,
-      paidInPreviousGracePeriodForPrevious,
-      paidInBillingCycleAfterPreviousGracePeriod,
+      paidInPrvGracePeriodForCurStatement,
+      paidInPrvGracePeriodForPrvStatement,
+      paidInBillingCycleAfterPrvGracePeriod,
       paidInGracePeriod,
-      averageDailyBalance,
       previousStatement: previousStatement,
       startDate: startDate,
       endDate: endDate,
