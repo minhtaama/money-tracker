@@ -194,16 +194,6 @@ abstract class Statement {
 
 @immutable
 class PreviousStatement {
-  /// Assign to `previousStatement` of the next Statement object.
-  ///
-  /// This class is not meant to be created outside of this library
-  const PreviousStatement._({
-    required this.balance,
-    required this.balanceAtEndDate,
-    required this.interest,
-    required this.dueDate,
-  });
-
   /// Can't be **negative**. This is the remaining amount of money that haven't been paid
   /// at the end of previous statement's grace period
   ///
@@ -229,6 +219,16 @@ class PreviousStatement {
   factory PreviousStatement.noData() {
     return PreviousStatement._(balance: 0, balanceAtEndDate: 0, interest: 0, dueDate: Calendar.minDate);
   }
+
+  /// Assign to `previousStatement` of the next Statement object.
+  ///
+  /// This class is not meant to be created outside of this library
+  const PreviousStatement._({
+    required this.balance,
+    required this.balanceAtEndDate,
+    required this.interest,
+    required this.dueDate,
+  });
 
   @override
   bool operator ==(Object other) =>

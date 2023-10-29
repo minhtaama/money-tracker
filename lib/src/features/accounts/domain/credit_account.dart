@@ -43,7 +43,11 @@ extension CreditAccountMethods on CreditAccount {
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
 
   bool canAddPaymentAt(DateTime dateTime) {
-    if (transactionsList.last.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
+    Statement statement = paymentTransactions.isNotEmpty
+        ? statementAt(paymentTransactions.last.dateTime)
+        : statementsList.last;
+
+    if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
       return true;
     } else {
       return false;
@@ -53,11 +57,7 @@ extension CreditAccountMethods on CreditAccount {
   /// Return `null` if no statement is found.
   ///
   /// Get whole `Statement` object contains the `dateTime`
-  Statement? statementAt(DateTime dateTime) {
-    if (statementsList.isEmpty) {
-      return null;
-    }
-
+  Statement statementAt(DateTime dateTime) {
     final date = dateTime.onlyYearMonthDay;
     final latestStatement = statementsList[statementsList.length - 1];
 
@@ -90,6 +90,6 @@ extension CreditAccountMethods on CreditAccount {
       return list.last;
     }
 
-    return null;
+    throw ErrorDescription('No statement is found');
   }
 }

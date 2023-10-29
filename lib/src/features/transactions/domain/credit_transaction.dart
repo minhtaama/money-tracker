@@ -1,7 +1,8 @@
 part of 'transaction_base.dart';
 
 sealed class BaseCreditTransaction extends BaseTransaction {
-  const BaseCreditTransaction(super.databaseObject, super.dateTime, super.amount, super.note, super.account);
+  const BaseCreditTransaction(
+      super.databaseObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable
@@ -24,11 +25,6 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
     this.categoryTag, {
     required this.installmentAmount,
   });
-
-  @override
-  String toString() {
-    return 'CreditSpending{dateTime: $dateTime, amount: $amount}';
-  }
 }
 
 @immutable
