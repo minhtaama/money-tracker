@@ -1,8 +1,7 @@
 part of 'transaction_base.dart';
 
 sealed class BaseCreditTransaction extends BaseTransaction {
-  const BaseCreditTransaction(
-      super.databaseObject, super.dateTime, super.amount, super.note, super.account);
+  const BaseCreditTransaction(super.databaseObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable
@@ -14,6 +13,8 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
   final CategoryTag? categoryTag;
 
   final double? installmentAmount;
+
+  bool get hasInstallmentPayment => installmentAmount != null;
 
   const CreditSpending._(
     super._isarObject,

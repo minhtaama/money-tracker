@@ -43,9 +43,8 @@ extension CreditAccountMethods on CreditAccount {
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
 
   bool canAddPaymentAt(DateTime dateTime) {
-    Statement statement = paymentTransactions.isNotEmpty
-        ? statementAt(paymentTransactions.last.dateTime)
-        : statementsList.last;
+    Statement statement =
+        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime) : statementsList.last;
 
     if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
       return true;

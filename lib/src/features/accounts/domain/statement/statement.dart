@@ -61,9 +61,7 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
-        ? transactionsInGracePeriod
-        : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -75,8 +73,7 @@ abstract class Statement {
 
   double getFullPaymentAmountAt(DateTime dateTime) {
     // Remaining spent amount after previous grace period that is left to this statement to pay
-    final remainingSpentInPrvGracePeriod =
-        math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
+    final remainingSpentInPrvGracePeriod = math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
 
     double spentInBillingCycleAfterPrvGracePeriodBeforeDateTime = 0;
     double spentInGracePeriodBeforeDateTime = 0;
@@ -113,32 +110,28 @@ abstract class Statement {
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement {
     // Remaining spent amount after previous grace period that is left to this statement to pay
-    double remainingSpentInPrvGracePeriod =
-        math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
+    double remainingSpentInPrvGracePeriod = math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
 
     /// Remaining surplus payment amount after previous grace period count to this statement
     double remainingPaidInPreviousGracePeriod =
         math.max(0, _paidInPrvGracePeriodForCurStatement - _spentInPrvGracePeriod);
 
     // Total spent amount until this statement billing cycle end (until endDate)
-    double totalSpent = previousStatement.carryOver +
-        remainingSpentInPrvGracePeriod +
-        _spentInBillingCycleAfterPrvGracePeriod;
+    double totalSpent =
+        previousStatement.carryOver + remainingSpentInPrvGracePeriod + _spentInBillingCycleAfterPrvGracePeriod;
 
     // Total payment amount in this billing cycle and the grace period.
     // This amount can be included the payment amount for spent of next statement
     // but inside this statement grace period.
-    double totalPaid =
-        remainingPaidInPreviousGracePeriod + _paidInBillingCycleAfterPrvGracePeriod + _paidInGracePeriod;
+    double totalPaid = remainingPaidInPreviousGracePeriod + _paidInBillingCycleAfterPrvGracePeriod + _paidInGracePeriod;
 
     // The spent amount that will be carried over to next statement.
     double balanceCarryToNextStatement = math.max(0, totalSpent - totalPaid);
 
     // Total payment amount until this statement billing cycle end (until endDate)
-    double totalPaidBeforeEndDate =
-        _paidInPrvGracePeriodForCurStatement + _paidInBillingCycleAfterPrvGracePeriod;
+    double totalPaidBeforeEndDate = _paidInPrvGracePeriodForCurStatement + _paidInBillingCycleAfterPrvGracePeriod;
 
-    double pendingForGracePeriod = previousStatement.carryOver +
+    double balanceAtEndDate = previousStatement.carryOver +
         _spentInPrvGracePeriod +
         _spentInBillingCycleAfterPrvGracePeriod -
         totalPaidBeforeEndDate;
@@ -148,7 +141,7 @@ abstract class Statement {
 
     return PreviousStatement._(
       balance: balanceCarryToNextStatement,
-      balanceAtEndDate: pendingForGracePeriod,
+      balanceAtEndDate: balanceAtEndDate,
       interest: interestCarryToNextStatement,
       dueDate: dueDate,
     );
@@ -241,6 +234,5 @@ class PreviousStatement {
           dueDate == other.dueDate;
 
   @override
-  int get hashCode =>
-      balance.hashCode ^ balanceAtEndDate.hashCode ^ interest.hashCode ^ dueDate.hashCode;
+  int get hashCode => balance.hashCode ^ balanceAtEndDate.hashCode ^ interest.hashCode ^ dueDate.hashCode;
 }
