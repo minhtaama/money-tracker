@@ -44,7 +44,7 @@ extension CreditAccountMethods on CreditAccount {
 
   bool canAddPaymentAt(DateTime dateTime) {
     Statement statement =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime) : statementsList.last;
+        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime) : statementsList.first;
 
     if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
       return true;
@@ -71,21 +71,31 @@ extension CreditAccountMethods on CreditAccount {
     if (date.compareTo(latestStatement.dueDate) > 0) {
       final list = [latestStatement];
 
-      for (DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
-          startDate.compareTo(date) <= 0;
-          startDate = startDate.copyWith(month: startDate.month + 1)) {
-        PreviousStatement previousStatement = list.last.carryToNextStatement;
+      DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
+      while (startDate.compareTo(date) <= 0) {
+        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+        final dueDate = statementDay >= paymentDueDay
+            ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
+            : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-        Statement statement = Statement.create(StatementType.withAverageDailyBalance,
-            previousStatement: previousStatement,
-            startDate: startDate,
-            statementDay: statementDay,
-            paymentDueDay: paymentDueDay,
-            apr: apr,
-            transactionsList: transactionsList);
+        final previousStatement = list.last.carryToNextStatement;
+
+        Statement statement = Statement.create(
+          StatementType.withAverageDailyBalance,
+          previousStatement: previousStatement,
+          startDate: startDate,
+          endDate: endDate,
+          dueDate: dueDate,
+          apr: apr,
+          installmentTransactionsToPay: const [],
+          transactionsList: transactionsList,
+        );
 
         list.add(statement);
+
+        startDate = startDate.copyWith(month: startDate.month + 1);
       }
+
       return list.last;
     }
 

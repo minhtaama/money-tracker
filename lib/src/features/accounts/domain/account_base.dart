@@ -15,6 +15,13 @@ import 'statement/statement.dart';
 part 'regular_account.dart';
 part 'credit_account.dart';
 
+class _InstallmentCount {
+  final CreditSpending txn;
+  int monthsLeft;
+
+  _InstallmentCount(this.txn, this.monthsLeft);
+}
+
 @immutable
 sealed class Account extends BaseModelWithIcon<AccountDb> {
   /// Already sorted by transactions dateTime when created
@@ -29,8 +36,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    // only year, month and day
     DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
@@ -44,8 +51,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       }
     }
 
-    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
-
+    // only year, month and day
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
@@ -58,27 +64,12 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     }
 
     // ADD STATEMENTS
-    final statementsList = <Statement>[];
+    var statementsList = <Statement>[];
     if (earliestStatementDate != null && latestStatementDate != null) {
-      for (DateTime startDate = earliestStatementDate;
-          startDate.compareTo(latestStatementDate) <= 0;
-          startDate = startDate.copyWith(month: startDate.month + 1)) {
-        PreviousStatement previousStatement = PreviousStatement.noData();
-
-        if (startDate != earliestStatementDate) {
-          previousStatement = statementsList.last.carryToNextStatement;
-        }
-
-        Statement statement = Statement.create(StatementType.withAverageDailyBalance,
-            previousStatement: previousStatement,
-            startDate: startDate,
-            statementDay: statementDay,
-            paymentDueDay: paymentDueDay,
-            apr: accountDb.creditDetails!.apr,
-            transactionsList: transactionsList);
-
-        statementsList.add(statement);
-      }
+      statementsList = _buildStatementsList(statementDay, paymentDueDay, accountDb.creditDetails!.apr,
+          earliestStatementDate: earliestStatementDate,
+          latestStatementDate: latestStatementDate,
+          accountTransactionsList: transactionsList);
     }
 
     return CreditAccount._(
@@ -96,6 +87,71 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       earliestStatementDate: earliestStatementDate,
       earliestPayableDate: earliestPayableDate,
     );
+  }
+
+  static List<Statement> _buildStatementsList(
+    int statementDay,
+    int paymentDueDay,
+    double apr, {
+    required DateTime earliestStatementDate,
+    required DateTime latestStatementDate,
+    required List<BaseCreditTransaction> accountTransactionsList,
+  }) {
+    final statementsList = <Statement>[];
+
+    final installmentCounts = <_InstallmentCount>[];
+
+    DateTime startDate = earliestStatementDate;
+
+    while (!startDate.isAfter(latestStatementDate) || installmentCounts.isNotEmpty) {
+      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final dueDate = statementDay >= paymentDueDay
+          ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
+          : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
+
+      final previousStatement =
+          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
+
+      final installmentTransactionsToPay = installmentCounts.map((e) => e.txn).toList();
+
+      final transactionsList = <BaseCreditTransaction>[];
+      for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
+        final txn = accountTransactionsList[i];
+
+        if (txn.dateTime.isBefore(startDate)) {
+          continue;
+        }
+
+        if (txn.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
+          break;
+        }
+
+        transactionsList.add(txn);
+
+        if (txn is CreditSpending && txn.hasInstallment) {
+          installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
+        }
+      }
+
+      Statement statement = Statement.create(StatementType.withAverageDailyBalance,
+          previousStatement: previousStatement,
+          startDate: startDate,
+          endDate: endDate,
+          dueDate: dueDate,
+          apr: apr,
+          installmentTransactionsToPay: installmentTransactionsToPay,
+          transactionsList: transactionsList);
+
+      statementsList.add(statement);
+
+      for (_InstallmentCount el in installmentCounts) {
+        el.monthsLeft = el.monthsLeft - 1;
+      }
+      installmentCounts.removeWhere((el) => el.monthsLeft < 0);
+      startDate = startDate.copyWith(month: startDate.month + 1);
+    }
+
+    return statementsList;
   }
 
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {

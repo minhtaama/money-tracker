@@ -12,9 +12,11 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
   @override
   final CategoryTag? categoryTag;
 
-  final double? installmentAmount;
+  final int? monthsToPay;
 
-  bool get hasInstallmentPayment => installmentAmount != null;
+  bool get hasInstallment => monthsToPay != null;
+
+  double get paymentAmount => hasInstallment ? amount / monthsToPay! : amount;
 
   const CreditSpending._(
     super._isarObject,
@@ -24,8 +26,13 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
     super.account,
     this.category,
     this.categoryTag, {
-    required this.installmentAmount,
+    required this.monthsToPay,
   });
+
+  @override
+  String toString() {
+    return 'CreditSpending{amount: $amount, paymentAmount: $paymentAmount, monthsToPay: $monthsToPay}';
+  }
 }
 
 @immutable
@@ -41,10 +48,4 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.account, {
     required this.transferAccount,
   });
-}
-
-extension SpendingDetails on CreditSpending {
-  bool get hasInstallment {
-    return installmentAmount != null;
-  }
 }

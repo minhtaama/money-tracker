@@ -14,6 +14,9 @@ abstract class Statement {
   final DateTime endDate;
   final DateTime dueDate;
 
+  /// Installment transactions happens before this statement, but need to pay at this statement
+  final List<BaseCreditTransaction> installmentTransactionsToPay;
+
   /// **Billing cycle**: From [startDate] to [endDate]
   final List<BaseCreditTransaction> transactionsInBillingCycle;
 
@@ -28,6 +31,8 @@ abstract class Statement {
   final double _paidInBillingCycleAfterPrvGracePeriod;
   final double _paidInGracePeriod;
 
+  /// This is the interest of this statement, only add this value to next statement
+  /// if this statement is not paid in full or previous statement has a carry over amount.
   abstract final double _interest;
 
   /// BillingCycle is only from [startDate] to [endDate].
@@ -151,18 +156,20 @@ abstract class Statement {
     StatementType type, {
     required PreviousStatement previousStatement,
     required DateTime startDate,
-    required int statementDay,
-    required int paymentDueDay,
+    required DateTime endDate,
+    required DateTime dueDate,
     required double apr,
+    required List<BaseCreditTransaction> installmentTransactionsToPay,
     required List<BaseCreditTransaction> transactionsList,
   }) {
     return switch (type) {
       StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(
           previousStatement: previousStatement,
           startDate: startDate,
-          statementDay: statementDay,
-          paymentDueDay: paymentDueDay,
+          endDate: endDate,
+          dueDate: dueDate,
           apr: apr,
+          installmentTransactionsToPay: installmentTransactionsToPay,
           transactionsList: transactionsList),
     };
   }
@@ -180,6 +187,7 @@ abstract class Statement {
     required this.startDate,
     required this.endDate,
     required this.dueDate,
+    required this.installmentTransactionsToPay,
     required this.transactionsInBillingCycle,
     required this.transactionsInGracePeriod,
   });

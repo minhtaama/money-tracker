@@ -30,9 +30,7 @@ class TransactionRepository {
   }
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   Stream<void> _watchDatabaseChanges() {
@@ -51,8 +49,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -71,8 +68,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -97,8 +93,7 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -116,7 +111,7 @@ class TransactionRepository {
     required CreditAccount account,
     required CategoryTag? tag,
     required String? note,
-    required double? installmentAmount,
+    required int? monthsToPay,
   }) {
     final newTransaction = TransactionDb(
         ObjectId(), _transactionTypeInDb(TransactionType.creditSpending), dateTime, amount,
@@ -124,7 +119,7 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        installmentAmount: installmentAmount);
+        monthsToPay: monthsToPay);
 
     realm.write(() {
       realm.add(newTransaction);

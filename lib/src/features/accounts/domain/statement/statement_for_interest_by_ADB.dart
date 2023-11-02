@@ -16,27 +16,25 @@ class StatementWithAverageDailyBalance extends Statement {
     required super.startDate,
     required super.endDate,
     required super.dueDate,
+    required super.installmentTransactionsToPay,
     required super.transactionsInBillingCycle,
     required super.transactionsInGracePeriod,
   });
 
+  /// This is the interest of this statement, only add this value to next statement
+  /// if this statement is not paid in full or previous statement has a carry over amount.
   @override
   final double _interest;
 
   factory StatementWithAverageDailyBalance._create({
     required PreviousStatement previousStatement,
     required DateTime startDate,
-    required int statementDay,
-    required int paymentDueDay,
+    required DateTime endDate,
+    required DateTime dueDate,
     required double apr,
+    required List<BaseCreditTransaction> installmentTransactionsToPay,
     required List<BaseCreditTransaction> transactionsList,
   }) {
-    final DateTime endDate =
-        startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
-    final DateTime dueDate = statementDay >= paymentDueDay
-        ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
-        : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
-
     List<BaseCreditTransaction> txnsInBillingCycle = List.empty(growable: true);
     List<BaseCreditTransaction> txnsInGracePeriod = List.empty(growable: true);
     double spentInPrvGracePeriod = 0;
@@ -59,17 +57,6 @@ class StatementWithAverageDailyBalance extends Statement {
 
     for (int i = 0; i <= transactionsList.length - 1; i++) {
       final txn = transactionsList[i];
-
-      if (txn.dateTime.isBefore(startDate)) {
-        continue;
-      }
-
-      if (txn.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
-        if (i >= 1) {
-          tCheckpointDateTime = transactionsList[i - 1].dateTime;
-        }
-        break;
-      }
 
       if (txn is CreditSpending) {
         if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
@@ -118,6 +105,7 @@ class StatementWithAverageDailyBalance extends Statement {
     }
 
     tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(endDate);
+
     double averageDailyBalance = tDailyBalanceSum / startDate.getDaysDifferent(endDate);
 
     // The interest of this statement
@@ -136,9 +124,15 @@ class StatementWithAverageDailyBalance extends Statement {
       startDate: startDate,
       endDate: endDate,
       dueDate: dueDate,
+      installmentTransactionsToPay: installmentTransactionsToPay,
       transactionsInBillingCycle: txnsInBillingCycle,
       transactionsInGracePeriod: txnsInGracePeriod,
       apr: apr,
     );
+  }
+
+  @override
+  String toString() {
+    return '{startDate: $startDate}';
   }
 }

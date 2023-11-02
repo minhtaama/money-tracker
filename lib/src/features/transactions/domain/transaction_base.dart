@@ -74,7 +74,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
-          installmentAmount: txn.installmentAmount,
+          monthsToPay: txn.monthsToPay,
         );
 
       default:

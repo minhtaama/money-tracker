@@ -156,7 +156,7 @@ class _TransactionDb {
   _TransferFeeDb? transferFee;
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
-  double? installmentAmount;
+  int? monthsToPay;
 }
 
 @RealmModel(ObjectType.embeddedObject)
