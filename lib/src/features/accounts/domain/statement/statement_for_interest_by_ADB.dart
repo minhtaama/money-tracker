@@ -48,7 +48,7 @@ class StatementWithAverageDailyBalance extends Statement {
     // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.carryOver;
+    double tCurrentBalance = previousStatement.balanceAtEndDate + previousStatement.interest;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
