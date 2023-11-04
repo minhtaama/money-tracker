@@ -160,7 +160,8 @@ abstract class Statement {
     required DateTime dueDate,
     required double apr,
     required List<BaseCreditTransaction> installmentTransactionsToPay,
-    required List<BaseCreditTransaction> transactionsList,
+    required List<BaseCreditTransaction> txnsInBillingCycle,
+    required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
     return switch (type) {
       StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(
@@ -170,7 +171,8 @@ abstract class Statement {
           dueDate: dueDate,
           apr: apr,
           installmentTransactionsToPay: installmentTransactionsToPay,
-          transactionsList: transactionsList),
+          txnsInBillingCycle: txnsInBillingCycle,
+          txnsInGracePeriod: txnsInGracePeriod),
     };
   }
 
@@ -230,17 +232,4 @@ class PreviousStatement {
     required this.interest,
     required this.dueDate,
   });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is PreviousStatement &&
-          runtimeType == other.runtimeType &&
-          balance == other.balance &&
-          balanceAtEndDate == other.balanceAtEndDate &&
-          interest == other.interest &&
-          dueDate == other.dueDate;
-
-  @override
-  int get hashCode => balance.hashCode ^ balanceAtEndDate.hashCode ^ interest.hashCode ^ dueDate.hashCode;
 }

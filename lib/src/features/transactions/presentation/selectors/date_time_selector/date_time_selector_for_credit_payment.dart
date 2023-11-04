@@ -125,6 +125,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                   final statement = widget.creditAccount!.statementAt(selectedDay);
                                   print(widget.creditAccount!.statementsList);
                                   print(statement.installmentTransactionsToPay);
+                                  print(statement.apr);
                                 }
                                 return AnimatedSize(
                                   duration: k150msDuration,

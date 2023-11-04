@@ -114,7 +114,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
 
       final installmentTransactionsToPay = installmentCounts.map((e) => e.txn).toList();
 
-      final transactionsList = <BaseCreditTransaction>[];
+      final txnsInGracePeriod = <BaseCreditTransaction>[];
+      final txnsInBillingCycle = <BaseCreditTransaction>[];
       for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
         final txn = accountTransactionsList[i];
 
@@ -126,10 +127,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           break;
         }
 
-        transactionsList.add(txn);
+        if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
+          txnsInGracePeriod.add(txn);
+        } else {
+          txnsInBillingCycle.add(txn);
 
-        if (txn is CreditSpending && txn.hasInstallment) {
-          installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
+          if (txn is CreditSpending && txn.hasInstallment) {
+            installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
+          }
         }
       }
 
@@ -140,7 +145,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           dueDate: dueDate,
           apr: apr,
           installmentTransactionsToPay: installmentTransactionsToPay,
-          transactionsList: transactionsList);
+          txnsInBillingCycle: txnsInBillingCycle,
+          txnsInGracePeriod: txnsInGracePeriod);
 
       statementsList.add(statement);
 
@@ -148,6 +154,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
         el.monthsLeft = el.monthsLeft - 1;
       }
       installmentCounts.removeWhere((el) => el.monthsLeft < 0);
+
       startDate = startDate.copyWith(month: startDate.month + 1);
     }
 

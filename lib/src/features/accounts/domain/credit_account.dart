@@ -88,7 +88,8 @@ extension CreditAccountMethods on CreditAccount {
           dueDate: dueDate,
           apr: apr,
           installmentTransactionsToPay: const [],
-          transactionsList: transactionsList,
+          txnsInGracePeriod: const [],
+          txnsInBillingCycle: const [],
         );
 
         list.add(statement);
