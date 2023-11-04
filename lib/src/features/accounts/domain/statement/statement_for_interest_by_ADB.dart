@@ -4,12 +4,9 @@ part of 'statement.dart';
 class StatementWithAverageDailyBalance extends Statement {
   const StatementWithAverageDailyBalance._(
     this._interest,
-    super._spentInPrvGracePeriod,
-    super._spentInBillingCycleAfterPrvGracePeriod,
-    super._spentInGracePeriod,
-    super._paidInPrvGracePeriodForCurStatement,
-    super._paidInPrvGracePeriodForPrvStatement,
-    super._paidInBillingCycleAfterPrvGracePeriod,
+    super._spentInBillingCycle,
+    super._spentInBillingCycleExcludeInstallments,
+    super._paidInBillingCycle,
     super._paidInGracePeriod, {
     required super.apr,
     required super.previousStatement,
@@ -30,25 +27,21 @@ class StatementWithAverageDailyBalance extends Statement {
     required DateTime endDate,
     required DateTime dueDate,
     required double apr,
-    required List<BaseCreditTransaction> installmentTransactionsToPay,
+    required List<CreditSpending> installmentTransactionsToPay,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
-    double spentInPrvGracePeriod = 0;
-    double spentInBillingCycleAfterPrvGracePeriod = 0;
-    double spentInGracePeriod = 0;
-    double paidInPrvGracePeriodForCurStatement = 0;
-    double paidInPrvGracePeriodForPrvStatement = 0;
-    double paidInBillingCycleAfterPrvGracePeriod = 0;
+    double totalSpentInBillingCycle = 0;
+    double spentInBillingCycleExcludeInstallments = 0;
+    double paidInBillingCycle = 0;
     double paidInGracePeriod = 0;
 
     //////////// TEMPORARY VARIABLES FOR THE LOOP /////////////////
-    double tPendingOfPreviousStatement = previousStatement.balanceAtEndDate;
     // Calculate sum of daily balance from `tCheckpointDateTime` to current Txn DateTime
     // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.balanceAtEndDate + previousStatement.interest;
+    double tCurrentBalance = previousStatement._balanceAtEndDate + previousStatement.interest;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -56,31 +49,21 @@ class StatementWithAverageDailyBalance extends Statement {
       final txn = txnsInBillingCycle[i];
 
       if (txn is CreditSpending) {
-        if (txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
-          spentInBillingCycleAfterPrvGracePeriod += txn.amount;
-        } else {
-          spentInPrvGracePeriod += txn.amount;
+        totalSpentInBillingCycle += txn.amount;
+
+        if (!txn.hasInstallment) {
+          spentInBillingCycleExcludeInstallments += txn.amount;
         }
 
-        // Calculate tDailyBalanceSum before this txn happens
         tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(txn.dateTime);
         tCurrentBalance += txn.amount;
       }
 
       if (txn is CreditPayment) {
+        paidInBillingCycle += txn.amount;
+
         tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(txn.dateTime);
-
-        if (txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
-          paidInBillingCycleAfterPrvGracePeriod += txn.amount;
-
-          tCurrentBalance -= txn.amount;
-        } else {
-          paidInPrvGracePeriodForPrvStatement += math.min(txn.amount, tPendingOfPreviousStatement);
-          paidInPrvGracePeriodForCurStatement += math.max(0, txn.amount - tPendingOfPreviousStatement);
-          tPendingOfPreviousStatement = math.max(0, tPendingOfPreviousStatement - paidInPrvGracePeriodForPrvStatement);
-
-          tCurrentBalance -= paidInPrvGracePeriodForCurStatement;
-        }
+        tCurrentBalance -= txn.amount;
       }
 
       tCheckpointDateTime = txnsInBillingCycle[i].dateTime;
@@ -88,10 +71,6 @@ class StatementWithAverageDailyBalance extends Statement {
 
     for (int i = 0; i <= txnsInGracePeriod.length - 1; i++) {
       final txn = txnsInGracePeriod[i];
-
-      if (txn is CreditSpending) {
-        spentInGracePeriod += txn.amount;
-      }
 
       if (txn is CreditPayment) {
         paidInGracePeriod += txn.amount;
@@ -107,12 +86,9 @@ class StatementWithAverageDailyBalance extends Statement {
 
     return StatementWithAverageDailyBalance._(
       interest,
-      spentInPrvGracePeriod,
-      spentInBillingCycleAfterPrvGracePeriod,
-      spentInGracePeriod,
-      paidInPrvGracePeriodForCurStatement,
-      paidInPrvGracePeriodForPrvStatement,
-      paidInBillingCycleAfterPrvGracePeriod,
+      totalSpentInBillingCycle,
+      spentInBillingCycleExcludeInstallments,
+      paidInBillingCycle,
       paidInGracePeriod,
       previousStatement: previousStatement,
       startDate: startDate,

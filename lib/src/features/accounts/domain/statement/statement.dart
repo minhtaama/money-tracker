@@ -15,7 +15,7 @@ abstract class Statement {
   final DateTime dueDate;
 
   /// Installment transactions happens before this statement, but need to pay at this statement
-  final List<BaseCreditTransaction> installmentTransactionsToPay;
+  final List<CreditSpending> installmentTransactionsToPay;
 
   /// **Billing cycle**: From [startDate] to [endDate]
   final List<BaseCreditTransaction> transactionsInBillingCycle;
@@ -23,12 +23,9 @@ abstract class Statement {
   /// **Grace Period**: From the day after [endDate] to [dueDate]
   final List<BaseCreditTransaction> transactionsInGracePeriod;
 
-  final double _spentInPrvGracePeriod;
-  final double _spentInBillingCycleAfterPrvGracePeriod;
-  final double _spentInGracePeriod;
-  final double _paidInPrvGracePeriodForCurStatement;
-  final double _paidInPrvGracePeriodForPrvStatement;
-  final double _paidInBillingCycleAfterPrvGracePeriod;
+  final double _totalSpentInBillingCycle;
+  final double _spentInBillingCycleExcludeInstallments;
+  final double _paidInBillingCycle;
   final double _paidInGracePeriod;
 
   /// This is the interest of this statement, only add this value to next statement
@@ -76,35 +73,41 @@ abstract class Statement {
     return list;
   }
 
-  double getFullPaymentAmountAt(DateTime dateTime) {
-    // Remaining spent amount after previous grace period that is left to this statement to pay
-    final remainingSpentInPrvGracePeriod = math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
+  double get installmentsAmountToPay {
+    double amount = 0;
+    for (CreditSpending txn in installmentTransactionsToPay) {
+      amount += txn.paymentAmount;
+    }
+    return amount;
+  }
 
-    double spentInBillingCycleAfterPrvGracePeriodBeforeDateTime = 0;
-    double spentInGracePeriodBeforeDateTime = 0;
+  double getFullPaymentAmountAt(DateTime dateTime) {
+    // // Remaining spent amount after previous grace period that is left to this statement to pay
+    // final remainingSpentInPrvGracePeriod = math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
+    //
+    double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
+    double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
     for (BaseCreditTransaction txn in transactionsInGracePeriod) {
-      if (txn is CreditSpending && txn.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
-        spentInGracePeriodBeforeDateTime += txn.amount;
+      if (txn is CreditSpending && !txn.hasInstallment && txn.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
+        spentInGracePeriodBeforeDateTimeExcludeInstallments += txn.amount;
       }
     }
 
     for (BaseCreditTransaction txn in transactionsInBillingCycle) {
-      if (txn is CreditSpending &&
-          txn.dateTime.onlyYearMonthDay.isBefore(dateTime) &&
-          txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
-        spentInBillingCycleAfterPrvGracePeriodBeforeDateTime += txn.amount;
+      if (txn is CreditSpending && !txn.hasInstallment && txn.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
+        spentInBillingCycleBeforeDateTimeExcludeInstallments += txn.amount;
       }
     }
 
     // Remaining balance before chosen dateTime
-    final x = previousStatement.balanceToPay +
+    final x = previousStatement._balanceToPayAtEndDate +
         previousStatement.interest +
-        remainingSpentInPrvGracePeriod +
-        spentInBillingCycleAfterPrvGracePeriodBeforeDateTime +
-        spentInGracePeriodBeforeDateTime -
+        installmentsAmountToPay +
+        spentInBillingCycleBeforeDateTimeExcludeInstallments +
+        spentInGracePeriodBeforeDateTimeExcludeInstallments -
         _paidInGracePeriod -
-        _paidInBillingCycleAfterPrvGracePeriod;
+        _paidInBillingCycle;
 
     if (x < 0) {
       return 0;
@@ -115,29 +118,38 @@ abstract class Statement {
 
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement {
-    double totalPaidBeforeEndDate = _paidInPrvGracePeriodForCurStatement + _paidInBillingCycleAfterPrvGracePeriod;
-
-    double totalPaidBeforeDueDate = totalPaidBeforeEndDate + _paidInGracePeriod;
-
-    double balanceAtEndDate = previousStatement.balanceAtEndDate +
+    double balanceAtEndDate = previousStatement._balanceAtEndDate +
         previousStatement.interest +
-        _spentInPrvGracePeriod +
-        _spentInBillingCycleAfterPrvGracePeriod -
-        totalPaidBeforeEndDate;
+        _totalSpentInBillingCycle -
+        _paidInBillingCycle;
 
-    double balance = previousStatement.balanceAtEndDate +
+    double balance = previousStatement._balanceAtEndDate +
         previousStatement.interest +
-        _spentInPrvGracePeriod +
-        _spentInBillingCycleAfterPrvGracePeriod -
-        totalPaidBeforeDueDate;
+        _totalSpentInBillingCycle -
+        _paidInBillingCycle -
+        _paidInGracePeriod;
+
+    double balanceToPayAtEndDate = previousStatement._balanceToPayAtEndDate +
+        previousStatement.interest +
+        installmentsAmountToPay +
+        _spentInBillingCycleExcludeInstallments -
+        _paidInBillingCycle;
+
+    double balanceToPay = previousStatement._balanceToPayAtEndDate +
+        previousStatement.interest +
+        installmentsAmountToPay +
+        _spentInBillingCycleExcludeInstallments -
+        _paidInBillingCycle -
+        _paidInGracePeriod;
 
     double interestCarryToNextStatement =
-        balance > 0 || previousStatement.balanceToPay + previousStatement.interest > 0 ? _interest : 0;
+        balanceToPay > 0 || previousStatement.balanceToPay + previousStatement.interest > 0 ? _interest : 0;
 
     return PreviousStatement._(
-      balance: balance,
-      balanceToPay: balance,
-      balanceAtEndDate: balanceAtEndDate,
+      balanceToPayAtEndDate,
+      balanceAtEndDate,
+      balance: math.max(0, balance),
+      balanceToPay: math.max(0, balanceToPay),
       interest: interestCarryToNextStatement,
       dueDate: dueDate,
     );
@@ -150,7 +162,7 @@ abstract class Statement {
     required DateTime endDate,
     required DateTime dueDate,
     required double apr,
-    required List<BaseCreditTransaction> installmentTransactionsToPay,
+    required List<CreditSpending> installmentTransactionsToPay,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
@@ -168,12 +180,9 @@ abstract class Statement {
   }
 
   const Statement(
-    this._spentInPrvGracePeriod,
-    this._spentInBillingCycleAfterPrvGracePeriod,
-    this._spentInGracePeriod,
-    this._paidInPrvGracePeriodForCurStatement,
-    this._paidInPrvGracePeriodForPrvStatement,
-    this._paidInBillingCycleAfterPrvGracePeriod,
+    this._totalSpentInBillingCycle,
+    this._spentInBillingCycleExcludeInstallments,
+    this._paidInBillingCycle,
     this._paidInGracePeriod, {
     required this.apr,
     required this.previousStatement,
@@ -191,7 +200,7 @@ class PreviousStatement {
   /// Can't be **negative**. Use to get the remaining amount needed to pay carry to current statement.
   /// This previous statement only carry interest if this value is more than 0.
   /// ---
-  /// = **previousStatement.balanceToPay** + **previousStatement.interest** +
+  /// = **previousStatement._balanceToPayAtEndDate** + **previousStatement.interest** +
   ///
   /// **the payment needed of all installments before** +
   ///
@@ -203,6 +212,18 @@ class PreviousStatement {
   /// because this value is calculated from **previousStatement.balanceAtEndDate**, so no transaction
   /// is counted twice.
   final double balanceToPay;
+
+  /// Can't be **negative**, no interest included. Use as the balance to pay at the start date
+  /// of current statement.
+  /// ---
+  /// = **previousStatement._balanceToPayAtEndDate** + **previousStatement.interest** +
+  ///
+  /// **spent amount happens in billing cycle** (included installments transaction) -
+  ///
+  /// **paid amount happens in billing cycle**.
+  /// ---
+  /// The math should not be less than 0. However if so, return 0.
+  final double _balanceToPayAtEndDate;
 
   /// Can't be **negative**. Use to calculate the interest of this previous statement.
   /// ---
@@ -227,25 +248,26 @@ class PreviousStatement {
   /// **paid amount happens in billing cycle**.
   /// ---
   /// The math should not be less than 0. However if so, return 0.
-  final double balanceAtEndDate;
+  final double _balanceAtEndDate;
 
   /// Only charge/carry interest if `balanceToPay` is more than 0.
   final double interest;
 
+  /// Use for checking if can add payments
   final DateTime dueDate;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(
-        balanceToPay: 0, balance: 0, balanceAtEndDate: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.
   ///
   /// This class is not meant to be created outside of this library
-  const PreviousStatement._({
+  const PreviousStatement._(
+    this._balanceToPayAtEndDate,
+    this._balanceAtEndDate, {
     required this.balanceToPay,
     required this.balance,
-    required this.balanceAtEndDate,
     required this.interest,
     required this.dueDate,
   });

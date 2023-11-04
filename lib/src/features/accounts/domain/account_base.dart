@@ -112,6 +112,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       final previousStatement =
           startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
 
+      // TODO: Hey, installment should start right at current statement, should let user choose when to start
       final installmentTransactionsToPay = installmentCounts.map((e) => e.txn).toList();
 
       final txnsInGracePeriod = <BaseCreditTransaction>[];
@@ -132,6 +133,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
         } else {
           txnsInBillingCycle.add(txn);
 
+          // TODO: Hey, installment should start right at current statement, should let user choose when to start
           if (txn is CreditSpending && txn.hasInstallment) {
             installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
           }

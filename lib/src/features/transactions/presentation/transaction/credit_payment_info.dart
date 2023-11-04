@@ -216,13 +216,6 @@ extension _ListGetters on _List {
     return CalService.formatCurrency(statement!.previousStatement.interest, enableDecimalDigits: true);
   }
 
-  // String? get currentInterest {
-  //   if (statement == null) {
-  //     return null;
-  //   }
-  //   return CalService.formatCurrency(statement!.currentInterest, enableDecimalDigits: true);
-  // }
-
   String? get carryingOver {
     if (statement == null) {
       return null;
