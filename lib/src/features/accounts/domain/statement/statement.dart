@@ -206,7 +206,7 @@ class PreviousStatement {
   /// **paid amount happens in billing cycle and in grace period (included pay for spent in current statement)**.
   /// ---
   /// The math might less than 0, if so, return 0. We don't need to care about the surplus paid amount
-  /// because this value is calculated from **previousStatement.balanceAtEndDate**, so no transaction
+  /// because this value is calculated from **previousStatement._balanceToPayAtEndDate**, so no transaction
   /// is counted twice.
   final double balanceToPay;
 
@@ -224,21 +224,21 @@ class PreviousStatement {
 
   /// Can't be **negative**. Use to calculate the interest of this previous statement.
   /// ---
-  /// = **previousStatement.balanceAtEndDate** + **previousStatement.interest** +
+  /// = **previousStatement._balanceAtEndDate** + **previousStatement.interest** +
   ///
   /// **spent amount happens in billing cycle** (included installments transaction) -
   ///
   /// **paid amount happens in billing cycle and in grace period (included pay for spent in current statement)**.
   /// ---
   /// The math might less than 0, if so, return 0. We don't need to care about the surplus paid amount
-  /// because this value is calculated from **previousStatement.balanceAtEndDate**, so no transaction
+  /// because this value is calculated from **previousStatement._balanceAtEndDate**, so no transaction
   /// is counted twice.
   final double balance;
 
   /// Can't be **negative**, no interest included. Use as the credit balance at the start date
   /// of current statement.
   /// ---
-  /// = **previousStatement.balanceAtEndDate** + **previousStatement.interest** +
+  /// = **previousStatement._balanceAtEndDate** + **previousStatement.interest** +
   ///
   /// **spent amount happens in billing cycle** (included installments transaction) -
   ///
