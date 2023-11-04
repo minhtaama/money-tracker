@@ -82,9 +82,6 @@ abstract class Statement {
   }
 
   double getFullPaymentAmountAt(DateTime dateTime) {
-    // // Remaining spent amount after previous grace period that is left to this statement to pay
-    // final remainingSpentInPrvGracePeriod = math.max(0, _spentInPrvGracePeriod - _paidInPrvGracePeriodForCurStatement);
-    //
     double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
     double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
