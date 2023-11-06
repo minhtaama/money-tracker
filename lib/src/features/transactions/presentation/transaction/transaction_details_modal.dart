@@ -65,7 +65,7 @@ class TransactionDetails extends ConsumerWidget {
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(model: accountRepo.getAccount(transaction.account!)!),
+                  _AccountCard(model: transaction.account!),
                   switch (transaction) {
                     BaseTransactionWithCategory() =>
                       transaction is Income && (transaction as Income).isInitialTransaction
@@ -74,8 +74,7 @@ class TransactionDetails extends ConsumerWidget {
                               model: (transaction as BaseTransactionWithCategory).category!,
                               categoryTag: (transaction as BaseTransactionWithCategory).categoryTag,
                             ),
-                    Transfer() => _AccountCard(
-                        model: accountRepo.getAccount((transaction as Transfer).transferAccount!)!),
+                    Transfer() => _AccountCard(model: (transaction as Transfer).transferAccount!),
                     CreditPayment() => Gap.noGap,
                   },
                 ],
@@ -219,7 +218,7 @@ class _AccountCard extends StatelessWidget {
             children: [
               Text(
                 model is CreditAccount ? 'CREDIT ACCOUNT:' : 'ACCOUNT:',
-                style: kHeader2TextStyle.copyWith(color: model.color.withOpacity(0.6), fontSize: 11),
+                style: kHeader2TextStyle.copyWith(color: model.iconColor.withOpacity(0.6), fontSize: 11),
               ),
               Gap.h4,
               IntrinsicWidth(
@@ -228,7 +227,7 @@ class _AccountCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         model.name,
-                        style: kHeader2TextStyle.copyWith(color: model.color, fontSize: 20),
+                        style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 20),
                       ),
                     ),
                     Gap.w48,
@@ -274,7 +273,7 @@ class _CategoryCard extends StatelessWidget {
                 size: 50,
                 iconPadding: 7,
                 backgroundColor: model.backgroundColor,
-                iconColor: model.color,
+                iconColor: model.iconColor,
               ),
               Gap.w16,
               Expanded(

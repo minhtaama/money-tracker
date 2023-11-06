@@ -65,7 +65,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             note: _note,
             category: _category!,
             account: _account!,
-            installmentAmount: CalService.formatToDouble(_installmentPaymentAmount),
+            monthsToPay: _installmentPaymentPeriod,
           );
       context.pop();
     }
@@ -248,8 +248,7 @@ extension _Validators on _AddCreditTransactionModalScreenState {
         CalService.formatToDouble(_installmentPaymentAmount) == 0) {
       return 'Invalid Amount';
     }
-    if (CalService.formatToDouble(_installmentPaymentAmount)! >
-        CalService.formatToDouble(_calOutputSpendAmount)!) {
+    if (CalService.formatToDouble(_installmentPaymentAmount)! > CalService.formatToDouble(_calOutputSpendAmount)!) {
       return 'Too high';
     }
     return null;

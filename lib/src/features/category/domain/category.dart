@@ -23,7 +23,7 @@ class Category extends BaseModelWithIcon<CategoryDb> {
       categoryRealm,
       type: type,
       name: categoryRealm.name,
-      color: AppColors.allColorsUserCanPick[categoryRealm.colorIndex][1],
+      iconColor: AppColors.allColorsUserCanPick[categoryRealm.colorIndex][1],
       backgroundColor: AppColors.allColorsUserCanPick[categoryRealm.colorIndex][0],
       iconPath: AppIcons.fromCategoryAndIndex(categoryRealm.iconCategory, categoryRealm.iconIndex),
     );
@@ -32,7 +32,7 @@ class Category extends BaseModelWithIcon<CategoryDb> {
   const Category._(
     super._realmObject, {
     required super.name,
-    required super.color,
+    required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
     required this.type,

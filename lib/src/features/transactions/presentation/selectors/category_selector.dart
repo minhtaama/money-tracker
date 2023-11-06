@@ -41,7 +41,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       iconPath: currentCategory != null ? currentCategory!.iconPath : AppIcons.add,
       backgroundColor: currentCategory != null ? currentCategory!.backgroundColor : Colors.transparent,
       color: currentCategory != null
-          ? currentCategory!.color
+          ? currentCategory!.iconColor
           : context.appTheme.backgroundNegative.withOpacity(0.4),
       width: null,
       height: null,
@@ -97,7 +97,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                                   ? category.backgroundColor
                                   : Colors.transparent,
                           color: currentCategory?.databaseObject.id == category.databaseObject.id
-                              ? category.color
+                              ? category.iconColor
                               : context.appTheme.backgroundNegative,
                           onTap: () => context.pop<Category>(category),
                           height: null,

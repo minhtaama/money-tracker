@@ -380,7 +380,7 @@ class TransactionDb extends _TransactionDb
     bool isInitialTransaction = false,
     AccountDb? transferAccount,
     TransferFeeDb? transferFee,
-    double? installmentAmount,
+    int? monthsToPay,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<TransactionDb>({
@@ -398,7 +398,7 @@ class TransactionDb extends _TransactionDb
     RealmObjectBase.set(this, 'isInitialTransaction', isInitialTransaction);
     RealmObjectBase.set(this, 'transferAccount', transferAccount);
     RealmObjectBase.set(this, 'transferFee', transferFee);
-    RealmObjectBase.set(this, 'installmentAmount', installmentAmount);
+    RealmObjectBase.set(this, 'monthsToPay', monthsToPay);
   }
 
   TransactionDb._();
@@ -472,11 +472,10 @@ class TransactionDb extends _TransactionDb
       RealmObjectBase.set(this, 'transferFee', value);
 
   @override
-  double? get installmentAmount =>
-      RealmObjectBase.get<double>(this, 'installmentAmount') as double?;
+  int? get monthsToPay => RealmObjectBase.get<int>(this, 'monthsToPay') as int?;
   @override
-  set installmentAmount(double? value) =>
-      RealmObjectBase.set(this, 'installmentAmount', value);
+  set monthsToPay(int? value) =>
+      RealmObjectBase.set(this, 'monthsToPay', value);
 
   @override
   Stream<RealmObjectChanges<TransactionDb>> get changes =>
@@ -508,8 +507,7 @@ class TransactionDb extends _TransactionDb
           optional: true, linkTarget: 'AccountDb'),
       SchemaProperty('transferFee', RealmPropertyType.object,
           optional: true, linkTarget: 'TransferFeeDb'),
-      SchemaProperty('installmentAmount', RealmPropertyType.double,
-          optional: true),
+      SchemaProperty('monthsToPay', RealmPropertyType.int, optional: true),
     ]);
   }
 }

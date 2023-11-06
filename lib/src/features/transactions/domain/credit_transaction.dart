@@ -1,8 +1,7 @@
 part of 'transaction_base.dart';
 
 sealed class BaseCreditTransaction extends BaseTransaction {
-  const BaseCreditTransaction(
-      super.databaseObject, super.dateTime, super.amount, super.note, super.account);
+  const BaseCreditTransaction(super.databaseObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable
@@ -13,7 +12,11 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
   @override
   final CategoryTag? categoryTag;
 
-  final double? installmentAmount;
+  final int? monthsToPay;
+
+  bool get hasInstallment => monthsToPay != null;
+
+  double get paymentAmount => hasInstallment ? amount / monthsToPay! : amount;
 
   const CreditSpending._(
     super._isarObject,
@@ -23,19 +26,19 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
     super.account,
     this.category,
     this.categoryTag, {
-    required this.installmentAmount,
+    required this.monthsToPay,
   });
 
   @override
   String toString() {
-    return 'CreditSpending{dateTime: $dateTime, amount: $amount}';
+    return 'CreditSpending{amount: $amount, paymentAmount: $paymentAmount, monthsToPay: $monthsToPay}';
   }
 }
 
 @immutable
 class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
-  final ObjectId? transferAccount;
+  final RegularAccount? transferAccount;
 
   const CreditPayment._(
     super._isarObject,
@@ -45,10 +48,4 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.account, {
     required this.transferAccount,
   });
-}
-
-extension SpendingDetails on CreditSpending {
-  bool get hasInstallment {
-    return installmentAmount != null;
-  }
 }

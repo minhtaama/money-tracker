@@ -1,96 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-
 import '../../utils/constants.dart';
 import '../card_item.dart';
-
-class CustomTabBar extends StatelessWidget {
-  const CustomTabBar({
-    Key? key,
-    required this.height,
-    this.extendedTabBar,
-    this.smallTabBar,
-    required this.pixelOffset,
-  }) : super(key: key);
-
-  final SmallTabBar? smallTabBar;
-  final ExtendedTabBar? extendedTabBar;
-  final double height;
-  final double pixelOffset;
-
-  double _getAppBarChildOpacity({required bool isExtendedChild, required double appBarHeight}) {
-    final height = appBarHeight;
-
-    if (extendedTabBar != null && smallTabBar != null) {
-      double opacity = (height - smallTabBar!.height) / (extendedTabBar!.height - smallTabBar!.height);
-      if (isExtendedChild) {
-        return opacity;
-      } else {
-        return 1 - opacity;
-      }
-    } else {
-      return 1;
-    }
-  }
-
-  Widget _animateChangingChild(double appBarHeight) {
-    double childOpacity = _getAppBarChildOpacity(isExtendedChild: false, appBarHeight: appBarHeight);
-    double extendedChildOpacity = _getAppBarChildOpacity(isExtendedChild: true, appBarHeight: appBarHeight);
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        AnimatedOpacity(
-          opacity: extendedChildOpacity < 0.1 ? 0 : 1,
-          duration: kNoDuration,
-          child: IgnorePointer(
-            ignoring: extendedChildOpacity > 0.1 ? false : true,
-            child: extendedTabBar ?? const SizedBox(),
-          ),
-        ),
-        AnimatedOpacity(
-          opacity: childOpacity > 0.9 ? 1 : 0,
-          duration: k150msDuration,
-          child: IgnorePointer(
-            ignoring: childOpacity > 0.9 ? false : true,
-            child: smallTabBar ?? const SizedBox(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  bool _isShowDivider(double pixelsOffset) {
-    if (extendedTabBar != null && smallTabBar != null) {
-      return pixelsOffset > extendedTabBar!.height - smallTabBar!.height + 15;
-    } else if (extendedTabBar == null && smallTabBar != null) {
-      return pixelsOffset > 15;
-    } else {
-      return false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double statusBarHeight = MediaQuery.of(context).padding.top;
-
-    return SizedBox(
-      height: height + statusBarHeight,
-      child: AnimatedContainer(
-          duration: k150msDuration,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: _isShowDivider(pixelOffset) && !context.appTheme.isDarkTheme
-                  ? BorderSide(color: Colors.grey.shade300, width: 1.5)
-                  : BorderSide.none,
-            ),
-          ),
-          child: _animateChangingChild(height)),
-    );
-  }
-}
 
 class SmallTabBar extends StatelessWidget {
   const SmallTabBar({
@@ -111,6 +23,7 @@ class SmallTabBar extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
           margin: EdgeInsets.zero,
+          height: height + Gap.statusBarHeight(context),
           color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.7 : 0.5),
           child: child,
         ),
@@ -138,13 +51,13 @@ class ExtendedTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Transform(
-          transform: Matrix4.translationValues(0.0, -outerChildHeight / 2, 0.0),
-          child: CardItem(
+    return SizedBox(
+      height: height + Gap.statusBarHeight(context),
+      child: Stack(
+        children: [
+          CardItem(
             width: double.infinity,
-            height: double.infinity,
+            height: height + Gap.statusBarHeight(context) - outerChildHeight / 2,
             isGradient: context.appTheme.isDarkTheme ? false : true,
             color: backgroundColor ??
                 (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary),
@@ -159,9 +72,9 @@ class ExtendedTabBar extends StatelessWidget {
             elevation: context.appTheme.isDarkTheme ? 0 : 2,
             child: ClipRect(child: innerChild),
           ),
-        ),
-        Align(alignment: Alignment.bottomCenter, child: outerChild),
-      ],
+          Align(alignment: Alignment.bottomCenter, child: outerChild),
+        ],
+      ),
     );
   }
 }

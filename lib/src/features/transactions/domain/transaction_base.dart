@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
@@ -10,7 +8,7 @@ part 'regular_transaction.dart';
 part 'credit_transaction.dart';
 
 abstract interface class ITransferable {
-  final ObjectId? transferAccount;
+  final RegularAccount? transferAccount;
 
   ITransferable(this.transferAccount);
 }
@@ -20,7 +18,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
   final DateTime dateTime;
   final double amount;
   final String? note;
-  final ObjectId? account;
+  final Account? account;
 
   const BaseTransaction(
     super._databaseObject,
@@ -38,7 +36,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
+          Account.fromDatabaseWithNoDetails(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
@@ -50,7 +48,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
+          Account.fromDatabaseWithNoDetails(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
         );
@@ -61,8 +59,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
-          transferAccount: txn.transferAccount?.id,
+          Account.fromDatabaseWithNoDetails(txn.account),
+          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -72,11 +70,11 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
+          Account.fromDatabaseWithNoDetails(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
-          installmentAmount: txn.installmentAmount,
+          monthsToPay: txn.monthsToPay,
         );
 
       default:
@@ -85,8 +83,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          txn.account?.id,
-          transferAccount: txn.transferAccount?.id,
+          Account.fromDatabaseWithNoDetails(txn.account),
+          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
         );
     }
   }
@@ -96,8 +94,6 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
 interface class BaseTransactionWithCategory {
   final Category? category;
   final CategoryTag? categoryTag;
-
-  // TODO: Change all to ObjectID, prevent stack overflow, must get model from repository
 
   const BaseTransactionWithCategory(
     this.category,

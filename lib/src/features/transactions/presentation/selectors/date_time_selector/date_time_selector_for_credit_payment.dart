@@ -97,25 +97,37 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                               currentMonthView: _currentMonthView,
                               onActionButtonTap: (dateTime) {
                                 if (dateTime != null) {
-                                  _currentMonthView = dateTime;
+                                  if (widget.creditAccount!.canAddPaymentAt(dateTime)) {
+                                    _currentMonthView = dateTime;
 
-                                  _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
-                                  _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
+                                    _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                                    _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
 
-                                  widget.onChanged(_outputDateTime!, _outputStatement);
+                                    widget.onChanged(_outputDateTime!, _outputStatement);
+                                    context.pop();
+                                  } else {
+                                    // TODO: Do some styling
+                                    _showCustomCalendarDialog(
+                                        context: context,
+                                        builder: (_, __) {
+                                          return const AlertDialog(
+                                            content: EmptyInfo(
+                                              infoText:
+                                                  'You can only add payments since the statement contains the latest payment',
+                                            ),
+                                          );
+                                        });
+                                  }
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
-                                // if (selectedDay != null) {
-                                //   final statement = widget.creditAccount!.statementAt(selectedDay)!;
-                                //   // print('beginDate ${statement.startDate}');
-                                //   // print('endDate ${statement.endDate}');
-                                //   // print('ADB ${statement.averageDailyBalance}');
-                                //   // print('carryover ${statement.lastStatement.carryToThisStatement}');
-                                //   // print('interest ${statement.interest}');
-                                //   print('${statement.paymentAmountAt(selectedDay)}');
-                                //   print(statement.lastStatement.toString());
-                                // }
+                                if (selectedDay != null) {
+                                  final statement = widget.creditAccount!.statementAt(selectedDay);
+                                  print(widget.creditAccount!.statementsList);
+                                  print(statement.installmentTransactionsToPay);
+                                  print(statement.previousStatement.balance);
+                                  print(statement.previousStatement.balanceToPay);
+                                }
                                 return AnimatedSize(
                                   duration: k150msDuration,
                                   child: widget.creditAccount!.earliestPayableDate == null
@@ -277,7 +289,7 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
     if (widget.creditAccount == null) {
       throw ErrorDescription('Must specify a credit account first');
     }
-    final list = widget.creditAccount!.statements.map((e) => e.dueDate.onlyYearMonthDay);
+    final list = widget.creditAccount!.statementsList.map((e) => e.dueDate.onlyYearMonthDay);
     final dateTimeYMD = dateTime.onlyYearMonthDay;
     if (list.contains(dateTimeYMD)) {
       return true;

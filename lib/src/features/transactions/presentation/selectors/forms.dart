@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
 import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
+import '../../../accounts/domain/statement/statement.dart';
 import '../../../category/domain/category.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';

@@ -47,7 +47,7 @@ class CategoriesListScreen extends ConsumerWidget {
                   key: ValueKey(index),
                   iconPath: model.iconPath,
                   backgroundColor: model.backgroundColor,
-                  iconColor: model.color,
+                  iconColor: model.iconColor,
                   name: model.name,
                   onMenuTap: () {
                     showCustomModalBottomSheet(

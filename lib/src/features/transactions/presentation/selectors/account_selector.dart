@@ -48,7 +48,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       iconPath: currentAccount != null ? currentAccount!.iconPath : AppIcons.add,
       backgroundColor: currentAccount != null ? currentAccount!.backgroundColor : Colors.transparent,
       color: currentAccount != null
-          ? currentAccount!.color
+          ? currentAccount!.iconColor
           : context.appTheme.backgroundNegative.withOpacity(0.4),
       height: null,
       width: null,
@@ -101,7 +101,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                                     ? account.backgroundColor
                                     : Colors.transparent,
                             color: currentAccount?.databaseObject.id == account.databaseObject.id
-                                ? account.color
+                                ? account.iconColor
                                 : context.appTheme.backgroundNegative,
                             onTap: () => context.pop<Account>(account),
                             height: null,
