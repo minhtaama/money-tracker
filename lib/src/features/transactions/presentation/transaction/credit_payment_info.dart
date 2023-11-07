@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:realm/realm.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../routing/app_router.dart';
@@ -16,7 +17,7 @@ import '../../../accounts/domain/statement/statement.dart';
 import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
-class CreditPaymentInfo extends ConsumerWidget {
+class CreditPaymentInfo extends StatelessWidget {
   const CreditPaymentInfo({
     Key? key,
     required this.statement,
@@ -32,7 +33,7 @@ class CreditPaymentInfo extends ConsumerWidget {
   final void Function(DateTime)? onDateTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return !noBorder
         ? AnimatedContainer(
             duration: k150msDuration,
@@ -69,47 +70,148 @@ class CreditPaymentInfo extends ConsumerWidget {
   }
 }
 
-class _List extends StatelessWidget {
+class _List extends StatefulWidget {
   const _List({this.statement, this.onDateTap, this.chosenDateTime});
 
   final Statement? statement;
   final void Function(DateTime)? onDateTap;
   final DateTime? chosenDateTime;
 
-  Widget buildHeader(BuildContext context, {String? h1, String? h2, String? h3}) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+  @override
+  State<_List> createState() => _ListState();
+}
+
+class _ListState extends State<_List> {
+  final _key = GlobalKey();
+  double _height = 20;
+
+  List<_InstallmentPay> buildInstallmentTransactionTile(BuildContext context) {
+    if (txnsInstallment.isEmpty) {
+      return <_InstallmentPay>[];
+    }
+    final list = <_InstallmentPay>[];
+    for (int i = 0; i < txnsInstallment.length; i++) {
+      list.add(_InstallmentPay(
+        transaction: txnsInstallment[i],
+      ));
+    }
+    return list;
+  }
+
+  List<_Transaction> buildTransactionTile(BuildContext context, List<BaseCreditTransaction> transactions) {
+    final list = <_Transaction>[];
+
+    DateTime temp = Calendar.minDate;
+
+    for (int i = 0; i < transactions.length; i++) {
+      if (!transactions[i].dateTime.onlyYearMonthDay.isAtSameMomentAs(temp)) {
+        temp = transactions[i].dateTime.onlyYearMonthDay;
+        list.add(_Transaction(transaction: transactions[i], dateTime: temp, onDateTap: widget.onDateTap));
+      } else {
+        list.add(_Transaction(transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
+      }
+    }
+    return list;
+  }
+
+  List<_Transaction> buildTodayTransactionTile(
+      BuildContext context, List<BaseCreditTransaction> transactions, bool showList) {
+    if (!showList) {
+      return <_Transaction>[];
+    }
+
+    final list = <_Transaction>[_Transaction(dateTime: widget.chosenDateTime!, isToday: true)];
+
+    for (int i = 0; i < transactions.length; i++) {
+      list.add(_Transaction(
+        transaction: transactions[i],
+        dateTime: null,
+        onDateTap: widget.onDateTap,
+        isToday: true,
+      ));
+    }
+    return list;
+  }
+
+  @override
+  void initState() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _height = _key.currentContext!.size!.height;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant _List oldWidget) {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _height = _key.currentContext!.size!.height;
+      });
+    });
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      reverse: true,
+      child: Stack(
+        alignment: Alignment.centerLeft,
         children: [
-          h1 != null
-              ? Text(
-                  h1,
-                  style: kHeader4TextStyle.copyWith(color: AppColors.grey(context), fontSize: 12),
-                  textAlign: TextAlign.center,
-                )
-              : Gap.noGap,
-          h2 != null
-              ? Text(
-                  h2,
-                  style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
-                  textAlign: TextAlign.center,
-                )
-              : Gap.noGap,
-          h3 != null
-              ? Text(
-                  h3,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
-                  textAlign: TextAlign.center,
-                )
-              : Gap.noGap,
+          Container(
+            margin: const EdgeInsets.only(left: 13),
+            color: AppColors.greyBorder(context),
+            width: 1,
+            height: _height - 20,
+          ),
+          Column(
+            key: _key,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Header(
+                dateTime: widget.statement?.startDate,
+                verticalPadding: 4,
+                h1: 'Start of billing cycle',
+                h2: 'Balance: $balanceToPay ${context.currentSettings.currency.code} ${interest != '0' ? '+ $interest ${context.currentSettings.currency.code} interest' : ''}',
+              ),
+              ...buildInstallmentTransactionTile(context),
+              ...buildTransactionTile(context, txnsInBillingCycle),
+              ...buildTodayTransactionTile(
+                  context, txnsInChosenDateTime, widget.chosenDateTime!.isBefore(nextStatementDateTime)),
+              _Header(
+                dateTime: nextStatementDateTime,
+                h1: 'Start of grace period'.hardcoded,
+                h2: 'Statement day',
+              ),
+              ...buildTransactionTile(context, txnsInGracePeriod),
+              ...buildTodayTransactionTile(
+                  context, txnsInChosenDateTime, !widget.chosenDateTime!.isBefore(nextStatementDateTime)),
+              !widget.chosenDateTime!.isBefore(nextStatementDateTime)
+                  ? _Header(
+                      dateTime: widget.statement!.dueDate,
+                      h1: 'Payment due date'.hardcoded,
+                      h2: 'Pay-in-full before this day for interest-free',
+                    )
+                  : Gap.noGap,
+            ],
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget buildTransactionTile(BuildContext context, BaseCreditTransaction transaction) {
+class _Transaction extends StatelessWidget {
+  const _Transaction({this.transaction, this.dateTime, this.isToday = false, this.onDateTap});
+  final DateTime? dateTime;
+  final bool isToday;
+  final BaseCreditTransaction? transaction;
+  final void Function(DateTime)? onDateTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: CustomInkWell(
@@ -117,20 +219,96 @@ class _List extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: () => context.push(RoutePath.transaction, extra: transaction),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           child: Row(
             children: [
+              _DateTime(
+                dateTime: dateTime,
+                onDateTap: onDateTap,
+                isToday: isToday,
+              ),
+              transaction != null ? Gap.w4 : Gap.w8,
               Expanded(
-                child: _Details(
-                  transaction: transaction,
-                  currencyCode: context.currentSettings.currency.code,
-                  onDateTap: onDateTap,
-                ),
+                child: transaction != null
+                    ? _Details(
+                        transaction: transaction!,
+                        currencyCode: context.currentSettings.currency.code,
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Selected day',
+                            style: kHeader2TextStyle.copyWith(fontSize: 11, color: context.appTheme.primary),
+                          ),
+                          Text(
+                            'Pay for spending happens before',
+                            style: kHeader3TextStyle.copyWith(
+                                fontSize: 11, color: context.appTheme.primary.withOpacity(0.6)),
+                          )
+                        ],
+                      ),
               ),
               Gap.w16,
+              transaction != null && transaction is CreditSpending && (transaction as CreditSpending).hasInstallment
+                  ? TxnInstallmentIcon(transaction: transaction as CreditSpending, size: 16)
+                  : Gap.noGap,
+              Gap.w4,
+              transaction != null
+                  ? TxnAmount(
+                      currencyCode: context.currentSettings.currency.code,
+                      transaction: transaction!,
+                      fontSize: 14,
+                    )
+                  : Gap.noGap,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InstallmentPay extends StatelessWidget {
+  const _InstallmentPay({required this.transaction});
+  final CreditSpending transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: CustomInkWell(
+        inkColor: AppColors.grey(context),
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.push(RoutePath.transaction, extra: transaction),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Row(
+            children: [
+              const _DateTime(),
+              Gap.w4,
+              TxnCategoryIcon(transaction: transaction),
+              Gap.w4,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Installment',
+                      style: kHeader3TextStyle.copyWith(fontSize: 9, color: AppColors.grey(context)),
+                    ),
+                    TxnCategoryName(
+                      transaction: transaction,
+                      fontSize: 11,
+                    )
+                  ],
+                ),
+              ),
+              Gap.w4,
               TxnAmount(
                 currencyCode: context.currentSettings.currency.code,
                 transaction: transaction,
+                showPaymentAmount: true,
                 fontSize: 14,
               ),
             ],
@@ -139,100 +317,56 @@ class _List extends StatelessWidget {
       ),
     );
   }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({this.dateTime, required this.h1, this.h2, this.verticalPadding = 7});
+
+  final DateTime? dateTime;
+  final String h1;
+  final String? h2;
+  final double verticalPadding;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      reverse: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4, vertical: verticalPadding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          buildHeader(context,
-              h1: 'Last statement carry over:'.hardcoded,
-              h2: '$carryingOver ${context.currentSettings.currency.code}',
-              h3: statement?.previousStatement.interest == 0
-                  ? null
-                  : '(included $lastInterest ${context.currentSettings.currency.code} interest)'.hardcoded),
-          Gap.h8,
-          buildHeader(
-            context,
-            h1: 'Start of billing cycle:',
-            h3: statement?.startDate.getFormattedDate(),
+          _DateTime(
+            dateTime: dateTime,
+            noMonth: false,
           ),
-          ...List.generate(
-              txnsInBillingCycle.length, (index) => buildTransactionTile(context, txnsInBillingCycle[index])),
-          txnsInGracePeriod.isNotEmpty ? Gap.h8 : Gap.noGap,
-          txnsInGracePeriod.isNotEmpty
-              ? buildHeader(
-                  context,
-                  h1: 'Grace period:'.hardcoded,
-                  h3: nextStatementDateTime.getFormattedDate(),
-                )
-              : Gap.noGap,
-          ...List.generate(
-              txnsInGracePeriod.length, (index) => buildTransactionTile(context, txnsInGracePeriod[index])),
-          txnsInChosenDateTime.isNotEmpty ? Gap.h8 : Gap.noGap,
-          txnsInChosenDateTime.isNotEmpty
-              ? buildHeader(
-                  context,
-                  h1: 'Selected day:',
-                  h3: chosenDateTime!.getFormattedDate(),
-                )
-              : Gap.noGap,
-          ...List.generate(
-              txnsInChosenDateTime.length, (index) => buildTransactionTile(context, txnsInChosenDateTime[index])),
+          Gap.w8,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  h1,
+                  style: kHeader2TextStyle.copyWith(fontSize: 11, color: AppColors.grey(context)),
+                ),
+                h2 != null
+                    ? Text(
+                        h2!,
+                        style: kHeader3TextStyle.copyWith(fontSize: 11, color: AppColors.grey(context)),
+                      )
+                    : Gap.noGap,
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-extension _ListGetters on _List {
-  List<BaseCreditTransaction> get txnsInBillingCycle {
-    if (statement == null || chosenDateTime == null) {
-      return <BaseCreditTransaction>[];
-    }
-    return statement!.transactionsInBillingCycleBefore(chosenDateTime!);
-  }
-
-  List<BaseCreditTransaction> get txnsInGracePeriod {
-    if (statement == null || chosenDateTime == null) {
-      return <BaseCreditTransaction>[];
-    }
-    return statement!.transactionsInGracePeriodBefore(chosenDateTime!);
-  }
-
-  List<BaseCreditTransaction> get txnsInChosenDateTime {
-    if (statement == null || chosenDateTime == null) {
-      return <BaseCreditTransaction>[];
-    }
-    return statement!.transactionsIn(chosenDateTime!);
-  }
-
-  String? get lastInterest {
-    if (statement == null) {
-      return null;
-    }
-    return CalService.formatCurrency(statement!.previousStatement.interest, enableDecimalDigits: true);
-  }
-
-  String? get carryingOver {
-    if (statement == null) {
-      return null;
-    }
-    return CalService.formatCurrency(statement!.previousStatement.balanceToPay + statement!.previousStatement.interest,
-        enableDecimalDigits: true);
-  }
-
-  DateTime get nextStatementDateTime => statement!.startDate.copyWith(month: statement!.startDate.month + 1);
-}
-
 class _Details extends StatelessWidget {
-  const _Details({required this.transaction, required this.currencyCode, this.onDateTap});
+  const _Details({required this.transaction, required this.currencyCode});
 
   final BaseCreditTransaction transaction;
   final String currencyCode;
-  final void Function(DateTime)? onDateTap;
 
   String? get _categoryTag {
     final txn = transaction;
@@ -250,11 +384,6 @@ class _Details extends StatelessWidget {
         ? Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TxnDateTime(
-                transaction: transaction,
-                onDateTap: onDateTap,
-              ),
-              Gap.w4,
               TxnCategoryIcon(transaction: transaction as CreditSpending),
               Gap.w4,
               Expanded(
@@ -282,11 +411,6 @@ class _Details extends StatelessWidget {
         : Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TxnDateTime(
-                transaction: transaction,
-                onDateTap: onDateTap,
-              ),
-              Gap.w4,
               SvgIcon(
                 AppIcons.receiptCheck,
                 color: context.appTheme.positive,
@@ -302,4 +426,112 @@ class _Details extends StatelessWidget {
             ],
           );
   }
+}
+
+class _DateTime extends StatelessWidget {
+  const _DateTime({this.dateTime, this.onDateTap, this.noMonth = true, this.isToday = false});
+
+  final DateTime? dateTime;
+  final void Function(DateTime)? onDateTap;
+  final bool noMonth;
+  final bool isToday;
+
+  @override
+  Widget build(BuildContext context) {
+    return dateTime != null
+        ? Container(
+            decoration: BoxDecoration(
+              color: isToday ? context.appTheme.primary : AppColors.greyBgr(context),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            width: 20,
+            constraints: const BoxConstraints(minHeight: 18),
+            padding: const EdgeInsets.all(3),
+            child: Center(
+              child: CustomInkWell(
+                inkColor: AppColors.grey(context),
+                borderRadius: BorderRadius.circular(1000),
+                onTap: onDateTap != null ? () => onDateTap!.call(dateTime!.onlyYearMonthDay) : null,
+                child: Column(
+                  children: [
+                    Text(
+                      dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
+                      style: kHeader2TextStyle.copyWith(
+                          color: isToday ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                          fontSize: 10,
+                          height: 1),
+                    ),
+                    noMonth
+                        ? Gap.noGap
+                        : Text(
+                            dateTime!.getFormattedDate(hasDay: false, hasYear: false),
+                            style: kHeader3TextStyle.copyWith(
+                                color: isToday ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                                fontSize: 10,
+                                height: 1),
+                          ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.only(left: 6, right: 6),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isToday ? context.appTheme.primary : AppColors.greyBgr(context),
+                borderRadius: BorderRadius.circular(1000),
+              ),
+              height: 7,
+              width: 7,
+            ),
+          );
+  }
+}
+
+extension _ListGetters on State<_List> {
+  List<CreditSpending> get txnsInstallment {
+    if (widget.statement == null || widget.chosenDateTime == null) {
+      return <CreditSpending>[];
+    }
+    return widget.statement!.installmentTransactionsToPay;
+  }
+
+  List<BaseCreditTransaction> get txnsInBillingCycle {
+    if (widget.statement == null || widget.chosenDateTime == null) {
+      return <BaseCreditTransaction>[];
+    }
+    return widget.statement!.transactionsInBillingCycleBefore(widget.chosenDateTime!);
+  }
+
+  List<BaseCreditTransaction> get txnsInGracePeriod {
+    if (widget.statement == null || widget.chosenDateTime == null) {
+      return <BaseCreditTransaction>[];
+    }
+    return widget.statement!.transactionsInGracePeriodBefore(widget.chosenDateTime!);
+  }
+
+  List<BaseCreditTransaction> get txnsInChosenDateTime {
+    if (widget.statement == null || widget.chosenDateTime == null) {
+      return <BaseCreditTransaction>[];
+    }
+    return widget.statement!.transactionsIn(widget.chosenDateTime!);
+  }
+
+  String? get interest {
+    if (widget.statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(widget.statement!.previousStatement.interest, enableDecimalDigits: true);
+  }
+
+  String? get balanceToPay {
+    if (widget.statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(widget.statement!.previousStatement.balanceToPay, enableDecimalDigits: true);
+  }
+
+  DateTime get nextStatementDateTime =>
+      widget.statement!.startDate.copyWith(month: widget.statement!.startDate.month + 1);
 }

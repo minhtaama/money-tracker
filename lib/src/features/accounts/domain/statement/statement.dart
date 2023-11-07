@@ -86,13 +86,17 @@ abstract class Statement {
     double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
     for (BaseCreditTransaction txn in transactionsInGracePeriod) {
-      if (txn is CreditSpending && !txn.hasInstallment && txn.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
+      if (txn is CreditSpending &&
+          !txn.hasInstallment &&
+          txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
         spentInGracePeriodBeforeDateTimeExcludeInstallments += txn.amount;
       }
     }
 
     for (BaseCreditTransaction txn in transactionsInBillingCycle) {
-      if (txn is CreditSpending && !txn.hasInstallment && txn.dateTime.onlyYearMonthDay.isBefore(dateTime)) {
+      if (txn is CreditSpending &&
+          !txn.hasInstallment &&
+          txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
         spentInBillingCycleBeforeDateTimeExcludeInstallments += txn.amount;
       }
     }
