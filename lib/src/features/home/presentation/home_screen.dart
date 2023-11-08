@@ -143,8 +143,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         late DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         late DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        print('a');
-
         List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listenManual(databaseChangesRealmProvider, (_, __) {

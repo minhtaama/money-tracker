@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
-import 'package:realm/realm.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../routing/app_router.dart';
@@ -85,27 +84,32 @@ class _ListState extends State<_List> {
   final _key = GlobalKey();
   double _height = 20;
 
-  List<_InstallmentPay> buildInstallmentTransactionTile(BuildContext context) {
+  List<_InstallmentPayTransaction> buildInstallmentTransactionTile(BuildContext context) {
     if (txnsInstallment.isEmpty) {
-      return <_InstallmentPay>[];
+      return <_InstallmentPayTransaction>[];
     }
-    final list = <_InstallmentPay>[];
+    final list = <_InstallmentPayTransaction>[];
     for (int i = 0; i < txnsInstallment.length; i++) {
-      list.add(_InstallmentPay(
+      list.add(_InstallmentPayTransaction(
         transaction: txnsInstallment[i],
       ));
     }
     return list;
   }
 
-  List<_Transaction> buildTransactionTile(BuildContext context, List<BaseCreditTransaction> transactions) {
+  List<_Transaction> buildTransactionBeforeTile(BuildContext context, List<BaseCreditTransaction> transactions) {
     final list = <_Transaction>[];
 
     DateTime temp = Calendar.minDate;
 
     for (int i = 0; i < transactions.length; i++) {
-      if (!transactions[i].dateTime.onlyYearMonthDay.isAtSameMomentAs(temp)) {
-        temp = transactions[i].dateTime.onlyYearMonthDay;
+      BaseCreditTransaction txn = transactions[i];
+      DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
+      if (txnDateTime.isAtSameMomentAs(widget.statement!.startDate) ||
+          txnDateTime.isAtSameMomentAs(nextStatementDateTime)) {
+        list.add(_Transaction(transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
+      } else if (!txnDateTime.isAtSameMomentAs(temp)) {
+        temp = txnDateTime;
         list.add(_Transaction(transaction: transactions[i], dateTime: temp, onDateTap: widget.onDateTap));
       } else {
         list.add(_Transaction(transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
@@ -114,20 +118,28 @@ class _ListState extends State<_List> {
     return list;
   }
 
-  List<_Transaction> buildTodayTransactionTile(
-      BuildContext context, List<BaseCreditTransaction> transactions, bool showList) {
+  List<_Transaction> buildTodayTransactionTile(BuildContext context, List<BaseCreditTransaction> transactions,
+      {bool showList = true, bool showTitle = true, String fullPaymentAmount = ''}) {
     if (!showList) {
       return <_Transaction>[];
     }
 
-    final list = <_Transaction>[_Transaction(dateTime: widget.chosenDateTime!, isToday: true)];
+    final list = <_Transaction>[];
+
+    if (showTitle) {
+      list.add(_Transaction(
+        dateTime: widget.chosenDateTime!,
+        isSelectedDay: true,
+        fullPaymentAmount: fullPaymentAmount,
+      ));
+    }
 
     for (int i = 0; i < transactions.length; i++) {
       list.add(_Transaction(
         transaction: transactions[i],
         dateTime: null,
         onDateTap: widget.onDateTap,
-        isToday: true,
+        isSelectedDay: true,
       ));
     }
     return list;
@@ -174,22 +186,33 @@ class _ListState extends State<_List> {
                 dateTime: widget.statement?.startDate,
                 verticalPadding: 4,
                 h1: 'Start of billing cycle',
-                h2: 'Balance: $balanceToPay ${context.currentSettings.currency.code} ${interest != '0' ? '+ $interest ${context.currentSettings.currency.code} interest' : ''}',
+                h2: 'Carry: $balanceToPay ${context.currentSettings.currency.code} ${interest != '0' ? '+ $interest ${context.currentSettings.currency.code} interest' : ''}',
               ),
               ...buildInstallmentTransactionTile(context),
-              ...buildTransactionTile(context, txnsInBillingCycle),
-              ...buildTodayTransactionTile(
-                  context, txnsInChosenDateTime, widget.chosenDateTime!.isBefore(nextStatementDateTime)),
-              _Header(
-                dateTime: nextStatementDateTime,
-                h1: 'Start of grace period'.hardcoded,
-                h2: 'Statement day',
-              ),
-              ...buildTransactionTile(context, txnsInGracePeriod),
-              ...buildTodayTransactionTile(
-                  context, txnsInChosenDateTime, !widget.chosenDateTime!.isBefore(nextStatementDateTime)),
+              ...buildTransactionBeforeTile(context, txnsInBillingCycle),
+              ...buildTodayTransactionTile(context, txnsInChosenDateTime,
+                  showList: widget.chosenDateTime!.isBefore(nextStatementDateTime),
+                  fullPaymentAmount: fullPaymentAmount!),
               !widget.chosenDateTime!.isBefore(nextStatementDateTime)
                   ? _Header(
+                      isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
+                      dateTime: nextStatementDateTime,
+                      h1: 'Start of grace period'.hardcoded,
+                      h2: 'Statement day',
+                    )
+                  : Gap.noGap,
+              ...buildTransactionBeforeTile(context, txnsInGracePeriod),
+              ...buildTodayTransactionTile(
+                context,
+                txnsInChosenDateTime,
+                showTitle: !widget.chosenDateTime!.isBefore(nextStatementDateTime) &&
+                    !widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate) &&
+                    !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
+                fullPaymentAmount: fullPaymentAmount!,
+              ),
+              widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate)
+                  ? _Header(
+                      isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
                       dateTime: widget.statement!.dueDate,
                       h1: 'Payment due date'.hardcoded,
                       h2: 'Pay-in-full before this day for interest-free',
@@ -204,9 +227,11 @@ class _ListState extends State<_List> {
 }
 
 class _Transaction extends StatelessWidget {
-  const _Transaction({this.transaction, this.dateTime, this.isToday = false, this.onDateTap});
+  const _Transaction(
+      {this.transaction, this.dateTime, this.isSelectedDay = false, this.onDateTap, this.fullPaymentAmount});
+  final String? fullPaymentAmount;
   final DateTime? dateTime;
-  final bool isToday;
+  final bool isSelectedDay;
   final BaseCreditTransaction? transaction;
   final void Function(DateTime)? onDateTap;
 
@@ -217,7 +242,7 @@ class _Transaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction),
+        onTap: transaction != null ? () => context.push(RoutePath.transaction, extra: transaction) : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           child: Row(
@@ -225,7 +250,7 @@ class _Transaction extends StatelessWidget {
               _DateTime(
                 dateTime: dateTime,
                 onDateTap: onDateTap,
-                isToday: isToday,
+                isSelectedDay: isSelectedDay,
               ),
               transaction != null ? Gap.w4 : Gap.w8,
               Expanded(
@@ -242,9 +267,8 @@ class _Transaction extends StatelessWidget {
                             style: kHeader2TextStyle.copyWith(fontSize: 11, color: context.appTheme.primary),
                           ),
                           Text(
-                            'Pay for spending happens before',
-                            style: kHeader3TextStyle.copyWith(
-                                fontSize: 11, color: context.appTheme.primary.withOpacity(0.6)),
+                            'Maximum payable: ${fullPaymentAmount ?? ''} ${context.currentSettings.currency.code}',
+                            style: kHeader3TextStyle.copyWith(fontSize: 11, color: context.appTheme.primary),
                           )
                         ],
                       ),
@@ -269,8 +293,8 @@ class _Transaction extends StatelessWidget {
   }
 }
 
-class _InstallmentPay extends StatelessWidget {
-  const _InstallmentPay({required this.transaction});
+class _InstallmentPayTransaction extends StatelessWidget {
+  const _InstallmentPayTransaction({required this.transaction});
   final CreditSpending transaction;
 
   @override
@@ -320,8 +344,9 @@ class _InstallmentPay extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({this.dateTime, required this.h1, this.h2, this.verticalPadding = 7});
+  const _Header({this.dateTime, required this.h1, this.h2, this.verticalPadding = 3, this.isSelectedDay = false});
 
+  final bool isSelectedDay;
   final DateTime? dateTime;
   final String h1;
   final String? h2;
@@ -330,11 +355,12 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: verticalPadding),
+      padding: EdgeInsets.only(left: 4, right: 4, top: verticalPadding + 4, bottom: verticalPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _DateTime(
+            isSelectedDay: isSelectedDay,
             dateTime: dateTime,
             noMonth: false,
           ),
@@ -345,12 +371,14 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 11, color: AppColors.grey(context)),
+                  style: kHeader2TextStyle.copyWith(
+                      fontSize: 11, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(fontSize: 11, color: AppColors.grey(context)),
+                        style: kHeader3TextStyle.copyWith(
+                            fontSize: 11, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
                       )
                     : Gap.noGap,
               ],
@@ -429,19 +457,19 @@ class _Details extends StatelessWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime({this.dateTime, this.onDateTap, this.noMonth = true, this.isToday = false});
+  const _DateTime({this.dateTime, this.onDateTap, this.noMonth = true, this.isSelectedDay = false});
 
   final DateTime? dateTime;
   final void Function(DateTime)? onDateTap;
   final bool noMonth;
-  final bool isToday;
+  final bool isSelectedDay;
 
   @override
   Widget build(BuildContext context) {
     return dateTime != null
         ? Container(
             decoration: BoxDecoration(
-              color: isToday ? context.appTheme.primary : AppColors.greyBgr(context),
+              color: isSelectedDay ? context.appTheme.primary : AppColors.greyBgr(context),
               borderRadius: BorderRadius.circular(8),
             ),
             width: 20,
@@ -457,7 +485,7 @@ class _DateTime extends StatelessWidget {
                     Text(
                       dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
                       style: kHeader2TextStyle.copyWith(
-                          color: isToday ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                          color: isSelectedDay ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
                           fontSize: 10,
                           height: 1),
                     ),
@@ -466,7 +494,9 @@ class _DateTime extends StatelessWidget {
                         : Text(
                             dateTime!.getFormattedDate(hasDay: false, hasYear: false),
                             style: kHeader3TextStyle.copyWith(
-                                color: isToday ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                                color: isSelectedDay
+                                    ? context.appTheme.primaryNegative
+                                    : context.appTheme.backgroundNegative,
                                 fontSize: 10,
                                 height: 1),
                           ),
@@ -479,7 +509,7 @@ class _DateTime extends StatelessWidget {
             padding: const EdgeInsets.only(left: 6, right: 6),
             child: Container(
               decoration: BoxDecoration(
-                color: isToday ? context.appTheme.primary : AppColors.greyBgr(context),
+                color: isSelectedDay ? context.appTheme.primary : AppColors.greyBgr(context),
                 borderRadius: BorderRadius.circular(1000),
               ),
               height: 7,
@@ -534,4 +564,12 @@ extension _ListGetters on State<_List> {
 
   DateTime get nextStatementDateTime =>
       widget.statement!.startDate.copyWith(month: widget.statement!.startDate.month + 1);
+
+  String? get fullPaymentAmount {
+    if (widget.statement == null) {
+      return null;
+    }
+    return CalService.formatCurrency(widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!),
+        enableDecimalDigits: true);
+  }
 }

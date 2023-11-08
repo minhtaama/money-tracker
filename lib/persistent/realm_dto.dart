@@ -187,4 +187,6 @@ class _SettingsDb {
 
   /// Currently, Realm do not support Dart Enum
   int currencyIndex = 101; // Currency.usd
+
+  //bool showDecimalDigits = false;
 }

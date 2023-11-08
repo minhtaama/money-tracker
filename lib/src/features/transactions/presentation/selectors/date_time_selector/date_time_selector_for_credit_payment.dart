@@ -238,7 +238,6 @@ extension _Details on _DateTimeSelectorForCreditPaymentState {
                   _hasSpendingTransaction(date)
                       ? icon(AppIcons.receiptDollar, color: context.appTheme.negative)
                       : Gap.noGap,
-                  // TODO: Some how date has payment is not show icon
                   _hasPaymentTransaction(date)
                       ? icon(AppIcons.receiptCheck, color: context.appTheme.positive)
                       : Gap.noGap,

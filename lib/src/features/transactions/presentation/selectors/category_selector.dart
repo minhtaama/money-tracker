@@ -40,9 +40,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentCategory != null ? currentCategory!.iconPath : AppIcons.add,
       backgroundColor: currentCategory != null ? currentCategory!.backgroundColor : Colors.transparent,
-      color: currentCategory != null
-          ? currentCategory!.iconColor
-          : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color:
+          currentCategory != null ? currentCategory!.iconColor : context.appTheme.backgroundNegative.withOpacity(0.4),
       width: null,
       height: null,
       border: currentCategory != null
@@ -57,8 +56,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription(
-              'Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModalBottomSheet<Category>(
@@ -92,10 +90,9 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                                 ? category.backgroundColor
                                 : context.appTheme.backgroundNegative.withOpacity(0.4),
                           ),
-                          backgroundColor:
-                              currentCategory?.databaseObject.id == category.databaseObject.id
-                                  ? category.backgroundColor
-                                  : Colors.transparent,
+                          backgroundColor: currentCategory?.databaseObject.id == category.databaseObject.id
+                              ? category.backgroundColor
+                              : Colors.transparent,
                           color: currentCategory?.databaseObject.id == category.databaseObject.id
                               ? category.iconColor
                               : context.appTheme.backgroundNegative,
@@ -125,13 +122,11 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                     Gap.h48,
                   ],
                 ),
-          //TODO: Create an empty list widget
         );
 
         setState(() {
           if (returnedValue != null) {
-            if (currentCategory != null &&
-                currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (currentCategory != null && currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
               currentCategory = null;
               widget.onChangedCategory(currentCategory);
             } else {

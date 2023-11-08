@@ -48,8 +48,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   double get _fullPaymentAmount =>
       _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
 
-  String get _fullPaymentFormattedAmount =>
-      CalService.formatCurrency(_fullPaymentAmount, enableDecimalDigits: true);
+  String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount, enableDecimalDigits: true);
 
   bool get _hidePayment => _statement == null;
 
@@ -170,7 +169,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   ],
                 ),
                 Gap.h16,
-                Text('${_statement?.getFullPaymentAmountAt(_dateTime ?? DateTime.now()) ?? 0}'),
                 _PaymentAmountTip(
                     onMinimumPaymentTap: () {},
                     onFullPaymentTap: () {
