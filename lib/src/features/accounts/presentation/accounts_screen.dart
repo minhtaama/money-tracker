@@ -68,8 +68,7 @@ class AccountsScreen extends ConsumerWidget {
                                 // Account Name
                                 child: Text(
                                   model.name,
-                                  style:
-                                      kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
+                                  style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -85,8 +84,7 @@ class AccountsScreen extends ConsumerWidget {
                                       ),
                                       child: Text(
                                         'Credit',
-                                        style: kHeader4TextStyle.copyWith(
-                                            color: model.backgroundColor, fontSize: 12),
+                                        style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
                                       ),
                                     )
                                   : const SizedBox(),
@@ -108,7 +106,7 @@ class AccountsScreen extends ConsumerWidget {
                               Gap.w8,
                               Expanded(
                                 child: Text(
-                                  CalService.formatCurrency(model.availableAmount),
+                                  CalService.formatCurrency(context, model.availableAmount),
                                   style: kHeader1TextStyle.copyWith(color: model.iconColor),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,

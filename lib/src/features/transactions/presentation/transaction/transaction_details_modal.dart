@@ -136,7 +136,7 @@ class _Amount extends ConsumerWidget {
           child: Row(
             children: [
               Text(
-                CalService.formatCurrency(transaction.amount),
+                CalService.formatCurrency(context, transaction.amount),
                 style: kHeader1TextStyle.copyWith(
                   color: _color(context),
                 ),

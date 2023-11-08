@@ -169,6 +169,7 @@ class _TransferFeeDb {
 }
 
 /////////////////////////////////////////////// SETTINGS ////////////////////////////////////////////////
+///////////////////////////////// ALL FIELDS MUST HAVE A DEFAULT VALUE //////////////////////////////////
 @RealmModel()
 class _SettingsDb {
   @PrimaryKey()
@@ -188,5 +189,6 @@ class _SettingsDb {
   /// Currently, Realm do not support Dart Enum
   int currencyIndex = 101; // Currency.usd
 
-  //bool showDecimalDigits = false;
+  bool showBalanceInHomeScreen = true;
+  bool showDecimalDigits = false;
 }

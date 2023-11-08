@@ -13,12 +13,12 @@ class SmallHomeTab extends ConsumerWidget {
   const SmallHomeTab({
     Key? key,
     required this.secondaryTitle,
-    required this.hideNumber,
+    required this.showNumber,
     required this.onEyeTap,
   }) : super(key: key);
 
   final String secondaryTitle;
-  final bool hideNumber;
+  final bool showNumber;
   final VoidCallback onEyeTap;
 
   @override
@@ -36,12 +36,12 @@ class SmallHomeTab extends ConsumerWidget {
     return PageHeading(
       leadingTitle: context.currentSettings.currency.code,
       title: CalService.formatCurrency(
+        context,
         totalBalance,
-        hideNumber: hideNumber,
       ),
       secondaryTitle: secondaryTitle,
       trailing: RoundedIconButton(
-        iconPath: hideNumber ? AppIcons.eye : AppIcons.eyeSlash,
+        iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
         backgroundColor: Colors.transparent,
         iconColor: context.appTheme.backgroundNegative,
         onTap: onEyeTap,

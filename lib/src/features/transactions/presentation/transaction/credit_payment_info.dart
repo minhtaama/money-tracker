@@ -186,13 +186,13 @@ class _ListState extends State<_List> {
                 dateTime: widget.statement?.startDate,
                 verticalPadding: 4,
                 h1: 'Start of billing cycle',
-                h2: 'Carry: $balanceToPay ${context.currentSettings.currency.code} ${interest != '0' ? '+ $interest ${context.currentSettings.currency.code} interest' : ''}',
+                h2: 'Carry: ${balanceToPay(context)} ${context.currentSettings.currency.code} ${interest(context) != '0' ? '+ ${interest(context)} ${context.currentSettings.currency.code} interest' : ''}',
               ),
               ...buildInstallmentTransactionTile(context),
               ...buildTransactionBeforeTile(context, txnsInBillingCycle),
               ...buildTodayTransactionTile(context, txnsInChosenDateTime,
                   showList: widget.chosenDateTime!.isBefore(nextStatementDateTime),
-                  fullPaymentAmount: fullPaymentAmount!),
+                  fullPaymentAmount: fullPaymentAmount(context)!),
               !widget.chosenDateTime!.isBefore(nextStatementDateTime)
                   ? _Header(
                       isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
@@ -208,7 +208,7 @@ class _ListState extends State<_List> {
                 showTitle: !widget.chosenDateTime!.isBefore(nextStatementDateTime) &&
                     !widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate) &&
                     !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
-                fullPaymentAmount: fullPaymentAmount!,
+                fullPaymentAmount: fullPaymentAmount(context)!,
               ),
               widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate)
                   ? _Header(
@@ -548,28 +548,30 @@ extension _ListGetters on State<_List> {
     return widget.statement!.transactionsIn(widget.chosenDateTime!);
   }
 
-  String? get interest {
+  String? interest(BuildContext context) {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(widget.statement!.previousStatement.interest, enableDecimalDigits: true);
+    return CalService.formatCurrency(context, widget.statement!.previousStatement.interest);
   }
 
-  String? get balanceToPay {
+  String? balanceToPay(BuildContext context) {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(widget.statement!.previousStatement.balanceToPay, enableDecimalDigits: true);
+    return CalService.formatCurrency(context, widget.statement!.previousStatement.balanceToPay);
   }
 
   DateTime get nextStatementDateTime =>
       widget.statement!.startDate.copyWith(month: widget.statement!.startDate.month + 1);
 
-  String? get fullPaymentAmount {
+  String? fullPaymentAmount(BuildContext context) {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!),
-        enableDecimalDigits: true);
+    return CalService.formatCurrency(
+        context,
+        widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!,
+            withDecimalDigits: context.currentSettings.showDecimalDigits));
   }
 }

@@ -45,10 +45,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   String get _calOutputFormattedAmount => _controller.text;
 
-  double get _fullPaymentAmount =>
-      _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
+  double _fullPaymentAmount(BuildContext context) => _statement == null || _dateTime == null
+      ? 0
+      : _statement!.getFullPaymentAmountAt(_dateTime!, withDecimalDigits: context.currentSettings.showDecimalDigits);
 
-  String get _fullPaymentFormattedAmount => CalService.formatCurrency(_fullPaymentAmount, enableDecimalDigits: true);
+  String _fullPaymentFormattedAmount(BuildContext context) =>
+      CalService.formatCurrency(context, _fullPaymentAmount(context));
 
   bool get _hidePayment => _statement == null;
 
@@ -157,7 +159,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         hintText: 'Payment Amount',
                         controller: _controller,
                         focusColor: context.appTheme.primary,
-                        validator: (_) => _calculatorValidator(),
+                        validator: (_) => _calculatorValidator(context),
                         formattedResultOutput: (value) {
                           setState(() {
                             _controller.text = value;
@@ -172,7 +174,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 _PaymentAmountTip(
                     onMinimumPaymentTap: () {},
                     onFullPaymentTap: () {
-                      _controller.text = _fullPaymentFormattedAmount;
+                      _controller.text = _fullPaymentFormattedAmount(context);
                     }),
               ],
             ),
@@ -265,7 +267,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     return null;
   }
 
-  String? _calculatorValidator() {
+  String? _calculatorValidator(BuildContext context) {
     if (_outputAmount == null || _outputAmount == 0) {
       return 'Invalid amount'.hardcoded;
     }
@@ -275,7 +277,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     // if (_statement!.balanceAtTheEndOfGracePeriod <= 0) {
     //   return 'This statement has paid in full'.hardcoded;
     // }
-    if (_outputAmount! > CalService.formatToDouble(_fullPaymentFormattedAmount)!) {
+    if (_outputAmount! > CalService.formatToDouble(_fullPaymentFormattedAmount(context))!) {
       return 'Value is higher than full payment amount'.hardcoded;
     }
     return null;

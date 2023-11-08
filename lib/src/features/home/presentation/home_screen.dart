@@ -5,8 +5,10 @@ import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
 import 'package:money_tracker_app/src/features/home/presentation/summary_card.dart';
+import 'package:money_tracker_app/src/features/settings/data/settings_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
@@ -26,6 +28,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+  late final settingsController = ref.read(settingsControllerProvider.notifier);
 
   late final PageController _controller = PageController(initialPage: _initialPageIndex);
 
@@ -36,9 +39,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late DateTime _displayDate = _today;
 
   bool _showCurrentDateButton = false;
-
-  // TODO: Save this to settings repo
-  bool _hideTotalBalance = false;
 
   // TODO: filter
   // DateTime? _minDate;
@@ -112,19 +112,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Save this to settings repo
+    bool showTotalBalance = context.currentSettings.showBalanceInHomeScreen;
     return CustomTabPageWithPageView(
       controller: _controller,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
           secondaryTitle: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-          hideNumber: _hideTotalBalance,
-          onEyeTap: () => setState(() => _hideTotalBalance = !_hideTotalBalance),
+          showNumber: showTotalBalance,
+          onEyeTap: () {
+            setState(() => showTotalBalance = !showTotalBalance);
+            settingsController.set(showBalanceInHomeScreen: showTotalBalance);
+          },
         ),
       ),
       extendedTabBar: ExtendedTabBar(
         innerChild: ExtendedHomeTab(
-          hideNumber: _hideTotalBalance,
-          onEyeTap: () => setState(() => _hideTotalBalance = !_hideTotalBalance),
+          showNumber: showTotalBalance,
+          onEyeTap: () {
+            setState(() => showTotalBalance = !showTotalBalance);
+            settingsController.set(showBalanceInHomeScreen: showTotalBalance);
+          },
         ),
         outerChild: DateSelector(
           dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),

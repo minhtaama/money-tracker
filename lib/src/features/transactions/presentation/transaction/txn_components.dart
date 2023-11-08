@@ -268,7 +268,7 @@ class TxnAmount extends StatelessWidget {
       children: [
         Text(
           CalService.formatCurrency(
-              showPaymentAmount ? (transaction as CreditSpending).paymentAmount : transaction.amount),
+              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount : transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
           style: kHeader2TextStyle.copyWith(color: _color(context, transaction), fontSize: fontSize ?? 15),

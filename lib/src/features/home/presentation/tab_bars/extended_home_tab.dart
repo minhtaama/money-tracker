@@ -14,8 +14,8 @@ import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
 class ExtendedHomeTab extends StatelessWidget {
-  const ExtendedHomeTab({Key? key, required this.hideNumber, required this.onEyeTap}) : super(key: key);
-  final bool hideNumber;
+  const ExtendedHomeTab({Key? key, required this.showNumber, required this.onEyeTap}) : super(key: key);
+  final bool showNumber;
   final VoidCallback onEyeTap;
 
   @override
@@ -26,7 +26,7 @@ class ExtendedHomeTab extends StatelessWidget {
       padding: EdgeInsets.zero,
       children: [
         TotalMoney(
-          hideNumber: hideNumber,
+          showNumber: showNumber,
           onEyeTap: onEyeTap,
         ),
         const WelcomeText(),
@@ -164,11 +164,11 @@ class WelcomeText extends StatelessWidget {
 class TotalMoney extends ConsumerWidget {
   const TotalMoney({
     super.key,
-    required this.hideNumber,
+    required this.showNumber,
     required this.onEyeTap,
   });
 
-  final bool hideNumber;
+  final bool showNumber;
   final VoidCallback onEyeTap;
 
   @override
@@ -199,7 +199,7 @@ class TotalMoney extends ConsumerWidget {
         Gap.w8,
         Expanded(
           child: EasyRichText(
-            CalService.formatCurrency(totalBalance, hideNumber: hideNumber),
+            CalService.formatCurrency(context, totalBalance),
             defaultStyle: kHeader2TextStyle.copyWith(
               color: context.appTheme.isDarkTheme
                   ? context.appTheme.backgroundNegative
@@ -222,7 +222,7 @@ class TotalMoney extends ConsumerWidget {
         ),
         Gap.w8,
         RoundedIconButton(
-          iconPath: hideNumber ? AppIcons.eye : AppIcons.eyeSlash,
+          iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
           backgroundColor: Colors.transparent,
           iconColor: context.appTheme.backgroundNegative,
           onTap: onEyeTap,

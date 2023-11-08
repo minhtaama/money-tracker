@@ -18,9 +18,11 @@ class SettingTileToggle extends StatefulWidget {
   final String title;
   final int initialValueIndex;
   final List<String>? valueLabels;
+
+  /// Index 0 means off
   final ValueChanged<int> onTap;
 
-  /// Last element in list represent Off
+  /// First element in list represent Off
   final int valuesCount;
 
   @override
@@ -52,7 +54,7 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
   Widget build(BuildContext context) {
     return CustomTile(
       title: widget.title,
-      secondaryTitle: widget.valueLabels![currentIndex],
+      secondaryTitle: widget.valueLabels?[currentIndex],
       trailing: _AnimatedToggle(
         currentValueIndex: currentIndex,
         valuesCount: widget.valuesCount,
@@ -66,9 +68,7 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
 }
 
 class _AnimatedToggle extends StatelessWidget {
-  const _AnimatedToggle(
-      {Key? key, required this.currentValueIndex, this.valuesCount = 2})
-      : super(key: key);
+  const _AnimatedToggle({Key? key, required this.currentValueIndex, this.valuesCount = 2}) : super(key: key);
 
   final int currentValueIndex;
 

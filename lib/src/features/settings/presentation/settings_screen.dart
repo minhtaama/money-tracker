@@ -59,6 +59,14 @@ class SettingsScreen extends ConsumerWidget {
               ),
               onTap: () => context.push(RoutePath.setCurrency),
             ),
+            SettingTileToggle(
+              title: 'With decimal digits',
+              onTap: (int index) {
+                settingsController.set(showDecimalDigits: index == 0 ? false : true);
+              },
+              valuesCount: 2,
+              initialValueIndex: settingsObject.showDecimalDigits ? 1 : 0,
+            ),
           ]),
           CustomSection(
             title: 'Theme',

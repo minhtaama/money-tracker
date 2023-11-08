@@ -10,11 +10,19 @@ class SettingsController extends StateNotifier<SettingsData> {
 
   final Realm realm;
 
-  Future<void> set({ThemeType? themeType, int? themeIndex, Currency? currency}) async {
+  Future<void> set({
+    ThemeType? themeType,
+    int? themeIndex,
+    Currency? currency,
+    bool? showBalanceInHomeScreen,
+    bool? showDecimalDigits,
+  }) async {
     state = state.copyWith(
       themeType: themeType,
       themeIndex: themeIndex,
       currency: currency,
+      showBalanceInHomeScreen: showBalanceInHomeScreen,
+      showDecimalDigits: showDecimalDigits,
     );
     realm.write(() => realm.add<SettingsDb>(state.toDatabase(), update: true));
   }

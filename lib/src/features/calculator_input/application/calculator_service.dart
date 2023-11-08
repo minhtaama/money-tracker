@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CalService {
-  static String formatCurrency(double value, {bool enableDecimalDigits = false, bool hideNumber = false}) {
+  static String formatCurrency(BuildContext context, double value) {
     NumberFormat formatter;
 
     if (value >= 1000000000.0) {
@@ -14,9 +16,9 @@ class CalService {
       formatter = NumberFormat('###,###.##');
       return '${formatter.format(shortValue)} M';
     }
-    formatter = NumberFormat.decimalPatternDigits(decimalDigits: enableDecimalDigits ? 2 : 0);
+    formatter = NumberFormat.decimalPatternDigits(decimalDigits: context.currentSettings.showDecimalDigits ? 2 : 0);
 
-    if (hideNumber) {
+    if (!context.currentSettings.showBalanceInHomeScreen) {
       return '***';
     } else {
       return formatter.format(value);

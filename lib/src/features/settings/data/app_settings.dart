@@ -34,16 +34,25 @@ class SettingsData {
 
   final Currency currency;
 
-  factory SettingsData.fromDatabase(SettingsDb settingsRealm) {
-    ThemeType themeType = switch (settingsRealm.themeType) {
+  final bool showBalanceInHomeScreen;
+  final bool showDecimalDigits;
+
+  factory SettingsData.fromDatabase(SettingsDb settingsDb) {
+    ThemeType themeType = switch (settingsDb.themeType) {
       0 => ThemeType.light,
       1 => ThemeType.dark,
       _ => ThemeType.system,
     };
 
-    Currency currency = Currency.values[settingsRealm.currencyIndex];
+    Currency currency = Currency.values[settingsDb.currencyIndex];
 
-    return SettingsData._(themeIndex: settingsRealm.themeIndex, themeType: themeType, currency: currency);
+    return SettingsData._(
+      themeIndex: settingsDb.themeIndex,
+      themeType: themeType,
+      currency: currency,
+      showDecimalDigits: settingsDb.showDecimalDigits,
+      showBalanceInHomeScreen: settingsDb.showBalanceInHomeScreen,
+    );
   }
 
   SettingsDb toDatabase() {
@@ -58,19 +67,29 @@ class SettingsData {
     return SettingsDb(0, themeIndex: themeIndex, themeType: themeTypeRealmData, currencyIndex: currencyRealmData);
   }
 
+  SettingsData._({
+    required this.themeIndex,
+    required this.themeType,
+    required this.currency,
+    required this.showDecimalDigits,
+    required this.showBalanceInHomeScreen,
+  });
+
   SettingsData copyWith({
     int? themeIndex,
     ThemeType? themeType,
     Currency? currency,
+    bool? showBalanceInHomeScreen,
+    bool? showDecimalDigits,
   }) {
     return SettingsData._(
       themeIndex: themeIndex ?? this.themeIndex,
       themeType: themeType ?? this.themeType,
       currency: currency ?? this.currency,
+      showBalanceInHomeScreen: showBalanceInHomeScreen ?? this.showBalanceInHomeScreen,
+      showDecimalDigits: showDecimalDigits ?? this.showDecimalDigits,
     );
   }
-
-  SettingsData._({required this.themeIndex, required this.themeType, required this.currency});
 }
 
 class AppThemeData {

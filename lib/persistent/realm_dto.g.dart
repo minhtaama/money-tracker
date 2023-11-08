@@ -572,6 +572,8 @@ class SettingsDb extends _SettingsDb
     int themeIndex = 0,
     int themeType = 0,
     int currencyIndex = 101,
+    bool showBalanceInHomeScreen = true,
+    bool showDecimalDigits = false,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<SettingsDb>({
@@ -579,12 +581,17 @@ class SettingsDb extends _SettingsDb
         'themeIndex': 0,
         'themeType': 0,
         'currencyIndex': 101,
+        'showBalanceInHomeScreen': true,
+        'showDecimalDigits': false,
       });
     }
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'themeIndex', themeIndex);
     RealmObjectBase.set(this, 'themeType', themeType);
     RealmObjectBase.set(this, 'currencyIndex', currencyIndex);
+    RealmObjectBase.set(
+        this, 'showBalanceInHomeScreen', showBalanceInHomeScreen);
+    RealmObjectBase.set(this, 'showDecimalDigits', showDecimalDigits);
   }
 
   SettingsDb._();
@@ -610,6 +617,20 @@ class SettingsDb extends _SettingsDb
       RealmObjectBase.set(this, 'currencyIndex', value);
 
   @override
+  bool get showBalanceInHomeScreen =>
+      RealmObjectBase.get<bool>(this, 'showBalanceInHomeScreen') as bool;
+  @override
+  set showBalanceInHomeScreen(bool value) =>
+      RealmObjectBase.set(this, 'showBalanceInHomeScreen', value);
+
+  @override
+  bool get showDecimalDigits =>
+      RealmObjectBase.get<bool>(this, 'showDecimalDigits') as bool;
+  @override
+  set showDecimalDigits(bool value) =>
+      RealmObjectBase.set(this, 'showDecimalDigits', value);
+
+  @override
   Stream<RealmObjectChanges<SettingsDb>> get changes =>
       RealmObjectBase.getChanges<SettingsDb>(this);
 
@@ -626,6 +647,8 @@ class SettingsDb extends _SettingsDb
       SchemaProperty('themeIndex', RealmPropertyType.int),
       SchemaProperty('themeType', RealmPropertyType.int),
       SchemaProperty('currencyIndex', RealmPropertyType.int),
+      SchemaProperty('showBalanceInHomeScreen', RealmPropertyType.bool),
+      SchemaProperty('showDecimalDigits', RealmPropertyType.bool),
     ]);
   }
 }

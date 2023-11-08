@@ -8,6 +8,7 @@ class CustomTile extends StatelessWidget {
   const CustomTile({
     Key? key,
     required this.title,
+    this.titleSize = 17,
     this.secondaryTitle,
     this.secondaryTitleOverflow = false,
     this.leading,
@@ -15,6 +16,7 @@ class CustomTile extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
   final String title;
+  final double titleSize;
   final String? secondaryTitle;
   final bool secondaryTitleOverflow;
   final Widget? leading;
@@ -27,7 +29,7 @@ class CustomTile extends StatelessWidget {
       inkColor: context.appTheme.backgroundNegative,
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
         child: Row(
           children: [
             leading ?? const SizedBox(),
@@ -41,6 +43,7 @@ class CustomTile extends StatelessWidget {
                           title,
                           style: kHeader2TextStyle.copyWith(
                             color: context.appTheme.backgroundNegative,
+                            fontSize: titleSize,
                           ),
                         ),
                         Text(
@@ -57,6 +60,7 @@ class CustomTile extends StatelessWidget {
                       title,
                       style: kHeader2TextStyle.copyWith(
                         color: context.appTheme.backgroundNegative,
+                        fontSize: titleSize,
                       ),
                     ),
             ),

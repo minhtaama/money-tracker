@@ -102,7 +102,7 @@ class DayCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          CalService.formatCurrency(_calculateCashFlow.abs()),
+                          CalService.formatCurrency(context, _calculateCashFlow.abs()),
                           style: kHeader1TextStyle.copyWith(
                               color: _calculateCashFlow > 0
                                   ? context.appTheme.positive

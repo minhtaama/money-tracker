@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'dart:math' as math;
@@ -81,7 +82,7 @@ abstract class Statement {
     return amount;
   }
 
-  double getFullPaymentAmountAt(DateTime dateTime) {
+  double getFullPaymentAmountAt(DateTime dateTime, {required bool withDecimalDigits}) {
     double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
     double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
@@ -113,7 +114,7 @@ abstract class Statement {
     if (x < 0) {
       return 0;
     } else {
-      return x;
+      return withDecimalDigits ? CalService.formatToDouble(x.toStringAsFixed(2))! : x.roundToDouble();
     }
   }
 
