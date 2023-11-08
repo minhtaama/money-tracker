@@ -77,12 +77,12 @@ abstract class Statement {
   double get installmentsAmountToPay {
     double amount = 0;
     for (CreditSpending txn in installmentTransactionsToPay) {
-      amount += txn.paymentAmount;
+      amount += txn.paymentAmount!;
     }
     return amount;
   }
 
-  double getFullPaymentAmountAt(DateTime dateTime, {required bool withDecimalDigits}) {
+  double getFullPaymentAmountAt(DateTime dateTime) {
     double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
     double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
@@ -114,7 +114,7 @@ abstract class Statement {
     if (x < 0) {
       return 0;
     } else {
-      return withDecimalDigits ? CalService.formatToDouble(x.toStringAsFixed(2))! : x.roundToDouble();
+      return CalService.formatToDouble(x.toStringAsFixed(2))!;
     }
   }
 

@@ -45,12 +45,10 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   String get _calOutputFormattedAmount => _controller.text;
 
-  double _fullPaymentAmount(BuildContext context) => _statement == null || _dateTime == null
-      ? 0
-      : _statement!.getFullPaymentAmountAt(_dateTime!, withDecimalDigits: context.currentSettings.showDecimalDigits);
+  double get _fullPaymentAmount =>
+      _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
 
-  String _fullPaymentFormattedAmount(BuildContext context) =>
-      CalService.formatCurrency(context, _fullPaymentAmount(context));
+  String _fullPaymentFormattedAmount(BuildContext context) => CalService.formatCurrency(context, _fullPaymentAmount);
 
   bool get _hidePayment => _statement == null;
 

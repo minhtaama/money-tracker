@@ -4,7 +4,6 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../persistent/realm_dto.dart';
-import '../../transactions/domain/transaction_base.dart';
 import '../domain/account_base.dart';
 
 class AccountRepositoryRealmDb {
@@ -85,14 +84,12 @@ class AccountRepositoryRealmDb {
 
     final order = getList(null).length;
 
-    final newAccount = AccountDb(
-        ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     if (type == AccountType.regular) {
       initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), balance,
-          account: newAccount,
-          isInitialTransaction: true); // transaction type 1 == TransactionType.income
+          account: newAccount, isInitialTransaction: true); // transaction type 1 == TransactionType.income
     }
 
     realm.write(() {
@@ -114,8 +111,7 @@ class AccountRepositoryRealmDb {
     final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction =
-        accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
       realm.write(() {

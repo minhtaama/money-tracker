@@ -112,14 +112,17 @@ class TransactionRepository {
     required CategoryTag? tag,
     required String? note,
     required int? monthsToPay,
+    required double? paymentAmount,
   }) {
+    final creditPaymentDb = CreditPaymentDetails(monthsToPay: monthsToPay, paymentAmount: paymentAmount);
+
     final newTransaction = TransactionDb(
         ObjectId(), _transactionTypeInDb(TransactionType.creditSpending), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        monthsToPay: monthsToPay);
+        creditPaymentDetails: monthsToPay != null && paymentAmount != null ? creditPaymentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);

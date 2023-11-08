@@ -190,9 +190,6 @@ class _ListState extends State<_List> {
               ),
               ...buildInstallmentTransactionTile(context),
               ...buildTransactionBeforeTile(context, txnsInBillingCycle),
-              ...buildTodayTransactionTile(context, txnsInChosenDateTime,
-                  showList: widget.chosenDateTime!.isBefore(nextStatementDateTime),
-                  fullPaymentAmount: fullPaymentAmount(context)!),
               !widget.chosenDateTime!.isBefore(nextStatementDateTime)
                   ? _Header(
                       isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
@@ -202,14 +199,6 @@ class _ListState extends State<_List> {
                     )
                   : Gap.noGap,
               ...buildTransactionBeforeTile(context, txnsInGracePeriod),
-              ...buildTodayTransactionTile(
-                context,
-                txnsInChosenDateTime,
-                showTitle: !widget.chosenDateTime!.isBefore(nextStatementDateTime) &&
-                    !widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate) &&
-                    !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
-                fullPaymentAmount: fullPaymentAmount(context)!,
-              ),
               widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate)
                   ? _Header(
                       isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
@@ -220,6 +209,14 @@ class _ListState extends State<_List> {
                           : 'Pay-in-full before this day for interest-free',
                     )
                   : Gap.noGap,
+              ...buildTodayTransactionTile(
+                context,
+                txnsInChosenDateTime,
+                showTitle: !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime) &&
+                    !widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate) &&
+                    !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
+                fullPaymentAmount: fullPaymentAmount(context)!,
+              ),
             ],
           ),
         ],
@@ -571,9 +568,6 @@ extension _ListGetters on State<_List> {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(
-        context,
-        widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!,
-            withDecimalDigits: context.currentSettings.showDecimalDigits));
+    return CalService.formatCurrency(context, widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!));
   }
 }

@@ -16,6 +16,7 @@ class RealmDataStore {
         CategoryTagDb.schema,
         TransactionDb.schema,
         TransferFeeDb.schema,
+        CreditPaymentDetails.schema,
         SettingsDb.schema,
       ],
       initialDataCallback: _initialDataCallback,

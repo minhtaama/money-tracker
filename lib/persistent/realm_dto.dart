@@ -156,7 +156,7 @@ class _TransactionDb {
   _TransferFeeDb? transferFee;
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
-  int? monthsToPay;
+  _CreditPaymentDetails? creditPaymentDetails;
 }
 
 @RealmModel(ObjectType.embeddedObject)
@@ -166,6 +166,13 @@ class _TransferFeeDb {
   /// Specify this to `true` if the fee is charged on the destination account
   /// `false` if the fee is charge on the account has money transferred away
   bool chargeOnDestination = false;
+}
+
+@RealmModel(ObjectType.embeddedObject)
+class _CreditPaymentDetails {
+  int? monthsToPay;
+
+  double? paymentAmount;
 }
 
 /////////////////////////////////////////////// SETTINGS ////////////////////////////////////////////////

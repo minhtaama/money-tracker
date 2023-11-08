@@ -66,6 +66,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             category: _category!,
             account: _account!,
             monthsToPay: _installmentPaymentPeriod,
+            paymentAmount: CalService.formatToDouble(_installmentPaymentController.text),
           );
       context.pop();
     }

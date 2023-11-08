@@ -14,9 +14,9 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
 
   final int? monthsToPay;
 
-  bool get hasInstallment => monthsToPay != null;
+  final double? paymentAmount;
 
-  double get paymentAmount => hasInstallment ? amount / monthsToPay! : amount;
+  bool get hasInstallment => monthsToPay != null;
 
   const CreditSpending._(
     super._isarObject,
@@ -27,6 +27,7 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
     this.category,
     this.categoryTag, {
     required this.monthsToPay,
+    required this.paymentAmount,
   });
 
   @override
