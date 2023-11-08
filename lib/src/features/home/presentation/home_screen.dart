@@ -112,8 +112,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Save this to settings repo
     bool showTotalBalance = context.currentSettings.showBalanceInHomeScreen;
+
     return CustomTabPageWithPageView(
       controller: _controller,
       smallTabBar: SmallTabBar(
