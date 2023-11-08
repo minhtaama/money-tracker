@@ -82,7 +82,7 @@ class _List extends StatefulWidget {
 
 class _ListState extends State<_List> {
   final _key = GlobalKey();
-  double _height = 20;
+  double _height = 0;
 
   List<_InstallmentPayTransaction> buildInstallmentTransactionTile(BuildContext context) {
     if (txnsInstallment.isEmpty) {
@@ -149,7 +149,7 @@ class _ListState extends State<_List> {
   void initState() {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        _height = _key.currentContext!.size!.height;
+        _height = _key.currentContext!.size!.height - 25;
       });
     });
     super.initState();
@@ -159,7 +159,7 @@ class _ListState extends State<_List> {
   void didUpdateWidget(covariant _List oldWidget) {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        _height = _key.currentContext!.size!.height;
+        _height = _key.currentContext!.size!.height - 30;
       });
     });
     super.didUpdateWidget(oldWidget);
@@ -176,7 +176,7 @@ class _ListState extends State<_List> {
             margin: const EdgeInsets.only(left: 13),
             color: AppColors.greyBorder(context),
             width: 1,
-            height: _height - 20,
+            height: _height,
           ),
           Column(
             key: _key,
@@ -215,7 +215,9 @@ class _ListState extends State<_List> {
                       isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
                       dateTime: widget.statement!.dueDate,
                       h1: 'Payment due date'.hardcoded,
-                      h2: 'Pay-in-full before this day for interest-free',
+                      h2: widget.statement!.previousStatement.balanceToPay > 0
+                          ? 'Because of carry-over balance, interest is added in next statement even if pay-in-full'
+                          : 'Pay-in-full before this day for interest-free',
                     )
                   : Gap.noGap,
             ],
@@ -244,7 +246,7 @@ class _Transaction extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: transaction != null ? () => context.push(RoutePath.transaction, extra: transaction) : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
           child: Row(
             children: [
               _DateTime(
@@ -264,11 +266,11 @@ class _Transaction extends StatelessWidget {
                         children: [
                           Text(
                             'Selected day',
-                            style: kHeader2TextStyle.copyWith(fontSize: 11, color: context.appTheme.primary),
+                            style: kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.primary),
                           ),
                           Text(
                             'Maximum payable: ${fullPaymentAmount ?? ''} ${context.currentSettings.currency.code}',
-                            style: kHeader3TextStyle.copyWith(fontSize: 11, color: context.appTheme.primary),
+                            style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.primary),
                           )
                         ],
                       ),
@@ -282,7 +284,7 @@ class _Transaction extends StatelessWidget {
                   ? TxnAmount(
                       currencyCode: context.currentSettings.currency.code,
                       transaction: transaction!,
-                      fontSize: 14,
+                      fontSize: 13,
                     )
                   : Gap.noGap,
             ],
@@ -319,11 +321,11 @@ class _InstallmentPayTransaction extends StatelessWidget {
                   children: [
                     Text(
                       'Installment',
-                      style: kHeader3TextStyle.copyWith(fontSize: 9, color: AppColors.grey(context)),
+                      style: kHeader3TextStyle.copyWith(fontSize: 10, color: AppColors.grey(context)),
                     ),
                     TxnCategoryName(
                       transaction: transaction,
-                      fontSize: 11,
+                      fontSize: 12,
                     )
                   ],
                 ),
@@ -333,7 +335,7 @@ class _InstallmentPayTransaction extends StatelessWidget {
                 currencyCode: context.currentSettings.currency.code,
                 transaction: transaction,
                 showPaymentAmount: true,
-                fontSize: 14,
+                fontSize: 13,
               ),
             ],
           ),
@@ -372,13 +374,13 @@ class _Header extends StatelessWidget {
                 Text(
                   h1,
                   style: kHeader2TextStyle.copyWith(
-                      fontSize: 11, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
+                      fontSize: 12, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
                         style: kHeader3TextStyle.copyWith(
-                            fontSize: 11, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
+                            fontSize: 12, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
                       )
                     : Gap.noGap,
               ],
@@ -420,13 +422,13 @@ class _Details extends StatelessWidget {
                   children: [
                     TxnCategoryName(
                       transaction: transaction as CreditSpending,
-                      fontSize: 11,
+                      fontSize: 12,
                     ),
                     _categoryTag != null
                         ? Text(
                             _categoryTag!,
                             style: kHeader3TextStyle.copyWith(
-                                fontSize: 10, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                                fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
                           )
@@ -448,7 +450,7 @@ class _Details extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Payment'.hardcoded,
-                  style: kHeader3TextStyle.copyWith(fontSize: 11, color: AppColors.grey(context)),
+                  style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
                 ),
               ),
             ],

@@ -144,8 +144,7 @@ abstract class Statement {
         _paidInBillingCycle -
         _paidInGracePeriod;
 
-    double interestCarryToNextStatement =
-        balanceToPay > 0 || previousStatement.balanceToPay + previousStatement.interest > 0 ? _interest : 0;
+    double interestCarryToNextStatement = balanceToPay > 0 || previousStatement.balanceToPay > 0 ? _interest : 0;
 
     return PreviousStatement._(
       balanceToPayAtEndDate,
