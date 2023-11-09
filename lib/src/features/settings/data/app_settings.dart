@@ -64,7 +64,14 @@ class SettingsData {
 
     int currencyRealmData = Currency.values.indexOf(currency);
 
-    return SettingsDb(0, themeIndex: themeIndex, themeType: themeTypeRealmData, currencyIndex: currencyRealmData);
+    return SettingsDb(
+      0,
+      themeIndex: themeIndex,
+      themeType: themeTypeRealmData,
+      currencyIndex: currencyRealmData,
+      showBalanceInHomeScreen: showBalanceInHomeScreen,
+      showDecimalDigits: showDecimalDigits,
+    );
   }
 
   SettingsData._({

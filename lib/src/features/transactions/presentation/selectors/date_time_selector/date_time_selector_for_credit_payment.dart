@@ -121,13 +121,14 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
-                                // if (selectedDay != null) {
-                                //   final statement = widget.creditAccount!.statementAt(selectedDay);
-                                //   print(widget.creditAccount!.statementsList);
-                                //   print(statement.installmentTransactionsToPay);
-                                //   print(statement.previousStatement.balance);
-                                //   print(statement.previousStatement.balanceToPay);
-                                // }
+                                if (selectedDay != null) {
+                                  final statement = widget.creditAccount!.statementAt(selectedDay);
+                                  print(widget.creditAccount!.statementsList);
+                                  print(statement.installmentTransactionsToPay);
+                                  print(statement.previousStatement.balance);
+                                  print(statement.previousStatement.balanceToPay);
+                                  print(statement.getFullPaymentAmountAt(selectedDay));
+                                }
                                 return AnimatedSize(
                                   duration: k150msDuration,
                                   child: widget.creditAccount!.earliestPayableDate == null

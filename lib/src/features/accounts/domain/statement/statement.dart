@@ -114,35 +114,47 @@ abstract class Statement {
     if (x < 0) {
       return 0;
     } else {
-      return CalService.formatToDouble(x.toStringAsFixed(2))!;
+      return double.parse(x.toStringAsFixed(2));
     }
   }
 
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement {
-    double balanceAtEndDate = previousStatement._balanceAtEndDate +
-        previousStatement.interest +
-        _totalSpentInBillingCycle -
-        _paidInBillingCycle;
+    double balanceAtEndDate = double.parse(
+      (previousStatement._balanceAtEndDate +
+              previousStatement.interest +
+              _totalSpentInBillingCycle -
+              _paidInBillingCycle)
+          .toStringAsFixed(2),
+    );
 
-    double balance = previousStatement._balanceAtEndDate +
-        previousStatement.interest +
-        _totalSpentInBillingCycle -
-        _paidInBillingCycle -
-        _paidInGracePeriod;
+    double balance = double.parse(
+      (previousStatement._balanceAtEndDate +
+              previousStatement.interest +
+              _totalSpentInBillingCycle -
+              _paidInBillingCycle -
+              _paidInGracePeriod)
+          .toStringAsFixed(2),
+    );
 
-    double balanceToPayAtEndDate = previousStatement._balanceToPayAtEndDate +
-        previousStatement.interest +
-        installmentsAmountToPay +
-        _spentInBillingCycleExcludeInstallments -
-        _paidInBillingCycle;
+    double balanceToPayAtEndDate = double.parse(
+      (previousStatement._balanceToPayAtEndDate +
+              previousStatement.interest +
+              installmentsAmountToPay +
+              _spentInBillingCycleExcludeInstallments -
+              _paidInBillingCycle)
+          .toStringAsFixed(2),
+    );
 
-    double balanceToPay = previousStatement._balanceToPayAtEndDate +
-        previousStatement.interest +
-        installmentsAmountToPay +
-        _spentInBillingCycleExcludeInstallments -
-        _paidInBillingCycle -
-        _paidInGracePeriod;
+    double balanceToPay = double.parse(
+      (previousStatement._balanceToPayAtEndDate +
+              previousStatement.interest +
+              installmentsAmountToPay +
+              _spentInBillingCycleExcludeInstallments -
+              _paidInBillingCycle -
+              _paidInGracePeriod)
+          .toStringAsFixed(2),
+    );
 
     double interestCarryToNextStatement = balanceToPay > 0 || previousStatement.balanceToPay > 0 ? _interest : 0;
 

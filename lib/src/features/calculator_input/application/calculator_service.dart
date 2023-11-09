@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CalService {
-  static String formatCurrency(BuildContext context, double value) {
+  static String formatCurrency(BuildContext context, double value, {bool forceWithDecimalDigits = false}) {
     NumberFormat formatter;
 
     if (value >= 1000000000.0) {
@@ -16,7 +16,8 @@ class CalService {
       formatter = NumberFormat('###,###.##');
       return '${formatter.format(shortValue)} M';
     }
-    formatter = NumberFormat.decimalPatternDigits(decimalDigits: context.currentSettings.showDecimalDigits ? 2 : 0);
+    formatter = NumberFormat.decimalPatternDigits(
+        decimalDigits: context.currentSettings.showDecimalDigits || forceWithDecimalDigits ? 2 : 0);
 
     if (!context.currentSettings.showBalanceInHomeScreen) {
       return '***';

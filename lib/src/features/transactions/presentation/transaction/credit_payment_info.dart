@@ -186,7 +186,7 @@ class _ListState extends State<_List> {
                 dateTime: widget.statement?.startDate,
                 verticalPadding: 4,
                 h1: 'Start of billing cycle',
-                h2: 'Carry: ${balanceToPay(context)} ${context.currentSettings.currency.code} ${interest(context) != '0' ? '+ ${interest(context)} ${context.currentSettings.currency.code} interest' : ''}',
+                h2: 'Carry: ${balanceToPay(context)} ${context.currentSettings.currency.code} ${interest(context) != '0.00' ? '+ ${interest(context)} ${context.currentSettings.currency.code} interest' : ''}',
               ),
               ...buildInstallmentTransactionTile(context),
               ...buildTransactionBeforeTile(context, txnsInBillingCycle),
@@ -551,14 +551,16 @@ extension _ListGetters on State<_List> {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(context, widget.statement!.previousStatement.interest);
+    return CalService.formatCurrency(context, widget.statement!.previousStatement.interest,
+        forceWithDecimalDigits: true);
   }
 
   String? balanceToPay(BuildContext context) {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(context, widget.statement!.previousStatement.balanceToPay);
+    return CalService.formatCurrency(context, widget.statement!.previousStatement.balanceToPay,
+        forceWithDecimalDigits: true);
   }
 
   DateTime get nextStatementDateTime =>
@@ -568,6 +570,7 @@ extension _ListGetters on State<_List> {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(context, widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!));
+    return CalService.formatCurrency(context, widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!),
+        forceWithDecimalDigits: true);
   }
 }
