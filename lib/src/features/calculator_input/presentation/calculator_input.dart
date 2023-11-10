@@ -18,6 +18,7 @@ class CalculatorInput extends StatefulWidget {
     required this.formattedResultOutput,
     required this.focusColor,
     required this.hintText,
+    this.initialValue,
     this.disableErrorText = false,
     this.isDense = false,
     this.textAlign = TextAlign.start,
@@ -30,6 +31,7 @@ class CalculatorInput extends StatefulWidget {
   final String? Function(String? value)? validator;
   final Color focusColor;
   final String hintText;
+  final String? initialValue;
   final double fontSize;
   final bool disableErrorText;
   final bool isDense;
@@ -48,7 +50,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
   @override
   void initState() {
     _formattedStringValue = '';
-    _controller = widget.controller ?? TextEditingController();
+    _controller = widget.controller ?? TextEditingController(text: widget.initialValue);
     super.initState();
   }
 

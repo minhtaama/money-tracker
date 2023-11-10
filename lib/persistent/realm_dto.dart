@@ -46,7 +46,7 @@ class _AccountDb implements _IColorAndIcon, _IOrderable {
   @Backlink(#account)
   late Iterable<_TransactionDb> transactions;
 
-  /// Transactions that transfer to/away-to-pay-from this account (need for calculating total money).
+  /// Transactions that transfer-to/away-to-pay-from this account (need for calculating total money).
   /// If type [AccountType.regular], only carry type [TransactionType.transfer]
   /// If type [AccountType.credit], only carry type [TransactionType.creditPayment]
   @Backlink(#transferAccount)
@@ -65,6 +65,10 @@ class _CreditDetailsDb {
   late int statementDay;
 
   late int paymentDueDay;
+
+  late double initialBalance;
+
+  late double initialInterest;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////
@@ -156,7 +160,7 @@ class _TransactionDb {
   _TransferFeeDb? transferFee;
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
-  _CreditPaymentDetails? creditPaymentDetails;
+  _CreditPaymentDetailsDb? creditPaymentDetails;
 }
 
 @RealmModel(ObjectType.embeddedObject)
@@ -169,7 +173,7 @@ class _TransferFeeDb {
 }
 
 @RealmModel(ObjectType.embeddedObject)
-class _CreditPaymentDetails {
+class _CreditPaymentDetailsDb {
   int? monthsToPay;
 
   double? paymentAmount;

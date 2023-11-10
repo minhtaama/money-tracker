@@ -74,12 +74,15 @@ class AccountRepositoryRealmDb {
     required int? statementDay,
     required int? paymentDueDay,
     required double? apr,
+    required double initialBalance,
+    required double initialInterest,
   }) async {
     TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
 
     if (type == AccountType.credit) {
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
+      creditDetailsDb =
+          CreditDetailsDb(balance, statementDay!, paymentDueDay!, initialBalance, initialInterest, apr: apr!);
     }
 
     final order = getList(null).length;

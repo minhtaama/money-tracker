@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -42,32 +43,8 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   String statementDay = '';
   String paymentDueDay = '';
   String apr = '';
-
-  double? _formatToDouble(String formattedValue) {
-    try {
-      double value = double.parse(formattedValue.split(',').join());
-      if (value == double.infinity || value == double.negativeInfinity) {
-        return null;
-      } else {
-        return value;
-      }
-    } catch (e) {
-      return null;
-    }
-  }
-
-  String? _dateInputValidator(String date, {String error = ''}) {
-    final dateParsed = int.tryParse(date);
-    if (dateParsed != null) {
-      if (dateParsed > 0 && dateParsed < 31) {
-        return null;
-      } else {
-        return error;
-      }
-    } else {
-      return error;
-    }
-  }
+  String initialBalance = '0';
+  String initialInterest = '0';
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +60,10 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
-                  hintText: accountType == AccountType.regular ? 'Initial Balance' : 'Credit balance',
+                  hintText: accountType == AccountType.regular ? 'Initial Balance' : 'Credit limit',
                   focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
                   validator: (_) {
-                    if (_formatToDouble(calculatorOutput) == null) {
+                    if (CalService.formatToDouble(calculatorOutput) == null) {
                       return 'Invalid amount';
                     }
                     return null;
@@ -142,7 +119,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               ),
             ],
           ),
-          Gap.h8,
+          Gap.h16,
           ColorSelectListView(
             onColorTap: (index) {
               setState(() {
@@ -157,8 +134,8 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.greyBorder(context)),
               ),
-              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               child: Column(
                 children: [
                   InlineTextFormField(
@@ -170,7 +147,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   ),
                   Gap.h8,
                   InlineTextFormField(
-                    prefixText: 'Payment due date :',
+                    prefixText: 'Payment due date:',
                     width: 30,
                     maxLength: 2,
                     validator: (_) => _dateInputValidator(paymentDueDay),
@@ -186,8 +163,52 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       text: 'APR'.hardcoded,
                       yOffset: 4,
                     ),
-                    validator: (_) => _formatToDouble(apr) == null ? '' : null,
+                    validator: (_) => CalService.formatToDouble(apr) == null ? '' : null,
                     onChanged: (value) => apr = value,
+                  ),
+                  Gap.h8,
+                  InlineTextFormField(
+                    prefixText: 'Init. balance:',
+                    suffixText: context.currentSettings.currency.symbol,
+                    suffixWidget: HelpButton(
+                      text:
+                          'The initial carrying-over balance to current statement. If you have paid-in-full in last statement, this value will be 0.\n(Exclude any installment spendings and interest)'
+                              .hardcoded,
+                      yOffset: 4,
+                    ),
+                    widget: CalculatorInput(
+                      fontSize: 18,
+                      isDense: true,
+                      textAlign: TextAlign.end,
+                      focusColor: context.appTheme.secondary,
+                      hintText: '',
+                      initialValue: '0',
+                      // TODO: Update here
+                      //validator: (_) {},
+                      formattedResultOutput: (value) => initialBalance = value,
+                    ),
+                  ),
+                  Gap.h8,
+                  InlineTextFormField(
+                    prefixText: 'Init. Interest amount:',
+                    suffixText: context.currentSettings.currency.symbol,
+                    suffixWidget: HelpButton(
+                      text:
+                          'Only specify if you have NOT paid-in-full in last statement. Ask for banking support to get the interest amount.'
+                              .hardcoded,
+                      yOffset: 4,
+                    ),
+                    widget: CalculatorInput(
+                      fontSize: 18,
+                      isDense: true,
+                      focusColor: context.appTheme.secondary,
+                      hintText: '',
+                      initialValue: '0',
+                      textAlign: TextAlign.end,
+                      // TODO: Update here
+                      //validator: (_) {},
+                      formattedResultOutput: (value) => initialInterest = value,
+                    ),
                   ),
                 ],
               ),
@@ -200,14 +221,14 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               iconPath: AppIcons.add,
               label: 'Create',
               backgroundColor: context.appTheme.accent,
-              isDisabled: accountName.isEmpty || _formatToDouble(calculatorOutput) == null,
+              isDisabled: accountName.isEmpty || CalService.formatToDouble(calculatorOutput) == null,
               onTap: () {
                 if (_formKey.currentState!.validate()) {
                   // By validating, the _formatToDouble(calculatorOutput) must not null
                   final accountRepository = ref.read(accountRepositoryProvider);
 
                   accountRepository.writeNew(
-                    _formatToDouble(calculatorOutput)!,
+                    CalService.formatToDouble(calculatorOutput)!,
                     type: accountType,
                     iconCategory: iconCategory,
                     iconIndex: iconIndex,
@@ -215,7 +236,9 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     colorIndex: colorIndex,
                     statementDay: int.tryParse(statementDay),
                     paymentDueDay: int.tryParse(paymentDueDay),
-                    apr: _formatToDouble(apr),
+                    apr: CalService.formatToDouble(apr),
+                    initialBalance: CalService.formatToDouble(initialBalance)!,
+                    initialInterest: CalService.formatToDouble(initialInterest)!,
                   );
                   context.pop();
                 }
@@ -225,5 +248,20 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         ],
       ),
     );
+  }
+}
+
+extension _Validator on _AddAccountModalScreenState {
+  String? _dateInputValidator(String date, {String error = ''}) {
+    final dateParsed = int.tryParse(date);
+    if (dateParsed != null) {
+      if (dateParsed > 0 && dateParsed < 31) {
+        return null;
+      } else {
+        return error;
+      }
+    } else {
+      return error;
+    }
   }
 }

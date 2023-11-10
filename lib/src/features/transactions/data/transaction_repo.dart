@@ -114,7 +114,10 @@ class TransactionRepository {
     required int? monthsToPay,
     required double? paymentAmount,
   }) {
-    final creditPaymentDb = CreditPaymentDetails(monthsToPay: monthsToPay, paymentAmount: paymentAmount);
+    final creditPaymentDb = CreditPaymentDetailsDb(
+      monthsToPay: monthsToPay,
+      paymentAmount: paymentAmount,
+    );
 
     final newTransaction = TransactionDb(
         ObjectId(), _transactionTypeInDb(TransactionType.creditSpending), dateTime, amount,

@@ -16,7 +16,7 @@ class RealmDataStore {
         CategoryTagDb.schema,
         TransactionDb.schema,
         TransferFeeDb.schema,
-        CreditPaymentDetails.schema,
+        CreditPaymentDetailsDb.schema,
         SettingsDb.schema,
       ],
       initialDataCallback: _initialDataCallback,
@@ -41,9 +41,9 @@ class RealmDataStore {
     // objects
     realm.add(AccountDb(ObjectId(), 0, 'Cash', 6, 'Business', 11, order: 0));
     realm.add(AccountDb(ObjectId(), 1, 'VPBank Credit', 9, 'Business', 10,
-        order: 1, creditDetails: CreditDetailsDb(2000, 25, 6, apr: 20)));
+        order: 1, creditDetails: CreditDetailsDb(2000, 25, 6, 0, 0, apr: 20)));
     realm.add(AccountDb(ObjectId(), 1, 'Vietcombank Credit', 14, 'Business', 2,
-        order: 2, creditDetails: CreditDetailsDb(3000, 1, 15, apr: 20)));
+        order: 2, creditDetails: CreditDetailsDb(3000, 1, 15, 0, 0, apr: 20)));
     realm.add(CategoryDb(ObjectId(), 0, 'Food and Beverage', 8, 'Food', 4, order: 0));
     realm.add(CategoryDb(ObjectId(), 1, 'Salary', 8, 'Business', 13, order: 1));
   }

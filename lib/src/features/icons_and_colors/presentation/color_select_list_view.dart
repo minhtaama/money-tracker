@@ -35,39 +35,26 @@ class _ColorSelectListViewState extends State<ColorSelectListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Choose Colors',
-          style: kHeader2TextStyle.copyWith(
-            color: context.appTheme.backgroundNegative,
-            fontSize: 18,
-          ),
+    return SizedBox(
+      height: widget.size,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: AppColors.allColorsUserCanPick.length,
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsets.only(right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
+          child: CircleColor(
+              color: AppColors.allColorsUserCanPick[index][0],
+              isSelected: currentColorIndex == index,
+              size: widget.size - widget.spacing * 2,
+              onTap: (index) {
+                setState(() {
+                  currentColorIndex = index;
+                });
+                widget.onColorTap(currentColorIndex);
+              },
+              index: index),
         ),
-        SizedBox(
-          height: widget.size,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: AppColors.allColorsUserCanPick.length,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(
-                  right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
-              child: CircleColor(
-                  color: AppColors.allColorsUserCanPick[index][0],
-                  isSelected: currentColorIndex == index,
-                  size: widget.size - widget.spacing * 2,
-                  onTap: (index) {
-                    setState(() {
-                      currentColorIndex = index;
-                    });
-                    widget.onColorTap(currentColorIndex);
-                  },
-                  index: index),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
