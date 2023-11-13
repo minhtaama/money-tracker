@@ -114,6 +114,30 @@ class _DateTimeWidget extends StatelessWidget {
   }
 }
 
+class _DateWidget extends StatelessWidget {
+  const _DateWidget({this.dateTime, required this.labelBuilder});
+
+  final DateTime? dateTime;
+  final String Function(DateTime?) labelBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return CardItem(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 7),
+      borderRadius: BorderRadius.circular(12),
+      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 6),
+      color: context.appTheme.primary,
+      elevation: 0,
+      child: Center(
+        child: Text(
+          labelBuilder(dateTime),
+          style: kHeader2TextStyle.copyWith(color: context.appTheme.primaryNegative, fontSize: 13),
+        ),
+      ),
+    );
+  }
+}
+
 class _DisableOverlay extends StatelessWidget {
   const _DisableOverlay({required this.disable, required this.height, required this.width, this.text});
   final bool disable;
@@ -255,6 +279,7 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
   DateTime? firstDate,
   DateTime? lastDate,
   int? firstDayOfWeek,
+  double? controlsHeight,
   bool Function(DateTime)? selectableDayPredicate,
   Widget? Function(
           {BoxDecoration? decoration,
@@ -312,5 +337,5 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
           color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
       yearBuilder: yearBuilder,
       dayBuilder: dayBuilder,
-      controlsHeight: 40);
+      controlsHeight: controlsHeight ?? 40);
 }

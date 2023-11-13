@@ -29,7 +29,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           borderRadius: BorderRadius.circular(1000),
           border: isToday != null && isToday
               ? Border.all(
-                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+                  color: isDisabled != null && isDisabled
+                      ? AppColors.greyBgr(context)
+                      : context.appTheme.primary,
                 )
               : null,
           color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
@@ -68,7 +70,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
+                        year: _outputDateTime.year,
+                        month: _outputDateTime.month,
+                        day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -85,8 +89,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             setState(() {
-                              _outputDateTime =
-                                  dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                              _outputDateTime = dateTime.copyWith(
+                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                             });
                             context.pop();
                           }
@@ -102,6 +106,111 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               )
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class DateSelector extends StatefulWidget {
+  const DateSelector(
+      {super.key,
+      required this.onChanged,
+      required this.labelBuilder,
+      this.initial,
+      this.selectableDayPredicate});
+
+  final DateTime? initial;
+  final bool Function(DateTime)? selectableDayPredicate;
+  final ValueSetter<DateTime> onChanged;
+  final String Function(DateTime?) labelBuilder;
+
+  @override
+  State<DateSelector> createState() => _DateSelectorState();
+}
+
+class _DateSelectorState extends State<DateSelector> {
+  late DateTime _outputDateTime = widget.initial ?? DateTime.now();
+  //late DateTime _selectedDay = DateTime.now();
+
+  @override
+  void didUpdateWidget(covariant DateSelector oldWidget) {
+    if (widget.initial != null) {
+      _outputDateTime = widget.initial!;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  Widget _dayBuilder(
+      {required DateTime date,
+      BoxDecoration? decoration,
+      bool? isDisabled,
+      bool? isSelected,
+      bool? isToday,
+      TextStyle? textStyle}) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        height: 33,
+        width: 33,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(1000),
+          border: isToday != null && isToday
+              ? Border.all(
+                  color: isDisabled != null && isDisabled
+                      ? AppColors.greyBgr(context)
+                      : context.appTheme.primary,
+                )
+              : null,
+          color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
+        ),
+        child: Center(
+          child: Text(
+            date.day.toString(),
+            style: kHeader4TextStyle.copyWith(
+              color: isDisabled != null && isDisabled
+                  ? AppColors.greyBgr(context)
+                  : isSelected != null && isSelected
+                      ? context.appTheme.primaryNegative
+                      : context.appTheme.backgroundNegative,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      child: CustomInkWell(
+        borderRadius: BorderRadius.circular(1000),
+        inkColor: AppColors.grey(context),
+        onTap: () async {
+          await _showCustomCalendarDialog(
+            context: context,
+            builder: (_, __) {
+              return _CustomCalendarDialog(
+                config: _customConfig(context,
+                    dayBuilder: _dayBuilder, selectableDayPredicate: widget.selectableDayPredicate),
+                currentDay: _outputDateTime,
+                onActionButtonTap: (dateTime) {
+                  if (dateTime != null) {
+                    setState(() {
+                      _outputDateTime =
+                          dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                    });
+                    context.pop();
+                  }
+                },
+              );
+            },
+          );
+          widget.onChanged(_outputDateTime);
+        },
+        child: _DateWidget(
+          dateTime: _outputDateTime,
+          labelBuilder: widget.labelBuilder,
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
@@ -12,11 +13,13 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../calculator_input/presentation/calculator_input.dart';
@@ -40,11 +43,51 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   AccountType accountType = AccountType.regular;
   String calculatorOutput = '0';
 
-  String statementDay = '';
-  String paymentDueDay = '';
+  int statementDay = 1;
+  int paymentDueDay = 15;
   String apr = '';
   String initialBalance = '0';
   String initialInterest = '0';
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      // By validating, the _formatToDouble(calculatorOutput) must not null
+      final accountRepository = ref.read(accountRepositoryProvider);
+
+      accountRepository.writeNew(
+        CalService.formatToDouble(calculatorOutput)!,
+        type: accountType,
+        iconCategory: iconCategory,
+        iconIndex: iconIndex,
+        name: accountName,
+        colorIndex: colorIndex,
+        statementDay: statementDay,
+        paymentDueDay: paymentDueDay,
+        apr: CalService.formatToDouble(apr),
+        initialBalance: CalService.formatToDouble(initialBalance)!,
+        initialInterest: CalService.formatToDouble(initialInterest)!,
+      );
+      context.pop();
+    }
+  }
+
+  String _dateBuilder(DateTime? dateTime) {
+    if (dateTime == null) {
+      return '--';
+    }
+
+    String suffix = 'th';
+
+    if (dateTime.day.toString().endsWith('1')) {
+      suffix = 'st';
+    } else if (dateTime.day.toString().endsWith('2')) {
+      suffix == 'nd';
+    } else if (dateTime.day.toString().endsWith('3')) {
+      suffix = 'rd';
+    }
+
+    return '${dateTime.day.toString()}$suffix';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,24 +181,46 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               child: Column(
                 children: [
-                  InlineTextFormField(
-                    prefixText: 'Statement date:',
-                    width: 30,
-                    maxLength: 2,
-                    validator: (_) => _dateInputValidator(statementDay),
-                    onChanged: (value) => statementDay = value,
+                  Row(
+                    children: [
+                      Text(
+                        'Statement day:',
+                        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                      ),
+                      DateSelector(
+                        onChanged: (dateTime) {
+                          setState(() {
+                            statementDay = dateTime.day;
+                          });
+                        },
+                        labelBuilder: (dateTime) {
+                          return '${_dateBuilder(dateTime)} of this month';
+                        },
+                      ),
+                    ],
+                  ),
+                  Gap.h8,
+                  Gap.h4,
+                  Row(
+                    children: [
+                      Text(
+                        'Payment due day:',
+                        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                      ),
+                      DateSelector(
+                        initial: DateTime.now().copyWith(day: 15),
+                        onChanged: (dateTime) {
+                          paymentDueDay = dateTime.day;
+                        },
+                        labelBuilder: (dateTime) {
+                          return '${_dateBuilder(dateTime)} of next month';
+                        },
+                      ),
+                    ],
                   ),
                   Gap.h8,
                   InlineTextFormField(
-                    prefixText: 'Payment due date:',
-                    width: 30,
-                    maxLength: 2,
-                    validator: (_) => _dateInputValidator(paymentDueDay),
-                    onChanged: (value) => paymentDueDay = value,
-                  ),
-                  Gap.h8,
-                  InlineTextFormField(
-                    prefixText: 'APR:',
+                    prefixText: 'Account APR:',
                     width: 60,
                     suffixText: '%',
                     suffixWidget: HelpButton(
@@ -163,57 +228,84 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       text: 'APR'.hardcoded,
                       yOffset: 4,
                     ),
+                    maxLength: 5,
                     validator: (_) => CalService.formatToDouble(apr) == null ? '' : null,
                     onChanged: (value) => apr = value,
-                  ),
-                  Gap.h8,
-                  InlineTextFormField(
-                    prefixText: 'Init. balance:',
-                    suffixText: context.currentSettings.currency.symbol,
-                    suffixWidget: HelpButton(
-                      text:
-                          'The initial carrying-over balance to current statement. If you have paid-in-full in last statement, this value will be 0.\n(Exclude any installment spendings and interest)'
-                              .hardcoded,
-                      yOffset: 4,
-                    ),
-                    widget: CalculatorInput(
-                      fontSize: 18,
-                      isDense: true,
-                      textAlign: TextAlign.end,
-                      focusColor: context.appTheme.secondary,
-                      hintText: '',
-                      initialValue: '0',
-                      // TODO: Update here
-                      //validator: (_) {},
-                      formattedResultOutput: (value) => initialBalance = value,
-                    ),
-                  ),
-                  Gap.h8,
-                  InlineTextFormField(
-                    prefixText: 'Init. Interest amount:',
-                    suffixText: context.currentSettings.currency.symbol,
-                    suffixWidget: HelpButton(
-                      text:
-                          'Only specify if you have NOT paid-in-full in last statement. Ask for banking support to get the interest amount.'
-                              .hardcoded,
-                      yOffset: 4,
-                    ),
-                    widget: CalculatorInput(
-                      fontSize: 18,
-                      isDense: true,
-                      focusColor: context.appTheme.secondary,
-                      hintText: '',
-                      initialValue: '0',
-                      textAlign: TextAlign.end,
-                      // TODO: Update here
-                      //validator: (_) {},
-                      formattedResultOutput: (value) => initialInterest = value,
-                    ),
                   ),
                 ],
               ),
             ),
           ),
+          accountType == AccountType.credit
+              ? CustomCheckbox(
+                  onChanged: (value) {
+                    if (!value) {
+                      setState(() {
+                        initialBalance = '0';
+                        initialInterest = '0';
+                      });
+                    }
+                  },
+                  label: 'With checkpoint'.hardcoded,
+                  labelSuffix: HelpButton(
+                    text: 'Checkpoint'.hardcoded,
+                  ),
+                  optionalWidget: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Checkpoint:',
+                            style:
+                                kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                          ),
+                          DateSelector(
+                            initial: DateTime.now().copyWith(day: statementDay),
+                            selectableDayPredicate: (dateTime) => dateTime.day == statementDay,
+                            onChanged: (dateTime) {},
+                            labelBuilder: (dateTime) {
+                              return dateTime != null ? dateTime.getFormattedDate() : '--';
+                            },
+                          ),
+                        ],
+                      ),
+                      Gap.h8,
+                      InlineTextFormField(
+                        prefixText: 'Balance:',
+                        suffixText: context.currentSettings.currency.symbol,
+                        widget: CalculatorInput(
+                          fontSize: 18,
+                          isDense: true,
+                          textAlign: TextAlign.end,
+                          focusColor: context.appTheme.secondary,
+                          hintText: '',
+                          initialValue: '0',
+                          // TODO: Update here
+                          //validator: (_) {},
+                          formattedResultOutput: (value) => initialBalance = value,
+                        ),
+                      ),
+                      Gap.h8,
+                      Gap.h4,
+                      InlineTextFormField(
+                        prefixText: 'Interest amount:',
+                        suffixText: context.currentSettings.currency.symbol,
+                        widget: CalculatorInput(
+                          fontSize: 18,
+                          isDense: true,
+                          focusColor: context.appTheme.secondary,
+                          hintText: '',
+                          initialValue: '0',
+                          textAlign: TextAlign.end,
+                          // TODO: Update here
+                          //validator: (_) {},
+                          formattedResultOutput: (value) => initialInterest = value,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Gap.noGap,
           Gap.h24,
           Align(
             alignment: Alignment.centerRight,
@@ -222,46 +314,11 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               label: 'Create',
               backgroundColor: context.appTheme.accent,
               isDisabled: accountName.isEmpty || CalService.formatToDouble(calculatorOutput) == null,
-              onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  // By validating, the _formatToDouble(calculatorOutput) must not null
-                  final accountRepository = ref.read(accountRepositoryProvider);
-
-                  accountRepository.writeNew(
-                    CalService.formatToDouble(calculatorOutput)!,
-                    type: accountType,
-                    iconCategory: iconCategory,
-                    iconIndex: iconIndex,
-                    name: accountName,
-                    colorIndex: colorIndex,
-                    statementDay: int.tryParse(statementDay),
-                    paymentDueDay: int.tryParse(paymentDueDay),
-                    apr: CalService.formatToDouble(apr),
-                    initialBalance: CalService.formatToDouble(initialBalance)!,
-                    initialInterest: CalService.formatToDouble(initialInterest)!,
-                  );
-                  context.pop();
-                }
-              },
+              onTap: _submit,
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-extension _Validator on _AddAccountModalScreenState {
-  String? _dateInputValidator(String date, {String error = ''}) {
-    final dateParsed = int.tryParse(date);
-    if (dateParsed != null) {
-      if (dateParsed > 0 && dateParsed < 31) {
-        return null;
-      } else {
-        return error;
-      }
-    } else {
-      return error;
-    }
   }
 }
