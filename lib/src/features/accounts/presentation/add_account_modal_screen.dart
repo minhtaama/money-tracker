@@ -247,6 +247,12 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                         checkpointBalance = null;
                         checkpointWithInterest = null;
                       });
+                    } else {
+                      setState(() {
+                        checkpoint = DateTime.now().copyWith(day: statementDay);
+                        checkpointBalance = '0';
+                        checkpointWithInterest = false;
+                      });
                     }
                   },
                   label: 'With checkpoint'.hardcoded,
@@ -282,6 +288,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                           textAlign: TextAlign.end,
                           focusColor: context.appTheme.secondary,
                           hintText: '',
+                          initialValue: '0',
                           // TODO: Update here
                           //validator: (_) {},
                           formattedResultOutput: (value) => checkpointBalance = value,

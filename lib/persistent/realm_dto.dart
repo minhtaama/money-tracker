@@ -66,11 +66,16 @@ class _CreditDetailsDb {
 
   late int paymentDueDay;
 
-  DateTime? checkpoint;
+  late List<_CheckpointDb> checkpoints;
+}
 
-  double? checkpointBalance;
+@RealmModel(ObjectType.embeddedObject)
+class _CheckpointDb {
+  late DateTime checkpoint;
 
-  bool? checkpointWithInterest;
+  late double checkpointBalance;
+
+  late bool checkpointWithInterest;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////

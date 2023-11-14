@@ -17,6 +17,7 @@ class RealmDataStore {
         TransactionDb.schema,
         TransferFeeDb.schema,
         CreditPaymentDetailsDb.schema,
+        CheckpointDb.schema,
         SettingsDb.schema,
       ],
       initialDataCallback: _initialDataCallback,

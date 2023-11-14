@@ -80,13 +80,17 @@ class AccountRepositoryRealmDb {
   }) async {
     TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
+    CheckpointDb? checkpointDb;
+
+    if (checkpoint != null && checkpointBalance != null && checkpointWithInterest != null) {
+      checkpointDb = CheckpointDb(checkpoint, checkpointBalance, checkpointWithInterest);
+    }
 
     if (type == AccountType.credit) {
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!,
-          apr: apr!,
-          checkpoint: checkpoint,
-          checkpointBalance: checkpointBalance,
-          checkpointWithInterest: checkpointWithInterest);
+      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
+      if (checkpointDb != null) {
+        creditDetailsDb.checkpoints.add(checkpointDb);
+      }
     }
 
     final order = getList(null).length;
