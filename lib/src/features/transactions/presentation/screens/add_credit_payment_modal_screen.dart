@@ -273,12 +273,9 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     if (_statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
-    // if (_statement!.balanceAtTheEndOfGracePeriod <= 0) {
-    //   return 'This statement has paid in full'.hardcoded;
+    // if (_outputAmount! > CalService.formatToDouble(_fullPaymentFormattedAmount(context))!) {
+    //   return 'Value is higher than full payment amount'.hardcoded;
     // }
-    if (_outputAmount! > CalService.formatToDouble(_fullPaymentFormattedAmount(context))!) {
-      return 'Value is higher than full payment amount'.hardcoded;
-    }
     return null;
   }
 

@@ -66,9 +66,11 @@ class _CreditDetailsDb {
 
   late int paymentDueDay;
 
-  late double initialBalance;
+  DateTime? checkpoint;
 
-  late double initialInterest;
+  double? checkpointBalance;
+
+  bool? checkpointWithInterest;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////

@@ -141,10 +141,11 @@ class CreditDetailsDb extends _CreditDetailsDb
   CreditDetailsDb(
     double creditBalance,
     int statementDay,
-    int paymentDueDay,
-    double initialBalance,
-    double initialInterest, {
+    int paymentDueDay, {
     double apr = 5,
+    DateTime? checkpoint,
+    double? checkpointBalance,
+    bool? checkpointWithInterest,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<CreditDetailsDb>({
@@ -155,8 +156,9 @@ class CreditDetailsDb extends _CreditDetailsDb
     RealmObjectBase.set(this, 'apr', apr);
     RealmObjectBase.set(this, 'statementDay', statementDay);
     RealmObjectBase.set(this, 'paymentDueDay', paymentDueDay);
-    RealmObjectBase.set(this, 'initialBalance', initialBalance);
-    RealmObjectBase.set(this, 'initialInterest', initialInterest);
+    RealmObjectBase.set(this, 'checkpoint', checkpoint);
+    RealmObjectBase.set(this, 'checkpointBalance', checkpointBalance);
+    RealmObjectBase.set(this, 'checkpointWithInterest', checkpointWithInterest);
   }
 
   CreditDetailsDb._();
@@ -187,18 +189,25 @@ class CreditDetailsDb extends _CreditDetailsDb
       RealmObjectBase.set(this, 'paymentDueDay', value);
 
   @override
-  double get initialBalance =>
-      RealmObjectBase.get<double>(this, 'initialBalance') as double;
+  DateTime? get checkpoint =>
+      RealmObjectBase.get<DateTime>(this, 'checkpoint') as DateTime?;
   @override
-  set initialBalance(double value) =>
-      RealmObjectBase.set(this, 'initialBalance', value);
+  set checkpoint(DateTime? value) =>
+      RealmObjectBase.set(this, 'checkpoint', value);
 
   @override
-  double get initialInterest =>
-      RealmObjectBase.get<double>(this, 'initialInterest') as double;
+  double? get checkpointBalance =>
+      RealmObjectBase.get<double>(this, 'checkpointBalance') as double?;
   @override
-  set initialInterest(double value) =>
-      RealmObjectBase.set(this, 'initialInterest', value);
+  set checkpointBalance(double? value) =>
+      RealmObjectBase.set(this, 'checkpointBalance', value);
+
+  @override
+  bool? get checkpointWithInterest =>
+      RealmObjectBase.get<bool>(this, 'checkpointWithInterest') as bool?;
+  @override
+  set checkpointWithInterest(bool? value) =>
+      RealmObjectBase.set(this, 'checkpointWithInterest', value);
 
   @override
   Stream<RealmObjectChanges<CreditDetailsDb>> get changes =>
@@ -218,8 +227,11 @@ class CreditDetailsDb extends _CreditDetailsDb
       SchemaProperty('apr', RealmPropertyType.double),
       SchemaProperty('statementDay', RealmPropertyType.int),
       SchemaProperty('paymentDueDay', RealmPropertyType.int),
-      SchemaProperty('initialBalance', RealmPropertyType.double),
-      SchemaProperty('initialInterest', RealmPropertyType.double),
+      SchemaProperty('checkpoint', RealmPropertyType.timestamp, optional: true),
+      SchemaProperty('checkpointBalance', RealmPropertyType.double,
+          optional: true),
+      SchemaProperty('checkpointWithInterest', RealmPropertyType.bool,
+          optional: true),
     ]);
   }
 }

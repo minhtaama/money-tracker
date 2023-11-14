@@ -97,27 +97,35 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                               currentMonthView: _currentMonthView,
                               onActionButtonTap: (dateTime) {
                                 if (dateTime != null) {
-                                  if (widget.creditAccount!.canAddPaymentAt(dateTime)) {
-                                    _currentMonthView = dateTime;
+                                  _currentMonthView = dateTime;
 
-                                    _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
-                                    _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
+                                  _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                                  _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
 
-                                    widget.onChanged(_outputDateTime!, _outputStatement);
-                                    context.pop();
-                                  } else {
-                                    // TODO: Do some styling
-                                    _showCustomCalendarDialog(
-                                        context: context,
-                                        builder: (_, __) {
-                                          return const AlertDialog(
-                                            content: EmptyInfo(
-                                              infoText:
-                                                  'You can only add payments since the statement contains the latest payment',
-                                            ),
-                                          );
-                                        });
-                                  }
+                                  widget.onChanged(_outputDateTime!, _outputStatement);
+                                  context.pop();
+
+                                  // if (widget.creditAccount!.canAddPaymentAt(dateTime)) {
+                                  //   _currentMonthView = dateTime;
+                                  //
+                                  //   _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                                  //   _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
+                                  //
+                                  //   widget.onChanged(_outputDateTime!, _outputStatement);
+                                  //   context.pop();
+                                  // } else {
+                                  //   // TODO: Do some styling
+                                  //   _showCustomCalendarDialog(
+                                  //       context: context,
+                                  //       builder: (_, __) {
+                                  //         return const AlertDialog(
+                                  //           content: EmptyInfo(
+                                  //             infoText:
+                                  //                 'You can only add payments since the statement contains the latest payment',
+                                  //           ),
+                                  //         );
+                                  //       });
+                                  // }
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {

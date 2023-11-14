@@ -46,8 +46,9 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   int statementDay = 1;
   int paymentDueDay = 15;
   String apr = '';
-  String initialBalance = '0';
-  String initialInterest = '0';
+  DateTime? checkpoint;
+  String? checkpointBalance;
+  bool? checkpointWithInterest;
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
@@ -64,8 +65,9 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         statementDay: statementDay,
         paymentDueDay: paymentDueDay,
         apr: CalService.formatToDouble(apr),
-        initialBalance: CalService.formatToDouble(initialBalance)!,
-        initialInterest: CalService.formatToDouble(initialInterest)!,
+        checkpoint: checkpoint,
+        checkpointBalance: CalService.formatToDouble(checkpointBalance),
+        checkpointWithInterest: checkpointWithInterest,
       );
       context.pop();
     }
@@ -241,8 +243,9 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   onChanged: (value) {
                     if (!value) {
                       setState(() {
-                        initialBalance = '0';
-                        initialInterest = '0';
+                        checkpoint = null;
+                        checkpointBalance = null;
+                        checkpointWithInterest = null;
                       });
                     }
                   },
@@ -251,18 +254,18 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     text: 'Checkpoint'.hardcoded,
                   ),
                   optionalWidget: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Text(
                             'Checkpoint:',
-                            style:
-                                kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                            style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
                           ),
                           DateSelector(
                             initial: DateTime.now().copyWith(day: statementDay),
                             selectableDayPredicate: (dateTime) => dateTime.day == statementDay,
-                            onChanged: (dateTime) {},
+                            onChanged: (dateTime) => checkpoint = dateTime,
                             labelBuilder: (dateTime) {
                               return dateTime != null ? dateTime.getFormattedDate() : '--';
                             },
@@ -279,29 +282,14 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                           textAlign: TextAlign.end,
                           focusColor: context.appTheme.secondary,
                           hintText: '',
-                          initialValue: '0',
                           // TODO: Update here
                           //validator: (_) {},
-                          formattedResultOutput: (value) => initialBalance = value,
+                          formattedResultOutput: (value) => checkpointBalance = value,
                         ),
                       ),
                       Gap.h8,
                       Gap.h4,
-                      InlineTextFormField(
-                        prefixText: 'Interest amount:',
-                        suffixText: context.currentSettings.currency.symbol,
-                        widget: CalculatorInput(
-                          fontSize: 18,
-                          isDense: true,
-                          focusColor: context.appTheme.secondary,
-                          hintText: '',
-                          initialValue: '0',
-                          textAlign: TextAlign.end,
-                          // TODO: Update here
-                          //validator: (_) {},
-                          formattedResultOutput: (value) => initialInterest = value,
-                        ),
-                      ),
+                      CustomCheckbox(onChanged: (value) => checkpointWithInterest = value, label: 'With interest'),
                     ],
                   ),
                 )
