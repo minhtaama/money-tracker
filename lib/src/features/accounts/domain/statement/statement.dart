@@ -14,6 +14,9 @@ abstract class Statement {
   final DateTime endDate;
   final DateTime dueDate;
 
+  /// Only specify if user custom it's `previousStatement` data
+  final bool isCheckpoint;
+
   /// Installment transactions happens before this statement, but need to pay at this statement
   final List<CreditSpending> installmentTransactionsToPay;
 
@@ -23,7 +26,7 @@ abstract class Statement {
   /// **Grace Period**: From the day after [endDate] to [dueDate]
   final List<BaseCreditTransaction> transactionsInGracePeriod;
 
-  final double _totalSpentInBillingCycle;
+  final double _spentInBillingCycle;
   final double _spentInBillingCycleExcludeInstallments;
   final double _paidInBillingCycle;
   final double _paidInGracePeriod;
@@ -120,17 +123,14 @@ abstract class Statement {
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement {
     double balanceAtEndDate = double.parse(
-      (previousStatement._balanceAtEndDate +
-              previousStatement.interest +
-              _totalSpentInBillingCycle -
-              _paidInBillingCycle)
+      (previousStatement._balanceAtEndDate + previousStatement.interest + _spentInBillingCycle - _paidInBillingCycle)
           .toStringAsFixed(2),
     );
 
     double balance = double.parse(
       (previousStatement._balanceAtEndDate +
               previousStatement.interest +
-              _totalSpentInBillingCycle -
+              _spentInBillingCycle -
               _paidInBillingCycle -
               _paidInGracePeriod)
           .toStringAsFixed(2),
@@ -177,6 +177,7 @@ abstract class Statement {
     required List<CreditSpending> installmentTransactionsToPay,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
+    bool isCheckpoint = false,
   }) {
     return switch (type) {
       StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(
@@ -192,7 +193,7 @@ abstract class Statement {
   }
 
   const Statement(
-    this._totalSpentInBillingCycle,
+    this._spentInBillingCycle,
     this._spentInBillingCycleExcludeInstallments,
     this._paidInBillingCycle,
     this._paidInGracePeriod, {
@@ -204,6 +205,7 @@ abstract class Statement {
     required this.installmentTransactionsToPay,
     required this.transactionsInBillingCycle,
     required this.transactionsInGracePeriod,
+    this.isCheckpoint = false,
   });
 }
 
@@ -283,4 +285,29 @@ class PreviousStatement {
     required this.interest,
     required this.dueDate,
   });
+
+  PreviousStatement copyWith({
+    double? balanceToPay,
+    double? balanceToPayAtEndDate,
+    double? balance,
+    double? balanceAtEndDate,
+    double? interest,
+  }) {
+    return PreviousStatement._(
+      balanceToPayAtEndDate ?? _balanceToPayAtEndDate,
+      balanceAtEndDate ?? _balanceAtEndDate,
+      balanceToPay: balanceToPay ?? this.balanceToPay,
+      balance: balance ?? this.balance,
+      interest: interest ?? this.interest,
+      dueDate: dueDate,
+    );
+  }
+}
+
+@immutable
+class Checkpoint {
+  final double balance;
+  final bool withInterest;
+
+  const Checkpoint(this.balance, this.withInterest);
 }

@@ -220,37 +220,34 @@ class CreditDetailsDb extends _CreditDetailsDb
 class CheckpointDb extends _CheckpointDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
   CheckpointDb(
-    DateTime checkpoint,
-    double checkpointBalance,
-    bool checkpointWithInterest,
+    DateTime dateTime,
+    double balance,
+    bool withInterest,
   ) {
-    RealmObjectBase.set(this, 'checkpoint', checkpoint);
-    RealmObjectBase.set(this, 'checkpointBalance', checkpointBalance);
-    RealmObjectBase.set(this, 'checkpointWithInterest', checkpointWithInterest);
+    RealmObjectBase.set(this, 'dateTime', dateTime);
+    RealmObjectBase.set(this, 'balance', balance);
+    RealmObjectBase.set(this, 'withInterest', withInterest);
   }
 
   CheckpointDb._();
 
   @override
-  DateTime get checkpoint =>
-      RealmObjectBase.get<DateTime>(this, 'checkpoint') as DateTime;
+  DateTime get dateTime =>
+      RealmObjectBase.get<DateTime>(this, 'dateTime') as DateTime;
   @override
-  set checkpoint(DateTime value) =>
-      RealmObjectBase.set(this, 'checkpoint', value);
+  set dateTime(DateTime value) => RealmObjectBase.set(this, 'dateTime', value);
 
   @override
-  double get checkpointBalance =>
-      RealmObjectBase.get<double>(this, 'checkpointBalance') as double;
+  double get balance => RealmObjectBase.get<double>(this, 'balance') as double;
   @override
-  set checkpointBalance(double value) =>
-      RealmObjectBase.set(this, 'checkpointBalance', value);
+  set balance(double value) => RealmObjectBase.set(this, 'balance', value);
 
   @override
-  bool get checkpointWithInterest =>
-      RealmObjectBase.get<bool>(this, 'checkpointWithInterest') as bool;
+  bool get withInterest =>
+      RealmObjectBase.get<bool>(this, 'withInterest') as bool;
   @override
-  set checkpointWithInterest(bool value) =>
-      RealmObjectBase.set(this, 'checkpointWithInterest', value);
+  set withInterest(bool value) =>
+      RealmObjectBase.set(this, 'withInterest', value);
 
   @override
   Stream<RealmObjectChanges<CheckpointDb>> get changes =>
@@ -265,9 +262,9 @@ class CheckpointDb extends _CheckpointDb
     RealmObjectBase.registerFactory(CheckpointDb._);
     return const SchemaObject(
         ObjectType.embeddedObject, CheckpointDb, 'CheckpointDb', [
-      SchemaProperty('checkpoint', RealmPropertyType.timestamp),
-      SchemaProperty('checkpointBalance', RealmPropertyType.double),
-      SchemaProperty('checkpointWithInterest', RealmPropertyType.bool),
+      SchemaProperty('dateTime', RealmPropertyType.timestamp),
+      SchemaProperty('balance', RealmPropertyType.double),
+      SchemaProperty('withInterest', RealmPropertyType.bool),
     ]);
   }
 }

@@ -66,10 +66,15 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     // ADD STATEMENTS
     var statementsList = <Statement>[];
     if (earliestStatementDate != null && latestStatementDate != null) {
-      statementsList = _buildStatementsList(statementDay, paymentDueDay, accountDb.creditDetails!.apr,
-          earliestStatementDate: earliestStatementDate,
-          latestStatementDate: latestStatementDate,
-          accountTransactionsList: transactionsList);
+      statementsList = _buildStatementsList(
+        statementDay,
+        paymentDueDay,
+        earliestStatementDate: earliestStatementDate,
+        latestStatementDate: latestStatementDate,
+        accountTransactionsList: transactionsList,
+        apr: accountDb.creditDetails!.apr,
+        checkpoints: accountDb.creditDetails!.checkpoints.toList(),
+      );
     }
 
     return CreditAccount._(
@@ -91,8 +96,9 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
 
   static List<Statement> _buildStatementsList(
     int statementDay,
-    int paymentDueDay,
-    double apr, {
+    int paymentDueDay, {
+    required double apr,
+    required List<CheckpointDb> checkpoints,
     required DateTime earliestStatementDate,
     required DateTime latestStatementDate,
     required List<BaseCreditTransaction> accountTransactionsList,
@@ -109,11 +115,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
+      // TODO: Continue here, balance trong checkpoint sẽ bao gồm toàn bộ giá trị, trừ giá trị installment
+      final checkpointsDateTime = checkpoints.map((e) => e.checkpoint);
+
       final previousStatement =
           startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
 
       // TODO: Hey, installment should start right at current statement, should let user choose when to start
-      final installmentTransactionsToPay = installmentCounts.map((e) => e.txn).toList();
+      final installmentsToPay = installmentCounts.map((e) => e.txn).toList();
 
       final txnsInGracePeriod = <BaseCreditTransaction>[];
       final txnsInBillingCycle = <BaseCreditTransaction>[];
@@ -146,7 +155,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           endDate: endDate,
           dueDate: dueDate,
           apr: apr,
-          installmentTransactionsToPay: installmentTransactionsToPay,
+          installmentTransactionsToPay: installmentsToPay,
           txnsInBillingCycle: txnsInBillingCycle,
           txnsInGracePeriod: txnsInGracePeriod);
 

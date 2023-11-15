@@ -71,11 +71,11 @@ class _CreditDetailsDb {
 
 @RealmModel(ObjectType.embeddedObject)
 class _CheckpointDb {
-  late DateTime checkpoint;
+  late DateTime dateTime;
 
-  late double checkpointBalance;
+  late double balance;
 
-  late bool checkpointWithInterest;
+  late bool withInterest;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////
