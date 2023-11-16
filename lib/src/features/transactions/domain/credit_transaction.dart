@@ -19,7 +19,7 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
   bool get hasInstallment => monthsToPay != null;
 
   const CreditSpending._(
-    super._isarObject,
+    super._databaseObject,
     super.dateTime,
     super.amount,
     super.note,
@@ -34,6 +34,14 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
   String toString() {
     return 'CreditSpending{amount: $amount, paymentAmount: $paymentAmount, monthsToPay: $monthsToPay}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
+
+  @override
+  int get hashCode => category.hashCode ^ categoryTag.hashCode ^ monthsToPay.hashCode ^ paymentAmount.hashCode;
 }
 
 @immutable

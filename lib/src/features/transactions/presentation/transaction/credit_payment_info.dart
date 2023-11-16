@@ -517,7 +517,7 @@ extension _ListGetters on State<_List> {
     if (widget.statement == null || widget.chosenDateTime == null) {
       return <CreditSpending>[];
     }
-    return widget.statement!.installmentTransactionsToPay;
+    return widget.statement!.installmentTxnsToPayCounts.map((e) => e.txn).toList();
   }
 
   List<BaseCreditTransaction> get txnsInBillingCycle {

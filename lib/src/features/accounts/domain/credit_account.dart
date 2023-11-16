@@ -22,7 +22,7 @@ class CreditAccount extends Account {
   final DateTime? earliestStatementDate;
 
   const CreditAccount._(
-    super._isarObject, {
+    super._databaseObject, {
     required super.name,
     required super.iconColor,
     required super.backgroundColor,
@@ -88,10 +88,10 @@ extension CreditAccountMethods on CreditAccount {
           endDate: endDate,
           dueDate: dueDate,
           apr: apr,
-          installmentTransactionsToPay: const [],
+          installmentTxnsToPayCounts: const [],
           txnsInGracePeriod: const [],
           txnsInBillingCycle: const [],
-          checkpoint: null,
+          checkpointOutstandingBalance: null,
         );
 
         list.add(statement);

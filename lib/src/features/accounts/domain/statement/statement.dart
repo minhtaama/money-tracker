@@ -15,10 +15,10 @@ abstract class Statement {
   final DateTime dueDate;
 
   /// Only specify if user custom this statement data
-  final Checkpoint? checkpoint;
+  final double? checkpointOutstandingBalance;
 
   /// Installment transactions happens before this statement, but need to pay at this statement
-  final List<CreditSpending> installmentTransactionsToPay;
+  final List<InstallmentCount> installmentTxnsToPayCounts;
 
   /// **Billing cycle**: From [startDate] to [endDate]
   final List<BaseCreditTransaction> transactionsInBillingCycle;
@@ -78,7 +78,8 @@ abstract class Statement {
 
   double get installmentsAmountToPay {
     double amount = 0;
-    for (CreditSpending txn in installmentTransactionsToPay) {
+    final installmentTransactions = installmentTxnsToPayCounts.map((e) => e.txn).toList();
+    for (CreditSpending txn in installmentTransactions) {
       amount += txn.paymentAmount!;
     }
     return amount;
@@ -147,10 +148,10 @@ abstract class Statement {
     double interestCarryToNextStatement = balanceToPay > 0 || previousStatement.balanceToPay > 0 ? _interest : 0;
 
     return PreviousStatement._(
-      balanceToPayAtEndDate,
-      balanceAtEndDate,
-      balance: math.max(0, balance),
-      balanceToPay: math.max(0, balanceToPay),
+      double.parse(balanceToPayAtEndDate.toStringAsFixed(2)),
+      double.parse(balanceAtEndDate.toStringAsFixed(2)),
+      balance: math.max(0, double.parse(balance.toStringAsFixed(2))),
+      balanceToPay: math.max(0, double.parse(balanceToPay.toStringAsFixed(2))),
       interest: interestCarryToNextStatement,
       dueDate: dueDate,
     );
@@ -159,24 +160,41 @@ abstract class Statement {
   factory Statement.create(
     StatementType type, {
     required PreviousStatement previousStatement,
-    required Checkpoint? checkpoint,
+    required double? checkpointOutstandingBalance,
     required DateTime startDate,
     required DateTime endDate,
     required DateTime dueDate,
     required double apr,
-    required List<CreditSpending> installmentTransactionsToPay,
+    required List<InstallmentCount> installmentTxnsToPayCounts,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
+    // TODO: Continue here, checkpoint phải lấy endDate chứ không phải startDate, điều chỉnh cụm dưới này nhồi vào chỗ khác, điều chỉnh logic generate statement. Khi một statement có endDate trùng với checkpoint thì chỉnh sửa cái `carryToNextStatement`, hiểu không?
+
+    PreviousStatement? prvStmWithCheckpoint;
+
+    if (checkpointOutstandingBalance != null) {
+      double installmentPaid = 0;
+      for (InstallmentCount count in installmentTxnsToPayCounts) {
+        installmentPaid += (count.txn.monthsToPay! - count.monthsLeft) * count.txn.paymentAmount!;
+      }
+      prvStmWithCheckpoint = previousStatement.copyWith(
+        balanceAtEndDate: checkpointOutstandingBalance,
+        balanceToPayAtEndDate: double.parse((checkpointOutstandingBalance - installmentPaid).toStringAsFixed(2)),
+      );
+    }
+
+    print(prvStmWithCheckpoint ?? previousStatement);
+
     return switch (type) {
       StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(
-          previousStatement: previousStatement,
-          checkpoint: checkpoint,
+          previousStatement: prvStmWithCheckpoint ?? previousStatement,
+          checkpointOutstandingBalance: checkpointOutstandingBalance,
           startDate: startDate,
           endDate: endDate,
           dueDate: dueDate,
           apr: apr,
-          installmentTransactionsToPay: installmentTransactionsToPay,
+          installmentTxnsToPayCounts: installmentTxnsToPayCounts,
           txnsInBillingCycle: txnsInBillingCycle,
           txnsInGracePeriod: txnsInGracePeriod),
     };
@@ -189,13 +207,13 @@ abstract class Statement {
     this._paidInGracePeriod, {
     required this.apr,
     required this.previousStatement,
+    required this.checkpointOutstandingBalance,
     required this.startDate,
     required this.endDate,
     required this.dueDate,
-    required this.installmentTransactionsToPay,
+    required this.installmentTxnsToPayCounts,
     required this.transactionsInBillingCycle,
     required this.transactionsInGracePeriod,
-    this.checkpoint,
   });
 }
 
@@ -292,17 +310,17 @@ class PreviousStatement {
       dueDate: dueDate,
     );
   }
-}
-
-@immutable
-class Checkpoint {
-  final double balance;
-  final bool withInterest;
-
-  const Checkpoint(this.balance, this.withInterest);
 
   @override
   String toString() {
-    return 'Checkpoint{balance: $balance, withInterest: $withInterest}';
+    return 'PreviousStatement{balanceToPay: $balanceToPay, _balanceToPayAtEndDate: $_balanceToPayAtEndDate, balance: $balance, _balanceAtEndDate: $_balanceAtEndDate, interest: $interest, dueDate: $dueDate}';
   }
+}
+
+@immutable
+class InstallmentCount {
+  final CreditSpending txn;
+  final int monthsLeft;
+
+  const InstallmentCount(this.txn, this.monthsLeft);
 }

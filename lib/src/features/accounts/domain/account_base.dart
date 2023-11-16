@@ -15,13 +15,6 @@ import 'statement/statement.dart';
 part 'regular_account.dart';
 part 'credit_account.dart';
 
-class _InstallmentCount {
-  final CreditSpending txn;
-  int monthsLeft;
-
-  _InstallmentCount(this.txn, this.monthsLeft);
-}
-
 @immutable
 sealed class Account extends BaseModelWithIcon<AccountDb> {
   /// Already sorted by transactions dateTime when created
@@ -189,11 +182,11 @@ extension _CreditAccountExtension on Account {
 
     final statementsList = <Statement>[];
 
-    final installmentCounts = <_InstallmentCount>[];
+    final installmentCountsMap = <CreditSpending, int>{};
 
     DateTime startDate = earliestStatementDate;
 
-    while (!startDate.isAfter(latestStatementDate) || installmentCounts.isNotEmpty) {
+    while (!startDate.isAfter(latestStatementDate) || installmentCountsMap.isNotEmpty) {
       final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
@@ -205,15 +198,13 @@ extension _CreditAccountExtension on Account {
       final previousStatement =
           startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
 
-      final checkpoint = checkpointsMap.containsKey(startDate) ? checkpointsMap[startDate] : null;
-
-      print(checkpointsMap);
-      print(startDate);
-      print(checkpoint);
-      print(checkpointsMap.containsKey(startDate));
+      final checkpointOutstandingBalance = checkpointsMap.containsKey(startDate) ? checkpointsMap[startDate] : null;
 
       // TODO: Hey, installment should start right at current statement, should let user choose when to start
-      final installmentTxnsToPay = installmentCounts.map((e) => e.txn).toList();
+      final installmentCounts = <InstallmentCount>[];
+      for (final entry in installmentCountsMap.entries) {
+        installmentCounts.add(InstallmentCount(entry.key, entry.value));
+      }
 
       final txnsInGracePeriod = <BaseCreditTransaction>[];
       final txnsInBillingCycle = <BaseCreditTransaction>[];
@@ -235,7 +226,7 @@ extension _CreditAccountExtension on Account {
 
           // TODO: Hey, installment should start right at current statement, should let user choose when to start
           if (txn is CreditSpending && txn.hasInstallment) {
-            installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
+            installmentCountsMap[txn] = txn.monthsToPay!;
           }
         }
       }
@@ -243,23 +234,21 @@ extension _CreditAccountExtension on Account {
       Statement statement = Statement.create(
         StatementType.withAverageDailyBalance,
         previousStatement: previousStatement,
-        checkpoint: checkpoint,
+        checkpointOutstandingBalance: checkpointOutstandingBalance,
         startDate: startDate,
         endDate: endDate,
         dueDate: dueDate,
         apr: apr,
-        installmentTransactionsToPay: installmentTxnsToPay,
+        installmentTxnsToPayCounts: installmentCounts,
         txnsInBillingCycle: txnsInBillingCycle,
         txnsInGracePeriod: txnsInGracePeriod,
       );
 
       statementsList.add(statement);
 
-      for (_InstallmentCount el in installmentCounts) {
-        el.monthsLeft = el.monthsLeft - 1;
-      }
+      installmentCountsMap.updateAll((txn, counts) => counts - 1);
 
-      installmentCounts.removeWhere((el) => el.monthsLeft < 0);
+      installmentCountsMap.removeWhere((txn, counts) => counts < 0);
 
       startDate = startDate.copyWith(month: startDate.month + 1);
     }
@@ -267,10 +256,10 @@ extension _CreditAccountExtension on Account {
     return statementsList;
   }
 
-  static Map<DateTime, Checkpoint> _buildCheckpointsMap(List<CheckpointDb> checkpoints) {
-    final map = <DateTime, Checkpoint>{};
+  static Map<DateTime, double> _buildCheckpointsMap(List<CheckpointDb> checkpoints) {
+    final map = <DateTime, double>{};
     for (CheckpointDb checkpointDb in checkpoints) {
-      map[checkpointDb.dateTime.toLocal()] = Checkpoint(checkpointDb.balance, checkpointDb.withInterest);
+      map[checkpointDb.dateTime.toLocal()] = checkpointDb.balance;
     }
     return map;
   }

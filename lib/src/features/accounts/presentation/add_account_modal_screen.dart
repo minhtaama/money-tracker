@@ -49,7 +49,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   String apr = '';
   DateTime? checkpointDateTime;
   String? checkpointBalance;
-  bool? checkpointWithInterest;
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
@@ -68,7 +67,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         apr: CalService.formatToDouble(apr),
         checkpointDateTime: checkpointDateTime,
         checkpointBalance: CalService.formatToDouble(checkpointBalance),
-        checkpointWithInterest: checkpointWithInterest,
       );
       context.pop();
     }
@@ -246,13 +244,11 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       setState(() {
                         checkpointDateTime = null;
                         checkpointBalance = null;
-                        checkpointWithInterest = null;
                       });
                     } else {
                       setState(() {
                         checkpointDateTime = DateTime.now().copyWith(day: statementDay).onlyYearMonthDay;
                         checkpointBalance = '0';
-                        checkpointWithInterest = false;
                       });
                     }
                   },
@@ -281,7 +277,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       ),
                       Gap.h8,
                       InlineTextFormField(
-                        prefixText: 'Balance:',
+                        prefixText: 'Outstanding Balance:',
                         suffixText: context.currentSettings.currency.symbol,
                         widget: CalculatorInput(
                           fontSize: 18,
@@ -296,8 +292,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                         ),
                       ),
                       Gap.h8,
-                      Gap.h4,
-                      CustomCheckbox(onChanged: (value) => checkpointWithInterest = value, label: 'With interest'),
                     ],
                   ),
                 )

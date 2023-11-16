@@ -74,8 +74,6 @@ class _CheckpointDb {
   late DateTime dateTime;
 
   late double balance;
-
-  late bool withInterest;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////

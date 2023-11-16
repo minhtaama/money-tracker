@@ -76,14 +76,13 @@ class AccountRepositoryRealmDb {
     required double? apr,
     required DateTime? checkpointDateTime,
     required double? checkpointBalance,
-    required bool? checkpointWithInterest,
   }) async {
     TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
     CheckpointDb? checkpointDb;
 
-    if (checkpointDateTime != null && checkpointBalance != null && checkpointWithInterest != null) {
-      checkpointDb = CheckpointDb(checkpointDateTime, checkpointBalance, checkpointWithInterest);
+    if (checkpointDateTime != null && checkpointBalance != null) {
+      checkpointDb = CheckpointDb(checkpointDateTime, checkpointBalance);
     }
 
     if (type == AccountType.credit) {

@@ -222,11 +222,9 @@ class CheckpointDb extends _CheckpointDb
   CheckpointDb(
     DateTime dateTime,
     double balance,
-    bool withInterest,
   ) {
     RealmObjectBase.set(this, 'dateTime', dateTime);
     RealmObjectBase.set(this, 'balance', balance);
-    RealmObjectBase.set(this, 'withInterest', withInterest);
   }
 
   CheckpointDb._();
@@ -243,13 +241,6 @@ class CheckpointDb extends _CheckpointDb
   set balance(double value) => RealmObjectBase.set(this, 'balance', value);
 
   @override
-  bool get withInterest =>
-      RealmObjectBase.get<bool>(this, 'withInterest') as bool;
-  @override
-  set withInterest(bool value) =>
-      RealmObjectBase.set(this, 'withInterest', value);
-
-  @override
   Stream<RealmObjectChanges<CheckpointDb>> get changes =>
       RealmObjectBase.getChanges<CheckpointDb>(this);
 
@@ -264,7 +255,6 @@ class CheckpointDb extends _CheckpointDb
         ObjectType.embeddedObject, CheckpointDb, 'CheckpointDb', [
       SchemaProperty('dateTime', RealmPropertyType.timestamp),
       SchemaProperty('balance', RealmPropertyType.double),
-      SchemaProperty('withInterest', RealmPropertyType.bool),
     ]);
   }
 }
