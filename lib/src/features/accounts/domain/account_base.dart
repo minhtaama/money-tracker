@@ -66,7 +66,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     // ADD STATEMENTS
     var statementsList = <Statement>[];
     if (earliestStatementDate != null && latestStatementDate != null) {
-      statementsList = _buildStatementsList(
+      statementsList = _CreditAccountExtension.buildStatementsList(
         statementDay,
         paymentDueDay,
         earliestStatementDate: earliestStatementDate,
@@ -92,84 +92,6 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       earliestStatementDate: earliestStatementDate,
       earliestPayableDate: earliestPayableDate,
     );
-  }
-
-  static List<Statement> _buildStatementsList(
-    int statementDay,
-    int paymentDueDay, {
-    required double apr,
-    required List<CheckpointDb> checkpoints,
-    required DateTime earliestStatementDate,
-    required DateTime latestStatementDate,
-    required List<BaseCreditTransaction> accountTransactionsList,
-  }) {
-    final statementsList = <Statement>[];
-
-    final installmentCounts = <_InstallmentCount>[];
-
-    DateTime startDate = earliestStatementDate;
-
-    while (!startDate.isAfter(latestStatementDate) || installmentCounts.isNotEmpty) {
-      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
-      final dueDate = statementDay >= paymentDueDay
-          ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
-          : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
-
-      // TODO: Continue here, balance trong checkpoint sẽ bao gồm toàn bộ giá trị, trừ giá trị installment
-      final checkpointsDateTime = checkpoints.map((e) => e.checkpoint);
-
-      final previousStatement =
-          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
-
-      // TODO: Hey, installment should start right at current statement, should let user choose when to start
-      final installmentsToPay = installmentCounts.map((e) => e.txn).toList();
-
-      final txnsInGracePeriod = <BaseCreditTransaction>[];
-      final txnsInBillingCycle = <BaseCreditTransaction>[];
-      for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
-        final txn = accountTransactionsList[i];
-
-        if (txn.dateTime.isBefore(startDate)) {
-          continue;
-        }
-
-        if (txn.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
-          break;
-        }
-
-        if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
-          txnsInGracePeriod.add(txn);
-        } else {
-          txnsInBillingCycle.add(txn);
-
-          // TODO: Hey, installment should start right at current statement, should let user choose when to start
-          if (txn is CreditSpending && txn.hasInstallment) {
-            installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
-          }
-        }
-      }
-
-      Statement statement = Statement.create(StatementType.withAverageDailyBalance,
-          previousStatement: previousStatement,
-          startDate: startDate,
-          endDate: endDate,
-          dueDate: dueDate,
-          apr: apr,
-          installmentTransactionsToPay: installmentsToPay,
-          txnsInBillingCycle: txnsInBillingCycle,
-          txnsInGracePeriod: txnsInGracePeriod);
-
-      statementsList.add(statement);
-
-      for (_InstallmentCount el in installmentCounts) {
-        el.monthsLeft = el.monthsLeft - 1;
-      }
-      installmentCounts.removeWhere((el) => el.monthsLeft < 0);
-
-      startDate = startDate.copyWith(month: startDate.month + 1);
-    }
-
-    return statementsList;
   }
 
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
@@ -253,7 +175,108 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   });
 }
 
-extension AccountGetters on Account {
+extension _CreditAccountExtension on Account {
+  static List<Statement> buildStatementsList(
+    int statementDay,
+    int paymentDueDay, {
+    required double apr,
+    required List<CheckpointDb> checkpoints,
+    required DateTime earliestStatementDate,
+    required DateTime latestStatementDate,
+    required List<BaseCreditTransaction> accountTransactionsList,
+  }) {
+    final checkpointsMap = _buildCheckpointsMap(checkpoints);
+
+    final statementsList = <Statement>[];
+
+    final installmentCounts = <_InstallmentCount>[];
+
+    DateTime startDate = earliestStatementDate;
+
+    while (!startDate.isAfter(latestStatementDate) || installmentCounts.isNotEmpty) {
+      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+
+      final dueDate = statementDay >= paymentDueDay
+          ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
+          : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
+
+      // TODO: Continue here, balance trong checkpoint sẽ bao gồm toàn bộ giá trị, trừ giá trị installment
+
+      final previousStatement =
+          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
+
+      final checkpoint = checkpointsMap.containsKey(startDate) ? checkpointsMap[startDate] : null;
+
+      print(checkpointsMap);
+      print(startDate);
+      print(checkpoint);
+      print(checkpointsMap.containsKey(startDate));
+
+      // TODO: Hey, installment should start right at current statement, should let user choose when to start
+      final installmentTxnsToPay = installmentCounts.map((e) => e.txn).toList();
+
+      final txnsInGracePeriod = <BaseCreditTransaction>[];
+      final txnsInBillingCycle = <BaseCreditTransaction>[];
+      for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
+        final txn = accountTransactionsList[i];
+
+        if (txn.dateTime.isBefore(startDate)) {
+          continue;
+        }
+
+        if (txn.dateTime.isAfter(dueDate.copyWith(day: dueDate.day + 1))) {
+          break;
+        }
+
+        if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
+          txnsInGracePeriod.add(txn);
+        } else {
+          txnsInBillingCycle.add(txn);
+
+          // TODO: Hey, installment should start right at current statement, should let user choose when to start
+          if (txn is CreditSpending && txn.hasInstallment) {
+            installmentCounts.add(_InstallmentCount(txn, txn.monthsToPay!));
+          }
+        }
+      }
+
+      Statement statement = Statement.create(
+        StatementType.withAverageDailyBalance,
+        previousStatement: previousStatement,
+        checkpoint: checkpoint,
+        startDate: startDate,
+        endDate: endDate,
+        dueDate: dueDate,
+        apr: apr,
+        installmentTransactionsToPay: installmentTxnsToPay,
+        txnsInBillingCycle: txnsInBillingCycle,
+        txnsInGracePeriod: txnsInGracePeriod,
+      );
+
+      statementsList.add(statement);
+
+      for (_InstallmentCount el in installmentCounts) {
+        el.monthsLeft = el.monthsLeft - 1;
+      }
+
+      installmentCounts.removeWhere((el) => el.monthsLeft < 0);
+
+      startDate = startDate.copyWith(month: startDate.month + 1);
+    }
+
+    return statementsList;
+  }
+
+  static Map<DateTime, Checkpoint> _buildCheckpointsMap(List<CheckpointDb> checkpoints) {
+    final map = <DateTime, Checkpoint>{};
+    for (CheckpointDb checkpointDb in checkpoints) {
+      map[checkpointDb.dateTime.toLocal()] = Checkpoint(checkpointDb.balance, checkpointDb.withInterest);
+    }
+    return map;
+  }
+}
+
+extension AccountGettersExtension on Account {
   double get availableAmount {
     switch (this) {
       case RegularAccount():

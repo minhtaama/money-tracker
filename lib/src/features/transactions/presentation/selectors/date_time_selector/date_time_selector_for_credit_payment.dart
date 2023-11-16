@@ -131,10 +131,10 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
                                 if (selectedDay != null) {
                                   final statement = widget.creditAccount!.statementAt(selectedDay);
-                                  print(widget.creditAccount!.statementsList);
-                                  print(statement.installmentTransactionsToPay);
-                                  print(statement.previousStatement.balance);
-                                  print(statement.previousStatement.balanceToPay);
+                                  // print(widget.creditAccount!.statementsList);
+                                  // print(statement.installmentTransactionsToPay);
+                                  // print(statement.previousStatement.balance);
+                                  print(statement.checkpoint);
                                   print(statement.getFullPaymentAmountAt(selectedDay));
                                 }
                                 return AnimatedSize(

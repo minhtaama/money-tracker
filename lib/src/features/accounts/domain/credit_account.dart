@@ -74,6 +74,7 @@ extension CreditAccountMethods on CreditAccount {
       DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
       while (startDate.compareTo(date) <= 0) {
         final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+
         final dueDate = statementDay >= paymentDueDay
             ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
             : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
@@ -90,6 +91,7 @@ extension CreditAccountMethods on CreditAccount {
           installmentTransactionsToPay: const [],
           txnsInGracePeriod: const [],
           txnsInBillingCycle: const [],
+          checkpoint: null,
         );
 
         list.add(statement);

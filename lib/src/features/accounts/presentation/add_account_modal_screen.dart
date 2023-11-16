@@ -41,12 +41,13 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   int colorIndex = 0;
 
   AccountType accountType = AccountType.regular;
+
   String calculatorOutput = '0';
 
   int statementDay = 1;
   int paymentDueDay = 15;
   String apr = '';
-  DateTime? checkpoint;
+  DateTime? checkpointDateTime;
   String? checkpointBalance;
   bool? checkpointWithInterest;
 
@@ -65,7 +66,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         statementDay: statementDay,
         paymentDueDay: paymentDueDay,
         apr: CalService.formatToDouble(apr),
-        checkpoint: checkpoint,
+        checkpointDateTime: checkpointDateTime,
         checkpointBalance: CalService.formatToDouble(checkpointBalance),
         checkpointWithInterest: checkpointWithInterest,
       );
@@ -243,13 +244,13 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   onChanged: (value) {
                     if (!value) {
                       setState(() {
-                        checkpoint = null;
+                        checkpointDateTime = null;
                         checkpointBalance = null;
                         checkpointWithInterest = null;
                       });
                     } else {
                       setState(() {
-                        checkpoint = DateTime.now().copyWith(day: statementDay);
+                        checkpointDateTime = DateTime.now().copyWith(day: statementDay).onlyYearMonthDay;
                         checkpointBalance = '0';
                         checkpointWithInterest = false;
                       });
@@ -271,7 +272,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                           DateSelector(
                             initial: DateTime.now().copyWith(day: statementDay),
                             selectableDayPredicate: (dateTime) => dateTime.day == statementDay,
-                            onChanged: (dateTime) => checkpoint = dateTime,
+                            onChanged: (dateTime) => checkpointDateTime = dateTime.onlyYearMonthDay,
                             labelBuilder: (dateTime) {
                               return dateTime != null ? dateTime.getFormattedDate() : '--';
                             },
