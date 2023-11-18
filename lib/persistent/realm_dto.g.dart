@@ -6,6 +6,7 @@ part of 'realm_dto.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
+// ignore_for_file: type=lint
 class AccountDb extends _AccountDb
     with RealmEntity, RealmObjectBase, RealmObject {
   AccountDb(
@@ -134,6 +135,7 @@ class AccountDb extends _AccountDb
   }
 }
 
+// ignore_for_file: type=lint
 class CreditDetailsDb extends _CreditDetailsDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
   static var _defaultsSet = false;
@@ -143,7 +145,6 @@ class CreditDetailsDb extends _CreditDetailsDb
     int statementDay,
     int paymentDueDay, {
     double apr = 5,
-    Iterable<CheckpointDb> checkpoints = const [],
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<CreditDetailsDb>({
@@ -154,8 +155,6 @@ class CreditDetailsDb extends _CreditDetailsDb
     RealmObjectBase.set(this, 'apr', apr);
     RealmObjectBase.set(this, 'statementDay', statementDay);
     RealmObjectBase.set(this, 'paymentDueDay', paymentDueDay);
-    RealmObjectBase.set<RealmList<CheckpointDb>>(
-        this, 'checkpoints', RealmList<CheckpointDb>(checkpoints));
   }
 
   CreditDetailsDb._();
@@ -186,14 +185,6 @@ class CreditDetailsDb extends _CreditDetailsDb
       RealmObjectBase.set(this, 'paymentDueDay', value);
 
   @override
-  RealmList<CheckpointDb> get checkpoints =>
-      RealmObjectBase.get<CheckpointDb>(this, 'checkpoints')
-          as RealmList<CheckpointDb>;
-  @override
-  set checkpoints(covariant RealmList<CheckpointDb> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
   Stream<RealmObjectChanges<CreditDetailsDb>> get changes =>
       RealmObjectBase.getChanges<CreditDetailsDb>(this);
 
@@ -211,54 +202,11 @@ class CreditDetailsDb extends _CreditDetailsDb
       SchemaProperty('apr', RealmPropertyType.double),
       SchemaProperty('statementDay', RealmPropertyType.int),
       SchemaProperty('paymentDueDay', RealmPropertyType.int),
-      SchemaProperty('checkpoints', RealmPropertyType.object,
-          linkTarget: 'CheckpointDb', collectionType: RealmCollectionType.list),
     ]);
   }
 }
 
-class CheckpointDb extends _CheckpointDb
-    with RealmEntity, RealmObjectBase, EmbeddedObject {
-  CheckpointDb(
-    DateTime dateTime,
-    double balance,
-  ) {
-    RealmObjectBase.set(this, 'dateTime', dateTime);
-    RealmObjectBase.set(this, 'balance', balance);
-  }
-
-  CheckpointDb._();
-
-  @override
-  DateTime get dateTime =>
-      RealmObjectBase.get<DateTime>(this, 'dateTime') as DateTime;
-  @override
-  set dateTime(DateTime value) => RealmObjectBase.set(this, 'dateTime', value);
-
-  @override
-  double get balance => RealmObjectBase.get<double>(this, 'balance') as double;
-  @override
-  set balance(double value) => RealmObjectBase.set(this, 'balance', value);
-
-  @override
-  Stream<RealmObjectChanges<CheckpointDb>> get changes =>
-      RealmObjectBase.getChanges<CheckpointDb>(this);
-
-  @override
-  CheckpointDb freeze() => RealmObjectBase.freezeObject<CheckpointDb>(this);
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(CheckpointDb._);
-    return const SchemaObject(
-        ObjectType.embeddedObject, CheckpointDb, 'CheckpointDb', [
-      SchemaProperty('dateTime', RealmPropertyType.timestamp),
-      SchemaProperty('balance', RealmPropertyType.double),
-    ]);
-  }
-}
-
+// ignore_for_file: type=lint
 class CategoryDb extends _CategoryDb
     with RealmEntity, RealmObjectBase, RealmObject {
   CategoryDb(
@@ -359,6 +307,7 @@ class CategoryDb extends _CategoryDb
   }
 }
 
+// ignore_for_file: type=lint
 class CategoryTagDb extends _CategoryTagDb
     with RealmEntity, RealmObjectBase, RealmObject {
   CategoryTagDb(
@@ -419,6 +368,7 @@ class CategoryTagDb extends _CategoryTagDb
   }
 }
 
+// ignore_for_file: type=lint
 class TransactionDb extends _TransactionDb
     with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;
@@ -570,6 +520,7 @@ class TransactionDb extends _TransactionDb
   }
 }
 
+// ignore_for_file: type=lint
 class TransferFeeDb extends _TransferFeeDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
   static var _defaultsSet = false;
@@ -621,6 +572,7 @@ class TransferFeeDb extends _TransferFeeDb
   }
 }
 
+// ignore_for_file: type=lint
 class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
   CreditPaymentDetailsDb({
@@ -666,6 +618,7 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
   }
 }
 
+// ignore_for_file: type=lint
 class SettingsDb extends _SettingsDb
     with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;

@@ -29,14 +29,17 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate =
+        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate =
+        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
       if (statementDay > earliestPayableDate.day) {
-        earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+        earliestStatementDate =
+            DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
       }
 
       if (statementDay <= earliestPayableDate.day) {
@@ -48,7 +51,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate =
+            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -66,7 +70,6 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
         latestStatementDate: latestStatementDate,
         accountTransactionsList: transactionsList,
         apr: accountDb.creditDetails!.apr,
-        checkpoints: accountDb.creditDetails!.checkpoints.toList(),
       );
     }
 
@@ -90,7 +93,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>(
+            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -173,12 +177,12 @@ extension _CreditAccountExtension on Account {
     int statementDay,
     int paymentDueDay, {
     required double apr,
-    required List<CheckpointDb> checkpoints,
+    //required List<CheckpointDb> checkpoints,
     required DateTime earliestStatementDate,
     required DateTime latestStatementDate,
     required List<BaseCreditTransaction> accountTransactionsList,
   }) {
-    final checkpointsMap = _buildCheckpointsMap(checkpoints);
+    //final checkpointsMap = _buildCheckpointsMap(checkpoints);
 
     final statementsList = <Statement>[];
 
@@ -187,7 +191,8 @@ extension _CreditAccountExtension on Account {
     DateTime startDate = earliestStatementDate;
 
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMap.isNotEmpty) {
-      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate =
+          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
@@ -195,10 +200,11 @@ extension _CreditAccountExtension on Account {
 
       // TODO: Continue here, balance trong checkpoint sẽ bao gồm toàn bộ giá trị, trừ giá trị installment
 
-      final previousStatement =
-          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
+      final previousStatement = startDate != earliestStatementDate
+          ? statementsList.last.carryToNextStatement
+          : PreviousStatement.noData();
 
-      final checkpointOutstandingBalance = checkpointsMap.containsKey(startDate) ? checkpointsMap[startDate] : null;
+      //final checkpointOutstandingBalance = checkpointsMap.containsKey(startDate) ? checkpointsMap[startDate] : null;
 
       // TODO: Hey, installment should start right at current statement, should let user choose when to start
       final installmentCounts = <InstallmentCount>[];
@@ -234,7 +240,7 @@ extension _CreditAccountExtension on Account {
       Statement statement = Statement.create(
         StatementType.withAverageDailyBalance,
         previousStatement: previousStatement,
-        checkpointOutstandingBalance: checkpointOutstandingBalance,
+        checkpointOutstandingBalance: null,
         startDate: startDate,
         endDate: endDate,
         dueDate: dueDate,
@@ -254,14 +260,6 @@ extension _CreditAccountExtension on Account {
     }
 
     return statementsList;
-  }
-
-  static Map<DateTime, double> _buildCheckpointsMap(List<CheckpointDb> checkpoints) {
-    final map = <DateTime, double>{};
-    for (CheckpointDb checkpointDb in checkpoints) {
-      map[checkpointDb.dateTime.toLocal()] = checkpointDb.balance;
-    }
-    return map;
   }
 }
 

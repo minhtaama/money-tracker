@@ -79,27 +79,31 @@ class AccountRepositoryRealmDb {
   }) async {
     TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
-    CheckpointDb? checkpointDb;
 
-    if (checkpointDateTime != null && checkpointBalance != null) {
-      checkpointDb = CheckpointDb(checkpointDateTime, checkpointBalance);
-    }
-
-    if (type == AccountType.credit) {
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
-      if (checkpointDb != null) {
-        creditDetailsDb.checkpoints.add(checkpointDb);
-      }
-    }
+    // TODO: Checkpoint as a transaction
+    // CheckpointDb? checkpointDb;
+    //
+    // if (checkpointDateTime != null && checkpointBalance != null) {
+    //   checkpointDb = CheckpointDb(checkpointDateTime, checkpointBalance);
+    // }
+    //
+    // if (type == AccountType.credit) {
+    //   creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
+    //   if (checkpointDb != null) {
+    //     creditDetailsDb.checkpoints.add(checkpointDb);
+    //   }
+    // }
 
     final order = getList(null).length;
 
-    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(
+        ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     if (type == AccountType.regular) {
       initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), balance,
-          account: newAccount, isInitialTransaction: true); // transaction type 1 == TransactionType.income
+          account: newAccount,
+          isInitialTransaction: true); // transaction type 1 == TransactionType.income
     }
 
     realm.write(() {
@@ -121,7 +125,8 @@ class AccountRepositoryRealmDb {
     final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    TransactionDb? initialTransaction =
+        accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
       realm.write(() {
