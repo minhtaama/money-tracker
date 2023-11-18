@@ -127,7 +127,9 @@ class _TransactionDb {
   ///
   /// 3 == TransactionType.creditSpending
   ///
-  /// 4, else == TransactionType.creditPayment
+  /// 4 == TransactionType.creditPayment
+  ///
+  /// 5, else == TransactionType.creditCheckpoint
   late int type;
 
   @Indexed()
@@ -157,6 +159,9 @@ class _TransactionDb {
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
   _CreditPaymentDetailsDb? creditPaymentDetails;
+
+  /// **Only specify this if type is [TransactionType.creditCheckpoint]**
+  late double? creditCheckpointAmountToPay;
 }
 
 @RealmModel(ObjectType.embeddedObject)

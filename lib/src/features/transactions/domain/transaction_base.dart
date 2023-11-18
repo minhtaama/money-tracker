@@ -78,7 +78,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           paymentAmount: txn.creditPaymentDetails?.paymentAmount,
         );
 
-      default:
+      case 4:
         return CreditPayment._(
           txn,
           txn.dateTime.toLocal(),
@@ -86,6 +86,16 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.note,
           Account.fromDatabaseWithNoDetails(txn.account),
           transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
+        );
+
+      default:
+        return CreditCheckpoint._(
+          txn,
+          txn.dateTime.toLocal(),
+          txn.amount,
+          txn.note,
+          Account.fromDatabaseWithNoDetails(txn.account),
+          amountToPay: txn.creditCheckpointAmountToPay,
         );
     }
   }

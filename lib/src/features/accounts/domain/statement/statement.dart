@@ -15,10 +15,10 @@ abstract class Statement {
   final DateTime dueDate;
 
   /// Only specify if user custom this statement data
-  final double? checkpointOutstandingBalance;
+  final Checkpoint? checkpoint;
 
   /// Installment transactions happens before this statement, but need to pay at this statement
-  final List<InstallmentCount> installmentTxnsToPayCounts;
+  final List<Installment> installments;
 
   /// **Billing cycle**: From [startDate] to [endDate]
   final List<BaseCreditTransaction> transactionsInBillingCycle;
@@ -66,7 +66,9 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
+        ? transactionsInGracePeriod
+        : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -78,7 +80,7 @@ abstract class Statement {
 
   double get installmentsAmountToPay {
     double amount = 0;
-    final installmentTransactions = installmentTxnsToPayCounts.map((e) => e.txn).toList();
+    final installmentTransactions = installments.map((e) => e.txn).toList();
     for (CreditSpending txn in installmentTransactions) {
       amount += txn.paymentAmount!;
     }
@@ -86,33 +88,43 @@ abstract class Statement {
   }
 
   double getFullPaymentAmountAt(DateTime dateTime) {
-    double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
-    double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
+    double x;
 
-    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
-      if (txn is CreditSpending &&
-          !txn.hasInstallment &&
-          txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
-        spentInGracePeriodBeforeDateTimeExcludeInstallments += txn.amount;
+    if (checkpoint != null) {
+      if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
+        return 0;
+      } else {
+        x = (checkpoint!.amountToPay ?? checkpoint!.amount) - _paidInGracePeriod;
       }
-    }
+    } else {
+      double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
+      double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
-    for (BaseCreditTransaction txn in transactionsInBillingCycle) {
-      if (txn is CreditSpending &&
-          !txn.hasInstallment &&
-          txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
-        spentInBillingCycleBeforeDateTimeExcludeInstallments += txn.amount;
+      for (BaseCreditTransaction txn in transactionsInGracePeriod) {
+        if (txn is CreditSpending &&
+            !txn.hasInstallment &&
+            txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
+          spentInGracePeriodBeforeDateTimeExcludeInstallments += txn.amount;
+        }
       }
-    }
 
-    // Remaining balance before chosen dateTime
-    final x = previousStatement._balanceToPayAtEndDate +
-        previousStatement.interest +
-        installmentsAmountToPay +
-        spentInBillingCycleBeforeDateTimeExcludeInstallments +
-        spentInGracePeriodBeforeDateTimeExcludeInstallments -
-        _paidInGracePeriod -
-        _paidInBillingCycle;
+      for (BaseCreditTransaction txn in transactionsInBillingCycle) {
+        if (txn is CreditSpending &&
+            !txn.hasInstallment &&
+            txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
+          spentInBillingCycleBeforeDateTimeExcludeInstallments += txn.amount;
+        }
+      }
+
+      // Remaining balance before chosen dateTime
+      x = previousStatement._balanceToPayAtEndDate +
+          previousStatement.interest +
+          installmentsAmountToPay +
+          spentInBillingCycleBeforeDateTimeExcludeInstallments +
+          spentInGracePeriodBeforeDateTimeExcludeInstallments -
+          _paidInGracePeriod -
+          _paidInBillingCycle;
+    }
 
     if (x < 0) {
       return 0;
@@ -123,35 +135,45 @@ abstract class Statement {
 
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement {
-    double balanceAtEndDate =
-        previousStatement._balanceAtEndDate + previousStatement.interest + _spentInBillingCycle - _paidInBillingCycle;
+    double balanceAtEndDate = checkpoint?.amount ??
+        double.parse(
+          (previousStatement._balanceAtEndDate +
+                  previousStatement.interest +
+                  _spentInBillingCycle -
+                  _paidInBillingCycle)
+              .toStringAsFixed(2),
+        );
 
-    double balance = previousStatement._balanceAtEndDate +
-        previousStatement.interest +
-        _spentInBillingCycle -
-        _paidInBillingCycle -
-        _paidInGracePeriod;
+    double balance = double.parse(
+      (balanceAtEndDate - _paidInGracePeriod).toStringAsFixed(2),
+    );
 
-    double balanceToPayAtEndDate = previousStatement._balanceToPayAtEndDate +
-        previousStatement.interest +
-        installmentsAmountToPay +
-        _spentInBillingCycleExcludeInstallments -
-        _paidInBillingCycle;
+    double balanceToPayAtEndDate = checkpoint != null
+        ? checkpoint!.amountToPay ?? checkpoint!.amount
+        : double.parse(
+            (previousStatement._balanceToPayAtEndDate +
+                    previousStatement.interest +
+                    installmentsAmountToPay +
+                    _spentInBillingCycleExcludeInstallments -
+                    _paidInBillingCycle)
+                .toStringAsFixed(2),
+          );
 
-    double balanceToPay = previousStatement._balanceToPayAtEndDate +
-        previousStatement.interest +
-        installmentsAmountToPay +
-        _spentInBillingCycleExcludeInstallments -
-        _paidInBillingCycle -
-        _paidInGracePeriod;
+    double balanceToPay = double.parse(
+      (balanceToPayAtEndDate - _paidInGracePeriod).toStringAsFixed(2),
+    );
 
-    double interestCarryToNextStatement = balanceToPay > 0 || previousStatement.balanceToPay > 0 ? _interest : 0;
+    double interestCarryToNextStatement = checkpoint != null
+        ? 0
+        : balanceToPay > 0 || previousStatement.balanceToPay > 0
+            ? _interest
+            : 0;
 
     return PreviousStatement._(
-      double.parse(balanceToPayAtEndDate.toStringAsFixed(2)),
-      double.parse(balanceAtEndDate.toStringAsFixed(2)),
-      balance: math.max(0, double.parse(balance.toStringAsFixed(2))),
-      balanceToPay: math.max(0, double.parse(balanceToPay.toStringAsFixed(2))),
+      balanceToPayAtEndDate,
+      balanceAtEndDate,
+      balance: balance,
+      balanceToPay: balanceToPay,
       interest: interestCarryToNextStatement,
       dueDate: dueDate,
     );
@@ -160,41 +182,24 @@ abstract class Statement {
   factory Statement.create(
     StatementType type, {
     required PreviousStatement previousStatement,
-    required double? checkpointOutstandingBalance,
+    required Checkpoint? checkpoint,
     required DateTime startDate,
     required DateTime endDate,
     required DateTime dueDate,
     required double apr,
-    required List<InstallmentCount> installmentTxnsToPayCounts,
+    required List<Installment> installmentTxnsToPayCounts,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
-    // TODO: Continue here, checkpoint phải lấy endDate chứ không phải startDate, điều chỉnh cụm dưới này nhồi vào chỗ khác, điều chỉnh logic generate statement. Khi một statement có endDate trùng với checkpoint thì chỉnh sửa cái `carryToNextStatement`, hiểu không?
-
-    PreviousStatement? prvStmWithCheckpoint;
-
-    if (checkpointOutstandingBalance != null) {
-      double installmentPaid = 0;
-      for (InstallmentCount count in installmentTxnsToPayCounts) {
-        installmentPaid += (count.txn.monthsToPay! - count.monthsLeft) * count.txn.paymentAmount!;
-      }
-      prvStmWithCheckpoint = previousStatement.copyWith(
-        balanceAtEndDate: checkpointOutstandingBalance,
-        balanceToPayAtEndDate: double.parse((checkpointOutstandingBalance - installmentPaid).toStringAsFixed(2)),
-      );
-    }
-
-    print(prvStmWithCheckpoint ?? previousStatement);
-
     return switch (type) {
       StatementType.withAverageDailyBalance => StatementWithAverageDailyBalance._create(
-          previousStatement: prvStmWithCheckpoint ?? previousStatement,
-          checkpointOutstandingBalance: checkpointOutstandingBalance,
+          previousStatement: previousStatement,
+          checkpoint: checkpoint,
           startDate: startDate,
           endDate: endDate,
           dueDate: dueDate,
           apr: apr,
-          installmentTxnsToPayCounts: installmentTxnsToPayCounts,
+          installments: installmentTxnsToPayCounts,
           txnsInBillingCycle: txnsInBillingCycle,
           txnsInGracePeriod: txnsInGracePeriod),
     };
@@ -207,11 +212,11 @@ abstract class Statement {
     this._paidInGracePeriod, {
     required this.apr,
     required this.previousStatement,
-    required this.checkpointOutstandingBalance,
+    required this.checkpoint,
     required this.startDate,
     required this.endDate,
     required this.dueDate,
-    required this.installmentTxnsToPayCounts,
+    required this.installments,
     required this.transactionsInBillingCycle,
     required this.transactionsInGracePeriod,
   });
@@ -279,7 +284,8 @@ class PreviousStatement {
   final DateTime dueDate;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(0, 0,
+        balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.
@@ -317,10 +323,18 @@ class PreviousStatement {
   }
 }
 
+class Checkpoint {
+  final double amount;
+
+  final double? amountToPay;
+
+  Checkpoint(this.amount, this.amountToPay);
+}
+
 @immutable
-class InstallmentCount {
+class Installment {
   final CreditSpending txn;
   final int monthsLeft;
 
-  const InstallmentCount(this.txn, this.monthsLeft);
+  const Installment(this.txn, this.monthsLeft);
 }

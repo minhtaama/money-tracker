@@ -4,6 +4,7 @@ enum TransactionType {
   transfer,
   creditSpending,
   creditPayment,
+  creditCheckpoint,
 }
 
 enum CategoryType {

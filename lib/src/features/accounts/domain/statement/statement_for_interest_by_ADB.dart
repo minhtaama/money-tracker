@@ -10,11 +10,11 @@ class StatementWithAverageDailyBalance extends Statement {
     super._paidInGracePeriod, {
     required super.apr,
     required super.previousStatement,
-    required super.checkpointOutstandingBalance,
+    required super.checkpoint,
     required super.startDate,
     required super.endDate,
     required super.dueDate,
-    required super.installmentTxnsToPayCounts,
+    required super.installments,
     required super.transactionsInBillingCycle,
     required super.transactionsInGracePeriod,
   });
@@ -24,12 +24,12 @@ class StatementWithAverageDailyBalance extends Statement {
 
   factory StatementWithAverageDailyBalance._create({
     required PreviousStatement previousStatement,
-    required double? checkpointOutstandingBalance,
+    required Checkpoint? checkpoint,
     required DateTime startDate,
     required DateTime endDate,
     required DateTime dueDate,
     required double apr,
-    required List<InstallmentCount> installmentTxnsToPayCounts,
+    required List<Installment> installments,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
@@ -93,11 +93,11 @@ class StatementWithAverageDailyBalance extends Statement {
       paidInBillingCycle,
       paidInGracePeriod,
       previousStatement: previousStatement,
-      checkpointOutstandingBalance: checkpointOutstandingBalance,
+      checkpoint: checkpoint,
       startDate: startDate,
       endDate: endDate,
       dueDate: dueDate,
-      installmentTxnsToPayCounts: installmentTxnsToPayCounts,
+      installments: installments,
       transactionsInBillingCycle: txnsInBillingCycle,
       transactionsInGracePeriod: txnsInGracePeriod,
       apr: apr,

@@ -26,7 +26,7 @@ import '../../calculator_input/presentation/calculator_input.dart';
 import '../../../common_widgets/modal_screen_components.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
-  const AddAccountModalScreen({Key? key}) : super(key: key);
+  const AddAccountModalScreen({super.key});
 
   @override
   ConsumerState<AddAccountModalScreen> createState() => _AddAccountModalScreenState();
@@ -47,8 +47,9 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   int statementDay = 1;
   int paymentDueDay = 15;
   String apr = '';
-  DateTime? checkpointDateTime;
-  String? checkpointBalance;
+  DateTime? checkpointDateTime; // copyWith(day: statementDay - 1, hour: 23, minute: 59, second: 58)
+  String? checkpointAmount;
+  String? checkpointAmountToPay;
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
@@ -66,7 +67,8 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         paymentDueDay: paymentDueDay,
         apr: CalService.formatToDouble(apr),
         checkpointDateTime: checkpointDateTime,
-        checkpointBalance: CalService.formatToDouble(checkpointBalance),
+        checkpointAmount: CalService.formatToDouble(checkpointAmount),
+        checkpointAmountToPay: CalService.formatToDouble(checkpointAmountToPay),
       );
       context.pop();
     }
@@ -189,6 +191,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                         style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
                       ),
                       DateSelector(
+                        initial: DateTime.now().copyWith(day: statementDay),
                         onChanged: (dateTime) {
                           setState(() {
                             statementDay = dateTime.day;
@@ -243,12 +246,13 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     if (!value) {
                       setState(() {
                         checkpointDateTime = null;
-                        checkpointBalance = null;
+                        checkpointAmount = null;
                       });
                     } else {
                       setState(() {
-                        checkpointDateTime = DateTime.now().copyWith(day: statementDay).onlyYearMonthDay;
-                        checkpointBalance = '0';
+                        checkpointDateTime = DateTime.now()
+                            .copyWith(day: statementDay - 1, hour: 23, minute: 59, second: 58);
+                        checkpointAmount = '0';
                       });
                     }
                   },
@@ -263,12 +267,14 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                         children: [
                           Text(
                             'Checkpoint:',
-                            style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                            style:
+                                kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
                           ),
                           DateSelector(
                             initial: DateTime.now().copyWith(day: statementDay),
                             selectableDayPredicate: (dateTime) => dateTime.day == statementDay,
-                            onChanged: (dateTime) => checkpointDateTime = dateTime.onlyYearMonthDay,
+                            onChanged: (dateTime) => checkpointDateTime = dateTime.copyWith(
+                                day: statementDay - 1, hour: 23, minute: 59, second: 58),
                             labelBuilder: (dateTime) {
                               return dateTime != null ? dateTime.getFormattedDate() : '--';
                             },
@@ -277,7 +283,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       ),
                       Gap.h8,
                       InlineTextFormField(
-                        prefixText: 'Outstanding Balance:',
+                        prefixText: 'Oustd. Balance:',
                         suffixText: context.currentSettings.currency.symbol,
                         widget: CalculatorInput(
                           fontSize: 18,
@@ -288,7 +294,23 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                           initialValue: '0',
                           // TODO: Update here
                           //validator: (_) {},
-                          formattedResultOutput: (value) => checkpointBalance = value,
+                          formattedResultOutput: (value) => checkpointAmount = value,
+                        ),
+                      ),
+                      Gap.h8,
+                      InlineTextFormField(
+                        prefixText: 'Balance to pay:',
+                        suffixText: context.currentSettings.currency.symbol,
+                        widget: CalculatorInput(
+                          fontSize: 18,
+                          isDense: true,
+                          textAlign: TextAlign.end,
+                          focusColor: context.appTheme.secondary,
+                          hintText: 'Optional',
+                          hintFontSize: 16,
+                          // TODO: Update here
+                          //validator: (_) {},
+                          formattedResultOutput: (value) => checkpointAmountToPay = value,
                         ),
                       ),
                       Gap.h8,

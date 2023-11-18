@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../persistent/realm_dto.dart';
@@ -75,41 +76,51 @@ class AccountRepositoryRealmDb {
     required int? paymentDueDay,
     required double? apr,
     required DateTime? checkpointDateTime,
-    required double? checkpointBalance,
+    required double? checkpointAmount,
+    required double? checkpointAmountToPay,
   }) async {
     TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
 
-    // TODO: Checkpoint as a transaction
-    // CheckpointDb? checkpointDb;
-    //
-    // if (checkpointDateTime != null && checkpointBalance != null) {
-    //   checkpointDb = CheckpointDb(checkpointDateTime, checkpointBalance);
-    // }
-    //
-    // if (type == AccountType.credit) {
-    //   creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
-    //   if (checkpointDb != null) {
-    //     creditDetailsDb.checkpoints.add(checkpointDb);
-    //   }
-    // }
-
     final order = getList(null).length;
+
+    if (type == AccountType.credit) {
+      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
+    }
 
     final newAccount = AccountDb(
         ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     if (type == AccountType.regular) {
-      initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), balance,
-          account: newAccount,
-          isInitialTransaction: true); // transaction type 1 == TransactionType.income
+      initialTransaction = TransactionDb(
+        ObjectId(),
+        1,
+        DateTime.now(),
+        balance,
+        account: newAccount,
+        isInitialTransaction: true,
+      ); // transaction type 1 == TransactionType.income
+    }
+
+    if (type == AccountType.credit && checkpointDateTime != null && checkpointAmount != null) {
+      initialTransaction = TransactionDb(
+        ObjectId(),
+        5,
+        checkpointDateTime.onlyYearMonthDay,
+        checkpointAmount,
+        account: newAccount,
+        creditCheckpointAmountToPay: checkpointAmountToPay,
+      );
     }
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
+        realm.add(initialTransaction!);
+      }
+      if (type == AccountType.credit && checkpointDateTime != null && checkpointAmount != null) {
         realm.add(initialTransaction!);
       }
     });

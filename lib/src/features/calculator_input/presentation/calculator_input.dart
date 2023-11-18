@@ -13,11 +13,12 @@ class CalculatorInput extends StatefulWidget {
   /// will return the result (__type String__) formatted with grouping by thousands (separated with ",").
   /// The result is only returned by calculation of the [_Calculator] widget.
   const CalculatorInput({
-    Key? key,
+    super.key,
     this.controller,
     required this.formattedResultOutput,
     required this.focusColor,
     required this.hintText,
+    this.hintFontSize = 18,
     this.initialValue,
     this.disableErrorText = false,
     this.isDense = false,
@@ -25,13 +26,14 @@ class CalculatorInput extends StatefulWidget {
     this.validator,
     this.fontSize = 22,
     //this.initialValue,
-  }) : super(key: key);
+  });
   final TextEditingController? controller;
   final ValueSetter<String> formattedResultOutput;
   final String? Function(String? value)? validator;
   final Color focusColor;
   final String hintText;
   final String? initialValue;
+  final double hintFontSize;
   final double fontSize;
   final bool disableErrorText;
   final bool isDense;
@@ -100,7 +102,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
         hintText: widget.hintText,
         hintStyle: kHeader2TextStyle.copyWith(
           color: context.appTheme.backgroundNegative.withOpacity(0.5),
-          fontSize: 18,
+          fontSize: widget.hintFontSize,
         ),
         errorStyle: widget.disableErrorText
             ? const TextStyle(height: 0.1, color: Colors.transparent, fontSize: 0)
@@ -139,7 +141,8 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.resultOutput}) : super(key: key);
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
+      : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__

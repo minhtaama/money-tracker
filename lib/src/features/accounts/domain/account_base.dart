@@ -177,20 +177,18 @@ extension _CreditAccountExtension on Account {
     int statementDay,
     int paymentDueDay, {
     required double apr,
-    //required List<CheckpointDb> checkpoints,
     required DateTime earliestStatementDate,
     required DateTime latestStatementDate,
     required List<BaseCreditTransaction> accountTransactionsList,
   }) {
-    //final checkpointsMap = _buildCheckpointsMap(checkpoints);
-
     final statementsList = <Statement>[];
 
-    final installmentCountsMap = <CreditSpending, int>{};
+    final installmentCountsMapToMutate = <CreditSpending, int>{};
 
     DateTime startDate = earliestStatementDate;
 
-    while (!startDate.isAfter(latestStatementDate) || installmentCountsMap.isNotEmpty) {
+    // Loop each startDate to create statement
+    while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
       final endDate =
           startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
@@ -198,20 +196,19 @@ extension _CreditAccountExtension on Account {
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-      // TODO: Continue here, balance trong checkpoint sẽ bao gồm toàn bộ giá trị, trừ giá trị installment
-
       final previousStatement = startDate != earliestStatementDate
           ? statementsList.last.carryToNextStatement
           : PreviousStatement.noData();
 
-      //final checkpointOutstandingBalance = checkpointsMap.containsKey(startDate) ? checkpointsMap[startDate] : null;
+      Checkpoint? checkpoint;
 
       // TODO: Hey, installment should start right at current statement, should let user choose when to start
-      final installmentCounts = <InstallmentCount>[];
-      for (final entry in installmentCountsMap.entries) {
-        installmentCounts.add(InstallmentCount(entry.key, entry.value));
+      final installmentCounts = <Installment>[];
+      for (final entry in installmentCountsMapToMutate.entries) {
+        installmentCounts.add(Installment(entry.key, entry.value));
       }
 
+      // Loop each transaction to add to statement
       final txnsInGracePeriod = <BaseCreditTransaction>[];
       final txnsInBillingCycle = <BaseCreditTransaction>[];
       for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
@@ -232,7 +229,11 @@ extension _CreditAccountExtension on Account {
 
           // TODO: Hey, installment should start right at current statement, should let user choose when to start
           if (txn is CreditSpending && txn.hasInstallment) {
-            installmentCountsMap[txn] = txn.monthsToPay!;
+            installmentCountsMapToMutate[txn] = txn.monthsToPay!;
+          }
+
+          if (txn is CreditCheckpoint) {
+            checkpoint = Checkpoint(txn.amount, txn.amountToPay);
           }
         }
       }
@@ -240,7 +241,7 @@ extension _CreditAccountExtension on Account {
       Statement statement = Statement.create(
         StatementType.withAverageDailyBalance,
         previousStatement: previousStatement,
-        checkpointOutstandingBalance: null,
+        checkpoint: checkpoint,
         startDate: startDate,
         endDate: endDate,
         dueDate: dueDate,
@@ -252,9 +253,9 @@ extension _CreditAccountExtension on Account {
 
       statementsList.add(statement);
 
-      installmentCountsMap.updateAll((txn, counts) => counts - 1);
+      installmentCountsMapToMutate.updateAll((txn, counts) => counts - 1);
 
-      installmentCountsMap.removeWhere((txn, counts) => counts < 0);
+      installmentCountsMapToMutate.removeWhere((txn, counts) => counts < 0);
 
       startDate = startDate.copyWith(month: startDate.month + 1);
     }

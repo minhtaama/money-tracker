@@ -43,8 +43,9 @@ extension CreditAccountMethods on CreditAccount {
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
 
   bool canAddPaymentAt(DateTime dateTime) {
-    Statement statement =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime) : statementsList.first;
+    Statement statement = paymentTransactions.isNotEmpty
+        ? statementAt(paymentTransactions.last.dateTime)
+        : statementsList.first;
 
     if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
       return true;
@@ -73,7 +74,8 @@ extension CreditAccountMethods on CreditAccount {
 
       DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
       while (startDate.compareTo(date) <= 0) {
-        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+        final endDate =
+            startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
         final dueDate = statementDay >= paymentDueDay
             ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
@@ -91,7 +93,7 @@ extension CreditAccountMethods on CreditAccount {
           installmentTxnsToPayCounts: const [],
           txnsInGracePeriod: const [],
           txnsInBillingCycle: const [],
-          checkpointOutstandingBalance: null,
+          checkpoint: null,
         );
 
         list.add(statement);

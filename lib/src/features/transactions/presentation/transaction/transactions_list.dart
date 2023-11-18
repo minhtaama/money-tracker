@@ -47,6 +47,8 @@ class TransactionsList extends StatelessWidget {
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditPayment() =>
                           _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
+                        CreditCheckpoint() => Gap.noGap,
+                        //TODO: styling checkpoint
                       },
                     ),
                     Gap.w16,
