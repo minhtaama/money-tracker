@@ -64,9 +64,11 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
 }
 
 class CreditCheckpoint extends BaseCreditTransaction {
-  final double? amountToPay;
-
   const CreditCheckpoint._(
-      super._databaseObject, super.dateTime, super.amount, super.note, super.account,
-      {required this.amountToPay});
+    super._databaseObject,
+    super.dateTime,
+    super.amount,
+    super.note,
+    super.account,
+  );
 }

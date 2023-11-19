@@ -95,7 +95,6 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseWithNoDetails(txn.account),
-          amountToPay: txn.creditCheckpointAmountToPay,
         );
     }
   }

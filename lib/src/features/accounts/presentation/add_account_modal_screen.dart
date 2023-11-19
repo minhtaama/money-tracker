@@ -67,8 +67,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         paymentDueDay: paymentDueDay,
         apr: CalService.formatToDouble(apr),
         checkpointDateTime: checkpointDateTime,
-        checkpointAmount: CalService.formatToDouble(checkpointAmount),
-        checkpointAmountToPay: CalService.formatToDouble(checkpointAmountToPay),
+        checkpointBalance: CalService.formatToDouble(checkpointAmount),
       );
       context.pop();
     }
@@ -295,22 +294,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                           // TODO: Update here
                           //validator: (_) {},
                           formattedResultOutput: (value) => checkpointAmount = value,
-                        ),
-                      ),
-                      Gap.h8,
-                      InlineTextFormField(
-                        prefixText: 'Balance to pay:',
-                        suffixText: context.currentSettings.currency.symbol,
-                        widget: CalculatorInput(
-                          fontSize: 18,
-                          isDense: true,
-                          textAlign: TextAlign.end,
-                          focusColor: context.appTheme.secondary,
-                          hintText: 'Optional',
-                          hintFontSize: 16,
-                          // TODO: Update here
-                          //validator: (_) {},
-                          formattedResultOutput: (value) => checkpointAmountToPay = value,
                         ),
                       ),
                       Gap.h8,

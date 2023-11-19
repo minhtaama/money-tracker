@@ -6,6 +6,8 @@ import '../../../../utils/constants.dart';
 import '../../../transactions/domain/transaction_base.dart';
 part 'statement_for_interest_by_ADB.dart';
 
+/// ALL OF THIS CLASS IS INSTANTIATE IN ACCOUNT_BASE.DART
+
 @immutable
 abstract class Statement {
   final double apr;
@@ -15,6 +17,7 @@ abstract class Statement {
   final DateTime dueDate;
 
   /// Only specify if user custom this statement data
+  /// This is the outstanding balance at the end date of the statement
   final Checkpoint? checkpoint;
 
   /// Installment transactions happens before this statement, but need to pay at this statement
@@ -94,7 +97,7 @@ abstract class Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
         return 0;
       } else {
-        x = (checkpoint!.amountToPay ?? checkpoint!.amount) - _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay - _paidInGracePeriod;
       }
     } else {
       double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
@@ -116,7 +119,6 @@ abstract class Statement {
         }
       }
 
-      // Remaining balance before chosen dateTime
       x = previousStatement._balanceToPayAtEndDate +
           previousStatement.interest +
           installmentsAmountToPay +
@@ -135,7 +137,7 @@ abstract class Statement {
 
   /// Assign to `previousStatement` of the next Statement object
   PreviousStatement get carryToNextStatement {
-    double balanceAtEndDate = checkpoint?.amount ??
+    final balanceAtEndDate = checkpoint?.oustdBalance ??
         double.parse(
           (previousStatement._balanceAtEndDate +
                   previousStatement.interest +
@@ -144,30 +146,29 @@ abstract class Statement {
               .toStringAsFixed(2),
         );
 
-    double balance = double.parse(
+    final balance = double.parse(
       (balanceAtEndDate - _paidInGracePeriod).toStringAsFixed(2),
     );
 
-    double balanceToPayAtEndDate = checkpoint != null
-        ? checkpoint!.amountToPay ?? checkpoint!.amount
-        : double.parse(
-            (previousStatement._balanceToPayAtEndDate +
-                    previousStatement.interest +
-                    installmentsAmountToPay +
-                    _spentInBillingCycleExcludeInstallments -
-                    _paidInBillingCycle)
-                .toStringAsFixed(2),
-          );
+    final balanceToPayAtEndDate = checkpoint?.unpaidToPay ??
+        double.parse(
+          (previousStatement._balanceToPayAtEndDate +
+                  previousStatement.interest +
+                  installmentsAmountToPay +
+                  _spentInBillingCycleExcludeInstallments -
+                  _paidInBillingCycle)
+              .toStringAsFixed(2),
+        );
 
-    double balanceToPay = double.parse(
+    final balanceToPay = double.parse(
       (balanceToPayAtEndDate - _paidInGracePeriod).toStringAsFixed(2),
     );
 
-    double interestCarryToNextStatement = checkpoint != null
-        ? 0
+    final interestCarryToNextStatement = checkpoint != null
+        ? 0.0
         : balanceToPay > 0 || previousStatement.balanceToPay > 0
             ? _interest
-            : 0;
+            : 0.0;
 
     return PreviousStatement._(
       balanceToPayAtEndDate,
@@ -226,15 +227,7 @@ abstract class Statement {
 class PreviousStatement {
   /// Can't be **negative**. Use to get the remaining amount needed to pay carry to current statement.
   /// This previous statement only carry interest if this value is more than 0.
-  /// ---
-  /// = **previousStatement._balanceToPayAtEndDate** + **previousStatement.interest** +
   ///
-  /// **the payment needed of all installments before** +
-  ///
-  /// **spent amount happens in billing cycle** (excluded installments transaction) -
-  ///
-  /// **paid amount happens in billing cycle and in grace period (included pay for spent in current statement)**.
-  /// ---
   /// The math might less than 0, if so, return 0. We don't need to care about the surplus paid amount
   /// because this value is calculated from **previousStatement._balanceToPayAtEndDate**, so no transaction
   /// is counted twice.
@@ -242,24 +235,12 @@ class PreviousStatement {
 
   /// Can't be **negative**, no interest included. Use as the balance to pay at the start date
   /// of current statement.
-  /// ---
-  /// = **previousStatement._balanceToPayAtEndDate** + **previousStatement.interest** +
   ///
-  /// **spent amount happens in billing cycle** (included installments transaction) -
-  ///
-  /// **paid amount happens in billing cycle**.
-  /// ---
   /// The math should not be less than 0. However if so, return 0.
   final double _balanceToPayAtEndDate;
 
   /// Can't be **negative**. Use to calculate the interest of this previous statement.
-  /// ---
-  /// = **previousStatement._balanceAtEndDate** + **previousStatement.interest** +
   ///
-  /// **spent amount happens in billing cycle** (included installments transaction) -
-  ///
-  /// **paid amount happens in billing cycle and in grace period (included pay for spent in current statement)**.
-  /// ---
   /// The math might less than 0, if so, return 0. We don't need to care about the surplus paid amount
   /// because this value is calculated from **previousStatement._balanceAtEndDate**, so no transaction
   /// is counted twice.
@@ -267,13 +248,7 @@ class PreviousStatement {
 
   /// Can't be **negative**, no interest included. Use as the credit balance at the start date
   /// of current statement.
-  /// ---
-  /// = **previousStatement._balanceAtEndDate** + **previousStatement.interest** +
   ///
-  /// **spent amount happens in billing cycle** (included installments transaction) -
-  ///
-  /// **paid amount happens in billing cycle**.
-  /// ---
   /// The math should not be less than 0. However if so, return 0.
   final double _balanceAtEndDate;
 
@@ -323,12 +298,25 @@ class PreviousStatement {
   }
 }
 
+@immutable
 class Checkpoint {
-  final double amount;
+  /// Can't be **negative**. The total of balance that user has spent at the checkpoint
+  final double oustdBalance;
 
-  final double? amountToPay;
+  /// Can't be **negative**. The total amount that haven't been paid of all installments in
+  /// the statement has this checkpoint
+  ///
+  /// /// unpaidOfInstallment is always lower than `oustdBalance`, as the calculation of
+  //   /// [_CreditAccountExtension.unpaidOfInstallmentsAtCheckpoint] in account_base.dart.
+  final double unpaidOfInstallments;
 
-  Checkpoint(this.amount, this.amountToPay);
+  /// unpaidOfInstallment is always lower than `oustdBalance`, as the calculation of
+  /// [_CreditAccountExtension.unpaidOfInstallmentsAtCheckpoint] in account_base.dart.
+  ///
+  /// But we put `math.max()` to make sure it always has to.
+  double get unpaidToPay => math.max(0, oustdBalance - unpaidOfInstallments);
+
+  const Checkpoint(this.oustdBalance, this.unpaidOfInstallments);
 }
 
 @immutable

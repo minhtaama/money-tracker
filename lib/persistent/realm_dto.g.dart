@@ -386,7 +386,6 @@ class TransactionDb extends _TransactionDb
     AccountDb? transferAccount,
     TransferFeeDb? transferFee,
     CreditPaymentDetailsDb? creditPaymentDetails,
-    double? creditCheckpointAmountToPay,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<TransactionDb>({
@@ -405,8 +404,6 @@ class TransactionDb extends _TransactionDb
     RealmObjectBase.set(this, 'transferAccount', transferAccount);
     RealmObjectBase.set(this, 'transferFee', transferFee);
     RealmObjectBase.set(this, 'creditPaymentDetails', creditPaymentDetails);
-    RealmObjectBase.set(
-        this, 'creditCheckpointAmountToPay', creditCheckpointAmountToPay);
   }
 
   TransactionDb._();
@@ -488,14 +485,6 @@ class TransactionDb extends _TransactionDb
       RealmObjectBase.set(this, 'creditPaymentDetails', value);
 
   @override
-  double? get creditCheckpointAmountToPay =>
-      RealmObjectBase.get<double>(this, 'creditCheckpointAmountToPay')
-          as double?;
-  @override
-  set creditCheckpointAmountToPay(double? value) =>
-      RealmObjectBase.set(this, 'creditCheckpointAmountToPay', value);
-
-  @override
   Stream<RealmObjectChanges<TransactionDb>> get changes =>
       RealmObjectBase.getChanges<TransactionDb>(this);
 
@@ -527,8 +516,6 @@ class TransactionDb extends _TransactionDb
           optional: true, linkTarget: 'TransferFeeDb'),
       SchemaProperty('creditPaymentDetails', RealmPropertyType.object,
           optional: true, linkTarget: 'CreditPaymentDetailsDb'),
-      SchemaProperty('creditCheckpointAmountToPay', RealmPropertyType.double,
-          optional: true),
     ]);
   }
 }

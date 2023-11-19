@@ -202,11 +202,10 @@ extension _CreditAccountExtension on Account {
 
       Checkpoint? checkpoint;
 
-      // TODO: Hey, installment should start right at current statement, should let user choose when to start
-      final installmentCounts = <Installment>[];
-      for (final entry in installmentCountsMapToMutate.entries) {
-        installmentCounts.add(Installment(entry.key, entry.value));
-      }
+      // TODO:  should let user choose when to start
+      final installmentCounts = <Installment>[
+        for (final entry in installmentCountsMapToMutate.entries) Installment(entry.key, entry.value)
+      ];
 
       // Loop each transaction to add to statement
       final txnsInGracePeriod = <BaseCreditTransaction>[];
@@ -227,13 +226,20 @@ extension _CreditAccountExtension on Account {
         } else {
           txnsInBillingCycle.add(txn);
 
-          // TODO: Hey, installment should start right at current statement, should let user choose when to start
+          // TODO: should let user choose when to start
           if (txn is CreditSpending && txn.hasInstallment) {
             installmentCountsMapToMutate[txn] = txn.monthsToPay!;
           }
 
           if (txn is CreditCheckpoint) {
-            checkpoint = Checkpoint(txn.amount, txn.amountToPay);
+            final x = unpaidOfInstallmentsAtCheckpoint(installmentCounts, txn.amount);
+
+            // User finish their installments left
+            if (x <= 0) {
+              installmentCountsMapToMutate.clear();
+            }
+
+            checkpoint = Checkpoint(txn.amount, x);
           }
         }
       }
@@ -261,6 +267,22 @@ extension _CreditAccountExtension on Account {
     }
 
     return statementsList;
+  }
+
+  static double unpaidOfInstallmentsAtCheckpoint(
+      List<Installment> installments, double checkpointBalance) {
+    double result = 0;
+
+    for (Installment inst in installments) {
+      result += inst.txn.paymentAmount! * inst.monthsLeft;
+    }
+
+    // Then user might have full-paid all installments
+    if (checkpointBalance < result) {
+      return 0;
+    } else {
+      return result;
+    }
   }
 }
 

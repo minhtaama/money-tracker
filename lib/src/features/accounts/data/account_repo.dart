@@ -76,8 +76,7 @@ class AccountRepositoryRealmDb {
     required int? paymentDueDay,
     required double? apr,
     required DateTime? checkpointDateTime,
-    required double? checkpointAmount,
-    required double? checkpointAmountToPay,
+    required double? checkpointBalance,
   }) async {
     TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
@@ -103,14 +102,13 @@ class AccountRepositoryRealmDb {
       ); // transaction type 1 == TransactionType.income
     }
 
-    if (type == AccountType.credit && checkpointDateTime != null && checkpointAmount != null) {
+    if (type == AccountType.credit && checkpointDateTime != null && checkpointBalance != null) {
       initialTransaction = TransactionDb(
         ObjectId(),
         5,
         checkpointDateTime.onlyYearMonthDay,
-        checkpointAmount,
+        checkpointBalance,
         account: newAccount,
-        creditCheckpointAmountToPay: checkpointAmountToPay,
       );
     }
 
@@ -120,7 +118,7 @@ class AccountRepositoryRealmDb {
       if (type == AccountType.regular) {
         realm.add(initialTransaction!);
       }
-      if (type == AccountType.credit && checkpointDateTime != null && checkpointAmount != null) {
+      if (type == AccountType.credit && checkpointDateTime != null && checkpointBalance != null) {
         realm.add(initialTransaction!);
       }
     });
