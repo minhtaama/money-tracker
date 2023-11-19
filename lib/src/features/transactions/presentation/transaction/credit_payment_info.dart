@@ -19,12 +19,12 @@ import 'txn_components.dart';
 
 class CreditPaymentInfo extends StatelessWidget {
   const CreditPaymentInfo({
-    Key? key,
+    super.key,
     required this.statement,
     this.noBorder = true,
     this.chosenDateTime,
     this.onDateTap,
-  }) : super(key: key);
+  });
 
   final Statement? statement;
 
@@ -282,7 +282,7 @@ class _Transaction extends StatelessWidget {
               transaction != null &&
                       transaction is CreditSpending &&
                       (transaction as CreditSpending).hasInstallment
-                  ? TxnInstallmentIcon(transaction: transaction as CreditSpending, size: 16)
+                  ? const TxnInstallmentIcon(size: 16)
                   : Gap.noGap,
               Gap.w4,
               transaction != null
@@ -325,7 +325,7 @@ class _InstallmentPayTransaction extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Installment of:',
+                      'Installment amount of:',
                       style: kHeader3TextStyle.copyWith(fontSize: 10, color: AppColors.grey(context)),
                     ),
                     TxnCategoryName(
@@ -346,6 +346,127 @@ class _InstallmentPayTransaction extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _Details extends StatelessWidget {
+  const _Details({required this.transaction, required this.currencyCode});
+
+  final BaseCreditTransaction transaction;
+  final String currencyCode;
+
+  String? get _categoryTag {
+    final txn = transaction;
+    switch (txn) {
+      case CreditSpending():
+        return txn.categoryTag != null ? '#${txn.categoryTag!.name}' : null;
+      case CreditPayment() || CreditCheckpoint():
+        return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (transaction) {
+      CreditSpending() => _Spending(
+          transaction: transaction as CreditSpending,
+          categoryTag: _categoryTag,
+        ),
+      CreditPayment() => _Payment(transaction: transaction as CreditPayment),
+      CreditCheckpoint() => _Checkpoint(transaction: transaction as CreditCheckpoint),
+    };
+  }
+}
+
+class _Spending extends StatelessWidget {
+  const _Spending({required this.transaction, this.categoryTag});
+
+  final CreditSpending transaction;
+  final String? categoryTag;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TxnCategoryIcon(transaction: transaction),
+        Gap.w4,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TxnCategoryName(
+                transaction: transaction,
+                fontSize: 12,
+              ),
+              categoryTag != null
+                  ? Text(
+                      categoryTag!,
+                      style: kHeader3TextStyle.copyWith(
+                          fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : Gap.noGap,
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Payment extends StatelessWidget {
+  const _Payment({required this.transaction});
+
+  final CreditPayment transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SvgIcon(
+          AppIcons.receiptCheck,
+          color: context.appTheme.positive,
+          size: 20,
+        ),
+        Gap.w4,
+        Expanded(
+          child: Text(
+            'Payment'.hardcoded,
+            style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Checkpoint extends StatelessWidget {
+  const _Checkpoint({required this.transaction});
+
+  final CreditCheckpoint transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SvgIcon(
+          AppIcons.receiptEdit,
+          color: context.appTheme.backgroundNegative,
+          size: 20,
+        ),
+        Gap.w4,
+        Expanded(
+          child: Text(
+            'Checkpoint'.hardcoded,
+            style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.backgroundNegative),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -397,91 +518,6 @@ class _Header extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class _Details extends StatelessWidget {
-  const _Details({required this.transaction, required this.currencyCode});
-
-  final BaseCreditTransaction transaction;
-  final String currencyCode;
-
-  String? get _categoryTag {
-    final txn = transaction;
-    switch (txn) {
-      case CreditSpending():
-        return txn.categoryTag != null ? '#${txn.categoryTag!.name}' : null;
-      case CreditPayment() || CreditCheckpoint():
-        return null;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return transaction is CreditSpending
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TxnCategoryIcon(transaction: transaction as CreditSpending),
-              Gap.w4,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TxnCategoryName(
-                      transaction: transaction as CreditSpending,
-                      fontSize: 12,
-                    ),
-                    _categoryTag != null
-                        ? Text(
-                            _categoryTag!,
-                            style: kHeader3TextStyle.copyWith(
-                                fontSize: 11,
-                                color: context.appTheme.backgroundNegative.withOpacity(0.7)),
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        : Gap.noGap,
-                  ],
-                ),
-              ),
-            ],
-          )
-        : transaction is CreditPayment
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SvgIcon(
-                    AppIcons.receiptCheck,
-                    color: context.appTheme.positive,
-                    size: 20,
-                  ),
-                  Gap.w4,
-                  Expanded(
-                    child: Text(
-                      'Payment'.hardcoded,
-                      style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SvgIcon(
-                    AppIcons.receiptCheck,
-                    color: context.appTheme.positive,
-                    size: 20,
-                  ),
-                  Gap.w4,
-                  Expanded(
-                    child: Text(
-                      'Checkpoint'.hardcoded,
-                      style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
-                    ),
-                  ),
-                ],
-              );
   }
 }
 
@@ -556,13 +592,6 @@ extension _ListGetters on State<_List> {
       return <CreditSpending>[];
     }
     return widget.statement!.installments.map((e) => e.txn).toList();
-  }
-
-  List<BaseCreditTransaction> get txnsInBillingCycle {
-    if (widget.statement == null || widget.chosenDateTime == null) {
-      return <BaseCreditTransaction>[];
-    }
-    return widget.statement!.transactionsInBillingCycleBefore(widget.chosenDateTime!);
   }
 
   List<BaseCreditTransaction> get txnsInBillingCycleBeforePreviousDueDate {

@@ -59,7 +59,7 @@ class AppIcons {
   static String get handCoin => 'assets/svg/app/hand_coin.svg';
   static String get receiptCheck => 'assets/svg/app/receipt_check.svg';
   static String get receiptDollar => 'assets/svg/app/receipt_dollar.svg';
-  static String get receiptTime => 'assets/svg/app/receipt_time.svg';
+  static String get receiptEdit => 'assets/svg/app/receipt_edit.svg';
   static String get credit => 'assets/svg/app/credit.svg';
 
   static String get defaultIcon => 'assets/svg/app/default.svg';

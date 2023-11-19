@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
-import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'dart:math' as math;
-import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/constants.dart';
-import '../../../../utils/enums.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../domain/transaction_base.dart';
 
 class TxnDot extends StatelessWidget {
-  const TxnDot({Key? key, required this.transaction, this.size}) : super(key: key);
+  const TxnDot({super.key, required this.transaction, this.size});
 
   final BaseTransaction transaction;
   final double? size;
@@ -78,24 +74,25 @@ class TxnInstallmentIcon extends StatelessWidget {
   const TxnInstallmentIcon({
     super.key,
     this.size = 18,
-    required this.transaction,
   });
 
   final double size;
-  final CreditSpending transaction;
 
   @override
   Widget build(BuildContext context) {
     return HelpButton(
-      text: transaction.hasInstallment ? 'Installment payment'.hardcoded : 'Full payment'.hardcoded,
-      iconPath: transaction.hasInstallment ? AppIcons.installment : AppIcons.fullPayment,
+      title: 'Installment Payment'.hardcoded,
+      text:
+          'This transaction has been registered for installment payments, so you won\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.'
+              .hardcoded,
+      iconPath: AppIcons.installment,
       size: size,
     );
   }
 }
 
 class TxnCategoryIcon extends StatelessWidget {
-  const TxnCategoryIcon({Key? key, required this.transaction}) : super(key: key);
+  const TxnCategoryIcon({super.key, required this.transaction});
 
   final BaseTransactionWithCategory transaction;
 
@@ -120,7 +117,7 @@ class TxnCategoryIcon extends StatelessWidget {
 }
 
 class TxnCategoryName extends StatelessWidget {
-  const TxnCategoryName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
+  const TxnCategoryName({super.key, required this.transaction, this.fontSize});
 
   final BaseTransactionWithCategory transaction;
   final double? fontSize;
