@@ -37,12 +37,12 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
-      if (statementDay > earliestPayableDate.day) {
+      if (statementDay >= earliestPayableDate.day) {
         earliestStatementDate =
             DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
       }
 
-      if (statementDay <= earliestPayableDate.day) {
+      if (statementDay < earliestPayableDate.day) {
         earliestStatementDate = earliestPayableDate.copyWith(day: statementDay).onlyYearMonthDay;
       }
     }
@@ -203,13 +203,15 @@ extension _CreditAccountExtension on Account {
       Checkpoint? checkpoint;
 
       // TODO:  should let user choose when to start
-      final installmentCounts = <Installment>[
+      final installments = <Installment>[
         for (final entry in installmentCountsMapToMutate.entries) Installment(entry.key, entry.value)
       ];
 
       // Loop each transaction to add to statement
       final txnsInGracePeriod = <BaseCreditTransaction>[];
+
       final txnsInBillingCycle = <BaseCreditTransaction>[];
+
       for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
         final txn = accountTransactionsList[i];
 
@@ -222,26 +224,32 @@ extension _CreditAccountExtension on Account {
         }
 
         if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
-          txnsInGracePeriod.add(txn);
-        } else {
-          txnsInBillingCycle.add(txn);
-
-          // TODO: should let user choose when to start
-          if (txn is CreditSpending && txn.hasInstallment) {
-            installmentCountsMapToMutate[txn] = txn.monthsToPay!;
-          }
-
           if (txn is CreditCheckpoint) {
-            final x = unpaidOfInstallmentsAtCheckpoint(installmentCounts, txn.amount);
+            final x = unpaidOfInstallmentsAtCheckpoint(installments, txn.amount);
 
-            // User finish their installments left
             if (x <= 0) {
+              // User finished their installments left
               installmentCountsMapToMutate.clear();
             }
 
             checkpoint = Checkpoint(txn.amount, x);
           }
+
+          txnsInGracePeriod.add(txn);
+
+          continue;
         }
+
+        if (txn is CreditCheckpoint) {
+          continue;
+        }
+
+        // TODO: should let user choose when to start
+        if (txn is CreditSpending && txn.hasInstallment) {
+          installmentCountsMapToMutate[txn] = txn.monthsToPay!;
+        }
+
+        txnsInBillingCycle.add(txn);
       }
 
       Statement statement = Statement.create(
@@ -252,7 +260,7 @@ extension _CreditAccountExtension on Account {
         endDate: endDate,
         dueDate: dueDate,
         apr: apr,
-        installmentTxnsToPayCounts: installmentCounts,
+        installmentTxnsToPayCounts: installments,
         txnsInBillingCycle: txnsInBillingCycle,
         txnsInGracePeriod: txnsInGracePeriod,
       );

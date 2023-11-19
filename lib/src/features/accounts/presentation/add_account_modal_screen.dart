@@ -249,8 +249,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       });
                     } else {
                       setState(() {
-                        checkpointDateTime = DateTime.now()
-                            .copyWith(day: statementDay - 1, hour: 23, minute: 59, second: 58);
+                        checkpointDateTime = DateTime.now().copyWith(day: statementDay);
                         checkpointAmount = '0';
                       });
                     }
@@ -272,8 +271,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                           DateSelector(
                             initial: DateTime.now().copyWith(day: statementDay),
                             selectableDayPredicate: (dateTime) => dateTime.day == statementDay,
-                            onChanged: (dateTime) => checkpointDateTime = dateTime.copyWith(
-                                day: statementDay - 1, hour: 23, minute: 59, second: 58),
+                            onChanged: (dateTime) => checkpointDateTime = dateTime,
                             labelBuilder: (dateTime) {
                               return dateTime != null ? dateTime.getFormattedDate() : '--';
                             },
