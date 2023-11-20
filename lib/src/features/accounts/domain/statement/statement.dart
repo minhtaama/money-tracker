@@ -69,9 +69,7 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
-        ? transactionsInGracePeriod
-        : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -93,32 +91,32 @@ abstract class Statement {
   double getFullPaymentAmountAt(DateTime dateTime) {
     double x;
 
+    double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
+    double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
+
+    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
+      if (txn is CreditSpending &&
+          !txn.hasInstallment &&
+          txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
+        spentInGracePeriodBeforeDateTimeExcludeInstallments += txn.amount;
+      }
+    }
+
+    for (BaseCreditTransaction txn in transactionsInBillingCycle) {
+      if (txn is CreditSpending &&
+          !txn.hasInstallment &&
+          txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
+        spentInBillingCycleBeforeDateTimeExcludeInstallments += txn.amount;
+      }
+    }
+
     if (checkpoint != null) {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
-        return 0;
+        x = 0;
       } else {
-        x = checkpoint!.unpaidToPay - _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _paidInGracePeriod;
       }
     } else {
-      double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
-      double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
-
-      for (BaseCreditTransaction txn in transactionsInGracePeriod) {
-        if (txn is CreditSpending &&
-            !txn.hasInstallment &&
-            txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
-          spentInGracePeriodBeforeDateTimeExcludeInstallments += txn.amount;
-        }
-      }
-
-      for (BaseCreditTransaction txn in transactionsInBillingCycle) {
-        if (txn is CreditSpending &&
-            !txn.hasInstallment &&
-            txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
-          spentInBillingCycleBeforeDateTimeExcludeInstallments += txn.amount;
-        }
-      }
-
       x = previousStatement._balanceToPayAtEndDate +
           previousStatement.interest +
           installmentsAmountToPay +
@@ -259,8 +257,7 @@ class PreviousStatement {
   final DateTime dueDate;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(0, 0,
-        balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.
