@@ -29,17 +29,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    DateTime? earliestPayableDate =
-        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate =
-        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
       if (statementDay >= earliestPayableDate.day) {
-        earliestStatementDate =
-            DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+        earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
       }
 
       if (statementDay < earliestPayableDate.day) {
@@ -51,8 +48,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate =
-            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -63,7 +59,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     // ADD STATEMENTS
     var statementsList = <Statement>[];
     if (earliestStatementDate != null && latestStatementDate != null) {
-      statementsList = _CreditAccountExtension.buildStatementsList(
+      statementsList = CreditAccountExtension._buildStatementsList(
         statementDay,
         paymentDueDay,
         earliestStatementDate: earliestStatementDate,
@@ -93,8 +89,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>(
-            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -172,8 +167,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   });
 }
 
-extension _CreditAccountExtension on Account {
-  static List<Statement> buildStatementsList(
+extension CreditAccountExtension on Account {
+  static List<Statement> _buildStatementsList(
     int statementDay,
     int paymentDueDay, {
     required double apr,
@@ -189,16 +184,14 @@ extension _CreditAccountExtension on Account {
 
     // Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
-      final endDate =
-          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-      final previousStatement = startDate != earliestStatementDate
-          ? statementsList.last.carryToNextStatement
-          : PreviousStatement.noData();
+      final previousStatement =
+          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
 
       Checkpoint? checkpoint;
 
@@ -225,12 +218,11 @@ extension _CreditAccountExtension on Account {
 
         if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
           if (txn is CreditCheckpoint) {
-            final x = unpaidOfInstallmentsAtCheckpoint(installments, txn.amount);
-
-            if (x <= 0) {
-              // User finished their installments left
-              installmentCountsMapToMutate.clear();
-            }
+            final x = _modifyInstallmentsAtCheckpoint(
+              installments: installments,
+              checkpointBalance: txn.amount,
+              installmentCountsMapToMutate: installmentCountsMapToMutate,
+            );
 
             checkpoint = Checkpoint(txn.amount, x);
           }
@@ -277,19 +269,28 @@ extension _CreditAccountExtension on Account {
     return statementsList;
   }
 
-  static double unpaidOfInstallmentsAtCheckpoint(
-      List<Installment> installments, double checkpointBalance) {
-    double result = 0;
+  /// Returns total unpaid of installments and modify the `installmentCountsMapToMutate`
+  /// to keep only installment transactions has unpaid amount lower than checkpoint balance
+  static double _modifyInstallmentsAtCheckpoint(
+      {required List<Installment> installments,
+      required double checkpointBalance,
+      required Map<CreditSpending, int> installmentCountsMapToMutate}) {
+    double totalUnpaid = 0;
 
+    // TODO: Continue here, modify this to let user choose which installments keep and which is finished
     for (Installment inst in installments) {
-      result += inst.txn.paymentAmount! * inst.monthsLeft;
+      if (inst.unpaidAmount <= 0) {
+        // User finished their installments left
+        installmentCountsMapToMutate.clear();
+      }
+      totalUnpaid += inst.unpaidAmount;
     }
 
     // Then user might have full-paid all installments
-    if (checkpointBalance < result) {
+    if (checkpointBalance < totalUnpaid) {
       return 0;
     } else {
-      return result;
+      return totalUnpaid;
     }
   }
 }

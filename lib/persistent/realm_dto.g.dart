@@ -386,6 +386,7 @@ class TransactionDb extends _TransactionDb
     AccountDb? transferAccount,
     TransferFeeDb? transferFee,
     CreditPaymentDetailsDb? creditPaymentDetails,
+    Iterable<ObjectId> creditCheckpointFinishedInstallments = const [],
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<TransactionDb>({
@@ -404,6 +405,10 @@ class TransactionDb extends _TransactionDb
     RealmObjectBase.set(this, 'transferAccount', transferAccount);
     RealmObjectBase.set(this, 'transferFee', transferFee);
     RealmObjectBase.set(this, 'creditPaymentDetails', creditPaymentDetails);
+    RealmObjectBase.set<RealmList<ObjectId>>(
+        this,
+        'creditCheckpointFinishedInstallments',
+        RealmList<ObjectId>(creditCheckpointFinishedInstallments));
   }
 
   TransactionDb._();
@@ -485,6 +490,15 @@ class TransactionDb extends _TransactionDb
       RealmObjectBase.set(this, 'creditPaymentDetails', value);
 
   @override
+  RealmList<ObjectId> get creditCheckpointFinishedInstallments =>
+      RealmObjectBase.get<ObjectId>(
+          this, 'creditCheckpointFinishedInstallments') as RealmList<ObjectId>;
+  @override
+  set creditCheckpointFinishedInstallments(
+          covariant RealmList<ObjectId> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
   Stream<RealmObjectChanges<TransactionDb>> get changes =>
       RealmObjectBase.getChanges<TransactionDb>(this);
 
@@ -516,6 +530,9 @@ class TransactionDb extends _TransactionDb
           optional: true, linkTarget: 'TransferFeeDb'),
       SchemaProperty('creditPaymentDetails', RealmPropertyType.object,
           optional: true, linkTarget: 'CreditPaymentDetailsDb'),
+      SchemaProperty(
+          'creditCheckpointFinishedInstallments', RealmPropertyType.objectid,
+          collectionType: RealmCollectionType.list),
     ]);
   }
 }

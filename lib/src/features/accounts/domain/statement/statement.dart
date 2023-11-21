@@ -308,7 +308,7 @@ class Checkpoint {
   final double unpaidOfInstallments;
 
   /// unpaidOfInstallment is always lower than `oustdBalance`, as the calculation of
-  /// [_CreditAccountExtension.unpaidOfInstallmentsAtCheckpoint] in account_base.dart.
+  /// [CreditAccountExtension._modifyInstallmentsAtCheckpoint] in account_base.dart.
   ///
   /// But we put `math.max()` to make sure it always has to.
   double get unpaidToPay => math.max(0, oustdBalance - unpaidOfInstallments);
@@ -320,6 +320,8 @@ class Checkpoint {
 class Installment {
   final CreditSpending txn;
   final int monthsLeft;
+
+  double get unpaidAmount => txn.paymentAmount! * monthsLeft;
 
   const Installment(this.txn, this.monthsLeft);
 }
