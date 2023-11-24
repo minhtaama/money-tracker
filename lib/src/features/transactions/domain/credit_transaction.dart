@@ -1,7 +1,8 @@
 part of 'transaction_base.dart';
 
 sealed class BaseCreditTransaction extends BaseTransaction {
-  const BaseCreditTransaction(super.databaseObject, super.dateTime, super.amount, super.note, super.account);
+  const BaseCreditTransaction(
+      super.databaseObject, super.dateTime, super.amount, super.note, super.account);
 }
 
 @immutable
@@ -38,10 +39,13 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
+      other is CreditSpending &&
+          runtimeType == other.runtimeType &&
+          databaseObject.id == other.databaseObject.id;
 
   @override
-  int get hashCode => category.hashCode ^ categoryTag.hashCode ^ monthsToPay.hashCode ^ paymentAmount.hashCode;
+  int get hashCode =>
+      category.hashCode ^ categoryTag.hashCode ^ monthsToPay.hashCode ^ paymentAmount.hashCode;
 }
 
 @immutable
@@ -62,17 +66,14 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
 class CreditCheckpoint extends BaseCreditTransaction {
   // TODO: Continue here, modify this to let user choose which installments keep and which is finished
 
-  List<CreditSpending> finishedInstallments(WidgetRef ref) {
-    final transactionRepo = ref.read(transactionRepositoryRealmProvider);
-    return transactionRepo.getAllFromObjectIds(databaseObject.creditCheckpointFinishedInstallments)
-        as List<CreditSpending>;
-  }
+  final List<CreditSpending> finishedInstallments;
 
   const CreditCheckpoint._(
     super._databaseObject,
     super.dateTime,
     super.amount,
     super.note,
-    super.account,
-  );
+    super.account, {
+    required this.finishedInstallments,
+  });
 }

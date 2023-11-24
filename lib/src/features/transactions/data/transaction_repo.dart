@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:async/async.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
@@ -30,14 +31,10 @@ class TransactionRepository {
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
-  // TODO: Continue here, modify this to let user choose which installments keep and which is finished
-  List<BaseTransaction> getAllFromObjectIds(List<ObjectId> list) {
-    final dbList = list.map((id) => realm.find<TransactionDb>(id)).toList().whereType<TransactionDb>();
-    return dbList.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
-  }
-
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   Stream<void> _watchDatabaseChanges() {
@@ -56,7 +53,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -75,7 +73,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -100,7 +99,8 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -161,23 +161,24 @@ class TransactionRepository {
     });
   }
 
-  // Future<void> writeNewCreditPaymentTxn({
-  //   required DateTime dateTime,
-  //   required double amount,
-  // }) async {
-  //   final txn = CreditPaymentIsar()
-  //     ..dateTime = dateTime
-  //     ..amount = amount
-  //     ..spendingTxnLinks. = creditSpendingIsar;
-  //
-  //   await isar.writeTxn(() async {
-  //     // Put the `txn` to the TransactionIsar collection
-  //     await isar.creditPaymentIsars.put(txn);
-  //
-  //     // Save the links in the `txn`
-  //     await txn.spendingTxnLink.save();
-  //   });
-  // }
+  void writeNewCreditCheckpoint({
+    required DateTime dateTime,
+    required double amount,
+    required CreditAccount account,
+    required List<CreditSpending> finishedInstallments,
+  }) {
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      _transactionTypeInDb(TransactionType.creditCheckpoint),
+      dateTime.onlyYearMonthDay,
+      amount,
+      account: account.databaseObject,
+    );
+
+    realm.write(() {
+      realm.add(newTransaction);
+    });
+  }
 }
 
 /////////////////// PROVIDERS //////////////////////////

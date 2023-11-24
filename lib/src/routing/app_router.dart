@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/settings/presentation/select_currency_screen.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_credit_payment_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transaction_details_modal.dart';
@@ -165,7 +167,7 @@ final goRouter = GoRouter(
                     state,
                     child: const AddAccountModalScreen(),
                   ),
-                )
+                ),
               ],
             )
           ],

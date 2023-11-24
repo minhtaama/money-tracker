@@ -8,18 +8,20 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
 import '../domain/account_base.dart';
 
 class AccountsScreen extends ConsumerWidget {
-  const AccountsScreen({Key? key}) : super(key: key);
+  const AccountsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,15 +65,11 @@ class AccountsScreen extends ConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 150),
-                                // Account Name
-                                child: Text(
-                                  model.name,
-                                  style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                ),
+                              Text(
+                                model.name,
+                                style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
                               ),
                               Gap.w16,
                               // Account Type
@@ -84,10 +82,22 @@ class AccountsScreen extends ConsumerWidget {
                                       ),
                                       child: Text(
                                         'Credit',
-                                        style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
+                                        style: kHeader4TextStyle.copyWith(
+                                            color: model.backgroundColor, fontSize: 12),
                                       ),
                                     )
-                                  : const SizedBox(),
+                                  : Gap.noGap,
+                              // TODO: Move this into Account screen
+                              model is CreditAccount
+                                  ? RoundedIconButton(
+                                      iconPath: AppIcons.add,
+                                      onTap: () {
+                                        showCustomModalBottomSheet(
+                                            context: context,
+                                            child: AddCreditCheckpointModalScreen(account: model));
+                                      },
+                                    )
+                                  : Gap.noGap,
                             ],
                           ),
                           const Expanded(child: SizedBox()),

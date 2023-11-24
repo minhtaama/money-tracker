@@ -91,13 +91,12 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
         );
 
       default:
-        return CreditCheckpoint._(
-          txn,
-          txn.dateTime.toLocal(),
-          txn.amount,
-          txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
-        );
+        return CreditCheckpoint._(txn, txn.dateTime.toLocal(), txn.amount, txn.note,
+            Account.fromDatabaseWithNoDetails(txn.account),
+            finishedInstallments: [
+              for (TransactionDb el in txn.creditCheckpointFinishedInstallments)
+                BaseTransaction.fromDatabase(el) as CreditSpending
+            ]);
     }
   }
 }

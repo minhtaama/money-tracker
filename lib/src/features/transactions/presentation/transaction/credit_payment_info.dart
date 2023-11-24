@@ -80,7 +80,8 @@ class _ListState extends State<_List> {
     return list;
   }
 
-  List<_Transaction> buildTransactionBeforeTile(BuildContext context, List<BaseCreditTransaction> transactions) {
+  List<_Transaction> buildTransactionBeforeTile(
+      BuildContext context, List<BaseCreditTransaction> transactions) {
     final list = <_Transaction>[];
 
     DateTime temp = Calendar.minDate;
@@ -91,20 +92,30 @@ class _ListState extends State<_List> {
       if (txnDateTime.isAtSameMomentAs(widget.statement!.startDate) ||
           txnDateTime.isAtSameMomentAs(nextStatementDateTime)) {
         list.add(_Transaction(
-            statement: widget.statement!, transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
+            statement: widget.statement!,
+            transaction: transactions[i],
+            dateTime: null,
+            onDateTap: widget.onDateTap));
       } else if (!txnDateTime.isAtSameMomentAs(temp)) {
         temp = txnDateTime;
         list.add(_Transaction(
-            statement: widget.statement!, transaction: transactions[i], dateTime: temp, onDateTap: widget.onDateTap));
+            statement: widget.statement!,
+            transaction: transactions[i],
+            dateTime: temp,
+            onDateTap: widget.onDateTap));
       } else {
         list.add(_Transaction(
-            statement: widget.statement!, transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
+            statement: widget.statement!,
+            transaction: transactions[i],
+            dateTime: null,
+            onDateTap: widget.onDateTap));
       }
     }
     return list;
   }
 
-  List<_Transaction> buildTodayTransactionTile(BuildContext context, List<BaseCreditTransaction> transactions,
+  List<_Transaction> buildTodayTransactionTile(
+      BuildContext context, List<BaseCreditTransaction> transactions,
       {bool showList = true, bool showTitle = true, String fullPaymentAmount = ''}) {
     if (!showList) {
       return <_Transaction>[];
@@ -195,7 +206,8 @@ class _ListState extends State<_List> {
                     ...buildTransactionBeforeTile(context, txnsInBillingCycleAfterPreviousDueDate),
                     !widget.chosenDateTime!.isBefore(nextStatementDateTime)
                         ? _Header(
-                            isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
+                            isSelectedDay:
+                                widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
                             dateTime: nextStatementDateTime,
                             h1: widget.statement!.checkpoint != null
                                 ? 'Statement date with checkpoint'.hardcoded
@@ -206,7 +218,8 @@ class _ListState extends State<_List> {
                     ...buildTransactionBeforeTile(context, txnsInGracePeriod),
                     widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate)
                         ? _Header(
-                            isSelectedDay: widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
+                            isSelectedDay:
+                                widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
                             dateTime: widget.statement!.dueDate,
                             h1: 'Payment due date'.hardcoded,
                             h2: widget.statement!.previousStatement.balanceToPay > 0
@@ -242,7 +255,9 @@ class _ListState extends State<_List> {
               ),
               Gap.w8,
               HelpButton(
-                text: 'For easier tracking, you can only pay for transactions happens before selected day'.hardcoded,
+                text:
+                    'For easier tracking, you can only pay for transactions happens before selected day'
+                        .hardcoded,
                 size: 18,
               ),
             ],
@@ -275,7 +290,8 @@ class _Transaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: transaction != null ? () => context.push(RoutePath.transaction, extra: transaction) : null,
+        onTap:
+            transaction != null ? () => context.push(RoutePath.transaction, extra: transaction) : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
           child: Row(
@@ -298,7 +314,9 @@ class _Transaction extends StatelessWidget {
                       ),
               ),
               transaction is! CreditCheckpoint ? Gap.w16 : Gap.noGap,
-              transaction != null && transaction is CreditSpending && (transaction as CreditSpending).hasInstallment
+              transaction != null &&
+                      transaction is CreditSpending &&
+                      (transaction as CreditSpending).hasInstallment
                   ? const TxnInstallmentIcon(size: 16)
                   : Gap.noGap,
               transaction is! CreditCheckpoint ? Gap.w4 : Gap.noGap,
@@ -514,8 +532,8 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.currentSettings.currency.code}'
                                   .hardcoded,
-                              style:
-                                  kHeader3TextStyle.copyWith(fontSize: 10, color: context.appTheme.backgroundNegative),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 10, color: context.appTheme.backgroundNegative),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -527,11 +545,13 @@ class _Checkpoint extends StatelessWidget {
               const FittedBox(child: _CheckpointArrow()),
               Text(
                 ' ${CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay)}'.hardcoded,
-                style: kHeader2TextStyle.copyWith(fontSize: 13, color: context.appTheme.backgroundNegative),
+                style:
+                    kHeader2TextStyle.copyWith(fontSize: 13, color: context.appTheme.backgroundNegative),
               ),
               Text(
                 ' ${context.currentSettings.currency.code}'.hardcoded,
-                style: kHeader4TextStyle.copyWith(fontSize: 13, color: context.appTheme.backgroundNegative),
+                style:
+                    kHeader4TextStyle.copyWith(fontSize: 13, color: context.appTheme.backgroundNegative),
               ),
             ],
           ),
@@ -542,7 +562,8 @@ class _Checkpoint extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({this.dateTime, required this.h1, this.h2, this.verticalPadding = 3, this.isSelectedDay = false});
+  const _Header(
+      {this.dateTime, required this.h1, this.h2, this.verticalPadding = 3, this.isSelectedDay = false});
 
   final bool isSelectedDay;
   final DateTime? dateTime;
@@ -570,13 +591,15 @@ class _Header extends StatelessWidget {
                 Text(
                   h1,
                   style: kHeader2TextStyle.copyWith(
-                      fontSize: 12, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
+                      fontSize: 12,
+                      color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
                         style: kHeader3TextStyle.copyWith(
-                            fontSize: 12, color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
+                            fontSize: 12,
+                            color: isSelectedDay ? context.appTheme.primary : AppColors.grey(context)),
                       )
                     : Gap.noGap,
               ],
@@ -617,7 +640,9 @@ class _DateTime extends StatelessWidget {
                     Text(
                       dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
                       style: kHeader2TextStyle.copyWith(
-                          color: isSelectedDay ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                          color: isSelectedDay
+                              ? context.appTheme.primaryNegative
+                              : context.appTheme.backgroundNegative,
                           fontSize: 10,
                           height: 1),
                     ),
@@ -732,13 +757,14 @@ extension _ListGetters on State<_List> {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(context, widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!),
+    return CalService.formatCurrency(
+        context, widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime!),
         forceWithDecimalDigits: true);
   }
 }
 
 class _CheckpointArrow extends StatelessWidget {
-  const _CheckpointArrow({super.key});
+  const _CheckpointArrow();
 
   @override
   Widget build(BuildContext context) {

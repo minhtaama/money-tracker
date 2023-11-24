@@ -161,7 +161,7 @@ class _TransactionDb {
   _CreditPaymentDetailsDb? creditPaymentDetails;
 
   /// **Only specify this if type is [TransactionType.creditCheckpoint]**
-  late List<ObjectId> creditCheckpointFinishedInstallments;
+  late List<_TransactionDb> creditCheckpointFinishedInstallments;
 }
 
 @RealmModel(ObjectType.embeddedObject)

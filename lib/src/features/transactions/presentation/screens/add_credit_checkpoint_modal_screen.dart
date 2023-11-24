@@ -1,0 +1,127 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/checkpoint_installments_list.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../../../common_widgets/inline_text_form_field.dart';
+import '../../../accounts/domain/account_base.dart';
+import '../../../accounts/domain/statement/statement.dart';
+import '../../../calculator_input/presentation/calculator_input.dart';
+import '../selectors/date_time_selector/date_time_selector_components.dart';
+import '../selectors/forms.dart';
+
+class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {
+  const AddCreditCheckpointModalScreen({super.key, required this.account});
+
+  final CreditAccount account;
+
+  @override
+  ConsumerState<AddCreditCheckpointModalScreen> createState() => _AddCreditCheckpointModalScreenState();
+}
+
+class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckpointModalScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  late Statement? _statement;
+
+  ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
+  late DateTime _dateTime;
+
+  late final CreditAccount _creditAccount = widget.account;
+
+  double? get _outputAmount => CalService.formatToDouble(_calOutputFormattedAmount);
+  ///////////////////////////////////////////////////////////////////////
+
+  String _calOutputFormattedAmount = '0';
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _dateTime = DateTime.now().copyWith(day: _creditAccount.statementDay);
+    _statement = _creditAccount.statementAt(_dateTime);
+    super.initState();
+  }
+
+  void _submit() {
+    // By validating, no important value can be null
+    if (_formKey.currentState!.validate()) {
+      // ref.read(transactionRepositoryRealmProvider).writeNewCreditCheckpoint(
+      //     dateTime: _dateTime,
+      //     amount: _outputAmount!,
+      //     account: _creditAccount,
+      //     finishedInstallments: []);
+      context.pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: CustomSection(
+        title: 'Add Checkpoint',
+        crossAxisAlignment: CrossAxisAlignment.start,
+        isWrapByCard: false,
+        sectionsClipping: false,
+        sections: [
+          Row(
+            children: [
+              Text(
+                'Checkpoint at:',
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+              ),
+              DateSelector(
+                initial: _dateTime,
+                selectableDayPredicate: (dateTime) => dateTime.day == _creditAccount.statementDay,
+                onChanged: (dateTime) {
+                  setState(() {
+                    _dateTime = dateTime;
+                    _statement = _creditAccount.statementAt(_dateTime);
+                  });
+                },
+                labelBuilder: (dateTime) {
+                  return dateTime != null ? dateTime.getFormattedDate() : '--';
+                },
+              ),
+            ],
+          ),
+          Gap.h8,
+          InlineTextFormField(
+            prefixText: 'Oustd. Balance:',
+            suffixText: context.currentSettings.currency.code,
+            widget: CalculatorInput(
+              fontSize: 18,
+              isDense: true,
+              textAlign: TextAlign.end,
+              focusColor: context.appTheme.secondary,
+              hintText: '',
+              initialValue: '0',
+              // TODO: Update here
+              //validator: (_) {},
+              formattedResultOutput: (value) => _calOutputFormattedAmount = value,
+            ),
+          ),
+          _statement != null ? CheckpointInstallmentsList(statement: _statement!) : Gap.noGap,
+          Gap.h24,
+          BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
+        ],
+      ),
+    );
+  }
+}
+
+extension _Validators on _AddCreditCheckpointModalScreenState {
+  bool get _isButtonDisable =>
+      CalService.formatToDouble(_calOutputFormattedAmount) == null ||
+      CalService.formatToDouble(_calOutputFormattedAmount) == 0;
+}
