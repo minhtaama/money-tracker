@@ -47,9 +47,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   int statementDay = 1;
   int paymentDueDay = 15;
   String apr = '';
-  DateTime? checkpointDateTime; // copyWith(day: statementDay - 1, hour: 23, minute: 59, second: 58)
-  String? checkpointAmount;
-  String? checkpointAmountToPay;
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
@@ -66,8 +63,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         statementDay: statementDay,
         paymentDueDay: paymentDueDay,
         apr: CalService.formatToDouble(apr),
-        checkpointDateTime: checkpointDateTime,
-        checkpointBalance: CalService.formatToDouble(checkpointAmount),
       );
       context.pop();
     }
@@ -239,66 +234,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               ),
             ),
           ),
-          accountType == AccountType.credit
-              ? CustomCheckbox(
-                  onChanged: (value) {
-                    if (!value) {
-                      setState(() {
-                        checkpointDateTime = null;
-                        checkpointAmount = null;
-                      });
-                    } else {
-                      setState(() {
-                        checkpointDateTime = DateTime.now().copyWith(day: statementDay);
-                        checkpointAmount = '0';
-                      });
-                    }
-                  },
-                  label: 'With checkpoint'.hardcoded,
-                  labelSuffix: HelpButton(
-                    text: 'Checkpoint'.hardcoded,
-                  ),
-                  optionalWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Checkpoint:',
-                            style:
-                                kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-                          ),
-                          DateSelector(
-                            initial: DateTime.now().copyWith(day: statementDay),
-                            selectableDayPredicate: (dateTime) => dateTime.day == statementDay,
-                            onChanged: (dateTime) => checkpointDateTime = dateTime,
-                            labelBuilder: (dateTime) {
-                              return dateTime != null ? dateTime.getFormattedDate() : '--';
-                            },
-                          ),
-                        ],
-                      ),
-                      Gap.h8,
-                      InlineTextFormField(
-                        prefixText: 'Oustd. Balance:',
-                        suffixText: context.currentSettings.currency.symbol,
-                        widget: CalculatorInput(
-                          fontSize: 18,
-                          isDense: true,
-                          textAlign: TextAlign.end,
-                          focusColor: context.appTheme.secondary,
-                          hintText: '',
-                          initialValue: '0',
-                          // TODO: Update here
-                          //validator: (_) {},
-                          formattedResultOutput: (value) => checkpointAmount = value,
-                        ),
-                      ),
-                      Gap.h8,
-                    ],
-                  ),
-                )
-              : Gap.noGap,
           Gap.h24,
           Align(
             alignment: Alignment.centerRight,

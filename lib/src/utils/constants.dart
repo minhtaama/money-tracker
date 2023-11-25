@@ -58,6 +58,14 @@ class Gap {
         endIndent: indent,
       );
 
+  static verticalDivider(BuildContext context, {double? indent}) => VerticalDivider(
+        color: context.appTheme.backgroundNegative.withOpacity(1),
+        width: 100,
+        thickness: 5,
+        indent: indent,
+        endIndent: indent,
+      );
+
   static get expanded => const Expanded(child: SizedBox());
 
   static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;

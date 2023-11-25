@@ -29,14 +29,17 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate =
+        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate =
+        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
       if (statementDay >= earliestPayableDate.day) {
-        earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+        earliestStatementDate =
+            DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
       }
 
       if (statementDay < earliestPayableDate.day) {
@@ -48,7 +51,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate =
+            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -89,7 +93,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>(
+            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -184,19 +189,20 @@ extension CreditAccountExtension on Account {
 
     // Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
-      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate =
+          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-      final previousStatement =
-          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
+      final previousStatement = startDate != earliestStatementDate
+          ? statementsList.last.carryToNextStatement
+          : PreviousStatement.noData();
 
       Checkpoint? checkpoint;
 
-      // TODO:  should let user choose when to start
-      final installments = <Installment>[
+      final installmentsToAddToStatement = <Installment>[
         for (final entry in installmentCountsMapToMutate.entries) Installment(entry.key, entry.value)
       ];
 
@@ -219,10 +225,13 @@ extension CreditAccountExtension on Account {
         if (txn.dateTime.onlyYearMonthDay.isAfter(endDate)) {
           if (txn is CreditCheckpoint) {
             final x = _modifyInstallmentsAtCheckpoint(
-              installments: installments,
+              installmentsToAddToStatement: installmentsToAddToStatement,
+              txn: txn,
               checkpointBalance: txn.amount,
               installmentCountsMapToMutate: installmentCountsMapToMutate,
             );
+
+            print('a');
 
             checkpoint = Checkpoint(txn.amount, x);
           }
@@ -252,7 +261,7 @@ extension CreditAccountExtension on Account {
         endDate: endDate,
         dueDate: dueDate,
         apr: apr,
-        installmentTxnsToPayCounts: installments,
+        installmentTxnsToPayCounts: installmentsToAddToStatement,
         txnsInBillingCycle: txnsInBillingCycle,
         txnsInGracePeriod: txnsInGracePeriod,
       );
@@ -272,17 +281,22 @@ extension CreditAccountExtension on Account {
   /// Returns total unpaid of installments and modify the `installmentCountsMapToMutate`
   /// to keep only installment transactions has unpaid amount lower than checkpoint balance
   static double _modifyInstallmentsAtCheckpoint(
-      {required List<Installment> installments,
+      {required List<Installment> installmentsToAddToStatement,
+      required CreditCheckpoint txn,
       required double checkpointBalance,
       required Map<CreditSpending, int> installmentCountsMapToMutate}) {
     double totalUnpaid = 0;
 
-    // TODO: Continue here, modify this to let user choose which installments keep and which is finished
-    for (Installment inst in installments) {
-      if (inst.unpaidAmount <= 0) {
-        // User finished their installments left
-        installmentCountsMapToMutate.clear();
+    for (CreditSpending spending in txn.finishedInstallments) {
+      if (installmentsToAddToStatement.map((e) => e.txn).contains(spending)) {
+        installmentsToAddToStatement
+            .removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
+        int? x = installmentCountsMapToMutate.remove(spending);
+        print(x);
       }
+    }
+
+    for (Installment inst in installmentsToAddToStatement) {
       totalUnpaid += inst.unpaidAmount;
     }
 

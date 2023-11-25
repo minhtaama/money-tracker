@@ -173,6 +173,7 @@ class TransactionRepository {
       dateTime.onlyYearMonthDay,
       amount,
       account: account.databaseObject,
+      creditCheckpointFinishedInstallments: finishedInstallments.map((txn) => txn.databaseObject),
     );
 
     realm.write(() {

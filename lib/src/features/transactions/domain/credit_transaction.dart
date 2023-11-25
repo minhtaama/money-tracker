@@ -44,8 +44,7 @@ class CreditSpending extends BaseCreditTransaction implements BaseTransactionWit
           databaseObject.id == other.databaseObject.id;
 
   @override
-  int get hashCode =>
-      category.hashCode ^ categoryTag.hashCode ^ monthsToPay.hashCode ^ paymentAmount.hashCode;
+  int get hashCode => databaseObject.id.hashCode;
 }
 
 @immutable

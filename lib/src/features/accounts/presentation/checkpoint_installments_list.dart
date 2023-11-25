@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -23,7 +24,7 @@ class CheckpointInstallmentsList extends StatelessWidget {
   });
 
   final Statement? statement;
-  final ValueChanged<List<Installment>> onMarkAsDone;
+  final void Function(List<Installment>, double) onMarkAsDone;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class CheckpointInstallmentsList extends StatelessWidget {
           child: statement != null
               ? _List(
                   statement: statement!,
-                  onMarkAsDone: (value) => onMarkAsDone(value),
+                  onMarkAsDone: (list, value) => onMarkAsDone(list, value),
                 )
               : Gap.noGap,
         ),
@@ -54,7 +55,7 @@ class _List extends StatefulWidget {
   const _List({required this.statement, required this.onMarkAsDone});
 
   final Statement statement;
-  final ValueChanged<List<Installment>> onMarkAsDone;
+  final void Function(List<Installment>, double) onMarkAsDone;
 
   @override
   State<_List> createState() => _ListState();
@@ -66,13 +67,30 @@ class _ListState extends State<_List> {
   late List<Installment> _installmentsList = widget.statement.installments;
 
   @override
+  void initState() {
+    widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
+    super.initState();
+  }
+
+  @override
   void didUpdateWidget(covariant _List oldWidget) {
     setState(() {
       _installmentsList = widget.statement.installments;
       _installmentsMarkAsDone.clear();
-      widget.onMarkAsDone(_installmentsMarkAsDone);
+      widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
     });
     super.didUpdateWidget(oldWidget);
+  }
+
+  double get _totalUnpaid {
+    double result = 0;
+    for (Installment ins in widget.statement.installments) {
+      result += ins.txn.paymentAmount! * ins.monthsLeft;
+    }
+    for (Installment ins in _installmentsMarkAsDone) {
+      result -= ins.txn.paymentAmount! * ins.monthsLeft;
+    }
+    return result;
   }
 
   @override
@@ -103,12 +121,45 @@ class _ListState extends State<_List> {
                           isDone
                               ? _installmentsMarkAsDone.add(ins)
                               : _installmentsMarkAsDone.remove(ins);
-                          widget.onMarkAsDone(_installmentsMarkAsDone);
+                          setState(() {
+                            widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
+                          });
                         },
                       ),
                   ],
           ),
         ),
+        Gap.divider(context, indent: 4),
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: Text(
+            'Total unpaid installment balance:',
+            style: kHeader4TextStyle.copyWith(fontSize: 13, color: context.appTheme.backgroundNegative),
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Row(
+          children: [
+            Gap.w4,
+            Text(
+              CalService.formatCurrency(context, _totalUnpaid),
+              style:
+                  kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Gap.w4,
+            Text(
+              context.currentSettings.currency.code,
+              style:
+                  kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+        Gap.h4,
       ],
     );
   }
@@ -164,7 +215,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
         borderRadius: BorderRadius.circular(12),
         onTap: _isDone ? null : () => context.push(RoutePath.transaction, extra: widget.transaction),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 6),
           child: Row(
             children: [
               Expanded(
@@ -242,8 +293,8 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                 iconColor:
                     _isDone ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
                 backgroundColor: _isDone ? context.appTheme.primary : AppColors.greyBgr(context),
-                size: 24,
-                iconPadding: 3,
+                size: 27,
+                iconPadding: 2,
                 onTap: () {
                   setState(() {
                     _isDone = !_isDone;

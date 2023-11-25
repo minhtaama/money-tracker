@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/features/transactions/data/transaction_rep
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import '../../../../common_widgets/inline_text_form_field.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../accounts/domain/statement/statement.dart';
@@ -30,8 +31,12 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
 
   late Statement? _statement;
 
+  double _unpaidInstallmentsAmount = 0;
+
   ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
   late DateTime _dateTime;
+
+  List<Installment> _finishedInstallments = [];
 
   late final CreditAccount _creditAccount = widget.account;
 
@@ -55,11 +60,11 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
   void _submit() {
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
-      // ref.read(transactionRepositoryRealmProvider).writeNewCreditCheckpoint(
-      //     dateTime: _dateTime,
-      //     amount: _outputAmount!,
-      //     account: _creditAccount,
-      //     finishedInstallments: []);
+      ref.read(transactionRepositoryRealmProvider).writeNewCreditCheckpoint(
+          dateTime: _dateTime,
+          amount: _outputAmount!,
+          account: _creditAccount,
+          finishedInstallments: _finishedInstallments.map((e) => e.txn).toList());
       context.pop();
     }
   }
@@ -107,7 +112,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
               hintText: '',
               initialValue: '0',
               // TODO: Update here
-              //validator: (_) {},
+              validator: (_) => _oustdBalanceValidator(),
               formattedResultOutput: (value) => _calOutputFormattedAmount = value,
             ),
           ),
@@ -115,8 +120,9 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
           _statement != null
               ? CheckpointInstallmentsList(
                   statement: _statement!,
-                  onMarkAsDone: (list) {
-                    print(list);
+                  onMarkAsDone: (list, totalUnpaid) {
+                    _finishedInstallments = List.from(list);
+                    _unpaidInstallmentsAmount = totalUnpaid;
                   },
                 )
               : Gap.noGap,
@@ -132,4 +138,12 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
   bool get _isButtonDisable =>
       CalService.formatToDouble(_calOutputFormattedAmount) == null ||
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
+
+  String? _oustdBalanceValidator() {
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount) {
+      return 'Must higher than unpaid installments amount'.hardcoded;
+    }
+
+    return null;
+  }
 }
