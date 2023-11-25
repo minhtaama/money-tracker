@@ -111,7 +111,15 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
               formattedResultOutput: (value) => _calOutputFormattedAmount = value,
             ),
           ),
-          _statement != null ? CheckpointInstallmentsList(statement: _statement!) : Gap.noGap,
+          Gap.h16,
+          _statement != null
+              ? CheckpointInstallmentsList(
+                  statement: _statement!,
+                  onMarkAsDone: (list) {
+                    print(list);
+                  },
+                )
+              : Gap.noGap,
           Gap.h24,
           BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
         ],

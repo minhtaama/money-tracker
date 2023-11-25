@@ -69,7 +69,9 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
+        ? transactionsInGracePeriod
+        : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -114,7 +116,9 @@ abstract class Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay +
+            spentInGracePeriodBeforeDateTimeExcludeInstallments -
+            _paidInGracePeriod;
       }
     } else {
       x = previousStatement._balanceToPayAtEndDate +
@@ -257,7 +261,8 @@ class PreviousStatement {
   final DateTime dueDate;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(0, 0,
+        balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.
@@ -324,4 +329,9 @@ class Installment {
   double get unpaidAmount => txn.paymentAmount! * monthsLeft;
 
   const Installment(this.txn, this.monthsLeft);
+
+  @override
+  String toString() {
+    return 'Installment{txn: $txn, monthsLeft: $monthsLeft}';
+  }
 }

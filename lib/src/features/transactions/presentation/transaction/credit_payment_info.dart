@@ -367,7 +367,7 @@ class _InstallmentPayTransaction extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Installment amount of:',
+                      'Instm. payment of:',
                       style: kHeader3TextStyle.copyWith(fontSize: 10, color: AppColors.grey(context)),
                     ),
                     TxnCategoryName(
