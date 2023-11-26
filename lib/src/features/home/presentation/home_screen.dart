@@ -20,7 +20,7 @@ import '../../../utils/enums.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -35,7 +35,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final DateTime _today = DateTime.now().onlyYearMonth;
   late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
 
-  late int _currentPageIndex = _initialPageIndex;
+  //late int _currentPageIndex = _initialPageIndex;
   late DateTime _displayDate = _today;
 
   bool _showCurrentDateButton = false;
@@ -47,7 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onPageChange(int value) {
     _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
-    _currentPageIndex = value;
+    //_currentPageIndex = value;
     _isShowGoToCurrentDateButton();
     setState(() {});
   }
@@ -148,8 +148,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       onDragRight: _nextPage,
       onPageChanged: _onPageChange,
       itemBuilder: (context, pageIndex) {
-        late DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
-        late DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
+        DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
+        DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
         List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 

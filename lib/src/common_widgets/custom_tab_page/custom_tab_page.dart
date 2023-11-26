@@ -91,7 +91,7 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
 
 class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   const CustomTabPageWithPageView({
-    Key? key,
+    super.key,
     required this.smallTabBar,
     this.extendedTabBar,
     this.controller,
@@ -100,7 +100,7 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
     this.pageItemCount,
     this.onDragLeft,
     this.onDragRight,
-  }) : super(key: key);
+  });
   final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final PageController? controller;
@@ -137,7 +137,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
     _translateAController.value = 0;
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       ref.read(systemIconBrightnessProvider.notifier).state =
-          widget.extendedTabBar!.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+          widget.extendedTabBar?.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
     });
     super.initState();
   }
@@ -165,7 +165,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
       _fadeAController.forward(from: 0);
       _showExtendedTabBar = true;
       ref.read(systemIconBrightnessProvider.notifier).state =
-          widget.extendedTabBar!.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+          widget.extendedTabBar?.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
     }
 
     if (offset >= _triggerSmallTabBarDividerOffset && _showSmallTabBarDivider == false) {
@@ -179,7 +179,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
   void _onPageChange() {
     ref.read(systemIconBrightnessProvider.notifier).state =
-        widget.extendedTabBar!.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+        widget.extendedTabBar?.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
     _translateAController.reverse();
     _fadeAController.forward();
     _showExtendedTabBar = true;
@@ -225,24 +225,35 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             );
           },
         ),
-        FadeTransition(
-          opacity: ReverseAnimation(_curveFA),
-          child: AnimatedBuilder(
-              animation: _curveDividerFA,
-              child: widget.smallTabBar,
-              builder: (BuildContext context, Widget? child) {
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: !context.appTheme.isDarkTheme
-                          ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
-                          : BorderSide.none,
-                    ),
+        widget.extendedTabBar != null
+            ? FadeTransition(
+                opacity: ReverseAnimation(_curveFA),
+                child: AnimatedBuilder(
+                    animation: _curveDividerFA,
+                    child: widget.smallTabBar,
+                    builder: (BuildContext context, Widget? child) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: !context.appTheme.isDarkTheme
+                                ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                                : BorderSide.none,
+                          ),
+                        ),
+                        child: child,
+                      );
+                    }),
+              )
+            : Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: !context.appTheme.isDarkTheme
+                        ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                        : BorderSide.none,
                   ),
-                  child: child,
-                );
-              }),
-        ),
+                ),
+                child: widget.smallTabBar,
+              ),
       ],
     );
   }
@@ -252,13 +263,13 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
 class _CustomListView extends ConsumerStatefulWidget {
   const _CustomListView({
-    Key? key,
+    super.key,
     this.smallTabBar,
     this.extendedTabBar,
     this.children = const [],
     this.onOffsetChange,
     this.initialOffset = 0,
-  }) : super(key: key);
+  });
 
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;

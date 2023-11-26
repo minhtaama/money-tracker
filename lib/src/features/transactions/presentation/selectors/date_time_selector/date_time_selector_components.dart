@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/statement_transactions_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -43,8 +43,7 @@ class _CustomTimePickSpinner extends StatelessWidget {
           alignment: Alignment.center,
           normalTextStyle: kHeader3TextStyle.copyWith(
               height: 0, color: context.appTheme.backgroundNegative.withOpacity(0.4), fontSize: 15),
-          highlightedTextStyle:
-              kHeader1TextStyle.copyWith(height: 0.9, color: context.appTheme.primary, fontSize: 25),
+          highlightedTextStyle: kHeader1TextStyle.copyWith(height: 0.9, color: context.appTheme.primary, fontSize: 25),
           isForce2Digits: true,
           onTimeChange: (value) {
             onTimeChange?.call(value.toLocal());
@@ -88,8 +87,7 @@ class _DateTimeWidget extends StatelessWidget {
                   dateTime != null
                       ? dateTime!.getFormattedDate(type: DateTimeType.ddmmmyyyy, hasYear: false)
                       : '- -   - - -',
-                  style:
-                      kHeader1TextStyle.copyWith(color: context.appTheme.primaryNegative, fontSize: 15),
+                  style: kHeader1TextStyle.copyWith(color: context.appTheme.primaryNegative, fontSize: 15),
                 ),
               ),
             ),
@@ -205,8 +203,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       surfaceTintColor: Colors.transparent,
-      backgroundColor:
-          context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
+      backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
       contentPadding: EdgeInsets.zero,
       actions: [
         IconWithTextButton(
@@ -230,8 +227,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-              child:
-                  widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             SizedBox(
@@ -304,8 +300,7 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       lastDate: lastDate,
       firstDayOfWeek: firstDayOfWeek,
       selectableDayPredicate: selectableDayPredicate,
-      selectedDayHighlightColor:
-          context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
+      selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary,
       selectedRangeHighlightColor: context.appTheme.isDarkTheme
           ? context.appTheme.secondary.withOpacity(0.5)
           : context.appTheme.primary.withOpacity(0.5),
@@ -321,20 +316,14 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       ),
       weekdayLabelTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
       selectedDayTextStyle: kHeader4TextStyle.copyWith(
-          color: context.appTheme.isDarkTheme
-              ? context.appTheme.secondaryNegative
-              : context.appTheme.primaryNegative),
+          color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
       selectedYearTextStyle: kHeader4TextStyle.copyWith(
-          color: context.appTheme.isDarkTheme
-              ? context.appTheme.secondaryNegative
-              : context.appTheme.primaryNegative),
+          color: context.appTheme.isDarkTheme ? context.appTheme.secondaryNegative : context.appTheme.primaryNegative),
       yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
       cancelButtonTextStyle: kHeader2TextStyle.copyWith(
-          fontSize: 15,
-          color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
       okButtonTextStyle: kHeader2TextStyle.copyWith(
-          fontSize: 15,
-          color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
+          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primary),
       yearBuilder: yearBuilder,
       dayBuilder: dayBuilder,
       controlsHeight: controlsHeight ?? 40);

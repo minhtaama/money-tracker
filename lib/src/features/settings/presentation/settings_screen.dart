@@ -18,7 +18,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../data/settings_repo.dart';
 
 class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
