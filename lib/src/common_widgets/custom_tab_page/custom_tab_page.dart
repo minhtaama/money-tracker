@@ -120,7 +120,11 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
   late final PageController _controller = widget.controller ?? PageController();
 
-  late final AnimationController _translateAController = AnimationController(vsync: this, duration: k250msDuration);
+  late final AnimationController _translateAController = AnimationController(
+      vsync: this,
+      duration: k250msDuration,
+      lowerBound: 0,
+      upperBound: (widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight) + 1000);
 
   late final AnimationController _fadeAController = AnimationController(vsync: this, duration: k250msDuration);
 
@@ -152,7 +156,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   late bool _showSmallTabBarDivider = false;
 
   void _onOffsetChange(double offset) {
-    _translateAController.value = math.min(1, offset / _triggerOffset);
+    _translateAController.value = offset >= _triggerOffset ? _translateAController.upperBound : offset;
 
     // At the moment extendedTabBar disappear and show smallAppBar
     if (offset >= _triggerOffset && _showExtendedTabBar == true) {
@@ -215,16 +219,6 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             ),
           ),
         ),
-        AnimatedBuilder(
-          animation: _translateAController,
-          child: widget.extendedTabBar,
-          builder: (BuildContext context, Widget? child) {
-            return Transform.translate(
-              offset: Offset(0, -_translateAController.value * _triggerOffset),
-              child: FadeTransition(opacity: _curveFA, child: child),
-            );
-          },
-        ),
         widget.extendedTabBar != null
             ? FadeTransition(
                 opacity: ReverseAnimation(_curveFA),
@@ -254,6 +248,16 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                 ),
                 child: widget.smallTabBar,
               ),
+        AnimatedBuilder(
+          animation: _translateAController,
+          child: widget.extendedTabBar,
+          builder: (BuildContext context, Widget? child) {
+            return Transform.translate(
+              offset: Offset(0, -_translateAController.value),
+              child: FadeTransition(opacity: _curveFA, child: child),
+            );
+          },
+        ),
       ],
     );
   }

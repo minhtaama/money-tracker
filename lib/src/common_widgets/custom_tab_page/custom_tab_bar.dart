@@ -32,7 +32,7 @@ class SmallTabBar extends StatelessWidget {
   }
 }
 
-class ExtendedTabBar extends StatelessWidget {
+class ExtendedTabBar extends StatefulWidget {
   const ExtendedTabBar({
     super.key,
     this.backgroundColor,
@@ -50,29 +50,34 @@ class ExtendedTabBar extends StatelessWidget {
   final Brightness? systemIconBrightness;
 
   @override
+  State<ExtendedTabBar> createState() => _ExtendedTabBarState();
+}
+
+class _ExtendedTabBarState extends State<ExtendedTabBar> {
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height + Gap.statusBarHeight(context),
+      height: widget.height + Gap.statusBarHeight(context),
       child: Stack(
         children: [
           CardItem(
             width: double.infinity,
-            height: height + Gap.statusBarHeight(context) - outerChildHeight / 2,
+            height: widget.height + Gap.statusBarHeight(context) - widget.outerChildHeight / 2,
             isGradient: context.appTheme.isDarkTheme ? false : true,
-            color: backgroundColor ??
+            color: widget.backgroundColor ??
                 (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary),
             margin: EdgeInsets.zero,
             borderRadius: BorderRadius.zero,
             padding: EdgeInsets.only(
               left: 16,
               right: 16,
-              bottom: outerChild != null ? 22.0 : 0,
-              top: Gap.statusBarHeight(context) + outerChildHeight / 2,
+              bottom: widget.outerChild != null ? 22.0 : 0,
+              top: Gap.statusBarHeight(context),
             ),
-            elevation: context.appTheme.isDarkTheme ? 0 : 2,
-            child: ClipRect(child: innerChild),
+            elevation: context.appTheme.isDarkTheme ? 0 : 1,
+            child: widget.innerChild,
           ),
-          Align(alignment: Alignment.bottomCenter, child: outerChild),
+          Align(alignment: Alignment.bottomCenter, child: widget.outerChild),
         ],
       ),
     );

@@ -52,7 +52,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
 
   @override
   void initState() {
-    _dateTime = DateTime.now().copyWith(day: _creditAccount.statementDay);
+    _dateTime = DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
     _statement = _creditAccount.statementAt(_dateTime);
     super.initState();
   }

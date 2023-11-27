@@ -1,41 +1,73 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 import '../../../../common_widgets/card_item.dart';
+import '../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
+import '../../../transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
+import '../../domain/account_base.dart';
 
-class ExtendedHomeTab extends StatelessWidget {
-  const ExtendedHomeTab({super.key, required this.showNumber, required this.onEyeTap});
-  final bool showNumber;
-  final VoidCallback onEyeTap;
+class ExtendedAccountTab extends ConsumerWidget {
+  const ExtendedAccountTab({super.key, required this.account});
+  final Account account;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Spacer(),
-        const WelcomeText(),
-        TotalMoney(
-          showNumber: showNumber,
-          onEyeTap: onEyeTap,
+        Row(
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            RoundedIconButton(
+              onTap: () => context.pop(),
+              backgroundColor: Colors.transparent,
+              iconColor: context.appTheme.backgroundNegative,
+              iconPath: AppIcons.back,
+            ),
+            Text(
+              account.name,
+              style: kHeader2TextStyle.copyWith(
+                color: account.iconColor,
+                fontSize: 18,
+              ),
+            ),
+            Gap.w8,
+            const TxnCreditIcon(
+              size: 22,
+            ),
+            // TODO: Move this into Account screen
+            account is CreditAccount
+                ? RoundedIconButton(
+                    iconPath: AppIcons.add,
+                    onTap: () {
+                      showCustomModalBottomSheet(
+                          context: context, child: AddCreditCheckpointModalScreen(account: account as CreditAccount));
+                    },
+                  )
+                : Gap.noGap,
+          ],
         ),
       ],
     );
   }
 }
 
-class DateSelector extends StatelessWidget {
-  const DateSelector({
+class StatementSelector extends StatelessWidget {
+  const StatementSelector({
     super.key,
     required this.dateDisplay,
     this.onTapLeft,
@@ -137,94 +169,6 @@ class DateSelector extends StatelessWidget {
               size: 25,
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class WelcomeText extends StatelessWidget {
-  const WelcomeText({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      'Hello, Tâm'.hardcoded,
-      style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
-        fontSize: 18,
-      ),
-    );
-  }
-}
-
-class TotalMoney extends ConsumerWidget {
-  const TotalMoney({
-    super.key,
-    required this.showNumber,
-    required this.onEyeTap,
-  });
-
-  final bool showNumber;
-  final VoidCallback onEyeTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final accountRepository = ref.watch(accountRepositoryProvider);
-
-    double totalBalance = accountRepository.getTotalBalance();
-
-    ref
-        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
-        .whenData((_) {
-      totalBalance = accountRepository.getTotalBalance();
-    });
-
-    return Row(
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(
-          context.currentSettings.currency.code,
-          style: kHeader4TextStyle.copyWith(
-            fontWeight: FontWeight.w100,
-            color:
-                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
-            fontSize: 36,
-            letterSpacing: -2,
-          ),
-        ),
-        Gap.w8,
-        Expanded(
-          child: EasyRichText(
-            CalService.formatCurrency(context, totalBalance),
-            defaultStyle: kHeader2TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.backgroundNegative
-                  : context.appTheme.secondaryNegative,
-              fontSize: 25,
-            ),
-            //textAlign: TextAlign.right,
-            patternList: [
-              EasyRichTextPattern(
-                targetString: '^[0-9]+',
-                style: kHeader1TextStyle.copyWith(
-                  color: context.appTheme.isDarkTheme
-                      ? context.appTheme.backgroundNegative
-                      : context.appTheme.secondaryNegative,
-                  fontSize: 36,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Gap.w8,
-        RoundedIconButton(
-          iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
-          backgroundColor: Colors.transparent,
-          iconColor: context.appTheme.backgroundNegative,
-          onTap: onEyeTap,
         ),
       ],
     );

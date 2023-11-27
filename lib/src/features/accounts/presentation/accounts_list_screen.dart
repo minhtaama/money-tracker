@@ -94,16 +94,6 @@ class AccountsListScreen extends ConsumerWidget {
                                         ),
                                       )
                                     : Gap.noGap,
-                                // TODO: Move this into Account screen
-                                model is CreditAccount
-                                    ? RoundedIconButton(
-                                        iconPath: AppIcons.add,
-                                        onTap: () {
-                                          showCustomModalBottomSheet(
-                                              context: context, child: AddCreditCheckpointModalScreen(account: model));
-                                        },
-                                      )
-                                    : Gap.noGap,
                               ],
                             ),
                             const Expanded(child: SizedBox()),

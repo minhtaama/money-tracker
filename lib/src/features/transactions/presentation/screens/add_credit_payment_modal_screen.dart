@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart'
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/statement_transactions_list.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -142,7 +142,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             hidden: _hidePayment,
             child: Column(
               children: [
-                StatementTransactionsBox(
+                CreditPaymentInfo(
                   chosenDateTime: _dateTime?.onlyYearMonthDay,
                   noBorder: false,
                   statement: _statement,

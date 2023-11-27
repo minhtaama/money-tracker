@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 import 'card_item.dart';
 
 class RoundedIconButton extends StatelessWidget {
   const RoundedIconButton({
-    Key? key,
+    super.key,
     required this.iconPath,
     this.label,
     this.backgroundColor,
@@ -15,7 +16,7 @@ class RoundedIconButton extends StatelessWidget {
     this.iconPadding = 12,
     this.onTap,
     this.iconColor,
-  }) : super(key: key);
+  });
 
   final String iconPath;
   final String? label;
@@ -29,6 +30,7 @@ class RoundedIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return label != null
         ? Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -41,16 +43,19 @@ class RoundedIconButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(1000),
                 elevation: 0,
                 isGradient: true,
-                child: CustomInkWell(
-                  onTap: onTap,
-                  borderRadius: BorderRadius.circular(10000),
-                  inkColor: iconColor ?? context.appTheme.primaryNegative,
-                  child: Padding(
-                    padding: EdgeInsets.all(iconPadding),
-                    child: FittedBox(
-                      child: SvgIcon(
-                        iconPath,
-                        color: iconColor,
+                child: Material(
+                  color: Colors.transparent,
+                  child: CustomInkWell(
+                    onTap: onTap,
+                    borderRadius: BorderRadius.circular(10000),
+                    inkColor: iconColor ?? context.appTheme.primaryNegative,
+                    child: Padding(
+                      padding: EdgeInsets.all(iconPadding),
+                      child: FittedBox(
+                        child: SvgIcon(
+                          iconPath,
+                          color: iconColor,
+                        ),
                       ),
                     ),
                   ),
@@ -69,25 +74,27 @@ class RoundedIconButton extends StatelessWidget {
               )
             ],
           )
-        : CardItem(
+        : SizedBox(
             width: size ?? 48,
             height: size ?? 48,
-            color: backgroundColor ?? Colors.transparent,
-            padding: EdgeInsets.zero,
-            margin: EdgeInsets.zero,
-            borderRadius: BorderRadius.circular(1000),
-            elevation: 0,
-            isGradient: true,
-            child: CustomInkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(10000),
-              inkColor: iconColor ?? context.appTheme.primaryNegative,
-              child: Padding(
-                padding: EdgeInsets.all(iconPadding),
-                child: FittedBox(
-                  child: SvgIcon(
-                    iconPath,
-                    color: iconColor,
+            child: CardItem(
+              color: backgroundColor ?? Colors.transparent,
+              padding: EdgeInsets.zero,
+              margin: EdgeInsets.zero,
+              borderRadius: BorderRadius.circular(1000),
+              elevation: 0,
+              isGradient: true,
+              child: CustomInkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(10000),
+                inkColor: iconColor ?? AppColors.grey(context),
+                child: Padding(
+                  padding: EdgeInsets.all(iconPadding),
+                  child: FittedBox(
+                    child: SvgIcon(
+                      iconPath,
+                      color: iconColor,
+                    ),
                   ),
                 ),
               ),

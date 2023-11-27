@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
-import 'package:money_tracker_app/src/features/accounts/presentation/credit_account_screen.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/account_screen/credit_account_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
