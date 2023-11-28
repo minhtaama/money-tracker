@@ -635,24 +635,100 @@ extension _StatementFunctions on _CreditAccountScreenState {
   List<Widget> buildList(BuildContext context, Statement statement) {
     final list = <Widget>[];
 
-    DateTime temp = Calendar.minDate;
+    DateTime tempDateTime = Calendar.minDate;
 
-    // for (int i = 0; i < transactions.length; i++) {
-    //   BaseCreditTransaction txn = transactions[i];
-    //
-    //   DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
-    //
-    //   if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
-    //       txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
-    //       txnDateTime.isAtSameMomentAs(statement.dueDate)) {
-    //     list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: null));
-    //   } else if (!txnDateTime.isAtSameMomentAs(temp)) {
-    //     temp = txnDateTime;
-    //     list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: temp));
-    //   } else {
-    //     list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: null));
-    //   }
-    // }
+    bool triggerAddPreviousDueDateHeader = true;
+    bool triggerAddPaymentDueDateHeaderAtTheEnd = true;
+
+    for (int i = 0; i < statement.transactionsInBillingCycle.length; i++) {
+      BaseCreditTransaction txn = statement.transactionsInBillingCycle[i];
+      DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
+
+      if (i == 0) {
+        list.add(
+          _Header(
+            dateTime: statement.startDate,
+            verticalPadding: 4,
+            h1: 'Billing cycle start',
+            h2: 'Carry: ${balanceToPay(context, statement)} ${context.currentSettings.currency.code} ${interest(context, statement) != '0.00' ? '+ ${interest(context, statement)} ${context.currentSettings.currency.code} interest' : ''}',
+          ),
+        );
+      }
+
+      if (!txnDateTime.isBefore(tempDateTime) && triggerAddPreviousDueDateHeader) {
+        triggerAddPreviousDueDateHeader = false;
+        list.add(
+          _Header(
+            dateTime: statement.previousStatement.dueDate,
+            verticalPadding: 4,
+            h1: 'Previous due date'.hardcoded,
+            h2: 'End of last grace period'.hardcoded,
+          ),
+        );
+      }
+
+      if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
+          txnDateTime.isAtSameMomentAs(statement.previousStatement.dueDate)) {
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
+      } else if (!txnDateTime.isAtSameMomentAs(tempDateTime)) {
+        tempDateTime = txnDateTime;
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDateTime));
+      } else {
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
+      }
+    }
+
+    for (int i = 0; i < statement.transactionsInGracePeriod.length; i++) {
+      BaseCreditTransaction txn = statement.transactionsInGracePeriod[i];
+      DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
+
+      if (i == 0) {
+        list.add(
+          _Header(
+            dateTime: nextStatementDateTime(statement),
+            h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
+            h2: 'Begin of grace period'.hardcoded,
+          ),
+        );
+      }
+
+      if (!txnDateTime.isAtSameMomentAs(statement.dueDate)) {
+        triggerAddPaymentDueDateHeaderAtTheEnd = false;
+
+        list.add(
+          _Header(
+            dateTime: statement.dueDate,
+            h1: 'Payment due date'.hardcoded,
+            h2: statement.previousStatement.balanceToPay > 0
+                ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
+                : 'Pay-in-full before this day for interest-free',
+          ),
+        );
+      }
+
+      if (txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
+          txnDateTime.isAtSameMomentAs(statement.dueDate)) {
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
+      } else if (!txnDateTime.isAtSameMomentAs(tempDateTime)) {
+        tempDateTime = txnDateTime;
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDateTime));
+      } else {
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
+      }
+
+      if (i == statement.transactionsInGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
+        list.add(
+          _Header(
+            dateTime: statement.dueDate,
+            h1: 'Payment due date'.hardcoded,
+            h2: statement.previousStatement.balanceToPay > 0
+                ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
+                : 'Pay-in-full before this day for interest-free',
+          ),
+        );
+      }
+    }
+
     return list;
   }
 }
