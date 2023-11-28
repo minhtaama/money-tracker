@@ -104,40 +104,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           Statement? statement = widget.creditAccount.statementAt(today);
 
           return statement != null
-              ? [
-                  _Header(
-                    dateTime: statement.startDate,
-                    verticalPadding: 4,
-                    h1: 'Billing cycle start',
-                    h2: 'Carry: ${balanceToPay(context, statement)} ${context.currentSettings.currency.code} ${interest(context, statement) != '0.00' ? '+ ${interest(context, statement)} ${context.currentSettings.currency.code} interest' : ''}',
-                  ),
-                  ...buildTransactionTile(context, txnsInBillingCycleBefore(statement), statement),
-                  _Header(
-                    dateTime: statement.previousStatement.dueDate,
-                    verticalPadding: 4,
-                    h1: 'Previous due date'.hardcoded,
-                    h2: 'End of last grace period'.hardcoded,
-                  ),
-                  ...buildInstallmentTransactionTile(context, statement),
-                  ...buildTransactionTile(context, txnsInBillingCycleAfterPreviousDueDate(statement), statement),
-                  _Header(
-                    dateTime: nextStatementDateTime(statement),
-                    h1: statement.checkpoint != null
-                        ? 'Statement date with checkpoint'.hardcoded
-                        : 'Statement date'.hardcoded,
-                    h2: 'Begin of grace period'.hardcoded,
-                  ),
-                  ...buildTransactionTile(context, statement.transactionsInGracePeriod, statement),
-                  _Header(
-                    dateTime: statement.dueDate,
-                    h1: 'Payment due date'.hardcoded,
-                    h2: statement.previousStatement.balanceToPay > 0
-                        ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
-                        : 'Pay-in-full before this day for interest-free',
-                  ),
-                  ...buildTransactionTile(context, statement.transactionsIn(statement.dueDate), statement),
-                  Gap.h48,
-                ]
+              ? buildList(context, statement)
               : [
                   EmptyInfo(
                     iconPath: AppIcons.done,
@@ -692,7 +659,7 @@ extension _StatementFunctions on _CreditAccountScreenState {
         );
       }
 
-      if (!txnDateTime.isAtSameMomentAs(statement.dueDate)) {
+      if (txnDateTime.isAtSameMomentAs(statement.dueDate)) {
         triggerAddPaymentDueDateHeaderAtTheEnd = false;
 
         list.add(
