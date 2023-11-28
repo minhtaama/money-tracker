@@ -630,4 +630,29 @@ extension _StatementFunctions on _CreditAccountScreenState {
     }
     return list;
   }
+
+  // TODO: Modify this to output offset
+  List<Widget> buildList(BuildContext context, Statement statement) {
+    final list = <Widget>[];
+
+    DateTime temp = Calendar.minDate;
+
+    // for (int i = 0; i < transactions.length; i++) {
+    //   BaseCreditTransaction txn = transactions[i];
+    //
+    //   DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
+    //
+    //   if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
+    //       txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
+    //       txnDateTime.isAtSameMomentAs(statement.dueDate)) {
+    //     list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: null));
+    //   } else if (!txnDateTime.isAtSameMomentAs(temp)) {
+    //     temp = txnDateTime;
+    //     list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: temp));
+    //   } else {
+    //     list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: null));
+    //   }
+    // }
+    return list;
+  }
 }
