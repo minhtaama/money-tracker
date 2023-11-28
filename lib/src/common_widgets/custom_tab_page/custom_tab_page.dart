@@ -124,7 +124,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
       vsync: this,
       duration: k250msDuration,
       lowerBound: 0,
-      upperBound: (widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight) + 1000);
+      upperBound: (widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight) +
+          (widget.extendedTabBar?.outerChildHeight ?? kExtendedTabBarOuterChildHeight));
 
   late final AnimationController _fadeAController = AnimationController(vsync: this, duration: k250msDuration);
 
