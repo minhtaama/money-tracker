@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
@@ -9,7 +10,9 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
+import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
+import '../../../home/presentation/summary_card.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
@@ -21,6 +24,8 @@ import '../../../transactions/domain/transaction_base.dart';
 import '../../../transactions/presentation/transaction/txn_components.dart';
 import '../../domain/account_base.dart';
 import '../../domain/statement/statement.dart';
+
+part 'credit_account_screen_components.dart';
 
 class CreditAccountScreen extends StatefulWidget {
   const CreditAccountScreen({super.key, required this.creditAccount});
@@ -104,7 +109,18 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           Statement? statement = widget.creditAccount.statementAt(today);
 
           return statement != null
-              ? buildList(context, statement)
+              ? [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(child: _SummaryCard(isPayment: true)),
+                        Expanded(child: _SummaryCard(isPayment: false)),
+                      ],
+                    ),
+                  ),
+                  _List(statement: statement),
+                ]
               : [
                   EmptyInfo(
                     iconPath: AppIcons.done,
@@ -117,489 +133,69 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
   }
 }
 
-class _Header extends StatelessWidget {
-  const _Header({this.dateTime, required this.h1, this.h2, this.verticalPadding = 3});
+class _List extends StatefulWidget {
+  const _List({super.key, required this.statement});
 
-  final DateTime? dateTime;
-  final String h1;
-  final String? h2;
-  final double verticalPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16, top: verticalPadding + 4, bottom: verticalPadding),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _DateTime(
-            dateTime: dateTime,
-            noMonth: false,
-          ),
-          Gap.w8,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: context.appTheme.backgroundNegative),
-                ),
-                h2 != null
-                    ? Text(
-                        h2!,
-                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: context.appTheme.backgroundNegative),
-                      )
-                    : Gap.noGap,
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Transaction extends StatelessWidget {
-  const _Transaction({required this.statement, required this.transaction, this.dateTime});
-  final Statement statement;
-  final DateTime? dateTime;
-  final BaseCreditTransaction transaction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: CustomInkWell(
-        inkColor: AppColors.grey(context),
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            children: [
-              _DateTime(
-                dateTime: dateTime,
-              ),
-              Gap.w4,
-              Expanded(
-                child: _Details(
-                  transaction: transaction,
-                  statement: statement,
-                ),
-              ),
-              transaction is! CreditCheckpoint ? Gap.w16 : Gap.noGap,
-              transaction is CreditSpending && (transaction as CreditSpending).hasInstallment
-                  ? const TxnInstallmentIcon(size: 16)
-                  : Gap.noGap,
-              transaction is! CreditCheckpoint ? Gap.w4 : Gap.noGap,
-              transaction is! CreditCheckpoint
-                  ? TxnAmount(
-                      currencyCode: context.currentSettings.currency.code,
-                      transaction: transaction,
-                      fontSize: 15,
-                      color: transaction is CreditSpending
-                          ? (transaction as CreditSpending).hasInstallment
-                              ? AppColors.grey(context)
-                              : context.appTheme.negative
-                          : context.appTheme.positive,
-                    )
-                  : Gap.noGap,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _InstallmentPayTransaction extends StatelessWidget {
-  const _InstallmentPayTransaction({required this.transaction});
-  final CreditSpending transaction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: CustomInkWell(
-        inkColor: AppColors.grey(context),
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            children: [
-              const _DateTime(),
-              Gap.w4,
-              TxnCategoryIcon(
-                transaction: transaction,
-                color: context.appTheme.negative,
-              ),
-              Gap.w4,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Instm. payment of:',
-                      style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
-                    ),
-                    TxnCategoryName(
-                      transaction: transaction,
-                      fontSize: 14,
-                    )
-                  ],
-                ),
-              ),
-              Gap.w4,
-              TxnAmount(
-                currencyCode: context.currentSettings.currency.code,
-                transaction: transaction,
-                showPaymentAmount: true,
-                color: context.appTheme.negative,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Details extends StatelessWidget {
-  const _Details({required this.transaction, required this.statement});
-
-  final BaseCreditTransaction transaction;
-  final Statement statement;
-
-  String? get _categoryTag {
-    final txn = transaction;
-    switch (txn) {
-      case CreditSpending():
-        return txn.categoryTag != null ? '#${txn.categoryTag!.name}' : null;
-      case CreditPayment() || CreditCheckpoint():
-        return null;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return switch (transaction) {
-      CreditSpending() => _Spending(
-          transaction: transaction as CreditSpending,
-          categoryTag: _categoryTag,
-        ),
-      CreditPayment() => _Payment(transaction: transaction as CreditPayment),
-      CreditCheckpoint() => _Checkpoint(
-          transaction: transaction as CreditCheckpoint,
-          statement: statement,
-        ),
-    };
-  }
-}
-
-class _Spending extends StatelessWidget {
-  const _Spending({required this.transaction, this.categoryTag});
-
-  final CreditSpending transaction;
-  final String? categoryTag;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        TxnCategoryIcon(
-          transaction: transaction,
-          color: transaction.hasInstallment ? null : context.appTheme.negative,
-        ),
-        Gap.w4,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TxnCategoryName(
-                transaction: transaction,
-                fontSize: 14,
-              ),
-              categoryTag != null
-                  ? Text(
-                      categoryTag!,
-                      style: kHeader3TextStyle.copyWith(
-                          fontSize: 13, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  : Gap.noGap,
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _Payment extends StatelessWidget {
-  const _Payment({required this.transaction});
-
-  final CreditPayment transaction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SvgIcon(
-          AppIcons.receiptCheck,
-          color: context.appTheme.positive,
-          size: 20,
-        ),
-        Gap.w4,
-        Expanded(
-          child: Text(
-            'Payment'.hardcoded,
-            style: kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _Checkpoint extends StatelessWidget {
-  const _Checkpoint({required this.transaction, required this.statement});
-
-  final CreditCheckpoint transaction;
   final Statement statement;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SvgIcon(
-          AppIcons.statementCheckpoint,
-          color: context.appTheme.backgroundNegative,
-          size: 20,
-        ),
-        Gap.w4,
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  clipBehavior: Clip.antiAlias,
-                  scrollDirection: Axis.horizontal,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Oustd. balance: ${statement.checkpoint!.unpaidOfInstallments != 0 ? CalService.formatCurrency(context, transaction.amount) : ''} ${statement.checkpoint!.unpaidOfInstallments != 0 ? context.currentSettings.currency.code : ''}'
-                            .hardcoded,
-                        style: kHeader3TextStyle.copyWith(
-                            fontSize: statement.checkpoint!.unpaidOfInstallments != 0 ? 12 : 15,
-                            color: context.appTheme.backgroundNegative),
-                        maxLines: 1,
-                        overflow: TextOverflow.fade,
-                      ),
-                      statement.checkpoint!.unpaidOfInstallments != 0
-                          ? Text(
-                              'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.currentSettings.currency.code}'
-                                  .hardcoded,
-                              style:
-                                  kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.backgroundNegative),
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                            )
-                          : Gap.noGap,
-                    ],
-                  ),
-                ),
-              ),
-              const FittedBox(child: _CheckpointArrow()),
-              Text(
-                CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay).hardcoded,
-                style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
-              ),
-              Gap.w4,
-              Text(
-                context.currentSettings.currency.code.hardcoded,
-                style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  State<_List> createState() => _ListState();
 }
 
-class _DateTime extends StatelessWidget {
-  const _DateTime({this.dateTime, this.noMonth = true});
+class _ListState extends State<_List> {
+  final GlobalKey _ancestorKey = GlobalKey();
+  final GlobalKey _topKey = GlobalKey();
+  final GlobalKey _bottomKey = GlobalKey();
 
-  final DateTime? dateTime;
-  final bool noMonth;
+  Offset _lineOffset = const Offset(0, 0);
+  double _lineHeight = 0;
 
   @override
-  Widget build(BuildContext context) {
-    return dateTime != null
-        ? Container(
-            decoration: BoxDecoration(
-              color: AppColors.greyBgr(context),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            width: 25,
-            constraints: const BoxConstraints(minHeight: 18),
-            padding: const EdgeInsets.all(3),
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 14, height: 1),
-                  ),
-                  noMonth
-                      ? Gap.noGap
-                      : Text(
-                          dateTime!.getFormattedDate(hasDay: false, hasYear: false),
-                          style: kHeader3TextStyle.copyWith(
-                              color: context.appTheme.backgroundNegative, fontSize: 14, height: 1),
-                        ),
-                ],
-              ),
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.greyBorder(context),
-                borderRadius: BorderRadius.circular(1000),
-              ),
-              height: 10,
-              width: 10,
-            ),
-          );
-  }
-}
+  void initState() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        // Find RenderBox of the widget using globalKey
+        RenderBox ancestorRenderBox = _ancestorKey.currentContext?.findRenderObject() as RenderBox;
+        RenderBox topRenderBox = _topKey.currentContext?.findRenderObject() as RenderBox;
+        RenderBox bottomRenderBox = _bottomKey.currentContext?.findRenderObject() as RenderBox;
 
-class _CheckpointArrow extends StatelessWidget {
-  const _CheckpointArrow();
+        Offset topOffset = topRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
+        Offset bottomOffset = bottomRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
+
+        setState(() {
+          // translateY is padding of _Transaction widget and width of _DateTime widget
+          _lineOffset = topOffset.translate(topRenderBox.size.height / 2, 16 + 25 / 2 - 1);
+
+          _lineHeight = bottomOffset.dy - topOffset.dy;
+        });
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.centerRight,
+      key: _ancestorKey,
       children: [
-        SvgIcon(
-          AppIcons.arrowRight,
-          color: context.appTheme.backgroundNegative,
-          size: 20,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
+        Positioned(
+          top: _lineOffset.dx,
+          left: _lineOffset.dy,
           child: Container(
-            width: 15,
-            height: 1.5,
-            color: context.appTheme.backgroundNegative,
+            width: 2,
+            height: _lineHeight,
+            color: AppColors.greyBorder(context),
           ),
+        ),
+        Column(
+          children: buildList(context, widget.statement, _topKey, _bottomKey),
         ),
       ],
     );
   }
-}
 
-extension _StatementFunctions on _CreditAccountScreenState {
-  List<CreditSpending> txnsInstallment(Statement statement) {
-    return statement.installments.map((e) => e.txn).toList();
-  }
-
-  List<BaseCreditTransaction> txnsInBillingCycleBefore(Statement statement) {
-    final list = statement.transactionsInBillingCycle;
-    final result = <BaseCreditTransaction>[];
-
-    for (int i = 0; i < list.length; i++) {
-      if (!list[i].dateTime.isAfter(statement.previousStatement.dueDate)) {
-        result.add(list[i]);
-      } else {
-        break;
-      }
-    }
-    return result;
-  }
-
-  List<BaseCreditTransaction> txnsInBillingCycleAfterPreviousDueDate(Statement statement) {
-    final list = statement.transactionsInBillingCycle;
-    final result = <BaseCreditTransaction>[];
-
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].dateTime.isAfter(statement.previousStatement.dueDate)) {
-        result.add(list[i]);
-      } else {
-        continue;
-      }
-    }
-    return result;
-  }
-
-  String? interest(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.previousStatement.interest, forceWithDecimalDigits: true);
-  }
-
-  String? balanceToPay(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.previousStatement.balanceToPay, forceWithDecimalDigits: true);
-  }
-
-  DateTime nextStatementDateTime(Statement statement) =>
-      statement.startDate.copyWith(month: statement.startDate.month + 1);
-
-  String? fullPaymentAmount(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.getFullPaymentAmountAt(statement.dueDate),
-        forceWithDecimalDigits: true);
-  }
-
-  List<_InstallmentPayTransaction> buildInstallmentTransactionTile(BuildContext context, Statement statement) {
-    if (txnsInstallment(statement).isEmpty) {
-      return <_InstallmentPayTransaction>[];
-    }
-    final installments = txnsInstallment(statement);
-    final list = <_InstallmentPayTransaction>[];
-    for (int i = 0; i < installments.length; i++) {
-      list.add(_InstallmentPayTransaction(
-        transaction: installments[i],
-      ));
-    }
-    return list;
-  }
-
-  List<_Transaction> buildTransactionTile(
-      BuildContext context, List<BaseCreditTransaction> transactions, Statement statement) {
-    final list = <_Transaction>[];
-
-    DateTime temp = Calendar.minDate;
-
-    for (int i = 0; i < transactions.length; i++) {
-      BaseCreditTransaction txn = transactions[i];
-
-      DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
-
-      if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
-          txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
-          txnDateTime.isAtSameMomentAs(statement.dueDate)) {
-        list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: null));
-      } else if (!txnDateTime.isAtSameMomentAs(temp)) {
-        temp = txnDateTime;
-        list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: temp));
-      } else {
-        list.add(_Transaction(statement: statement, transaction: transactions[i], dateTime: null));
-      }
-    }
-    return list;
-  }
-
-  // TODO: Modify this to output offset
-  List<Widget> buildList(BuildContext context, Statement statement) {
+  List<Widget> buildList(
+      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     DateTime tempDateTime = Calendar.minDate;
@@ -607,42 +203,37 @@ extension _StatementFunctions on _CreditAccountScreenState {
     bool triggerAddPreviousDueDateHeader = true;
     bool triggerAddPaymentDueDateHeaderAtTheEnd = true;
 
+    if (statement.transactionsInBillingCycle.isEmpty) {
+      _addH0(list, statement, topKey);
+      _addH1(list, statement);
+    }
+
     for (int i = 0; i < statement.transactionsInBillingCycle.length; i++) {
       BaseCreditTransaction txn = statement.transactionsInBillingCycle[i];
       DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
 
       if (i == 0) {
-        list.add(
-          _Header(
-            dateTime: statement.startDate,
-            verticalPadding: 4,
-            h1: 'Billing cycle start',
-            h2: 'Carry: ${balanceToPay(context, statement)} ${context.currentSettings.currency.code} ${interest(context, statement) != '0.00' ? '+ ${interest(context, statement)} ${context.currentSettings.currency.code} interest' : ''}',
-          ),
-        );
+        _addH0(list, statement, topKey);
       }
 
       if (!txnDateTime.isBefore(tempDateTime) && triggerAddPreviousDueDateHeader) {
         triggerAddPreviousDueDateHeader = false;
-        list.add(
-          _Header(
-            dateTime: statement.previousStatement.dueDate,
-            verticalPadding: 4,
-            h1: 'Previous due date'.hardcoded,
-            h2: 'End of last grace period'.hardcoded,
-          ),
-        );
+        _addH1(list, statement);
       }
 
       if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
-          txnDateTime.isAtSameMomentAs(statement.previousStatement.dueDate)) {
+          txnDateTime.isAtSameMomentAs(statement.previousStatement.dueDate) ||
+          txnDateTime.isAtSameMomentAs(tempDateTime)) {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
-      } else if (!txnDateTime.isAtSameMomentAs(tempDateTime)) {
+      } else {
         tempDateTime = txnDateTime;
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDateTime));
-      } else {
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
       }
+    }
+
+    if (statement.transactionsInGracePeriod.isEmpty) {
+      _addH2(list, statement);
+      _addH3(list, statement, bottomKey: bottomKey);
     }
 
     for (int i = 0; i < statement.transactionsInGracePeriod.length; i++) {
@@ -650,52 +241,114 @@ extension _StatementFunctions on _CreditAccountScreenState {
       DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
 
       if (i == 0) {
-        list.add(
-          _Header(
-            dateTime: nextStatementDateTime(statement),
-            h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
-            h2: 'Begin of grace period'.hardcoded,
-          ),
-        );
+        _addH2(list, statement);
       }
 
       if (txnDateTime.isAtSameMomentAs(statement.dueDate)) {
         triggerAddPaymentDueDateHeaderAtTheEnd = false;
 
-        list.add(
-          _Header(
-            dateTime: statement.dueDate,
-            h1: 'Payment due date'.hardcoded,
-            h2: statement.previousStatement.balanceToPay > 0
-                ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
-                : 'Pay-in-full before this day for interest-free',
-          ),
-        );
+        _addH3(list, statement);
       }
 
       if (txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
-          txnDateTime.isAtSameMomentAs(statement.dueDate)) {
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
-      } else if (!txnDateTime.isAtSameMomentAs(tempDateTime)) {
+          txnDateTime.isAtSameMomentAs(statement.dueDate) ||
+          txnDateTime.isAtSameMomentAs(tempDateTime)) {
+        list.add(_Transaction(
+            key: i == statement.transactionsInGracePeriod.length - 1 &&
+                    txnDateTime.isAtSameMomentAs(statement.dueDate)
+                ? bottomKey
+                : null,
+            statement: statement,
+            transaction: txn,
+            dateTime: null));
+      } else {
         tempDateTime = txnDateTime;
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDateTime));
-      } else {
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
       }
 
-      if (i == statement.transactionsInGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
-        list.add(
-          _Header(
-            dateTime: statement.dueDate,
-            h1: 'Payment due date'.hardcoded,
-            h2: statement.previousStatement.balanceToPay > 0
-                ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
-                : 'Pay-in-full before this day for interest-free',
-          ),
-        );
+      if (i == statement.transactionsInGracePeriod.length - 1 &&
+          triggerAddPaymentDueDateHeaderAtTheEnd) {
+        _addH3(list, statement, bottomKey: bottomKey);
       }
     }
 
     return list;
   }
+
+  void _addH0(List<Widget> list, Statement statement, GlobalKey topKey) {
+    list.add(
+      _Header(
+        key: topKey,
+        dateTime: statement.startDate,
+        h1: 'Billing cycle start',
+        h2: 'Carry: ${balanceToPay(context, statement)} ${context.currentSettings.currency.code} ${interest(context, statement) != '0.00' ? '+ ${interest(context, statement)} ${context.currentSettings.currency.code} interest' : ''}',
+      ),
+    );
+  }
+
+  void _addH1(List<Widget> list, Statement statement) {
+    list.add(
+      _Header(
+        dateTime: statement.previousStatement.dueDate,
+        h1: 'Previous due date'.hardcoded,
+        h2: 'End of last grace period'.hardcoded,
+      ),
+    );
+    _addInstallments(list, statement);
+  }
+
+  void _addH2(List<Widget> list, Statement statement) {
+    list.add(
+      _Header(
+        dateTime: nextStatementDateTime(statement),
+        h1: statement.checkpoint != null
+            ? 'Statement date with checkpoint'.hardcoded
+            : 'Statement date'.hardcoded,
+        h2: 'Begin of grace period'.hardcoded,
+      ),
+    );
+  }
+
+  void _addH3(List<Widget> list, Statement statement, {GlobalKey? bottomKey}) {
+    list.add(
+      _Header(
+        key: bottomKey,
+        dateTime: statement.dueDate,
+        h1: 'Payment due date'.hardcoded,
+        h2: statement.previousStatement.balanceToPay > 0
+            ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
+            : 'Pay-in-full before this day for interest-free',
+      ),
+    );
+  }
+
+  void _addInstallments(List<Widget> list, Statement statement) {
+    list.addAll(
+      statement.installments.map((instm) => instm.txn).map(
+            (txn) => _InstallmentPayTransaction(
+              transaction: txn,
+            ),
+          ),
+    );
+  }
+}
+
+extension _StatementDetails on _ListState {
+  String? interest(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, statement.previousStatement.interest,
+        forceWithDecimalDigits: true);
+  }
+
+  String? balanceToPay(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, statement.previousStatement.balanceToPay,
+        forceWithDecimalDigits: true);
+  }
+
+  DateTime nextStatementDateTime(Statement statement) =>
+      statement.startDate.copyWith(month: statement.startDate.month + 1);
+
+  // String? fullPaymentAmount(BuildContext context, Statement statement) {
+  //   return CalService.formatCurrency(context, statement.getFullPaymentAmountAt(statement.dueDate),
+  //       forceWithDecimalDigits: true);
+  // }
 }
