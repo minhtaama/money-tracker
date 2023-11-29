@@ -38,12 +38,18 @@ class StatementWithAverageDailyBalance extends Statement {
     double paidInBillingCycle = 0;
     double paidInGracePeriod = 0;
 
+    double installmentsAmount = 0;
+
+    for (Installment inst in installments) {
+      installmentsAmount += inst.txn.paymentAmount!;
+    }
+
     //////////// TEMPORARY VARIABLES FOR THE LOOP /////////////////
     // Calculate sum of daily balance from `tCheckpointDateTime` to current Txn DateTime
     // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement._balanceAtEndDate + previousStatement.interest;
+    double tCurrentBalance = previousStatement._balanceAtEndDate + previousStatement.interest + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -102,10 +108,5 @@ class StatementWithAverageDailyBalance extends Statement {
       transactionsInGracePeriod: txnsInGracePeriod,
       apr: apr,
     );
-  }
-
-  @override
-  String toString() {
-    return '{startDate: $startDate}';
   }
 }

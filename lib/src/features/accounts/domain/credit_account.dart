@@ -57,7 +57,7 @@ extension CreditAccountMethods on CreditAccount {
   /// Return `null` if account has no transaction.
   ///
   /// Get whole `Statement` object contains the `dateTime`
-  Statement? statementAt(DateTime dateTime) {
+  Statement? statementAt(DateTime dateTime, {bool? upperGapAtDueDate}) {
     if (statementsList.isEmpty) {
       return null;
     }
@@ -77,12 +77,14 @@ extension CreditAccountMethods on CreditAccount {
       final list = [latestStatement];
 
       DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
-      while (startDate.compareTo(date) <= 0) {
-        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      DateTime dueDate = statementDay >= paymentDueDay
+          ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
+          : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-        final dueDate = statementDay >= paymentDueDay
-            ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
-            : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
+      while (upperGapAtDueDate != null && upperGapAtDueDate
+          ? dueDate.compareTo(date) <= 0
+          : startDate.compareTo(date) <= 0) {
+        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
         final previousStatement = list.last.carryToNextStatement;
 
@@ -93,7 +95,7 @@ extension CreditAccountMethods on CreditAccount {
           endDate: endDate,
           dueDate: dueDate,
           apr: apr,
-          installmentTxnsToPayCounts: const [],
+          installments: const [],
           txnsInGracePeriod: const [],
           txnsInBillingCycle: const [],
           checkpoint: null,
@@ -102,6 +104,9 @@ extension CreditAccountMethods on CreditAccount {
         list.add(statement);
 
         startDate = startDate.copyWith(month: startDate.month + 1);
+        dueDate = statementDay >= paymentDueDay
+            ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
+            : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
       }
 
       return list.last;

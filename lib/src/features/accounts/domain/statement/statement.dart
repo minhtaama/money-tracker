@@ -69,9 +69,7 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
-        ? transactionsInGracePeriod
-        : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -81,6 +79,8 @@ abstract class Statement {
     return list;
   }
 
+  double get spentInBillingCycleExcludeInstallments => _spentInBillingCycleExcludeInstallments;
+
   double get installmentsAmountToPay {
     double amount = 0;
     final installmentTransactions = installments.map((e) => e.txn).toList();
@@ -88,6 +88,19 @@ abstract class Statement {
       amount += txn.paymentAmount!;
     }
     return amount;
+  }
+
+  double get paidForThisStatement {
+    double spentInGracePeriodExcludeInstallments = 0;
+
+    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
+      if (txn is CreditSpending && !txn.hasInstallment) {
+        spentInGracePeriodExcludeInstallments += txn.amount;
+      }
+    }
+
+    return math.max(0, _paidInBillingCycle - previousStatement._balanceToPayAtEndDate) +
+        math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
   }
 
   double getFullPaymentAmountAt(DateTime dateTime) {
@@ -116,9 +129,7 @@ abstract class Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay +
-            spentInGracePeriodBeforeDateTimeExcludeInstallments -
-            _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _paidInGracePeriod;
       }
     } else {
       x = previousStatement._balanceToPayAtEndDate +
@@ -190,7 +201,7 @@ abstract class Statement {
     required DateTime endDate,
     required DateTime dueDate,
     required double apr,
-    required List<Installment> installmentTxnsToPayCounts,
+    required List<Installment> installments,
     required List<BaseCreditTransaction> txnsInBillingCycle,
     required List<BaseCreditTransaction> txnsInGracePeriod,
   }) {
@@ -202,7 +213,7 @@ abstract class Statement {
           endDate: endDate,
           dueDate: dueDate,
           apr: apr,
-          installments: installmentTxnsToPayCounts,
+          installments: installments,
           txnsInBillingCycle: txnsInBillingCycle,
           txnsInGracePeriod: txnsInGracePeriod),
     };
@@ -261,8 +272,7 @@ class PreviousStatement {
   final DateTime dueDate;
 
   factory PreviousStatement.noData() {
-    return PreviousStatement._(0, 0,
-        balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
+    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.

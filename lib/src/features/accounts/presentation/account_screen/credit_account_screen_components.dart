@@ -1,38 +1,5 @@
 part of 'credit_account_screen.dart';
 
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({super.key, required this.isPayment});
-
-  final bool isPayment;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: CardItem(
-        color: context.appTheme.isDarkTheme
-            ? context.appTheme.background3
-            : isPayment
-                ? context.appTheme.positive
-                : context.appTheme.negative,
-        isGradient: true,
-        width: double.infinity,
-        height: 100,
-        child: Text(
-          isPayment ? 'Paid' : 'Spent',
-          style: kHeader2TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.backgroundNegative
-                  : isPayment
-                      ? context.appTheme.onPositive
-                      : context.appTheme.onNegative,
-              fontSize: 20),
-        ),
-      ),
-    );
-  }
-}
-
 class _Header extends StatelessWidget {
   const _Header({super.key, this.dateTime, required this.h1, this.h2, this.verticalPadding = 10});
 
@@ -59,14 +26,12 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(
-                      fontSize: 16, color: context.appTheme.backgroundNegative),
+                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: context.appTheme.backgroundNegative),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(
-                            fontSize: 14, color: context.appTheme.backgroundNegative),
+                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: context.appTheme.backgroundNegative),
                       )
                     : Gap.noGap,
               ],
@@ -324,8 +289,8 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.currentSettings.currency.code}'
                                   .hardcoded,
-                              style: kHeader3TextStyle.copyWith(
-                                  fontSize: 12, color: context.appTheme.backgroundNegative),
+                              style:
+                                  kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.backgroundNegative),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -337,14 +302,12 @@ class _Checkpoint extends StatelessWidget {
               const FittedBox(child: _CheckpointArrow()),
               Text(
                 CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay).hardcoded,
-                style:
-                    kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
               ),
               Gap.w4,
               Text(
                 context.currentSettings.currency.code.hardcoded,
-                style:
-                    kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
               ),
             ],
           ),
@@ -376,8 +339,8 @@ class _DateTime extends StatelessWidget {
                 children: [
                   Text(
                     dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
-                    style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative, fontSize: 14, height: 1),
+                    style:
+                        kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 14, height: 1),
                   ),
                   noMonth
                       ? Gap.noGap

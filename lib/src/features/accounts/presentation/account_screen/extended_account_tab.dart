@@ -1,22 +1,15 @@
-import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
-import '../../../transactions/data/transaction_repo.dart';
 import '../../../transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
 import '../../domain/account_base.dart';
 

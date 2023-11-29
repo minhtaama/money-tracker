@@ -29,17 +29,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    DateTime? earliestPayableDate =
-        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate =
-        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
       if (statementDay >= earliestPayableDate.day) {
-        earliestStatementDate =
-            DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+        earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
       }
 
       if (statementDay < earliestPayableDate.day) {
@@ -51,8 +48,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate =
-            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -93,8 +89,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>(
-            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -189,16 +184,14 @@ extension CreditAccountExtension on Account {
 
     // Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
-      final endDate =
-          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-      final previousStatement = startDate != earliestStatementDate
-          ? statementsList.last.carryToNextStatement
-          : PreviousStatement.noData();
+      final previousStatement =
+          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
 
       Checkpoint? checkpoint;
 
@@ -261,7 +254,7 @@ extension CreditAccountExtension on Account {
         endDate: endDate,
         dueDate: dueDate,
         apr: apr,
-        installmentTxnsToPayCounts: installmentsToAddToStatement,
+        installments: installmentsToAddToStatement,
         txnsInBillingCycle: txnsInBillingCycle,
         txnsInGracePeriod: txnsInGracePeriod,
       );
@@ -289,8 +282,7 @@ extension CreditAccountExtension on Account {
 
     for (CreditSpending spending in txn.finishedInstallments) {
       if (installmentsToAddToStatement.map((e) => e.txn).contains(spending)) {
-        installmentsToAddToStatement
-            .removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
+        installmentsToAddToStatement.removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
         int? x = installmentCountsMapToMutate.remove(spending);
         print(x);
       }

@@ -1,3 +1,4 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,6 @@ import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
 
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
-import '../../../home/presentation/summary_card.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
@@ -37,20 +37,29 @@ class CreditAccountScreen extends StatefulWidget {
 }
 
 class _CreditAccountScreenState extends State<CreditAccountScreen> {
-  late final _statementDay = widget.creditAccount.statementDay;
-
   late final PageController _controller = PageController(initialPage: _initialPageIndex);
 
-  late final DateTime _today = DateTime.now().onlyYearMonthDay;
+  late final _statementDay = widget.creditAccount.statementDay;
+  late final _dueDay = widget.creditAccount.paymentDueDay;
 
-  late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
+  late final _today = DateTime.now().onlyYearMonthDay;
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _today.month + 1);
+  int get _initialStatementMonth {
+    if (_statementDay > _dueDay) {
+      return _today.day > _dueDay ? _today.month : _today.month - 1;
+    } else {
+      return _today.day > _dueDay ? _today.month + 1 : _today.month;
+    }
+  }
+
+  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+
+  late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
 
   bool _showCurrentDateButton = false;
 
   void _onPageChange(int value) {
-    _displayStatementDate = DateTime(_today.year, _today.month + (value - _initialPageIndex) + 1);
+    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     _isShowGoToCurrentDateButton();
     setState(() {});
   }
@@ -68,7 +77,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
   }
 
   void _isShowGoToCurrentDateButton() {
-    if (_displayStatementDate.year == _today.year && _displayStatementDate.month - 1 == _today.month) {
+    if (_displayStatementDate.year == _today.year && _displayStatementDate.month == _initialStatementMonth) {
       _showCurrentDateButton = false;
     } else {
       _showCurrentDateButton = true;
@@ -106,19 +115,10 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
         onPageChanged: _onPageChange,
         itemBuilder: (context, pageIndex) {
           DateTime today = DateTime(Calendar.minDate.year, pageIndex, _today.day);
-          Statement? statement = widget.creditAccount.statementAt(today);
-
+          Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
           return statement != null
               ? [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(child: _SummaryCard(isPayment: true)),
-                        Expanded(child: _SummaryCard(isPayment: false)),
-                      ],
-                    ),
-                  ),
+                  _SummaryCard(statement: statement),
                   _List(statement: statement),
                 ]
               : [
@@ -134,7 +134,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
 }
 
 class _List extends StatefulWidget {
-  const _List({super.key, required this.statement});
+  const _List({required this.statement});
 
   final Statement statement;
 
@@ -143,6 +143,8 @@ class _List extends StatefulWidget {
 }
 
 class _ListState extends State<_List> {
+  final _today = DateTime.now().onlyYearMonthDay;
+
   final GlobalKey _ancestorKey = GlobalKey();
   final GlobalKey _topKey = GlobalKey();
   final GlobalKey _bottomKey = GlobalKey();
@@ -163,7 +165,7 @@ class _ListState extends State<_List> {
         Offset bottomOffset = bottomRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
 
         setState(() {
-          // translateY is padding of _Transaction widget and width of _DateTime widget
+          // translateY is padding of _Transaction widget, width of _DateTime widget and width of the line
           _lineOffset = topOffset.translate(topRenderBox.size.height / 2, 16 + 25 / 2 - 1);
 
           _lineHeight = bottomOffset.dy - topOffset.dy;
@@ -194,18 +196,22 @@ class _ListState extends State<_List> {
     );
   }
 
-  List<Widget> buildList(
-      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
-    DateTime tempDateTime = Calendar.minDate;
+    DateTime tempDate = Calendar.minDate;
 
     bool triggerAddPreviousDueDateHeader = true;
     bool triggerAddPaymentDueDateHeaderAtTheEnd = true;
+    bool triggerAddTodayHeaderAtTheEndOfBillingCycle = true;
+    bool triggerAddTodayHeaderAtTheEndOfGracePeriod = true;
 
     if (statement.transactionsInBillingCycle.isEmpty) {
       _addH0(list, statement, topKey);
       _addH1(list, statement);
+      if (_today.isAfter(statement.previousStatement.dueDate) && _today.isBefore(nextStatementDateTime(statement))) {
+        _addHToday(list, statement);
+      }
     }
 
     for (int i = 0; i < statement.transactionsInBillingCycle.length; i++) {
@@ -216,23 +222,39 @@ class _ListState extends State<_List> {
         _addH0(list, statement, topKey);
       }
 
-      if (!txnDateTime.isBefore(tempDateTime) && triggerAddPreviousDueDateHeader) {
+      if (!txnDateTime.isBefore(tempDate) && triggerAddPreviousDueDateHeader) {
         triggerAddPreviousDueDateHeader = false;
         _addH1(list, statement);
       }
 
+      if (tempDate.isAtSameMomentAs(_today) || tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+        triggerAddTodayHeaderAtTheEndOfBillingCycle = false;
+
+        _addHToday(list, statement);
+      }
+
       if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
           txnDateTime.isAtSameMomentAs(statement.previousStatement.dueDate) ||
-          txnDateTime.isAtSameMomentAs(tempDateTime)) {
+          txnDateTime.isAtSameMomentAs(tempDate) ||
+          txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
       } else {
-        tempDateTime = txnDateTime;
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDateTime));
+        tempDate = txnDateTime;
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
+      }
+
+      if (i == statement.transactionsInBillingCycle.length - 1 &&
+          triggerAddTodayHeaderAtTheEndOfBillingCycle &&
+          _today.isBefore(nextStatementDateTime(statement))) {
+        _addHToday(list, statement);
       }
     }
 
     if (statement.transactionsInGracePeriod.isEmpty) {
       _addH2(list, statement);
+      if (_today.isAfter(nextStatementDateTime(statement)) && _today.isBefore(statement.dueDate)) {
+        _addHToday(list, statement);
+      }
       _addH3(list, statement, bottomKey: bottomKey);
     }
 
@@ -250,24 +272,35 @@ class _ListState extends State<_List> {
         _addH3(list, statement);
       }
 
+      if (tempDate.isAtSameMomentAs(_today) || tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+        triggerAddTodayHeaderAtTheEndOfGracePeriod = false;
+
+        _addHToday(list, statement);
+      }
+
       if (txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
           txnDateTime.isAtSameMomentAs(statement.dueDate) ||
-          txnDateTime.isAtSameMomentAs(tempDateTime)) {
+          txnDateTime.isAtSameMomentAs(tempDate) ||
+          txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(
-            key: i == statement.transactionsInGracePeriod.length - 1 &&
-                    txnDateTime.isAtSameMomentAs(statement.dueDate)
+            key: i == statement.transactionsInGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.dueDate)
                 ? bottomKey
                 : null,
             statement: statement,
             transaction: txn,
             dateTime: null));
       } else {
-        tempDateTime = txnDateTime;
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDateTime));
+        tempDate = txnDateTime;
+        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
       }
 
       if (i == statement.transactionsInGracePeriod.length - 1 &&
-          triggerAddPaymentDueDateHeaderAtTheEnd) {
+          triggerAddTodayHeaderAtTheEndOfGracePeriod &&
+          !_today.isAtSameMomentAs(statement.dueDate)) {
+        _addHToday(list, statement);
+      }
+
+      if (i == statement.transactionsInGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
         _addH3(list, statement, bottomKey: bottomKey);
       }
     }
@@ -281,7 +314,6 @@ class _ListState extends State<_List> {
         key: topKey,
         dateTime: statement.startDate,
         h1: 'Billing cycle start',
-        h2: 'Carry: ${balanceToPay(context, statement)} ${context.currentSettings.currency.code} ${interest(context, statement) != '0.00' ? '+ ${interest(context, statement)} ${context.currentSettings.currency.code} interest' : ''}',
       ),
     );
   }
@@ -301,9 +333,7 @@ class _ListState extends State<_List> {
     list.add(
       _Header(
         dateTime: nextStatementDateTime(statement),
-        h1: statement.checkpoint != null
-            ? 'Statement date with checkpoint'.hardcoded
-            : 'Statement date'.hardcoded,
+        h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
       ),
     );
@@ -322,6 +352,15 @@ class _ListState extends State<_List> {
     );
   }
 
+  void _addHToday(List<Widget> list, Statement statement) {
+    list.add(
+      _Header(
+        dateTime: _today,
+        h1: 'Today',
+      ),
+    );
+  }
+
   void _addInstallments(List<Widget> list, Statement statement) {
     list.addAll(
       statement.installments.map((instm) => instm.txn).map(
@@ -331,24 +370,136 @@ class _ListState extends State<_List> {
           ),
     );
   }
-}
-
-extension _StatementDetails on _ListState {
-  String? interest(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.previousStatement.interest,
-        forceWithDecimalDigits: true);
-  }
-
-  String? balanceToPay(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.previousStatement.balanceToPay,
-        forceWithDecimalDigits: true);
-  }
 
   DateTime nextStatementDateTime(Statement statement) =>
       statement.startDate.copyWith(month: statement.startDate.month + 1);
+}
 
-  // String? fullPaymentAmount(BuildContext context, Statement statement) {
-  //   return CalService.formatCurrency(context, statement.getFullPaymentAmountAt(statement.dueDate),
-  //       forceWithDecimalDigits: true);
-  // }
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({required this.statement});
+
+  final Statement statement;
+
+  Widget _buildText(BuildContext context, {String? text, String? richText}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        children: [
+          text != null
+              ? Expanded(
+                  child: Text(
+                    text,
+                    style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.isDarkTheme
+                          ? context.appTheme.backgroundNegative
+                          : context.appTheme.secondaryNegative,
+                      fontSize: 15,
+                    ),
+                  ),
+                )
+              : Gap.noGap,
+          richText != null
+              ? EasyRichText(
+                  richText,
+                  defaultStyle: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.isDarkTheme
+                        ? context.appTheme.backgroundNegative
+                        : context.appTheme.secondaryNegative,
+                    fontSize: 15,
+                  ),
+                  textAlign: TextAlign.right,
+                  patternList: [
+                    EasyRichTextPattern(
+                      targetString: '.',
+                      hasSpecialCharacters: true,
+                      style: kHeader1TextStyle.copyWith(
+                        color: context.appTheme.isDarkTheme
+                            ? context.appTheme.backgroundNegative
+                            : context.appTheme.secondaryNegative,
+                        fontSize: 15,
+                      ),
+                    ),
+                    EasyRichTextPattern(
+                      targetString: '[0-9]+',
+                      style: kHeader1TextStyle.copyWith(
+                        color: context.appTheme.isDarkTheme
+                            ? context.appTheme.backgroundNegative
+                            : context.appTheme.secondaryNegative,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                )
+              : Gap.noGap,
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+      child: CardItem(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildText(
+              context,
+              text: 'Carrying-over:',
+              richText: '${carry(context, statement)} ${context.currentSettings.currency.code}',
+            ),
+            statement.previousStatement.interest > 0
+                ? _buildText(
+                    context,
+                    text: 'Interest:',
+                    richText: '~ ${interest(context, statement)} ${context.currentSettings.currency.code}',
+                  )
+                : Gap.noGap,
+            _buildText(context,
+                text: 'Spent in billing cycle:',
+                richText: '${spent(context, statement)} ${context.currentSettings.currency.code}'),
+            _buildText(context,
+                text: 'Paid for this statement:',
+                richText: '${paid(context, statement)} ${context.currentSettings.currency.code}'),
+            _buildText(context,
+                text: 'Statement balance:',
+                richText: '${remaining(context, statement)} ${context.currentSettings.currency.code}'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+extension _StatementDetails on _SummaryCard {
+  String? interest(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, statement.previousStatement.interest, forceWithDecimalDigits: true);
+  }
+
+  String? carry(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, statement.previousStatement.balanceToPay, forceWithDecimalDigits: true);
+  }
+
+  String? spent(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(
+        context, statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay,
+        forceWithDecimalDigits: true);
+  }
+
+  String? paid(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, statement.paidForThisStatement, forceWithDecimalDigits: true);
+  }
+
+  String? remaining(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(
+        context,
+        (statement.previousStatement.interest +
+                statement.previousStatement.balanceToPay +
+                statement.spentInBillingCycleExcludeInstallments +
+                statement.installmentsAmountToPay) -
+            statement.paidForThisStatement,
+        forceWithDecimalDigits: true);
+  }
 }
