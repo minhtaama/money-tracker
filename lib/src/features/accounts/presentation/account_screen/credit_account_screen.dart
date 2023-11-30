@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen/extended_account_tab.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
@@ -114,8 +115,8 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
         itemBuilder: (context, pageIndex) {
-          DateTime today = DateTime(Calendar.minDate.year, pageIndex, _displayStatementDate.day);
-          Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
+          final today = DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
           return statement != null
               ? [
                   _SummaryCard(statement: statement),
@@ -201,7 +202,7 @@ class _ListState extends State<_List> {
 
     DateTime tempDate = Calendar.minDate;
 
-    bool triggerAddPreviousDueDateHeader = true;
+    bool triggerAddPreviousDueDateHeaderAtTheEnd = true;
     bool triggerAddPaymentDueDateHeaderAtTheEnd = true;
     bool triggerAddTodayHeaderAtTheEndOfBillingCycle = true;
     bool triggerAddTodayHeaderAtTheEndOfGracePeriod = true;
@@ -222,11 +223,6 @@ class _ListState extends State<_List> {
         _addH0(list, statement, topKey);
       }
 
-      if (!txnDateTime.isBefore(tempDate) && triggerAddPreviousDueDateHeader) {
-        triggerAddPreviousDueDateHeader = false;
-        _addH1(list, statement);
-      }
-
       if (tempDate.isAtSameMomentAs(_today) ||
           _today.isAfter(statement.previousStatement.dueDate) &&
               tempDate.isBefore(_today) &&
@@ -234,6 +230,12 @@ class _ListState extends State<_List> {
         triggerAddTodayHeaderAtTheEndOfBillingCycle = false;
 
         _addHToday(list, statement);
+      }
+
+      if (tempDate.isBefore(statement.previousStatement.dueDate) &&
+          !txnDateTime.isBefore(statement.previousStatement.dueDate)) {
+        triggerAddPreviousDueDateHeaderAtTheEnd = false;
+        _addH1(list, statement);
       }
 
       if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
@@ -244,6 +246,11 @@ class _ListState extends State<_List> {
       } else {
         tempDate = txnDateTime;
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
+      }
+
+      if (i == statement.transactionsInBillingCycle.length - 1 && triggerAddPreviousDueDateHeaderAtTheEnd) {
+        triggerAddPreviousDueDateHeaderAtTheEnd = false;
+        _addH1(list, statement);
       }
 
       if (i == statement.transactionsInBillingCycle.length - 1 &&
@@ -302,7 +309,8 @@ class _ListState extends State<_List> {
       if (i == statement.transactionsInGracePeriod.length - 1 &&
           triggerAddTodayHeaderAtTheEndOfGracePeriod &&
           !_today.isAtSameMomentAs(statement.dueDate) &&
-          _today.isAfter(statement.statementDate)) {
+          _today.isAfter(statement.statementDate) &&
+          _today.isBefore(statement.dueDate)) {
         _addHToday(list, statement);
       }
 
@@ -341,6 +349,8 @@ class _ListState extends State<_List> {
         dateTime: statement.statementDate,
         h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
+        color: context.appTheme.primary,
+        dateColor: context.appTheme.primaryNegative,
       ),
     );
   }
@@ -361,8 +371,9 @@ class _ListState extends State<_List> {
   void _addHToday(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        backgroundColor: context.appTheme.primary,
-        color: context.appTheme.primaryNegative,
+        color: context.appTheme.accent.addDark(0.1),
+        dateBgColor: context.appTheme.accent,
+        dateColor: context.appTheme.accentNegative,
         dateTime: _today,
         h1: 'Today',
       ),

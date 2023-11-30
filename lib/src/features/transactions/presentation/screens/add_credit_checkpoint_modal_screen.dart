@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/checkpoint_installments_list.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -79,6 +82,16 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
         isWrapByCard: false,
         sectionsClipping: false,
         sections: [
+          CardItem(
+            color: context.appTheme.negative,
+            child: IconWithText(
+              iconPath: AppIcons.receiptEdit,
+              text: 'NOTICE: Please add transactions has installment payment going through this checkpoint first'
+                  .hardcoded,
+              color: context.appTheme.onNegative,
+            ),
+          ),
+          Gap.h8,
           Row(
             children: [
               Text(

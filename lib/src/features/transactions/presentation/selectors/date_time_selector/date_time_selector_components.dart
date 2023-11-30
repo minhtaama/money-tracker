@@ -22,7 +22,7 @@ import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/statement/statement.dart';
 import '../../../domain/transaction_base.dart';
 
-part 'date_time_selector_for_credit_payment.dart';
+part 'date_time_selector_credit.dart';
 part 'date_time_selector_regular.dart';
 
 ////////////////////// COMPONENTS //////////////////////

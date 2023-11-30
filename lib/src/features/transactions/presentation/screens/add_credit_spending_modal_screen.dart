@@ -38,7 +38,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   String? _note;
   Category? _category;
   CategoryTag? _tag;
-  CreditAccount? _account;
+  CreditAccount? _creditAccount;
 
   String _calOutputSpendAmount = '0';
 
@@ -64,7 +64,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             tag: _tag,
             note: _note,
             category: _category!,
-            account: _account!,
+            account: _creditAccount!,
             monthsToPay: _installmentPaymentPeriod,
             paymentAmount: CalService.formatToDouble(_installmentPaymentController.text),
           );
@@ -162,8 +162,16 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: DateTimeSelector(
-                  onChanged: (DateTime value) => _dateTime = value,
+                child: CreditDateTimeFormSelector(
+                  creditAccount: _creditAccount,
+                  disableText: 'Choose credit account first'.hardcoded,
+                  initialDate: _dateTime,
+                  onChanged: (dateTime, statement) {
+                    if (dateTime != null) {
+                      _dateTime = dateTime;
+                    }
+                    setState(() {});
+                  },
                 ),
               ),
               Gap.w24,
@@ -188,7 +196,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       accountType: AccountType.credit,
                       validator: (_) => _creditAccountValidator(),
                       onChangedAccount: (newAccount) => setState(() {
-                        _account = newAccount as CreditAccount;
+                        _creditAccount = newAccount as CreditAccount;
                       }),
                     ),
                   ],
@@ -234,7 +242,7 @@ extension _Validators on _AddCreditTransactionModalScreenState {
       CalService.formatToDouble(_calOutputSpendAmount) == null ||
       CalService.formatToDouble(_calOutputSpendAmount) == 0 ||
       _category == null ||
-      _account == null;
+      _creditAccount == null;
 
   String? _calSpendingAmountValidator() {
     if (CalService.formatToDouble(_calOutputSpendAmount) == null ||
@@ -263,7 +271,7 @@ extension _Validators on _AddCreditTransactionModalScreenState {
   }
 
   String? _creditAccountValidator() {
-    if (_account == null) {
+    if (_creditAccount == null) {
       return 'Must specify for payment'.hardcoded;
     }
     return null;

@@ -1,11 +1,12 @@
 part of 'credit_account_screen.dart';
 
 class _Header extends StatelessWidget {
-  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.color, this.backgroundColor});
+  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});
 
   final DateTime? dateTime;
+  final Color? dateColor;
   final Color? color;
-  final Color? backgroundColor;
+  final Color? dateBgColor;
   final String h1;
   final String? h2;
 
@@ -18,8 +19,8 @@ class _Header extends StatelessWidget {
         children: [
           _DateTime(
             dateTime: dateTime,
-            color: color,
-            backgroundColor: backgroundColor,
+            color: dateColor,
+            backgroundColor: dateBgColor ?? color,
             noMonth: false,
           ),
           Gap.w8,
@@ -29,14 +30,13 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(
-                      fontSize: 16, color: backgroundColor ?? context.appTheme.backgroundNegative),
+                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.backgroundNegative),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
                         style: kHeader3TextStyle.copyWith(
-                            fontSize: 14, color: backgroundColor ?? context.appTheme.backgroundNegative),
+                            fontSize: 14, color: color ?? context.appTheme.backgroundNegative),
                       )
                     : Gap.noGap,
               ],

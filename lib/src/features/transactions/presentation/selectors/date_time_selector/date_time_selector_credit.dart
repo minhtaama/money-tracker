@@ -1,7 +1,7 @@
 part of 'date_time_selector_components.dart';
 
-class DateTimeSelectorForCreditPayment extends ConsumerStatefulWidget {
-  const DateTimeSelectorForCreditPayment(
+class DateTimeSelectorCredit extends ConsumerStatefulWidget {
+  const DateTimeSelectorCredit(
       {super.key, this.creditAccount, this.initialDate, required this.onChanged, this.disableText});
 
   final CreditAccount? creditAccount;
@@ -10,10 +10,10 @@ class DateTimeSelectorForCreditPayment extends ConsumerStatefulWidget {
   final String? disableText;
 
   @override
-  ConsumerState<DateTimeSelectorForCreditPayment> createState() => _DateTimeSelectorForCreditPaymentState();
+  ConsumerState<DateTimeSelectorCredit> createState() => _DateTimeSelectorCreditState();
 }
 
-class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelectorForCreditPayment> {
+class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit> {
   late DateTime? _outputDateTime = widget.initialDate;
   Statement? _outputStatement;
 
@@ -39,13 +39,23 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
   }
 
   @override
-  void didUpdateWidget(covariant DateTimeSelectorForCreditPayment oldWidget) {
+  void didUpdateWidget(covariant DateTimeSelectorCredit oldWidget) {
     if (widget.creditAccount != null) {
       _statementDay = widget.creditAccount!.statementDay;
       _paymentDueDay = widget.creditAccount!.paymentDueDay;
       _outputDateTime = widget.initialDate;
     }
     super.didUpdateWidget(oldWidget);
+  }
+
+  void _submit(DateTime dateTime) {
+    _currentMonthView = dateTime;
+
+    _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
+    _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
+
+    widget.onChanged(_outputDateTime!, _outputStatement);
+    context.pop();
   }
 
   @override
@@ -96,35 +106,39 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                               currentMonthView: _currentMonthView,
                               onActionButtonTap: (dateTime) {
                                 if (dateTime != null) {
-                                  _currentMonthView = dateTime;
-
-                                  _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
-                                  _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
-
-                                  widget.onChanged(_outputDateTime!, _outputStatement);
-                                  context.pop();
-
-                                  // if (widget.creditAccount!.canAddPaymentAt(dateTime)) {
-                                  //   _currentMonthView = dateTime;
-                                  //
-                                  //   _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
-                                  //   _outputStatement = widget.creditAccount!.statementAt(_outputDateTime!);
-                                  //
-                                  //   widget.onChanged(_outputDateTime!, _outputStatement);
-                                  //   context.pop();
-                                  // } else {
-                                  //   // TODO: Do some styling
-                                  //   _showCustomCalendarDialog(
-                                  //       context: context,
-                                  //       builder: (_, __) {
-                                  //         return const AlertDialog(
-                                  //           content: EmptyInfo(
-                                  //             infoText:
-                                  //                 'You can only add payments since the statement contains the latest payment',
-                                  //           ),
-                                  //         );
-                                  //       });
-                                  // }
+                                  if (widget.creditAccount!.isBeforeLastCheckpoint(dateTime)) {
+                                    // TODO: Do some styling
+                                    _showCustomCalendarDialog(
+                                        context: context,
+                                        builder: (_, __) {
+                                          return AlertDialog(
+                                            surfaceTintColor: Colors.transparent,
+                                            backgroundColor: context.appTheme.negative,
+                                            content: IconWithText(
+                                              color: context.appTheme.onNegative,
+                                              text: 'You can only add transaction after latest checkpoint'.hardcoded,
+                                            ),
+                                          );
+                                        });
+                                  } else if (widget.creditAccount!.isBeforeStatementHasLastPayment(dateTime)) {
+                                    // TODO: Do some styling
+                                    _showCustomCalendarDialog(
+                                        context: context,
+                                        builder: (_, __) {
+                                          return AlertDialog(
+                                            surfaceTintColor: Colors.transparent,
+                                            backgroundColor: context.appTheme.negative,
+                                            content: IconWithText(
+                                              color: context.appTheme.onNegative,
+                                              text:
+                                                  'You can only add payments since the statement contains the latest payment'
+                                                      .hardcoded,
+                                            ),
+                                          );
+                                        });
+                                  } else {
+                                    _submit(dateTime);
+                                  }
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
@@ -189,7 +203,7 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
   }
 }
 
-extension _Details on _DateTimeSelectorForCreditPaymentState {
+extension _Details on _DateTimeSelectorCreditState {
   Widget _dayBuilder(
       {required DateTime date,
       BoxDecoration? decoration,

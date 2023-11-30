@@ -43,16 +43,43 @@ extension CreditAccountMethods on CreditAccount {
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
   List<CreditCheckpoint> get checkpointTransactions => transactionsList.whereType<CreditCheckpoint>().toList();
 
-  bool canAddPaymentAt(DateTime dateTime) {
+  bool isBeforeLastCheckpoint(DateTime dateTime) {
+    CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+
+    if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool isBeforeStatementHasLastPayment(DateTime dateTime) {
     Statement statement =
         paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : statementsList.first;
 
     if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
-      return true;
-    } else {
       return false;
     }
+
+    return true;
   }
+
+  // bool canAddTransactionAt(DateTime dateTime) {
+  //   CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+  //
+  //   if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
+  //     return false;
+  //   }
+  //
+  //   Statement statement =
+  //       paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : statementsList.first;
+  //
+  //   if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
+  //     return true;
+  //   }
+  //
+  //   return false;
+  // }
 
   /// Return `null` if account has no transaction.
   ///
@@ -82,7 +109,7 @@ extension CreditAccountMethods on CreditAccount {
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
       while (upperGapAtDueDate != null && upperGapAtDueDate
-          ? dueDate.compareTo(date) <= 0
+          ? date.isAfter(list[list.length - 1].dueDate)
           : startDate.compareTo(date) <= 0) {
         final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 

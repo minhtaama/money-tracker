@@ -113,7 +113,7 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                 alignment: Alignment.center,
                 fit: StackFit.passthrough,
                 children: [
-                  DateTimeSelectorForCreditPayment(
+                  DateTimeSelectorCredit(
                     creditAccount: creditAccount,
                     disableText: disableText,
                     initialDate: initialDate,

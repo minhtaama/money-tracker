@@ -247,6 +247,11 @@ abstract class Statement {
     required this.transactionsInBillingCycle,
     required this.transactionsInGracePeriod,
   });
+
+  @override
+  String toString() {
+    return 'Statement{startDate: $startDate, dueDate: $dueDate}';
+  }
 }
 
 @immutable
