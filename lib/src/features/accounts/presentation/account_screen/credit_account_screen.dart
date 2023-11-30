@@ -114,7 +114,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
         itemBuilder: (context, pageIndex) {
-          DateTime today = DateTime(Calendar.minDate.year, pageIndex, _today.day);
+          DateTime today = DateTime(Calendar.minDate.year, pageIndex, _displayStatementDate.day);
           Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
           return statement != null
               ? [

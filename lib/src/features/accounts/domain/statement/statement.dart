@@ -284,8 +284,8 @@ class PreviousStatement {
   /// Use for checking if can add payments
   final DateTime dueDate;
 
-  factory PreviousStatement.noData() {
-    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: Calendar.minDate);
+  factory PreviousStatement.noData({required DateTime dueDate}) {
+    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: dueDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.

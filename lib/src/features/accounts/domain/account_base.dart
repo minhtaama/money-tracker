@@ -190,8 +190,12 @@ extension CreditAccountExtension on Account {
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
-      final previousStatement =
-          startDate != earliestStatementDate ? statementsList.last.carryToNextStatement : PreviousStatement.noData();
+      final previousStatement = startDate != earliestStatementDate
+          ? statementsList.last.carryToNextStatement
+          : PreviousStatement.noData(
+              dueDate: statementDay >= paymentDueDay
+                  ? startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay
+                  : startDate.copyWith(month: startDate.month, day: paymentDueDay).onlyYearMonthDay);
 
       Checkpoint? checkpoint;
 

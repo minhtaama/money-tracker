@@ -67,7 +67,7 @@ extension CreditAccountMethods on CreditAccount {
 
     // If statement is already in credit account statements list
     for (Statement statement in statementsList) {
-      if (date.compareTo(statement.startDate) >= 0 && date.compareTo(statement.dueDate) <= 0) {
+      if (date.compareTo(statement.previousStatement.dueDate) > 0 && date.compareTo(statement.dueDate) <= 0) {
         return statement;
       }
     }
