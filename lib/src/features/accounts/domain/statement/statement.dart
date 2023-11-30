@@ -38,6 +38,8 @@ abstract class Statement {
   /// if this statement is not paid in full or previous statement has a carry over amount.
   abstract final double _interest;
 
+  DateTime get statementDate => startDate.copyWith(month: startDate.month + 1);
+
   /// BillingCycle is only from [startDate] to [endDate].
   List<BaseCreditTransaction> transactionsInBillingCycleBefore(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
@@ -79,9 +81,14 @@ abstract class Statement {
     return list;
   }
 
-  double get spentInBillingCycleExcludeInstallments => _spentInBillingCycleExcludeInstallments;
+  double get spentInBillingCycleExcludeInstallments =>
+      checkpoint?.unpaidToPay ?? _spentInBillingCycleExcludeInstallments;
 
   double get installmentsAmountToPay {
+    if (checkpoint != null) {
+      return 0;
+    }
+
     double amount = 0;
     final installmentTransactions = installments.map((e) => e.txn).toList();
     for (CreditSpending txn in installmentTransactions) {
@@ -91,6 +98,7 @@ abstract class Statement {
   }
 
   double get paidForThisStatement {
+    // Included Checkpoint transaction
     double spentInGracePeriodExcludeInstallments = 0;
 
     for (BaseCreditTransaction txn in transactionsInGracePeriod) {
@@ -99,8 +107,13 @@ abstract class Statement {
       }
     }
 
-    return math.max(0, _paidInBillingCycle - previousStatement._balanceToPayAtEndDate) +
-        math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
+    if (checkpoint != null) {
+      return math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
+    } else {
+      return math.max(0,
+              _paidInBillingCycle - previousStatement._balanceToPayAtEndDate - spentInBillingCycleExcludeInstallments) +
+          math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
+    }
   }
 
   double getFullPaymentAmountAt(DateTime dateTime) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
-import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -106,9 +106,9 @@ class _ListState extends State<_List> {
             mainAxisSize: MainAxisSize.min,
             children: _installmentsList.isEmpty
                 ? [
-                    EmptyInfo(
+                    IconWithText(
                       iconPath: AppIcons.done,
-                      infoText: 'No ongoing installments in this statement',
+                      text: 'No ongoing installments in this statement',
                     )
                   ]
                 : [
@@ -118,9 +118,7 @@ class _ListState extends State<_List> {
                         ins.monthsLeft,
                         isDone: _installmentsMarkAsDone.contains(ins),
                         onMarkAsDone: (isDone) {
-                          isDone
-                              ? _installmentsMarkAsDone.add(ins)
-                              : _installmentsMarkAsDone.remove(ins);
+                          isDone ? _installmentsMarkAsDone.add(ins) : _installmentsMarkAsDone.remove(ins);
                           setState(() {
                             widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
                           });
@@ -144,16 +142,14 @@ class _ListState extends State<_List> {
             Gap.w4,
             Text(
               CalService.formatCurrency(context, _totalUnpaid),
-              style:
-                  kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+              style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             ),
             Gap.w4,
             Text(
               context.currentSettings.currency.code,
-              style:
-                  kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+              style: kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             ),
@@ -166,8 +162,7 @@ class _ListState extends State<_List> {
 }
 
 class _InstallmentDetails extends StatefulWidget {
-  const _InstallmentDetails(this.transaction, this.monthsLeft,
-      {required this.isDone, required this.onMarkAsDone});
+  const _InstallmentDetails(this.transaction, this.monthsLeft, {required this.isDone, required this.onMarkAsDone});
 
   final CreditSpending transaction;
   final int monthsLeft;
@@ -245,8 +240,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                                 ? Text(
                                     categoryTag,
                                     style: kHeader3TextStyle.copyWith(
-                                        fontSize: 11,
-                                        color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                                        fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                   )
@@ -268,16 +262,14 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                               Text(
                                 '/m'.hardcoded,
                                 style: kHeader3TextStyle.copyWith(
-                                    fontSize: 11,
-                                    color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                                    fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
                               )
                             ],
                           ),
                           Text(
                             '${widget.monthsLeft.toString()} months left',
                             style: kHeader3TextStyle.copyWith(
-                                fontSize: 11,
-                                color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                                fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
                           )
@@ -290,8 +282,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
               Gap.w8,
               RoundedIconButton(
                 iconPath: AppIcons.done,
-                iconColor:
-                    _isDone ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                iconColor: _isDone ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
                 backgroundColor: _isDone ? context.appTheme.primary : AppColors.greyBgr(context),
                 size: 27,
                 iconPadding: 2,

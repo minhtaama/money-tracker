@@ -5,14 +5,15 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-class EmptyInfo extends StatelessWidget {
-  const EmptyInfo({super.key, this.iconPath, this.infoText, this.onTap, this.iconSize, this.textSize});
+class IconWithText extends StatelessWidget {
+  const IconWithText({super.key, this.iconPath, this.text, this.onTap, this.color, this.iconSize, this.textSize});
 
   final String? iconPath;
   final double? iconSize;
-  final String? infoText;
+  final String? text;
   final double? textSize;
   final VoidCallback? onTap;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +27,11 @@ class EmptyInfo extends StatelessWidget {
           SvgIcon(
             iconPath ?? AppIcons.minus,
             size: iconSize ?? 40,
-            color: AppColors.grey(context),
+            color: color ?? AppColors.grey(context),
           ),
           Text(
-            infoText ?? '',
-            style: kHeader2TextStyle.copyWith(color: AppColors.grey(context), fontSize: textSize ?? 13),
+            text ?? '',
+            style: kHeader2TextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
             textAlign: TextAlign.center,
           ),
         ],

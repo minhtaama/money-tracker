@@ -1,22 +1,25 @@
 part of 'credit_account_screen.dart';
 
 class _Header extends StatelessWidget {
-  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.verticalPadding = 10});
+  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.color, this.backgroundColor});
 
   final DateTime? dateTime;
+  final Color? color;
+  final Color? backgroundColor;
   final String h1;
   final String? h2;
-  final double verticalPadding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16, top: verticalPadding + 4, bottom: verticalPadding),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 14, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _DateTime(
             dateTime: dateTime,
+            color: color,
+            backgroundColor: backgroundColor,
             noMonth: false,
           ),
           Gap.w8,
@@ -26,12 +29,14 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: context.appTheme.backgroundNegative),
+                  style: kHeader2TextStyle.copyWith(
+                      fontSize: 16, color: backgroundColor ?? context.appTheme.backgroundNegative),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: context.appTheme.backgroundNegative),
+                        style: kHeader3TextStyle.copyWith(
+                            fontSize: 14, color: backgroundColor ?? context.appTheme.backgroundNegative),
                       )
                     : Gap.noGap,
               ],
@@ -318,17 +323,19 @@ class _Checkpoint extends StatelessWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime({this.dateTime, this.noMonth = true});
+  const _DateTime({this.dateTime, this.backgroundColor, this.color, this.noMonth = true});
 
   final DateTime? dateTime;
   final bool noMonth;
+  final Color? backgroundColor;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return dateTime != null
         ? Container(
             decoration: BoxDecoration(
-              color: AppColors.greyBgr(context),
+              color: backgroundColor ?? AppColors.greyBgr(context),
               borderRadius: BorderRadius.circular(8),
             ),
             width: 25,
@@ -339,15 +346,15 @@ class _DateTime extends StatelessWidget {
                 children: [
                   Text(
                     dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 14, height: 1),
+                    style: kHeader2TextStyle.copyWith(
+                        color: color ?? context.appTheme.backgroundNegative, fontSize: 14, height: 1),
                   ),
                   noMonth
                       ? Gap.noGap
                       : Text(
                           dateTime!.getFormattedDate(hasDay: false, hasYear: false),
                           style: kHeader3TextStyle.copyWith(
-                              color: context.appTheme.backgroundNegative, fontSize: 14, height: 1),
+                              color: color ?? context.appTheme.backgroundNegative, fontSize: 14, height: 1),
                         ),
                 ],
               ),
@@ -357,7 +364,7 @@ class _DateTime extends StatelessWidget {
             padding: const EdgeInsets.only(left: 7.5, right: 8.5),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.greyBorder(context),
+                color: backgroundColor ?? AppColors.greyBorder(context),
                 borderRadius: BorderRadius.circular(1000),
               ),
               height: 10,

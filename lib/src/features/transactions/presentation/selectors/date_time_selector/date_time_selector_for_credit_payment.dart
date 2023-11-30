@@ -136,17 +136,17 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                 return AnimatedSize(
                                   duration: k150msDuration,
                                   child: widget.creditAccount!.earliestPayableDate == null
-                                      ? EmptyInfo(
+                                      ? IconWithText(
                                           iconPath: AppIcons.done,
-                                          infoText:
+                                          text:
                                               'This credit account currently has no credit/BNPL transaction needed to pay'
                                                   .hardcoded,
                                         )
                                       : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
                                               .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
-                                          ? EmptyInfo(
+                                          ? IconWithText(
                                               iconPath: AppIcons.done,
-                                              infoText: 'No payment is needed before this time'.hardcoded,
+                                              text: 'No payment is needed before this time'.hardcoded,
                                             )
                                           : selectedDay != null
                                               ? CreditPaymentInfo(
@@ -156,9 +156,9 @@ class _DateTimeSelectorForCreditPaymentState extends ConsumerState<DateTimeSelec
                                                     _currentMonthView = dateTime;
                                                   }),
                                                 )
-                                              : EmptyInfo(
+                                              : IconWithText(
                                                   iconPath: AppIcons.today,
-                                                  infoText:
+                                                  text:
                                                       'Select a payment day.\n Spending transaction can be paid will be displayed here'
                                                           .hardcoded,
                                                 ),

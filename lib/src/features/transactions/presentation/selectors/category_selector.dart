@@ -7,7 +7,7 @@ import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
-import '../../../../common_widgets/empty_info.dart';
+import '../../../../common_widgets/icon_with_text.dart';
 import '../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/icons.dart';
@@ -109,8 +109,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
               : Column(
                   children: [
                     Gap.h8,
-                    EmptyInfo(
-                        infoText:
+                    IconWithText(
+                        text:
                             'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
                                 .hardcoded,
                         textSize: 14,

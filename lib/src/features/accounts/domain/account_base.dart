@@ -224,8 +224,6 @@ extension CreditAccountExtension on Account {
               installmentCountsMapToMutate: installmentCountsMapToMutate,
             );
 
-            print('a');
-
             checkpoint = Checkpoint(txn.amount, x);
           }
 
@@ -283,8 +281,7 @@ extension CreditAccountExtension on Account {
     for (CreditSpending spending in txn.finishedInstallments) {
       if (installmentsToAddToStatement.map((e) => e.txn).contains(spending)) {
         installmentsToAddToStatement.removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
-        int? x = installmentCountsMapToMutate.remove(spending);
-        print(x);
+        installmentCountsMapToMutate.remove(spending);
       }
     }
 

@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
-import 'package:money_tracker_app/src/common_widgets/empty_info.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen/extended_account_tab.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -122,9 +122,9 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
                   _List(statement: statement),
                 ]
               : [
-                  EmptyInfo(
+                  IconWithText(
                     iconPath: AppIcons.done,
-                    infoText: 'No transactions has made before this day'.hardcoded,
+                    text: 'No transactions has made before this day'.hardcoded,
                   ),
                 ];
         },
@@ -209,7 +209,7 @@ class _ListState extends State<_List> {
     if (statement.transactionsInBillingCycle.isEmpty) {
       _addH0(list, statement, topKey);
       _addH1(list, statement);
-      if (_today.isAfter(statement.previousStatement.dueDate) && _today.isBefore(nextStatementDateTime(statement))) {
+      if (_today.isAfter(statement.previousStatement.dueDate) && _today.isBefore(statement.statementDate)) {
         _addHToday(list, statement);
       }
     }
@@ -227,7 +227,10 @@ class _ListState extends State<_List> {
         _addH1(list, statement);
       }
 
-      if (tempDate.isAtSameMomentAs(_today) || tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+      if (tempDate.isAtSameMomentAs(_today) ||
+          _today.isAfter(statement.previousStatement.dueDate) &&
+              tempDate.isBefore(_today) &&
+              !txnDateTime.isBefore(_today)) {
         triggerAddTodayHeaderAtTheEndOfBillingCycle = false;
 
         _addHToday(list, statement);
@@ -245,14 +248,15 @@ class _ListState extends State<_List> {
 
       if (i == statement.transactionsInBillingCycle.length - 1 &&
           triggerAddTodayHeaderAtTheEndOfBillingCycle &&
-          _today.isBefore(nextStatementDateTime(statement))) {
+          _today.isBefore(statement.statementDate) &&
+          _today.isAfter(statement.previousStatement.dueDate)) {
         _addHToday(list, statement);
       }
     }
 
     if (statement.transactionsInGracePeriod.isEmpty) {
       _addH2(list, statement);
-      if (_today.isAfter(nextStatementDateTime(statement)) && _today.isBefore(statement.dueDate)) {
+      if (_today.isAfter(statement.statementDate) && _today.isBefore(statement.dueDate)) {
         _addHToday(list, statement);
       }
       _addH3(list, statement, bottomKey: bottomKey);
@@ -272,13 +276,14 @@ class _ListState extends State<_List> {
         _addH3(list, statement);
       }
 
-      if (tempDate.isAtSameMomentAs(_today) || tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+      if (tempDate.isAtSameMomentAs(_today) ||
+          _today.isAfter(statement.statementDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
         triggerAddTodayHeaderAtTheEndOfGracePeriod = false;
 
         _addHToday(list, statement);
       }
 
-      if (txnDateTime.isAtSameMomentAs(nextStatementDateTime(statement)) ||
+      if (txnDateTime.isAtSameMomentAs(statement.statementDate) ||
           txnDateTime.isAtSameMomentAs(statement.dueDate) ||
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
@@ -296,7 +301,8 @@ class _ListState extends State<_List> {
 
       if (i == statement.transactionsInGracePeriod.length - 1 &&
           triggerAddTodayHeaderAtTheEndOfGracePeriod &&
-          !_today.isAtSameMomentAs(statement.dueDate)) {
+          !_today.isAtSameMomentAs(statement.dueDate) &&
+          _today.isAfter(statement.statementDate)) {
         _addHToday(list, statement);
       }
 
@@ -332,7 +338,7 @@ class _ListState extends State<_List> {
   void _addH2(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        dateTime: nextStatementDateTime(statement),
+        dateTime: statement.statementDate,
         h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
       ),
@@ -355,6 +361,8 @@ class _ListState extends State<_List> {
   void _addHToday(List<Widget> list, Statement statement) {
     list.add(
       _Header(
+        backgroundColor: context.appTheme.primary,
+        color: context.appTheme.primaryNegative,
         dateTime: _today,
         h1: 'Today',
       ),
@@ -370,9 +378,6 @@ class _ListState extends State<_List> {
           ),
     );
   }
-
-  DateTime nextStatementDateTime(Statement statement) =>
-      statement.startDate.copyWith(month: statement.startDate.month + 1);
 }
 
 class _SummaryCard extends StatelessWidget {
@@ -380,7 +385,7 @@ class _SummaryCard extends StatelessWidget {
 
   final Statement statement;
 
-  Widget _buildText(BuildContext context, {String? text, String? richText}) {
+  Widget _buildText(BuildContext context, {String? text, String? richText, int color = 0}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -402,9 +407,13 @@ class _SummaryCard extends StatelessWidget {
               ? EasyRichText(
                   richText,
                   defaultStyle: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.isDarkTheme
-                        ? context.appTheme.backgroundNegative
-                        : context.appTheme.secondaryNegative,
+                    color: color < 0
+                        ? context.appTheme.negative
+                        : color > 0
+                            ? context.appTheme.positive
+                            : context.appTheme.isDarkTheme
+                                ? context.appTheme.backgroundNegative
+                                : context.appTheme.secondaryNegative,
                     fontSize: 15,
                   ),
                   textAlign: TextAlign.right,
@@ -413,18 +422,40 @@ class _SummaryCard extends StatelessWidget {
                       targetString: '.',
                       hasSpecialCharacters: true,
                       style: kHeader1TextStyle.copyWith(
-                        color: context.appTheme.isDarkTheme
-                            ? context.appTheme.backgroundNegative
-                            : context.appTheme.secondaryNegative,
+                        color: color < 0
+                            ? context.appTheme.negative
+                            : color > 0
+                                ? context.appTheme.positive
+                                : context.appTheme.isDarkTheme
+                                    ? context.appTheme.backgroundNegative
+                                    : context.appTheme.secondaryNegative,
+                        fontSize: 15,
+                      ),
+                    ),
+                    EasyRichTextPattern(
+                      targetString: ',',
+                      hasSpecialCharacters: true,
+                      style: kHeader1TextStyle.copyWith(
+                        color: color < 0
+                            ? context.appTheme.negative
+                            : color > 0
+                                ? context.appTheme.positive
+                                : context.appTheme.isDarkTheme
+                                    ? context.appTheme.backgroundNegative
+                                    : context.appTheme.secondaryNegative,
                         fontSize: 15,
                       ),
                     ),
                     EasyRichTextPattern(
                       targetString: '[0-9]+',
                       style: kHeader1TextStyle.copyWith(
-                        color: context.appTheme.isDarkTheme
-                            ? context.appTheme.backgroundNegative
-                            : context.appTheme.secondaryNegative,
+                        color: color < 0
+                            ? context.appTheme.negative
+                            : color > 0
+                                ? context.appTheme.positive
+                                : context.appTheme.isDarkTheme
+                                    ? context.appTheme.backgroundNegative
+                                    : context.appTheme.secondaryNegative,
                         fontSize: 15,
                       ),
                     ),
@@ -442,64 +473,109 @@ class _SummaryCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
       child: CardItem(
         width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildText(
-              context,
-              text: 'Carrying-over:',
-              richText: '${carry(context, statement)} ${context.currentSettings.currency.code}',
-            ),
-            statement.previousStatement.interest > 0
-                ? _buildText(
+        child: statement.checkpoint == null
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildText(
                     context,
-                    text: 'Interest:',
-                    richText: '~ ${interest(context, statement)} ${context.currentSettings.currency.code}',
-                  )
-                : Gap.noGap,
-            _buildText(context,
-                text: 'Spent in billing cycle:',
-                richText: '${spent(context, statement)} ${context.currentSettings.currency.code}'),
-            _buildText(context,
-                text: 'Paid for this statement:',
-                richText: '${paid(context, statement)} ${context.currentSettings.currency.code}'),
-            _buildText(context,
-                text: 'Statement balance:',
-                richText: '${remaining(context, statement)} ${context.currentSettings.currency.code}'),
-          ],
-        ),
+                    text: 'Carrying-over:',
+                    richText: '${carryString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: carry <= 0 ? 0 : -1,
+                  ),
+                  statement.previousStatement.interest > 0
+                      ? _buildText(
+                          context,
+                          text: 'Interest:',
+                          richText: '~ ${interestString(context, statement)} ${context.currentSettings.currency.code}',
+                          color: interest <= 0 ? 0 : -1,
+                        )
+                      : Gap.noGap,
+                  _buildText(
+                    context,
+                    text: 'Spent in billing cycle:',
+                    richText: '${spentString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: spent <= 0 ? 0 : -1,
+                  ),
+                  _buildText(
+                    context,
+                    text: 'Paid for this statement:',
+                    richText: '${paidString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: paid <= 0 ? 0 : 1,
+                  ),
+                  Gap.divider(context, indent: 0),
+                  _buildText(
+                    context,
+                    text: 'Statement balance:',
+                    richText: '${remainingString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: remaining <= 0 ? 0 : -1,
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  IconWithText(
+                    iconPath: AppIcons.statementCheckpoint,
+                    iconSize: 30,
+                    text: 'This statement has checkpoint',
+                  ),
+                  Gap.divider(context, indent: 0),
+                  _buildText(
+                    context,
+                    text: 'Spent at checkpoint:',
+                    richText: '${spentString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: spent <= 0 ? 0 : -1,
+                  ),
+                  _buildText(
+                    context,
+                    text: 'Paid in grace period:',
+                    richText: '${paidString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: paid <= 0 ? 0 : 1,
+                  ),
+                  Gap.divider(context, indent: 0),
+                  _buildText(
+                    context,
+                    text: 'Statement balance:',
+                    richText: '${remainingString(context, statement)} ${context.currentSettings.currency.code}',
+                    color: remaining <= 0 ? 0 : -1,
+                  ),
+                ],
+              ),
       ),
     );
   }
 }
 
 extension _StatementDetails on _SummaryCard {
-  String? interest(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.previousStatement.interest, forceWithDecimalDigits: true);
+  double get interest => statement.previousStatement.interest;
+  double get carry => statement.previousStatement.balanceToPay;
+  double get spent => statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
+  double get paid => statement.paidForThisStatement;
+  double get remaining => statement.checkpoint == null
+      ? (statement.previousStatement.interest +
+              statement.previousStatement.balanceToPay +
+              statement.spentInBillingCycleExcludeInstallments +
+              statement.installmentsAmountToPay) -
+          statement.paidForThisStatement
+      : statement.spentInBillingCycleExcludeInstallments - statement.paidForThisStatement;
+
+  String? interestString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, interest, forceWithDecimalDigits: true);
   }
 
-  String? carry(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.previousStatement.balanceToPay, forceWithDecimalDigits: true);
+  String? carryString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, carry, forceWithDecimalDigits: true);
   }
 
-  String? spent(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(
-        context, statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay,
-        forceWithDecimalDigits: true);
+  String? spentString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, spent, forceWithDecimalDigits: true);
   }
 
-  String? paid(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, statement.paidForThisStatement, forceWithDecimalDigits: true);
+  String? paidString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, paid, forceWithDecimalDigits: true);
   }
 
-  String? remaining(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(
-        context,
-        (statement.previousStatement.interest +
-                statement.previousStatement.balanceToPay +
-                statement.spentInBillingCycleExcludeInstallments +
-                statement.installmentsAmountToPay) -
-            statement.paidForThisStatement,
-        forceWithDecimalDigits: true);
+  String? remainingString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, remaining, forceWithDecimalDigits: true);
   }
 }
