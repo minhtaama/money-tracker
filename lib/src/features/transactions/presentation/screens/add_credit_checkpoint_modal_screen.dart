@@ -86,7 +86,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             color: context.appTheme.negative,
             child: IconWithText(
               iconPath: AppIcons.receiptEdit,
-              text: 'NOTICE: Please add transactions has installment payment going through this checkpoint first'
+              text: 'NOTE: Add [transactions has installment payment going through this checkpoint] first, if any.'
                   .hardcoded,
               color: context.appTheme.onNegative,
             ),

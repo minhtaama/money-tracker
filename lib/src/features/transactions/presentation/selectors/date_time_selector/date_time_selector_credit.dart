@@ -2,9 +2,15 @@ part of 'date_time_selector_components.dart';
 
 class DateTimeSelectorCredit extends ConsumerStatefulWidget {
   const DateTimeSelectorCredit(
-      {super.key, this.creditAccount, this.initialDate, required this.onChanged, this.disableText});
+      {super.key,
+      this.creditAccount,
+      this.initialDate,
+      required this.onChanged,
+      this.isForPayment = true,
+      this.disableText});
 
   final CreditAccount? creditAccount;
+  final bool isForPayment;
   final DateTime? initialDate;
   final Function(DateTime, Statement?) onChanged;
   final String? disableText;
@@ -98,8 +104,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                             return _CustomCalendarDialog(
                               config: _customConfig(
                                 context,
-                                firstDate: _earliestMonthViewable,
-                                selectableDayPredicate: _selectableDayPredicate,
+                                firstDate: widget.isForPayment ? _earliestMonthViewable : null,
+                                selectableDayPredicate: widget.isForPayment ? _selectableDayPredicate : null,
                                 dayBuilder: _dayBuilder,
                               ),
                               currentDay: _outputDateTime,
@@ -131,7 +137,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                             content: IconWithText(
                                               color: context.appTheme.onNegative,
                                               text:
-                                                  'You can only add payments since the statement contains the latest payment'
+                                                  'You can only add transactions since the statement contains the latest payment'
                                                       .hardcoded,
                                             ),
                                           );
@@ -160,11 +166,12 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                               .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
                                           ? IconWithText(
                                               iconPath: AppIcons.done,
-                                              text: 'No payment is needed before this time'.hardcoded,
+                                              text: 'No transactions before this time'.hardcoded,
                                             )
                                           : selectedDay != null
-                                              ? CreditPaymentInfo(
+                                              ? CreditInfo(
                                                   chosenDateTime: selectedDay,
+                                                  isForPayment: widget.isForPayment,
                                                   statement: widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
@@ -215,7 +222,7 @@ extension _Details on _DateTimeSelectorCreditState {
         ? AppColors.greyBgr(context)
         : isSelected != null && isSelected
             ? context.appTheme.primaryNegative
-            : context.appTheme.backgroundNegative;
+            : context.appTheme.backgroundNegative.withOpacity(_canAddTransaction(date) ? 1 : 0.33);
 
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
@@ -281,6 +288,15 @@ extension _Details on _DateTimeSelectorCreditState {
 
     return DateTime(
         widget.creditAccount!.earliestPayableDate!.year, widget.creditAccount!.earliestPayableDate!.month - 1);
+  }
+
+  bool _canAddTransaction(DateTime dateTime) {
+    if (widget.creditAccount == null) {
+      throw ErrorDescription('Must specify a credit account first');
+    }
+
+    return !widget.creditAccount!.isBeforeLastCheckpoint(dateTime) &&
+        !widget.creditAccount!.isBeforeStatementHasLastPayment(dateTime);
   }
 
   bool _hasSpendingTransaction(DateTime dateTime) {

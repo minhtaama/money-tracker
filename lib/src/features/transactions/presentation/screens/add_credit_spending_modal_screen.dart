@@ -164,6 +164,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               Expanded(
                 child: CreditDateTimeFormSelector(
                   creditAccount: _creditAccount,
+                  isForPayment: false,
                   disableText: 'Choose credit account first'.hardcoded,
                   initialDate: _dateTime,
                   onChanged: (dateTime, statement) {

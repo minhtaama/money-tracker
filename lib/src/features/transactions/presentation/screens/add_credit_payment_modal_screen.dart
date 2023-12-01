@@ -89,6 +89,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   creditAccount: _creditAccount,
                   disableText: 'Choose credit account first'.hardcoded,
                   initialDate: _dateTime,
+                  isForPayment: true,
                   onChanged: (dateTime, statement) {
                     if (dateTime != null) {
                       _dateTime = dateTime;
@@ -142,7 +143,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             hidden: _hidePayment,
             child: Column(
               children: [
-                CreditPaymentInfo(
+                CreditInfo(
+                  isForPayment: true,
                   chosenDateTime: _dateTime?.onlyYearMonthDay,
                   noBorder: false,
                   statement: _statement,

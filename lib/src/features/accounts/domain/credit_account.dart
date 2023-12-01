@@ -64,23 +64,6 @@ extension CreditAccountMethods on CreditAccount {
     return true;
   }
 
-  // bool canAddTransactionAt(DateTime dateTime) {
-  //   CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
-  //
-  //   if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
-  //     return false;
-  //   }
-  //
-  //   Statement statement =
-  //       paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : statementsList.first;
-  //
-  //   if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
-  //     return true;
-  //   }
-  //
-  //   return false;
-  // }
-
   /// Return `null` if account has no transaction.
   ///
   /// Get whole `Statement` object contains the `dateTime`

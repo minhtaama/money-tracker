@@ -98,16 +98,14 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
     super.key,
     CreditAccount? creditAccount,
     required Function(DateTime?, Statement?) onChanged,
-    FormFieldSetter<DateTime>? onSaved,
-    FormFieldValidator<DateTime>? validator,
+    super.onSaved,
+    super.validator,
     DateTime? initialDate,
-    AutovalidateMode? autovalidateMode = AutovalidateMode.onUserInteraction,
+    bool isForPayment = false,
+    super.autovalidateMode = AutovalidateMode.onUserInteraction,
     String? disableText,
   }) : super(
-            onSaved: onSaved,
-            validator: validator,
             initialValue: initialDate,
-            autovalidateMode: autovalidateMode,
             builder: (FormFieldState<DateTime?> state) {
               return Stack(
                 alignment: Alignment.center,
@@ -117,6 +115,7 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                     creditAccount: creditAccount,
                     disableText: disableText,
                     initialDate: initialDate,
+                    isForPayment: isForPayment,
                     onChanged: (newDateTime, newStatement) {
                       state.didChange(newDateTime);
                       onChanged(newDateTime, newStatement);
