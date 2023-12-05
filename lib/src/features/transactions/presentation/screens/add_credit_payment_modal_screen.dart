@@ -33,43 +33,17 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   final _controller = TextEditingController();
   Statement? _statement;
 
-  ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
+  ////////////////////// VALUE OUTPUT TO DATABASE /////////////////////////
   DateTime? _dateTime;
-
   String? _note;
+
   CreditAccount? _creditAccount;
   RegularAccount? _fromRegularAccount;
 
   double? get _outputAmount => CalService.formatToDouble(_calOutputFormattedAmount);
+  CreditPaymentType _type = CreditPaymentType.underMinimum;
+  double? _adjustedBalance;
   ///////////////////////////////////////////////////////////////////////
-
-  String get _calOutputFormattedAmount => _controller.text;
-
-  double get _fullPaymentAmount =>
-      _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
-
-  String _fullPaymentFormattedAmount(BuildContext context) =>
-      CalService.formatCurrency(context, _fullPaymentAmount, forceWithDecimalDigits: true);
-
-  bool get _hidePayment => _statement == null;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void _submit() {
-    // By validating, no important value can be null
-    if (_formKey.currentState!.validate()) {
-      ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
-          dateTime: _dateTime!,
-          amount: _outputAmount!,
-          account: _creditAccount!,
-          fromAccount: _fromRegularAccount!,
-          note: _note);
-      context.pop();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,6 +226,34 @@ class _PaymentAmountTip extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+extension _FunctionsAndGetters on _AddCreditPaymentModalScreenState {
+  bool get _hidePayment => _statement == null;
+
+  String get _calOutputFormattedAmount => _controller.text;
+
+  double get _fullPaymentAmount =>
+      _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
+
+  String _fullPaymentFormattedAmount(BuildContext context) =>
+      CalService.formatCurrency(context, _fullPaymentAmount, forceWithDecimalDigits: true);
+
+  void _submit() {
+    // By validating, no important value can be null
+    if (_formKey.currentState!.validate()) {
+      ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
+            dateTime: _dateTime!,
+            amount: _outputAmount!,
+            account: _creditAccount!,
+            fromAccount: _fromRegularAccount!,
+            note: _note,
+            type: _type,
+            adjustedBalance: _adjustedBalance,
+          );
+      context.pop();
+    }
   }
 }
 

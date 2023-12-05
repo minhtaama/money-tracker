@@ -385,6 +385,7 @@ class TransactionDb extends _TransactionDb
     bool isInitialTransaction = false,
     AccountDb? transferAccount,
     TransferFeeDb? transferFee,
+    CreditInstallmentDetailsDb? creditInstallmentDetails,
     CreditPaymentDetailsDb? creditPaymentDetails,
     Iterable<TransactionDb> creditCheckpointFinishedInstallments = const [],
   }) {
@@ -404,6 +405,8 @@ class TransactionDb extends _TransactionDb
     RealmObjectBase.set(this, 'isInitialTransaction', isInitialTransaction);
     RealmObjectBase.set(this, 'transferAccount', transferAccount);
     RealmObjectBase.set(this, 'transferFee', transferFee);
+    RealmObjectBase.set(
+        this, 'creditInstallmentDetails', creditInstallmentDetails);
     RealmObjectBase.set(this, 'creditPaymentDetails', creditPaymentDetails);
     RealmObjectBase.set<RealmList<TransactionDb>>(
         this,
@@ -482,6 +485,14 @@ class TransactionDb extends _TransactionDb
       RealmObjectBase.set(this, 'transferFee', value);
 
   @override
+  CreditInstallmentDetailsDb? get creditInstallmentDetails =>
+      RealmObjectBase.get<CreditInstallmentDetailsDb>(
+          this, 'creditInstallmentDetails') as CreditInstallmentDetailsDb?;
+  @override
+  set creditInstallmentDetails(covariant CreditInstallmentDetailsDb? value) =>
+      RealmObjectBase.set(this, 'creditInstallmentDetails', value);
+
+  @override
   CreditPaymentDetailsDb? get creditPaymentDetails =>
       RealmObjectBase.get<CreditPaymentDetailsDb>(this, 'creditPaymentDetails')
           as CreditPaymentDetailsDb?;
@@ -529,6 +540,8 @@ class TransactionDb extends _TransactionDb
           optional: true, linkTarget: 'AccountDb'),
       SchemaProperty('transferFee', RealmPropertyType.object,
           optional: true, linkTarget: 'TransferFeeDb'),
+      SchemaProperty('creditInstallmentDetails', RealmPropertyType.object,
+          optional: true, linkTarget: 'CreditInstallmentDetailsDb'),
       SchemaProperty('creditPaymentDetails', RealmPropertyType.object,
           optional: true, linkTarget: 'CreditPaymentDetailsDb'),
       SchemaProperty(
@@ -592,9 +605,9 @@ class TransferFeeDb extends _TransferFeeDb
 }
 
 // ignore_for_file: type=lint
-class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
+class CreditInstallmentDetailsDb extends _CreditInstallmentDetailsDb
     with RealmEntity, RealmObjectBase, EmbeddedObject {
-  CreditPaymentDetailsDb({
+  CreditInstallmentDetailsDb({
     int? monthsToPay,
     double? paymentAmount,
   }) {
@@ -602,7 +615,7 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
     RealmObjectBase.set(this, 'paymentAmount', paymentAmount);
   }
 
-  CreditPaymentDetailsDb._();
+  CreditInstallmentDetailsDb._();
 
   @override
   int? get monthsToPay => RealmObjectBase.get<int>(this, 'monthsToPay') as int?;
@@ -618,6 +631,58 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
       RealmObjectBase.set(this, 'paymentAmount', value);
 
   @override
+  Stream<RealmObjectChanges<CreditInstallmentDetailsDb>> get changes =>
+      RealmObjectBase.getChanges<CreditInstallmentDetailsDb>(this);
+
+  @override
+  CreditInstallmentDetailsDb freeze() =>
+      RealmObjectBase.freezeObject<CreditInstallmentDetailsDb>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(CreditInstallmentDetailsDb._);
+    return const SchemaObject(ObjectType.embeddedObject,
+        CreditInstallmentDetailsDb, 'CreditInstallmentDetailsDb', [
+      SchemaProperty('monthsToPay', RealmPropertyType.int, optional: true),
+      SchemaProperty('paymentAmount', RealmPropertyType.double, optional: true),
+    ]);
+  }
+}
+
+// ignore_for_file: type=lint
+class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
+    with RealmEntity, RealmObjectBase, EmbeddedObject {
+  static var _defaultsSet = false;
+
+  CreditPaymentDetailsDb({
+    int paymentType = 0,
+    double? adjustedBalance,
+  }) {
+    if (!_defaultsSet) {
+      _defaultsSet = RealmObjectBase.setDefaults<CreditPaymentDetailsDb>({
+        'paymentType': 0,
+      });
+    }
+    RealmObjectBase.set(this, 'paymentType', paymentType);
+    RealmObjectBase.set(this, 'adjustedBalance', adjustedBalance);
+  }
+
+  CreditPaymentDetailsDb._();
+
+  @override
+  int get paymentType => RealmObjectBase.get<int>(this, 'paymentType') as int;
+  @override
+  set paymentType(int value) => RealmObjectBase.set(this, 'paymentType', value);
+
+  @override
+  double? get adjustedBalance =>
+      RealmObjectBase.get<double>(this, 'adjustedBalance') as double?;
+  @override
+  set adjustedBalance(double? value) =>
+      RealmObjectBase.set(this, 'adjustedBalance', value);
+
+  @override
   Stream<RealmObjectChanges<CreditPaymentDetailsDb>> get changes =>
       RealmObjectBase.getChanges<CreditPaymentDetailsDb>(this);
 
@@ -631,8 +696,9 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
     RealmObjectBase.registerFactory(CreditPaymentDetailsDb._);
     return const SchemaObject(ObjectType.embeddedObject, CreditPaymentDetailsDb,
         'CreditPaymentDetailsDb', [
-      SchemaProperty('monthsToPay', RealmPropertyType.int, optional: true),
-      SchemaProperty('paymentAmount', RealmPropertyType.double, optional: true),
+      SchemaProperty('paymentType', RealmPropertyType.int),
+      SchemaProperty('adjustedBalance', RealmPropertyType.double,
+          optional: true),
     ]);
   }
 }

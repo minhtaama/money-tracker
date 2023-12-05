@@ -43,7 +43,7 @@ class TransactionsList extends StatelessWidget {
                       child: switch (transaction) {
                         Transfer() =>
                           _TransferDetails(transaction: transaction, currencyCode: currencyCode),
-                        BaseTransactionWithCategory() =>
+                        IBaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditPayment() =>
                           _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
@@ -56,8 +56,8 @@ class TransactionsList extends StatelessWidget {
                   ],
                 ),
                 transaction.note != null ||
-                        transaction is BaseTransactionWithCategory &&
-                            (transaction as BaseTransactionWithCategory).categoryTag != null
+                        transaction is IBaseTransactionWithCategory &&
+                            (transaction as IBaseTransactionWithCategory).categoryTag != null
                     ? TxnNote(transaction: transaction)
                     : Gap.noGap,
               ],
@@ -83,9 +83,9 @@ class _WithCategoryDetails extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            TxnCategoryIcon(transaction: transaction as BaseTransactionWithCategory),
+            TxnCategoryIcon(transaction: transaction as IBaseTransactionWithCategory),
             Gap.w4,
-            Expanded(child: TxnCategoryName(transaction: transaction as BaseTransactionWithCategory)),
+            Expanded(child: TxnCategoryName(transaction: transaction as IBaseTransactionWithCategory)),
           ],
         ),
         IntrinsicWidth(

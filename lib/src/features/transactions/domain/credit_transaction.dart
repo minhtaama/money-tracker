@@ -6,7 +6,7 @@ sealed class BaseCreditTransaction extends BaseTransaction {
 }
 
 @immutable
-class CreditSpending extends BaseCreditTransaction implements BaseTransactionWithCategory {
+class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWithCategory {
   @override
   final Category? category;
 
@@ -52,6 +52,10 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
   final RegularAccount? transferAccount;
 
+  final CreditPaymentType type;
+
+  final double? adjustedBalance;
+
   const CreditPayment._(
     super._databaseObject,
     super.dateTime,
@@ -59,12 +63,12 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.note,
     super.account, {
     required this.transferAccount,
+    required this.type,
+    required this.adjustedBalance,
   });
 }
 
 class CreditCheckpoint extends BaseCreditTransaction {
-  // TODO: Continue here, modify this to let user choose which installments keep and which is finished
-
   final List<CreditSpending> finishedInstallments;
 
   const CreditCheckpoint._(

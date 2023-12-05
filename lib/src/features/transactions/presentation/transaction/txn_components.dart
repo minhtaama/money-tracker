@@ -94,7 +94,7 @@ class TxnInstallmentIcon extends StatelessWidget {
 class TxnCategoryIcon extends StatelessWidget {
   const TxnCategoryIcon({super.key, required this.transaction, this.color});
 
-  final BaseTransactionWithCategory transaction;
+  final IBaseTransactionWithCategory transaction;
   final Color? color;
 
   String get _iconPath {
@@ -120,7 +120,7 @@ class TxnCategoryIcon extends StatelessWidget {
 class TxnCategoryName extends StatelessWidget {
   const TxnCategoryName({super.key, required this.transaction, this.fontSize});
 
-  final BaseTransactionWithCategory transaction;
+  final IBaseTransactionWithCategory transaction;
   final double? fontSize;
 
   String get _name {
@@ -197,7 +197,8 @@ class TxnAccountName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       transaction.account!.name,
-      style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
+      style: kHeader3TextStyle.copyWith(
+          color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -271,16 +272,18 @@ class TxnAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          CalService.formatCurrency(
-              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+          CalService.formatCurrency(context,
+              showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader2TextStyle.copyWith(
+              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader4TextStyle.copyWith(
+              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );
@@ -295,9 +298,9 @@ class TxnNote extends StatelessWidget {
   String? get _categoryTag {
     final txn = transaction;
     switch (txn) {
-      case BaseTransactionWithCategory():
-        return (txn as BaseTransactionWithCategory).categoryTag != null
-            ? '# ${(txn as BaseTransactionWithCategory).categoryTag!.name}'
+      case IBaseTransactionWithCategory():
+        return (txn as IBaseTransactionWithCategory).categoryTag != null
+            ? '# ${(txn as IBaseTransactionWithCategory).categoryTag!.name}'
             : null;
       case Transfer() || CreditPayment() || CreditCheckpoint():
         return null;
@@ -309,14 +312,16 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(
+            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius:
+              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,7 +359,12 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1});
+      {super.key,
+      this.height = 27,
+      this.width = 20,
+      this.adjustY = 1,
+      this.strokeWidth = 1,
+      this.opacity = 1});
 
   final double height;
   final double adjustY;
@@ -369,7 +379,8 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity,
+              height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
@@ -443,7 +454,7 @@ Color _color(BuildContext context, BaseTransaction transaction) {
   };
 }
 
-bool _isInitial(BaseTransactionWithCategory transaction) {
+bool _isInitial(IBaseTransactionWithCategory transaction) {
   if (transaction is Income && transaction.isInitialTransaction) {
     return true;
   }

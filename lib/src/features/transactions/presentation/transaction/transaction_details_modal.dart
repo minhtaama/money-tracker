@@ -67,12 +67,12 @@ class TransactionDetails extends ConsumerWidget {
                 children: [
                   _AccountCard(model: transaction.account!),
                   switch (transaction) {
-                    BaseTransactionWithCategory() =>
+                    IBaseTransactionWithCategory() =>
                       transaction is Income && (transaction as Income).isInitialTransaction
                           ? Gap.noGap
                           : _CategoryCard(
-                              model: (transaction as BaseTransactionWithCategory).category!,
-                              categoryTag: (transaction as BaseTransactionWithCategory).categoryTag,
+                              model: (transaction as IBaseTransactionWithCategory).category!,
+                              categoryTag: (transaction as IBaseTransactionWithCategory).categoryTag,
                             ),
                     Transfer() => _AccountCard(model: (transaction as Transfer).transferAccount!),
                     CreditPayment() || CreditCheckpoint() => Gap.noGap,

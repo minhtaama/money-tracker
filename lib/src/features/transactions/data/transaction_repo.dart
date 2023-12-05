@@ -25,6 +25,12 @@ class TransactionRepository {
         TransactionType.creditCheckpoint => 5,
       };
 
+  int _creditPaymentTypeInDb(CreditPaymentType type) => switch (type) {
+        CreditPaymentType.underMinimum => 0,
+        CreditPaymentType.minimumOrHigher => 1,
+        CreditPaymentType.full => 2,
+      };
+
   List<BaseTransaction> getAll(DateTime lower, DateTime upper) {
     List<TransactionDb> list =
         realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).toList();
@@ -121,7 +127,7 @@ class TransactionRepository {
     required int? monthsToPay,
     required double? paymentAmount,
   }) {
-    final creditPaymentDb = CreditPaymentDetailsDb(
+    final creditInstallmentDb = CreditInstallmentDetailsDb(
       monthsToPay: monthsToPay,
       paymentAmount: paymentAmount,
     );
@@ -132,7 +138,8 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditPaymentDetails: monthsToPay != null && paymentAmount != null ? creditPaymentDb : null);
+        creditInstallmentDetails:
+            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);
@@ -145,7 +152,14 @@ class TransactionRepository {
     required CreditAccount account,
     required RegularAccount fromAccount,
     required String? note,
+    required CreditPaymentType type,
+    required double? adjustedBalance,
   }) {
+    final creditPaymentDetails = CreditPaymentDetailsDb(
+      paymentType: _creditPaymentTypeInDb(type),
+      adjustedBalance: adjustedBalance,
+    );
+
     final newTransaction = TransactionDb(
       ObjectId(),
       _transactionTypeInDb(TransactionType.creditPayment),
@@ -154,6 +168,7 @@ class TransactionRepository {
       note: note,
       account: account.databaseObject,
       transferAccount: fromAccount.databaseObject,
+      creditPaymentDetails: creditPaymentDetails,
     );
 
     realm.write(() {

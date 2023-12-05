@@ -158,6 +158,9 @@ class _TransactionDb {
   _TransferFeeDb? transferFee;
 
   /// **Only specify this if type is [TransactionType.creditSpending]**
+  _CreditInstallmentDetailsDb? creditInstallmentDetails;
+
+  /// **Only specify this if type is [TransactionType.creditPayment]**
   _CreditPaymentDetailsDb? creditPaymentDetails;
 
   /// **Only specify this if type is [TransactionType.creditCheckpoint]**
@@ -174,10 +177,24 @@ class _TransferFeeDb {
 }
 
 @RealmModel(ObjectType.embeddedObject)
-class _CreditPaymentDetailsDb {
+class _CreditInstallmentDetailsDb {
   int? monthsToPay;
 
   double? paymentAmount;
+}
+
+@RealmModel(ObjectType.embeddedObject)
+class _CreditPaymentDetailsDb {
+  /// Currently, Realm do not support Dart Enum
+  ///
+  /// 0 == CreditPaymentType.underMinimum
+  ///
+  /// 1 == CreditPaymentType.minimumOrHigher
+  ///
+  /// 2, else == CreditPaymentType.full
+  int paymentType = 0;
+
+  double? adjustedBalance;
 }
 
 /////////////////////////////////////////////// SETTINGS ////////////////////////////////////////////////

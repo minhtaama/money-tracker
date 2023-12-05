@@ -7,6 +7,12 @@ enum TransactionType {
   creditCheckpoint,
 }
 
+enum CreditPaymentType {
+  underMinimum,
+  minimumOrHigher,
+  full,
+}
+
 enum CategoryType {
   income,
   expense,
