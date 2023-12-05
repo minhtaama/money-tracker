@@ -55,7 +55,8 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
 
   @override
   void initState() {
-    _dateTime = DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
+    _dateTime =
+        DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
     _statement = _creditAccount.statementAt(_dateTime);
     super.initState();
   }
@@ -86,8 +87,9 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             color: context.appTheme.negative,
             child: IconWithText(
               iconPath: AppIcons.receiptEdit,
-              text: 'NOTE: Add [transactions has installment payment going through this checkpoint] first, if any.'
-                  .hardcoded,
+              text:
+                  'NOTE: Add [transactions has installment payment going through this checkpoint] first, if any.'
+                      .hardcoded,
               color: context.appTheme.onNegative,
             ),
           ),
@@ -124,7 +126,6 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
               focusColor: context.appTheme.secondary,
               hintText: '',
               initialValue: '0',
-              // TODO: Update here
               validator: (_) => _oustdBalanceValidator(),
               formattedResultOutput: (value) => _calOutputFormattedAmount = value,
             ),

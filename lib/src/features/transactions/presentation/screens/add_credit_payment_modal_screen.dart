@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
-import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
-import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -22,7 +21,7 @@ import '../../../calculator_input/presentation/calculator_input.dart';
 import '../selectors/forms.dart';
 
 class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
-  const AddCreditPaymentModalScreen({Key? key}) : super(key: key);
+  const AddCreditPaymentModalScreen({super.key});
 
   @override
   ConsumerState<AddCreditPaymentModalScreen> createState() => _AddCreditPaymentModalScreenState();
@@ -41,6 +40,9 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   RegularAccount? _fromRegularAccount;
 
   double? get _outputAmount => CalService.formatToDouble(_calOutputFormattedAmount);
+
+  //TODO: CONTINUE HERE!!!!!
+
   CreditPaymentType _type = CreditPaymentType.underMinimum;
   double? _adjustedBalance;
   ///////////////////////////////////////////////////////////////////////
@@ -146,14 +148,19 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   ],
                 ),
                 Gap.h16,
-                _PaymentAmountTip(
-                    onMinimumPaymentTap: () {},
-                    onFullPaymentTap: () {
-                      _controller.text = _fullPaymentFormattedAmount(context);
-                    }),
               ],
             ),
           ),
+          _statement != null
+              ? _PaymentAmountInfo(
+                  statement: _statement,
+                  minimumPayment: 150,
+                  // onMinimumPaymentTap: () {},
+                  // onFullPaymentTap: () {
+                  //   _controller.text = _fullPaymentFormattedAmount(context);
+                  // },
+                )
+              : Gap.noGap,
           Gap.h16,
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -185,43 +192,54 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   }
 }
 
-class _PaymentAmountTip extends StatelessWidget {
-  const _PaymentAmountTip({
-    required this.onMinimumPaymentTap,
-    required this.onFullPaymentTap,
+class _PaymentAmountInfo extends StatefulWidget {
+  const _PaymentAmountInfo({
+    required this.statement,
+    required this.minimumPayment,
   });
-  final VoidCallback onMinimumPaymentTap;
-  final VoidCallback onFullPaymentTap;
+  final Statement? statement;
+  final double minimumPayment;
+
+  @override
+  State<_PaymentAmountInfo> createState() => _PaymentAmountInfoState();
+}
+
+class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
+  final _key = GlobalKey();
+  double _width = 0;
+
+  @override
+  void initState() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _width = _key.currentContext!.size!.width;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Stack(
+      alignment: Alignment.centerLeft,
       children: [
-        Expanded(
-          child: IconWithTextButton(
-            iconPath: AppIcons.coins,
-            label: 'Full payment',
-            labelSize: 12,
-            iconSize: 25,
-            height: null,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            backgroundColor: context.appTheme.primary,
-            color: context.appTheme.primaryNegative,
-            onTap: onFullPaymentTap,
+        Container(
+          key: _key,
+          height: 10,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: AppColors.greyBgr(context),
           ),
         ),
-        Gap.w8,
-        Expanded(
-          child: IconWithTextButton(
-            iconPath: AppIcons.coins,
-            label: 'Min payment',
-            labelSize: 12,
-            iconSize: 25,
-            height: null,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            backgroundColor: AppColors.greyBgr(context),
-            color: context.appTheme.backgroundNegative,
-            onTap: onMinimumPaymentTap,
+        AnimatedContainer(
+          duration: k250msDuration,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          height: 6,
+          width: _width * 0.5,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: context.appTheme.primary,
           ),
         ),
       ],

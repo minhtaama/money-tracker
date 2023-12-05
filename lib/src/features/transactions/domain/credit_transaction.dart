@@ -2,7 +2,12 @@ part of 'transaction_base.dart';
 
 sealed class BaseCreditTransaction extends BaseTransaction {
   const BaseCreditTransaction(
-      super.databaseObject, super.dateTime, super.amount, super.note, super.account);
+    super.databaseObject,
+    super.dateTime,
+    super.amount,
+    super.note,
+    super.account,
+  );
 }
 
 @immutable

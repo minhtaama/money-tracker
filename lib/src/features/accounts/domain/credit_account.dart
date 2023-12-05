@@ -41,10 +41,12 @@ class CreditAccount extends Account {
 extension CreditAccountMethods on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
-  List<CreditCheckpoint> get checkpointTransactions => transactionsList.whereType<CreditCheckpoint>().toList();
+  List<CreditCheckpoint> get checkpointTransactions =>
+      transactionsList.whereType<CreditCheckpoint>().toList();
 
   bool isBeforeLastCheckpoint(DateTime dateTime) {
-    CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+    CreditCheckpoint? lastCheckpoint =
+        checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
 
     if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
       return true;
@@ -54,10 +56,10 @@ extension CreditAccountMethods on CreditAccount {
   }
 
   bool isBeforeStatementHasLastPayment(DateTime dateTime) {
-    Statement statement =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : statementsList.first;
+    Statement? statement =
+        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
-    if (dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
+    if (statement == null || dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
       return false;
     }
 
@@ -77,7 +79,8 @@ extension CreditAccountMethods on CreditAccount {
 
     // If statement is already in credit account statements list
     for (Statement statement in statementsList) {
-      if (date.compareTo(statement.previousStatement.dueDate) > 0 && date.compareTo(statement.dueDate) <= 0) {
+      if (date.compareTo(statement.previousStatement.dueDate) > 0 &&
+          date.compareTo(statement.dueDate) <= 0) {
         return statement;
       }
     }
@@ -94,7 +97,8 @@ extension CreditAccountMethods on CreditAccount {
       while (upperGapAtDueDate != null && upperGapAtDueDate
           ? date.isAfter(list[list.length - 1].dueDate)
           : startDate.compareTo(date) <= 0) {
-        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+        final endDate =
+            startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
         final previousStatement = list.last.carryToNextStatement;
 
