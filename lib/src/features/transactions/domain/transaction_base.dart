@@ -16,7 +16,7 @@ abstract interface class ITransferable {
 }
 
 @immutable
-interface class IBaseTransactionWithCategory {
+abstract interface class IBaseTransactionWithCategory {
   final Category? category;
   final CategoryTag? categoryTag;
 
