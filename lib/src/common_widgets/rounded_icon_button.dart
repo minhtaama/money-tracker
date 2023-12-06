@@ -11,6 +11,7 @@ class RoundedIconButton extends StatelessWidget {
     super.key,
     required this.iconPath,
     this.label,
+    this.labelSize,
     this.backgroundColor,
     this.size,
     this.iconPadding = 12,
@@ -23,56 +24,60 @@ class RoundedIconButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? iconColor;
   final double? size;
+  final double? labelSize;
   final double iconPadding;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return label != null
-        ? Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CardItem(
-                width: size ?? 24,
-                height: size ?? 24,
-                color: backgroundColor,
-                padding: EdgeInsets.zero,
-                margin: EdgeInsets.zero,
-                borderRadius: BorderRadius.circular(1000),
-                elevation: 0,
-                isGradient: true,
-                child: Material(
-                  color: Colors.transparent,
-                  child: CustomInkWell(
-                    onTap: onTap,
-                    borderRadius: BorderRadius.circular(10000),
-                    inkColor: iconColor ?? context.appTheme.primaryNegative,
-                    child: Padding(
-                      padding: EdgeInsets.all(iconPadding),
-                      child: FittedBox(
-                        child: SvgIcon(
-                          iconPath,
-                          color: iconColor,
+        ? ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: (size ?? 20) * 2),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CardItem(
+                  width: size ?? 24,
+                  height: size ?? 24,
+                  color: backgroundColor,
+                  padding: EdgeInsets.zero,
+                  margin: EdgeInsets.zero,
+                  borderRadius: BorderRadius.circular(1000),
+                  elevation: 0,
+                  isGradient: true,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: CustomInkWell(
+                      onTap: onTap,
+                      borderRadius: BorderRadius.circular(10000),
+                      inkColor: iconColor ?? context.appTheme.primaryNegative,
+                      child: Padding(
+                        padding: EdgeInsets.all(iconPadding),
+                        child: FittedBox(
+                          child: SvgIcon(
+                            iconPath,
+                            color: iconColor,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Material(
-                color: Colors.transparent,
-                child: Text(
-                  label!,
-                  style: kHeader2TextStyle.copyWith(
-                    color: context.appTheme.backgroundNegative,
-                    fontSize: size != null ? size! / 4 : 20,
+                Material(
+                  color: Colors.transparent,
+                  child: Text(
+                    label!,
+                    style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.backgroundNegative,
+                      fontSize: labelSize ?? (size != null ? size! / 4 : 20),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           )
         : SizedBox(
             width: size ?? 48,

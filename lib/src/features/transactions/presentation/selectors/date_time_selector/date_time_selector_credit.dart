@@ -74,8 +74,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
           padding: EdgeInsets.zero,
           elevation: 0,
           border: Border.all(
-              color: context.appTheme.backgroundNegative
-                  .withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+              color: context.appTheme.backgroundNegative.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -89,8 +88,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
                       if (_outputDateTime != null) {
                         setState(() {
-                          _outputDateTime =
-                              _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                          _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
                         });
                         widget.onChanged(_outputDateTime!, _outputStatement);
                       }
@@ -107,8 +105,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                               config: _customConfig(
                                 context,
                                 firstDate: widget.isForPayment ? _earliestMonthViewable : null,
-                                selectableDayPredicate:
-                                    widget.isForPayment ? _selectableDayPredicate : null,
+                                selectableDayPredicate: widget.isForPayment ? _selectableDayPredicate : null,
                                 dayBuilder: _dayBuilder,
                               ),
                               currentDay: _outputDateTime,
@@ -124,14 +121,11 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                             backgroundColor: context.appTheme.negative,
                                             content: IconWithText(
                                               color: context.appTheme.onNegative,
-                                              text:
-                                                  'You can only add transaction after latest checkpoint'
-                                                      .hardcoded,
+                                              text: 'You can only add transaction after latest checkpoint'.hardcoded,
                                             ),
                                           );
                                         });
-                                  } else if (widget.creditAccount!
-                                      .isBeforeStatementHasLastPayment(dateTime)) {
+                                  } else if (widget.creditAccount!.isBeforeStatementHasLastPayment(dateTime)) {
                                     _showCustomCalendarDialog(
                                         context: context,
                                         builder: (_, __) {
@@ -167,10 +161,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                                   .hardcoded,
                                         )
                                       : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
-                                              .copyWith(
-                                                  month:
-                                                      widget.creditAccount!.earliestPayableDate!.month -
-                                                          1))
+                                              .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
                                           ? IconWithText(
                                               iconPath: AppIcons.done,
                                               text: 'No transactions before this time'.hardcoded,
@@ -179,8 +170,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                               ? CreditInfo(
                                                   chosenDateTime: selectedDay,
                                                   isForPayment: widget.isForPayment,
-                                                  statement:
-                                                      widget.creditAccount!.statementAt(selectedDay),
+                                                  statement: widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
                                                   }),
@@ -235,8 +225,7 @@ extension _Details on _DateTimeSelectorCreditState {
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
         ? Border.all(
-            color:
-                isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
           )
         : null;
 
@@ -295,8 +284,8 @@ extension _Details on _DateTimeSelectorCreditState {
       return DateTime(DateTime.now().year, DateTime.now().month);
     }
 
-    return DateTime(widget.creditAccount!.earliestPayableDate!.year,
-        widget.creditAccount!.earliestPayableDate!.month - 1);
+    return DateTime(
+        widget.creditAccount!.earliestPayableDate!.year, widget.creditAccount!.earliestPayableDate!.month - 1);
   }
 
   bool _canAddTransaction(DateTime dateTime) {
@@ -348,7 +337,8 @@ extension _Details on _DateTimeSelectorCreditState {
     if (widget.creditAccount == null) {
       throw ErrorDescription('Must specify a credit account first');
     }
-    final list = widget.creditAccount!.statementsList.map((e) => e.dueDate.onlyYearMonthDay);
+    final list = widget.creditAccount!.statementsList.map((e) => e.dueDate.onlyYearMonthDay).toList();
+    list.add(widget.creditAccount!.statementsList.first.previousStatement.dueDate);
     final dateTimeYMD = dateTime.onlyYearMonthDay;
     if (list.contains(dateTimeYMD)) {
       return true;

@@ -35,13 +35,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
-      if (statementDay >= earliestPayableDate.day) {
-        earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
-      }
-
-      if (statementDay < earliestPayableDate.day) {
-        earliestStatementDate = earliestPayableDate.copyWith(day: statementDay).onlyYearMonthDay;
-      }
+      earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+      // if (statementDay >= earliestPayableDate.day) {
+      //   earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+      // }
+      //
+      // if (statementDay < earliestPayableDate.day) {
+      //   earliestStatementDate = earliestPayableDate.copyWith(day: statementDay).onlyYearMonthDay;
+      // }
     }
 
     // only year, month and day
