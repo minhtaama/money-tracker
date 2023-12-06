@@ -40,6 +40,44 @@ abstract class Statement {
 
   DateTime get statementDate => startDate.copyWith(month: startDate.month + 1);
 
+  double get spentInBillingCycleExcludeInstallments =>
+      checkpoint?.unpaidToPay ?? _spentInBillingCycleExcludeInstallments;
+
+  double get installmentsAmountToPay {
+    if (checkpoint != null) {
+      return 0;
+    }
+
+    double amount = 0;
+    final installmentTransactions = installments.map((e) => e.txn).toList();
+    for (CreditSpending txn in installmentTransactions) {
+      amount += txn.paymentAmount!;
+    }
+    return amount;
+  }
+
+  double get paidForThisStatement {
+    // Included Checkpoint transaction
+    double spentInGracePeriodExcludeInstallments = 0;
+
+    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
+      if (txn is CreditSpending && !txn.hasInstallment) {
+        spentInGracePeriodExcludeInstallments += txn.amount;
+      }
+    }
+
+    if (checkpoint != null) {
+      return math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
+    } else {
+      return math.max(
+              0,
+              _paidInBillingCycle -
+                  previousStatement._balanceToPayAtEndDate -
+                  spentInBillingCycleExcludeInstallments) +
+          math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
+    }
+  }
+
   /// BillingCycle is only from [startDate] to [endDate].
   List<BaseCreditTransaction> transactionsInBillingCycleBefore(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
@@ -71,7 +109,9 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
+        ? transactionsInGracePeriod
+        : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -79,41 +119,6 @@ abstract class Statement {
       }
     }
     return list;
-  }
-
-  double get spentInBillingCycleExcludeInstallments =>
-      checkpoint?.unpaidToPay ?? _spentInBillingCycleExcludeInstallments;
-
-  double get installmentsAmountToPay {
-    if (checkpoint != null) {
-      return 0;
-    }
-
-    double amount = 0;
-    final installmentTransactions = installments.map((e) => e.txn).toList();
-    for (CreditSpending txn in installmentTransactions) {
-      amount += txn.paymentAmount!;
-    }
-    return amount;
-  }
-
-  double get paidForThisStatement {
-    // Included Checkpoint transaction
-    double spentInGracePeriodExcludeInstallments = 0;
-
-    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
-      if (txn is CreditSpending && !txn.hasInstallment) {
-        spentInGracePeriodExcludeInstallments += txn.amount;
-      }
-    }
-
-    if (checkpoint != null) {
-      return math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
-    } else {
-      return math.max(0,
-              _paidInBillingCycle - previousStatement._balanceToPayAtEndDate - spentInBillingCycleExcludeInstallments) +
-          math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
-    }
   }
 
   double getFullPaymentAmountAt(DateTime dateTime) {
@@ -142,7 +147,9 @@ abstract class Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay +
+            spentInGracePeriodBeforeDateTimeExcludeInstallments -
+            _paidInGracePeriod;
       }
     } else {
       x = previousStatement._balanceToPayAtEndDate +
