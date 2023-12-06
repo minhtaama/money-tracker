@@ -363,7 +363,7 @@ class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
                   _Button(
                     iconKey: _firstKey,
                     iconPath: AppIcons.minus,
-                    label: 'Under minimum',
+                    label: '< Min',
                     isSelected: _type != null,
                     onTap: () {
                       setState(() {
@@ -376,7 +376,7 @@ class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
                   _Button(
                     iconKey: _middleKey,
                     iconPath: AppIcons.installment,
-                    label: 'Minimum or higher',
+                    label: '≥ Min',
                     isSelected: _type == CreditPaymentType.minimumOrHigher || _type == CreditPaymentType.full,
                     onTap: () {
                       setState(() {
@@ -389,7 +389,7 @@ class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
                   _Button(
                     iconKey: _lastKey,
                     iconPath: AppIcons.done,
-                    label: 'Full payment',
+                    label: 'Full',
                     isSelected: _type == CreditPaymentType.full,
                     onTap: () {
                       setState(() {
@@ -474,7 +474,7 @@ class _ButtonState extends State<_Button> {
           child: Text(
             widget.label,
             style: kHeader2TextStyle.copyWith(
-                fontSize: 10, color: context.appTheme.backgroundNegative.withOpacity(_isDisable ? 0.3 : 1)),
+                fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(_isDisable ? 0.3 : 1)),
             textAlign: TextAlign.center,
           ),
         )
