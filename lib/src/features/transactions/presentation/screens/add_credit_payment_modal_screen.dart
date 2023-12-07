@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
-import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
-import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -48,7 +46,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   //TODO: CONTINUE HERE!!!!!
 
-  CreditPaymentType _type = CreditPaymentType.underMinimum;
+  bool _isFullPayment = false;
   double? _adjustedBalance;
   ///////////////////////////////////////////////////////////////////////
 
@@ -157,16 +155,9 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             ),
           ),
           _statement != null
-              ? _PaymentAmountInfo(
-                  statement: _statement,
-                  minimumPayment: 150,
-                  onChange: (value) {
-                    print(value);
-                  },
-                  // onMinimumPaymentTap: () {},
-                  // onFullPaymentTap: () {
-                  //   _controller.text = _fullPaymentFormattedAmount(context);
-                  // },
+              ? CustomCheckbox(
+                  onChanged: (value) => _isFullPayment = value,
+                  label: 'Full payment',
                 )
               : Gap.noGap,
           Gap.h16,
@@ -220,7 +211,7 @@ extension _FunctionsAndGetters on _AddCreditPaymentModalScreenState {
             account: _creditAccount!,
             fromAccount: _fromRegularAccount!,
             note: _note,
-            type: _type,
+            isFullPayment: _isFullPayment,
             adjustedBalance: _adjustedBalance,
           );
       context.pop();
@@ -266,146 +257,6 @@ extension _Validators on _AddCreditPaymentModalScreenState {
       return 'Must be specify for payment';
     }
     return null;
-  }
-}
-
-class _PaymentAmountInfo extends StatefulWidget {
-  const _PaymentAmountInfo({
-    required this.statement,
-    required this.minimumPayment,
-    required this.onChange,
-  });
-  final Statement? statement;
-  final double minimumPayment;
-  final ValueSetter<CreditPaymentType> onChange;
-
-  @override
-  State<_PaymentAmountInfo> createState() => _PaymentAmountInfoState();
-}
-
-class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
-  final _ancestorKey = GlobalKey();
-  final _firstKey = GlobalKey();
-  final _middleKey = GlobalKey();
-  final _lastKey = GlobalKey();
-
-  Offset _containerOffset = Offset.zero;
-  double _containerWidth = 0;
-  double _containerWidthAtFirst = 0;
-  double _containerWidthAtMiddle = 0;
-  double _animatedContainerWidth = 0;
-
-  CreditPaymentType? _type;
-
-  @override
-  void initState() {
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (mounted) {
-        RenderBox ancestorRenderBox = _ancestorKey.currentContext?.findRenderObject() as RenderBox;
-        RenderBox firstRenderBox = _firstKey.currentContext?.findRenderObject() as RenderBox;
-        RenderBox middleRenderBox = _middleKey.currentContext?.findRenderObject() as RenderBox;
-        RenderBox lastRenderBox = _lastKey.currentContext?.findRenderObject() as RenderBox;
-
-        Offset firstOffset = firstRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
-        Offset middleOffset = middleRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
-        Offset lastOffset = lastRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
-
-        setState(() {
-          _containerOffset = Offset(0, firstOffset.dy).translate(0.3, 0);
-          _containerWidth = lastOffset.dx - _containerOffset.dx + 35 - 0.3;
-          _containerWidthAtFirst = firstOffset.dx - _containerOffset.dx + 35 - 0.3;
-          _containerWidthAtMiddle = middleOffset.dx - _containerOffset.dx + 35 - 0.3;
-        });
-      }
-    });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Stack(
-          key: _ancestorKey,
-          alignment: Alignment.topLeft,
-          children: [
-            Positioned(
-              top: _containerOffset.dy,
-              left: _containerOffset.dx,
-              child: Container(
-                height: 35,
-                width: _containerWidth,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(1000),
-                  color: AppColors.grey(context).withOpacity(0.6),
-                ),
-              ),
-            ),
-            Positioned(
-              top: _containerOffset.dy,
-              left: _containerOffset.dx,
-              child: AnimatedContainer(
-                duration: k150msDuration,
-                height: 35,
-                width: _animatedContainerWidth,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(1000),
-                  color: context.appTheme.primary.withOpacity(0.55),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 48.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Button(
-                    iconKey: _firstKey,
-                    iconPath: AppIcons.minus,
-                    label: '< Min',
-                    isSelected: _type != null,
-                    onTap: () {
-                      setState(() {
-                        _animatedContainerWidth = _containerWidthAtFirst;
-                        _type = CreditPaymentType.underMinimum;
-                        widget.onChange(_type!);
-                      });
-                    },
-                  ),
-                  _Button(
-                    iconKey: _middleKey,
-                    iconPath: AppIcons.installment,
-                    label: '≥ Min',
-                    isSelected: _type == CreditPaymentType.minimumOrHigher || _type == CreditPaymentType.full,
-                    onTap: () {
-                      setState(() {
-                        _animatedContainerWidth = _containerWidthAtMiddle;
-                        _type = CreditPaymentType.minimumOrHigher;
-                        widget.onChange(_type!);
-                      });
-                    },
-                  ),
-                  _Button(
-                    iconKey: _lastKey,
-                    iconPath: AppIcons.done,
-                    label: 'Full',
-                    isSelected: _type == CreditPaymentType.full,
-                    onTap: () {
-                      setState(() {
-                        _animatedContainerWidth = _containerWidth;
-                        _type = CreditPaymentType.full;
-                        widget.onChange(_type!);
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
   }
 }
 
@@ -482,3 +333,143 @@ class _ButtonState extends State<_Button> {
     );
   }
 }
+
+// class _PaymentAmountInfo extends StatefulWidget {
+//   const _PaymentAmountInfo({
+//     required this.statement,
+//     required this.minimumPayment,
+//     required this.onChange,
+//   });
+//   final Statement? statement;
+//   final double minimumPayment;
+//   final ValueSetter<CreditPaymentType> onChange;
+//
+//   @override
+//   State<_PaymentAmountInfo> createState() => _PaymentAmountInfoState();
+// }
+//
+// class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
+//   final _ancestorKey = GlobalKey();
+//   final _firstKey = GlobalKey();
+//   final _middleKey = GlobalKey();
+//   final _lastKey = GlobalKey();
+//
+//   Offset _containerOffset = Offset.zero;
+//   double _containerWidth = 0;
+//   double _containerWidthAtFirst = 0;
+//   double _containerWidthAtMiddle = 0;
+//   double _animatedContainerWidth = 0;
+//
+//   CreditPaymentType? _type;
+//
+//   @override
+//   void initState() {
+//     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+//       if (mounted) {
+//         RenderBox ancestorRenderBox = _ancestorKey.currentContext?.findRenderObject() as RenderBox;
+//         RenderBox firstRenderBox = _firstKey.currentContext?.findRenderObject() as RenderBox;
+//         RenderBox middleRenderBox = _middleKey.currentContext?.findRenderObject() as RenderBox;
+//         RenderBox lastRenderBox = _lastKey.currentContext?.findRenderObject() as RenderBox;
+//
+//         Offset firstOffset = firstRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
+//         Offset middleOffset = middleRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
+//         Offset lastOffset = lastRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
+//
+//         setState(() {
+//           _containerOffset = Offset(0, firstOffset.dy).translate(0.3, 0);
+//           _containerWidth = lastOffset.dx - _containerOffset.dx + 35 - 0.3;
+//           _containerWidthAtFirst = firstOffset.dx - _containerOffset.dx + 35 - 0.3;
+//           _containerWidthAtMiddle = middleOffset.dx - _containerOffset.dx + 35 - 0.3;
+//         });
+//       }
+//     });
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         Stack(
+//           key: _ancestorKey,
+//           alignment: Alignment.topLeft,
+//           children: [
+//             Positioned(
+//               top: _containerOffset.dy,
+//               left: _containerOffset.dx,
+//               child: Container(
+//                 height: 35,
+//                 width: _containerWidth,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(1000),
+//                   color: AppColors.grey(context).withOpacity(0.6),
+//                 ),
+//               ),
+//             ),
+//             Positioned(
+//               top: _containerOffset.dy,
+//               left: _containerOffset.dx,
+//               child: AnimatedContainer(
+//                 duration: k150msDuration,
+//                 height: 35,
+//                 width: _animatedContainerWidth,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(1000),
+//                   color: context.appTheme.primary.withOpacity(0.55),
+//                 ),
+//               ),
+//             ),
+//             Padding(
+//               padding: const EdgeInsets.only(left: 48.0),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   _Button(
+//                     iconKey: _firstKey,
+//                     iconPath: AppIcons.minus,
+//                     label: '< Min',
+//                     isSelected: _type != null,
+//                     onTap: () {
+//                       setState(() {
+//                         _animatedContainerWidth = _containerWidthAtFirst;
+//                         _type = CreditPaymentType.underMinimum;
+//                         widget.onChange(_type!);
+//                       });
+//                     },
+//                   ),
+//                   _Button(
+//                     iconKey: _middleKey,
+//                     iconPath: AppIcons.installment,
+//                     label: '≥ Min',
+//                     isSelected: _type == CreditPaymentType.minimumOrHigher || _type == CreditPaymentType.full,
+//                     onTap: () {
+//                       setState(() {
+//                         _animatedContainerWidth = _containerWidthAtMiddle;
+//                         _type = CreditPaymentType.minimumOrHigher;
+//                         widget.onChange(_type!);
+//                       });
+//                     },
+//                   ),
+//                   _Button(
+//                     iconKey: _lastKey,
+//                     iconPath: AppIcons.done,
+//                     label: 'Full',
+//                     isSelected: _type == CreditPaymentType.full,
+//                     onTap: () {
+//                       setState(() {
+//                         _animatedContainerWidth = _containerWidth;
+//                         _type = CreditPaymentType.full;
+//                         widget.onChange(_type!);
+//                       });
+//                     },
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }

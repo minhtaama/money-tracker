@@ -25,11 +25,11 @@ class TransactionRepository {
         TransactionType.creditCheckpoint => 5,
       };
 
-  int _creditPaymentTypeInDb(CreditPaymentType type) => switch (type) {
-        CreditPaymentType.underMinimum => 0,
-        CreditPaymentType.minimumOrHigher => 1,
-        CreditPaymentType.full => 2,
-      };
+  // int _creditPaymentTypeInDb(CreditPaymentType type) => switch (type) {
+  //       CreditPaymentType.underMinimum => 0,
+  //       CreditPaymentType.minimumOrHigher => 1,
+  //       CreditPaymentType.full => 2,
+  //     };
 
   List<BaseTransaction> getAll(DateTime lower, DateTime upper) {
     List<TransactionDb> list =
@@ -38,9 +38,7 @@ class TransactionRepository {
   }
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   Stream<void> _watchDatabaseChanges() {
@@ -59,8 +57,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -79,8 +76,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -105,8 +101,7 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -138,8 +133,7 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails:
-            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);
@@ -152,11 +146,11 @@ class TransactionRepository {
     required CreditAccount account,
     required RegularAccount fromAccount,
     required String? note,
-    required CreditPaymentType type,
+    required bool isFullPayment,
     required double? adjustedBalance,
   }) {
     final creditPaymentDetails = CreditPaymentDetailsDb(
-      paymentType: _creditPaymentTypeInDb(type),
+      isFullPayment: isFullPayment,
       adjustedBalance: adjustedBalance,
     );
 

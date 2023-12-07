@@ -44,9 +44,7 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending &&
-          runtimeType == other.runtimeType &&
-          databaseObject.id == other.databaseObject.id;
+      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
 
   @override
   int get hashCode => databaseObject.id.hashCode;
@@ -57,7 +55,7 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
   final RegularAccount? transferAccount;
 
-  final CreditPaymentType type;
+  final bool isFullPayment;
 
   final double? adjustedBalance;
 
@@ -68,7 +66,7 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.note,
     super.account, {
     required this.transferAccount,
-    required this.type,
+    required this.isFullPayment,
     required this.adjustedBalance,
   });
 }

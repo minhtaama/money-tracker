@@ -255,14 +255,16 @@ class _ListState extends State<_List> {
         widget.isForPayment
             ? Padding(
                 padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-                child: Row(
+                child: Wrap(
+                  runSpacing: 2,
                   children: [
                     Text(
-                      'Full payment:',
+                      'Total balance to pay at selected day:',
                       style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.primary),
                     ),
+                    Gap.w4,
                     Text(
-                      ' ${fullPaymentAmount(context) ?? ''} ${context.currentSettings.currency.code}',
+                      '${fullPaymentAmount(context) ?? ''} ${context.currentSettings.currency.code}',
                       style: kHeader2TextStyle.copyWith(fontSize: 13, color: context.appTheme.primary),
                     ),
                     Gap.w8,

@@ -92,11 +92,11 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
         );
 
       case 4:
-        CreditPaymentType paymentTypeFromDb(int type) => switch (type) {
-              0 => CreditPaymentType.underMinimum,
-              1 => CreditPaymentType.minimumOrHigher,
-              _ => CreditPaymentType.full,
-            };
+        // CreditPaymentType paymentTypeFromDb(int type) => switch (type) {
+        //       0 => CreditPaymentType.underMinimum,
+        //       1 => CreditPaymentType.minimumOrHigher,
+        //       _ => CreditPaymentType.full,
+        //     };
 
         return CreditPayment._(
           txn,
@@ -105,7 +105,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.note,
           Account.fromDatabaseWithNoDetails(txn.account),
           transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
-          type: paymentTypeFromDb(txn.creditPaymentDetails!.paymentType),
+          isFullPayment: txn.creditPaymentDetails!.isFullPayment,
           adjustedBalance: txn.creditPaymentDetails!.adjustedBalance,
         );
 

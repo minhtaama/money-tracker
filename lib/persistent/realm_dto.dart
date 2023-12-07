@@ -185,14 +185,7 @@ class _CreditInstallmentDetailsDb {
 
 @RealmModel(ObjectType.embeddedObject)
 class _CreditPaymentDetailsDb {
-  /// Currently, Realm do not support Dart Enum
-  ///
-  /// 0 == CreditPaymentType.underMinimum
-  ///
-  /// 1 == CreditPaymentType.minimumOrHigher
-  ///
-  /// 2, else == CreditPaymentType.full
-  int paymentType = 0;
+  bool isFullPayment = false;
 
   double? adjustedBalance;
 }
