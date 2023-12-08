@@ -38,6 +38,7 @@ class IconWithText extends StatelessWidget {
         children: [
           Wrap(
             runAlignment: WrapAlignment.center,
+            runSpacing: 2,
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
@@ -46,12 +47,12 @@ class IconWithText extends StatelessWidget {
                 size: iconSize ?? 40,
                 color: color ?? AppColors.grey(context),
               ),
-              header != null ? Gap.w8 : Gap.noGap,
+              header != null ? Gap.w4 : Gap.noGap,
               header != null
                   ? Text(
                       header!,
                       style: kHeader2TextStyle.copyWith(
-                          color: color ?? AppColors.grey(context), fontSize: headerSize ?? 13),
+                          color: color ?? AppColors.grey(context), fontSize: headerSize ?? 14),
                       textAlign: TextAlign.center,
                     )
                   : Gap.noGap,
@@ -60,7 +61,8 @@ class IconWithText extends StatelessWidget {
           text != null
               ? Text(
                   text!,
-                  style: kHeader4TextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
+                  style: kHeader4TextStyle.copyWith(
+                      color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,

@@ -91,6 +91,29 @@ class TxnInstallmentIcon extends StatelessWidget {
   }
 }
 
+class TxnAdjustmentIcon extends StatelessWidget {
+  const TxnAdjustmentIcon({
+    super.key,
+    this.size = 18,
+    required this.transaction,
+  });
+
+  final double size;
+  final CreditPayment transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return HelpButton(
+      title:
+          'Adjusted Payment: ${transaction.adjustment! > 0 ? '+' : ''}${CalService.formatCurrency(context, transaction.adjustment!)} ${context.currentSettings.currency.code}'
+              .hardcoded,
+      text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
+      iconPath: AppIcons.edit,
+      size: size,
+    );
+  }
+}
+
 class TxnCategoryIcon extends StatelessWidget {
   const TxnCategoryIcon({super.key, required this.transaction, this.color});
 

@@ -28,6 +28,7 @@ class CalculatorInput extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.validator,
     this.fontSize = 22,
+    this.suffix,
     //this.initialValue,
   });
   final TextEditingController? controller;
@@ -42,6 +43,7 @@ class CalculatorInput extends StatefulWidget {
   final bool isDense;
   final bool underLineBorder;
   final TextAlign textAlign;
+  final Widget? suffix;
   //final double? initialValue;
 
   @override
@@ -91,11 +93,13 @@ class _CalculatorInputState extends State<CalculatorInput> {
         fontSize: widget.fontSize,
       ),
       decoration: InputDecoration(
+        suffix: widget.suffix,
         isDense: widget.isDense,
         focusColor: context.appTheme.primary,
         enabledBorder: widget.underLineBorder
             ? UnderlineInputBorder(
-                borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
+                borderSide:
+                    BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
               )
             : InputBorder.none,
         focusedBorder: widget.underLineBorder
@@ -154,7 +158,8 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.resultOutput}) : super(key: key);
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
+      : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__

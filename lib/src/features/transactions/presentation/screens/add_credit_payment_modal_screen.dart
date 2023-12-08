@@ -46,7 +46,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
       _statement == null || _dateTime == null ? 0 : _statement!.getBalanceAmountAt(_dateTime!);
 
   String get _paymentCalOutputFormattedAmount => _paymentInputController.text;
-  String get _remainingCalOutputFormattedAmount => _remainingInputController.text;
 
   double? _userRemainingAmount;
 
@@ -58,14 +57,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
     _userRemainingAmount = null;
 
-    if (_userPaymentAmount != null && _userPaymentAmount! > _totalBalanceAmount) {
+    if (_userPaymentAmount != null && (_userPaymentAmount! > _totalBalanceAmount || _isFullPayment)) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       _adjustment = _totalBalanceAmount - _userPaymentAmount!;
     } else {
       _adjustment = null;
     }
-
-    print(_adjustment);
   }
 
   void _onRemainingInputChange(String value) {
@@ -79,8 +76,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     // Then: userRemaining = totalBalance - afterAdjustedAmount
     // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
     _adjustment = _totalBalanceAmount - _userPaymentAmount! - _userRemainingAmount!;
-
-    print(_adjustment);
   }
 
   void _onFullPaymentCheckboxChange(bool value) {
@@ -89,14 +84,37 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     _remainingInputController.clear();
     _userRemainingAmount = null;
 
-    if (_userPaymentAmount != null && _userPaymentAmount! > _totalBalanceAmount) {
+    if (_isFullPayment && _userPaymentAmount != null) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       _adjustment = _totalBalanceAmount - _userPaymentAmount!;
     } else {
       _adjustment = null;
     }
+  }
 
-    print(_adjustment);
+  void _onDateTimeChange(DateTime? dateTime, Statement? statement) {
+    setState(() {
+      if (dateTime != null) {
+        _dateTime = dateTime;
+      }
+      _statement = statement;
+    });
+  }
+
+  void _onCreditAccountChange(Account? newAccount) {
+    setState(() {
+      _creditAccount = newAccount as CreditAccount?;
+      if (_creditAccount == null) {
+        _statement = null;
+        _dateTime = null;
+      }
+    });
+  }
+
+  void _onRegularAccountChange(Account? newAccount) {
+    setState(() {
+      _fromRegularAccount = newAccount != null ? (newAccount as RegularAccount) : null;
+    });
   }
 
   void _submit() {
@@ -124,8 +142,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   CreditAccount? _creditAccount;
   RegularAccount? _fromRegularAccount;
 
-  //TODO: CONTINUE HERE!!!!!
-
   bool _isFullPayment = false;
   double? _adjustment;
   ///////////////////////////////////////////////////////////////////////
@@ -149,13 +165,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   disableText: 'Choose credit account first'.hardcoded,
                   initialDate: _dateTime,
                   isForPayment: true,
-                  onChanged: (dateTime, statement) {
-                    if (dateTime != null) {
-                      _dateTime = dateTime;
-                    }
-                    _statement = statement;
-                    setState(() {});
-                  },
+                  onChanged: _onDateTimeChange,
                   validator: (_) => _dateTimeValidator(),
                 ),
               ),
@@ -170,15 +180,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                     AccountFormSelector(
                       accountType: AccountType.credit,
                       validator: (_) => _creditAccountValidator(),
-                      onChangedAccount: (newAccount) {
-                        setState(() {
-                          _creditAccount = newAccount as CreditAccount?;
-                          if (_creditAccount == null) {
-                            _statement = null;
-                            _dateTime = null;
-                          }
-                        });
-                      },
+                      onChangedAccount: _onCreditAccountChange,
                     ),
                     Gap.h8,
                     const TextHeader('Payment account:'),
@@ -186,11 +188,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                     AccountFormSelector(
                       accountType: AccountType.regular,
                       validator: (_) => _fromRegularAccountValidator(),
-                      onChangedAccount: (newAccount) {
-                        setState(() {
-                          _fromRegularAccount = newAccount != null ? (newAccount as RegularAccount) : null;
-                        });
-                      },
+                      onChangedAccount: _onRegularAccountChange,
                     ),
                   ],
                 ),
@@ -206,6 +204,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 CustomBox(
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 4.0),
@@ -217,49 +216,38 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         ),
                       ),
                       Gap.h16,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 2.0),
+                        child: Text(
+                          'Payment amount:',
+                          style: kHeader3TextStyle.copyWith(
+                            fontSize: 14,
+                            color: context.appTheme.backgroundNegative.withOpacity(0.8),
+                          ),
+                        ),
+                      ),
+                      Gap.h4,
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const CurrencyIcon(),
                           Gap.w8,
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 2.0),
-                                  child: Text(
-                                    'PAYMENT AMOUNT:',
-                                    style: kHeader2TextStyle.copyWith(
-                                      fontSize: 12,
-                                      color: context.appTheme.backgroundNegative,
-                                    ),
-                                  ),
+                            child: CalculatorInput(
+                              suffix: Transform.translate(
+                                offset: const Offset(0, 5),
+                                child: SvgIcon(
+                                  AppIcons.receiptCheck,
+                                  size: 27,
+                                  color: context.appTheme.backgroundNegative,
                                 ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0, right: 5.0),
-                                      child: SvgIcon(
-                                        AppIcons.handCoin,
-                                        size: 30,
-                                        color: context.appTheme.backgroundNegative,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: CalculatorInput(
-                                        hintText: 'XXX',
-                                        controller: _paymentInputController,
-                                        isDense: true,
-                                        focusColor: context.appTheme.primary,
-                                        validator: (_) => _paymentInputValidator(context),
-                                        formattedResultOutput: _onPaymentInputChange,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                              ),
+                              hintText: '???',
+                              controller: _paymentInputController,
+                              focusColor: context.appTheme.primary,
+                              fontSize: 25,
+                              validator: (_) => _paymentInputValidator(context),
+                              formattedResultOutput: _onPaymentInputChange,
                             ),
                           ),
                           Gap.w8,
@@ -270,11 +258,41 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   ),
                 ),
                 HelpBox(
-                  isShow: _showHelpBox,
+                  isShow: _showWarningBox,
                   iconPath: AppIcons.sadFace,
                   margin: const EdgeInsets.only(top: 8),
-                  header: 'Payment is so much higher than balance left at selected day!'.hardcoded,
-                  text: 'Maybe there are other spending transactions before this day?'.hardcoded,
+                  header: 'Too high than balance to pay!'.hardcoded,
+                  text:
+                      'Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount'
+                          .hardcoded,
+                ),
+                HelpBox(
+                  isShow: _showFYKBox1,
+                  iconPath: AppIcons.fykFace,
+                  margin: const EdgeInsets.only(top: 8),
+                  backgroundColor: context.appTheme.positive,
+                  color: context.appTheme.onPositive,
+                  header: 'Close to balance to pay!'.hardcoded,
+                  text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
+                ),
+                HelpBox(
+                  isShow: _showFYKBox2,
+                  iconPath: AppIcons.fykFace,
+                  margin: const EdgeInsets.only(top: 8),
+                  backgroundColor: context.appTheme.positive,
+                  color: context.appTheme.onPositive,
+                  header: 'Pay amount is quite higher'.hardcoded,
+                  text:
+                      'Are there some hidden fee or some small transaction you forgot to add? If not a full payment, you must specify the balance after payment amount'
+                          .hardcoded,
+                ),
+                HelpBox(
+                  isShow: _showFYKBox3,
+                  iconPath: AppIcons.fykFace,
+                  margin: const EdgeInsets.only(top: 8),
+                  backgroundColor: context.appTheme.positive,
+                  color: context.appTheme.onPositive,
+                  header: 'Exact balance to pay!'.hardcoded,
                 ),
                 CustomCheckbox(
                   onChanged: _onFullPaymentCheckboxChange,
@@ -283,12 +301,15 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   optionalWidget: Column(
                     children: [
                       InlineTextFormField(
-                        prefixText: 'Balance remaining:',
+                        prefixText: 'Bal. after payment:'.hardcoded,
                         suffixText: context.currentSettings.currency.code,
                         textSize: 14,
                         widget: CalculatorInput(
-                          hintText: CalService.formatCurrency(
-                              context, max(0, _totalBalanceAmount - (_userPaymentAmount ?? 0))),
+                          hintText: _totalBalanceAmount - (_userPaymentAmount ?? 0) > 0 &&
+                                  _userPaymentAmount != null
+                              ? CalService.formatCurrency(
+                                  context, _totalBalanceAmount - (_userPaymentAmount ?? 0))
+                              : '???',
                           textAlign: TextAlign.right,
                           controller: _remainingInputController,
                           isDense: true,
@@ -341,7 +362,21 @@ extension _Validators on _AddCreditPaymentModalScreenState {
       CalService.formatToDouble(_paymentCalOutputFormattedAmount) == 0 ||
       _fromRegularAccount == null;
 
-  bool get _showHelpBox => _userPaymentAmount != null
+  bool get _showFYKBox1 => _userPaymentAmount != null
+      ? _userPaymentAmount! <= _totalBalanceAmount + (_totalBalanceAmount * 2.5 / 100) &&
+          _userPaymentAmount! >= _totalBalanceAmount - (_totalBalanceAmount * 2.5 / 100) &&
+          _userPaymentAmount! != _totalBalanceAmount
+      : false;
+
+  bool get _showFYKBox2 => _userPaymentAmount != null
+      ? _userPaymentAmount! < _totalBalanceAmount + (_totalBalanceAmount * 10 / 100) &&
+          _userPaymentAmount! > _totalBalanceAmount + (_totalBalanceAmount * 2.5 / 100)
+      : false;
+
+  bool get _showFYKBox3 =>
+      _userPaymentAmount != null ? _userPaymentAmount! == _totalBalanceAmount : false;
+
+  bool get _showWarningBox => _userPaymentAmount != null
       ? _userPaymentAmount! >= _totalBalanceAmount + (_totalBalanceAmount * 10 / 100)
       : false;
 
@@ -373,7 +408,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
 
     // When user is not tick as full payment but not specify a remaining amount
     if (max(0, _totalBalanceAmount - (_userPaymentAmount ?? 0)) == 0) {
-      return 'Invalid amount 2'.hardcoded;
+      return 'Invalid amount'.hardcoded;
     }
 
     //TODO: Show 'Balance adjusted icon' if this is not a full payment and user specified a remaining balance

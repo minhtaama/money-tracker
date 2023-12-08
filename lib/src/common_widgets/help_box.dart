@@ -61,29 +61,30 @@ class _HelpBoxState extends State<HelpBox> {
         child: ConstrainedBox(
           constraints: widget.constraints ?? const BoxConstraints.tightForFinite(),
           child: _isShow
-              ? Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: Row(
-                          children: [
-                            const Spacer(),
-                            RoundedIconButton(
-                              iconPath: AppIcons.close,
-                              iconColor: widget.color ?? context.appTheme.onNegative,
-                              size: 20,
-                              iconPadding: 0,
-                              onTap: () => setState(() {
-                                _isShow = !_isShow;
-                              }),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
+              ? Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Row(
                         children: [
+                          const Spacer(),
+                          RoundedIconButton(
+                            iconPath: AppIcons.close,
+                            iconColor: widget.color ?? context.appTheme.onNegative,
+                            size: 35,
+                            iconPadding: 9,
+                            onTap: () => setState(() {
+                              _isShow = !_isShow;
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        children: [
+                          Gap.h16,
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: IconWithText(
@@ -94,10 +95,11 @@ class _HelpBoxState extends State<HelpBox> {
                             ),
                           ),
                           widget.bottomWidget ?? Gap.noGap,
+                          Gap.h16,
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 )
               : Gap.noGap,
         ),

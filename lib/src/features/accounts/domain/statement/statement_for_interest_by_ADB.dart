@@ -49,7 +49,8 @@ class StatementWithAverageDailyBalance extends Statement {
     // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement._balanceAtEndDate + previousStatement.interest + installmentsAmount;
+    double tCurrentBalance =
+        previousStatement._balanceAtEndDate + previousStatement.interest + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -68,7 +69,7 @@ class StatementWithAverageDailyBalance extends Statement {
       }
 
       if (txn is CreditPayment) {
-        paidInBillingCycle += txn.amount;
+        paidInBillingCycle += txn.afterAdjustedAmount;
 
         tDailyBalanceSum += tCurrentBalance * tCheckpointDateTime.getDaysDifferent(txn.dateTime);
         tCurrentBalance -= txn.amount;
@@ -81,7 +82,7 @@ class StatementWithAverageDailyBalance extends Statement {
       final txn = txnsInGracePeriod[i];
 
       if (txn is CreditPayment) {
-        paidInGracePeriod += txn.amount;
+        paidInGracePeriod += txn.afterAdjustedAmount;
       }
     }
 
