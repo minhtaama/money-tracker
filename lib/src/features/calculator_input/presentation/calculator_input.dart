@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +24,7 @@ class CalculatorInput extends StatefulWidget {
     this.initialValue,
     this.disableErrorText = false,
     this.isDense = false,
+    this.underLineBorder = true,
     this.textAlign = TextAlign.start,
     this.validator,
     this.fontSize = 22,
@@ -37,6 +40,7 @@ class CalculatorInput extends StatefulWidget {
   final double fontSize;
   final bool disableErrorText;
   final bool isDense;
+  final bool underLineBorder;
   final TextAlign textAlign;
   //final double? initialValue;
 
@@ -67,10 +71,9 @@ class _CalculatorInputState extends State<CalculatorInput> {
   // @override
   // void didUpdateWidget(covariant CalculatorInput oldWidget) {
   //   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-  //     if (widget.initialValue != null && widget.initialValue != oldWidget.initialValue) {
-  //       _formattedStringValue = _formatNumberInGroup(widget.initialValue.toString());
-  //       _controller.text = _formattedStringValue;
-  //       widget.formattedResultOutput(_formattedStringValue);
+  //     if (widget.initialValue != null) {
+  //       _controller.text = widget.initialValue!;
+  //       widget.formattedResultOutput(widget.initialValue!);
   //     }
   //   });
   //   super.didUpdateWidget(oldWidget);
@@ -90,15 +93,21 @@ class _CalculatorInputState extends State<CalculatorInput> {
       decoration: InputDecoration(
         isDense: widget.isDense,
         focusColor: context.appTheme.primary,
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: widget.focusColor, width: 2),
-        ),
-        errorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: context.appTheme.negative, width: 1),
-        ),
+        enabledBorder: widget.underLineBorder
+            ? UnderlineInputBorder(
+                borderSide: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
+              )
+            : InputBorder.none,
+        focusedBorder: widget.underLineBorder
+            ? UnderlineInputBorder(
+                borderSide: BorderSide(color: widget.focusColor, width: 2),
+              )
+            : InputBorder.none,
+        errorBorder: widget.underLineBorder
+            ? UnderlineInputBorder(
+                borderSide: BorderSide(color: context.appTheme.negative, width: 1),
+              )
+            : InputBorder.none,
         hintText: widget.hintText,
         hintStyle: kHeader2TextStyle.copyWith(
           color: context.appTheme.backgroundNegative.withOpacity(0.5),
@@ -106,7 +115,10 @@ class _CalculatorInputState extends State<CalculatorInput> {
         ),
         errorStyle: widget.disableErrorText
             ? const TextStyle(height: 0.1, color: Colors.transparent, fontSize: 0)
-            : kHeader4TextStyle.copyWith(fontSize: 12, color: context.appTheme.negative),
+            : kHeader4TextStyle.copyWith(
+                fontSize: 12,
+                color: context.appTheme.negative,
+              ),
         errorMaxLines: 2,
         contentPadding: EdgeInsets.zero,
       ),
@@ -142,8 +154,7 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
-      : super(key: key);
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput}) : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__

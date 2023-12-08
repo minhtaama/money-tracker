@@ -74,8 +74,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
           padding: EdgeInsets.zero,
           elevation: 0,
           border: Border.all(
-              color: context.appTheme.backgroundNegative
-                  .withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+              color: context.appTheme.backgroundNegative.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -89,8 +88,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
                       if (_outputDateTime != null) {
                         setState(() {
-                          _outputDateTime =
-                              _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                          _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
                         });
                         widget.onChanged(_outputDateTime!, _outputStatement);
                       }
@@ -107,8 +105,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                               config: _customConfig(
                                 context,
                                 firstDate: widget.isForPayment ? _earliestMonthViewable : null,
-                                selectableDayPredicate:
-                                    widget.isForPayment ? _selectableDayPredicate : null,
+                                selectableDayPredicate: widget.isForPayment ? _selectableDayPredicate : null,
                                 dayBuilder: _dayBuilder,
                               ),
                               currentDay: _outputDateTime,
@@ -119,30 +116,38 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                     _showCustomCalendarDialog(
                                         context: context,
                                         builder: (_, __) {
-                                          return AlertDialog(
-                                            surfaceTintColor: Colors.transparent,
-                                            backgroundColor: context.appTheme.negative,
-                                            content: IconWithText(
-                                              color: context.appTheme.onNegative,
-                                              text:
-                                                  'You can only add transaction after latest checkpoint'
-                                                      .hardcoded,
+                                          return Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: AlertDialog(
+                                              surfaceTintColor: Colors.transparent,
+                                              backgroundColor: context.appTheme.negative,
+                                              elevation: 5,
+                                              content: IconWithText(
+                                                iconPath: AppIcons.sadFace,
+                                                color: context.appTheme.onNegative,
+                                                header:
+                                                    'You can only add transaction after [latest checkpoint]'.hardcoded,
+                                              ),
                                             ),
                                           );
                                         });
-                                  } else if (widget.creditAccount!
-                                      .isBeforeStatementHasLastPayment(dateTime)) {
+                                  } else if (widget.creditAccount!.isBeforeStatementHasLastPayment(dateTime)) {
                                     _showCustomCalendarDialog(
                                         context: context,
                                         builder: (_, __) {
-                                          return AlertDialog(
-                                            surfaceTintColor: Colors.transparent,
-                                            backgroundColor: context.appTheme.negative,
-                                            content: IconWithText(
-                                              color: context.appTheme.onNegative,
-                                              text:
-                                                  'You can only add transactions since the statement contains the latest payment'
-                                                      .hardcoded,
+                                          return Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: AlertDialog(
+                                              surfaceTintColor: Colors.transparent,
+                                              backgroundColor: context.appTheme.negative,
+                                              elevation: 5,
+                                              content: IconWithText(
+                                                iconPath: AppIcons.sadFace,
+                                                color: context.appTheme.onNegative,
+                                                header:
+                                                    'Oops! You can only add transactions since [the statement contains the latest payment]'
+                                                        .hardcoded,
+                                              ),
                                             ),
                                           );
                                         });
@@ -162,32 +167,28 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                   child: widget.creditAccount!.earliestPayableDate == null
                                       ? IconWithText(
                                           iconPath: AppIcons.done,
-                                          text:
+                                          header:
                                               'This credit account currently has no credit/BNPL transaction needed to pay'
                                                   .hardcoded,
                                         )
                                       : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
-                                              .copyWith(
-                                                  month:
-                                                      widget.creditAccount!.earliestPayableDate!.month -
-                                                          1))
+                                              .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
                                           ? IconWithText(
                                               iconPath: AppIcons.done,
-                                              text: 'No transactions before this time'.hardcoded,
+                                              header: 'No transactions before this time'.hardcoded,
                                             )
                                           : selectedDay != null
                                               ? CreditInfo(
                                                   chosenDateTime: selectedDay,
-                                                  isForPayment: widget.isForPayment,
-                                                  statement:
-                                                      widget.creditAccount!.statementAt(selectedDay),
+                                                  showPaymentAmount: widget.isForPayment,
+                                                  statement: widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
                                                   }),
                                                 )
                                               : IconWithText(
                                                   iconPath: AppIcons.today,
-                                                  text:
+                                                  header:
                                                       'Select a payment day.\n Spending transaction can be paid will be displayed here'
                                                           .hardcoded,
                                                 ),
@@ -235,8 +236,7 @@ extension _Details on _DateTimeSelectorCreditState {
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
         ? Border.all(
-            color:
-                isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
           )
         : null;
 
@@ -295,8 +295,8 @@ extension _Details on _DateTimeSelectorCreditState {
       return DateTime(DateTime.now().year, DateTime.now().month);
     }
 
-    return DateTime(widget.creditAccount!.earliestPayableDate!.year,
-        widget.creditAccount!.earliestPayableDate!.month - 1);
+    return DateTime(
+        widget.creditAccount!.earliestPayableDate!.year, widget.creditAccount!.earliestPayableDate!.month - 1);
   }
 
   bool _canAddTransaction(DateTime dateTime) {

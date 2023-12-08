@@ -69,11 +69,8 @@ abstract class Statement {
     if (checkpoint != null) {
       return math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
     } else {
-      return math.max(
-              0,
-              _paidInBillingCycle -
-                  previousStatement._balanceToPayAtEndDate -
-                  spentInBillingCycleExcludeInstallments) +
+      return math.max(0,
+              _paidInBillingCycle - previousStatement._balanceToPayAtEndDate - spentInBillingCycleExcludeInstallments) +
           math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
     }
   }
@@ -109,9 +106,7 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
-        ? transactionsInGracePeriod
-        : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -121,7 +116,7 @@ abstract class Statement {
     return list;
   }
 
-  double getFullPaymentAmountAt(DateTime dateTime) {
+  double getBalanceAmountAt(DateTime dateTime) {
     double x;
 
     double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
@@ -147,9 +142,7 @@ abstract class Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay +
-            spentInGracePeriodBeforeDateTimeExcludeInstallments -
-            _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _paidInGracePeriod;
       }
     } else {
       x = previousStatement._balanceToPayAtEndDate +

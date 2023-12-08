@@ -97,10 +97,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return [
         Gap.h16,
         IconWithText(
-          text:
+          header:
               'You don\'t have any transactions in ${dayBeginOfMonth.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false, hasYear: false)}.\nCreate a new one by tapping \'+\' button'
                   .hardcoded,
-          textSize: 14,
+          headerSize: 14,
           iconPath: AppIcons.budgets,
         ),
         Gap.h48,

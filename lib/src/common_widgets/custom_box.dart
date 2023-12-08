@@ -4,9 +4,10 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 
 class CustomBox extends StatelessWidget {
-  const CustomBox({super.key, required this.child, this.constraints});
+  const CustomBox({super.key, required this.child, this.constraints, this.padding});
 
   final Widget child;
+  final EdgeInsets? padding;
   final BoxConstraints? constraints;
 
   @override
@@ -15,7 +16,7 @@ class CustomBox extends StatelessWidget {
       duration: k150msDuration,
       width: double.infinity,
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(6),
+      padding: padding ?? const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
         border: Border.all(

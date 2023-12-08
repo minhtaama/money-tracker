@@ -108,7 +108,7 @@ class _ListState extends State<_List> {
                 ? [
                     IconWithText(
                       iconPath: AppIcons.done,
-                      text: 'No ongoing installments at selected date',
+                      header: 'No ongoing installments at selected date',
                     )
                   ]
                 : [

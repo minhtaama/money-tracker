@@ -125,7 +125,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
               : [
                   IconWithText(
                     iconPath: AppIcons.done,
-                    text: 'No transactions has made before this day'.hardcoded,
+                    header: 'No transactions has made before this day'.hardcoded,
                   ),
                 ];
         },
@@ -528,7 +528,7 @@ class _SummaryCard extends StatelessWidget {
                   IconWithText(
                     iconPath: AppIcons.statementCheckpoint,
                     iconSize: 30,
-                    text: 'This statement has checkpoint',
+                    header: 'This statement has checkpoint',
                   ),
                   Gap.divider(context, indent: 0),
                   _buildText(

@@ -110,10 +110,10 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                   children: [
                     Gap.h8,
                     IconWithText(
-                        text:
+                        header:
                             'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
                                 .hardcoded,
-                        textSize: 14,
+                        headerSize: 14,
                         iconPath: AppIcons.accounts,
                         onTap: () {
                           context.pop();

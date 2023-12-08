@@ -147,11 +147,11 @@ class TransactionRepository {
     required RegularAccount fromAccount,
     required String? note,
     required bool isFullPayment,
-    required double? adjustedBalance,
+    required double? adjustment,
   }) {
     final creditPaymentDetails = CreditPaymentDetailsDb(
       isFullPayment: isFullPayment,
-      adjustedBalance: adjustedBalance,
+      adjustedBalance: adjustment,
     );
 
     final newTransaction = TransactionDb(

@@ -1,17 +1,20 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/help_box.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -32,22 +35,99 @@ class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
 
 class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _controller = TextEditingController();
+  final _paymentInputController = TextEditingController();
+  final _remainingInputController = TextEditingController();
+
   Statement? _statement;
 
+  bool get _hidePayment => _statement == null;
+
+  double get _totalBalanceAmount =>
+      _statement == null || _dateTime == null ? 0 : _statement!.getBalanceAmountAt(_dateTime!);
+
+  String get _paymentCalOutputFormattedAmount => _paymentInputController.text;
+  String get _remainingCalOutputFormattedAmount => _remainingInputController.text;
+
+  double? _userRemainingAmount;
+
+  void _onPaymentInputChange(String value) {
+    setState(() {
+      _paymentInputController.text = value;
+      _remainingInputController.clear();
+    });
+
+    _userRemainingAmount = null;
+
+    if (_userPaymentAmount != null && _userPaymentAmount! > _totalBalanceAmount) {
+      //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
+      _adjustment = _totalBalanceAmount - _userPaymentAmount!;
+    } else {
+      _adjustment = null;
+    }
+
+    print(_adjustment);
+  }
+
+  void _onRemainingInputChange(String value) {
+    setState(() {
+      _remainingInputController.text = value;
+    });
+
+    _userRemainingAmount = CalService.formatToDouble(value);
+
+    // Because: afterAdjustedAmount = userPaymentAmount + adjustment
+    // Then: userRemaining = totalBalance - afterAdjustedAmount
+    // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
+    _adjustment = _totalBalanceAmount - _userPaymentAmount! - _userRemainingAmount!;
+
+    print(_adjustment);
+  }
+
+  void _onFullPaymentCheckboxChange(bool value) {
+    _isFullPayment = value;
+
+    _remainingInputController.clear();
+    _userRemainingAmount = null;
+
+    if (_userPaymentAmount != null && _userPaymentAmount! > _totalBalanceAmount) {
+      //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
+      _adjustment = _totalBalanceAmount - _userPaymentAmount!;
+    } else {
+      _adjustment = null;
+    }
+
+    print(_adjustment);
+  }
+
+  void _submit() {
+    // By validating, no important value can be null
+    if (_formKey.currentState!.validate()) {
+      ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
+            dateTime: _dateTime!,
+            amount: _userPaymentAmount!,
+            account: _creditAccount!,
+            fromAccount: _fromRegularAccount!,
+            note: _note,
+            isFullPayment: _isFullPayment,
+            adjustment: _adjustment,
+          );
+      context.pop();
+    }
+  }
+
   ////////////////////// VALUE OUTPUT TO DATABASE /////////////////////////
+  double? get _userPaymentAmount => CalService.formatToDouble(_paymentCalOutputFormattedAmount);
+
   DateTime? _dateTime;
   String? _note;
 
   CreditAccount? _creditAccount;
   RegularAccount? _fromRegularAccount;
 
-  double? get _outputAmount => CalService.formatToDouble(_calOutputFormattedAmount);
-
   //TODO: CONTINUE HERE!!!!!
 
   bool _isFullPayment = false;
-  double? _adjustedBalance;
+  double? _adjustment;
   ///////////////////////////////////////////////////////////////////////
 
   @override
@@ -108,7 +188,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                       validator: (_) => _fromRegularAccountValidator(),
                       onChangedAccount: (newAccount) {
                         setState(() {
-                          _fromRegularAccount = newAccount as RegularAccount;
+                          _fromRegularAccount = newAccount != null ? (newAccount as RegularAccount) : null;
                         });
                       },
                     ),
@@ -121,45 +201,109 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
           HideableContainer(
             hidden: _hidePayment,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CreditInfo(
-                  isForPayment: true,
-                  chosenDateTime: _dateTime?.onlyYearMonthDay,
-                  noBorder: false,
-                  statement: _statement,
-                ),
-                Gap.h16,
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const CurrencyIcon(),
-                    Gap.w16,
-                    Expanded(
-                      child: CalculatorInput(
-                        hintText: 'Payment Amount',
-                        controller: _controller,
-                        focusColor: context.appTheme.primary,
-                        validator: (_) => _calculatorValidator(context),
-                        formattedResultOutput: (value) {
-                          setState(() {
-                            _controller.text = value;
-                          });
-                        },
+                CustomBox(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0),
+                        child: CreditInfo(
+                          showPaymentAmount: true,
+                          showList: false,
+                          chosenDateTime: _dateTime?.onlyYearMonthDay,
+                          statement: _statement,
+                        ),
                       ),
-                    ),
-                    Gap.w8,
-                  ],
+                      Gap.h16,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CurrencyIcon(),
+                          Gap.w8,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 2.0),
+                                  child: Text(
+                                    'PAYMENT AMOUNT:',
+                                    style: kHeader2TextStyle.copyWith(
+                                      fontSize: 12,
+                                      color: context.appTheme.backgroundNegative,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4.0, right: 5.0),
+                                      child: SvgIcon(
+                                        AppIcons.handCoin,
+                                        size: 30,
+                                        color: context.appTheme.backgroundNegative,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: CalculatorInput(
+                                        hintText: 'XXX',
+                                        controller: _paymentInputController,
+                                        isDense: true,
+                                        focusColor: context.appTheme.primary,
+                                        validator: (_) => _paymentInputValidator(context),
+                                        formattedResultOutput: _onPaymentInputChange,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Gap.w8,
+                        ],
+                      ),
+                      Gap.h4,
+                    ],
+                  ),
                 ),
-                Gap.h16,
+                HelpBox(
+                  isShow: _showHelpBox,
+                  iconPath: AppIcons.sadFace,
+                  margin: const EdgeInsets.only(top: 8),
+                  header: 'Payment is so much higher than balance left at selected day!'.hardcoded,
+                  text: 'Maybe there are other spending transactions before this day?'.hardcoded,
+                ),
+                CustomCheckbox(
+                  onChanged: _onFullPaymentCheckboxChange,
+                  label: 'Full payment',
+                  showOptionalWidgetWhenValueIsFalse: true,
+                  optionalWidget: Column(
+                    children: [
+                      InlineTextFormField(
+                        prefixText: 'Balance remaining:',
+                        suffixText: context.currentSettings.currency.code,
+                        textSize: 14,
+                        widget: CalculatorInput(
+                          hintText: CalService.formatCurrency(
+                              context, max(0, _totalBalanceAmount - (_userPaymentAmount ?? 0))),
+                          textAlign: TextAlign.right,
+                          controller: _remainingInputController,
+                          isDense: true,
+                          fontSize: 16,
+                          focusColor: context.appTheme.primary,
+                          validator: (_) => _remainingInputValidator(context),
+                          formattedResultOutput: _onRemainingInputChange,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
-          _statement != null
-              ? CustomCheckbox(
-                  onChanged: (value) => _isFullPayment = value,
-                  label: 'Full payment',
-                )
-              : Gap.noGap,
           Gap.h16,
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -191,39 +335,15 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   }
 }
 
-extension _FunctionsAndGetters on _AddCreditPaymentModalScreenState {
-  bool get _hidePayment => _statement == null;
-
-  String get _calOutputFormattedAmount => _controller.text;
-
-  double get _fullPaymentAmount =>
-      _statement == null || _dateTime == null ? 0 : _statement!.getFullPaymentAmountAt(_dateTime!);
-
-  String _fullPaymentFormattedAmount(BuildContext context) =>
-      CalService.formatCurrency(context, _fullPaymentAmount, forceWithDecimalDigits: true);
-
-  void _submit() {
-    // By validating, no important value can be null
-    if (_formKey.currentState!.validate()) {
-      ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
-            dateTime: _dateTime!,
-            amount: _outputAmount!,
-            account: _creditAccount!,
-            fromAccount: _fromRegularAccount!,
-            note: _note,
-            isFullPayment: _isFullPayment,
-            adjustedBalance: _adjustedBalance,
-          );
-      context.pop();
-    }
-  }
-}
-
 extension _Validators on _AddCreditPaymentModalScreenState {
   bool get _isButtonDisable =>
-      CalService.formatToDouble(_calOutputFormattedAmount) == null ||
-      CalService.formatToDouble(_calOutputFormattedAmount) == 0 ||
+      CalService.formatToDouble(_paymentCalOutputFormattedAmount) == null ||
+      CalService.formatToDouble(_paymentCalOutputFormattedAmount) == 0 ||
       _fromRegularAccount == null;
+
+  bool get _showHelpBox => _userPaymentAmount != null
+      ? _userPaymentAmount! >= _totalBalanceAmount + (_totalBalanceAmount * 10 / 100)
+      : false;
 
   String? _dateTimeValidator() {
     if (_dateTime == null) {
@@ -232,16 +352,34 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     return null;
   }
 
-  String? _calculatorValidator(BuildContext context) {
-    if (_outputAmount == null || _outputAmount == 0) {
+  String? _paymentInputValidator(BuildContext context) {
+    if (_userPaymentAmount == null || _userPaymentAmount == 0) {
       return 'Invalid amount'.hardcoded;
     }
     if (_statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
-    // if (_outputAmount! > CalService.formatToDouble(_fullPaymentFormattedAmount(context))!) {
-    //   return 'Value is higher than full payment amount'.hardcoded;
-    // }
+    return null;
+  }
+
+  String? _remainingInputValidator(BuildContext context) {
+    if (_statement == null) {
+      return 'No statement found in selected day'.hardcoded;
+    }
+
+    if (_userRemainingAmount != null && _userRemainingAmount! > _totalBalanceAmount) {
+      return 'Invalid amount'.hardcoded;
+    }
+
+    // When user is not tick as full payment but not specify a remaining amount
+    if (max(0, _totalBalanceAmount - (_userPaymentAmount ?? 0)) == 0) {
+      return 'Invalid amount 2'.hardcoded;
+    }
+
+    //TODO: Show 'Balance adjusted icon' if this is not a full payment and user specified a remaining balance
+    //TODO: Show 'Full payment icon' if this is a full payment
+    //TODO: Change calculation of payment, now using 'afterAdjustedAmount'
+
     return null;
   }
 
@@ -259,217 +397,3 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     return null;
   }
 }
-
-class _Button extends StatefulWidget {
-  const _Button({
-    this.iconKey,
-    required this.iconPath,
-    required this.label,
-    this.onTap,
-    this.isSelected = false,
-    this.isDisable = false,
-  });
-  final Key? iconKey;
-  final String iconPath;
-  final String label;
-  final bool isSelected;
-  final bool isDisable;
-  final VoidCallback? onTap;
-
-  @override
-  State<_Button> createState() => _ButtonState();
-}
-
-class _ButtonState extends State<_Button> {
-  bool _isSelected = false;
-  bool _isDisable = false;
-
-  @override
-  void didUpdateWidget(covariant _Button oldWidget) {
-    setState(() {
-      _isSelected = widget.isSelected;
-      _isDisable = widget.isDisable;
-    });
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CustomInkWell(
-          key: widget.iconKey,
-          onTap: _isDisable ? null : widget.onTap,
-          child: AnimatedContainer(
-            duration: k250msDuration,
-            curve: Curves.easeInOut,
-            height: 35,
-            width: 35,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(1000),
-              color: _isSelected
-                  ? context.appTheme.primary.withOpacity(_isDisable ? 0.7 : 1)
-                  : AppColors.greyBgr(context).withOpacity(_isDisable ? 0.7 : 1),
-            ),
-            child: SvgIcon(
-              widget.iconPath,
-              color: _isSelected
-                  ? context.appTheme.primaryNegative.withOpacity(_isDisable ? 0.3 : 1)
-                  : context.appTheme.backgroundNegative.withOpacity(_isDisable ? 0.3 : 1),
-            ),
-          ),
-        ),
-        Gap.h4,
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 50),
-          child: Text(
-            widget.label,
-            style: kHeader2TextStyle.copyWith(
-                fontSize: 11, color: context.appTheme.backgroundNegative.withOpacity(_isDisable ? 0.3 : 1)),
-            textAlign: TextAlign.center,
-          ),
-        )
-      ],
-    );
-  }
-}
-
-// class _PaymentAmountInfo extends StatefulWidget {
-//   const _PaymentAmountInfo({
-//     required this.statement,
-//     required this.minimumPayment,
-//     required this.onChange,
-//   });
-//   final Statement? statement;
-//   final double minimumPayment;
-//   final ValueSetter<CreditPaymentType> onChange;
-//
-//   @override
-//   State<_PaymentAmountInfo> createState() => _PaymentAmountInfoState();
-// }
-//
-// class _PaymentAmountInfoState extends State<_PaymentAmountInfo> {
-//   final _ancestorKey = GlobalKey();
-//   final _firstKey = GlobalKey();
-//   final _middleKey = GlobalKey();
-//   final _lastKey = GlobalKey();
-//
-//   Offset _containerOffset = Offset.zero;
-//   double _containerWidth = 0;
-//   double _containerWidthAtFirst = 0;
-//   double _containerWidthAtMiddle = 0;
-//   double _animatedContainerWidth = 0;
-//
-//   CreditPaymentType? _type;
-//
-//   @override
-//   void initState() {
-//     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-//       if (mounted) {
-//         RenderBox ancestorRenderBox = _ancestorKey.currentContext?.findRenderObject() as RenderBox;
-//         RenderBox firstRenderBox = _firstKey.currentContext?.findRenderObject() as RenderBox;
-//         RenderBox middleRenderBox = _middleKey.currentContext?.findRenderObject() as RenderBox;
-//         RenderBox lastRenderBox = _lastKey.currentContext?.findRenderObject() as RenderBox;
-//
-//         Offset firstOffset = firstRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
-//         Offset middleOffset = middleRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
-//         Offset lastOffset = lastRenderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
-//
-//         setState(() {
-//           _containerOffset = Offset(0, firstOffset.dy).translate(0.3, 0);
-//           _containerWidth = lastOffset.dx - _containerOffset.dx + 35 - 0.3;
-//           _containerWidthAtFirst = firstOffset.dx - _containerOffset.dx + 35 - 0.3;
-//           _containerWidthAtMiddle = middleOffset.dx - _containerOffset.dx + 35 - 0.3;
-//         });
-//       }
-//     });
-//     super.initState();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         Stack(
-//           key: _ancestorKey,
-//           alignment: Alignment.topLeft,
-//           children: [
-//             Positioned(
-//               top: _containerOffset.dy,
-//               left: _containerOffset.dx,
-//               child: Container(
-//                 height: 35,
-//                 width: _containerWidth,
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(1000),
-//                   color: AppColors.grey(context).withOpacity(0.6),
-//                 ),
-//               ),
-//             ),
-//             Positioned(
-//               top: _containerOffset.dy,
-//               left: _containerOffset.dx,
-//               child: AnimatedContainer(
-//                 duration: k150msDuration,
-//                 height: 35,
-//                 width: _animatedContainerWidth,
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(1000),
-//                   color: context.appTheme.primary.withOpacity(0.55),
-//                 ),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.only(left: 48.0),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   _Button(
-//                     iconKey: _firstKey,
-//                     iconPath: AppIcons.minus,
-//                     label: '< Min',
-//                     isSelected: _type != null,
-//                     onTap: () {
-//                       setState(() {
-//                         _animatedContainerWidth = _containerWidthAtFirst;
-//                         _type = CreditPaymentType.underMinimum;
-//                         widget.onChange(_type!);
-//                       });
-//                     },
-//                   ),
-//                   _Button(
-//                     iconKey: _middleKey,
-//                     iconPath: AppIcons.installment,
-//                     label: '≥ Min',
-//                     isSelected: _type == CreditPaymentType.minimumOrHigher || _type == CreditPaymentType.full,
-//                     onTap: () {
-//                       setState(() {
-//                         _animatedContainerWidth = _containerWidthAtMiddle;
-//                         _type = CreditPaymentType.minimumOrHigher;
-//                         widget.onChange(_type!);
-//                       });
-//                     },
-//                   ),
-//                   _Button(
-//                     iconKey: _lastKey,
-//                     iconPath: AppIcons.done,
-//                     label: 'Full',
-//                     isSelected: _type == CreditPaymentType.full,
-//                     onTap: () {
-//                       setState(() {
-//                         _animatedContainerWidth = _containerWidth;
-//                         _type = CreditPaymentType.full;
-//                         widget.onChange(_type!);
-//                       });
-//                     },
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ],
-//     );
-//   }
-// }

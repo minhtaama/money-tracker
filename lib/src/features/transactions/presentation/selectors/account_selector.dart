@@ -113,10 +113,10 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                   children: [
                     Gap.h8,
                     IconWithText(
-                      text:
+                      header:
                           'No${widget.accountType == AccountType.credit ? ' credit' : ''} account.\n Tap here to create a first one'
                               .hardcoded,
-                      textSize: 14,
+                      headerSize: 14,
                       iconPath: AppIcons.accounts,
                       onTap: () {
                         context.pop();

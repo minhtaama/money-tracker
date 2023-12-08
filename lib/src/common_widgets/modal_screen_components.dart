@@ -21,7 +21,7 @@ class CurrencyIcon extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       margin: EdgeInsets.zero,
       color: AppColors.greyBgr(context),
-      borderRadius: BorderRadius.circular(1000),
+      borderRadius: BorderRadius.circular(16),
       child: FittedBox(
         child: Text(
           context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,

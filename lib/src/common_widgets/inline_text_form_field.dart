@@ -11,6 +11,7 @@ class InlineTextFormField extends StatelessWidget {
       this.onChanged,
       this.prefixText,
       this.suffixText,
+      this.textSize,
       this.suffixWidget,
       this.widget,
       this.width,
@@ -19,6 +20,7 @@ class InlineTextFormField extends StatelessWidget {
   final String? prefixText;
   final String? suffixText;
   final Widget? suffixWidget;
+  final double? textSize;
   final Widget? widget;
   final double? width;
   final int? maxLength;
@@ -35,7 +37,7 @@ class InlineTextFormField extends StatelessWidget {
         prefixText != null
             ? Text(
                 prefixText!,
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: textSize),
               )
             : Gap.noGap,
         prefixText != null ? Gap.w8 : Gap.noGap,
@@ -78,7 +80,7 @@ class InlineTextFormField extends StatelessWidget {
         suffixText != null
             ? Text(
                 suffixText!,
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: textSize),
               )
             : Gap.noGap,
         suffixWidget != null ? Gap.w16 : Gap.noGap,

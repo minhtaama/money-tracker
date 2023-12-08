@@ -6,10 +6,22 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 class IconWithText extends StatelessWidget {
-  const IconWithText({super.key, this.iconPath, this.text, this.onTap, this.color, this.iconSize, this.textSize});
+  const IconWithText({
+    super.key,
+    this.iconPath,
+    this.header,
+    this.onTap,
+    this.color,
+    this.iconSize,
+    this.headerSize,
+    this.text,
+    this.textSize,
+  });
 
   final String? iconPath;
   final double? iconSize;
+  final String? header;
+  final double? headerSize;
   final String? text;
   final double? textSize;
   final VoidCallback? onTap;
@@ -24,16 +36,34 @@ class IconWithText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgIcon(
-            iconPath ?? AppIcons.minus,
-            size: iconSize ?? 40,
-            color: color ?? AppColors.grey(context),
+          Wrap(
+            runAlignment: WrapAlignment.center,
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              SvgIcon(
+                iconPath ?? AppIcons.minus,
+                size: iconSize ?? 40,
+                color: color ?? AppColors.grey(context),
+              ),
+              header != null ? Gap.w8 : Gap.noGap,
+              header != null
+                  ? Text(
+                      header!,
+                      style: kHeader2TextStyle.copyWith(
+                          color: color ?? AppColors.grey(context), fontSize: headerSize ?? 13),
+                      textAlign: TextAlign.center,
+                    )
+                  : Gap.noGap,
+            ],
           ),
-          Text(
-            text ?? '',
-            style: kHeader2TextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
-            textAlign: TextAlign.center,
-          ),
+          text != null
+              ? Text(
+                  text!,
+                  style: kHeader4TextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
+                  textAlign: TextAlign.center,
+                )
+              : Gap.noGap,
         ],
       ),
     );

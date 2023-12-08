@@ -54,6 +54,7 @@ class AppIcons {
   static String get download => 'assets/svg/app/download.svg';
   static String get upload => 'assets/svg/app/upload.svg';
   static String get minus => 'assets/svg/app/minus.svg';
+  static String get close => 'assets/svg/app/close.svg';
   static String get installment => 'assets/svg/app/installment.svg';
   static String get fullPayment => 'assets/svg/app/fullPayment.svg';
   static String get handCoin => 'assets/svg/app/hand_coin.svg';
@@ -62,6 +63,8 @@ class AppIcons {
   static String get receiptEdit => 'assets/svg/app/receipt_edit.svg';
   static String get credit => 'assets/svg/app/credit.svg';
   static String get statementCheckpoint => 'assets/svg/app/statement_checkpoint.svg';
+  static String get sadFace => 'assets/svg/app/sad_face.svg';
+  static String get fykFace => 'assets/svg/app/fyk_face.svg';
 
   static String get defaultIcon => 'assets/svg/app/default.svg';
 

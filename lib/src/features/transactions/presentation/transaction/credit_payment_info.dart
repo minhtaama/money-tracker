@@ -22,14 +22,16 @@ import 'txn_components.dart';
 class CreditInfo extends StatelessWidget {
   const CreditInfo({
     super.key,
-    required this.isForPayment,
+    required this.showPaymentAmount,
     required this.statement,
     this.noBorder = true,
+    this.showList = true,
     this.chosenDateTime,
     this.onDateTap,
   });
 
-  final bool isForPayment;
+  final bool showPaymentAmount;
+  final bool showList;
   final Statement? statement;
 
   final bool noBorder;
@@ -40,16 +42,21 @@ class CreditInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return !noBorder
         ? CustomBox(
-            child: _List(
-              statement: statement,
-              isForPayment: isForPayment,
-              onDateTap: onDateTap,
-              chosenDateTime: chosenDateTime,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _List(
+                statement: statement,
+                showList: showList,
+                showPaymentAmount: showPaymentAmount,
+                onDateTap: onDateTap,
+                chosenDateTime: chosenDateTime,
+              ),
             ),
           )
         : _List(
             statement: statement,
-            isForPayment: isForPayment,
+            showList: showList,
+            showPaymentAmount: showPaymentAmount,
             onDateTap: onDateTap,
             chosenDateTime: chosenDateTime,
           );
@@ -57,10 +64,12 @@ class CreditInfo extends StatelessWidget {
 }
 
 class _List extends StatefulWidget {
-  const _List({this.statement, required this.isForPayment, this.onDateTap, this.chosenDateTime});
+  const _List(
+      {this.statement, required this.showPaymentAmount, this.onDateTap, this.chosenDateTime, this.showList = true});
 
   final Statement? statement;
-  final bool isForPayment;
+  final bool showPaymentAmount;
+  final bool showList;
   final void Function(DateTime)? onDateTap;
   final DateTime? chosenDateTime;
 
@@ -141,7 +150,7 @@ class _ListState extends State<_List> {
   @override
   void initState() {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (mounted) {
+      if (mounted && widget.showList) {
         setState(() {
           _height = _key.currentContext!.size!.height - 30;
         });
@@ -153,7 +162,7 @@ class _ListState extends State<_List> {
   @override
   void didUpdateWidget(covariant _List oldWidget) {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (mounted) {
+      if (mounted && widget.showList) {
         setState(() {
           _height = _key.currentContext!.size!.height - 30;
         });
@@ -168,110 +177,125 @@ class _ListState extends State<_List> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 200),
-          child: SingleChildScrollView(
-            reverse: true,
-            child: Stack(
-              alignment: Alignment.centerLeft,
-              children: [
-                widget.statement != null
-                    ? Container(
-                        margin: const EdgeInsets.only(left: 13),
-                        color: AppColors.greyBorder(context),
-                        width: 1,
-                        height: _height,
-                      )
-                    : Gap.noGap,
-                widget.statement != null
-                    ? Column(
-                        key: _key,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _Header(
-                            dateTime: widget.statement!.startDate,
-                            verticalPadding: 4,
-                            h1: 'Billing cycle start',
-                            h2: 'Carry: ${balanceToPay(context)} ${context.currentSettings.currency.code} ${interest(context) != '0.00' ? '+ ${interest(context)} ${context.currentSettings.currency.code} interest' : ''}',
-                          ),
-                          ...buildTransactionBeforeTile(context, txnsInBillingCycleBeforePreviousDueDate),
-                          widget.statement!.previousStatement.dueDate != Calendar.minDate
-                              ? _Header(
-                                  dateTime: widget.statement!.previousStatement.dueDate,
+        widget.showList
+            ? ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      widget.statement != null
+                          ? Container(
+                              margin: const EdgeInsets.only(left: 13),
+                              color: AppColors.greyBorder(context),
+                              width: 1,
+                              height: _height,
+                            )
+                          : Gap.noGap,
+                      widget.statement != null
+                          ? Column(
+                              key: _key,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _Header(
+                                  dateTime: widget.statement!.startDate,
                                   verticalPadding: 4,
-                                  h1: 'Previous due date'.hardcoded,
-                                  h2: 'End of last grace period'.hardcoded,
-                                )
-                              : Gap.noGap,
-                          ...buildInstallmentTransactionTile(context),
-                          ...buildTransactionBeforeTile(context, txnsInBillingCycleAfterPreviousDueDate),
-                          widget.chosenDateTime == null || !widget.chosenDateTime!.isBefore(nextStatementDateTime)
-                              ? _Header(
-                                  isSelectedDay: widget.chosenDateTime == null
+                                  h1: 'Billing cycle start',
+                                  h2: 'Carry: ${balanceToPay(context)} ${context.currentSettings.currency.code} ${interest! > 0 ? '+~ ${interestString(context)} ${context.currentSettings.currency.code} interest' : ''}',
+                                ),
+                                ...buildTransactionBeforeTile(context, txnsInBillingCycleBeforePreviousDueDate),
+                                widget.statement!.previousStatement.dueDate != Calendar.minDate
+                                    ? _Header(
+                                        dateTime: widget.statement!.previousStatement.dueDate,
+                                        verticalPadding: 4,
+                                        h1: 'Previous due date'.hardcoded,
+                                        h2: 'End of last grace period'.hardcoded,
+                                      )
+                                    : Gap.noGap,
+                                ...buildInstallmentTransactionTile(context),
+                                ...buildTransactionBeforeTile(context, txnsInBillingCycleAfterPreviousDueDate),
+                                widget.chosenDateTime == null || !widget.chosenDateTime!.isBefore(nextStatementDateTime)
+                                    ? _Header(
+                                        isSelectedDay: widget.chosenDateTime == null
+                                            ? false
+                                            : widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
+                                        dateTime: nextStatementDateTime,
+                                        h1: widget.statement!.checkpoint != null
+                                            ? 'Statement date with checkpoint'.hardcoded
+                                            : 'Statement date'.hardcoded,
+                                        h2: 'Begin of grace period'.hardcoded,
+                                      )
+                                    : Gap.noGap,
+                                ...buildTransactionBeforeTile(context, txnsInGracePeriod),
+                                widget.chosenDateTime == null ||
+                                        widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate)
+                                    ? _Header(
+                                        isSelectedDay: widget.chosenDateTime == null
+                                            ? false
+                                            : widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
+                                        dateTime: widget.statement!.dueDate,
+                                        h1: 'Payment due date'.hardcoded,
+                                        h2: widget.statement!.previousStatement.balanceToPay > 0
+                                            ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
+                                            : 'Pay-in-full before this day for interest-free',
+                                      )
+                                    : Gap.noGap,
+                                ...buildTodayTransactionTile(
+                                  context,
+                                  txnsInChosenDateTime,
+                                  showTitle: widget.chosenDateTime == null
                                       ? false
-                                      : widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
-                                  dateTime: nextStatementDateTime,
-                                  h1: widget.statement!.checkpoint != null
-                                      ? 'Statement date with checkpoint'.hardcoded
-                                      : 'Statement date'.hardcoded,
-                                  h2: 'Begin of grace period'.hardcoded,
-                                )
-                              : Gap.noGap,
-                          ...buildTransactionBeforeTile(context, txnsInGracePeriod),
-                          widget.chosenDateTime == null ||
-                                  widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate)
-                              ? _Header(
-                                  isSelectedDay: widget.chosenDateTime == null
-                                      ? false
-                                      : widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate),
-                                  dateTime: widget.statement!.dueDate,
-                                  h1: 'Payment due date'.hardcoded,
-                                  h2: widget.statement!.previousStatement.balanceToPay > 0
-                                      ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
-                                      : 'Pay-in-full before this day for interest-free',
-                                )
-                              : Gap.noGap,
-                          ...buildTodayTransactionTile(
-                            context,
-                            txnsInChosenDateTime,
-                            showTitle: widget.chosenDateTime == null
-                                ? false
-                                : !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime) &&
-                                    !widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate) &&
-                                    !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
-                            fullPaymentAmount: fullPaymentAmount(context)!,
-                          ),
-                        ],
-                      )
-                    : IconWithText(
-                        key: _key,
-                        iconPath: AppIcons.done,
-                        text: 'No transactions before this time'.hardcoded,
-                      ),
-              ],
-            ),
-          ),
-        ),
-        widget.isForPayment
+                                      : !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime) &&
+                                          !widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.dueDate) &&
+                                          !widget.chosenDateTime!.isAtSameMomentAs(nextStatementDateTime),
+                                  fullPaymentAmount: fullPaymentAmount(context)!,
+                                ),
+                              ],
+                            )
+                          : IconWithText(
+                              key: _key,
+                              iconPath: AppIcons.done,
+                              header: 'No transactions before this time'.hardcoded,
+                            ),
+                    ],
+                  ),
+                ),
+              )
+            : Gap.noGap,
+        widget.showPaymentAmount
             ? Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+                padding: EdgeInsets.only(
+                    top: widget.showList ? 8.0 : 0.0,
+                    left: widget.showList ? 8.0 : 0.0,
+                    right: widget.showList ? 8.0 : 0.0),
                 child: Wrap(
+                  alignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.start,
                   runSpacing: 2,
                   children: [
                     Text(
-                      'Total balance to pay at selected day:',
-                      style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.primary),
+                      '${interest! > 0 ? 'Estimated balance' : 'Balance'} left at selected day:',
+                      style: kHeader3TextStyle.copyWith(
+                          fontSize: widget.showList ? 12 : 13, color: context.appTheme.primary.withOpacity(0.7)),
                     ),
                     Gap.w4,
-                    Text(
-                      '${fullPaymentAmount(context) ?? ''} ${context.currentSettings.currency.code}',
-                      style: kHeader2TextStyle.copyWith(fontSize: 13, color: context.appTheme.primary),
-                    ),
-                    Gap.w8,
-                    HelpButton(
-                      text: 'For easier tracking, you can only pay for transactions happens before selected day'
-                          .hardcoded,
-                      size: 18,
+                    Row(
+                      children: [
+                        Text(
+                          '${interest! > 0 ? '~ ' : ''}${fullPaymentAmount(context) ?? ''} ${context.currentSettings.currency.code}',
+                          style: kHeader2TextStyle.copyWith(
+                              fontSize: widget.showList ? 14 : 16, color: context.appTheme.primary),
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                        ),
+                        Gap.w8,
+                        HelpButton(
+                          text: 'For easier tracking, you can only pay for transactions happens before selected day'
+                              .hardcoded,
+                          size: 18,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -738,7 +762,15 @@ extension _ListGetters on State<_List> {
     return widget.statement!.transactionsIn(widget.chosenDateTime!);
   }
 
-  String? interest(BuildContext context) {
+  double? get interest {
+    if (widget.statement == null) {
+      return null;
+    }
+
+    return widget.statement!.previousStatement.interest;
+  }
+
+  String? interestString(BuildContext context) {
     if (widget.statement == null) {
       return null;
     }
@@ -762,7 +794,7 @@ extension _ListGetters on State<_List> {
       return null;
     }
     return CalService.formatCurrency(
-        context, widget.statement!.getFullPaymentAmountAt(widget.chosenDateTime ?? widget.statement!.dueDate),
+        context, widget.statement!.getBalanceAmountAt(widget.chosenDateTime ?? widget.statement!.dueDate),
         forceWithDecimalDigits: true);
   }
 }

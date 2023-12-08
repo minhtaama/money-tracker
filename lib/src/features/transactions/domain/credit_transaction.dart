@@ -57,7 +57,10 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
 
   final bool isFullPayment;
 
-  final double? adjustedBalance;
+  /// This value can be negative. Only used to calculate account balance
+  final double? adjustment;
+
+  double get afterAdjustedAmount => amount + (adjustment ?? 0);
 
   const CreditPayment._(
     super._databaseObject,
@@ -67,7 +70,7 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.account, {
     required this.transferAccount,
     required this.isFullPayment,
-    required this.adjustedBalance,
+    required this.adjustment,
   });
 }
 
