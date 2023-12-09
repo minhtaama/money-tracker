@@ -101,16 +101,36 @@ class TxnAdjustmentIcon extends StatelessWidget {
   final double size;
   final CreditPayment transaction;
 
+  bool _showIcon(BuildContext context) {
+    if (transaction.adjustment == null) {
+      return false;
+    }
+
+    if (context.currentSettings.showDecimalDigits) {
+      if (transaction.adjustment!.roundUsingAppSetting(context) <= 0.00) {
+        return false;
+      }
+    } else {
+      if (transaction.adjustment!.roundUsingAppSetting(context) <= 0) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return HelpButton(
-      title:
-          'Adjusted Payment: ${transaction.adjustment! > 0 ? '+' : ''}${CalService.formatCurrency(context, transaction.adjustment!)} ${context.currentSettings.currency.code}'
-              .hardcoded,
-      text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
-      iconPath: AppIcons.edit,
-      size: size,
-    );
+    return _showIcon(context)
+        ? HelpButton(
+            title:
+                'Adjusted Payment: ${transaction.adjustment! > 0 ? '+' : ''}${CalService.formatCurrency(context, transaction.adjustment!)} ${context.currentSettings.currency.code}'
+                    .hardcoded,
+            text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
+            iconPath: AppIcons.edit,
+            size: size,
+          )
+        : Gap.noGap;
   }
 }
 

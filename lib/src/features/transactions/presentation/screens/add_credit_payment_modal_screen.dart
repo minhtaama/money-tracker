@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,7 +55,11 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
     _userRemainingAmount = null;
 
-    if (_userPaymentAmount != null && (_userPaymentAmount! > _totalBalanceAmount || _isFullPayment)) {
+    if (_userPaymentAmount != null &&
+        (_userPaymentAmount! > _totalBalanceAmount ||
+            _isFullPayment ||
+            _userPaymentAmount!.roundUsingAppSetting(context) ==
+                _totalBalanceAmount.roundUsingAppSetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       _adjustment = _totalBalanceAmount - _userPaymentAmount!;
     } else {
@@ -258,7 +260,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   ),
                 ),
                 HelpBox(
-                  isShow: _showWarningBox,
+                  isShow: _showWarningBox(context),
                   iconPath: AppIcons.sadFace,
                   margin: const EdgeInsets.only(top: 8),
                   header: 'Too high than balance to pay!'.hardcoded,
@@ -267,7 +269,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           .hardcoded,
                 ),
                 HelpBox(
-                  isShow: _showFYKBox1,
+                  isShow: _showFYKBox1(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -276,7 +278,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
                 ),
                 HelpBox(
-                  isShow: _showFYKBox2,
+                  isShow: _showFYKBox2(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -287,7 +289,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           .hardcoded,
                 ),
                 HelpBox(
-                  isShow: _showFYKBox3,
+                  isShow: _showFYKBox3(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -305,10 +307,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         suffixText: context.currentSettings.currency.code,
                         textSize: 14,
                         widget: CalculatorInput(
-                          hintText: _totalBalanceAmount - (_userPaymentAmount ?? 0) > 0 &&
-                                  _userPaymentAmount != null
+                          hintText: _userPaymentAmount != null &&
+                                  _totalBalanceAmount.roundUsingAppSetting(context) -
+                                          _userPaymentAmount!.roundUsingAppSetting(context) >
+                                      0
                               ? CalService.formatCurrency(
-                                  context, _totalBalanceAmount - (_userPaymentAmount ?? 0))
+                                  context, _totalBalanceAmount - _userPaymentAmount!)
                               : '???',
                           textAlign: TextAlign.right,
                           controller: _remainingInputController,
@@ -362,23 +366,52 @@ extension _Validators on _AddCreditPaymentModalScreenState {
       CalService.formatToDouble(_paymentCalOutputFormattedAmount) == 0 ||
       _fromRegularAccount == null;
 
-  bool get _showFYKBox1 => _userPaymentAmount != null
-      ? _userPaymentAmount! <= _totalBalanceAmount + (_totalBalanceAmount * 2.5 / 100) &&
-          _userPaymentAmount! >= _totalBalanceAmount - (_totalBalanceAmount * 2.5 / 100) &&
-          _userPaymentAmount! != _totalBalanceAmount
-      : false;
+  bool _showFYKBox1(BuildContext context) {
+    if (_userPaymentAmount != null) {
+      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
 
-  bool get _showFYKBox2 => _userPaymentAmount != null
-      ? _userPaymentAmount! < _totalBalanceAmount + (_totalBalanceAmount * 10 / 100) &&
-          _userPaymentAmount! > _totalBalanceAmount + (_totalBalanceAmount * 2.5 / 100)
-      : false;
+      return paymentAmount <= balanceAmount + (balanceAmount * 2.5 / 100) &&
+          paymentAmount >= balanceAmount - (balanceAmount * 2.5 / 100) &&
+          paymentAmount != balanceAmount;
+    } else {
+      return false;
+    }
+  }
 
-  bool get _showFYKBox3 =>
-      _userPaymentAmount != null ? _userPaymentAmount! == _totalBalanceAmount : false;
+  bool _showFYKBox2(BuildContext context) {
+    if (_userPaymentAmount != null) {
+      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
 
-  bool get _showWarningBox => _userPaymentAmount != null
-      ? _userPaymentAmount! >= _totalBalanceAmount + (_totalBalanceAmount * 10 / 100)
-      : false;
+      return paymentAmount < balanceAmount + (balanceAmount * 10 / 100) &&
+          paymentAmount > balanceAmount + (balanceAmount * 2.5 / 100);
+    } else {
+      return false;
+    }
+  }
+
+  bool _showFYKBox3(BuildContext context) {
+    if (_userPaymentAmount != null) {
+      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+
+      return paymentAmount == balanceAmount;
+    } else {
+      return false;
+    }
+  }
+
+  bool _showWarningBox(BuildContext context) {
+    if (_userPaymentAmount != null) {
+      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+
+      return paymentAmount >= balanceAmount + (balanceAmount * 10 / 100);
+    } else {
+      return false;
+    }
+  }
 
   String? _dateTimeValidator() {
     if (_dateTime == null) {
@@ -402,12 +435,17 @@ extension _Validators on _AddCreditPaymentModalScreenState {
       return 'No statement found in selected day'.hardcoded;
     }
 
-    if (_userRemainingAmount != null && _userRemainingAmount! > _totalBalanceAmount) {
+    if (_userRemainingAmount != null &&
+        _userRemainingAmount!.roundUsingAppSetting(context) >
+            _totalBalanceAmount.roundUsingAppSetting(context)) {
       return 'Invalid amount'.hardcoded;
     }
 
     // When user is not tick as full payment but not specify a remaining amount
-    if (max(0, _totalBalanceAmount - (_userPaymentAmount ?? 0)) == 0) {
+    if (_userPaymentAmount == null ||
+        _totalBalanceAmount.roundUsingAppSetting(context) -
+                _userPaymentAmount!.roundUsingAppSetting(context) <=
+            0) {
       return 'Invalid amount'.hardcoded;
     }
 

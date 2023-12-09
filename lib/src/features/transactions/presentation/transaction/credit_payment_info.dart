@@ -383,9 +383,7 @@ class _Transaction extends StatelessWidget {
                       (transaction as CreditSpending).hasInstallment
                   ? const TxnInstallmentIcon(size: 16)
                   : Gap.noGap,
-              transaction != null &&
-                      transaction is CreditPayment &&
-                      (transaction as CreditPayment).adjustment != null
+              transaction != null && transaction is CreditPayment
                   ? TxnAdjustmentIcon(
                       size: 16,
                       transaction: (transaction as CreditPayment),
