@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
@@ -47,7 +47,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentAccount != null ? currentAccount!.iconPath : AppIcons.add,
       backgroundColor: currentAccount != null ? currentAccount!.backgroundColor : Colors.transparent,
-      color: currentAccount != null ? currentAccount!.iconColor : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color: currentAccount != null
+          ? currentAccount!.iconColor
+          : context.appTheme.backgroundNegative.withOpacity(0.4),
       height: null,
       width: null,
       border: currentAccount != null
@@ -79,11 +81,13 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       children: List.generate(accountList.length, (index) {
                         final account = accountList[index];
                         return IgnorePointer(
-                          ignoring: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
+                          ignoring: widget.otherSelectedAccount?.databaseObject.id ==
+                              account.databaseObject.id,
                           child: IconWithTextButton(
                             iconPath: account.iconPath,
                             label: account.name,
-                            isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
+                            isDisabled: widget.otherSelectedAccount?.databaseObject.id ==
+                                account.databaseObject.id,
                             labelSize: 18,
                             borderRadius: BorderRadius.circular(16),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -92,9 +96,10 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                                   ? account.backgroundColor
                                   : context.appTheme.backgroundNegative.withOpacity(0.4),
                             ),
-                            backgroundColor: currentAccount?.databaseObject.id == account.databaseObject.id
-                                ? account.backgroundColor
-                                : Colors.transparent,
+                            backgroundColor:
+                                currentAccount?.databaseObject.id == account.databaseObject.id
+                                    ? account.backgroundColor
+                                    : Colors.transparent,
                             color: currentAccount?.databaseObject.id == account.databaseObject.id
                                 ? account.iconColor
                                 : context.appTheme.backgroundNegative,
@@ -130,7 +135,8 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (currentAccount != null && currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (currentAccount != null &&
+                currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               currentAccount = null;
               widget.onChangedAccount(currentAccount);
             } else {

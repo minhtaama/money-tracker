@@ -20,7 +20,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../../common_widgets/modal_screen_components.dart';

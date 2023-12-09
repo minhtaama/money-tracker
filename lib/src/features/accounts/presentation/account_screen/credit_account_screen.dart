@@ -10,7 +10,7 @@ import 'package:money_tracker_app/src/features/accounts/presentation/account_scr
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
@@ -205,11 +205,13 @@ class _ListState extends State<_List> {
       BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
-    DateTime tempDate = statement.transactionsInBillingCycle.isNotEmpty
-        ? statement.transactionsInBillingCycle.first.dateTime.onlyYearMonthDay
-        : statement.transactionsInGracePeriod.isNotEmpty
-            ? statement.transactionsInGracePeriod.first.dateTime.onlyYearMonthDay
-            : Calendar.minDate;
+    // DateTime tempDate = statement.transactionsInBillingCycle.isNotEmpty
+    //     ? statement.transactionsInBillingCycle.first.dateTime.onlyYearMonthDay
+    //     : statement.transactionsInGracePeriod.isNotEmpty
+    //         ? statement.transactionsInGracePeriod.first.dateTime.onlyYearMonthDay
+    //         : Calendar.minDate;
+
+    DateTime tempDate = statement.startDate;
 
     bool triggerAddPreviousDueDateHeaderAtTheEnd = true;
     bool triggerAddPaymentDueDateHeaderAtTheEnd = true;

@@ -11,7 +11,7 @@ import 'package:money_tracker_app/src/features/transactions/presentation/selecto
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
 import '../../../category/domain/category.dart';

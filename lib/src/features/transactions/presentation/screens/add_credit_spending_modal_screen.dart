@@ -12,7 +12,7 @@ import 'package:money_tracker_app/src/features/transactions/presentation/selecto
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../common_widgets/inline_text_form_field.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
@@ -258,7 +258,8 @@ extension _Validators on _AddCreditTransactionModalScreenState {
         CalService.formatToDouble(_installmentPaymentAmount) == 0) {
       return 'Invalid Amount';
     }
-    if (CalService.formatToDouble(_installmentPaymentAmount)! > CalService.formatToDouble(_calOutputSpendAmount)!) {
+    if (CalService.formatToDouble(_installmentPaymentAmount)! >
+        CalService.formatToDouble(_calOutputSpendAmount)!) {
       return 'Too high';
     }
     return null;

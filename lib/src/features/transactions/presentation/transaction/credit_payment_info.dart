@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/features/calculator_input/application/calc
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../routing/app_router.dart';

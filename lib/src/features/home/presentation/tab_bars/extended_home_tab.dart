@@ -6,7 +6,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 import '../../../../common_widgets/card_item.dart';
@@ -153,7 +153,9 @@ class WelcomeText extends StatelessWidget {
     return Text(
       'Hello, Tâm'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+        color: context.appTheme.isDarkTheme
+            ? context.appTheme.backgroundNegative
+            : context.appTheme.secondaryNegative,
         fontSize: 18,
       ),
     );
@@ -177,7 +179,8 @@ class TotalMoney extends ConsumerWidget {
     double totalBalance = accountRepository.getTotalBalance();
 
     ref
-        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .watch(transactionChangesRealmProvider(
+            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
         .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
@@ -189,8 +192,9 @@ class TotalMoney extends ConsumerWidget {
           context.currentSettings.currency.code,
           style: kHeader4TextStyle.copyWith(
             fontWeight: FontWeight.w100,
-            color:
-                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+            color: context.appTheme.isDarkTheme
+                ? context.appTheme.backgroundNegative
+                : context.appTheme.secondaryNegative,
             fontSize: 36,
             letterSpacing: -2,
           ),

@@ -6,7 +6,7 @@ import 'package:money_tracker_app/src/features/category/data/category_repo.dart'
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../common_widgets/icon_with_text.dart';
 import '../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../routing/app_router.dart';
@@ -40,8 +40,9 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentCategory != null ? currentCategory!.iconPath : AppIcons.add,
       backgroundColor: currentCategory != null ? currentCategory!.backgroundColor : Colors.transparent,
-      color:
-          currentCategory != null ? currentCategory!.iconColor : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color: currentCategory != null
+          ? currentCategory!.iconColor
+          : context.appTheme.backgroundNegative.withOpacity(0.4),
       width: null,
       height: null,
       border: currentCategory != null
@@ -56,7 +57,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription(
+              'Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModalBottomSheet<Category>(
@@ -90,9 +92,10 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                                 ? category.backgroundColor
                                 : context.appTheme.backgroundNegative.withOpacity(0.4),
                           ),
-                          backgroundColor: currentCategory?.databaseObject.id == category.databaseObject.id
-                              ? category.backgroundColor
-                              : Colors.transparent,
+                          backgroundColor:
+                              currentCategory?.databaseObject.id == category.databaseObject.id
+                                  ? category.backgroundColor
+                                  : Colors.transparent,
                           color: currentCategory?.databaseObject.id == category.databaseObject.id
                               ? category.iconColor
                               : context.appTheme.backgroundNegative,
@@ -126,7 +129,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (currentCategory != null && currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (currentCategory != null &&
+                currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
               currentCategory = null;
               widget.onChangedCategory(currentCategory);
             } else {

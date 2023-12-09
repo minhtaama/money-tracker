@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_extension.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../theme_and_ui/colors.dart';

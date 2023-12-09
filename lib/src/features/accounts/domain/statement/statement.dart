@@ -59,6 +59,14 @@ abstract class Statement {
   double get paidForThisStatement {
     // Included Checkpoint transaction
     double spentInGracePeriodExcludeInstallments = 0;
+    double paidInBillingCycleInPreviousGracePeriod = 0;
+
+    for (int i = 0; i < transactionsInBillingCycle.length; i++) {
+      final txn = transactionsInBillingCycle[i];
+      if (txn is CreditPayment && !txn.dateTime.isAfter(previousStatement.dueDate)) {
+        paidInBillingCycleInPreviousGracePeriod += txn.afterAdjustedAmount;
+      }
+    }
 
     for (BaseCreditTransaction txn in transactionsInGracePeriod) {
       if (txn is CreditSpending && !txn.hasInstallment) {
@@ -69,7 +77,9 @@ abstract class Statement {
     if (checkpoint != null) {
       return math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
     } else {
-      return math.max(0, _paidInBillingCycle - previousStatement._balanceToPayAtEndDate) +
+      return math.max(
+              0, paidInBillingCycleInPreviousGracePeriod - previousStatement._balanceToPayAtEndDate) +
+          (_paidInBillingCycle - paidInBillingCycleInPreviousGracePeriod) +
           math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
     }
   }
