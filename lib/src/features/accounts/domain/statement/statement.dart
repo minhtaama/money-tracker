@@ -77,11 +77,22 @@ abstract class Statement {
     if (checkpoint != null) {
       return math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
     } else {
-      return math.max(
-              0, paidInBillingCycleInPreviousGracePeriod - previousStatement._balanceToPayAtEndDate) +
+      return math.max(0, paidInBillingCycleInPreviousGracePeriod - previousStatement._balanceToPayAtEndDate) +
           (_paidInBillingCycle - paidInBillingCycleInPreviousGracePeriod) +
           math.max(0, _paidInGracePeriod - spentInGracePeriodExcludeInstallments);
     }
+  }
+
+  double get balance {
+    double value = checkpoint == null
+        ? (previousStatement.interest +
+                previousStatement.balanceToPay +
+                spentInBillingCycleExcludeInstallments +
+                installmentsAmountToPay) -
+            paidForThisStatement
+        : spentInBillingCycleExcludeInstallments - paidForThisStatement;
+
+    return math.max(0, value);
   }
 
   /// BillingCycle is only from [startDate] to [endDate].
@@ -115,9 +126,7 @@ abstract class Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate)
-        ? transactionsInGracePeriod
-        : transactionsInBillingCycle;
+    final txnList = dateTime.onlyYearMonthDay.isAfter(endDate) ? transactionsInGracePeriod : transactionsInBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
@@ -153,9 +162,7 @@ abstract class Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay +
-            spentInGracePeriodBeforeDateTimeExcludeInstallments -
-            _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _paidInGracePeriod;
       }
     } else {
       x = previousStatement._balanceToPayAtEndDate +
@@ -210,10 +217,10 @@ abstract class Statement {
             : 0.0;
 
     return PreviousStatement._(
-      balanceToPayAtEndDate,
-      balanceAtEndDate,
-      balance: balance,
-      balanceToPay: balanceToPay,
+      math.max(0, balanceToPayAtEndDate),
+      math.max(0, balanceAtEndDate),
+      balance: math.max(0, balance),
+      balanceToPay: math.max(0, balanceToPay),
       interest: interestCarryToNextStatement,
       dueDate: dueDate,
     );
