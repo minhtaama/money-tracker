@@ -224,7 +224,7 @@ class TxnAccountIcon extends ConsumerWidget {
 }
 
 class TxnAccountName extends ConsumerWidget {
-  const TxnAccountName({Key? key, required this.transaction, this.fontSize}) : super(key: key);
+  const TxnAccountName({super.key, required this.transaction, this.fontSize});
 
   final BaseTransaction transaction;
   final double? fontSize;

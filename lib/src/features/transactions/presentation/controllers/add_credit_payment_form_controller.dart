@@ -39,26 +39,26 @@ class CreditPaymentFormState {
   factory CreditPaymentFormState.initial() => CreditPaymentFormState._();
 
   CreditPaymentFormState copyWith({
-    Statement? statement,
-    DateTime? dateTime,
-    String? note,
-    CreditAccount? creditAccount,
-    RegularAccount? fromRegularAccount,
-    bool? isFullPayment,
-    double? adjustment,
-    double? userPaymentAmount,
-    double? userRemainingAmount,
+    Statement? Function()? statement,
+    DateTime? Function()? dateTime,
+    String? Function()? note,
+    CreditAccount? Function()? creditAccount,
+    RegularAccount? Function()? fromRegularAccount,
+    bool Function()? isFullPayment,
+    double? Function()? adjustment,
+    double? Function()? userPaymentAmount,
+    double? Function()? userRemainingAmount,
   }) {
     return CreditPaymentFormState._(
-      statement: statement ?? this.statement,
-      dateTime: dateTime ?? this.dateTime,
-      note: note ?? this.note,
-      creditAccount: creditAccount ?? this.creditAccount,
-      fromRegularAccount: fromRegularAccount ?? this.fromRegularAccount,
-      isFullPayment: isFullPayment ?? this.isFullPayment,
-      adjustment: adjustment ?? this.adjustment,
-      userPaymentAmount: userPaymentAmount ?? this.userPaymentAmount,
-      userRemainingAmount: userRemainingAmount ?? this.userRemainingAmount,
+      statement: statement != null ? statement() : this.statement,
+      dateTime: dateTime != null ? dateTime() : this.dateTime,
+      note: note != null ? note() : this.note,
+      creditAccount: creditAccount != null ? creditAccount() : this.creditAccount,
+      fromRegularAccount: fromRegularAccount != null ? fromRegularAccount() : this.fromRegularAccount,
+      isFullPayment: isFullPayment != null ? isFullPayment() : this.isFullPayment,
+      adjustment: adjustment != null ? adjustment() : this.adjustment,
+      userPaymentAmount: userPaymentAmount != null ? userPaymentAmount() : this.userPaymentAmount,
+      userRemainingAmount: userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
     );
   }
 
@@ -76,31 +76,31 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
 
   void _resetNumberInput() {
     state = state.copyWith(
-      userRemainingAmount: null,
-      userPaymentAmount: null,
-      adjustment: null,
-      isFullPayment: false,
+      userRemainingAmount: () => null,
+      userPaymentAmount: () => null,
+      adjustment: () => null,
+      isFullPayment: () => false,
     );
   }
 
   void _resetDateTime() {
-    state = state.copyWith(dateTime: null, statement: null);
+    state = state.copyWith(dateTime: () => null, statement: () => null);
   }
 
   void changeRemainingInput(String value) {
-    state = state.copyWith(userRemainingAmount: CalService.formatToDouble(value));
+    state = state.copyWith(userRemainingAmount: () => CalService.formatToDouble(value));
 
     state = state.copyWith(
         // Because: afterAdjustedAmount = userPaymentAmount + adjustment
         // Then: userRemaining = totalBalance - afterAdjustedAmount
         // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
-        adjustment: state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
+        adjustment: () => state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
   }
 
   void changePaymentInput(BuildContext context, String value) {
     state = state.copyWith(
-      userPaymentAmount: CalService.formatToDouble(value),
-      userRemainingAmount: null,
+      userPaymentAmount: () => CalService.formatToDouble(value),
+      userRemainingAmount: () => null,
     );
 
     if (state.userPaymentAmount != null &&
@@ -109,40 +109,40 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
             state.userPaymentAmount!.roundUsingAppSetting(context) ==
                 state.totalBalanceAmount.roundUsingAppSetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      state = state.copyWith(adjustment: state.totalBalanceAmount - state.userPaymentAmount!);
+      state = state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
-      state = state.copyWith(adjustment: null);
+      state = state.copyWith(adjustment: () => null);
     }
   }
 
   void toggleFullPayment(bool value) {
-    state = state.copyWith(isFullPayment: value, userRemainingAmount: null);
+    state = state.copyWith(isFullPayment: () => value, userRemainingAmount: () => null);
 
     if (state.isFullPayment && state.userPaymentAmount != null) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      state.copyWith(adjustment: state.totalBalanceAmount - state.userPaymentAmount!);
+      state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
-      state.copyWith(adjustment: null);
+      state.copyWith(adjustment: () => null);
     }
   }
 
   void changeDateTime(DateTime? dateTime, Statement? statement) {
     _resetNumberInput();
-    state = state.copyWith(dateTime: dateTime, statement: statement);
+    state = state.copyWith(dateTime: () => dateTime, statement: () => statement);
   }
 
   void changeCreditAccount(CreditAccount? creditAccount) {
     _resetNumberInput();
     _resetDateTime();
-    state = state.copyWith(creditAccount: creditAccount);
+    state = state.copyWith(creditAccount: () => creditAccount);
   }
 
   void changeRegularAccount(RegularAccount? regularAccount) {
-    state = state.copyWith(fromRegularAccount: regularAccount);
+    state = state.copyWith(fromRegularAccount: () => regularAccount);
   }
 
   void changeNote(String note) {
-    state = state.copyWith(note: note);
+    state = state.copyWith(note: () => note);
   }
 }
 

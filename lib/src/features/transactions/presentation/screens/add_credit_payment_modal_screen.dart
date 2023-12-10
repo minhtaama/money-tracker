@@ -158,7 +158,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           statement: watchState.statement,
                         ),
                       ),
-                      Gap.h16,
+                      Gap.divider(context, indent: 6),
+                      Gap.h8,
                       Padding(
                         padding: const EdgeInsets.only(left: 2.0),
                         child: Text(
@@ -196,10 +197,10 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           Gap.w8,
                         ],
                       ),
-                      Gap.h4,
                     ],
                   ),
                 ),
+                Gap.h4,
                 HelpBox(
                   isShow: _isPaymentTooHighThanBalance(context),
                   iconPath: AppIcons.sadFace,
@@ -313,13 +314,14 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
 extension _Validators on _AddCreditPaymentModalScreenState {
   bool get _isButtonDisable =>
-      CalService.formatToDouble(_paymentCalOutputFormattedAmount) == null ||
-      CalService.formatToDouble(_paymentCalOutputFormattedAmount) == 0 ||
+      _readState.userPaymentAmount == null ||
+      _readState.userPaymentAmount == 0 ||
+      _readState.userRemainingAmount == 0 ||
       _readState.fromRegularAccount == null;
 
   bool _isPaymentCloseToBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double paymentAmount = _readState.userPaymentAmount!;
       double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
@@ -336,7 +338,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
 
   bool _isPaymentQuiteHighThanBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double paymentAmount = _readState.userPaymentAmount!;
       double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
@@ -352,7 +354,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
 
   bool _isPaymentEqualBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double paymentAmount = _readState.userPaymentAmount!;
       double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
@@ -367,7 +369,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
 
   bool _isPaymentTooHighThanBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double paymentAmount = _readState.userPaymentAmount!;
       double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
@@ -411,20 +413,20 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     if (_readState.userRemainingAmount != null &&
         _readState.userRemainingAmount!.roundUsingAppSetting(context) >
             _readState.totalBalanceAmount.roundUsingAppSetting(context)) {
-      return 'Invalid amount'.hardcoded;
+      return 'Higher than balance to pay'.hardcoded;
+    }
+
+    if (_readState.userRemainingAmount != null && _readState.userRemainingAmount == 0) {
+      return 'Please tick as full payment'.hardcoded;
     }
 
     // When user is not tick as full payment but not specify a remaining amount
-    if (_readState.userPaymentAmount == null ||
-        _readState.totalBalanceAmount.roundUsingAppSetting(context) -
-                _readState.userPaymentAmount!.roundUsingAppSetting(context) <=
-            0) {
-      return 'Invalid amount'.hardcoded;
+    if (_readState.isFullPayment == false &&
+        _readState.userRemainingAmount == null &&
+        _readState.userPaymentAmount != null &&
+        _readState.totalBalanceAmount.roundUsingAppSetting(context) - _readState.userPaymentAmount! <= 0) {
+      return 'Please specify an amount'.hardcoded;
     }
-
-    //TODO: Show 'Balance adjusted icon' if this is not a full payment and user specified a remaining balance
-    //TODO: Show 'Full payment icon' if this is a full payment
-    //TODO: Change calculation of payment, now using 'afterAdjustedAmount'
 
     return null;
   }
