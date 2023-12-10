@@ -45,8 +45,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   String get _paymentCalOutputFormattedAmount => _paymentInputController.text;
 
-  double? _userRemainingAmount;
-
+  //done
   void _onPaymentInputChange(String value) {
     setState(() {
       _paymentInputController.text = value;
@@ -66,6 +65,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     }
   }
 
+  //done
   void _onRemainingInputChange(String value) {
     setState(() {
       _remainingInputController.text = value;
@@ -79,6 +79,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     _adjustment = _totalBalanceAmount - _userPaymentAmount! - _userRemainingAmount!;
   }
 
+  //done
   void _onFullPaymentCheckboxChange(bool value) {
     _isFullPayment = value;
 
@@ -93,6 +94,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     }
   }
 
+  //done
   void _onDateTimeChange(DateTime? dateTime, Statement? statement) {
     setState(() {
       if (dateTime != null) {
@@ -102,6 +104,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     });
   }
 
+  //done
   void _onCreditAccountChange(Account? newAccount) {
     setState(() {
       _creditAccount = newAccount as CreditAccount?;
@@ -112,6 +115,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     });
   }
 
+  //done
   void _onRegularAccountChange(Account? newAccount) {
     setState(() {
       _fromRegularAccount = newAccount != null ? (newAccount as RegularAccount) : null;
@@ -134,6 +138,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     }
   }
 
+  double? _userRemainingAmount;
   ////////////////////// VALUE OUTPUT TO DATABASE /////////////////////////
   double? get _userPaymentAmount => CalService.formatToDouble(_paymentCalOutputFormattedAmount);
 
