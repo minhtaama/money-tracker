@@ -3,27 +3,30 @@ import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CalService {
-  static String formatCurrency(BuildContext context, double value, {bool forceWithDecimalDigits = false}) {
+  static String formatCurrency(BuildContext context, double value,
+      {bool forceWithDecimalDigits = false, bool isAbs = false}) {
     NumberFormat formatter;
+
+    if (isAbs) {
+      value = value.abs();
+    }
 
     if (value >= 1000000000.0) {
       final shortValue = value / 1000000000;
       formatter = NumberFormat('###,###.##');
-      return '${formatter.format(shortValue)} B';
+      return context.currentSettings.showBalanceInHomeScreen ? '${formatter.format(shortValue)} B' : '***';
     }
+
     if (value >= 100000000.0) {
       final shortValue = value / 1000000;
       formatter = NumberFormat('###,###.##');
-      return '${formatter.format(shortValue)} M';
+      return context.currentSettings.showBalanceInHomeScreen ? '${formatter.format(shortValue)} M' : '***';
     }
+
     formatter = NumberFormat.decimalPatternDigits(
         decimalDigits: context.currentSettings.showDecimalDigits || forceWithDecimalDigits ? 2 : 0);
 
-    if (!context.currentSettings.showBalanceInHomeScreen) {
-      return '***';
-    } else {
-      return formatter.format(value);
-    }
+    return context.currentSettings.showBalanceInHomeScreen ? formatter.format(value) : '***';
   }
 
   /// This function takes the argument only in type __String__. It use Regex to find all

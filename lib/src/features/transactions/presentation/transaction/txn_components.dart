@@ -107,11 +107,11 @@ class TxnAdjustmentIcon extends StatelessWidget {
     }
 
     if (context.currentSettings.showDecimalDigits) {
-      if (transaction.adjustment!.roundUsingAppSetting(context) <= 0.00) {
+      if (transaction.adjustment!.roundUsingAppSetting(context) == 0.00) {
         return false;
       }
     } else {
-      if (transaction.adjustment!.roundUsingAppSetting(context) <= 0) {
+      if (transaction.adjustment!.roundUsingAppSetting(context) == 0) {
         return false;
       }
     }
@@ -124,7 +124,7 @@ class TxnAdjustmentIcon extends StatelessWidget {
     return _showIcon(context)
         ? HelpButton(
             title:
-                'Adjusted Payment: ${transaction.adjustment! > 0 ? '+' : ''}${CalService.formatCurrency(context, transaction.adjustment!)} ${context.currentSettings.currency.code}'
+                'Adjust amount: ${transaction.adjustment! > 0 ? '+' : '-'} ${CalService.formatCurrency(context, transaction.adjustment!, isAbs: true)} ${context.currentSettings.currency.code}'
                     .hardcoded,
             text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
             iconPath: AppIcons.edit,
@@ -240,8 +240,7 @@ class TxnAccountName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       transaction.account!.name,
-      style: kHeader3TextStyle.copyWith(
-          color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
+      style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -315,18 +314,16 @@ class TxnAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          CalService.formatCurrency(context,
-              showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+          CalService.formatCurrency(
+              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader2TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader4TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );
@@ -355,16 +352,14 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(
-            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius:
-              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,12 +397,7 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key,
-      this.height = 27,
-      this.width = 20,
-      this.adjustY = 1,
-      this.strokeWidth = 1,
-      this.opacity = 1});
+      {super.key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1});
 
   final double height;
   final double adjustY;
@@ -422,8 +412,7 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity,
-              height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
         ),
       ),
     );

@@ -12,6 +12,7 @@ import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/controllers/add_credit_payment_form_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -32,128 +33,64 @@ class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
 }
 
 class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentModalScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _paymentInputController = TextEditingController();
   final _remainingInputController = TextEditingController();
 
-  Statement? _statement;
+  final _formKey = GlobalKey<FormState>();
+  late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
-  bool get _hidePayment => _statement == null;
+  CreditPaymentFormState get _readState => ref.read(creditPaymentFormNotifierProvider);
 
-  double get _totalBalanceAmount =>
-      _statement == null || _dateTime == null ? 0 : _statement!.getBalanceAmountAt(_dateTime!);
-
+  bool get _hidePayment => _readState.statement == null;
   String get _paymentCalOutputFormattedAmount => _paymentInputController.text;
 
-  //done
   void _onPaymentInputChange(String value) {
-    setState(() {
-      _paymentInputController.text = value;
-      _remainingInputController.clear();
-    });
-
-    _userRemainingAmount = null;
-
-    if (_userPaymentAmount != null &&
-        (_userPaymentAmount! > _totalBalanceAmount ||
-            _isFullPayment ||
-            _userPaymentAmount!.roundUsingAppSetting(context) == _totalBalanceAmount.roundUsingAppSetting(context))) {
-      //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      _adjustment = _totalBalanceAmount - _userPaymentAmount!;
-    } else {
-      _adjustment = null;
-    }
-  }
-
-  //done
-  void _onRemainingInputChange(String value) {
-    setState(() {
-      _remainingInputController.text = value;
-    });
-
-    _userRemainingAmount = CalService.formatToDouble(value);
-
-    // Because: afterAdjustedAmount = userPaymentAmount + adjustment
-    // Then: userRemaining = totalBalance - afterAdjustedAmount
-    // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
-    _adjustment = _totalBalanceAmount - _userPaymentAmount! - _userRemainingAmount!;
-  }
-
-  //done
-  void _onFullPaymentCheckboxChange(bool value) {
-    _isFullPayment = value;
-
+    _paymentInputController.text = value;
     _remainingInputController.clear();
-    _userRemainingAmount = null;
-
-    if (_isFullPayment && _userPaymentAmount != null) {
-      //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      _adjustment = _totalBalanceAmount - _userPaymentAmount!;
-    } else {
-      _adjustment = null;
-    }
+    _stateController.changePaymentInput(context, value);
   }
 
-  //done
+  void _onRemainingInputChange(String value) {
+    _remainingInputController.text = value;
+    _stateController.changeRemainingInput(value);
+  }
+
+  void _onToggleFullPaymentCheckbox(bool value) {
+    _remainingInputController.clear();
+    _stateController.toggleFullPayment(value);
+  }
+
   void _onDateTimeChange(DateTime? dateTime, Statement? statement) {
-    setState(() {
-      if (dateTime != null) {
-        _dateTime = dateTime;
-      }
-      _statement = statement;
-    });
+    _stateController.changeDateTime(dateTime, statement);
   }
 
-  //done
   void _onCreditAccountChange(Account? newAccount) {
-    setState(() {
-      _creditAccount = newAccount as CreditAccount?;
-      if (_creditAccount == null) {
-        _statement = null;
-        _dateTime = null;
-      }
-    });
+    _stateController.changeCreditAccount(newAccount as CreditAccount?);
   }
 
-  //done
   void _onRegularAccountChange(Account? newAccount) {
-    setState(() {
-      _fromRegularAccount = newAccount != null ? (newAccount as RegularAccount) : null;
-    });
+    _stateController.changeRegularAccount(newAccount as RegularAccount?);
   }
 
   void _submit() {
     // By validating, no important value can be null
     if (_formKey.currentState!.validate() && !_isNoNeedPayment(context)) {
       ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
-            dateTime: _dateTime!,
-            amount: _userPaymentAmount!,
-            account: _creditAccount!,
-            fromAccount: _fromRegularAccount!,
-            note: _note,
-            isFullPayment: _isFullPayment,
-            adjustment: _adjustment,
+            dateTime: _readState.dateTime!,
+            amount: _readState.userPaymentAmount!,
+            account: _readState.creditAccount!,
+            fromAccount: _readState.fromRegularAccount!,
+            note: _readState.note,
+            isFullPayment: _readState.isFullPayment,
+            adjustment: _readState.adjustment,
           );
       context.pop();
     }
   }
 
-  double? _userRemainingAmount;
-  ////////////////////// VALUE OUTPUT TO DATABASE /////////////////////////
-  double? get _userPaymentAmount => CalService.formatToDouble(_paymentCalOutputFormattedAmount);
-
-  DateTime? _dateTime;
-  String? _note;
-
-  CreditAccount? _creditAccount;
-  RegularAccount? _fromRegularAccount;
-
-  bool _isFullPayment = false;
-  double? _adjustment;
-  ///////////////////////////////////////////////////////////////////////
-
   @override
   Widget build(BuildContext context) {
+    final watchState = ref.watch(creditPaymentFormNotifierProvider);
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -167,9 +104,9 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             children: [
               Expanded(
                 child: CreditDateTimeFormSelector(
-                  creditAccount: _creditAccount,
+                  creditAccount: watchState.creditAccount,
                   disableText: 'Choose credit account first'.hardcoded,
-                  initialDate: _dateTime,
+                  initialDate: watchState.dateTime,
                   isForPayment: true,
                   onChanged: _onDateTimeChange,
                   validator: (_) => _dateTimeValidator(),
@@ -217,8 +154,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         child: CreditInfo(
                           showPaymentAmount: true,
                           showList: false,
-                          chosenDateTime: _dateTime?.onlyYearMonthDay,
-                          statement: _statement,
+                          chosenDateTime: watchState.dateTime?.onlyYearMonthDay,
+                          statement: watchState.statement,
                         ),
                       ),
                       Gap.h16,
@@ -310,7 +247,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 ),
                 !_isNoNeedPayment(context)
                     ? CustomCheckbox(
-                        onChanged: _onFullPaymentCheckboxChange,
+                        onChanged: _onToggleFullPaymentCheckbox,
                         label: 'Full payment',
                         showOptionalWidgetWhenValueIsFalse: true,
                         optionalWidget: Column(
@@ -320,11 +257,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                               suffixText: context.currentSettings.currency.code,
                               textSize: 14,
                               widget: CalculatorInput(
-                                hintText: _userPaymentAmount != null &&
-                                        _totalBalanceAmount.roundUsingAppSetting(context) -
-                                                _userPaymentAmount!.roundUsingAppSetting(context) >
+                                hintText: watchState.userPaymentAmount != null &&
+                                        watchState.totalBalanceAmount.roundUsingAppSetting(context) -
+                                                watchState.userPaymentAmount!.roundUsingAppSetting(context) >
                                             0
-                                    ? CalService.formatCurrency(context, _totalBalanceAmount - _userPaymentAmount!)
+                                    ? CalService.formatCurrency(
+                                        context, watchState.totalBalanceAmount - watchState.userPaymentAmount!)
                                     : '???',
                                 textAlign: TextAlign.right,
                                 controller: _remainingInputController,
@@ -362,7 +300,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             hintText: 'Note ...',
             textInputAction: TextInputAction.done,
             onChanged: (value) {
-              _note = value;
+              _stateController.changeNote(value);
             },
           ),
           Gap.h16,
@@ -377,12 +315,12 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   bool get _isButtonDisable =>
       CalService.formatToDouble(_paymentCalOutputFormattedAmount) == null ||
       CalService.formatToDouble(_paymentCalOutputFormattedAmount) == 0 ||
-      _fromRegularAccount == null;
+      _readState.fromRegularAccount == null;
 
   bool _isPaymentCloseToBalance(BuildContext context) {
-    if (_userPaymentAmount != null) {
-      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
-      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+    if (_readState.userPaymentAmount != null) {
+      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -397,9 +335,9 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   bool _isPaymentQuiteHighThanBalance(BuildContext context) {
-    if (_userPaymentAmount != null) {
-      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
-      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+    if (_readState.userPaymentAmount != null) {
+      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -413,9 +351,9 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   bool _isPaymentEqualBalance(BuildContext context) {
-    if (_userPaymentAmount != null) {
-      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
-      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+    if (_readState.userPaymentAmount != null) {
+      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -428,9 +366,9 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   bool _isPaymentTooHighThanBalance(BuildContext context) {
-    if (_userPaymentAmount != null) {
-      double paymentAmount = _userPaymentAmount!.roundUsingAppSetting(context);
-      double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+    if (_readState.userPaymentAmount != null) {
+      double paymentAmount = _readState.userPaymentAmount!.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -443,41 +381,44 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   bool _isNoNeedPayment(BuildContext context) {
-    double balanceAmount = _totalBalanceAmount.roundUsingAppSetting(context);
+    double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
 
     return balanceAmount == 0;
   }
 
   String? _dateTimeValidator() {
-    if (_dateTime == null) {
+    if (_readState.dateTime == null) {
       return 'Please select a date';
     }
     return null;
   }
 
   String? _paymentInputValidator(BuildContext context) {
-    if (_userPaymentAmount == null || _userPaymentAmount == 0) {
+    if (_readState.userPaymentAmount == null || _readState.userPaymentAmount == 0) {
       return 'Invalid amount'.hardcoded;
     }
-    if (_statement == null) {
+    if (_readState.statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
     return null;
   }
 
   String? _remainingInputValidator(BuildContext context) {
-    if (_statement == null) {
+    if (_readState.statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
 
-    if (_userRemainingAmount != null &&
-        _userRemainingAmount!.roundUsingAppSetting(context) > _totalBalanceAmount.roundUsingAppSetting(context)) {
+    if (_readState.userRemainingAmount != null &&
+        _readState.userRemainingAmount!.roundUsingAppSetting(context) >
+            _readState.totalBalanceAmount.roundUsingAppSetting(context)) {
       return 'Invalid amount'.hardcoded;
     }
 
     // When user is not tick as full payment but not specify a remaining amount
-    if (_userPaymentAmount == null ||
-        _totalBalanceAmount.roundUsingAppSetting(context) - _userPaymentAmount!.roundUsingAppSetting(context) <= 0) {
+    if (_readState.userPaymentAmount == null ||
+        _readState.totalBalanceAmount.roundUsingAppSetting(context) -
+                _readState.userPaymentAmount!.roundUsingAppSetting(context) <=
+            0) {
       return 'Invalid amount'.hardcoded;
     }
 
@@ -489,14 +430,14 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   String? _creditAccountValidator() {
-    if (_creditAccount == null) {
+    if (_readState.creditAccount == null) {
       return 'Must specify a credit account';
     }
     return null;
   }
 
   String? _fromRegularAccountValidator() {
-    if (_fromRegularAccount == null) {
+    if (_readState.fromRegularAccount == null) {
       return 'Must be specify for payment';
     }
     return null;

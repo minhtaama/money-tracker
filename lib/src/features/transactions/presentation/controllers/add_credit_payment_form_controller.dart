@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
@@ -19,13 +20,12 @@ class CreditPaymentFormState {
 
   final double? userRemainingAmount;
 
-  final Statement? _statement;
+  final Statement? statement;
 
-  double get _totalBalanceAmount =>
-      _statement == null || dateTime == null ? 0 : _statement!.getBalanceAmountAt(dateTime!);
+  double get totalBalanceAmount => statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
 
-  CreditPaymentFormState._(
-    this._statement, {
+  CreditPaymentFormState._({
+    this.statement,
     this.dateTime,
     this.note,
     this.creditAccount,
@@ -36,7 +36,7 @@ class CreditPaymentFormState {
     this.isFullPayment = false,
   });
 
-  factory CreditPaymentFormState.initial() => CreditPaymentFormState._(null);
+  factory CreditPaymentFormState.initial() => CreditPaymentFormState._();
 
   CreditPaymentFormState copyWith({
     Statement? statement,
@@ -50,7 +50,7 @@ class CreditPaymentFormState {
     double? userRemainingAmount,
   }) {
     return CreditPaymentFormState._(
-      statement,
+      statement: statement ?? this.statement,
       dateTime: dateTime ?? this.dateTime,
       note: note ?? this.note,
       creditAccount: creditAccount ?? this.creditAccount,
@@ -61,16 +61,17 @@ class CreditPaymentFormState {
       userRemainingAmount: userRemainingAmount ?? this.userRemainingAmount,
     );
   }
+
+  @override
+  String toString() {
+    return 'CreditPaymentFormState{dateTime: $dateTime, note: $note, creditAccount: $creditAccount, fromRegularAccount: $fromRegularAccount, isFullPayment: $isFullPayment, adjustment: $adjustment, userPaymentAmount: $userPaymentAmount, userRemainingAmount: $userRemainingAmount, statement: $statement}';
+  }
 }
 
-class CreditPaymentFormController extends Notifier<CreditPaymentFormState> {
+class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormState> {
   @override
   CreditPaymentFormState build() {
     return CreditPaymentFormState.initial();
-  }
-
-  void _resetAll() {
-    state = CreditPaymentFormState.initial();
   }
 
   void _resetNumberInput() {
@@ -83,25 +84,32 @@ class CreditPaymentFormController extends Notifier<CreditPaymentFormState> {
   }
 
   void _resetDateTime() {
-    state = state.copyWith(dateTime: null);
+    state = state.copyWith(dateTime: null, statement: null);
   }
 
   void changeRemainingInput(String value) {
+    state = state.copyWith(userRemainingAmount: CalService.formatToDouble(value));
+
     state = state.copyWith(
-        userRemainingAmount: CalService.formatToDouble(value),
-        adjustment: state._totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
+        // Because: afterAdjustedAmount = userPaymentAmount + adjustment
+        // Then: userRemaining = totalBalance - afterAdjustedAmount
+        // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
+        adjustment: state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
   }
 
   void changePaymentInput(BuildContext context, String value) {
-    state = state.copyWith(userRemainingAmount: null);
+    state = state.copyWith(
+      userPaymentAmount: CalService.formatToDouble(value),
+      userRemainingAmount: null,
+    );
 
     if (state.userPaymentAmount != null &&
-        (state.userPaymentAmount! > state._totalBalanceAmount ||
+        (state.userPaymentAmount! > state.totalBalanceAmount ||
             state.isFullPayment ||
             state.userPaymentAmount!.roundUsingAppSetting(context) ==
-                state._totalBalanceAmount.roundUsingAppSetting(context))) {
+                state.totalBalanceAmount.roundUsingAppSetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      state = state.copyWith(adjustment: state._totalBalanceAmount - state.userPaymentAmount!);
+      state = state.copyWith(adjustment: state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
       state = state.copyWith(adjustment: null);
     }
@@ -112,27 +120,33 @@ class CreditPaymentFormController extends Notifier<CreditPaymentFormState> {
 
     if (state.isFullPayment && state.userPaymentAmount != null) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      state.copyWith(adjustment: state._totalBalanceAmount - state.userPaymentAmount!);
+      state.copyWith(adjustment: state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
       state.copyWith(adjustment: null);
     }
   }
 
-  void changeDateTime(DateTime dateTime, Statement statement) {
+  void changeDateTime(DateTime? dateTime, Statement? statement) {
     _resetNumberInput();
     state = state.copyWith(dateTime: dateTime, statement: statement);
   }
 
-  void changeCreditAccount(CreditAccount creditAccount) {
+  void changeCreditAccount(CreditAccount? creditAccount) {
     _resetNumberInput();
     _resetDateTime();
     state = state.copyWith(creditAccount: creditAccount);
   }
 
-  void changeRegularAccount(RegularAccount regularAccount) {
+  void changeRegularAccount(RegularAccount? regularAccount) {
     state = state.copyWith(fromRegularAccount: regularAccount);
+  }
+
+  void changeNote(String note) {
+    state = state.copyWith(note: note);
   }
 }
 
 final creditPaymentFormNotifierProvider =
-    NotifierProvider<CreditPaymentFormController, CreditPaymentFormState>(CreditPaymentFormController.new);
+    AutoDisposeNotifierProvider<CreditPaymentFormController, CreditPaymentFormState>(() {
+  return CreditPaymentFormController();
+});

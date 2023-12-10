@@ -1,14 +1,7 @@
 part of 'credit_account_screen.dart';
 
 class _Header extends StatelessWidget {
-  const _Header(
-      {super.key,
-      this.dateTime,
-      required this.h1,
-      this.h2,
-      this.dateColor,
-      this.dateBgColor,
-      this.color});
+  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});
 
   final DateTime? dateTime;
   final Color? dateColor;
@@ -37,8 +30,7 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(
-                      fontSize: 16, color: color ?? context.appTheme.backgroundNegative),
+                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.backgroundNegative),
                 ),
                 h2 != null
                     ? Text(
@@ -84,17 +76,6 @@ class _Transaction extends StatelessWidget {
                   statement: statement,
                 ),
               ),
-              transaction is! CreditCheckpoint ? Gap.w16 : Gap.noGap,
-              transaction is CreditSpending && (transaction as CreditSpending).hasInstallment
-                  ? const TxnInstallmentIcon(size: 16)
-                  : Gap.noGap,
-              transaction is CreditPayment
-                  ? TxnAdjustmentIcon(
-                      size: 16,
-                      transaction: transaction as CreditPayment,
-                    )
-                  : Gap.noGap,
-              transaction is! CreditCheckpoint ? Gap.w4 : Gap.noGap,
               transaction is! CreditCheckpoint
                   ? TxnAmount(
                       currencyCode: context.currentSettings.currency.code,
@@ -236,6 +217,8 @@ class _Spending extends StatelessWidget {
             ],
           ),
         ),
+        transaction.hasInstallment ? const TxnInstallmentIcon() : Gap.noGap,
+        Gap.w4,
       ],
     );
   }
@@ -259,10 +242,12 @@ class _Payment extends StatelessWidget {
         Gap.w4,
         Expanded(
           child: Text(
-            transaction.isFullPayment ? 'Full Payment'.hardcoded : 'Payment'.hardcoded,
+            'Payment'.hardcoded,
             style: kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
           ),
         ),
+        TxnAdjustmentIcon(transaction: transaction),
+        Gap.w4,
       ],
     );
   }
@@ -308,8 +293,8 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.currentSettings.currency.code}'
                                   .hardcoded,
-                              style: kHeader3TextStyle.copyWith(
-                                  fontSize: 12, color: context.appTheme.backgroundNegative),
+                              style:
+                                  kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.backgroundNegative),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -321,14 +306,12 @@ class _Checkpoint extends StatelessWidget {
               const FittedBox(child: _CheckpointArrow()),
               Text(
                 CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay).hardcoded,
-                style:
-                    kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
               ),
               Gap.w4,
               Text(
                 context.currentSettings.currency.code.hardcoded,
-                style:
-                    kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
               ),
             ],
           ),
@@ -370,9 +353,7 @@ class _DateTime extends StatelessWidget {
                       : Text(
                           dateTime!.getFormattedDate(hasDay: false, hasYear: false),
                           style: kHeader3TextStyle.copyWith(
-                              color: color ?? context.appTheme.backgroundNegative,
-                              fontSize: 14,
-                              height: 1),
+                              color: color ?? context.appTheme.backgroundNegative, fontSize: 14, height: 1),
                         ),
                 ],
               ),
