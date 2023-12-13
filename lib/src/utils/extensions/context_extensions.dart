@@ -16,7 +16,9 @@ extension LocalizedBuildContext on BuildContext {
 extension AppThemeBuildContext on BuildContext {
   ThemeType _getThemeType(ThemeType currentThemeType) {
     if (currentThemeType == ThemeType.system) {
-      return MediaQuery.of(this).platformBrightness == Brightness.light ? ThemeType.light : ThemeType.dark;
+      return WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.light
+          ? ThemeType.light
+          : ThemeType.dark;
     } else {
       return currentThemeType;
     }

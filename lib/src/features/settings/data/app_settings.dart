@@ -6,10 +6,10 @@ import '../../../utils/enums.dart';
 /// Class for reading SettingsData via InheritedWidget
 class AppSettings extends InheritedWidget {
   const AppSettings({
-    Key? key,
+    super.key,
     required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final SettingsData data;
 

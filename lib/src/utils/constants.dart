@@ -59,9 +59,8 @@ class Gap {
       );
 
   static verticalDivider(BuildContext context, {double? indent}) => VerticalDivider(
-        color: context.appTheme.backgroundNegative.withOpacity(1),
-        width: 100,
-        thickness: 5,
+        color: context.appTheme.backgroundNegative.withOpacity(0.25),
+        thickness: 1,
         indent: indent,
         endIndent: indent,
       );

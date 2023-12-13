@@ -34,15 +34,7 @@ Future<void> main() async {
 }
 
 class MoneyTrackerApp extends ConsumerWidget {
-  const MoneyTrackerApp({Key? key}) : super(key: key);
-
-  ThemeType getThemeType(BuildContext context, ThemeType currentThemeType) {
-    if (currentThemeType == ThemeType.system) {
-      return MediaQuery.of(context).platformBrightness == Brightness.light ? ThemeType.light : ThemeType.dark;
-    } else {
-      return currentThemeType;
-    }
-  }
+  const MoneyTrackerApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,8 +62,8 @@ class MoneyTrackerApp extends ConsumerWidget {
               useMaterial3: true,
               fontFamily: 'WixMadeforDisplay',
               // For showDatePicker2 colors
-              colorScheme:
-                  ColorScheme.fromSwatch().copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
+              colorScheme: ColorScheme.fromSwatch()
+                  .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
             ),
           ),
         ),
