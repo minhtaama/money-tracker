@@ -259,11 +259,11 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                               textSize: 14,
                               widget: CalculatorInput(
                                 hintText: watchState.userPaymentAmount != null &&
-                                        watchState.totalBalanceAmount.roundUsingAppSetting(context) -
-                                                watchState.userPaymentAmount!.roundUsingAppSetting(context) >
+                                        watchState.totalBalanceAmount.roundBySetting(context) -
+                                                watchState.userPaymentAmount!.roundBySetting(context) >
                                             0
-                                    ? CalService.formatCurrency(
-                                        context, watchState.totalBalanceAmount - watchState.userPaymentAmount!)
+                                    ? CalService.formatCurrency(context,
+                                        watchState.totalBalanceAmount - watchState.userPaymentAmount!)
                                     : '???',
                                 textAlign: TextAlign.right,
                                 controller: _remainingInputController,
@@ -322,7 +322,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   bool _isPaymentCloseToBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
       double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -339,7 +339,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   bool _isPaymentQuiteHighThanBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
       double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -355,7 +355,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   bool _isPaymentEqualBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
       double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -370,7 +370,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   bool _isPaymentTooHighThanBalance(BuildContext context) {
     if (_readState.userPaymentAmount != null) {
       double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
+      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
 
       if (paymentAmount == 0 || balanceAmount == 0) {
         return false;
@@ -383,7 +383,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   bool _isNoNeedPayment(BuildContext context) {
-    double balanceAmount = _readState.totalBalanceAmount.roundUsingAppSetting(context);
+    double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
 
     return balanceAmount == 0;
   }
@@ -411,8 +411,8 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     }
 
     if (_readState.userRemainingAmount != null &&
-        _readState.userRemainingAmount!.roundUsingAppSetting(context) >
-            _readState.totalBalanceAmount.roundUsingAppSetting(context)) {
+        _readState.userRemainingAmount!.roundBySetting(context) >
+            _readState.totalBalanceAmount.roundBySetting(context)) {
       return 'Higher than balance to pay'.hardcoded;
     }
 
@@ -424,7 +424,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
     if (_readState.isFullPayment == false &&
         _readState.userRemainingAmount == null &&
         _readState.userPaymentAmount != null &&
-        _readState.totalBalanceAmount.roundUsingAppSetting(context) - _readState.userPaymentAmount! <= 0) {
+        _readState.totalBalanceAmount.roundBySetting(context) - _readState.userPaymentAmount! <= 0) {
       return 'Please specify an amount'.hardcoded;
     }
 

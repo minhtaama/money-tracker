@@ -44,27 +44,66 @@ extension CreditAccountMethods on CreditAccount {
   List<CreditCheckpoint> get checkpointTransactions =>
       transactionsList.whereType<CreditCheckpoint>().toList();
 
-  bool isBeforeLastCheckpoint(DateTime dateTime) {
+  // bool isBeforeLastCheckpoint(DateTime dateTime) {
+  //   CreditCheckpoint? lastCheckpoint =
+  //       checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+  //
+  //   if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
+  //     return true;
+  //   }
+  //
+  //   return false;
+  // }
+
+  DateTime get lastCheckpointDateTime {
     CreditCheckpoint? lastCheckpoint =
         checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
 
-    if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
-      return true;
-    }
-
-    return false;
+    return lastCheckpoint?.dateTime.onlyYearMonthDay ?? Calendar.minDate;
   }
 
-  bool isBeforeStatementHasLastPayment(DateTime dateTime) {
+  DateTime get canAddTransactionSinceDateTime {
     Statement? statement =
         paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
-    if (statement == null || dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
-      return false;
-    }
-
-    return true;
+    return statement?.previousStatement.dueDate.onlyYearMonthDay ?? Calendar.minDate;
   }
+
+  DateTime get todayStatementDueDate {
+    final today = DateTime.now().onlyYearMonthDay;
+    if (today.day <= paymentDueDay) {
+      return today.copyWith(day: paymentDueDay);
+    } else {
+      return today.copyWith(day: paymentDueDay, month: today.month + 1);
+    }
+  }
+
+  // bool isBeforeStatementHasLastPayment(DateTime dateTime) {
+  //   Statement? statement =
+  //       paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+  //
+  //   if (statement == null || dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
+  //     return false;
+  //   }
+  //
+  //   return true;
+  // }
+  //
+  // bool isAfterTodayStatement(DateTime dateTime) {
+  //   final today = DateTime.now().onlyYearMonthDay;
+  //   DateTime dueDate;
+  //   if (today.day <= paymentDueDay) {
+  //     dueDate = today.copyWith(day: paymentDueDay);
+  //   } else {
+  //     dueDate = today.copyWith(day: paymentDueDay, month: today.month + 1);
+  //   }
+  //
+  //   if (dateTime.onlyYearMonthDay.isAfter(dueDate)) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   /// Return `null` if account has no transaction.
   ///

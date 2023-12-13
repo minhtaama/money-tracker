@@ -85,10 +85,10 @@ class _ListState extends State<_List> {
   double get _totalUnpaid {
     double result = 0;
     for (Installment ins in widget.statement.installments) {
-      result += ins.txn.paymentAmount! * ins.monthsLeft;
+      result += ins.txn.paymentAmount!.roundBySetting(context) * ins.monthsLeft;
     }
     for (Installment ins in _installmentsMarkAsDone) {
-      result -= ins.txn.paymentAmount! * ins.monthsLeft;
+      result -= ins.txn.paymentAmount!.roundBySetting(context) * ins.monthsLeft;
     }
     return result;
   }

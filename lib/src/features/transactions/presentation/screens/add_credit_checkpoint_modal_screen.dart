@@ -153,7 +153,8 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
 
   String? _oustdBalanceValidator() {
-    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount) {
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! <
+        _unpaidInstallmentsAmount.roundBySetting(context)) {
       return 'Must higher than unpaid installments amount'.hardcoded;
     }
 
