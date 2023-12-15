@@ -40,13 +40,6 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
       earliestStatementDate =
           DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
-      // if (statementDay >= earliestPayableDate.day) {
-      //   earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
-      // }
-      //
-      // if (statementDay < earliestPayableDate.day) {
-      //   earliestStatementDate = earliestPayableDate.copyWith(day: statementDay).onlyYearMonthDay;
-      // }
     }
 
     // only year, month and day
@@ -81,7 +74,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
       backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
       iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
-      creditBalance: accountDb.creditDetails!.creditBalance,
+      creditLimit: accountDb.creditDetails!.creditBalance,
       apr: accountDb.creditDetails!.apr,
       statementDay: accountDb.creditDetails!.statementDay,
       paymentDueDay: accountDb.creditDetails!.paymentDueDay,
@@ -153,7 +146,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
-          creditBalance: accountDb.creditDetails!.creditBalance,
+          creditLimit: accountDb.creditDetails!.creditBalance,
           apr: accountDb.creditDetails!.apr,
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
@@ -337,15 +330,10 @@ extension AccountGettersExtension on Account {
         return balance;
 
       case CreditAccount():
-        double balance = (this as CreditAccount).creditBalance;
-        //TODO: Calculate credit balance
-        // for (BaseCreditTransaction txn in transactionsList) {
-        //
-        //   if (!txn.isDone) {
-        //     balance -= txn.amount - txn.paidAmount;
-        //   }
-        // }
-        return balance;
+        final limit = (this as CreditAccount).creditLimit;
+        final latestStatement = (this as CreditAccount).statementsList.last;
+        return limit - latestStatement.balance;
+        return limit;
     }
   }
 }

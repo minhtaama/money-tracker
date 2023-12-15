@@ -14,7 +14,7 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
   /// This is a [StatefulWidget], which return a [Scaffold] with [BottomAppBarWithFAB],
   /// a [CustomFloatingActionButton] and the child widget.
   /// This [Scaffold] screen is the [ShellRoute]'s child in [GoRouter] and using `rootNavKey`
-  const ScaffoldWithBottomNavBar({Key? key, required this.child}) : super(key: key);
+  const ScaffoldWithBottomNavBar({super.key, required this.child});
   final Widget child;
 
   @override

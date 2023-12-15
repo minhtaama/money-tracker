@@ -42,16 +42,6 @@ class ExtendedAccountTab extends ConsumerWidget {
             const TxnCreditIcon(
               size: 22,
             ),
-            account is CreditAccount
-                ? RoundedIconButton(
-                    iconPath: AppIcons.add,
-                    onTap: () {
-                      showCustomModalBottomSheet(
-                          context: context,
-                          child: AddCreditCheckpointModalScreen(account: account as CreditAccount));
-                    },
-                  )
-                : Gap.noGap,
           ],
         ),
       ],

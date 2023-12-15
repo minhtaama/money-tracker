@@ -8,7 +8,8 @@ import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem(
+      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -20,17 +21,17 @@ class FABItem {
 // https://blog.logrocket.com/complete-guide-implementing-overlays-flutter/#example-2-a-floatingactionbutton-showing-three-other-buttons
 // Create a custom FloatingActionButton that expands more buttons when tapped
 class CustomFloatingActionButton extends StatefulWidget {
-  const CustomFloatingActionButton({Key? key, required this.roundedButtonItems, required this.listItems})
-      : assert(roundedButtonItems.length == 3),
-        super(key: key);
+  const CustomFloatingActionButton({super.key, required this.roundedButtonItems, this.listItems})
+      : assert(roundedButtonItems.length == 3);
   final List<FABItem> roundedButtonItems;
-  final List<FABItem> listItems;
+  final List<FABItem>? listItems;
 
   @override
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -65,7 +66,8 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () {
@@ -86,31 +88,33 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     };
 
     _listWidgets = (overlayEntry) {
-      return List.generate(widget.listItems.length, (index) {
-        return Column(
-          children: [
-            IconWithTextButton(
-              onTap: () {
-                widget.listItems[index].onTap();
-                _removeEntry(overlayEntry);
-              },
-              width: null,
-              height: null,
-              iconPath: widget.listItems[index].icon,
-              label: widget.listItems[index].label,
-              padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
-              labelSize: 15,
-              color: context.appTheme.backgroundNegative.withOpacity(0.5),
-              backgroundColor: Colors.transparent,
-              border: Border.all(
-                color: context.appTheme.backgroundNegative.withOpacity(0.4),
-                width: 1.5,
-              ),
-            ),
-            Gap.h16,
-          ],
-        );
-      });
+      return widget.listItems != null
+          ? List.generate(widget.listItems!.length, (index) {
+              return Column(
+                children: [
+                  IconWithTextButton(
+                    onTap: () {
+                      widget.listItems![index].onTap();
+                      _removeEntry(overlayEntry);
+                    },
+                    width: null,
+                    height: null,
+                    iconPath: widget.listItems![index].icon,
+                    label: widget.listItems![index].label,
+                    padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
+                    labelSize: 15,
+                    color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                    backgroundColor: Colors.transparent,
+                    border: Border.all(
+                      color: context.appTheme.backgroundNegative.withOpacity(0.4),
+                      width: 1.5,
+                    ),
+                  ),
+                  Gap.h16,
+                ],
+              );
+            })
+          : [];
     };
 
     super.didChangeDependencies();

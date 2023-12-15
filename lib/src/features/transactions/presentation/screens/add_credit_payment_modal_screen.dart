@@ -42,7 +42,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   CreditPaymentFormState get _readState => ref.read(creditPaymentFormNotifierProvider);
 
   bool get _hidePayment => _readState.statement == null;
-  String get _paymentCalOutputFormattedAmount => _paymentInputController.text;
 
   void _onPaymentInputChange(String value) {
     _paymentInputController.text = value;

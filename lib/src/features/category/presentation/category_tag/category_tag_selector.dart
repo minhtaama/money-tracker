@@ -118,12 +118,12 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
                   child: FittedBox(
                     clipBehavior: Clip.antiAlias,
                     child: RoundedIconButton(
-                      iconPath: AppIcons.minus,
+                      iconPath: AppIcons.close,
                       iconColor: context.appTheme.isDarkTheme
                           ? context.appTheme.secondaryNegative
                           : context.appTheme.primaryNegative,
                       backgroundColor: Colors.transparent,
-                      iconPadding: 0,
+                      iconPadding: 7,
                       onTap: () {
                         setState(() {
                           _chosenTag = null;

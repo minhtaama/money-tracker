@@ -8,7 +8,7 @@ class CreditAccount extends Account {
 
   final List<Statement> statementsList;
 
-  final double creditBalance;
+  final double creditLimit;
 
   /// (APR) As in percent.
   final double apr;
@@ -27,7 +27,7 @@ class CreditAccount extends Account {
     required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
-    required this.creditBalance,
+    required this.creditLimit,
     required this.apr,
     required this.statementDay,
     required this.paymentDueDay,
@@ -43,17 +43,6 @@ extension CreditAccountMethods on CreditAccount {
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
   List<CreditCheckpoint> get checkpointTransactions =>
       transactionsList.whereType<CreditCheckpoint>().toList();
-
-  // bool isBeforeLastCheckpoint(DateTime dateTime) {
-  //   CreditCheckpoint? lastCheckpoint =
-  //       checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
-  //
-  //   if (lastCheckpoint != null && dateTime.onlyYearMonthDay.isBefore(lastCheckpoint.dateTime)) {
-  //     return true;
-  //   }
-  //
-  //   return false;
-  // }
 
   DateTime get lastCheckpointDateTime {
     CreditCheckpoint? lastCheckpoint =
@@ -77,33 +66,6 @@ extension CreditAccountMethods on CreditAccount {
       return today.copyWith(day: paymentDueDay, month: today.month + 1);
     }
   }
-
-  // bool isBeforeStatementHasLastPayment(DateTime dateTime) {
-  //   Statement? statement =
-  //       paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
-  //
-  //   if (statement == null || dateTime.onlyYearMonthDay.isAfter(statement.previousStatement.dueDate)) {
-  //     return false;
-  //   }
-  //
-  //   return true;
-  // }
-  //
-  // bool isAfterTodayStatement(DateTime dateTime) {
-  //   final today = DateTime.now().onlyYearMonthDay;
-  //   DateTime dueDate;
-  //   if (today.day <= paymentDueDay) {
-  //     dueDate = today.copyWith(day: paymentDueDay);
-  //   } else {
-  //     dueDate = today.copyWith(day: paymentDueDay, month: today.month + 1);
-  //   }
-  //
-  //   if (dateTime.onlyYearMonthDay.isAfter(dueDate)) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
 
   /// Return `null` if account has no transaction.
   ///

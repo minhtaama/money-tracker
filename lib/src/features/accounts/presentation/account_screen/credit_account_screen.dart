@@ -15,6 +15,8 @@ import 'package:money_tracker_app/src/utils/extensions/string_double_extension.d
 
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
+import '../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
+import '../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
@@ -23,6 +25,7 @@ import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../../transactions/domain/transaction_base.dart';
+import '../../../transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
 import '../../../transactions/presentation/transaction/txn_components.dart';
 import '../../domain/account_base.dart';
 import '../../domain/statement/statement.dart';
@@ -93,6 +96,33 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appTheme.background,
+      floatingActionButton: CustomFloatingActionButton(
+        roundedButtonItems: [
+          FABItem(
+            icon: AppIcons.receiptDollar,
+            label: 'Spending'.hardcoded,
+            color: context.appTheme.onNegative,
+            backgroundColor: context.appTheme.negative,
+            onTap: () => context.push(RoutePath.addCreditSpending),
+          ),
+          FABItem(
+            icon: AppIcons.statementCheckpoint,
+            label: 'Checkpoint'.hardcoded,
+            color: context.appTheme.backgroundNegative,
+            backgroundColor: AppColors.grey(context),
+            onTap: () => showCustomModalBottomSheet(
+                context: context, child: AddCreditCheckpointModalScreen(account: widget.creditAccount)),
+          ),
+          FABItem(
+            icon: AppIcons.handCoin,
+            label: 'Payment'.hardcoded,
+            color: context.appTheme.onPositive,
+            backgroundColor: context.appTheme.positive,
+            onTap: () => context.push(RoutePath.addCreditPayment),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomTabPageWithPageView(
         controller: _controller,
         smallTabBar: SmallTabBar(
@@ -126,6 +156,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
               ? [
                   _SummaryCard(statement: statement),
                   _List(statement: statement),
+                  Gap.h48,
                 ]
               : [
                   IconWithText(
