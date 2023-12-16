@@ -21,8 +21,7 @@ class CreditPaymentFormState {
 
   final Statement? statement;
 
-  double get totalBalanceAmount =>
-      statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
+  double get totalBalanceAmount => statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
 
   CreditPaymentFormState._({
     this.statement,
@@ -58,8 +57,7 @@ class CreditPaymentFormState {
       isFullPayment: isFullPayment != null ? isFullPayment() : this.isFullPayment,
       adjustment: adjustment != null ? adjustment() : this.adjustment,
       userPaymentAmount: userPaymentAmount != null ? userPaymentAmount() : this.userPaymentAmount,
-      userRemainingAmount:
-          userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
+      userRemainingAmount: userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
     );
   }
 
@@ -95,8 +93,7 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
         // Because: afterAdjustedAmount = userPaymentAmount + adjustment
         // Then: userRemaining = totalBalance - afterAdjustedAmount
         // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
-        adjustment: () =>
-            state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
+        adjustment: () => state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
   }
 
   void changePaymentInput(BuildContext context, String value) {
@@ -108,8 +105,7 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
     if (state.userPaymentAmount != null &&
         (state.userPaymentAmount! > state.totalBalanceAmount ||
             state.isFullPayment ||
-            state.userPaymentAmount!.roundBySetting(context) ==
-                state.totalBalanceAmount.roundBySetting(context))) {
+            state.userPaymentAmount!.roundBySetting(context) == state.totalBalanceAmount.roundBySetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       state = state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
@@ -129,7 +125,6 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
   }
 
   void changeDateTime(DateTime? dateTime, Statement? statement) {
-    _resetNumberInput();
     state = state.copyWith(dateTime: () => dateTime, statement: () => statement);
   }
 
@@ -145,6 +140,75 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
 
   void changeNote(String note) {
     state = state.copyWith(note: () => note);
+  }
+
+  bool isPaymentCloseToBalance(BuildContext context) {
+    if (state.userPaymentAmount != null) {
+      double paymentAmount = state.userPaymentAmount!;
+      double balanceAmount = state.totalBalanceAmount.roundBySetting(context);
+
+      if (paymentAmount == 0 || balanceAmount == 0) {
+        return false;
+      }
+
+      return paymentAmount <= balanceAmount + (balanceAmount * 2.5 / 100) &&
+          paymentAmount >= balanceAmount - (balanceAmount * 2.5 / 100) &&
+          paymentAmount != balanceAmount;
+    } else {
+      return false;
+    }
+  }
+
+  bool isPaymentQuiteHighThanBalance(BuildContext context) {
+    if (state.userPaymentAmount != null) {
+      double paymentAmount = state.userPaymentAmount!;
+      double balanceAmount = state.totalBalanceAmount.roundBySetting(context);
+
+      if (paymentAmount == 0 || balanceAmount == 0) {
+        return false;
+      }
+
+      return paymentAmount < balanceAmount + (balanceAmount * 10 / 100) &&
+          paymentAmount > balanceAmount + (balanceAmount * 2.5 / 100);
+    } else {
+      return false;
+    }
+  }
+
+  bool isPaymentEqualBalance(BuildContext context) {
+    if (state.userPaymentAmount != null) {
+      double paymentAmount = state.userPaymentAmount!;
+      double balanceAmount = state.totalBalanceAmount.roundBySetting(context);
+
+      if (paymentAmount == 0 || balanceAmount == 0) {
+        return false;
+      }
+
+      return paymentAmount == balanceAmount;
+    } else {
+      return false;
+    }
+  }
+
+  bool isPaymentTooHighThanBalance(BuildContext context) {
+    if (state.userPaymentAmount != null) {
+      double paymentAmount = state.userPaymentAmount!;
+      double balanceAmount = state.totalBalanceAmount.roundBySetting(context);
+
+      if (paymentAmount == 0 || balanceAmount == 0) {
+        return false;
+      }
+
+      return paymentAmount >= balanceAmount + (balanceAmount * 10 / 100);
+    } else {
+      return false;
+    }
+  }
+
+  bool isNoNeedPayment(BuildContext context) {
+    double balanceAmount = state.totalBalanceAmount.roundBySetting(context);
+
+    return balanceAmount == 0;
   }
 }
 

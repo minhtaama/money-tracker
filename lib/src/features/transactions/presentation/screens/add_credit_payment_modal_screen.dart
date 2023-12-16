@@ -35,13 +35,13 @@ class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
 class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentModalScreen> {
   final _paymentInputController = TextEditingController();
   final _remainingInputController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
-  CreditPaymentFormState get _readState => ref.read(creditPaymentFormNotifierProvider);
+  CreditPaymentFormState get _stateRead => ref.read(creditPaymentFormNotifierProvider);
 
-  bool get _hidePayment => _readState.statement == null;
+  bool get _hidePayment => _stateRead.statement == null;
 
   void _onPaymentInputChange(String value) {
     _paymentInputController.text = value;
@@ -73,15 +73,15 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   void _submit() {
     // By validating, no important value can be null
-    if (_formKey.currentState!.validate() && !_isNoNeedPayment(context)) {
+    if (_formKey.currentState!.validate() && !_stateController.isNoNeedPayment(context)) {
       ref.read(transactionRepositoryRealmProvider).writeNewCreditPayment(
-            dateTime: _readState.dateTime!,
-            amount: _readState.userPaymentAmount!,
-            account: _readState.creditAccount!,
-            fromAccount: _readState.fromRegularAccount!,
-            note: _readState.note,
-            isFullPayment: _readState.isFullPayment,
-            adjustment: _readState.adjustment,
+            dateTime: _stateRead.dateTime!,
+            amount: _stateRead.userPaymentAmount!,
+            account: _stateRead.creditAccount!,
+            fromAccount: _stateRead.fromRegularAccount!,
+            note: _stateRead.note,
+            isFullPayment: _stateRead.isFullPayment,
+            adjustment: _stateRead.adjustment,
           );
       context.pop();
     }
@@ -89,7 +89,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
   @override
   Widget build(BuildContext context) {
-    final watchState = ref.watch(creditPaymentFormNotifierProvider);
+    final stateWatch = ref.watch(creditPaymentFormNotifierProvider);
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -103,9 +103,9 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             children: [
               Expanded(
                 child: CreditDateTimeFormSelector(
-                  creditAccount: watchState.creditAccount,
+                  creditAccount: stateWatch.creditAccount,
                   disableText: 'Choose credit account first'.hardcoded,
-                  initialDate: watchState.dateTime,
+                  initialDate: stateWatch.dateTime,
                   isForPayment: true,
                   onChanged: _onDateTimeChange,
                   validator: (_) => _dateTimeValidator(),
@@ -153,8 +153,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         child: CreditInfo(
                           showPaymentAmount: true,
                           showList: false,
-                          chosenDateTime: watchState.dateTime?.onlyYearMonthDay,
-                          statement: watchState.statement,
+                          chosenDateTime: stateWatch.dateTime?.onlyYearMonthDay,
+                          statement: stateWatch.statement,
                         ),
                       ),
                       Gap.divider(context, indent: 6),
@@ -201,7 +201,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 ),
                 Gap.h4,
                 HelpBox(
-                  isShow: _isPaymentTooHighThanBalance(context),
+                  isShow: _stateController.isPaymentTooHighThanBalance(context),
                   iconPath: AppIcons.sadFace,
                   margin: const EdgeInsets.only(top: 8),
                   header: 'Too high than balance to pay!'.hardcoded,
@@ -210,7 +210,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           .hardcoded,
                 ),
                 HelpBox(
-                  isShow: _isPaymentQuiteHighThanBalance(context),
+                  isShow: _stateController.isPaymentQuiteHighThanBalance(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -221,7 +221,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           .hardcoded,
                 ),
                 HelpBox(
-                  isShow: _isPaymentCloseToBalance(context),
+                  isShow: _stateController.isPaymentCloseToBalance(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -230,7 +230,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
                 ),
                 HelpBox(
-                  isShow: _isPaymentEqualBalance(context),
+                  isShow: _stateController.isPaymentEqualBalance(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -238,14 +238,14 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   header: 'Exact balance to pay!'.hardcoded,
                 ),
                 HelpBox(
-                  isShow: _isNoNeedPayment(context),
+                  isShow: _stateController.isNoNeedPayment(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
                   color: context.appTheme.onPositive,
                   header: 'No balance left to pay!'.hardcoded,
                 ),
-                !_isNoNeedPayment(context)
+                !_stateController.isNoNeedPayment(context)
                     ? CustomCheckbox(
                         onChanged: _onToggleFullPaymentCheckbox,
                         label: 'Full payment',
@@ -257,12 +257,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                               suffixText: context.currentSettings.currency.code,
                               textSize: 14,
                               widget: CalculatorInput(
-                                hintText: watchState.userPaymentAmount != null &&
-                                        watchState.totalBalanceAmount.roundBySetting(context) -
-                                                watchState.userPaymentAmount!.roundBySetting(context) >
+                                hintText: stateWatch.userPaymentAmount != null &&
+                                        stateWatch.totalBalanceAmount.roundBySetting(context) -
+                                                stateWatch.userPaymentAmount!.roundBySetting(context) >
                                             0
-                                    ? CalService.formatCurrency(context,
-                                        watchState.totalBalanceAmount - watchState.userPaymentAmount!)
+                                    ? CalService.formatCurrency(
+                                        context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                     : '???',
                                 textAlign: TextAlign.right,
                                 controller: _remainingInputController,
@@ -313,117 +313,50 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
 
 extension _Validators on _AddCreditPaymentModalScreenState {
   bool get _isButtonDisable =>
-      _readState.userPaymentAmount == null ||
-      _readState.userPaymentAmount == 0 ||
-      _readState.userRemainingAmount == 0 ||
-      _readState.fromRegularAccount == null;
-
-  bool _isPaymentCloseToBalance(BuildContext context) {
-    if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
-
-      if (paymentAmount == 0 || balanceAmount == 0) {
-        return false;
-      }
-
-      return paymentAmount <= balanceAmount + (balanceAmount * 2.5 / 100) &&
-          paymentAmount >= balanceAmount - (balanceAmount * 2.5 / 100) &&
-          paymentAmount != balanceAmount;
-    } else {
-      return false;
-    }
-  }
-
-  bool _isPaymentQuiteHighThanBalance(BuildContext context) {
-    if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
-
-      if (paymentAmount == 0 || balanceAmount == 0) {
-        return false;
-      }
-
-      return paymentAmount < balanceAmount + (balanceAmount * 10 / 100) &&
-          paymentAmount > balanceAmount + (balanceAmount * 2.5 / 100);
-    } else {
-      return false;
-    }
-  }
-
-  bool _isPaymentEqualBalance(BuildContext context) {
-    if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
-
-      if (paymentAmount == 0 || balanceAmount == 0) {
-        return false;
-      }
-
-      return paymentAmount == balanceAmount;
-    } else {
-      return false;
-    }
-  }
-
-  bool _isPaymentTooHighThanBalance(BuildContext context) {
-    if (_readState.userPaymentAmount != null) {
-      double paymentAmount = _readState.userPaymentAmount!;
-      double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
-
-      if (paymentAmount == 0 || balanceAmount == 0) {
-        return false;
-      }
-
-      return paymentAmount >= balanceAmount + (balanceAmount * 10 / 100);
-    } else {
-      return false;
-    }
-  }
-
-  bool _isNoNeedPayment(BuildContext context) {
-    double balanceAmount = _readState.totalBalanceAmount.roundBySetting(context);
-
-    return balanceAmount == 0;
-  }
+      _stateRead.userPaymentAmount == null ||
+      _stateRead.userPaymentAmount == 0 ||
+      _stateRead.userRemainingAmount == 0 ||
+      _stateRead.userRemainingAmount == null && !_stateRead.isFullPayment ||
+      _stateRead.fromRegularAccount == null ||
+      _stateRead.totalBalanceAmount.roundBySetting(context) == 0;
 
   String? _dateTimeValidator() {
-    if (_readState.dateTime == null) {
+    if (_stateRead.dateTime == null) {
       return 'Please select a date';
     }
     return null;
   }
 
   String? _paymentInputValidator(BuildContext context) {
-    if (_readState.userPaymentAmount == null || _readState.userPaymentAmount == 0) {
+    if (_stateRead.userPaymentAmount == null || _stateRead.userPaymentAmount == 0) {
       return 'Invalid amount'.hardcoded;
     }
-    if (_readState.statement == null) {
+    if (_stateRead.statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
     return null;
   }
 
   String? _remainingInputValidator(BuildContext context) {
-    if (_readState.statement == null) {
+    if (_stateRead.statement == null) {
       return 'No statement found in selected day'.hardcoded;
     }
 
-    if (_readState.userRemainingAmount != null &&
-        _readState.userRemainingAmount!.roundBySetting(context) >
-            _readState.totalBalanceAmount.roundBySetting(context)) {
+    if (_stateRead.userRemainingAmount != null &&
+        _stateRead.userRemainingAmount!.roundBySetting(context) >
+            _stateRead.totalBalanceAmount.roundBySetting(context)) {
       return 'Higher than balance to pay'.hardcoded;
     }
 
-    if (_readState.userRemainingAmount != null && _readState.userRemainingAmount == 0) {
+    if (_stateRead.userRemainingAmount != null && _stateRead.userRemainingAmount == 0) {
       return 'Please tick as full payment'.hardcoded;
     }
 
     // When user is not tick as full payment but not specify a remaining amount
-    if (_readState.isFullPayment == false &&
-        _readState.userRemainingAmount == null &&
-        _readState.userPaymentAmount != null &&
-        _readState.totalBalanceAmount.roundBySetting(context) - _readState.userPaymentAmount! <= 0) {
+    if (_stateRead.isFullPayment == false &&
+        _stateRead.userRemainingAmount == null &&
+        _stateRead.userPaymentAmount != null &&
+        _stateRead.totalBalanceAmount.roundBySetting(context) - _stateRead.userPaymentAmount! <= 0) {
       return 'Please specify an amount'.hardcoded;
     }
 
@@ -431,14 +364,14 @@ extension _Validators on _AddCreditPaymentModalScreenState {
   }
 
   String? _creditAccountValidator() {
-    if (_readState.creditAccount == null) {
+    if (_stateRead.creditAccount == null) {
       return 'Must specify a credit account';
     }
     return null;
   }
 
   String? _fromRegularAccountValidator() {
-    if (_readState.fromRegularAccount == null) {
+    if (_stateRead.fromRegularAccount == null) {
       return 'Must be specify for payment';
     }
     return null;
