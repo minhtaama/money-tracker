@@ -19,7 +19,7 @@ import '../../../category/domain/category_tag.dart';
 import '../selectors/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.transactionType, {Key? key}) : super(key: key);
+  const AddRegularTxnModalScreen(this.transactionType, {super.key});
   final TransactionType transactionType;
 
   @override
@@ -130,8 +130,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(
-                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
@@ -169,8 +168,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                           });
                         }
                       },
-                      otherSelectedAccount:
-                          widget.transactionType == TransactionType.transfer ? _account : null,
+                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? _account : null,
                     ),
                   ],
                 ),
@@ -219,8 +217,7 @@ extension _Validators on _AddTransactionModalScreenState {
       _account == null;
 
   String? _calculatorValidator() {
-    if (CalService.formatToDouble(_calculatorOutput) == null ||
-        CalService.formatToDouble(_calculatorOutput) == 0) {
+    if (CalService.formatToDouble(_calculatorOutput) == null || CalService.formatToDouble(_calculatorOutput) == 0) {
       return 'Invalid amount';
     }
     return null;
