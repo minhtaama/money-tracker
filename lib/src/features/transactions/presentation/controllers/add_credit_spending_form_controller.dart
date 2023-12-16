@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
@@ -6,59 +8,61 @@ import '../../../calculator_input/application/calculator_service.dart';
 import '../../../category/domain/category.dart';
 import '../../../category/domain/category_tag.dart';
 
-class RegularTransactionFormState {
-  final TransactionType type;
+class CreditSpendingFormState {
   final DateTime dateTime;
   final double? amount;
   final String? note;
   final CategoryTag? tag;
   final Category? category;
-  final RegularAccount? account;
-  final RegularAccount? toAccount;
+  final CreditAccount? account;
+  final int? installmentPeriod;
 
-  factory RegularTransactionFormState.initial(TransactionType type) => RegularTransactionFormState._(
-        type: type,
-        dateTime: DateTime.now(),
-      );
+  double? getInstallmentAmount(BuildContext context) {
+    if (amount != null && installmentPeriod != null) {
+      return (amount! / installmentPeriod!).roundBySetting(context);
+    } else {
+      return null;
+    }
+  }
 
-  RegularTransactionFormState._({
-    required this.type,
+  factory CreditSpendingFormState.initial() => CreditSpendingFormState._(dateTime: DateTime.now());
+
+  CreditSpendingFormState._({
     required this.dateTime,
     this.amount,
     this.note,
     this.tag,
     this.category,
     this.account,
-    this.toAccount,
+    this.installmentPeriod,
   });
 
-  RegularTransactionFormState copyWith({
+  CreditSpendingFormState copyWith({
     // TransactionType Function()? type,
     DateTime? Function()? dateTime,
     double? Function()? amount,
     String? Function()? note,
     CategoryTag? Function()? tag,
     Category? Function()? category,
-    RegularAccount? Function()? account,
-    RegularAccount? Function()? toAccount,
+    CreditAccount? Function()? account,
+    int? Function()? installmentPeriod,
   }) {
-    return RegularTransactionFormState._(
-      type: type,
+    return CreditSpendingFormState._(
       dateTime: dateTime != null ? dateTime()! : this.dateTime,
       amount: amount != null ? amount() : this.amount,
       note: note != null ? note() : this.note,
       tag: tag != null ? tag() : this.tag,
       category: category != null ? category() : this.category,
       account: account != null ? account() : this.account,
-      toAccount: toAccount != null ? toAccount() : this.toAccount,
+      installmentPeriod: installmentPeriod != null ? installmentPeriod() : this.installmentPeriod,
     );
   }
 }
 
-class RegularTransactionFormController extends AutoDisposeFamilyNotifier<RegularTransactionFormState, TransactionType> {
+class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFormState> {
   @override
-  RegularTransactionFormState build(TransactionType arg) {
-    return RegularTransactionFormState.initial(arg);
+  CreditSpendingFormState build() {
+    return CreditSpendingFormState.initial();
   }
 
   void _resetCategoryTag() {
@@ -82,12 +86,12 @@ class RegularTransactionFormController extends AutoDisposeFamilyNotifier<Regular
     state = state.copyWith(tag: () => tag);
   }
 
-  void changeAccount(RegularAccount? account) {
+  void changeCreditAccount(CreditAccount? account) {
     state = state.copyWith(account: () => account);
   }
 
-  void changeToAccount(RegularAccount? toAccount) {
-    state = state.copyWith(toAccount: () => toAccount);
+  void changeInstallmentPeriod(int? period) {
+    state = state.copyWith(installmentPeriod: () => period);
   }
 
   void changeNote(String note) {
@@ -96,7 +100,6 @@ class RegularTransactionFormController extends AutoDisposeFamilyNotifier<Regular
 }
 
 final regularTransactionFormNotifierProvider =
-    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType>(
-        () {
-  return RegularTransactionFormController();
+    AutoDisposeNotifierProvider<CreditSpendingFormController, CreditSpendingFormState>(() {
+  return CreditSpendingFormController();
 });

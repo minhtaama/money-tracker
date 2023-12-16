@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/controllers/add_regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -14,8 +14,6 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
-import '../../../category/domain/category.dart';
-import '../../../category/domain/category_tag.dart';
 import '../selectors/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
@@ -28,15 +26,9 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  late final TransactionType _type = widget.transactionType;
-  late DateTime _dateTime = DateTime.now();
-  String _calculatorOutput = '0';
-  String? _note;
-  CategoryTag? _tag;
-  Category? _category;
-  RegularAccount? _account;
-  RegularAccount? _toAccount;
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  RegularTransactionFormState get _stateRead =>
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
   String get _title {
     return widget.transactionType == TransactionType.income
@@ -50,33 +42,33 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
     if (_formKey.currentState!.validate()) {
       final transactionRepo = ref.read(transactionRepositoryRealmProvider);
 
-      if (_type == TransactionType.income) {
+      if (_stateRead.type == TransactionType.income) {
         transactionRepo.writeNewIncome(
-          dateTime: _dateTime,
-          amount: CalService.formatToDouble(_calculatorOutput)!,
-          category: _category!,
-          tag: _tag,
-          account: _account!,
-          note: _note,
+          dateTime: _stateRead.dateTime,
+          amount: _stateRead.amount!,
+          category: _stateRead.category!,
+          tag: _stateRead.tag,
+          account: _stateRead.account!,
+          note: _stateRead.note,
         );
       }
-      if (_type == TransactionType.expense) {
+      if (_stateRead.type == TransactionType.expense) {
         transactionRepo.writeNewExpense(
-          dateTime: _dateTime,
-          amount: CalService.formatToDouble(_calculatorOutput)!,
-          category: _category!,
-          tag: _tag,
-          account: _account!,
-          note: _note,
+          dateTime: _stateRead.dateTime,
+          amount: _stateRead.amount!,
+          category: _stateRead.category!,
+          tag: _stateRead.tag,
+          account: _stateRead.account!,
+          note: _stateRead.note,
         );
       }
-      if (_type == TransactionType.transfer) {
+      if (_stateRead.type == TransactionType.transfer) {
         transactionRepo.writeNewTransfer(
-            dateTime: _dateTime,
-            amount: CalService.formatToDouble(_calculatorOutput)!,
-            account: _account!,
-            toAccount: _toAccount!,
-            note: _note,
+            dateTime: _stateRead.dateTime,
+            amount: _stateRead.amount!,
+            account: _stateRead.account!,
+            toAccount: _stateRead.toAccount!,
+            note: _stateRead.note,
             fee: null,
             isChargeOnDestinationAccount: null);
         // TODO: add transfer fee logic
@@ -87,6 +79,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
   @override
   Widget build(BuildContext context) {
+    final stateWatch = ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -104,11 +97,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                   hintText: 'Amount',
                   focusColor: context.appTheme.primary,
                   validator: (_) => _calculatorValidator(),
-                  formattedResultOutput: (value) {
-                    setState(() {
-                      _calculatorOutput = value;
-                    });
-                  },
+                  formattedResultOutput: (value) => _stateController.changeAmount(value),
                 ),
               ),
             ],
@@ -119,9 +108,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             children: [
               Expanded(
                 child: DateTimeSelector(
-                  onChanged: (DateTime value) {
-                    _dateTime = value;
-                  },
+                  onChanged: (DateTime value) => _stateController.changeDateTime(value),
                 ),
               ),
               Gap.w24,
@@ -136,20 +123,14 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) => _categoryValidator(),
-                            onChangedCategory: (newCategory) {
-                              setState(() {
-                                _category = newCategory;
-                              });
-                            })
+                            onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
+                          )
                         : AccountFormSelector(
                             accountType: AccountType.regular,
                             validator: (_) => _sendingAccountValidator(),
-                            onChangedAccount: (newAccount) {
-                              setState(() {
-                                _account = newAccount as RegularAccount;
-                              });
-                            },
-                            otherSelectedAccount: _toAccount,
+                            onChangedAccount: (newAccount) =>
+                                _stateController.changeAccount(newAccount as RegularAccount),
+                            otherSelectedAccount: stateWatch.account,
                           ),
                     Gap.h16,
                     TextHeader(widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:'),
@@ -159,16 +140,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                       validator: (_) => _toAccountAndAccountValidator(),
                       onChangedAccount: (newAccount) {
                         if (widget.transactionType != TransactionType.transfer) {
-                          setState(() {
-                            _account = newAccount as RegularAccount;
-                          });
+                          _stateController.changeAccount(newAccount as RegularAccount);
                         } else {
-                          setState(() {
-                            _toAccount = newAccount as RegularAccount;
-                          });
+                          _stateController.changeToAccount(newAccount as RegularAccount);
                         }
                       },
-                      otherSelectedAccount: widget.transactionType == TransactionType.transfer ? _account : null,
+                      otherSelectedAccount:
+                          widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
                     ),
                   ],
                 ),
@@ -183,10 +161,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           Gap.h4,
           widget.transactionType != TransactionType.transfer
               ? CategoryTagSelector(
-                  category: _category,
-                  onTagSelected: (value) {
-                    _tag = value;
-                  })
+                  category: stateWatch.category,
+                  onTagSelected: (value) => _stateController.changeCategoryTag(value),
+                )
               : Gap.noGap,
           widget.transactionType != TransactionType.transfer ? Gap.h8 : Gap.noGap,
           CustomTextFormField(
@@ -196,9 +173,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             maxLines: 3,
             hintText: 'Note ...',
             textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              _note = value;
-            },
+            onChanged: (value) => _stateController.changeNote(value),
           ),
           Gap.h16,
           BottomButtons(isBigButtonDisabled: _isButtonDisabled, onBigButtonTap: _submit),
@@ -210,38 +185,38 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
 extension _Validators on _AddTransactionModalScreenState {
   bool get _isButtonDisabled =>
-      CalService.formatToDouble(_calculatorOutput) == null ||
-      CalService.formatToDouble(_calculatorOutput) == 0 ||
-      _category == null && widget.transactionType != TransactionType.transfer ||
-      _toAccount == null && widget.transactionType == TransactionType.transfer ||
-      _account == null;
+      _stateRead.amount == null ||
+      _stateRead.amount == 0 ||
+      _stateRead.category == null && widget.transactionType != TransactionType.transfer ||
+      _stateRead.toAccount == null && widget.transactionType == TransactionType.transfer ||
+      _stateRead.account == null;
 
   String? _calculatorValidator() {
-    if (CalService.formatToDouble(_calculatorOutput) == null || CalService.formatToDouble(_calculatorOutput) == 0) {
+    if (_stateRead.amount == null || _stateRead.amount == 0) {
       return 'Invalid amount';
     }
     return null;
   }
 
   String? _categoryValidator() {
-    if (_category == null && widget.transactionType != TransactionType.transfer) {
+    if (_stateRead.category == null && widget.transactionType != TransactionType.transfer) {
       return 'Must specify a category'.hardcoded;
     }
     return null;
   }
 
   String? _sendingAccountValidator() {
-    if (_account == null) {
+    if (_stateRead.account == null) {
       return 'Must specify a sending account'.hardcoded;
     }
     return null;
   }
 
   String? _toAccountAndAccountValidator() {
-    if (widget.transactionType != TransactionType.transfer && _account == null) {
+    if (widget.transactionType != TransactionType.transfer && _stateRead.account == null) {
       return 'Must specify an account for payment'.hardcoded;
     }
-    if (widget.transactionType == TransactionType.transfer && _toAccount == null) {
+    if (widget.transactionType == TransactionType.transfer && _stateRead.toAccount == null) {
       return 'Must specify a destination account'.hardcoded;
     }
     return null;

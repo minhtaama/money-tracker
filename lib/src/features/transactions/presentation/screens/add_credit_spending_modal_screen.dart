@@ -8,7 +8,6 @@ import 'package:money_tracker_app/src/features/calculator_input/application/calc
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -22,7 +21,7 @@ import '../../data/transaction_repo.dart';
 import '../selectors/forms.dart';
 
 class AddCreditSpendingModalScreen extends ConsumerStatefulWidget {
-  const AddCreditSpendingModalScreen({Key? key}) : super(key: key);
+  const AddCreditSpendingModalScreen({super.key});
 
   @override
   ConsumerState<AddCreditSpendingModalScreen> createState() => _AddCreditTransactionModalScreenState();
@@ -258,8 +257,7 @@ extension _Validators on _AddCreditTransactionModalScreenState {
         CalService.formatToDouble(_installmentPaymentAmount) == 0) {
       return 'Invalid Amount';
     }
-    if (CalService.formatToDouble(_installmentPaymentAmount)! >
-        CalService.formatToDouble(_calOutputSpendAmount)!) {
+    if (CalService.formatToDouble(_installmentPaymentAmount)! > CalService.formatToDouble(_calOutputSpendAmount)!) {
       return 'Too high';
     }
     return null;
