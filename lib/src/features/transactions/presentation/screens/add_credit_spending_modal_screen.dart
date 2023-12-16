@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/controllers/add_credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -15,8 +15,6 @@ import 'package:money_tracker_app/src/utils/extensions/string_double_extension.d
 import '../../../../common_widgets/inline_text_form_field.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/presentation/calculator_input.dart';
-import '../../../category/domain/category_tag.dart';
-import '../../../category/domain/category.dart';
 import '../../data/transaction_repo.dart';
 import '../selectors/forms.dart';
 
@@ -31,45 +29,28 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   final _formKey = GlobalKey<FormState>();
   final _installmentPaymentController = TextEditingController();
 
-  int? _installmentPaymentPeriod;
-
-  late DateTime _dateTime = DateTime.now();
-  String? _note;
-  Category? _category;
-  CategoryTag? _tag;
-  CreditAccount? _creditAccount;
-
-  String _calOutputSpendAmount = '0';
-
-  String? get _installmentPaymentAmount {
-    if (CalService.formatToDouble(_calOutputSpendAmount) != null && _installmentPaymentPeriod != null) {
-      return CalService.formatNumberInGroup(
-          (CalService.formatToDouble(_calOutputSpendAmount)! / _installmentPaymentPeriod!).toString());
-    } else {
-      return null;
-    }
-  }
-
-  void _resetInstallmentDetails() {
-    _installmentPaymentPeriod = null;
-  }
+  late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
+  CreditSpendingFormState get _stateRead => ref.read(creditSpendingFormNotifierProvider);
 
   void _submit() {
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
       ref.read(transactionRepositoryRealmProvider).writeNewCreditSpending(
-            dateTime: _dateTime,
-            amount: CalService.formatToDouble(_calOutputSpendAmount)!,
-            tag: _tag,
-            note: _note,
-            category: _category!,
-            account: _creditAccount!,
-            monthsToPay: _installmentPaymentPeriod,
-            paymentAmount: CalService.formatToDouble(_installmentPaymentController.text),
+            dateTime: _stateRead.dateTime,
+            amount: _stateRead.amount!,
+            tag: _stateRead.tag,
+            note: _stateRead.note,
+            category: _stateRead.category!,
+            account: _stateRead.creditAccount!,
+            monthsToPay: _stateRead.installmentPeriod,
+            paymentAmount: _stateRead.installmentAmount,
           );
       context.pop();
     }
   }
+
+  void _changeInstallmentControllerText() =>
+      _installmentPaymentController.text = _stateRead.installmentAmountString(context) ?? '0';
 
   @override
   void dispose() {
@@ -79,6 +60,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
 
   @override
   Widget build(BuildContext context) {
+    final stateWatch = ref.watch(creditSpendingFormNotifierProvider);
+
     return Form(
       key: _formKey,
       child: CustomSection(
@@ -97,10 +80,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   focusColor: context.appTheme.primary,
                   validator: (_) => _calSpendingAmountValidator(),
                   formattedResultOutput: (value) {
-                    setState(() {
-                      _calOutputSpendAmount = value;
-                      _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
-                    });
+                    _stateController.changeAmount(context, value);
+                    _changeInstallmentControllerText();
                   },
                 ),
               ),
@@ -120,12 +101,10 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                     'For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \'Spending Amount\' (Because installment payment is a fixed amount, see more details in your banking contract).'
                         .hardcoded),
             onChanged: (value) {
-              setState(() {
-                if (!value) {
-                  _resetInstallmentDetails();
-                }
-                _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
-              });
+              if (!value) {
+                _stateController.changeInstallmentPeriod(context, null);
+              }
+              _changeInstallmentControllerText();
             },
             optionalWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,10 +112,10 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                 InlineTextFormField(
                   prefixText: 'Installment Period:',
                   suffixText: 'month(s)',
-                  validator: (_) => _installmentPaymentPeriod == null ? 'error' : null,
+                  validator: (_) => stateWatch.installmentPeriod == null ? 'error' : null,
                   onChanged: (value) {
-                    _installmentPaymentPeriod = int.tryParse(value);
-                    _installmentPaymentController.text = _installmentPaymentAmount ?? '0';
+                    _stateController.changeInstallmentPeriod(context, int.tryParse(value));
+                    _changeInstallmentControllerText();
                   },
                 ),
                 Gap.h8,
@@ -149,7 +128,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       isDense: true,
                       textAlign: TextAlign.end,
                       validator: (_) => _installmentPaymentValidator(),
-                      formattedResultOutput: (value) => _installmentPaymentController.text = value,
+                      formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
                       focusColor: context.appTheme.secondary,
                       hintText: ''),
                 ),
@@ -162,15 +141,14 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             children: [
               Expanded(
                 child: CreditDateTimeFormSelector(
-                  creditAccount: _creditAccount,
+                  creditAccount: stateWatch.creditAccount,
                   isForPayment: false,
                   disableText: 'Choose credit account first'.hardcoded,
-                  initialDate: _dateTime,
+                  initialDate: stateWatch.dateTime,
                   onChanged: (dateTime, statement) {
                     if (dateTime != null) {
-                      _dateTime = dateTime;
+                      _stateController.changeDateTime(dateTime);
                     }
-                    setState(() {});
                   },
                 ),
               ),
@@ -185,9 +163,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                     CategoryFormSelector(
                       transactionType: TransactionType.expense,
                       validator: (_) => _categoryValidator(),
-                      onChangedCategory: (newCategory) => setState(() {
-                        _category = newCategory;
-                      }),
+                      onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
                     ),
                     Gap.h16,
                     const TextHeader('Credit Account:'),
@@ -195,9 +171,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                     AccountFormSelector(
                       accountType: AccountType.credit,
                       validator: (_) => _creditAccountValidator(),
-                      onChangedAccount: (newAccount) => setState(() {
-                        _creditAccount = newAccount as CreditAccount;
-                      }),
+                      onChangedAccount: (newAccount) =>
+                          _stateController.changeCreditAccount(newAccount as CreditAccount),
                     ),
                   ],
                 ),
@@ -213,10 +188,9 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               )),
           Gap.h4,
           CategoryTagSelector(
-              category: _category,
-              onTagSelected: (value) {
-                _tag = value;
-              }),
+            category: stateWatch.category,
+            onTagSelected: (value) => _stateController.changeCategoryTag(value),
+          ),
           Gap.h8,
           CustomTextFormField(
             autofocus: false,
@@ -225,9 +199,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             maxLines: 3,
             hintText: 'Note ...',
             textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              _note = value;
-            },
+            onChanged: (value) => _stateController.changeNote(value),
           ),
           Gap.h16,
           BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
@@ -239,39 +211,38 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
 
 extension _Validators on _AddCreditTransactionModalScreenState {
   bool get _isButtonDisable =>
-      CalService.formatToDouble(_calOutputSpendAmount) == null ||
-      CalService.formatToDouble(_calOutputSpendAmount) == 0 ||
-      _category == null ||
-      _creditAccount == null;
+      _stateRead.amount == null ||
+      _stateRead.amount == 0 ||
+      _stateRead.category == null ||
+      _stateRead.creditAccount == null;
 
   String? _calSpendingAmountValidator() {
-    if (CalService.formatToDouble(_calOutputSpendAmount) == null ||
-        CalService.formatToDouble(_calOutputSpendAmount) == 0) {
+    if (_stateRead.amount == null || _stateRead.amount == 0) {
       return 'Invalid amount';
     }
     return null;
   }
 
   String? _installmentPaymentValidator() {
-    if (CalService.formatToDouble(_installmentPaymentAmount) == null ||
-        CalService.formatToDouble(_installmentPaymentAmount) == 0) {
+    if (_stateRead.installmentAmount == null || _stateRead.installmentAmount == 0) {
       return 'Invalid Amount';
     }
-    if (CalService.formatToDouble(_installmentPaymentAmount)! > CalService.formatToDouble(_calOutputSpendAmount)!) {
+
+    if (_stateRead.installmentAmount! > _stateRead.amount!) {
       return 'Too high';
     }
     return null;
   }
 
   String? _categoryValidator() {
-    if (_category == null) {
+    if (_stateRead.category == null) {
       return 'Must specify a category'.hardcoded;
     }
     return null;
   }
 
   String? _creditAccountValidator() {
-    if (_creditAccount == null) {
+    if (_stateRead.creditAccount == null) {
       return 'Must specify for payment'.hardcoded;
     }
     return null;

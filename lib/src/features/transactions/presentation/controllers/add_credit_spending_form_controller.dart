@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../../category/domain/category.dart';
@@ -14,15 +13,15 @@ class CreditSpendingFormState {
   final String? note;
   final CategoryTag? tag;
   final Category? category;
-  final CreditAccount? account;
+  final CreditAccount? creditAccount;
   final int? installmentPeriod;
+  final double? installmentAmount;
 
-  double? getInstallmentAmount(BuildContext context) {
-    if (amount != null && installmentPeriod != null) {
-      return (amount! / installmentPeriod!).roundBySetting(context);
-    } else {
-      return null;
+  String? installmentAmountString(BuildContext context) {
+    if (installmentAmount != null) {
+      return CalService.formatCurrency(context, installmentAmount!);
     }
+    return null;
   }
 
   factory CreditSpendingFormState.initial() => CreditSpendingFormState._(dateTime: DateTime.now());
@@ -33,8 +32,9 @@ class CreditSpendingFormState {
     this.note,
     this.tag,
     this.category,
-    this.account,
+    this.creditAccount,
     this.installmentPeriod,
+    this.installmentAmount,
   });
 
   CreditSpendingFormState copyWith({
@@ -44,8 +44,9 @@ class CreditSpendingFormState {
     String? Function()? note,
     CategoryTag? Function()? tag,
     Category? Function()? category,
-    CreditAccount? Function()? account,
+    CreditAccount? Function()? creditAccount,
     int? Function()? installmentPeriod,
+    double? Function()? installmentAmount,
   }) {
     return CreditSpendingFormState._(
       dateTime: dateTime != null ? dateTime()! : this.dateTime,
@@ -53,8 +54,9 @@ class CreditSpendingFormState {
       note: note != null ? note() : this.note,
       tag: tag != null ? tag() : this.tag,
       category: category != null ? category() : this.category,
-      account: account != null ? account() : this.account,
+      creditAccount: creditAccount != null ? creditAccount() : this.creditAccount,
       installmentPeriod: installmentPeriod != null ? installmentPeriod() : this.installmentPeriod,
+      installmentAmount: installmentAmount != null ? installmentAmount() : this.installmentAmount,
     );
   }
 }
@@ -69,8 +71,22 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     state = state.copyWith(tag: () => null);
   }
 
-  void changeAmount(String value) {
+  void _resetInstallment() {
+    state = state.copyWith(
+      installmentPeriod: () => null,
+      installmentAmount: () => null,
+    );
+  }
+
+  void changeAmount(BuildContext context, String value) {
     state = state.copyWith(amount: () => CalService.formatToDouble(value));
+    if (state.installmentPeriod != null) {
+      state = state.copyWith(
+        installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
+      );
+    } else {
+      _resetInstallment();
+    }
   }
 
   void changeDateTime(DateTime? dateTime) {
@@ -87,11 +103,23 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
   }
 
   void changeCreditAccount(CreditAccount? account) {
-    state = state.copyWith(account: () => account);
+    state = state.copyWith(creditAccount: () => account);
   }
 
-  void changeInstallmentPeriod(int? period) {
+  void changeInstallmentPeriod(BuildContext context, int? period) {
     state = state.copyWith(installmentPeriod: () => period);
+
+    if (state.installmentPeriod != null) {
+      state = state.copyWith(
+        installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
+      );
+    } else {
+      _resetInstallment();
+    }
+  }
+
+  void changeInstallmentAmount(String value) {
+    state = state.copyWith(installmentAmount: () => CalService.formatToDouble(value));
   }
 
   void changeNote(String note) {
@@ -99,7 +127,7 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
   }
 }
 
-final regularTransactionFormNotifierProvider =
+final creditSpendingFormNotifierProvider =
     AutoDisposeNotifierProvider<CreditSpendingFormController, CreditSpendingFormState>(() {
   return CreditSpendingFormController();
 });
