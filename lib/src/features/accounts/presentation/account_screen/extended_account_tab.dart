@@ -8,9 +8,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
 import '../../../../common_widgets/card_item.dart';
-import '../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
-import '../../../transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
 import '../../domain/account_base.dart';
 
 class ExtendedAccountTab extends ConsumerWidget {

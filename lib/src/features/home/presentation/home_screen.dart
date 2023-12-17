@@ -80,8 +80,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -128,22 +127,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       extendedTabBar: ExtendedTabBar(
-        innerChild: ExtendedHomeTab(
+        child: ExtendedHomeTab(
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
             settingsController.set(showBalanceInHomeScreen: showTotalBalance);
           },
         ),
-        outerChild: DateSelector(
-          dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-          onTapLeft: _previousPage,
-          onTapRight: _nextPage,
-          onTapGoToCurrentDate: () {
-            _animatedToPage(_initialPageIndex);
-          },
-          showGoToCurrentDateButton: _showCurrentDateButton,
-        ),
+        // outerChild: DateSelector(
+        //   dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
+        //   onTapLeft: _previousPage,
+        //   onTapRight: _nextPage,
+        //   onTapGoToCurrentDate: () {
+        //     _animatedToPage(_initialPageIndex);
+        //   },
+        //   showGoToCurrentDateButton: _showCurrentDateButton,
+        // ),
       ),
       onDragLeft: _previousPage,
       onDragRight: _nextPage,
@@ -152,8 +151,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList =
-            transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listenManual(databaseChangesRealmProvider, (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);

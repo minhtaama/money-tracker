@@ -32,54 +32,23 @@ class SmallTabBar extends StatelessWidget {
   }
 }
 
-class ExtendedTabBar extends StatefulWidget {
+class ExtendedTabBar extends StatelessWidget {
   const ExtendedTabBar({
     super.key,
     this.backgroundColor,
-    required this.innerChild,
-    this.outerChild,
+    required this.child,
     this.height = kExtendedCustomTabBarHeight,
     this.outerChildHeight = kExtendedTabBarOuterChildHeight,
     this.systemIconBrightness,
   });
   final Color? backgroundColor;
-  final Widget innerChild;
-  final Widget? outerChild;
+  final Widget child;
   final double height;
   final double outerChildHeight;
   final Brightness? systemIconBrightness;
 
   @override
-  State<ExtendedTabBar> createState() => _ExtendedTabBarState();
-}
-
-class _ExtendedTabBarState extends State<ExtendedTabBar> {
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.height + Gap.statusBarHeight(context),
-      child: Stack(
-        children: [
-          CardItem(
-            width: double.infinity,
-            height: widget.height + Gap.statusBarHeight(context) - widget.outerChildHeight / 2,
-            isGradient: context.appTheme.isDarkTheme ? false : true,
-            color: widget.backgroundColor ??
-                (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary),
-            margin: EdgeInsets.zero,
-            borderRadius: BorderRadius.zero,
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              bottom: widget.outerChild != null ? 22.0 : 0,
-              top: Gap.statusBarHeight(context),
-            ),
-            elevation: context.appTheme.isDarkTheme ? 0 : 1,
-            child: widget.innerChild,
-          ),
-          Align(alignment: Alignment.bottomCenter, child: widget.outerChild),
-        ],
-      ),
-    );
+    return child;
   }
 }

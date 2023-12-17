@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
@@ -122,7 +123,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
   late final AnimationController _translateAController = AnimationController(
       vsync: this,
-      duration: k250msDuration,
+      duration: k1msDuration,
       lowerBound: 0,
       upperBound: (widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight) +
           (widget.extendedTabBar?.outerChildHeight ?? kExtendedTabBarOuterChildHeight));
@@ -157,13 +158,10 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   late bool _showSmallTabBarDivider = false;
 
   void _onOffsetChange(double offset) {
-    if (_showExtendedTabBar) {
-      _translateAController.value = offset;
-    }
+    _translateAController.value = offset;
 
     // At the moment extendedTabBar disappear and show smallAppBar
     if (offset >= _triggerOffset && _showExtendedTabBar == true) {
-      _translateAController.forward();
       _fadeAController.reverse(from: 1);
       _showExtendedTabBar = false;
       ref.read(systemIconBrightnessProvider.notifier).state =
@@ -253,12 +251,67 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                 child: widget.smallTabBar,
               ),
         AnimatedBuilder(
-          animation: _translateAController,
-          child: widget.extendedTabBar,
+          animation: _fadeAController,
           builder: (BuildContext context, Widget? child) {
-            return Transform.translate(
-              offset: Offset(0, -_translateAController.value),
-              child: FadeTransition(opacity: _curveFA, child: child),
+            return IgnorePointer(
+              ignoring: _fadeAController.value == 0,
+              child: AnimatedBuilder(
+                animation: _translateAController,
+                builder: (BuildContext context, Widget? child) {
+                  return Transform.translate(
+                    offset: Offset(0, -_translateAController.value),
+                    child: FadeTransition(
+                        opacity: _curveFA,
+                        child: Stack(
+                          children: [
+                            SizedBox(
+                              height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
+                              child: Container(
+                                width: double.infinity,
+                                height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
+                                color: widget.extendedTabBar?.backgroundColor ??
+                                    (context.appTheme.isDarkTheme
+                                        ? context.appTheme.background2
+                                        : context.appTheme.secondary),
+                                margin: EdgeInsets.zero,
+                                padding: EdgeInsets.only(
+                                  left: 16,
+                                  right: 16,
+                                  top: Gap.statusBarHeight(context),
+                                  bottom: 30,
+                                ),
+                                child: AnimatedBuilder(
+                                  animation: _translateAController,
+                                  builder: (BuildContext context, Widget? child) {
+                                    return Transform.translate(
+                                      offset: Offset(0, _translateAController.value / 3),
+                                      child: child,
+                                    );
+                                  },
+                                  child: widget.extendedTabBar,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: -1,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                height: 25,
+                                decoration: BoxDecoration(
+                                    color: context.appTheme.background,
+                                    borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(100), topLeft: Radius.circular(100)),
+                                    boxShadow: [
+                                      BoxShadow(color: AppColors.black.withOpacity(0.3), blurRadius: 4),
+                                    ]),
+                              ),
+                            ),
+                          ],
+                        )),
+                  );
+                },
+              ),
             );
           },
         ),
@@ -288,16 +341,9 @@ class _CustomListView extends ConsumerStatefulWidget {
   ConsumerState<_CustomListView> createState() => _CustomListViewState();
 }
 
-class _CustomListViewState extends ConsumerState<_CustomListView> with SingleTickerProviderStateMixin {
+class _CustomListViewState extends ConsumerState<_CustomListView> {
   late ScrollController _scrollController; // ScrollController used for ListView
   double scrollPixelsOffset = 0;
-
-  late final AnimationController _translateAController = AnimationController(
-    vsync: this,
-    duration: k250msDuration,
-    lowerBound: 0,
-    upperBound: 1000000,
-  );
 
   @override
   void initState() {
@@ -315,7 +361,6 @@ class _CustomListViewState extends ConsumerState<_CustomListView> with SingleTic
 
   void _scrollControllerListener() {
     ScrollPosition position = _scrollController.position;
-    _translateAController.value = position.pixels / 3;
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       scrollPixelsOffset = position.pixels;
@@ -325,53 +370,28 @@ class _CustomListViewState extends ConsumerState<_CustomListView> with SingleTic
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        AnimatedBuilder(
-          animation: _translateAController,
-          child: Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [context.appTheme.secondary, context.appTheme.background],
-                stops: const [0.3, 1],
-              ),
-            ),
-          ),
-          builder: (BuildContext context, Widget? child) {
-            return Transform.translate(
-              offset: Offset(0, -Gap.statusBarHeight(context) - _translateAController.value),
-              child: child,
-            );
-          },
-        ),
-        ListView.builder(
-          physics: widget.smallTabBar != null && widget.extendedTabBar != null
-              ? SnapScrollPhysics(
-                  parent: const AlwaysScrollableScrollPhysics(),
-                  snaps: [Snap.avoidZone(0, widget.extendedTabBar!.height - widget.smallTabBar!.height)],
-                )
-              : const ClampingScrollPhysics(),
-          controller: _scrollController,
-          itemCount: widget.children.length + 2,
-          itemBuilder: (context, index) {
-            return index == 0
-                ? SizedBox(
-                    height: widget.smallTabBar == null && widget.extendedTabBar == null
-                        ? 0
-                        : widget.extendedTabBar == null
-                            ? widget.smallTabBar!.height
-                            : widget.extendedTabBar!.height + 15,
-                  )
-                : index == widget.children.length + 1
-                    ? const SizedBox(height: 30)
-                    : widget.children[index - 1];
-          },
-        ),
-      ],
+    return ListView.builder(
+      physics: widget.smallTabBar != null && widget.extendedTabBar != null
+          ? SnapScrollPhysics(
+              parent: const AlwaysScrollableScrollPhysics(),
+              snaps: [Snap.avoidZone(0, widget.extendedTabBar!.height - widget.smallTabBar!.height)],
+            )
+          : const ClampingScrollPhysics(),
+      controller: _scrollController,
+      itemCount: widget.children.length + 2,
+      itemBuilder: (context, index) {
+        return index == 0
+            ? SizedBox(
+                height: widget.smallTabBar == null && widget.extendedTabBar == null
+                    ? 0
+                    : widget.extendedTabBar == null
+                        ? widget.smallTabBar!.height
+                        : widget.extendedTabBar!.height,
+              )
+            : index == widget.children.length + 1
+                ? const SizedBox(height: 30)
+                : widget.children[index - 1];
+      },
     );
   }
 }
