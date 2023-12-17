@@ -1,6 +1,7 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
@@ -14,21 +15,41 @@ import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
 class ExtendedHomeTab extends StatelessWidget {
-  const ExtendedHomeTab({super.key, required this.showNumber, required this.onEyeTap});
+  const ExtendedHomeTab(
+      {super.key,
+      required this.showNumber,
+      required this.onEyeTap,
+      required this.dateDisplay,
+      this.onTapLeft,
+      this.onTapRight,
+      this.onTapGoToCurrentDate,
+      required this.showGoToCurrentDateButton});
   final bool showNumber;
   final VoidCallback onEyeTap;
+  final String dateDisplay;
+  final VoidCallback? onTapLeft;
+  final VoidCallback? onTapRight;
+  final VoidCallback? onTapGoToCurrentDate;
+  final bool showGoToCurrentDateButton;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Spacer(),
         const WelcomeText(),
+        Gap.h16,
         TotalMoney(
           showNumber: showNumber,
           onEyeTap: onEyeTap,
         ),
+        DateSelector(
+          dateDisplay: dateDisplay,
+          showGoToCurrentDateButton: showGoToCurrentDateButton,
+          onTapGoToCurrentDate: onTapGoToCurrentDate,
+          onTapLeft: onTapLeft,
+          onTapRight: onTapRight,
+        )
       ],
     );
   }
@@ -54,88 +75,63 @@ class DateSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        AnimatedOpacity(
-          duration: k150msDuration,
-          opacity: showGoToCurrentDateButton ? 1 : 0,
-          child: CardItem(
-            height: kExtendedTabBarOuterChildHeight,
-            margin: EdgeInsets.zero,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: GestureDetector(
-              onTap: onTapGoToCurrentDate,
-              child: SvgIcon(
-                AppIcons.today,
-                color: context.appTheme.backgroundNegative,
-              ),
-            ),
+        Transform.translate(
+          offset: const Offset(0, 1),
+          child: RoundedIconButton(
+            iconPath: AppIcons.arrowLeft,
+            iconColor:
+                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+            //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
+            onTap: onTapLeft,
+            size: 20,
+            iconPadding: 2,
           ),
         ),
-        Gap.w16,
-        CardItem(
-          height: kExtendedTabBarOuterChildHeight,
-          margin: EdgeInsets.zero,
-          color: context.appTheme.isDarkTheme ? context.appTheme.background3 : null,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: onTapLeft,
-                child: SvgIcon(
-                  AppIcons.arrowLeft,
-                  color: context.appTheme.backgroundNegative,
-                ),
-              ),
-              Gap.w4,
-              SizedBox(
-                width: 125,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: AnimatedSwitcher(
-                    duration: k150msDuration,
-                    transitionBuilder: (Widget child, Animation<double> animation) {
-                      return FadeTransition(
-                        opacity: Tween<double>(
-                          begin: 0,
-                          end: 1,
-                        ).animate(animation),
-                        child: child,
-                      );
-                    },
-                    child: Text(
-                      key: ValueKey(dateDisplay),
-                      dateDisplay,
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
-                    ),
+        GestureDetector(
+          onTap: onTapGoToCurrentDate,
+          child: SizedBox(
+            width: 125,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: AnimatedSwitcher(
+                duration: k150msDuration,
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: Tween<double>(
+                      begin: 0,
+                      end: 1,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+                child: Text(
+                  key: ValueKey(dateDisplay),
+                  dateDisplay,
+                  style: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.isDarkTheme
+                        ? context.appTheme.backgroundNegative.withOpacity(0.7)
+                        : context.appTheme.secondaryNegative.withOpacity(0.7),
+                    fontSize: 14,
                   ),
                 ),
               ),
-              Gap.w4,
-              GestureDetector(
-                onTap: onTapRight,
-                child: SvgIcon(
-                  AppIcons.arrowRight,
-                  color: context.appTheme.backgroundNegative,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
-        Gap.w16,
-        CardItem(
-          height: kExtendedTabBarOuterChildHeight,
-          margin: EdgeInsets.zero,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: GestureDetector(
-            onTap: () {}, //TODO: FILTER
-            child: SvgIcon(
-              AppIcons.filter,
-              color: context.appTheme.backgroundNegative,
-              size: 25,
-            ),
+        Transform.translate(
+          offset: const Offset(0, 1),
+          child: RoundedIconButton(
+            iconPath: AppIcons.arrowRight,
+            iconColor:
+                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+
+            //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
+            onTap: onTapRight,
+            size: 20,
+            iconPadding: 2,
           ),
         ),
       ],
@@ -151,12 +147,10 @@ class WelcomeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Hello, Tâm'.hardcoded,
+      'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme
-            ? context.appTheme.backgroundNegative
-            : context.appTheme.secondaryNegative,
-        fontSize: 18,
+        color: context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+        fontSize: 14,
       ),
     );
   }
@@ -179,58 +173,74 @@ class TotalMoney extends ConsumerWidget {
     double totalBalance = accountRepository.getTotalBalance();
 
     ref
-        .watch(transactionChangesRealmProvider(
-            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
         .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
 
-    return Row(
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(
-          context.currentSettings.currency.code,
-          style: kHeader4TextStyle.copyWith(
-            fontWeight: FontWeight.w100,
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.backgroundNegative
-                : context.appTheme.secondaryNegative,
-            fontSize: 36,
-            letterSpacing: -2,
-          ),
-        ),
-        Gap.w8,
-        Expanded(
-          child: EasyRichText(
-            CalService.formatCurrency(context, totalBalance),
-            defaultStyle: kHeader2TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.backgroundNegative
-                  : context.appTheme.secondaryNegative,
-              fontSize: 25,
+    return SizedBox(
+      height: 38,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Spacer(),
+          Transform.translate(
+            offset: const Offset(-7, 2),
+            child: Text(
+              context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,
+              style: kHeader3TextStyle.copyWith(
+                color: context.appTheme.isDarkTheme
+                    ? context.appTheme.backgroundNegative.withOpacity(0.6)
+                    : context.appTheme.secondaryNegative.withOpacity(0.6),
+                fontSize: 23,
+              ),
+              textAlign: TextAlign.right,
             ),
-            //textAlign: TextAlign.right,
+          ),
+          EasyRichText(
+            CalService.formatCurrency(context, totalBalance),
+            defaultStyle: kHeader3TextStyle.copyWith(
+                color: context.appTheme.isDarkTheme
+                    ? context.appTheme.backgroundNegative
+                    : context.appTheme.secondaryNegative,
+                fontSize: 23,
+                letterSpacing: 1),
+            textAlign: TextAlign.right,
             patternList: [
               EasyRichTextPattern(
-                targetString: '^[0-9]+',
-                style: kHeader1TextStyle.copyWith(
+                targetString: r'[0-9]+',
+                style: kHeader2TextStyle.copyWith(
                   color: context.appTheme.isDarkTheme
                       ? context.appTheme.backgroundNegative
                       : context.appTheme.secondaryNegative,
-                  fontSize: 36,
+                  fontSize: 25,
                 ),
               ),
             ],
           ),
-        ),
-        Gap.w8,
-        RoundedIconButton(
-          iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
-          backgroundColor: Colors.transparent,
-          iconColor: context.appTheme.backgroundNegative,
-          onTap: onEyeTap,
-        ),
-      ],
+          Expanded(
+            child: Row(
+              children: [
+                const Spacer(),
+                Transform.translate(
+                  offset: const Offset(0, 1),
+                  child: RoundedIconButton(
+                    iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
+                    //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
+                    size: 25,
+                    iconPadding: 4,
+                    iconColor: context.appTheme.isDarkTheme
+                        ? context.appTheme.backgroundNegative
+                        : context.appTheme.secondaryNegative,
+                    onTap: onEyeTap,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

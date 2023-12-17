@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:realm/realm.dart';
 import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 import 'custom_tab_bar.dart';
 import 'dart:math' as math;
@@ -95,6 +96,7 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
     super.key,
     required this.smallTabBar,
     this.extendedTabBar,
+    this.toolBar,
     this.controller,
     this.onPageChanged,
     required this.itemBuilder,
@@ -104,6 +106,7 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   });
   final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
+  final Widget? toolBar;
   final PageController? controller;
   final int? pageItemCount;
   final List<Widget> Function(BuildContext, int) itemBuilder;
@@ -284,7 +287,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                                   animation: _translateAController,
                                   builder: (BuildContext context, Widget? child) {
                                     return Transform.translate(
-                                      offset: Offset(0, _translateAController.value / 3),
+                                      offset: Offset(0, _translateAController.value / 1.7),
                                       child: child,
                                     );
                                   },
@@ -296,15 +299,25 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                               bottom: -1,
                               left: 0,
                               right: 0,
-                              child: Container(
-                                height: 25,
-                                decoration: BoxDecoration(
-                                    color: context.appTheme.background,
-                                    borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(100), topLeft: Radius.circular(100)),
-                                    boxShadow: [
-                                      BoxShadow(color: AppColors.black.withOpacity(0.3), blurRadius: 4),
-                                    ]),
+                              child: Column(
+                                children: [
+                                  widget.toolBar ?? Gap.noGap,
+                                  widget.toolBar != null ? Gap.h8 : Gap.noGap,
+                                  Container(
+                                    height: 25,
+                                    decoration: BoxDecoration(
+                                        color: context.appTheme.background,
+                                        borderRadius: const BorderRadius.only(
+                                            topRight: Radius.circular(100), topLeft: Radius.circular(100)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: AppColors.grey(context)
+                                                  .withOpacity(context.appTheme.isDarkTheme ? 0.18 : 0.45),
+                                              blurRadius: 32,
+                                              spreadRadius: 5),
+                                        ]),
+                                  ),
+                                ],
                               ),
                             ),
                           ],

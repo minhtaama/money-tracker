@@ -128,19 +128,19 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           hasBackButton: true,
         )),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor,
+          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedAccountTab(
             account: widget.creditAccount,
           ),
-          // outerChild: StatementSelector(
-          //   dateDisplay: _displayStatementDate.getFormattedDate(type: DateTimeType.ddmmyyyy),
-          //   onTapLeft: _previousPage,
-          //   onTapRight: _nextPage,
-          //   onTapGoToCurrentDate: () {
-          //     _animatedToPage(_initialPageIndex);
-          //   },
-          //   showGoToCurrentDateButton: _showCurrentDateButton,
-          // ),
+        ),
+        toolBar: StatementSelector(
+          dateDisplay: _displayStatementDate.getFormattedDate(type: DateTimeType.ddmmyyyy),
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onTapGoToCurrentDate: () {
+            _animatedToPage(_initialPageIndex);
+          },
+          showGoToCurrentDateButton: _showCurrentDateButton,
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,

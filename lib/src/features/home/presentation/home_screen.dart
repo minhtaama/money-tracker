@@ -14,6 +14,7 @@ import 'package:money_tracker_app/src/utils/extensions/string_double_extension.d
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../common_widgets/icon_with_text.dart';
+import '../../../common_widgets/rounded_icon_button.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
@@ -129,20 +130,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       extendedTabBar: ExtendedTabBar(
         child: ExtendedHomeTab(
           showNumber: showTotalBalance,
+          dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onTapGoToCurrentDate: () {
+            _animatedToPage(_initialPageIndex);
+          },
+          showGoToCurrentDateButton: _showCurrentDateButton,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
             settingsController.set(showBalanceInHomeScreen: showTotalBalance);
           },
         ),
-        // outerChild: DateSelector(
-        //   dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-        //   onTapLeft: _previousPage,
-        //   onTapRight: _nextPage,
-        //   onTapGoToCurrentDate: () {
-        //     _animatedToPage(_initialPageIndex);
-        //   },
-        //   showGoToCurrentDateButton: _showCurrentDateButton,
-        // ),
       ),
       onDragLeft: _previousPage,
       onDragRight: _nextPage,
