@@ -276,7 +276,8 @@ class _MoneyCarouselState extends ConsumerState<MoneyCarousel> {
           String pageMonth = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
               .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
 
-          ref.listenManual(databaseChangesRealmProvider, (_, __) {
+          ref.listenManual(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+              (_, __) {
             amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
             setState(() {});
           });

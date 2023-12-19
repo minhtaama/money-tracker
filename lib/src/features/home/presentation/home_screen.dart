@@ -39,6 +39,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   //late int _currentPageIndex = _initialPageIndex;
   late DateTime _displayDate = _today;
+  late int _activePage = _initialPageIndex;
 
   // TODO: filter
   // DateTime? _minDate;
@@ -47,6 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onPageChange(int value) {
     _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
+    _activePage = value;
     //_currentPageIndex = value;
     setState(() {});
   }
@@ -148,7 +150,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.listenManual(databaseChangesRealmProvider, (_, __) {
+        ref.listenManual(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+            (event, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });
