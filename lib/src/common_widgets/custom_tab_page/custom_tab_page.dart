@@ -125,11 +125,11 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   late final PageController _controller = widget.controller ?? PageController();
 
   late final AnimationController _translateAController = AnimationController(
-      vsync: this,
-      duration: k1msDuration,
-      lowerBound: 0,
-      upperBound: (widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight) +
-          (widget.extendedTabBar?.outerChildHeight ?? kExtendedTabBarOuterChildHeight));
+    vsync: this,
+    duration: k1msDuration,
+    lowerBound: 0,
+    upperBound: widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight,
+  );
 
   late final AnimationController _fadeAController = AnimationController(vsync: this, duration: k250msDuration);
 
@@ -154,6 +154,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   @override
   void dispose() {
     _translateAController.dispose();
+    _fadeAController.dispose();
+    _fadeDividerAController.dispose();
     super.dispose();
   }
 
@@ -194,6 +196,129 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
     _showExtendedTabBar = true;
   }
 
+  Widget _smallTabBar() {
+    return widget.extendedTabBar != null
+        ? FadeTransition(
+            opacity: ReverseAnimation(_curveFA),
+            child: AnimatedBuilder(
+                animation: _curveDividerFA,
+                child: widget.smallTabBar,
+                builder: (BuildContext context, Widget? child) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: !context.appTheme.isDarkTheme
+                            ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                            : BorderSide.none,
+                      ),
+                    ),
+                    child: child,
+                  );
+                }),
+          )
+        : Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: !context.appTheme.isDarkTheme
+                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                    : BorderSide.none,
+              ),
+            ),
+            child: widget.smallTabBar,
+          );
+  }
+
+  Widget _extendedTabBar() {
+    return AnimatedBuilder(
+      animation: _fadeAController,
+      builder: (BuildContext context, Widget? child) {
+        return IgnorePointer(
+          ignoring: _fadeAController.value == 0,
+          child: AnimatedBuilder(
+            animation: _translateAController,
+            builder: (BuildContext context, Widget? child) {
+              return Transform.translate(
+                offset: Offset(0, -_translateAController.value),
+                child: FadeTransition(
+                  opacity: _curveFA,
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
+                        child: Container(
+                          width: double.infinity,
+                          height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                widget.extendedTabBar?.backgroundColor ??
+                                    (context.appTheme.isDarkTheme
+                                        ? context.appTheme.background2
+                                        : context.appTheme.secondary),
+                                context.appTheme.isDarkTheme
+                                    ? context.appTheme.background2
+                                    : context.appTheme.background,
+                              ],
+                              stops: const [0.99, 1],
+                            ),
+                          ),
+                          margin: EdgeInsets.zero,
+                          padding: EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                            top: Gap.statusBarHeight(context),
+                            bottom: 30,
+                          ),
+                          child: AnimatedBuilder(
+                            animation: _translateAController,
+                            builder: (BuildContext context, Widget? child) {
+                              return Transform.translate(
+                                offset: Offset(0, _translateAController.value / 1.3),
+                                child: child,
+                              );
+                            },
+                            child: widget.extendedTabBar,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: -1,
+                        left: 0,
+                        right: 0,
+                        child: Column(
+                          children: [
+                            widget.toolBar ?? Gap.noGap,
+                            widget.toolBar != null ? Gap.h8 : Gap.noGap,
+                            Container(
+                              height: 25,
+                              decoration: BoxDecoration(
+                                  color: context.appTheme.background,
+                                  borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(100), topLeft: Radius.circular(100)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: AppColors.grey(context)
+                                            .withOpacity(context.appTheme.isDarkTheme ? 0.18 : 0.45),
+                                        blurRadius: 32,
+                                        spreadRadius: 5),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -224,110 +349,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             ),
           ),
         ),
-        widget.extendedTabBar != null
-            ? FadeTransition(
-                opacity: ReverseAnimation(_curveFA),
-                child: AnimatedBuilder(
-                    animation: _curveDividerFA,
-                    child: widget.smallTabBar,
-                    builder: (BuildContext context, Widget? child) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: !context.appTheme.isDarkTheme
-                                ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
-                                : BorderSide.none,
-                          ),
-                        ),
-                        child: child,
-                      );
-                    }),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: !context.appTheme.isDarkTheme
-                        ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
-                        : BorderSide.none,
-                  ),
-                ),
-                child: widget.smallTabBar,
-              ),
-        AnimatedBuilder(
-          animation: _fadeAController,
-          builder: (BuildContext context, Widget? child) {
-            return IgnorePointer(
-              ignoring: _fadeAController.value == 0,
-              child: AnimatedBuilder(
-                animation: _translateAController,
-                builder: (BuildContext context, Widget? child) {
-                  return Transform.translate(
-                    offset: Offset(0, -_translateAController.value),
-                    child: FadeTransition(
-                        opacity: _curveFA,
-                        child: Stack(
-                          children: [
-                            SizedBox(
-                              height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
-                              child: Container(
-                                width: double.infinity,
-                                height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
-                                color: widget.extendedTabBar?.backgroundColor ??
-                                    (context.appTheme.isDarkTheme
-                                        ? context.appTheme.background2
-                                        : context.appTheme.secondary),
-                                margin: EdgeInsets.zero,
-                                padding: EdgeInsets.only(
-                                  left: 16,
-                                  right: 16,
-                                  top: Gap.statusBarHeight(context),
-                                  bottom: 30,
-                                ),
-                                child: AnimatedBuilder(
-                                  animation: _translateAController,
-                                  builder: (BuildContext context, Widget? child) {
-                                    return Transform.translate(
-                                      offset: Offset(0, _translateAController.value / 1.7),
-                                      child: child,
-                                    );
-                                  },
-                                  child: widget.extendedTabBar,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: -1,
-                              left: 0,
-                              right: 0,
-                              child: Column(
-                                children: [
-                                  widget.toolBar ?? Gap.noGap,
-                                  widget.toolBar != null ? Gap.h8 : Gap.noGap,
-                                  Container(
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                        color: context.appTheme.background,
-                                        borderRadius: const BorderRadius.only(
-                                            topRight: Radius.circular(100), topLeft: Radius.circular(100)),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: AppColors.grey(context)
-                                                  .withOpacity(context.appTheme.isDarkTheme ? 0.18 : 0.45),
-                                              blurRadius: 32,
-                                              spreadRadius: 5),
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )),
-                  );
-                },
-              ),
-            );
-          },
-        ),
+        _smallTabBar(),
+        _extendedTabBar(),
       ],
     );
   }

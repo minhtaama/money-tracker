@@ -17,7 +17,7 @@ const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 const double kCustomTabBarHeight = 80;
 
 /// Value related to CustomTabBar and CustomTabPage
-const double kExtendedCustomTabBarHeight = 275;
+const double kExtendedCustomTabBarHeight = 350;
 
 /// Value related to OuterChild of ExtendedTabBar
 const double kExtendedTabBarOuterChildHeight = 35;

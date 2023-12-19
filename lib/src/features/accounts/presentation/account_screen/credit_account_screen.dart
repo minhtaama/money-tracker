@@ -123,10 +123,11 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
       body: CustomTabPageWithPageView(
         controller: _controller,
         smallTabBar: SmallTabBar(
-            child: PageHeading(
-          title: widget.creditAccount.name,
-          hasBackButton: true,
-        )),
+          child: PageHeading(
+            title: widget.creditAccount.name,
+            hasBackButton: true,
+          ),
+        ),
         extendedTabBar: ExtendedTabBar(
           backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedAccountTab(

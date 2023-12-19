@@ -37,6 +37,20 @@ class TransactionRepository {
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
+  double getNetCashflow(DateTime lower, DateTime upper) {
+    final list = getAll(lower, upper);
+    double result = 0;
+    for (BaseTransaction txn in list) {
+      if (txn is Income) {
+        result += txn.amount;
+      }
+      if (txn is Expense || txn is CreditPayment) {
+        result -= txn.amount;
+      }
+    }
+    return result;
+  }
+
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
     return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }

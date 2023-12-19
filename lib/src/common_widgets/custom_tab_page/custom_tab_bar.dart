@@ -6,11 +6,11 @@ import '../card_item.dart';
 
 class SmallTabBar extends StatelessWidget {
   const SmallTabBar({
-    Key? key,
+    super.key,
     required this.child,
     this.height = kCustomTabBarHeight,
     this.systemIconBrightness,
-  }) : super(key: key);
+  });
   final Widget child;
   final double height;
   final Brightness? systemIconBrightness;
@@ -38,13 +38,11 @@ class ExtendedTabBar extends StatelessWidget {
     this.backgroundColor,
     required this.child,
     this.height = kExtendedCustomTabBarHeight,
-    this.outerChildHeight = kExtendedTabBarOuterChildHeight,
     this.systemIconBrightness,
   });
   final Color? backgroundColor;
   final Widget child;
   final double height;
-  final double outerChildHeight;
   final Brightness? systemIconBrightness;
 
   @override
