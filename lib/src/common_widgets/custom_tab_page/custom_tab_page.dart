@@ -27,9 +27,11 @@ class CustomTabPage extends ConsumerStatefulWidget {
 class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProviderStateMixin {
   late final double _triggerSmallTabBarDividerOffset = 30;
 
-  late final AnimationController _fadeDividerAController = AnimationController(vsync: this, duration: k250msDuration);
+  late final AnimationController _fadeDividerAController =
+      AnimationController(vsync: this, duration: k250msDuration);
 
-  late final Animation<double> _curveDividerFA = _fadeDividerAController.drive(CurveTween(curve: Curves.easeInOut));
+  late final Animation<double> _curveDividerFA =
+      _fadeDividerAController.drive(CurveTween(curve: Curves.easeInOut));
 
   @override
   void initState() {
@@ -77,7 +79,8 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: !context.appTheme.isDarkTheme
-                        ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                        ? BorderSide(
+                            color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
                         : BorderSide.none,
                   ),
                 ),
@@ -109,7 +112,7 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   final Widget? toolBar;
   final PageController? controller;
   final int? pageItemCount;
-  final List<Widget> Function(BuildContext, int) itemBuilder;
+  final List<Widget> Function(BuildContext, WidgetRef, int) itemBuilder;
   final ValueChanged<int>? onPageChanged;
   final VoidCallback? onDragLeft;
   final VoidCallback? onDragRight;
@@ -118,7 +121,8 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   ConsumerState<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
 }
 
-class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView> with TickerProviderStateMixin {
+class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView>
+    with TickerProviderStateMixin {
   late final double _triggerOffset = kExtendedCustomTabBarHeight - kCustomTabBarHeight - 15;
   late final double _triggerSmallTabBarDividerOffset = _triggerOffset + 30;
 
@@ -131,13 +135,16 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
     upperBound: widget.extendedTabBar?.height ?? kExtendedCustomTabBarHeight,
   );
 
-  late final AnimationController _fadeAController = AnimationController(vsync: this, duration: k250msDuration);
+  late final AnimationController _fadeAController =
+      AnimationController(vsync: this, duration: k250msDuration);
 
-  late final AnimationController _fadeDividerAController = AnimationController(vsync: this, duration: k250msDuration);
+  late final AnimationController _fadeDividerAController =
+      AnimationController(vsync: this, duration: k250msDuration);
 
   late final Animation<double> _curveFA = _fadeAController.drive(CurveTween(curve: Curves.easeInOut));
 
-  late final Animation<double> _curveDividerFA = _fadeDividerAController.drive(CurveTween(curve: Curves.easeInOut));
+  late final Animation<double> _curveDividerFA =
+      _fadeDividerAController.drive(CurveTween(curve: Curves.easeInOut));
 
   @override
   void initState() {
@@ -146,7 +153,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
     _translateAController.value = 0;
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       ref.read(systemIconBrightnessProvider.notifier).state =
-          widget.extendedTabBar?.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+          widget.extendedTabBar?.systemIconBrightness ??
+              context.appTheme.systemIconBrightnessOnExtendedTabBar;
     });
     super.initState();
   }
@@ -176,7 +184,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
       _fadeAController.forward(from: 0);
       _showExtendedTabBar = true;
       ref.read(systemIconBrightnessProvider.notifier).state =
-          widget.extendedTabBar?.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+          widget.extendedTabBar?.systemIconBrightness ??
+              context.appTheme.systemIconBrightnessOnExtendedTabBar;
     }
 
     if (offset >= _triggerSmallTabBarDividerOffset && _showSmallTabBarDivider == false) {
@@ -190,7 +199,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
   void _onPageChange() {
     ref.read(systemIconBrightnessProvider.notifier).state =
-        widget.extendedTabBar?.systemIconBrightness ?? context.appTheme.systemIconBrightnessOnExtendedTabBar;
+        widget.extendedTabBar?.systemIconBrightness ??
+            context.appTheme.systemIconBrightnessOnExtendedTabBar;
     _translateAController.reverse();
     _fadeAController.forward();
     _showExtendedTabBar = true;
@@ -208,7 +218,9 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: !context.appTheme.isDarkTheme
-                            ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                            ? BorderSide(
+                                color: Colors.grey.shade300.withOpacity(_curveDividerFA.value),
+                                width: 1.5)
                             : BorderSide.none,
                       ),
                     ),
@@ -220,7 +232,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
+                    ? BorderSide(
+                        color: Colors.grey.shade300.withOpacity(_curveDividerFA.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),
@@ -294,16 +307,18 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                             Container(
                               height: 25,
                               decoration: BoxDecoration(
-                                  color: context.appTheme.background,
-                                  borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(100), topLeft: Radius.circular(100)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: AppColors.grey(context)
-                                            .withOpacity(context.appTheme.isDarkTheme ? 0.18 : 0.45),
-                                        blurRadius: 32,
-                                        spreadRadius: 5),
-                                  ]),
+                                color: context.appTheme.background,
+                                borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(100), topLeft: Radius.circular(100)),
+                                boxShadow: !context.appTheme.isDarkTheme
+                                    ? [
+                                        BoxShadow(
+                                            color: AppColors.grey(context).withOpacity(0.45),
+                                            blurRadius: 32,
+                                            spreadRadius: 5)
+                                      ]
+                                    : null,
+                              ),
                             ),
                           ],
                         ),
@@ -340,12 +355,16 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
               widget.onPageChanged?.call(index);
             },
             itemCount: widget.pageItemCount,
-            itemBuilder: (context, pageIndex) => _CustomListView(
-              smallTabBar: widget.smallTabBar,
-              extendedTabBar: widget.extendedTabBar,
-              initialOffset: 0,
-              onOffsetChange: (value) => _onOffsetChange(value),
-              children: widget.itemBuilder(context, pageIndex),
+            itemBuilder: (context, pageIndex) => Consumer(
+              builder: (_, ref, __) {
+                return _CustomListView(
+                  smallTabBar: widget.smallTabBar,
+                  extendedTabBar: widget.extendedTabBar,
+                  initialOffset: 0,
+                  onOffsetChange: (value) => _onOffsetChange(value),
+                  children: widget.itemBuilder(context, ref, pageIndex),
+                );
+              },
             ),
           ),
         ),

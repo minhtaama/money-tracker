@@ -57,14 +57,16 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
     }
   }
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate =
+      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
 
   bool _showCurrentDateButton = false;
 
   void _onPageChange(int value) {
-    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate =
+        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     _isShowGoToCurrentDateButton();
     setState(() {});
   }
@@ -82,7 +84,8 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
   }
 
   void _isShowGoToCurrentDateButton() {
-    if (_displayStatementDate.year == _today.year && _displayStatementDate.month == _initialStatementMonth) {
+    if (_displayStatementDate.year == _today.year &&
+        _displayStatementDate.month == _initialStatementMonth) {
       _showCurrentDateButton = false;
     } else {
       _showCurrentDateButton = true;
@@ -129,7 +132,8 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedAccountTab(
             account: widget.creditAccount,
           ),
@@ -146,8 +150,9 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
-        itemBuilder: (context, pageIndex) {
-          final today = DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+        itemBuilder: (context, ref, pageIndex) {
+          final today = DateTime(
+              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
           final Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
           return statement != null
               ? [
@@ -230,7 +235,8 @@ class _ListState extends State<_List> {
     );
   }
 
-  List<Widget> buildList(BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(
+      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     DateTime tempDate = statement.startDate;
@@ -243,7 +249,8 @@ class _ListState extends State<_List> {
     if (statement.transactionsInBillingCycle.isEmpty) {
       _addH0(list, statement, topKey);
       _addH1(list, statement);
-      if (_today.isAfter(statement.previousStatement.dueDate) && _today.isBefore(statement.statementDate)) {
+      if (_today.isAfter(statement.previousStatement.dueDate) &&
+          _today.isBefore(statement.statementDate)) {
         _addHToday(list, statement);
       }
     }
@@ -329,7 +336,9 @@ class _ListState extends State<_List> {
 
       if (triggerAddTodayHeaderInGracePeriod) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.statementDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.statementDate) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInGracePeriod = false;
 
           _addHToday(list, statement);
@@ -341,7 +350,8 @@ class _ListState extends State<_List> {
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(
-            key: i == statement.transactionsInGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.dueDate)
+            key: i == statement.transactionsInGracePeriod.length - 1 &&
+                    txnDateTime.isAtSameMomentAs(statement.dueDate)
                 ? bottomKey
                 : null,
             statement: statement,
@@ -360,7 +370,8 @@ class _ListState extends State<_List> {
         _addHToday(list, statement);
       }
 
-      if (i == statement.transactionsInGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
+      if (i == statement.transactionsInGracePeriod.length - 1 &&
+          triggerAddPaymentDueDateHeaderAtTheEnd) {
         _addH3(list, statement, bottomKey: bottomKey);
       }
     }
@@ -393,7 +404,9 @@ class _ListState extends State<_List> {
     list.add(
       _Header(
         dateTime: statement.statementDate,
-        h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
+        h1: statement.checkpoint != null
+            ? 'Statement date with checkpoint'.hardcoded
+            : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
         color: context.appTheme.primary,
         dateColor: context.appTheme.primaryNegative,
@@ -537,34 +550,39 @@ class _SummaryCard extends StatelessWidget {
                   _buildText(
                     context,
                     text: 'Carrying-over:',
-                    richText: '${carryString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${carryString(context, statement)} ${context.currentSettings.currency.code}',
                     color: carry.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                   statement.previousStatement.interest > 0
                       ? _buildText(
                           context,
                           text: 'Interest:',
-                          richText: '~ ${interestString(context, statement)} ${context.currentSettings.currency.code}',
+                          richText:
+                              '~ ${interestString(context, statement)} ${context.currentSettings.currency.code}',
                           color: interest.roundBySetting(context) <= 0 ? 0 : -1,
                         )
                       : Gap.noGap,
                   _buildText(
                     context,
                     text: 'Spent in billing cycle:',
-                    richText: '${spentString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${spentString(context, statement)} ${context.currentSettings.currency.code}',
                     color: spent.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                   _buildText(
                     context,
                     text: 'Paid for this statement:',
-                    richText: '${paidString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${paidString(context, statement)} ${context.currentSettings.currency.code}',
                     color: paid.roundBySetting(context) <= 0 ? 0 : 1,
                   ),
                   Gap.divider(context, indent: 0),
                   _buildText(
                     context,
                     text: 'Statement balance:',
-                    richText: '${balanceString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${balanceString(context, statement)} ${context.currentSettings.currency.code}',
                     color: balance.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                 ],
@@ -580,20 +598,23 @@ class _SummaryCard extends StatelessWidget {
                   _buildText(
                     context,
                     text: 'Spent at checkpoint:',
-                    richText: '${spentString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${spentString(context, statement)} ${context.currentSettings.currency.code}',
                     color: spent <= 0 ? 0 : -1,
                   ),
                   _buildText(
                     context,
                     text: 'Paid in grace period:',
-                    richText: '${paidString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${paidString(context, statement)} ${context.currentSettings.currency.code}',
                     color: paid <= 0 ? 0 : 1,
                   ),
                   Gap.divider(context, indent: 0),
                   _buildText(
                     context,
                     text: 'Statement balance:',
-                    richText: '${balanceString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText:
+                        '${balanceString(context, statement)} ${context.currentSettings.currency.code}',
                     color: balance <= 0 ? 0 : -1,
                   ),
                 ],
@@ -606,7 +627,8 @@ class _SummaryCard extends StatelessWidget {
 extension _StatementDetails on _SummaryCard {
   double get interest => statement.previousStatement.interest;
   double get carry => statement.previousStatement.balanceToPay;
-  double get spent => statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
+  double get spent =>
+      statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
   double get paid => statement.paidForThisStatement;
   double get balance => statement.balance;
 

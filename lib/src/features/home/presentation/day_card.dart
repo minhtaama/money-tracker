@@ -11,11 +11,11 @@ import '../../transactions/domain/transaction_base.dart';
 
 class DayCard extends StatelessWidget {
   const DayCard({
-    Key? key,
+    super.key,
     required this.dateTime,
     required this.transactions,
     this.onTransactionTap,
-  }) : super(key: key);
+  });
 
   final DateTime dateTime;
   final List<BaseTransaction> transactions;
@@ -85,7 +85,8 @@ class DayCard extends StatelessWidget {
                     ),
                     Text(
                       dateTime.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(
+                          color: context.appTheme.backgroundNegative, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],

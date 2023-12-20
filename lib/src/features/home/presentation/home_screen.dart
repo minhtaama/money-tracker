@@ -39,7 +39,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   //late int _currentPageIndex = _initialPageIndex;
   late DateTime _displayDate = _today;
-  late int _activePage = _initialPageIndex;
 
   // TODO: filter
   // DateTime? _minDate;
@@ -47,10 +46,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // DateTime? _maxDate;
 
   void _onPageChange(int value) {
-    _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
-    _activePage = value;
-    //_currentPageIndex = value;
-    setState(() {});
+    setState(() {
+      _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
+    });
   }
 
   void _previousPage() {
@@ -76,7 +74,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -137,21 +136,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
         onTapLeft: _previousPage,
         onTapRight: _nextPage,
-        onTapGoToCurrentDate: () {
+        onDateTap: () {
           _animatedToPage(_initialPageIndex);
         },
       ),
       onDragLeft: _previousPage,
       onDragRight: _nextPage,
       onPageChanged: _onPageChange,
-      itemBuilder: (context, pageIndex) {
+      itemBuilder: (context, ref, pageIndex) {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList =
+            transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.listenManual(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-            (event, __) {
+        ref.listen(
+            transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+            (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });

@@ -1,8 +1,7 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -12,7 +11,6 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
@@ -34,16 +32,23 @@ class ExtendedHomeTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const WelcomeText(),
+        const _WelcomeText(),
         Gap.h16,
         // TotalMoney(
         //   showNumber: showNumber,
         //   onEyeTap: onEyeTap,
         // ),
-        MoneyCarousel(
+        _MoneyCarousel(
           controller: carouselController,
           initialPageIndex: initialPageIndex,
         ),
+        // LineChart(
+        //   LineChartData(
+        //     lineBarsData: [
+        //       LineChartBarData(spots: [FlSpot(0, 1)])
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
@@ -55,13 +60,13 @@ class DateSelector extends StatelessWidget {
     required this.dateDisplay,
     this.onTapLeft,
     this.onTapRight,
-    this.onTapGoToCurrentDate,
+    this.onDateTap,
   });
 
   final String dateDisplay;
   final VoidCallback? onTapLeft;
   final VoidCallback? onTapRight;
-  final VoidCallback? onTapGoToCurrentDate;
+  final VoidCallback? onDateTap;
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +79,9 @@ class DateSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
-            iconColor:
-                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+            iconColor: context.appTheme.isDarkTheme
+                ? context.appTheme.backgroundNegative
+                : context.appTheme.secondaryNegative,
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapLeft,
             size: 24,
@@ -83,7 +89,7 @@ class DateSelector extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: onTapGoToCurrentDate,
+          onTap: onDateTap,
           child: SizedBox(
             width: 140,
             child: FittedBox(
@@ -117,8 +123,9 @@ class DateSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowRight,
-            iconColor:
-                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+            iconColor: context.appTheme.isDarkTheme
+                ? context.appTheme.backgroundNegative
+                : context.appTheme.secondaryNegative,
 
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapRight,
@@ -131,8 +138,8 @@ class DateSelector extends StatelessWidget {
   }
 }
 
-class WelcomeText extends StatelessWidget {
-  const WelcomeText({
+class _WelcomeText extends StatelessWidget {
+  const _WelcomeText({
     super.key,
   });
 
@@ -141,15 +148,17 @@ class WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+        color: context.appTheme.isDarkTheme
+            ? context.appTheme.backgroundNegative
+            : context.appTheme.secondaryNegative,
         fontSize: 14,
       ),
     );
   }
 }
 
-class TotalMoney extends ConsumerWidget {
-  const TotalMoney({
+class _TotalMoney extends ConsumerWidget {
+  const _TotalMoney({
     super.key,
     required this.showNumber,
     required this.onEyeTap,
@@ -165,7 +174,8 @@ class TotalMoney extends ConsumerWidget {
     double totalBalance = accountRepository.getTotalBalance();
 
     ref
-        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .watch(transactionChangesRealmProvider(
+            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
         .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
@@ -237,8 +247,8 @@ class TotalMoney extends ConsumerWidget {
   }
 }
 
-class MoneyCarousel extends ConsumerStatefulWidget {
-  const MoneyCarousel({
+class _MoneyCarousel extends StatefulWidget {
+  const _MoneyCarousel({
     super.key,
     required this.controller,
     required this.initialPageIndex,
@@ -248,11 +258,10 @@ class MoneyCarousel extends ConsumerStatefulWidget {
   final int initialPageIndex;
 
   @override
-  ConsumerState<MoneyCarousel> createState() => _MoneyCarouselState();
+  State<_MoneyCarousel> createState() => _MoneyCarouselState();
 }
 
-class _MoneyCarouselState extends ConsumerState<MoneyCarousel> {
-  late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+class _MoneyCarouselState extends State<_MoneyCarousel> {
   late int _currentPageIndex = widget.controller.initialPage;
   late final DateTime _today = DateTime.now().onlyYearMonth;
 
@@ -272,20 +281,28 @@ class _MoneyCarouselState extends ConsumerState<MoneyCarousel> {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-          double amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
-          String pageMonth = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
-              .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
+          return Consumer(
+            builder: (context, ref, child) {
+              final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+              String pageMonth =
+                  DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
+                      .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
 
-          ref.listenManual(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-              (_, __) {
-            amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
-            setState(() {});
-          });
+              double amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
 
-          return _CarouselContent(
-            isActive: _currentPageIndex == pageIndex,
-            amount: amount,
-            text: '${amount != 0 ? 'Cashflow in' : 'Nothing in'} $pageMonth',
+              ref.listen(
+                  transactionChangesRealmProvider(
+                      DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
+                amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
+                setState(() {});
+              });
+
+              return _CarouselContent(
+                isActive: _currentPageIndex == pageIndex,
+                amount: amount,
+                text: '${amount != 0 ? 'Cashflow in' : 'Nothing in'} $pageMonth',
+              );
+            },
           );
         },
       ),
