@@ -92,13 +92,19 @@ class _CustomLineChartState extends State<CustomLineChart> {
   List<LineTooltipItem> _lineTooltipItem(List<LineBarSpot> touchedSpots) {
     return touchedSpots.map((LineBarSpot touchedSpot) {
       return LineTooltipItem(
-        CalService.formatCurrency(context, touchedSpot.y),
+        '${context.currentSettings.currency.symbol ?? context.currentSettings.currency.code} ${CalService.formatCurrency(context, touchedSpot.y)}',
         touchedSpot.x == 0 || touchedSpot.x == _endX
             ? kHeaderTransparent
             : kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative,
+                color: context.appTheme.isDarkTheme
+                    ? context.appTheme.backgroundNegative
+                    : context.appTheme.primaryNegative,
                 shadows: [
-                  Shadow(color: context.appTheme.backgroundNegative.withOpacity(0.7), blurRadius: 20)
+                  Shadow(
+                      color: context.appTheme.isDarkTheme
+                          ? context.appTheme.backgroundNegative.withOpacity(0.7)
+                          : context.appTheme.primaryNegative.withOpacity(0.5),
+                      blurRadius: 20)
                 ],
                 fontSize: 16,
               ),
