@@ -98,12 +98,12 @@ class _CustomLineChartState extends State<CustomLineChart> {
             : kHeader2TextStyle.copyWith(
                 color: context.appTheme.isDarkTheme
                     ? context.appTheme.backgroundNegative
-                    : context.appTheme.primaryNegative,
+                    : context.appTheme.secondaryNegative,
                 shadows: [
                   Shadow(
                       color: context.appTheme.isDarkTheme
                           ? context.appTheme.backgroundNegative.withOpacity(0.7)
-                          : context.appTheme.primaryNegative.withOpacity(0.5),
+                          : context.appTheme.secondaryNegative.withOpacity(0.5),
                       blurRadius: 20)
                 ],
                 fontSize: 16,
