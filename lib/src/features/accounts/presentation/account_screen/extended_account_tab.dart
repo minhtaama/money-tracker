@@ -67,15 +67,16 @@ class StatementSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         Transform.translate(
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
-            iconColor:
-                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+            iconColor: context.appTheme.isDarkTheme
+                ? context.appTheme.backgroundNegative
+                : context.appTheme.secondaryNegative,
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapLeft,
             size: 25,
@@ -130,8 +131,9 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowRight,
-            iconColor:
-                context.appTheme.isDarkTheme ? context.appTheme.backgroundNegative : context.appTheme.secondaryNegative,
+            iconColor: context.appTheme.isDarkTheme
+                ? context.appTheme.backgroundNegative
+                : context.appTheme.secondaryNegative,
 
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapRight,

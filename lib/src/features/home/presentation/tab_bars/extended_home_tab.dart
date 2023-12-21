@@ -1,5 +1,4 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
@@ -11,6 +10,7 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
+import '../../../../common_widgets/custom_line_chart.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
@@ -42,13 +42,20 @@ class ExtendedHomeTab extends StatelessWidget {
           controller: carouselController,
           initialPageIndex: initialPageIndex,
         ),
-        // LineChart(
-        //   LineChartData(
-        //     lineBarsData: [
-        //       LineChartBarData(spots: [FlSpot(0, 1)])
-        //     ],
-        //   ),
-        // ),
+        Expanded(
+            child: CustomLineChart(
+          currentMonthView: DateTime.now(),
+          //beginValue: 12,
+          //endValue: 54,
+          valuesBetween: [
+            // TODO: Make value dynamic
+            CLCData(day: 1, amount: 1500000),
+            CLCData(day: 8, amount: 1174627),
+            CLCData(day: 15, amount: 1398458),
+            CLCData(day: 23, amount: 700898),
+            CLCData(day: 31, amount: 2873483),
+          ],
+        )),
       ],
     );
   }
@@ -72,22 +79,19 @@ class DateSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Transform.translate(
-          offset: const Offset(0, 1),
-          child: RoundedIconButton(
-            iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.isDarkTheme
-                ? context.appTheme.backgroundNegative
-                : context.appTheme.secondaryNegative,
-            //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
-            onTap: onTapLeft,
-            size: 24,
-            iconPadding: 2,
-          ),
+        RoundedIconButton(
+          iconPath: AppIcons.arrowLeft,
+          iconColor: context.appTheme.isDarkTheme
+              ? context.appTheme.backgroundNegative
+              : context.appTheme.secondaryNegative,
+          onTap: onTapLeft,
+          size: 26,
+          iconPadding: 2,
         ),
+        Gap.w8,
         GestureDetector(
           onTap: onDateTap,
           child: SizedBox(
@@ -110,28 +114,26 @@ class DateSelector extends StatelessWidget {
                   dateDisplay,
                   style: kHeader3TextStyle.copyWith(
                     color: context.appTheme.isDarkTheme
-                        ? context.appTheme.backgroundNegative.withOpacity(0.7)
-                        : context.appTheme.secondaryNegative.withOpacity(0.7),
-                    fontSize: 15,
+                        ? context.appTheme.backgroundNegative
+                        : context.appTheme.secondaryNegative,
+                    fontSize: 16,
                   ),
                 ),
               ),
             ),
           ),
         ),
-        Transform.translate(
-          offset: const Offset(0, 1),
-          child: RoundedIconButton(
-            iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.isDarkTheme
-                ? context.appTheme.backgroundNegative
-                : context.appTheme.secondaryNegative,
+        Gap.w8,
+        RoundedIconButton(
+          iconPath: AppIcons.arrowRight,
+          iconColor: context.appTheme.isDarkTheme
+              ? context.appTheme.backgroundNegative
+              : context.appTheme.secondaryNegative,
 
-            //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
-            onTap: onTapRight,
-            size: 24,
-            iconPadding: 2,
-          ),
+          //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
+          onTap: onTapRight,
+          size: 26,
+          iconPadding: 2,
         ),
       ],
     );

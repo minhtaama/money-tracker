@@ -4,6 +4,10 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 extension DateTimeExtensions on DateTime {
+  int get daysInMonth {
+    return DateTime(year, month + 1, 0).day;
+  }
+
   /// Returns [DateTime] without timestamp.
   DateTime get onlyYearMonth => DateTime(year, month);
 

@@ -256,71 +256,64 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                   opacity: _curveFA,
                   child: Stack(
                     children: [
-                      SizedBox(
+                      Container(
+                        width: double.infinity,
                         height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
-                        child: Container(
-                          width: double.infinity,
-                          height: kExtendedCustomTabBarHeight + Gap.statusBarHeight(context),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                widget.extendedTabBar?.backgroundColor ??
-                                    (context.appTheme.isDarkTheme
-                                        ? context.appTheme.background2
-                                        : context.appTheme.secondary),
-                                context.appTheme.isDarkTheme
-                                    ? context.appTheme.background2
-                                    : context.appTheme.background,
-                              ],
-                              stops: const [0.99, 1],
-                            ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              widget.extendedTabBar?.backgroundColor ??
+                                  (context.appTheme.isDarkTheme
+                                      ? context.appTheme.background2
+                                      : context.appTheme.secondary),
+                              context.appTheme.isDarkTheme
+                                  ? context.appTheme.background2
+                                  : context.appTheme.background,
+                            ],
+                            stops: const [0.99, 1],
                           ),
-                          margin: EdgeInsets.zero,
-                          padding: EdgeInsets.only(
-                            left: 16,
-                            right: 16,
-                            top: Gap.statusBarHeight(context),
-                            bottom: 30,
-                          ),
-                          child: AnimatedBuilder(
-                            animation: _translateAController,
-                            builder: (BuildContext context, Widget? child) {
-                              return Transform.translate(
-                                offset: Offset(0, _translateAController.value / 1.3),
-                                child: child,
-                              );
-                            },
-                            child: widget.extendedTabBar,
-                          ),
+                        ),
+                        margin: EdgeInsets.zero,
+                        padding: EdgeInsets.only(
+                          top: Gap.statusBarHeight(context),
+                          bottom: 30,
+                        ),
+                        child: AnimatedBuilder(
+                          animation: _translateAController,
+                          builder: (BuildContext context, Widget? child) {
+                            return Transform.translate(
+                              offset: Offset(0, _translateAController.value / 1.3),
+                              child: child,
+                            );
+                          },
+                          child: widget.extendedTabBar,
                         ),
                       ),
                       Positioned(
                         bottom: -1,
                         left: 0,
                         right: 0,
-                        child: Column(
-                          children: [
-                            widget.toolBar ?? Gap.noGap,
-                            widget.toolBar != null ? Gap.h8 : Gap.noGap,
-                            Container(
-                              height: 25,
-                              decoration: BoxDecoration(
-                                color: context.appTheme.background,
-                                borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(100), topLeft: Radius.circular(100)),
-                                boxShadow: !context.appTheme.isDarkTheme
-                                    ? [
-                                        BoxShadow(
-                                            color: AppColors.grey(context).withOpacity(0.45),
-                                            blurRadius: 32,
-                                            spreadRadius: 5)
-                                      ]
-                                    : null,
-                              ),
-                            ),
-                          ],
+                        child: Container(
+                          height: widget.toolBar == null ? 25 : null,
+                          width: double.infinity,
+                          padding:
+                              widget.toolBar == null ? null : const EdgeInsets.only(top: 10, bottom: 8),
+                          decoration: BoxDecoration(
+                            color: context.appTheme.background,
+                            borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(32), topLeft: Radius.circular(32)),
+                            boxShadow: !context.appTheme.isDarkTheme
+                                ? [
+                                    BoxShadow(
+                                        color: context.appTheme.accentNegative.withOpacity(0.35),
+                                        blurRadius: 32,
+                                        spreadRadius: 5)
+                                  ]
+                                : null,
+                          ),
+                          child: widget.toolBar ?? Gap.noGap,
                         ),
                       ),
                     ],

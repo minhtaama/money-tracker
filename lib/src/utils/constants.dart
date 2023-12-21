@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 /// Value related to Text. To change more details, use .copyWith()
+const kHeaderTransparent = TextStyle(color: Colors.transparent);
+
+/// Value related to Text. To change more details, use .copyWith()
 const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28);
 
 /// Value related to Text. To change more details, use .copyWith()
