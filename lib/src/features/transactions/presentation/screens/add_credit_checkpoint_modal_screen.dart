@@ -56,8 +56,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
 
   @override
   void initState() {
-    _dateTime =
-        DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
+    _dateTime = DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
     _statement = _creditAccount.statementAt(_dateTime);
     super.initState();
   }
@@ -88,16 +87,14 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             isShow: true,
             iconPath: AppIcons.fykFace,
             header: 'For your knowledge'.hardcoded,
-            text:
-                'Add [transactions has installment payment going through this checkpoint] first, if any.'
-                    .hardcoded,
+            text: 'Add [transactions has installment payment going through this checkpoint] first, if any.'.hardcoded,
           ),
           Gap.h8,
           Row(
             children: [
               Text(
                 'Checkpoint at:',
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
               ),
               DateSelector(
                 initial: _dateTime,
@@ -122,7 +119,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
               fontSize: 18,
               isDense: true,
               textAlign: TextAlign.end,
-              focusColor: context.appTheme.secondary,
+              focusColor: context.appTheme.secondary500,
               hintText: '',
               initialValue: '0',
               validator: (_) => _oustdBalanceValidator(),
@@ -153,8 +150,7 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
 
   String? _oustdBalanceValidator() {
-    if (CalService.formatToDouble(_calOutputFormattedAmount)! <
-        _unpaidInstallmentsAmount.roundBySetting(context)) {
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount.roundBySetting(context)) {
       return 'Must higher than unpaid installments amount'.hardcoded;
     }
 

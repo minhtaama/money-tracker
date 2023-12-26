@@ -129,7 +129,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       textAlign: TextAlign.end,
                       validator: (_) => _installmentPaymentValidator(),
                       formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
-                      focusColor: context.appTheme.secondary,
+                      focusColor: context.appTheme.secondary500,
                       hintText: ''),
                 ),
               ],

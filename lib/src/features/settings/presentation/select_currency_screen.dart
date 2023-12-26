@@ -18,7 +18,7 @@ class SelectCurrencyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: context.appTheme.background,
+      backgroundColor: context.appTheme.background500,
       body: CustomTabPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
@@ -35,7 +35,7 @@ class SelectCurrencyScreen extends ConsumerWidget {
                       title: Currency.values[index].name,
                       trailing: Text(
                         Currency.values[index].code,
-                        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                       onTap: () {
                         final settingController = ref.read(settingsControllerProvider.notifier);

@@ -35,13 +35,13 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appTheme.background,
+      backgroundColor: context.appTheme.background500,
       floatingActionButton: IconWithTextButton(
         height: 60,
         iconPath: AppIcons.done,
         label: 'Choose',
         backgroundColor: context.appTheme.accent,
-        color: context.appTheme.accentNegative,
+        color: context.appTheme.onAccent,
         // Returned value is here
         onTap: () => context.pop([currentCategory, currentIconIndex]),
       ),
@@ -112,7 +112,7 @@ class CircleIcon extends StatelessWidget {
               height: double.infinity,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: context.appTheme.background3,
+                color: context.appTheme.background400,
                 borderRadius: BorderRadius.circular(1000),
                 border: Border.all(width: 2, color: AppColors.grey(context)),
               ),
@@ -132,7 +132,7 @@ class CircleIcon extends StatelessWidget {
             Center(
               child: SvgIcon(
                 AppIcons.fromCategoryAndIndex(iconCategory, iconIndex),
-                color: isSelected ? context.appTheme.primaryNegative : context.appTheme.backgroundNegative,
+                color: isSelected ? context.appTheme.onPrimary : context.appTheme.onBackground,
               ),
             )
           ],

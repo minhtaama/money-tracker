@@ -43,7 +43,7 @@ class SmallHomeTab extends ConsumerWidget {
       trailing: RoundedIconButton(
         iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
         backgroundColor: Colors.transparent,
-        iconColor: context.appTheme.backgroundNegative,
+        iconColor: context.appTheme.onBackground,
         onTap: onEyeTap,
       ),
     );

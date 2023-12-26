@@ -40,15 +40,13 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentCategory != null ? currentCategory!.iconPath : AppIcons.add,
       backgroundColor: currentCategory != null ? currentCategory!.backgroundColor : Colors.transparent,
-      color: currentCategory != null
-          ? currentCategory!.iconColor
-          : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color: currentCategory != null ? currentCategory!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
       width: null,
       height: null,
       border: currentCategory != null
           ? null
           : Border.all(
-              color: context.appTheme.backgroundNegative.withOpacity(0.4),
+              color: context.appTheme.onBackground.withOpacity(0.4),
             ),
       onTap: () async {
         List<Category> categoryList;
@@ -57,8 +55,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription(
-              'Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModalBottomSheet<Category>(
@@ -72,7 +69,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Text(
                         'Choose Category',
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                     ),
                     Gap.h16,
@@ -90,15 +87,14 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                           border: Border.all(
                             color: currentCategory?.databaseObject.id == category.databaseObject.id
                                 ? category.backgroundColor
-                                : context.appTheme.backgroundNegative.withOpacity(0.4),
+                                : context.appTheme.onBackground.withOpacity(0.4),
                           ),
-                          backgroundColor:
-                              currentCategory?.databaseObject.id == category.databaseObject.id
-                                  ? category.backgroundColor
-                                  : Colors.transparent,
+                          backgroundColor: currentCategory?.databaseObject.id == category.databaseObject.id
+                              ? category.backgroundColor
+                              : Colors.transparent,
                           color: currentCategory?.databaseObject.id == category.databaseObject.id
                               ? category.iconColor
-                              : context.appTheme.backgroundNegative,
+                              : context.appTheme.onBackground,
                           onTap: () => context.pop<Category>(category),
                           height: null,
                           width: null,
@@ -129,8 +125,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (currentCategory != null &&
-                currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (currentCategory != null && currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
               currentCategory = null;
               widget.onChangedCategory(currentCategory);
             } else {

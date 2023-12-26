@@ -74,8 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -124,6 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       extendedTabBar: ExtendedTabBar(
         child: ExtendedHomeTab(
           initialPageIndex: _initialPageIndex,
+          displayDate: _displayDate,
           carouselController: _carouselController,
           showNumber: showTotalBalance,
           onEyeTap: () {
@@ -147,12 +147,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList =
-            transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.listen(
-            transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-            (_, __) {
+        ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });

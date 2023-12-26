@@ -2,9 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+
+import '../theme_and_ui/colors.dart';
 
 class CLCData {
   CLCData({required this.day, required this.amount});
@@ -16,13 +19,9 @@ class CustomLineChart extends StatefulWidget {
   const CustomLineChart({
     super.key,
     required this.currentMonthView,
-    this.beginValue,
-    this.endValue,
-    required this.valuesBetween,
+    required this.values,
   });
-  final double? beginValue;
-  final double? endValue;
-  final List<CLCData> valuesBetween;
+  final List<CLCData> values;
   final DateTime currentMonthView;
 
   @override
@@ -30,14 +29,13 @@ class CustomLineChart extends StatefulWidget {
 }
 
 class _CustomLineChartState extends State<CustomLineChart> {
-  late double _endX = widget.currentMonthView.daysInMonth.toDouble() + 1;
   late double _lowestAmount;
   late double _highestAmount;
 
   void findLowestAndHighestAmount() {
     double lowTemp = double.infinity;
     double highTemp = double.negativeInfinity;
-    for (CLCData data in widget.valuesBetween) {
+    for (CLCData data in widget.values) {
       if (data.amount < lowTemp) {
         lowTemp = data.amount;
       }
@@ -57,12 +55,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
   @override
   void didUpdateWidget(covariant CustomLineChart oldWidget) {
-    if (widget.currentMonthView != oldWidget.currentMonthView) {
-      setState(() {
-        _endX = widget.currentMonthView.daysInMonth.toDouble() + 1;
-      });
-    }
-    if (widget.valuesBetween != oldWidget.valuesBetween) {
+    if (widget.values != oldWidget.values) {
       setState(() {
         findLowestAndHighestAmount();
       });
@@ -71,18 +64,18 @@ class _CustomLineChartState extends State<CustomLineChart> {
   }
 
   Widget _bottomTitleWidgets(double value, TitleMeta meta) {
-    bool isShowTitle = widget.valuesBetween.map((e) => e.day).contains(value.toInt());
+    bool isShowTitle = widget.values.map((e) => e.day).contains(value.toInt());
 
     return isShowTitle
         ? Transform.translate(
-            offset: const Offset(0, -73),
+            offset: const Offset(0, -53),
             child: SideTitleWidget(
               axisSide: AxisSide.bottom,
               space: 0,
-              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: false),
+              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
               child: Text(
                 value.toInt().toString(),
-                style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.accentNegative),
+                style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent),
               ),
             ),
           )
@@ -92,22 +85,23 @@ class _CustomLineChartState extends State<CustomLineChart> {
   List<LineTooltipItem> _lineTooltipItem(List<LineBarSpot> touchedSpots) {
     return touchedSpots.map((LineBarSpot touchedSpot) {
       return LineTooltipItem(
-        '${context.currentSettings.currency.symbol ?? context.currentSettings.currency.code} ${CalService.formatCurrency(context, touchedSpot.y)}',
-        touchedSpot.x == 0 || touchedSpot.x == _endX
-            ? kHeaderTransparent
-            : kHeader2TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme
-                    ? context.appTheme.backgroundNegative
-                    : context.appTheme.secondaryNegative,
-                shadows: [
-                  Shadow(
-                      color: context.appTheme.isDarkTheme
-                          ? context.appTheme.backgroundNegative.withOpacity(0.7)
-                          : context.appTheme.secondaryNegative.withOpacity(0.5),
-                      blurRadius: 20)
-                ],
-                fontSize: 16,
-              ),
+        '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, touchedSpot.y)} \n',
+        kHeader2TextStyle.copyWith(
+          color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+          fontSize: 14,
+        ),
+        textAlign: TextAlign.left,
+        children: [
+          TextSpan(
+            text: widget.currentMonthView
+                .copyWith(day: touchedSpot.x.toInt())
+                .getFormattedDate(hasYear: false, type: DateTimeType.ddmmmmyyyy),
+            style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+              fontSize: 11,
+            ),
+          ),
+        ],
       );
     }).toList();
   }
@@ -125,7 +119,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       final dotData = FlDotData(
         getDotPainter: (spot, percent, bar, _) => FlDotCirclePainter(
           radius: 8,
-          color: x == 0 || x == _endX ? Colors.transparent : context.appTheme.accent.addDark(0.1),
+          color: context.appTheme.accent.addDark(0.1),
           strokeColor: Colors.transparent,
         ),
       );
@@ -136,12 +130,55 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
   @override
   Widget build(BuildContext context) {
+    final lineTouchData = LineTouchData(
+      enabled: true,
+      touchSpotThreshold: 50,
+      touchTooltipData: LineTouchTooltipData(
+        fitInsideHorizontally: true,
+        tooltipBgColor: context.appTheme.isDarkTheme
+            ? context.appTheme.background400.withOpacity(0.6)
+            : context.appTheme.secondary600.withOpacity(0.6),
+        getTooltipItems: _lineTooltipItem,
+      ),
+      getTouchedSpotIndicator: _touchedIndicators,
+    );
+
+    final lineChartBarData = [
+      LineChartBarData(
+        spots: widget.values.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList(),
+        isCurved: true,
+        isStrokeCapRound: true,
+        preventCurveOverShooting: true,
+        barWidth: 4.5,
+        shadow: context.appTheme.isDarkTheme
+            ? Shadow(
+                color: context.appTheme.accent,
+                blurRadius: 50,
+              )
+            : const Shadow(color: Colors.transparent),
+        color: context.appTheme.accent,
+        belowBarData: BarAreaData(
+          show: true,
+          gradient: LinearGradient(
+            colors: [
+              context.appTheme.accent.withOpacity(0.65),
+              context.appTheme.accent.withOpacity(0.3),
+            ],
+            stops: const [0.3, 1],
+          ),
+        ),
+        dotData: const FlDotData(show: false),
+      )
+    ];
+
     return Transform.translate(
-      offset: const Offset(0, 50),
+      offset: const Offset(0, 38),
       child: LineChart(
         LineChartData(
-          maxY: _highestAmount * 0.9,
-          minY: _lowestAmount - _highestAmount / 1.5,
+          maxY: _highestAmount,
+          minY: _lowestAmount - _highestAmount / 2,
+          minX: 1,
+          maxX: widget.values.last.day.toDouble(),
           baselineY: 0,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
@@ -160,47 +197,8 @@ class _CustomLineChartState extends State<CustomLineChart> {
               ),
             ),
           ),
-          lineTouchData: LineTouchData(
-            touchSpotThreshold: 50,
-            touchTooltipData: LineTouchTooltipData(
-              fitInsideHorizontally: true,
-              tooltipBgColor: Colors.transparent,
-              getTooltipItems: _lineTooltipItem,
-            ),
-            getTouchedSpotIndicator: _touchedIndicators,
-          ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: [
-                FlSpot(0, widget.beginValue ?? widget.valuesBetween.first.amount),
-                ...widget.valuesBetween.map((e) => FlSpot(e.day.toDouble(), e.amount)),
-                FlSpot(_endX, widget.endValue ?? widget.valuesBetween.last.amount),
-              ],
-              isCurved: true,
-              isStrokeCapRound: true,
-              barWidth: 4.5,
-              dotData: const FlDotData(
-                show: false,
-              ),
-              shadow: context.appTheme.isDarkTheme
-                  ? Shadow(
-                      color: context.appTheme.accent,
-                      blurRadius: 50,
-                    )
-                  : const Shadow(color: Colors.transparent),
-              color: context.appTheme.accent,
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: LinearGradient(
-                  colors: [
-                    context.appTheme.accent.withOpacity(0.65),
-                    context.appTheme.accent.withOpacity(0.3),
-                  ],
-                  stops: const [0.3, 1],
-                ),
-              ),
-            ),
-          ],
+          lineTouchData: lineTouchData,
+          lineBarsData: lineChartBarData,
         ),
       ),
     );

@@ -18,11 +18,9 @@ Future<T?> showConfirmModalBottomSheet<T>({
     context: context,
     elevation: 0,
     enableDrag: false,
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-    barrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background400 : context.appTheme.background500,
+    barrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -34,7 +32,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
               Text(
                 label,
                 style: kHeader3TextStyle.copyWith(
-                  color: context.appTheme.backgroundNegative,
+                  color: context.appTheme.onBackground,
                 ),
               ),
               Gap.h24,
@@ -43,7 +41,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                   IconWithTextButton(
                     iconPath: AppIcons.back,
                     label: 'No',
-                    color: context.appTheme.backgroundNegative,
+                    color: context.appTheme.onBackground,
                     backgroundColor: AppColors.grey(context),
                     onTap: () => context.pop(),
                   ),
@@ -51,7 +49,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                   IconWithTextButton(
                     iconPath: confirmIcon ?? AppIcons.delete,
                     label: confirmLabel,
-                    color: context.appTheme.accentNegative,
+                    color: context.appTheme.onAccent,
                     backgroundColor: context.appTheme.accent,
                     onTap: () {
                       onConfirm();
@@ -84,11 +82,9 @@ Future<T?> showCustomModalBottomSheet<T>(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-    barrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background400 : context.appTheme.background500,
+    barrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -118,11 +114,9 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
     {required Widget child, bool hasHandle = true}) {
   return ModalBottomSheetPage(
     hasHandle: hasHandle,
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background,
-    modalBarrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background400 : context.appTheme.background500,
+    modalBarrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     child: child,
   );
 }
@@ -179,8 +173,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
               ? Stack(
                   children: [
                     AnimatedPadding(
-                      padding:
-                          EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
                       duration: const Duration(milliseconds: 0),
                       child: SingleChildScrollView(child: child),
                     ),
@@ -209,7 +202,7 @@ class Handle extends StatelessWidget {
           width: 50,
           height: 5,
           decoration: BoxDecoration(
-            color: context.appTheme.backgroundNegative.withOpacity(0.5),
+            color: context.appTheme.onBackground.withOpacity(0.5),
             borderRadius: BorderRadius.circular(30),
           ),
         ),

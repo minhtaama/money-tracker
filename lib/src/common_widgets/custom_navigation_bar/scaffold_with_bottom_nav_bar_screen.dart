@@ -50,7 +50,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       FABItem(
         icon: AppIcons.transfer,
         label: 'Transfer'.hardcoded,
-        color: context.appTheme.backgroundNegative,
+        color: context.appTheme.onBackground,
         backgroundColor: AppColors.grey(context),
         onTap: () => context.go(RoutePath.addTransfer),
       ),
@@ -94,7 +94,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
           isHomeScreen = tabIndex == 0;
         },
       ),
-      backgroundColor: context.appTheme.background,
+      backgroundColor: context.appTheme.background500,
       extendBody: true,
       body: widget.child,
     );

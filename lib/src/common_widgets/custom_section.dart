@@ -85,7 +85,7 @@ class _CustomSectionState extends State<CustomSection> {
                   child: Text(
                     widget.title!,
                     style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative.withOpacity(0.85),
+                      color: context.appTheme.onBackground.withOpacity(0.85),
                     ),
                   ),
                 )

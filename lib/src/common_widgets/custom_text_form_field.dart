@@ -68,14 +68,14 @@ class CustomTextFormField extends StatelessWidget {
         textAlign: textAlign,
         autovalidateMode: autovalidateMode,
         onFieldSubmitted: onFieldSubmitted,
-        cursorColor: context.appTheme.backgroundNegative.withOpacity(0.1),
+        cursorColor: context.appTheme.onBackground.withOpacity(0.1),
         style: withOutlineBorder
             ? kHeader3TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative,
+                color: context.appTheme.onBackground,
                 fontSize: 15,
               )
             : kHeader2TextStyle.copyWith(
-                color: context.appTheme.backgroundNegative,
+                color: context.appTheme.onBackground,
                 fontSize: 18,
               ),
         validator: validator,
@@ -122,11 +122,11 @@ class CustomTextFormField extends StatelessWidget {
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide:
-                      BorderSide(color: context.appTheme.backgroundNegative.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                      BorderSide(color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 )
               : UnderlineInputBorder(
                   borderSide:
-                      BorderSide(color: context.appTheme.backgroundNegative.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                      BorderSide(color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 ),
           focusedBorder: withOutlineBorder
               ? OutlineInputBorder(
@@ -139,11 +139,11 @@ class CustomTextFormField extends StatelessWidget {
           hintText: hintText,
           hintStyle: withOutlineBorder
               ? kHeader3TextStyle.copyWith(
-                  color: context.appTheme.backgroundNegative.withOpacity(enabled ? 0.5 : 0.2),
+                  color: context.appTheme.onBackground.withOpacity(enabled ? 0.5 : 0.2),
                   fontSize: 15,
                 )
               : kHeader2TextStyle.copyWith(
-                  color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                  color: context.appTheme.onBackground.withOpacity(0.5),
                   fontSize: 18,
                 ),
           errorStyle: disableErrorText

@@ -29,12 +29,12 @@ class CalKey extends StatelessWidget {
       isGradient: true,
       child: InkWell(
         onTap: () => onInput(value ?? text),
-        highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
+        highlightColor: context.appTheme.onBackground.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: Text(
             text,
-            style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 25),
+            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 25),
           ),
         ),
       ),

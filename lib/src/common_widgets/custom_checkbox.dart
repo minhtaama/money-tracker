@@ -55,16 +55,16 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Checkbox(
-                      activeColor: context.appTheme.secondary,
-                      focusColor: context.appTheme.secondary,
-                      hoverColor: context.appTheme.secondary,
-                      checkColor: context.appTheme.secondaryNegative,
-                      overlayColor: MaterialStatePropertyAll<Color>(context.appTheme.secondary.withOpacity(0.1)),
+                      activeColor: context.appTheme.secondary500,
+                      focusColor: context.appTheme.secondary500,
+                      hoverColor: context.appTheme.secondary500,
+                      checkColor: context.appTheme.onSecondary,
+                      overlayColor: MaterialStatePropertyAll<Color>(context.appTheme.secondary500.withOpacity(0.1)),
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity:
                           widget.optionalWidget == null ? const VisualDensity(horizontal: 0, vertical: -3) : null,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                      side: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1.5),
+                      side: BorderSide(color: context.appTheme.onBackground.withOpacity(0.4), width: 1.5),
                       value: _value,
                       onChanged: (value) {
                         setState(() {
@@ -88,7 +88,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                                 widget.label,
                                 style: widget.labelStyle ??
                                     kHeader3TextStyle.copyWith(
-                                        fontSize: 15, color: context.appTheme.backgroundNegative.withOpacity(0.6)),
+                                        fontSize: 15, color: context.appTheme.onBackground.withOpacity(0.6)),
                               ),
                             ),
                             Gap.w8,
@@ -114,9 +114,9 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                     : EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: widget.optionalWidgetBackgroundColor ??
-                      (context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.background),
+                      (context.appTheme.isDarkTheme ? context.appTheme.background400 : context.appTheme.background500),
                   border: Border.all(
-                    color: context.appTheme.backgroundNegative.withOpacity(
+                    color: context.appTheme.onBackground.withOpacity(
                         !widget.showOptionalWidgetWhenValueIsFalse && _value ||
                                 widget.showOptionalWidgetWhenValueIsFalse && !_value
                             ? 0.3

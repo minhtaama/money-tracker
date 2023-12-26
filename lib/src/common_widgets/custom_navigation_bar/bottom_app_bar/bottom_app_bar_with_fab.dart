@@ -60,7 +60,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
     List<Widget> buttons = List.generate(widget.items.length, (index) {
       bool isSelected = _selectedIndex == index;
       return BottomAppBarButton(
-        backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background3 : context.appTheme.primary,
+        backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background400 : context.appTheme.primary,
         index: index,
         onTap: _updateIndex,
         isLeft: index < widget.items.length / 2,
@@ -83,7 +83,7 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
             ),
             child: BottomAppBar(
               height: kBottomAppBarHeight,
-              color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.7 : 0.5),
+              color: context.appTheme.background500.withOpacity(context.appTheme.isDarkTheme ? 0.7 : 0.5),
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               child: Row(

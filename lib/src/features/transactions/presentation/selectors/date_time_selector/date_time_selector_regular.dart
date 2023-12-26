@@ -29,9 +29,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           borderRadius: BorderRadius.circular(1000),
           border: isToday != null && isToday
               ? Border.all(
-                  color: isDisabled != null && isDisabled
-                      ? AppColors.greyBgr(context)
-                      : context.appTheme.primary,
+                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
                 )
               : null,
           color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
@@ -43,8 +41,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               color: isDisabled != null && isDisabled
                   ? AppColors.greyBgr(context)
                   : isSelected != null && isSelected
-                      ? context.appTheme.primaryNegative
-                      : context.appTheme.backgroundNegative,
+                      ? context.appTheme.onPrimary
+                      : context.appTheme.onBackground,
             ),
           ),
         ),
@@ -61,7 +59,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           elevation: 0,
-          border: Border.all(color: context.appTheme.backgroundNegative.withOpacity(0.4)),
+          border: Border.all(color: context.appTheme.onBackground.withOpacity(0.4)),
           color: Colors.transparent,
           child: Column(
             children: [
@@ -70,9 +68,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year,
-                        month: _outputDateTime.month,
-                        day: _outputDateTime.day);
+                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -89,8 +85,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             setState(() {
-                              _outputDateTime = dateTime.copyWith(
-                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                              _outputDateTime =
+                                  dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                             });
                             context.pop();
                           }
@@ -114,11 +110,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
 
 class DateSelector extends StatefulWidget {
   const DateSelector(
-      {super.key,
-      required this.onChanged,
-      required this.labelBuilder,
-      this.initial,
-      this.selectableDayPredicate});
+      {super.key, required this.onChanged, required this.labelBuilder, this.initial, this.selectableDayPredicate});
 
   final DateTime? initial;
   final bool Function(DateTime)? selectableDayPredicate;
@@ -157,9 +149,7 @@ class _DateSelectorState extends State<DateSelector> {
           borderRadius: BorderRadius.circular(1000),
           border: isToday != null && isToday
               ? Border.all(
-                  color: isDisabled != null && isDisabled
-                      ? AppColors.greyBgr(context)
-                      : context.appTheme.primary,
+                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
                 )
               : null,
           color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
@@ -171,8 +161,8 @@ class _DateSelectorState extends State<DateSelector> {
               color: isDisabled != null && isDisabled
                   ? AppColors.greyBgr(context)
                   : isSelected != null && isSelected
-                      ? context.appTheme.primaryNegative
-                      : context.appTheme.backgroundNegative,
+                      ? context.appTheme.onPrimary
+                      : context.appTheme.onBackground,
             ),
           ),
         ),
@@ -197,8 +187,7 @@ class _DateSelectorState extends State<DateSelector> {
                 onActionButtonTap: (dateTime) {
                   if (dateTime != null) {
                     setState(() {
-                      _outputDateTime =
-                          dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                      _outputDateTime = dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                     });
                     context.pop();
                   }

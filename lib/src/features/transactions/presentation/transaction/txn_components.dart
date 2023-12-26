@@ -45,7 +45,7 @@ class TxnInfo extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 9),
+        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 9),
       ),
     );
   }
@@ -155,7 +155,7 @@ class TxnCategoryIcon extends StatelessWidget {
     return SvgIcon(
       _iconPath,
       size: 20,
-      color: color ?? context.appTheme.backgroundNegative.withOpacity(_isInitial(transaction) ? 0.5 : 1),
+      color: color ?? context.appTheme.onBackground.withOpacity(_isInitial(transaction) ? 0.5 : 1),
     );
   }
 }
@@ -182,7 +182,7 @@ class TxnCategoryName extends StatelessWidget {
       _name,
       style: kHeader3TextStyle.copyWith(
         fontSize: fontSize ?? 12,
-        color: context.appTheme.backgroundNegative.withOpacity(_isInitial(transaction) ? 0.5 : 1),
+        color: context.appTheme.onBackground.withOpacity(_isInitial(transaction) ? 0.5 : 1),
       ),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -218,7 +218,7 @@ class TxnAccountIcon extends ConsumerWidget {
     return SvgIcon(
       _iconPath(ref),
       size: 20,
-      color: context.appTheme.backgroundNegative,
+      color: context.appTheme.onBackground,
     );
   }
 }
@@ -240,8 +240,7 @@ class TxnAccountName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       transaction.account!.name,
-      style: kHeader3TextStyle.copyWith(
-          color: context.appTheme.backgroundNegative, fontSize: fontSize ?? 12),
+      style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -265,7 +264,7 @@ class TxnToAccountIcon extends ConsumerWidget {
     return SvgIcon(
       _iconPath(ref),
       size: 20,
-      color: context.appTheme.backgroundNegative,
+      color: context.appTheme.onBackground,
     );
   }
 }
@@ -286,7 +285,7 @@ class TxnTransferAccountName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       _name(ref),
-      style: kHeader3TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 12),
+      style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -315,18 +314,16 @@ class TxnAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          CalService.formatCurrency(context,
-              showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+          CalService.formatCurrency(
+              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader2TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader4TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );
@@ -355,16 +352,14 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border: Border(
-            left: BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.3), width: 1.5)),
+        border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
-          color: context.appTheme.backgroundNegative.withOpacity(0.05),
-          borderRadius:
-              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          color: context.appTheme.onBackground.withOpacity(0.05),
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,7 +370,7 @@ class TxnNote extends StatelessWidget {
                 ? Text(
                     _categoryTag!,
                     style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative.withOpacity(0.7),
+                      color: context.appTheme.onBackground.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   )
@@ -385,7 +380,7 @@ class TxnNote extends StatelessWidget {
                 ? Text(
                     transaction.note!,
                     style: kHeader4TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative.withOpacity(0.7),
+                      color: context.appTheme.onBackground.withOpacity(0.7),
                       fontSize: 12,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -402,12 +397,7 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key,
-      this.height = 27,
-      this.width = 20,
-      this.adjustY = 1,
-      this.strokeWidth = 1,
-      this.opacity = 1});
+      {super.key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1});
 
   final double height;
   final double adjustY;
@@ -422,8 +412,7 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity,
-              height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
@@ -548,7 +537,7 @@ class _TransferLinePainter extends CustomPainter {
     const useCenter = false;
 
     final paint = Paint()
-      ..color = context.appTheme.backgroundNegative.withOpacity(opacity)
+      ..color = context.appTheme.onBackground.withOpacity(opacity)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
 

@@ -53,8 +53,8 @@ class BottomAppBarButton extends StatelessWidget {
                   child: SvgIcon(
                     item.iconData,
                     color: isSelected
-                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary : context.appTheme.primaryNegative)
-                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary : backgroundColor),
+                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary500 : context.appTheme.onPrimary)
+                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary500 : backgroundColor),
                   ),
                 ),
                 Gap.w4,
@@ -67,9 +67,9 @@ class BottomAppBarButton extends StatelessWidget {
                       style: kHeader4TextStyle.copyWith(
                         color: isSelected
                             ? (context.appTheme.isDarkTheme
-                                ? context.appTheme.secondary
-                                : context.appTheme.primaryNegative)
-                            : (context.appTheme.isDarkTheme ? context.appTheme.secondary : backgroundColor),
+                                ? context.appTheme.secondary500
+                                : context.appTheme.onPrimary)
+                            : (context.appTheme.isDarkTheme ? context.appTheme.secondary500 : backgroundColor),
                         fontFamily: 'WixMadeforDisplay',
                         fontSize: 14,
                       ),

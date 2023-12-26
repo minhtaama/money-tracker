@@ -107,7 +107,7 @@ class _AnimatedToggle extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(1000),
                     //border: Border.all(color: bgrColor, width: 4),
-                    color: context.appTheme.background,
+                    color: context.appTheme.background500,
                   ),
                 ),
               ),

@@ -26,7 +26,7 @@ class ExtendedAccountTab extends ConsumerWidget {
             RoundedIconButton(
               onTap: () => context.pop(),
               backgroundColor: Colors.transparent,
-              iconColor: context.appTheme.backgroundNegative,
+              iconColor: context.appTheme.onBackground,
               iconPath: AppIcons.back,
             ),
             Text(
@@ -74,9 +74,7 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.isDarkTheme
-                ? context.appTheme.backgroundNegative
-                : context.appTheme.secondaryNegative,
+            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapLeft,
             size: 25,
@@ -91,8 +89,8 @@ class StatementSelector extends StatelessWidget {
                 'Statement date',
                 style: kHeader3TextStyle.copyWith(
                   color: context.appTheme.isDarkTheme
-                      ? context.appTheme.backgroundNegative.withOpacity(0.7)
-                      : context.appTheme.secondaryNegative.withOpacity(0.7),
+                      ? context.appTheme.onBackground.withOpacity(0.7)
+                      : context.appTheme.onSecondary.withOpacity(0.7),
                   fontSize: 12,
                 ),
               ),
@@ -115,9 +113,8 @@ class StatementSelector extends StatelessWidget {
                       key: ValueKey(dateDisplay),
                       dateDisplay,
                       style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.isDarkTheme
-                            ? context.appTheme.backgroundNegative
-                            : context.appTheme.secondaryNegative,
+                        color:
+                            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                         fontSize: 16,
                       ),
                     ),
@@ -131,9 +128,7 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.isDarkTheme
-                ? context.appTheme.backgroundNegative
-                : context.appTheme.secondaryNegative,
+            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
 
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapRight,

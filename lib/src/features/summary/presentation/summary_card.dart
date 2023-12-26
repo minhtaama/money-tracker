@@ -31,14 +31,14 @@ class SummaryCard extends StatelessWidget {
                 children: [
                   SvgIcon(
                     icon,
-                    color: context.appTheme.backgroundNegative,
+                    color: context.appTheme.onBackground,
                   ),
                   Gap.w16,
                   Expanded(
                     child: Text(
                       title,
                       style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative,
+                        color: context.appTheme.onBackground,
                       ),
                     ),
                   ),
@@ -46,8 +46,7 @@ class SummaryCard extends StatelessWidget {
                     'See all',
                     style: kHeader3TextStyle.copyWith(
                       fontSize: 13,
-                      color:
-                          context.appTheme.backgroundNegative.withOpacity(0.6),
+                      color: context.appTheme.onBackground.withOpacity(0.6),
                     ),
                   ),
                   Gap.w4,

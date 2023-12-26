@@ -19,11 +19,13 @@ class ExtendedHomeTab extends StatelessWidget {
     super.key,
     required this.carouselController,
     required this.initialPageIndex,
+    required this.displayDate,
     required this.showNumber,
     required this.onEyeTap,
   });
   final PageController carouselController;
   final int initialPageIndex;
+  final DateTime displayDate;
   final bool showNumber;
   final VoidCallback onEyeTap;
 
@@ -44,10 +46,8 @@ class ExtendedHomeTab extends StatelessWidget {
         ),
         Expanded(
             child: CustomLineChart(
-          currentMonthView: DateTime.now(),
-          //beginValue: 12,
-          //endValue: 54,
-          valuesBetween: [
+          currentMonthView: displayDate,
+          values: [
             // TODO: Make value dynamic
             CLCData(day: 1, amount: 1500000),
             CLCData(day: 8, amount: 1174627),
@@ -84,9 +84,7 @@ class DateSelector extends StatelessWidget {
       children: [
         RoundedIconButton(
           iconPath: AppIcons.arrowLeft,
-          iconColor: context.appTheme.isDarkTheme
-              ? context.appTheme.backgroundNegative
-              : context.appTheme.secondaryNegative,
+          iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
           onTap: onTapLeft,
           size: 26,
           iconPadding: 2,
@@ -113,9 +111,7 @@ class DateSelector extends StatelessWidget {
                   key: ValueKey(dateDisplay),
                   dateDisplay,
                   style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.isDarkTheme
-                        ? context.appTheme.backgroundNegative
-                        : context.appTheme.secondaryNegative,
+                    color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                     fontSize: 16,
                   ),
                 ),
@@ -126,9 +122,7 @@ class DateSelector extends StatelessWidget {
         Gap.w8,
         RoundedIconButton(
           iconPath: AppIcons.arrowRight,
-          iconColor: context.appTheme.isDarkTheme
-              ? context.appTheme.backgroundNegative
-              : context.appTheme.secondaryNegative,
+          iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
 
           //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
           onTap: onTapRight,
@@ -150,9 +144,7 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme
-            ? context.appTheme.backgroundNegative
-            : context.appTheme.secondaryNegative,
+        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 14,
       ),
     );
@@ -176,8 +168,7 @@ class _TotalMoney extends ConsumerWidget {
     double totalBalance = accountRepository.getTotalBalance();
 
     ref
-        .watch(transactionChangesRealmProvider(
-            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
         .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
@@ -195,8 +186,8 @@ class _TotalMoney extends ConsumerWidget {
               context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,
               style: kHeader4TextStyle.copyWith(
                 color: context.appTheme.isDarkTheme
-                    ? context.appTheme.backgroundNegative.withOpacity(0.6)
-                    : context.appTheme.secondaryNegative.withOpacity(0.6),
+                    ? context.appTheme.onBackground.withOpacity(0.6)
+                    : context.appTheme.onSecondary.withOpacity(0.6),
                 fontSize: 20,
               ),
               textAlign: TextAlign.right,
@@ -206,8 +197,8 @@ class _TotalMoney extends ConsumerWidget {
             CalService.formatCurrency(context, totalBalance),
             defaultStyle: kHeader4TextStyle.copyWith(
                 color: context.appTheme.isDarkTheme
-                    ? context.appTheme.backgroundNegative.withOpacity(0.6)
-                    : context.appTheme.secondaryNegative.withOpacity(0.6),
+                    ? context.appTheme.onBackground.withOpacity(0.6)
+                    : context.appTheme.onSecondary.withOpacity(0.6),
                 fontSize: 18,
                 letterSpacing: 1),
             textAlign: TextAlign.right,
@@ -216,8 +207,8 @@ class _TotalMoney extends ConsumerWidget {
                 targetString: r'[0-9]+',
                 style: kHeader3TextStyle.copyWith(
                   color: context.appTheme.isDarkTheme
-                      ? context.appTheme.backgroundNegative.withOpacity(0.8)
-                      : context.appTheme.secondaryNegative.withOpacity(0.8),
+                      ? context.appTheme.onBackground.withOpacity(0.8)
+                      : context.appTheme.onSecondary.withOpacity(0.8),
                   fontSize: 20,
                 ),
               ),
@@ -234,9 +225,8 @@ class _TotalMoney extends ConsumerWidget {
                     //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
                     size: 25,
                     iconPadding: 4,
-                    iconColor: context.appTheme.isDarkTheme
-                        ? context.appTheme.backgroundNegative
-                        : context.appTheme.secondaryNegative,
+                    iconColor:
+                        context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                     onTap: onEyeTap,
                   ),
                 ),
@@ -286,15 +276,13 @@ class _MoneyCarouselState extends State<_MoneyCarousel> {
           return Consumer(
             builder: (context, ref, child) {
               final transactionRepository = ref.read(transactionRepositoryRealmProvider);
-              String pageMonth =
-                  DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
-                      .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
+              String pageMonth = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
+                  .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
 
               double amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
 
-              ref.listen(
-                  transactionChangesRealmProvider(
-                      DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
+              ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+                  (_, __) {
                 amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
                 setState(() {});
               });
@@ -354,8 +342,8 @@ class _CarouselContent extends StatelessWidget {
                         _symbol(context),
                         style: kHeader3TextStyle.copyWith(
                           color: context.appTheme.isDarkTheme
-                              ? context.appTheme.backgroundNegative.withOpacity(0.6)
-                              : context.appTheme.secondaryNegative.withOpacity(0.6),
+                              ? context.appTheme.onBackground.withOpacity(0.6)
+                              : context.appTheme.onSecondary.withOpacity(0.6),
                           fontSize: 25,
                         ),
                         textAlign: TextAlign.right,
@@ -365,8 +353,8 @@ class _CarouselContent extends StatelessWidget {
                       CalService.formatCurrency(context, amount),
                       defaultStyle: kHeader3TextStyle.copyWith(
                           color: context.appTheme.isDarkTheme
-                              ? context.appTheme.backgroundNegative
-                              : context.appTheme.secondaryNegative,
+                              ? context.appTheme.onBackground
+                              : context.appTheme.onSecondary,
                           fontSize: 23,
                           letterSpacing: 1),
                       textAlign: TextAlign.right,
@@ -375,8 +363,8 @@ class _CarouselContent extends StatelessWidget {
                           targetString: r'[0-9]+',
                           style: kHeader2TextStyle.copyWith(
                             color: context.appTheme.isDarkTheme
-                                ? context.appTheme.backgroundNegative
-                                : context.appTheme.secondaryNegative,
+                                ? context.appTheme.onBackground
+                                : context.appTheme.onSecondary,
                             fontSize: 28,
                           ),
                         ),
@@ -397,8 +385,8 @@ class _CarouselContent extends StatelessWidget {
                   text,
                   style: kHeader4TextStyle.copyWith(
                     color: context.appTheme.isDarkTheme
-                        ? context.appTheme.backgroundNegative.withOpacity(0.6)
-                        : context.appTheme.secondaryNegative.withOpacity(0.6),
+                        ? context.appTheme.onBackground.withOpacity(0.6)
+                        : context.appTheme.onSecondary.withOpacity(0.6),
                     fontSize: 13,
                   ),
                   textAlign: TextAlign.right,

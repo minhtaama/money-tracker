@@ -182,7 +182,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     children: [
                       Text(
                         'Statement day:',
-                        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                       DateSelector(
                         initial: DateTime.now().copyWith(day: statementDay),
@@ -203,7 +203,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     children: [
                       Text(
                         'Payment due day:',
-                        style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                       DateSelector(
                         initial: DateTime.now().copyWith(day: 15),

@@ -61,7 +61,7 @@ class ACKey extends StatelessWidget {
       isGradient: true,
       child: InkWell(
         onTap: onAC,
-        highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
+        highlightColor: context.appTheme.onBackground.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: Text(

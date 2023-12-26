@@ -138,7 +138,7 @@ class AccountsListScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: context.appTheme.background,
+      backgroundColor: context.appTheme.background500,
       body: CustomTabPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
@@ -146,8 +146,8 @@ class AccountsListScreen extends ConsumerWidget {
             hasBackButton: true,
             trailing: RoundedIconButton(
               iconPath: AppIcons.add,
-              iconColor: context.appTheme.backgroundNegative,
-              backgroundColor: context.appTheme.background3,
+              iconColor: context.appTheme.onBackground,
+              backgroundColor: context.appTheme.background400,
               onTap: () => context.push(RoutePath.addAccount),
             ),
           ),
