@@ -12,8 +12,16 @@ class ExtendedAccountTab extends ConsumerWidget {
   const ExtendedAccountTab({
     super.key,
     required this.account,
+    required this.dateDisplay,
+    this.onTapLeft,
+    this.onTapRight,
+    this.onTapGoToCurrentDate,
   });
   final Account account;
+  final String dateDisplay;
+  final VoidCallback? onTapLeft;
+  final VoidCallback? onTapRight;
+  final VoidCallback? onTapGoToCurrentDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,101 +50,126 @@ class ExtendedAccountTab extends ConsumerWidget {
             ),
           ],
         ),
+        const Spacer(),
+        _StatementSelector(
+          dateDisplay: dateDisplay,
+          onTapLeft: onTapLeft,
+          onTapRight: onTapRight,
+          onTapGoToCurrentDate: onTapGoToCurrentDate,
+        ),
       ],
     );
   }
 }
 
-class StatementSelector extends StatelessWidget {
-  const StatementSelector({
+class _StatementSelector extends StatelessWidget {
+  const _StatementSelector({
     super.key,
     required this.dateDisplay,
     this.onTapLeft,
     this.onTapRight,
     this.onTapGoToCurrentDate,
-    required this.showGoToCurrentDateButton,
   });
 
   final String dateDisplay;
   final VoidCallback? onTapLeft;
   final VoidCallback? onTapRight;
   final VoidCallback? onTapGoToCurrentDate;
-  final bool showGoToCurrentDateButton;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Transform.translate(
-          offset: const Offset(0, 1),
-          child: RoundedIconButton(
-            iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-            //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
-            onTap: onTapLeft,
-            size: 25,
-            iconPadding: 2,
+    return Transform.translate(
+      offset: const Offset(0, 0),
+      child: Container(
+        width: Gap.screenWidth(context),
+        height: 70,
+        padding: const EdgeInsets.only(top: 10),
+        decoration: BoxDecoration(
+          color: context.appTheme.background400,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
           ),
         ),
-        GestureDetector(
-          onTap: onTapGoToCurrentDate,
-          child: Column(
-            children: [
-              Text(
-                'Statement date',
-                style: kHeader3TextStyle.copyWith(
-                  color: context.appTheme.isDarkTheme
-                      ? context.appTheme.onBackground.withOpacity(0.7)
-                      : context.appTheme.onSecondary.withOpacity(0.7),
-                  fontSize: 12,
-                ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, 1),
+              child: RoundedIconButton(
+                iconPath: AppIcons.arrowLeft,
+                iconColor: context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary,
+                //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
+                onTap: onTapLeft,
+                size: 25,
+                iconPadding: 2,
               ),
-              SizedBox(
-                width: 125,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: AnimatedSwitcher(
-                    duration: k150msDuration,
-                    transitionBuilder: (Widget child, Animation<double> animation) {
-                      return FadeTransition(
-                        opacity: Tween<double>(
-                          begin: 0,
-                          end: 1,
-                        ).animate(animation),
-                        child: child,
-                      );
-                    },
-                    child: Text(
-                      key: ValueKey(dateDisplay),
-                      dateDisplay,
-                      style: kHeader2TextStyle.copyWith(
-                        color:
-                            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-                        fontSize: 16,
+            ),
+            GestureDetector(
+              onTap: onTapGoToCurrentDate,
+              child: Column(
+                children: [
+                  Text(
+                    'Statement date',
+                    style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.isDarkTheme
+                          ? context.appTheme.onBackground.withOpacity(0.7)
+                          : context.appTheme.onSecondary.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 125,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: AnimatedSwitcher(
+                        duration: k150msDuration,
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: Tween<double>(
+                              begin: 0,
+                              end: 1,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        child: Text(
+                          key: ValueKey(dateDisplay),
+                          dateDisplay,
+                          style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.isDarkTheme
+                                ? context.appTheme.onBackground
+                                : context.appTheme.onSecondary,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
-        Transform.translate(
-          offset: const Offset(0, 1),
-          child: RoundedIconButton(
-            iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            ),
+            Transform.translate(
+              offset: const Offset(0, 1),
+              child: RoundedIconButton(
+                iconPath: AppIcons.arrowRight,
+                iconColor: context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary,
 
-            //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
-            onTap: onTapRight,
-            size: 25,
-            iconPadding: 2,
-          ),
+                //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
+                onTap: onTapRight,
+                size: 25,
+                iconPadding: 2,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

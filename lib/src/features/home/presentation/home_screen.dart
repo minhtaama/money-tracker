@@ -46,6 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // DateTime? _maxDate;
 
   void _onPageChange(int value) {
+    _carouselController.animateToPage(value, duration: k250msDuration, curve: Curves.easeOut);
     setState(() {
       _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
     });
@@ -74,7 +75,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -126,19 +128,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           displayDate: _displayDate,
           carouselController: _carouselController,
           showNumber: showTotalBalance,
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onDateTap: () => _animatedToPage(_initialPageIndex),
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
             settingsController.set(showBalanceInHomeScreen: showTotalBalance);
           },
         ),
-      ),
-      toolBar: DateSelector(
-        dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-        onTapLeft: _previousPage,
-        onTapRight: _nextPage,
-        onDateTap: () {
-          _animatedToPage(_initialPageIndex);
-        },
       ),
       onDragLeft: _previousPage,
       onDragRight: _nextPage,
@@ -147,25 +144,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList =
+            transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
+        ref.listen(
+            transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+            (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });
 
-        return [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                Expanded(child: SummaryCard(isIncome: true)),
-                Expanded(child: SummaryCard(isIncome: false)),
-              ],
-            ),
-          ),
-          ..._buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth),
-        ];
+        return _buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth);
       },
     );
   }

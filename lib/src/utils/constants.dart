@@ -22,9 +22,6 @@ const double kCustomTabBarHeight = 80;
 /// Value related to CustomTabBar and CustomTabPage
 const double kExtendedCustomTabBarHeight = 350;
 
-/// Value related to OuterChild of ExtendedTabBar
-const double kExtendedTabBarOuterChildHeight = 35;
-
 // Durations
 const Duration kNoDuration = Duration(milliseconds: 0);
 const Duration k1msDuration = Duration(milliseconds: 1);

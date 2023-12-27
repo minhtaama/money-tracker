@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -22,12 +23,18 @@ class ExtendedHomeTab extends StatelessWidget {
     required this.displayDate,
     required this.showNumber,
     required this.onEyeTap,
+    required this.onTapLeft,
+    required this.onTapRight,
+    required this.onDateTap,
   });
   final PageController carouselController;
   final int initialPageIndex;
   final DateTime displayDate;
   final bool showNumber;
   final VoidCallback onEyeTap;
+  final VoidCallback onTapLeft;
+  final VoidCallback onTapRight;
+  final VoidCallback onDateTap;
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +63,19 @@ class ExtendedHomeTab extends StatelessWidget {
             CLCData(day: 31, amount: 2873483),
           ],
         )),
+        _DateSelector(
+          dateDisplay: displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy),
+          onDateTap: onDateTap,
+          onTapLeft: onTapLeft,
+          onTapRight: onTapRight,
+        ),
       ],
     );
   }
 }
 
-class DateSelector extends StatelessWidget {
-  const DateSelector({
+class _DateSelector extends StatelessWidget {
+  const _DateSelector({
     super.key,
     required this.dateDisplay,
     this.onTapLeft,
@@ -77,59 +90,73 @@ class DateSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        RoundedIconButton(
-          iconPath: AppIcons.arrowLeft,
-          iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-          onTap: onTapLeft,
-          size: 26,
-          iconPadding: 2,
+    return Transform.translate(
+      offset: const Offset(0, 0),
+      child: Container(
+        width: Gap.screenWidth(context),
+        height: 53,
+        padding: const EdgeInsets.only(top: 10),
+        decoration: BoxDecoration(
+          color: context.appTheme.background400,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
         ),
-        Gap.w8,
-        GestureDetector(
-          onTap: onDateTap,
-          child: SizedBox(
-            width: 140,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: AnimatedSwitcher(
-                duration: k150msDuration,
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(
-                    opacity: Tween<double>(
-                      begin: 0,
-                      end: 1,
-                    ).animate(animation),
-                    child: child,
-                  );
-                },
-                child: Text(
-                  key: ValueKey(dateDisplay),
-                  dateDisplay,
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-                    fontSize: 16,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RoundedIconButton(
+              iconPath: AppIcons.arrowLeft,
+              iconColor: context.appTheme.onBackground,
+              onTap: onTapLeft,
+              size: 23,
+              iconPadding: 2,
+            ),
+            Gap.w8,
+            GestureDetector(
+              onTap: onDateTap,
+              child: SizedBox(
+                width: 145,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: AnimatedSwitcher(
+                    duration: k150msDuration,
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: Tween<double>(
+                          begin: 0,
+                          end: 1,
+                        ).animate(animation),
+                        child: child,
+                      );
+                    },
+                    child: Text(
+                      key: ValueKey(dateDisplay),
+                      dateDisplay,
+                      style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.onBackground,
+                        fontSize: 15,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            Gap.w8,
+            RoundedIconButton(
+              iconPath: AppIcons.arrowRight,
+              iconColor: context.appTheme.onBackground,
+              onTap: onTapRight,
+              size: 23,
+              iconPadding: 2,
+            ),
+          ],
         ),
-        Gap.w8,
-        RoundedIconButton(
-          iconPath: AppIcons.arrowRight,
-          iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-
-          //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
-          onTap: onTapRight,
-          size: 26,
-          iconPadding: 2,
-        ),
-      ],
+      ),
     );
   }
 }
@@ -144,7 +171,8 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color:
+            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 14,
       ),
     );
@@ -168,7 +196,8 @@ class _TotalMoney extends ConsumerWidget {
     double totalBalance = accountRepository.getTotalBalance();
 
     ref
-        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .watch(transactionChangesRealmProvider(
+            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
         .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
@@ -225,8 +254,9 @@ class _TotalMoney extends ConsumerWidget {
                     //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
                     size: 25,
                     iconPadding: 4,
-                    iconColor:
-                        context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                    iconColor: context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary,
                     onTap: onEyeTap,
                   ),
                 ),
@@ -276,13 +306,15 @@ class _MoneyCarouselState extends State<_MoneyCarousel> {
           return Consumer(
             builder: (context, ref, child) {
               final transactionRepository = ref.read(transactionRepositoryRealmProvider);
-              String pageMonth = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
-                  .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
+              String pageMonth =
+                  DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
+                      .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
 
               double amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
 
-              ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-                  (_, __) {
+              ref.listen(
+                  transactionChangesRealmProvider(
+                      DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
                 amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
                 setState(() {});
               });

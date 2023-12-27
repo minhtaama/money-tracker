@@ -11,11 +11,11 @@ import '../../../transactions/data/transaction_repo.dart';
 
 class SmallHomeTab extends ConsumerWidget {
   const SmallHomeTab({
-    Key? key,
+    super.key,
     required this.secondaryTitle,
     required this.showNumber,
     required this.onEyeTap,
-  }) : super(key: key);
+  });
 
   final String secondaryTitle;
   final bool showNumber;
@@ -28,7 +28,8 @@ class SmallHomeTab extends ConsumerWidget {
     double totalBalance = accountRepository.getTotalBalance();
 
     ref
-        .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
+        .watch(transactionChangesRealmProvider(
+            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
         .whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });

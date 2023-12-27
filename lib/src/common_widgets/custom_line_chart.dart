@@ -68,7 +68,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
     return isShowTitle
         ? Transform.translate(
-            offset: const Offset(0, -53),
+            offset: const Offset(0, -40),
             child: SideTitleWidget(
               axisSide: AxisSide.bottom,
               space: 0,
@@ -87,17 +87,21 @@ class _CustomLineChartState extends State<CustomLineChart> {
       return LineTooltipItem(
         '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, touchedSpot.y)} \n',
         kHeader2TextStyle.copyWith(
-          color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-          fontSize: 14,
+          color: context.appTheme.isDarkTheme
+              ? context.appTheme.onBackground
+              : context.appTheme.onSecondary,
+          fontSize: 13,
         ),
-        textAlign: TextAlign.left,
+        textAlign: TextAlign.right,
         children: [
           TextSpan(
             text: widget.currentMonthView
                 .copyWith(day: touchedSpot.x.toInt())
-                .getFormattedDate(hasYear: false, type: DateTimeType.ddmmmmyyyy),
+                .getFormattedDate(hasYear: false, type: DateTimeType.ddmmmyyyy),
             style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.onBackground
+                  : context.appTheme.onSecondary,
               fontSize: 11,
             ),
           ),
@@ -135,9 +139,12 @@ class _CustomLineChartState extends State<CustomLineChart> {
       touchSpotThreshold: 50,
       touchTooltipData: LineTouchTooltipData(
         fitInsideHorizontally: true,
+        tooltipRoundedRadius: 12,
+        tooltipHorizontalAlignment: FLHorizontalAlignment.center,
+        tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         tooltipBgColor: context.appTheme.isDarkTheme
-            ? context.appTheme.background400.withOpacity(0.6)
-            : context.appTheme.secondary600.withOpacity(0.6),
+            ? context.appTheme.background400.withOpacity(0.8)
+            : context.appTheme.secondary600.withOpacity(0.8),
         getTooltipItems: _lineTooltipItem,
       ),
       getTouchedSpotIndicator: _touchedIndicators,
@@ -172,11 +179,11 @@ class _CustomLineChartState extends State<CustomLineChart> {
     ];
 
     return Transform.translate(
-      offset: const Offset(0, 38),
+      offset: const Offset(0, 32),
       child: LineChart(
         LineChartData(
           maxY: _highestAmount,
-          minY: _lowestAmount - _highestAmount / 2,
+          minY: _lowestAmount - _highestAmount / 3,
           minX: 1,
           maxX: widget.values.last.day.toDouble(),
           baselineY: 0,
