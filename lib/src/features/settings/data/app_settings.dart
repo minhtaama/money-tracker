@@ -118,7 +118,6 @@ class AppThemeData {
 
   /// __Light Mode:__
   /// * [ExtendedHomeTab]'s background
-  /// * [CustomLineChart] tooltip background
   ///
   /// __Dark Mode:__
   ///
@@ -126,7 +125,6 @@ class AppThemeData {
   final Color secondary1;
 
   /// __Light Mode:__
-  /// * [ExtendedHomeTab]'s background
   /// * [CustomLineChart] tooltip background
   ///
   /// __Dark Mode:__

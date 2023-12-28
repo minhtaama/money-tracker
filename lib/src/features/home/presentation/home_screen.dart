@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
-import 'package:money_tracker_app/src/features/home/presentation/summary_card.dart';
 import 'package:money_tracker_app/src/features/settings/data/settings_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';

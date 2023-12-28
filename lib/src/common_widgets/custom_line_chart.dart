@@ -155,7 +155,6 @@ class _CustomLineChartState extends State<CustomLineChart> {
         spots: widget.values.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList(),
         isCurved: true,
         isStrokeCapRound: true,
-        preventCurveOverShooting: true,
         barWidth: 4.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(

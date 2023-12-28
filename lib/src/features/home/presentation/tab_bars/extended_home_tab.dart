@@ -43,10 +43,6 @@ class ExtendedHomeTab extends StatelessWidget {
       children: [
         const _WelcomeText(),
         Gap.h16,
-        // TotalMoney(
-        //   showNumber: showNumber,
-        //   onEyeTap: onEyeTap,
-        // ),
         _MoneyCarousel(
           controller: carouselController,
           initialPageIndex: initialPageIndex,
@@ -56,11 +52,11 @@ class ExtendedHomeTab extends StatelessWidget {
           currentMonthView: displayDate,
           values: [
             // TODO: Make value dynamic
-            CLCData(day: 1, amount: 1500000),
-            CLCData(day: 8, amount: 1174627),
-            CLCData(day: 15, amount: 1398458),
-            CLCData(day: 23, amount: 700898),
-            CLCData(day: 31, amount: 2873483),
+            CLCData(day: 1, amount: 3500000),
+            CLCData(day: 8, amount: 2174627),
+            CLCData(day: 15, amount: 5398458),
+            CLCData(day: 23, amount: 4030898),
+            CLCData(day: 31, amount: 5873483),
           ],
         )),
         _DateSelector(
@@ -382,7 +378,7 @@ class _CarouselContent extends StatelessWidget {
                       ),
                     ),
                     EasyRichText(
-                      CalService.formatCurrency(context, amount),
+                      CalService.formatCurrency(context, amount, isAbs: true),
                       defaultStyle: kHeader3TextStyle.copyWith(
                           color: context.appTheme.isDarkTheme
                               ? context.appTheme.onBackground

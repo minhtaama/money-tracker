@@ -44,7 +44,7 @@ class BottomAppBarButton extends StatelessWidget {
             borderRadius: borderRadius,
             margin: EdgeInsets.zero,
             isGradient: isSelected ? (context.appTheme.isDarkTheme ? false : true) : false,
-            elevation: isSelected ? 1 : 0,
+            elevation: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,

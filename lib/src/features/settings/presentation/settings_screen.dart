@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
@@ -24,6 +25,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsController = ref.watch(settingsControllerProvider.notifier);
     final settingsObject = ref.watch(settingsControllerProvider);
+    final statusBarBrightness = ref.read(systemIconBrightnessProvider.notifier);
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
@@ -77,6 +79,7 @@ class SettingsScreen extends ConsumerWidget {
                 currentColorIndex: context.currentSettings.themeIndex,
                 onColorTap: (int value) {
                   settingsController.set(themeIndex: value);
+                  statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
                 },
               ),
               SettingTileToggle(
@@ -88,6 +91,9 @@ class SettingsScreen extends ConsumerWidget {
                 ],
                 onTap: (int index) {
                   settingsController.set(themeType: ThemeType.values[index]);
+                  SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+                    statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+                  });
                 },
                 valuesCount: ThemeType.values.length,
                 initialValueIndex: ThemeType.values.indexOf(settingsObject.themeType),
