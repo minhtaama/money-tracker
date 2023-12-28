@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 class AppColors {
   static List<Map<ThemeType, AppThemeData>> allThemeData = [
     _theme1,
+    _theme2,
   ];
 
   /// Each element has a type of [List<Color>],
@@ -82,6 +83,51 @@ class AppColors {
       onNegative: AppColors.black,
       systemIconBrightnessOnExtendedTabBar: Brightness.light,
       systemIconBrightnessOnSmallTabBar: Brightness.light,
+    ),
+  };
+
+  static final _theme2 = <ThemeType, AppThemeData>{
+    ThemeType.light: AppThemeData(
+      isDuoColor: true,
+      isDarkTheme: false,
+      primary: AppColors.lightestBlack,
+      secondary500: AppColors.white,
+      secondary600: AppColors.darkerWhite,
+      accent: AppColors.black.addWhite(0.1),
+      onPrimary: AppColors.white,
+      onSecondary: AppColors.black,
+      onAccent: AppColors.white,
+      background500: AppColors.white,
+      background600: AppColors.white,
+      background400: AppColors.white,
+      onBackground: AppColors.black,
+      positive: AppColors.black,
+      negative: AppColors.black,
+      onPositive: AppColors.white,
+      onNegative: AppColors.white,
+      systemIconBrightnessOnExtendedTabBar: Brightness.dark,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
+    ),
+    ThemeType.dark: AppThemeData(
+      isDuoColor: true,
+      isDarkTheme: true,
+      primary: AppColors.darkerWhite,
+      secondary500: AppColors.white,
+      secondary600: AppColors.darkerWhite,
+      accent: AppColors.white,
+      onPrimary: AppColors.black,
+      onSecondary: AppColors.black,
+      onAccent: AppColors.black,
+      background500: AppColors.black,
+      background600: AppColors.black,
+      background400: AppColors.lighterBlack,
+      onBackground: AppColors.white,
+      positive: AppColors.white,
+      negative: AppColors.white,
+      onPositive: AppColors.black,
+      onNegative: AppColors.black,
+      systemIconBrightnessOnExtendedTabBar: Brightness.dark,
+      systemIconBrightnessOnSmallTabBar: Brightness.dark,
     ),
   };
 
