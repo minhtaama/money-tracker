@@ -8,7 +8,8 @@ import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem(
+      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -29,7 +30,8 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -64,7 +66,8 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () {
@@ -146,7 +149,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             children: [
               ModalBarrier(
                 onDismiss: () => _removeEntry(overlayEntry),
-                color: context.appTheme.background500.withOpacity(0.5 * _animation.value),
+                color: context.appTheme.background1.withOpacity(0.5 * _animation.value),
               ),
               Positioned(
                 top: fabPosition.dy - overlayBoxHeight,
@@ -229,7 +232,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       child: RoundedIconButton(
         iconPath: AppIcons.add,
         iconColor: context.appTheme.onAccent,
-        backgroundColor: context.appTheme.accent,
+        backgroundColor: context.appTheme.accent2,
         size: double.infinity,
         onTap: _showOverlay,
       ),

@@ -45,7 +45,7 @@ class CalDisplay extends StatelessWidget {
                 patternList: [
                   EasyRichTextPattern(
                     targetString: '[\\+\\-*/]',
-                    style: kHeader1TextStyle.copyWith(color: context.appTheme.accent),
+                    style: kHeader1TextStyle.copyWith(color: context.appTheme.accent1),
                   ),
                 ],
               ),

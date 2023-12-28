@@ -41,7 +41,8 @@ class _ColorSelectListViewState extends State<ColorSelectListView> {
         scrollDirection: Axis.horizontal,
         itemCount: AppColors.allColorsUserCanPick.length,
         itemBuilder: (context, index) => Padding(
-          padding: EdgeInsets.only(right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
+          padding:
+              EdgeInsets.only(right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
           child: CircleColor(
               color: AppColors.allColorsUserCanPick[index][0],
               isSelected: currentColorIndex == index,
@@ -99,7 +100,7 @@ class CircleColor extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(1000),
-                  color: context.appTheme.background500.withOpacity(0.5),
+                  color: context.appTheme.background1.withOpacity(0.5),
                 ),
                 child: Transform.scale(
                   scale: 0.7,

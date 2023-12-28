@@ -81,7 +81,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                         elevation: 1.5,
                         isGradient: true,
                         borderRadius: BorderRadius.circular(100),
-                        color: widget.toggleColor ?? context.appTheme.accent,
+                        color: widget.toggleColor ?? context.appTheme.accent1,
                       ),
                     ),
                   ),
@@ -109,7 +109,8 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                                         fontSize: 19,
                                         color: currentValueIndex == index
                                             ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
-                                            : widget.labelsOnBackgroundColor ?? context.appTheme.onBackground,
+                                            : widget.labelsOnBackgroundColor ??
+                                                context.appTheme.onBackground,
                                       ),
                                     ),
                                   ),

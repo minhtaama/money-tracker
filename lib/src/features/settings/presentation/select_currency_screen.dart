@@ -18,7 +18,7 @@ class SelectCurrencyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: context.appTheme.background500,
+      backgroundColor: context.appTheme.background1,
       body: CustomTabPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(

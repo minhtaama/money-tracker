@@ -48,7 +48,7 @@ class DoneKey extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
-      color: context.appTheme.accent,
+      color: context.appTheme.accent1,
       width: 70,
       height: 70,
       padding: EdgeInsets.zero,

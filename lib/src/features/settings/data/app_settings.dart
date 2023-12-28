@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_line_chart.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 
 import '../../../utils/enums.dart';
@@ -102,13 +103,11 @@ class SettingsData {
 }
 
 class AppThemeData {
-  final bool isDuoColor;
   final bool isDarkTheme;
 
   /// __Light Mode:__
   /// * [CustomFloatingActionButton]'s background
   /// * [IncomeCard]'s background
-  /// * [BottomAppBarButton]'s color when selected
   /// * Colors of highlight in [DateTimeSelector] and [DateTimeSelectorCredit]
   ///
   /// __Dark Mode:__
@@ -119,31 +118,39 @@ class AppThemeData {
 
   /// __Light Mode:__
   /// * [ExtendedHomeTab]'s background
+  /// * [CustomLineChart] tooltip background
   ///
   /// __Dark Mode:__
-  /// * [BottomAppBarButton]'s text
   ///
-  final Color secondary500;
+  ///
+  final Color secondary1;
 
   /// __Light Mode:__
   /// * [ExtendedHomeTab]'s background
+  /// * [CustomLineChart] tooltip background
   ///
   /// __Dark Mode:__
-  /// * [BottomAppBarButton]'s text when selected
   ///
-  final Color secondary600;
+  ///
+  final Color secondary2;
 
   /// __Light Mode:__
-  /// * [ExpenseCard]'s background
   /// * [CustomLineChart]'s color
+  ///
   /// __Dark Mode:__
-  /// * [BottomAppBarButton]'s icons and text color
   /// * [CustomLineChart]'s color
-  final Color accent;
+  final Color accent1;
+
+  /// __Light Mode:__
+  /// * [CustomFloatingActionButton]'s background
+  ///
+  /// __Dark Mode:__
+  ///
+  ///
+  final Color accent2;
 
   /// __Light Mode:__
   /// * [CustomFloatingActionButton]'s icon
-  /// * [IncomeCard]'s text
   /// * [ExtendedHomeTab]'s text
   ///
   /// __Dark Mode:__
@@ -173,7 +180,7 @@ class AppThemeData {
   /// * [CardItem]'s default background
   /// * Modals background
   /// *
-  final Color background400;
+  final Color background0;
 
   /// __Light Mode:__
   /// * [ScaffoldWithBottomNavBar]'s color
@@ -187,14 +194,15 @@ class AppThemeData {
   /// * [SmallHomeTab]'s background color
   /// * [BottomAppBarWithFAB]'s background
   /// * System nav bar color
-  final Color background500;
+  final Color background1;
 
   /// __Light Mode:__
+  /// * [BottomAppBarButton]'s color when selected
   ///
   /// __DarkMode:__
   /// * [ExtendedHomeTab]'s background
   /// *
-  final Color background600;
+  final Color background2;
 
   /// __Both Light Mode and Dark Mode:__
   /// Colors of text on backgrounds
@@ -217,18 +225,18 @@ class AppThemeData {
   final Brightness systemIconBrightnessOnSmallTabBar;
 
   AppThemeData({
-    required this.isDuoColor,
     required this.isDarkTheme,
     required this.primary,
-    required this.secondary500,
-    required this.secondary600,
-    required this.accent,
+    required this.secondary1,
+    required this.secondary2,
+    required this.accent1,
+    required this.accent2,
     required this.onPrimary,
     required this.onSecondary,
     required this.onAccent,
-    required this.background500,
-    required this.background600,
-    required this.background400,
+    required this.background1,
+    required this.background2,
+    required this.background0,
     required this.onBackground,
     required this.positive,
     required this.onPositive,

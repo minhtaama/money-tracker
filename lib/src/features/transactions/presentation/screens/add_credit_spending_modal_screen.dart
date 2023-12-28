@@ -129,7 +129,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                       textAlign: TextAlign.end,
                       validator: (_) => _installmentPaymentValidator(),
                       formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
-                      focusColor: context.appTheme.secondary500,
+                      focusColor: context.appTheme.secondary1,
                       hintText: ''),
                 ),
               ],
@@ -194,7 +194,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
           Gap.h8,
           CustomTextFormField(
             autofocus: false,
-            focusColor: context.appTheme.accent,
+            focusColor: context.appTheme.accent1,
             withOutlineBorder: true,
             maxLines: 3,
             hintText: 'Note ...',

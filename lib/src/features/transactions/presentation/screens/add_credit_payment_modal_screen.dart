@@ -261,8 +261,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                         stateWatch.totalBalanceAmount.roundBySetting(context) -
                                                 stateWatch.userPaymentAmount!.roundBySetting(context) >
                                             0
-                                    ? CalService.formatCurrency(
-                                        context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                    ? CalService.formatCurrency(context,
+                                        stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                     : '???',
                                 textAlign: TextAlign.right,
                                 controller: _remainingInputController,
@@ -294,7 +294,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
           Gap.h4,
           CustomTextFormField(
             autofocus: false,
-            focusColor: context.appTheme.accent,
+            focusColor: context.appTheme.accent1,
             withOutlineBorder: true,
             maxLines: 3,
             hintText: 'Note ...',

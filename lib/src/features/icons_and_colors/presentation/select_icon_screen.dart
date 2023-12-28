@@ -35,12 +35,12 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appTheme.background500,
+      backgroundColor: context.appTheme.background1,
       floatingActionButton: IconWithTextButton(
         height: 60,
         iconPath: AppIcons.done,
         label: 'Choose',
-        backgroundColor: context.appTheme.accent,
+        backgroundColor: context.appTheme.accent1,
         color: context.appTheme.onAccent,
         // Returned value is here
         onTap: () => context.pop([currentCategory, currentIconIndex]),
@@ -66,7 +66,8 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
                     AppIcons.iconsWithCategories[keyList[keyIndex]]!.length,
                     (iconIndex) {
                       return CircleIcon(
-                        isSelected: currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
+                        isSelected:
+                            currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
                         onTap: (newIconCategory, newIconIndex) {
                           setState(
                             () {
@@ -92,7 +93,11 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
 
 class CircleIcon extends StatelessWidget {
   const CircleIcon(
-      {Key? key, required this.isSelected, required this.onTap, required this.iconCategory, required this.iconIndex})
+      {Key? key,
+      required this.isSelected,
+      required this.onTap,
+      required this.iconCategory,
+      required this.iconIndex})
       : super(key: key);
   final String iconCategory;
   final int iconIndex;
@@ -112,7 +117,7 @@ class CircleIcon extends StatelessWidget {
               height: double.infinity,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: context.appTheme.background400,
+                color: context.appTheme.background0,
                 borderRadius: BorderRadius.circular(1000),
                 border: Border.all(width: 2, color: AppColors.grey(context)),
               ),

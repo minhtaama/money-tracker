@@ -6,12 +6,11 @@ import '../data/app_settings.dart';
 
 class ColorPicker extends StatelessWidget {
   const ColorPicker(
-      {Key? key,
+      {super.key,
       required this.colorsList,
       required this.onColorTap,
       required this.currentColorIndex,
-      required this.currentThemeType})
-      : super(key: key);
+      required this.currentThemeType});
   final ThemeType currentThemeType;
   final List<Map<ThemeType, AppThemeData>> colorsList;
   final ValueChanged<int> onColorTap;
@@ -25,9 +24,7 @@ class ColorPicker extends StatelessWidget {
         spacing: 15,
         children: List.generate(colorsList.length, (index) {
           return CircleColor(
-            color1: colorsList[index][currentThemeType]!.accent,
-            color2:
-                colorsList[index][currentThemeType]!.isDuoColor ? colorsList[index][currentThemeType]!.primary : null,
+            color: colorsList[index][currentThemeType]!.accent1,
             isSelected: currentColorIndex == index,
             onTap: onColorTap,
             index: index,
@@ -40,11 +37,13 @@ class ColorPicker extends StatelessWidget {
 
 class CircleColor extends StatelessWidget {
   const CircleColor(
-      {Key? key, required this.color1, this.color2, required this.isSelected, required this.onTap, required this.index})
-      : super(key: key);
+      {super.key,
+      required this.color,
+      required this.isSelected,
+      required this.onTap,
+      required this.index});
   final int index;
-  final Color color1;
-  final Color? color2;
+  final Color color;
   final bool isSelected;
   final ValueChanged<int> onTap;
 
@@ -61,15 +60,7 @@ class CircleColor extends StatelessWidget {
               height: double.infinity,
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: color2 != null
-                    ? LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [color1, color2!],
-                        stops: const [0.5, 0.5],
-                      )
-                    : null,
-                color: color2 != null ? null : color1,
+                color: color,
                 borderRadius: BorderRadius.circular(1000),
               ),
             ),
@@ -81,11 +72,11 @@ class CircleColor extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(1000),
-                  color: context.appTheme.background500.withOpacity(0.5),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.done,
                   size: 30,
+                  color: context.appTheme.onAccent,
                 ),
               ),
             )

@@ -68,7 +68,8 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
 }
 
 class _AnimatedToggle extends StatelessWidget {
-  const _AnimatedToggle({Key? key, required this.currentValueIndex, this.valuesCount = 2}) : super(key: key);
+  const _AnimatedToggle({Key? key, required this.currentValueIndex, this.valuesCount = 2})
+      : super(key: key);
 
   final int currentValueIndex;
 
@@ -78,7 +79,7 @@ class _AnimatedToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOn = currentValueIndex != 0;
-    final bgrColor = isOn ? context.appTheme.accent : Colors.grey;
+    final bgrColor = isOn ? context.appTheme.accent1 : Colors.grey;
     final togglePosition = currentValueIndex / (valuesCount - 1);
     const double widthRatio = 1.7;
     const double size = 30;
@@ -107,7 +108,7 @@ class _AnimatedToggle extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(1000),
                     //border: Border.all(color: bgrColor, width: 4),
-                    color: context.appTheme.background500,
+                    color: context.appTheme.background1,
                   ),
                 ),
               ),

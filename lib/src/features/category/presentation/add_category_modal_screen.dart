@@ -94,7 +94,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
             child: IconWithTextButton(
               iconPath: AppIcons.add,
               label: 'Create',
-              backgroundColor: context.appTheme.accent,
+              backgroundColor: context.appTheme.accent1,
               isDisabled: categoryName == '',
               onTap: () {
                 if (_formKey.currentState!.validate()) {

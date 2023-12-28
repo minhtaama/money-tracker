@@ -20,7 +20,7 @@ class SmallTabBar extends StatelessWidget {
         padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
         margin: EdgeInsets.zero,
         height: height + Gap.statusBarHeight(context),
-        color: context.appTheme.background500,
+        color: context.appTheme.background1,
         child: child,
       ),
     );

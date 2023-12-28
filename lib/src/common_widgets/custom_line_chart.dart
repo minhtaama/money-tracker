@@ -123,7 +123,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       final dotData = FlDotData(
         getDotPainter: (spot, percent, bar, _) => FlDotCirclePainter(
           radius: 8,
-          color: context.appTheme.accent.addDark(0.1),
+          color: context.appTheme.accent1.addDark(0.1),
           strokeColor: Colors.transparent,
         ),
       );
@@ -143,8 +143,8 @@ class _CustomLineChartState extends State<CustomLineChart> {
         tooltipHorizontalAlignment: FLHorizontalAlignment.center,
         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         tooltipBgColor: context.appTheme.isDarkTheme
-            ? context.appTheme.background400.withOpacity(0.8)
-            : context.appTheme.secondary600.withOpacity(0.8),
+            ? context.appTheme.background0.withOpacity(0.8)
+            : context.appTheme.secondary2.withOpacity(0.8),
         getTooltipItems: _lineTooltipItem,
       ),
       getTouchedSpotIndicator: _touchedIndicators,
@@ -159,17 +159,17 @@ class _CustomLineChartState extends State<CustomLineChart> {
         barWidth: 4.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
-                color: context.appTheme.accent,
+                color: context.appTheme.accent1,
                 blurRadius: 50,
               )
             : const Shadow(color: Colors.transparent),
-        color: context.appTheme.accent,
+        color: context.appTheme.accent1,
         belowBarData: BarAreaData(
           show: true,
           gradient: LinearGradient(
             colors: [
-              context.appTheme.accent.withOpacity(0.65),
-              context.appTheme.accent.withOpacity(0.3),
+              context.appTheme.accent1.withOpacity(0.65),
+              context.appTheme.accent1.withOpacity(0.3),
             ],
             stops: const [0.3, 1],
           ),

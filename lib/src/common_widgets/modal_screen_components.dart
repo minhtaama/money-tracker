@@ -43,7 +43,8 @@ class TextHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
+      style: kHeader2TextStyle.copyWith(
+          fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
     );
   }
 }
@@ -79,7 +80,7 @@ class BottomButtons extends StatelessWidget {
         IconWithTextButton(
           iconPath: bigButtonIcon ?? AppIcons.add,
           label: bigButtonLabel ?? 'Add',
-          backgroundColor: context.appTheme.accent,
+          backgroundColor: context.appTheme.accent1,
           isDisabled: isBigButtonDisabled,
           onTap: onBigButtonTap,
         ),

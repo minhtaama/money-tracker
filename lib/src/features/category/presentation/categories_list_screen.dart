@@ -68,7 +68,7 @@ class CategoriesListScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: context.appTheme.background500,
+      backgroundColor: context.appTheme.background1,
       body: CustomTabPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
@@ -77,7 +77,7 @@ class CategoriesListScreen extends ConsumerWidget {
             trailing: RoundedIconButton(
               iconPath: AppIcons.add,
               iconColor: context.appTheme.onBackground,
-              backgroundColor: context.appTheme.background400,
+              backgroundColor: context.appTheme.background0,
               onTap: () => context.push(RoutePath.addCategory),
             ),
           ),

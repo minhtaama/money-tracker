@@ -269,8 +269,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             decoration: BoxDecoration(
               color: widget.extendedTabBar?.backgroundColor ??
                   (context.appTheme.isDarkTheme
-                      ? context.appTheme.background600
-                      : context.appTheme.secondary500),
+                      ? context.appTheme.background2
+                      : context.appTheme.secondary1),
             ),
             margin: EdgeInsets.zero,
             padding: EdgeInsets.only(
@@ -300,7 +300,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             return Container(
               height: Gap.screenHeight(context),
               decoration: BoxDecoration(
-                  color: context.appTheme.background500,
+                  color: context.appTheme.background1,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(25),
                     topRight: Radius.circular(25),

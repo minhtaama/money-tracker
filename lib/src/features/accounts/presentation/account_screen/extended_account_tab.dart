@@ -85,7 +85,7 @@ class _StatementSelector extends StatelessWidget {
         height: 70,
         padding: const EdgeInsets.only(top: 10),
         decoration: BoxDecoration(
-          color: context.appTheme.background400,
+          color: context.appTheme.background0,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),

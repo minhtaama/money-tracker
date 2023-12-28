@@ -240,7 +240,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             child: IconWithTextButton(
               iconPath: AppIcons.add,
               label: 'Create',
-              backgroundColor: context.appTheme.accent,
+              backgroundColor: context.appTheme.accent1,
               isDisabled: accountName.isEmpty || CalService.formatToDouble(calculatorOutput) == null,
               onTap: _submit,
             ),

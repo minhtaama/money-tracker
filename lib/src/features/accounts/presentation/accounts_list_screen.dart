@@ -75,7 +75,8 @@ class AccountsListScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   model.name,
-                                  style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
+                                  style:
+                                      kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -90,7 +91,8 @@ class AccountsListScreen extends ConsumerWidget {
                                         ),
                                         child: Text(
                                           'Credit',
-                                          style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
+                                          style: kHeader4TextStyle.copyWith(
+                                              color: model.backgroundColor, fontSize: 12),
                                         ),
                                       )
                                     : Gap.noGap,
@@ -138,7 +140,7 @@ class AccountsListScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: context.appTheme.background500,
+      backgroundColor: context.appTheme.background1,
       body: CustomTabPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
@@ -147,7 +149,7 @@ class AccountsListScreen extends ConsumerWidget {
             trailing: RoundedIconButton(
               iconPath: AppIcons.add,
               iconColor: context.appTheme.onBackground,
-              backgroundColor: context.appTheme.background400,
+              backgroundColor: context.appTheme.background0,
               onTap: () => context.push(RoutePath.addAccount),
             ),
           ),

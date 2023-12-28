@@ -18,10 +18,10 @@ class SummaryCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: CardItem(
         color: context.appTheme.isDarkTheme
-            ? context.appTheme.background400
+            ? context.appTheme.background0
             : isIncome
                 ? context.appTheme.primary
-                : context.appTheme.accent,
+                : context.appTheme.accent1,
         isGradient: true,
         width: double.infinity,
         height: 100,

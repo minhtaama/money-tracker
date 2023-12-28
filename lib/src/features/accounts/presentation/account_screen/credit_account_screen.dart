@@ -95,7 +95,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appTheme.background500,
+      backgroundColor: context.appTheme.background1,
       floatingActionButton: CustomFloatingActionButton(
         roundedButtonItems: [
           FABItem(
@@ -427,8 +427,8 @@ class _ListState extends State<_List> {
   void _addHToday(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        color: context.appTheme.accent.addDark(0.1),
-        dateBgColor: context.appTheme.accent,
+        color: context.appTheme.accent1.addDark(0.1),
+        dateBgColor: context.appTheme.accent1,
         dateColor: context.appTheme.onAccent,
         dateTime: _today,
         h1: 'Today',

@@ -103,7 +103,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             IconWithTextButton(
               iconPath: AppIcons.edit,
               label: 'Done',
-              backgroundColor: context.appTheme.accent,
+              backgroundColor: context.appTheme.accent1,
               onTap: () async {
                 final categoryRepository = ref.read(categoryRepositoryRealmProvider);
                 categoryRepository.edit(

@@ -90,7 +90,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
               IconWithTextButton(
                 iconPath: AppIcons.edit,
                 label: 'Done',
-                backgroundColor: context.appTheme.accent,
+                backgroundColor: context.appTheme.accent1,
                 onTap: () {
                   categoryRepo.editTag(widget.tag, name: _newName);
                   context.pop();

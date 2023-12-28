@@ -50,7 +50,7 @@ class DayCard extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: dateTime.weekday == 6 || dateTime.weekday == 7
-                        ? context.appTheme.accent
+                        ? context.appTheme.accent1
                         : AppColors.greyBgr(context),
                     borderRadius: BorderRadius.circular(8),
                     border: dateTime.year == DateTime.now().year &&
@@ -85,7 +85,8 @@ class DayCard extends StatelessWidget {
                     ),
                     Text(
                       dateTime.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
+                      style:
+                          kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],

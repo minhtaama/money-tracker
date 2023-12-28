@@ -97,7 +97,7 @@ class _DateSelector extends StatelessWidget {
         height: 53,
         padding: const EdgeInsets.only(top: 10),
         decoration: BoxDecoration(
-          color: context.appTheme.background400,
+          color: context.appTheme.background0,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),

@@ -26,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
     final settingsObject = ref.watch(settingsControllerProvider);
 
     return Scaffold(
-      backgroundColor: context.appTheme.background500,
+      backgroundColor: context.appTheme.background1,
       body: CustomTabPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
