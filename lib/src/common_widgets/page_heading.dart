@@ -33,7 +33,7 @@ class PageHeading extends StatelessWidget {
             hasBackButton
                 ? RoundedIconButton(
                     iconPath: AppIcons.back,
-                    iconColor: context.appTheme.backgroundNegative,
+                    iconColor: context.appTheme.onBackground,
                     onTap: () => context.pop(),
                   )
                 : const SizedBox(),
@@ -50,15 +50,14 @@ class PageHeading extends StatelessWidget {
                                   Text(
                                     leadingTitle!,
                                     style: kHeader4TextStyle.copyWith(
-                                        color: context.appTheme.backgroundNegative,
-                                        fontSize: kHeader1TextStyle.fontSize),
+                                        color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
                                   ),
                                   Gap.w8,
                                   Expanded(
                                     child: Text(
                                       title,
                                       style: kHeader1TextStyle.copyWith(
-                                        color: context.appTheme.backgroundNegative,
+                                        color: context.appTheme.onBackground,
                                       ),
                                     ),
                                   ),
@@ -67,13 +66,13 @@ class PageHeading extends StatelessWidget {
                             : Text(
                                 title,
                                 style: kHeader1TextStyle.copyWith(
-                                  color: context.appTheme.backgroundNegative,
+                                  color: context.appTheme.onBackground,
                                 ),
                               ),
                         Text(
                           secondaryTitle!,
                           style: kHeader4TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative.withOpacity(0.8),
+                            color: context.appTheme.onBackground.withOpacity(0.8),
                           ),
                         ),
                         Gap.h8,
@@ -82,7 +81,7 @@ class PageHeading extends StatelessWidget {
                   : Text(
                       title,
                       style: kHeader1TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative,
+                        color: context.appTheme.onBackground,
                       ),
                     ),
             ),

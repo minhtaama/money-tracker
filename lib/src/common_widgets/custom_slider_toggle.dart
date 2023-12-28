@@ -108,8 +108,8 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                                       style: kHeader2TextStyle.copyWith(
                                         fontSize: 19,
                                         color: currentValueIndex == index
-                                            ? widget.labelsOnToggleColor ?? context.appTheme.accentNegative
-                                            : widget.labelsOnBackgroundColor ?? context.appTheme.backgroundNegative,
+                                            ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
+                                            : widget.labelsOnBackgroundColor ?? context.appTheme.onBackground,
                                       ),
                                     ),
                                   ),

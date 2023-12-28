@@ -95,7 +95,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appTheme.background,
+      backgroundColor: context.appTheme.background500,
       floatingActionButton: CustomFloatingActionButton(
         roundedButtonItems: [
           FABItem(
@@ -108,7 +108,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           FABItem(
             icon: AppIcons.statementCheckpoint,
             label: 'Checkpoint'.hardcoded,
-            color: context.appTheme.backgroundNegative,
+            color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
             onTap: () => showCustomModalBottomSheet(
                 context: context, child: AddCreditCheckpointModalScreen(account: widget.creditAccount)),
@@ -126,29 +126,28 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
       body: CustomTabPageWithPageView(
         controller: _controller,
         smallTabBar: SmallTabBar(
-            child: PageHeading(
-          title: widget.creditAccount.name,
-          hasBackButton: true,
-        )),
-        extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor,
-          innerChild: ExtendedAccountTab(
-            account: widget.creditAccount,
+          child: PageHeading(
+            title: widget.creditAccount.name,
+            hasBackButton: true,
           ),
-          outerChild: StatementSelector(
+        ),
+        extendedTabBar: ExtendedTabBar(
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedAccountTab(
+            account: widget.creditAccount,
             dateDisplay: _displayStatementDate.getFormattedDate(type: DateTimeType.ddmmyyyy),
             onTapLeft: _previousPage,
             onTapRight: _nextPage,
             onTapGoToCurrentDate: () {
               _animatedToPage(_initialPageIndex);
             },
-            showGoToCurrentDateButton: _showCurrentDateButton,
           ),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
-        itemBuilder: (context, pageIndex) {
+        itemBuilder: (context, ref, pageIndex) {
           final today = DateTime(
               _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
           final Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
@@ -407,7 +406,7 @@ class _ListState extends State<_List> {
             : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
         color: context.appTheme.primary,
-        dateColor: context.appTheme.primaryNegative,
+        dateColor: context.appTheme.onPrimary,
       ),
     );
   }
@@ -430,7 +429,7 @@ class _ListState extends State<_List> {
       _Header(
         color: context.appTheme.accent.addDark(0.1),
         dateBgColor: context.appTheme.accent,
-        dateColor: context.appTheme.accentNegative,
+        dateColor: context.appTheme.onAccent,
         dateTime: _today,
         h1: 'Today',
       ),
@@ -464,8 +463,8 @@ class _SummaryCard extends StatelessWidget {
                     text,
                     style: kHeader3TextStyle.copyWith(
                       color: context.appTheme.isDarkTheme
-                          ? context.appTheme.backgroundNegative
-                          : context.appTheme.secondaryNegative,
+                          ? context.appTheme.onBackground
+                          : context.appTheme.onSecondary,
                       fontSize: 15,
                     ),
                   ),
@@ -480,8 +479,8 @@ class _SummaryCard extends StatelessWidget {
                         : color > 0
                             ? context.appTheme.positive
                             : context.appTheme.isDarkTheme
-                                ? context.appTheme.backgroundNegative
-                                : context.appTheme.secondaryNegative,
+                                ? context.appTheme.onBackground
+                                : context.appTheme.onSecondary,
                     fontSize: 15,
                   ),
                   textAlign: TextAlign.right,
@@ -495,8 +494,8 @@ class _SummaryCard extends StatelessWidget {
                             : color > 0
                                 ? context.appTheme.positive
                                 : context.appTheme.isDarkTheme
-                                    ? context.appTheme.backgroundNegative
-                                    : context.appTheme.secondaryNegative,
+                                    ? context.appTheme.onBackground
+                                    : context.appTheme.onSecondary,
                         fontSize: 15,
                       ),
                     ),
@@ -509,8 +508,8 @@ class _SummaryCard extends StatelessWidget {
                             : color > 0
                                 ? context.appTheme.positive
                                 : context.appTheme.isDarkTheme
-                                    ? context.appTheme.backgroundNegative
-                                    : context.appTheme.secondaryNegative,
+                                    ? context.appTheme.onBackground
+                                    : context.appTheme.onSecondary,
                         fontSize: 15,
                       ),
                     ),
@@ -522,8 +521,8 @@ class _SummaryCard extends StatelessWidget {
                             : color > 0
                                 ? context.appTheme.positive
                                 : context.appTheme.isDarkTheme
-                                    ? context.appTheme.backgroundNegative
-                                    : context.appTheme.secondaryNegative,
+                                    ? context.appTheme.onBackground
+                                    : context.appTheme.onSecondary,
                         fontSize: 15,
                       ),
                     ),

@@ -26,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
     final settingsObject = ref.watch(settingsControllerProvider);
 
     return Scaffold(
-      backgroundColor: context.appTheme.background,
+      backgroundColor: context.appTheme.background500,
       body: CustomTabPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
@@ -42,18 +42,18 @@ class SettingsScreen extends ConsumerWidget {
               secondaryTitleOverflow: true,
               leading: SvgIcon(
                 AppIcons.coins,
-                color: context.appTheme.backgroundNegative,
+                color: context.appTheme.onBackground,
               ),
               trailing: Row(
                 children: [
                   Text(
                     settingsObject.currency.code,
-                    style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
                   ),
                   Gap.w8,
                   SvgIcon(
                     AppIcons.arrowRight,
-                    color: context.appTheme.backgroundNegative,
+                    color: context.appTheme.onBackground,
                   ),
                 ],
               ),

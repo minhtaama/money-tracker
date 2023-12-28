@@ -30,8 +30,7 @@ class CalDisplay extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 previousExpression,
-                style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.backgroundNegative.withOpacity(0.6)),
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6)),
                 textAlign: TextAlign.right,
               ),
             ),
@@ -41,7 +40,7 @@ class CalDisplay extends StatelessWidget {
               reverse: true,
               child: EasyRichText(
                 result,
-                defaultStyle: kHeader1TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                defaultStyle: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground),
                 textAlign: TextAlign.right,
                 patternList: [
                   EasyRichTextPattern(

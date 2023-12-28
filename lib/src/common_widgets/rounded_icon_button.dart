@@ -17,12 +17,14 @@ class RoundedIconButton extends StatelessWidget {
     this.iconPadding = 12,
     this.onTap,
     this.iconColor,
+    this.inkColor,
   });
 
   final String iconPath;
   final String? label;
   final Color? backgroundColor;
   final Color? iconColor;
+  final Color? inkColor;
   final double? size;
   final double? labelSize;
   final double iconPadding;
@@ -52,7 +54,7 @@ class RoundedIconButton extends StatelessWidget {
                     child: CustomInkWell(
                       onTap: onTap,
                       borderRadius: BorderRadius.circular(10000),
-                      inkColor: iconColor ?? context.appTheme.primaryNegative,
+                      inkColor: inkColor ?? iconColor ?? context.appTheme.onPrimary,
                       child: Padding(
                         padding: EdgeInsets.all(iconPadding),
                         child: FittedBox(
@@ -70,7 +72,7 @@ class RoundedIconButton extends StatelessWidget {
                   child: Text(
                     label!,
                     style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative,
+                      color: context.appTheme.onBackground,
                       fontSize: labelSize ?? (size != null ? size! / 4 : 20),
                     ),
                     textAlign: TextAlign.center,

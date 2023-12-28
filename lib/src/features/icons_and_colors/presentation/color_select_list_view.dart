@@ -99,7 +99,7 @@ class CircleColor extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(1000),
-                  color: context.appTheme.background.withOpacity(0.5),
+                  color: context.appTheme.background500.withOpacity(0.5),
                 ),
                 child: Transform.scale(
                   scale: 0.7,

@@ -52,7 +52,7 @@ class IconWithTextButton extends StatelessWidget {
       isGradient: true,
       child: CustomInkWell(
         onTap: onTap,
-        inkColor: color ?? context.appTheme.primaryNegative,
+        inkColor: color ?? context.appTheme.onPrimary,
         child: Padding(
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),
           child: IntrinsicWidth(
@@ -61,7 +61,7 @@ class IconWithTextButton extends StatelessWidget {
               children: [
                 SvgIcon(
                   iconPath,
-                  color: isDisabled ? context.appTheme.backgroundNegative : color ?? context.appTheme.accentNegative,
+                  color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
                   size: iconSize ?? 30,
                 ),
                 Gap.w8,
@@ -70,8 +70,7 @@ class IconWithTextButton extends StatelessWidget {
                     child: Text(
                       label,
                       style: kHeader2TextStyle.copyWith(
-                        color:
-                            isDisabled ? context.appTheme.backgroundNegative : color ?? context.appTheme.accentNegative,
+                        color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
                         fontSize: labelSize,
                       ),
                     ),

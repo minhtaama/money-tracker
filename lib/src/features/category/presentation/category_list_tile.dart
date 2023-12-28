@@ -43,14 +43,14 @@ class CategoryListTile extends StatelessWidget {
         Expanded(
           child: Text(
             name,
-            style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
           ),
         ),
         Gap.w8,
         RoundedIconButton(
           iconPath: AppIcons.edit,
           backgroundColor: Colors.transparent,
-          iconColor: context.appTheme.backgroundNegative,
+          iconColor: context.appTheme.onBackground,
           onTap: onMenuTap,
         ),
       ],

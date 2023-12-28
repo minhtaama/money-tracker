@@ -26,7 +26,7 @@ class CurrencyIcon extends StatelessWidget {
         child: Text(
           context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,
           style: kHeader1TextStyle.copyWith(
-            color: context.appTheme.backgroundNegative,
+            color: context.appTheme.onBackground,
           ),
         ),
       ),
@@ -43,8 +43,7 @@ class TextHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: kHeader2TextStyle.copyWith(
-          fontSize: fontSize, color: context.appTheme.backgroundNegative.withOpacity(0.5)),
+      style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
     );
   }
 }
@@ -72,7 +71,7 @@ class BottomButtons extends StatelessWidget {
         RoundedIconButton(
           iconPath: smallButtonIcon ?? AppIcons.back,
           backgroundColor: context.appTheme.primary,
-          iconColor: context.appTheme.primaryNegative,
+          iconColor: context.appTheme.onPrimary,
           size: 55,
           onTap: onSmallButtonTap ?? () => context.pop(),
         ),

@@ -8,8 +8,7 @@ import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem(
-      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -30,8 +29,7 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
-    with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -66,8 +64,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment:
-                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () {
@@ -75,7 +72,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     _removeEntry(overlayEntry);
                   },
                   iconPath: widget.roundedButtonItems[index].icon,
-                  iconColor: context.appTheme.backgroundNegative,
+                  iconColor: context.appTheme.onBackground,
                   label: widget.roundedButtonItems[index].label,
                   backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
                   size: overlayBoxWidth / 5.5,
@@ -103,10 +100,10 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     label: widget.listItems![index].label,
                     padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
                     labelSize: 15,
-                    color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                    color: context.appTheme.onBackground.withOpacity(0.5),
                     backgroundColor: Colors.transparent,
                     border: Border.all(
-                      color: context.appTheme.backgroundNegative.withOpacity(0.4),
+                      color: context.appTheme.onBackground.withOpacity(0.4),
                       width: 1.5,
                     ),
                   ),
@@ -149,7 +146,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             children: [
               ModalBarrier(
                 onDismiss: () => _removeEntry(overlayEntry),
-                color: context.appTheme.background.withOpacity(0.5 * _animation.value),
+                color: context.appTheme.background500.withOpacity(0.5 * _animation.value),
               ),
               Positioned(
                 top: fabPosition.dy - overlayBoxHeight,
@@ -231,7 +228,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       backgroundColor: Colors.transparent,
       child: RoundedIconButton(
         iconPath: AppIcons.add,
-        iconColor: context.appTheme.accentNegative,
+        iconColor: context.appTheme.onAccent,
         backgroundColor: context.appTheme.accent,
         size: double.infinity,
         onTap: _showOverlay,

@@ -30,7 +30,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
   late final settingsController = ref.read(settingsControllerProvider.notifier);
 
-  late final PageController _controller = PageController(initialPage: _initialPageIndex);
+  late final PageController _pageController = PageController(initialPage: _initialPageIndex);
+  late final PageController _carouselController =
+      PageController(initialPage: _initialPageIndex, viewportFraction: 0.55);
 
   late final DateTime _today = DateTime.now().onlyYearMonth;
   late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
@@ -38,38 +40,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   //late int _currentPageIndex = _initialPageIndex;
   late DateTime _displayDate = _today;
 
-  bool _showCurrentDateButton = false;
-
   // TODO: filter
   // DateTime? _minDate;
   //
   // DateTime? _maxDate;
 
   void _onPageChange(int value) {
-    _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
-    //_currentPageIndex = value;
-    _isShowGoToCurrentDateButton();
-    setState(() {});
+    _carouselController.animateToPage(value, duration: k250msDuration, curve: Curves.easeOut);
+    setState(() {
+      _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
+    });
   }
 
   void _previousPage() {
-    _controller.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+    _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
   }
 
   void _nextPage() {
-    _controller.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+    _pageController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
   }
 
   void _animatedToPage(int page) {
-    _controller.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-  }
-
-  void _isShowGoToCurrentDateButton() {
-    if (_displayDate.year == _today.year && _displayDate.month == _today.month) {
-      _showCurrentDateButton = false;
-    } else {
-      _showCurrentDateButton = true;
-    }
+    _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+    _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
   }
 
   List<Widget> _buildTransactionWidgetList(
@@ -116,7 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     bool showTotalBalance = context.currentSettings.showBalanceInHomeScreen;
 
     return CustomTabPageWithPageView(
-      controller: _controller,
+      controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
           secondaryTitle: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
@@ -128,50 +123,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       extendedTabBar: ExtendedTabBar(
-        innerChild: ExtendedHomeTab(
+        child: ExtendedHomeTab(
+          initialPageIndex: _initialPageIndex,
+          displayDate: _displayDate,
+          carouselController: _carouselController,
           showNumber: showTotalBalance,
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onDateTap: () => _animatedToPage(_initialPageIndex),
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
             settingsController.set(showBalanceInHomeScreen: showTotalBalance);
           },
         ),
-        outerChild: DateSelector(
-          dateDisplay: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-          onTapLeft: _previousPage,
-          onTapRight: _nextPage,
-          onTapGoToCurrentDate: () {
-            _animatedToPage(_initialPageIndex);
-          },
-          showGoToCurrentDateButton: _showCurrentDateButton,
-        ),
       ),
       onDragLeft: _previousPage,
       onDragRight: _nextPage,
       onPageChanged: _onPageChange,
-      itemBuilder: (context, pageIndex) {
+      itemBuilder: (context, ref, pageIndex) {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
         List<BaseTransaction> transactionList =
             transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
 
-        ref.listenManual(databaseChangesRealmProvider, (_, __) {
+        ref.listen(
+            transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+            (_, __) {
           transactionList = transactionRepository.getAll(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });
 
-        return [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                Expanded(child: SummaryCard(isIncome: true)),
-                Expanded(child: SummaryCard(isIncome: false)),
-              ],
-            ),
-          ),
-          ..._buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth),
-        ];
+        return _buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth);
       },
     );
   }

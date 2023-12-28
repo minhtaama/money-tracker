@@ -1,16 +1,14 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../utils/constants.dart';
-import '../card_item.dart';
 
 class SmallTabBar extends StatelessWidget {
   const SmallTabBar({
-    Key? key,
+    super.key,
     required this.child,
     this.height = kCustomTabBarHeight,
     this.systemIconBrightness,
-  }) : super(key: key);
+  });
   final Widget child;
   final double height;
   final Brightness? systemIconBrightness;
@@ -18,68 +16,32 @@ class SmallTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
-        child: Container(
-          padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
-          margin: EdgeInsets.zero,
-          height: height + Gap.statusBarHeight(context),
-          color: context.appTheme.background.withOpacity(context.appTheme.isDarkTheme ? 0.7 : 0.5),
-          child: child,
-        ),
+      child: Container(
+        padding: EdgeInsets.only(left: 16, right: 16, top: Gap.statusBarHeight(context)),
+        margin: EdgeInsets.zero,
+        height: height + Gap.statusBarHeight(context),
+        color: context.appTheme.background500,
+        child: child,
       ),
     );
   }
 }
 
-class ExtendedTabBar extends StatefulWidget {
+class ExtendedTabBar extends StatelessWidget {
   const ExtendedTabBar({
     super.key,
     this.backgroundColor,
-    required this.innerChild,
-    this.outerChild,
-    this.height = kExtendedCustomTabBarHeight,
-    this.outerChildHeight = kExtendedTabBarOuterChildHeight,
+    required this.child,
+    this.height = kExtendedCustomTabBarHeight + 20,
     this.systemIconBrightness,
   });
   final Color? backgroundColor;
-  final Widget innerChild;
-  final Widget? outerChild;
+  final Widget child;
   final double height;
-  final double outerChildHeight;
   final Brightness? systemIconBrightness;
 
   @override
-  State<ExtendedTabBar> createState() => _ExtendedTabBarState();
-}
-
-class _ExtendedTabBarState extends State<ExtendedTabBar> {
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.height + Gap.statusBarHeight(context),
-      child: Stack(
-        children: [
-          CardItem(
-            width: double.infinity,
-            height: widget.height + Gap.statusBarHeight(context) - widget.outerChildHeight / 2,
-            isGradient: context.appTheme.isDarkTheme ? false : true,
-            color: widget.backgroundColor ??
-                (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary),
-            margin: EdgeInsets.zero,
-            borderRadius: BorderRadius.zero,
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              bottom: widget.outerChild != null ? 22.0 : 0,
-              top: Gap.statusBarHeight(context),
-            ),
-            elevation: context.appTheme.isDarkTheme ? 0 : 1,
-            child: widget.innerChild,
-          ),
-          Align(alignment: Alignment.bottomCenter, child: widget.outerChild),
-        ],
-      ),
-    );
+    return child;
   }
 }

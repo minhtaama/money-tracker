@@ -66,8 +66,7 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
 
     Offset helpBoxOffset() {
       double dx = buttonOffset.dx - helpBoxWidth / 2; // Makes center of help box sames as button
-      double dy =
-          buttonOffset.dy - helpBoxHeight - 10; // Make center of help box same as top-center of button
+      double dy = buttonOffset.dy - helpBoxHeight - 10; // Make center of help box same as top-center of button
 
       if (helpBoxWidth / 2 >= Gap.screenWidth(context) - buttonOffset.dx) {
         double offset = helpBoxWidth / 2 - (Gap.screenWidth(context) - buttonOffset.dx);
@@ -103,9 +102,7 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
               ),
               Positioned(
                 left: buttonOffset.dx,
-                top: _showBoxUnderButton
-                    ? buttonOffset.dy + buttonSize.height + 10
-                    : buttonOffset.dy - 10,
+                top: _showBoxUnderButton ? buttonOffset.dy + buttonSize.height + 10 : buttonOffset.dy - 10,
                 child: Opacity(
                   opacity: _animation.value,
                   child: _Arrow(_showBoxUnderButton),
@@ -202,16 +199,14 @@ class _HelpBox extends StatelessWidget {
                 title != null
                     ? Text(
                         title!,
-                        style: kHeader2TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative, fontSize: 14),
+                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                         textAlign: TextAlign.left,
                       )
                     : Gap.noGap,
                 title != null ? Gap.h4 : Gap.noGap,
                 Text(
                   text,
-                  style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.backgroundNegative, fontSize: 14),
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                   textAlign: TextAlign.left,
                 ),
               ],

@@ -18,7 +18,7 @@ class SummaryCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: CardItem(
         color: context.appTheme.isDarkTheme
-            ? context.appTheme.background3
+            ? context.appTheme.background400
             : isIncome
                 ? context.appTheme.primary
                 : context.appTheme.accent,
@@ -29,10 +29,10 @@ class SummaryCard extends StatelessWidget {
           isIncome ? 'Income' : 'Expense',
           style: kHeader2TextStyle.copyWith(
               color: context.appTheme.isDarkTheme
-                  ? context.appTheme.backgroundNegative
+                  ? context.appTheme.onBackground
                   : isIncome
-                      ? context.appTheme.primaryNegative
-                      : context.appTheme.accentNegative,
+                      ? context.appTheme.onPrimary
+                      : context.appTheme.onAccent,
               fontSize: 20),
         ),
       ),

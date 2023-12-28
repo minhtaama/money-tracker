@@ -51,7 +51,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
               child: Text(
                 '#',
                 style: kHeader3TextStyle.copyWith(
-                  color: context.appTheme.backgroundNegative.withOpacity(0.5),
+                  color: context.appTheme.onBackground.withOpacity(0.5),
                   fontSize: 20,
                 ),
               ),
@@ -74,7 +74,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                 iconPath: AppIcons.delete,
                 iconPadding: 15,
                 backgroundColor: AppColors.grey(context),
-                iconColor: context.appTheme.backgroundNegative,
+                iconColor: context.appTheme.onBackground,
                 onTap: () {
                   showConfirmModalBottomSheet(
                     context: context,

@@ -46,7 +46,7 @@ class MoneyTrackerApp extends ConsumerWidget {
       child: Builder(
         builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
-            systemNavigationBarColor: context.appTheme.background,
+            systemNavigationBarColor: context.appTheme.background500,
             systemNavigationBarDividerColor: Colors.transparent,
             systemNavigationBarIconBrightness: systemIconBrightness,
             statusBarColor: Colors.transparent,
@@ -61,8 +61,8 @@ class MoneyTrackerApp extends ConsumerWidget {
               useMaterial3: true,
               fontFamily: 'WixMadeforDisplay',
               // For showDatePicker2 colors
-              colorScheme: ColorScheme.fromSwatch()
-                  .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
+              colorScheme:
+                  ColorScheme.fromSwatch().copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
             ),
           ),
         ),

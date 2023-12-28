@@ -165,7 +165,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           'Payment amount:',
                           style: kHeader3TextStyle.copyWith(
                             fontSize: 14,
-                            color: context.appTheme.backgroundNegative.withOpacity(0.8),
+                            color: context.appTheme.onBackground.withOpacity(0.8),
                           ),
                         ),
                       ),
@@ -182,7 +182,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                 child: SvgIcon(
                                   AppIcons.receiptCheck,
                                   size: 27,
-                                  color: context.appTheme.backgroundNegative,
+                                  color: context.appTheme.onBackground,
                                 ),
                               ),
                               hintText: '???',
@@ -287,7 +287,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               'OPTIONAL:',
               style: kHeader2TextStyle.copyWith(
                 fontSize: 11,
-                color: context.appTheme.backgroundNegative.withOpacity(0.4),
+                color: context.appTheme.onBackground.withOpacity(0.4),
               ),
             ),
           ),

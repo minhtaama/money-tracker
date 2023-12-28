@@ -37,16 +37,22 @@ class TransactionRepository {
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
-  Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+  double getNetCashflow(DateTime lower, DateTime upper) {
+    final list = getAll(lower, upper);
+    double result = 0;
+    for (BaseTransaction txn in list) {
+      if (txn is Income) {
+        result += txn.amount;
+      }
+      if (txn is Expense || txn is CreditPayment) {
+        result -= txn.amount;
+      }
+    }
+    return result;
   }
 
-  Stream<void> _watchDatabaseChanges() {
-    Stream<void> s1 = realm.all<CategoryDb>().changes;
-    Stream<void> s2 = realm.all<CategoryTagDb>().changes;
-    Stream<void> s3 = realm.all<AccountDb>().changes;
-    Stream<void> s4 = realm.all<TransactionDb>().changes;
-    return StreamGroup.merge([s1, s2, s3, s4]);
+  Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   void writeNewIncome({
@@ -200,16 +206,10 @@ final transactionRepositoryRealmProvider = Provider<TransactionRepository>(
   },
 );
 
-final transactionChangesRealmProvider = StreamProvider.family<void, DateTimeRange>(
+final transactionChangesRealmProvider =
+    StreamProvider.autoDispose.family<RealmResultsChanges<TransactionDb>, DateTimeRange>(
   (ref, range) {
     final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges(range.start, range.end);
-  },
-);
-
-final databaseChangesRealmProvider = StreamProvider.autoDispose<void>(
-  (ref) {
-    final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
-    return transactionRepo._watchDatabaseChanges();
   },
 );

@@ -30,13 +30,12 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.backgroundNegative),
+                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.onBackground),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(
-                            fontSize: 14, color: color ?? context.appTheme.backgroundNegative),
+                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: color ?? context.appTheme.onBackground),
                       )
                     : Gap.noGap,
               ],
@@ -209,7 +208,7 @@ class _Spending extends StatelessWidget {
                   ? Text(
                       categoryTag!,
                       style: kHeader3TextStyle.copyWith(
-                          fontSize: 13, color: context.appTheme.backgroundNegative.withOpacity(0.7)),
+                          fontSize: 13, color: context.appTheme.onBackground.withOpacity(0.7)),
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                     )
@@ -243,7 +242,7 @@ class _Payment extends StatelessWidget {
         Expanded(
           child: Text(
             'Payment'.hardcoded,
-            style: kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+            style: kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
           ),
         ),
         TxnAdjustmentIcon(transaction: transaction),
@@ -266,7 +265,7 @@ class _Checkpoint extends StatelessWidget {
       children: [
         SvgIcon(
           AppIcons.statementCheckpoint,
-          color: context.appTheme.backgroundNegative,
+          color: context.appTheme.onBackground,
           size: 20,
         ),
         Gap.w4,
@@ -285,7 +284,7 @@ class _Checkpoint extends StatelessWidget {
                             .hardcoded,
                         style: kHeader3TextStyle.copyWith(
                             fontSize: statement.checkpoint!.unpaidOfInstallments != 0 ? 12 : 15,
-                            color: context.appTheme.backgroundNegative),
+                            color: context.appTheme.onBackground),
                         maxLines: 1,
                         overflow: TextOverflow.fade,
                       ),
@@ -293,8 +292,7 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.currentSettings.currency.code}'
                                   .hardcoded,
-                              style:
-                                  kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.backgroundNegative),
+                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -306,12 +304,12 @@ class _Checkpoint extends StatelessWidget {
               const FittedBox(child: _CheckpointArrow()),
               Text(
                 CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay).hardcoded,
-                style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
               ),
               Gap.w4,
               Text(
                 context.currentSettings.currency.code.hardcoded,
-                style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.backgroundNegative),
+                style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
               ),
             ],
           ),
@@ -346,14 +344,14 @@ class _DateTime extends StatelessWidget {
                   Text(
                     dateTime!.getFormattedDate(hasMonth: false, hasYear: false),
                     style: kHeader2TextStyle.copyWith(
-                        color: color ?? context.appTheme.backgroundNegative, fontSize: 14, height: 1),
+                        color: color ?? context.appTheme.onBackground, fontSize: 14, height: 1),
                   ),
                   noMonth
                       ? Gap.noGap
                       : Text(
                           dateTime!.getFormattedDate(hasDay: false, hasYear: false),
                           style: kHeader3TextStyle.copyWith(
-                              color: color ?? context.appTheme.backgroundNegative, fontSize: 14, height: 1),
+                              color: color ?? context.appTheme.onBackground, fontSize: 14, height: 1),
                         ),
                 ],
               ),
@@ -383,7 +381,7 @@ class _CheckpointArrow extends StatelessWidget {
       children: [
         SvgIcon(
           AppIcons.arrowRight,
-          color: context.appTheme.backgroundNegative,
+          color: context.appTheme.onBackground,
           size: 20,
         ),
         Padding(
@@ -391,7 +389,7 @@ class _CheckpointArrow extends StatelessWidget {
           child: Container(
             width: 15,
             height: 1.5,
-            color: context.appTheme.backgroundNegative,
+            color: context.appTheme.onBackground,
           ),
         ),
       ],

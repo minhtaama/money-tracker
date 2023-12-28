@@ -35,7 +35,7 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultBgColor = context.appTheme.background3;
+    final defaultBgColor = context.appTheme.background400;
 
     return Container(
       margin: margin,
@@ -69,7 +69,7 @@ class CardItem extends StatelessWidget {
                 end: Alignment.topRight,
                 colors: [
                   color ?? defaultBgColor,
-                  Color.lerp(color ?? defaultBgColor, context.appTheme.background2, 0.2)!
+                  Color.lerp(color ?? defaultBgColor, context.appTheme.background600, 0.2)!
                 ],
                 stops: const [0.15, 1],
               )

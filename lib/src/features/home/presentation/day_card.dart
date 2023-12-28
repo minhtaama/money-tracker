@@ -11,11 +11,11 @@ import '../../transactions/domain/transaction_base.dart';
 
 class DayCard extends StatelessWidget {
   const DayCard({
-    Key? key,
+    super.key,
     required this.dateTime,
     required this.transactions,
     this.onTransactionTap,
-  }) : super(key: key);
+  });
 
   final DateTime dateTime;
   final List<BaseTransaction> transactions;
@@ -56,7 +56,7 @@ class DayCard extends StatelessWidget {
                     border: dateTime.year == DateTime.now().year &&
                             dateTime.month == DateTime.now().month &&
                             dateTime.day == DateTime.now().day
-                        ? Border.all(color: context.appTheme.backgroundNegative)
+                        ? Border.all(color: context.appTheme.onBackground)
                         : null,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -65,8 +65,8 @@ class DayCard extends StatelessWidget {
                     style: kHeader1TextStyle.copyWith(
                       fontSize: 20,
                       color: dateTime.weekday == 6 || dateTime.weekday == 7
-                          ? context.appTheme.accentNegative
-                          : context.appTheme.backgroundNegative,
+                          ? context.appTheme.onAccent
+                          : context.appTheme.onBackground,
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -78,14 +78,14 @@ class DayCard extends StatelessWidget {
                     Text(
                       dateTime.weekdayString(),
                       style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative,
+                        color: context.appTheme.onBackground,
                         fontSize: 15,
                       ),
                       textAlign: TextAlign.left,
                     ),
                     Text(
                       dateTime.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.backgroundNegative, fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -97,7 +97,7 @@ class DayCard extends StatelessWidget {
                     Text(
                       'Cash flow',
                       style: kHeader4TextStyle.copyWith(
-                          color: context.appTheme.backgroundNegative.withOpacity(0.5), fontSize: 12),
+                          color: context.appTheme.onBackground.withOpacity(0.5), fontSize: 12),
                     ),
                     Row(
                       children: [
@@ -108,7 +108,7 @@ class DayCard extends StatelessWidget {
                                   ? context.appTheme.positive
                                   : _calculateCashFlow < 0
                                       ? context.appTheme.negative
-                                      : context.appTheme.backgroundNegative,
+                                      : context.appTheme.onBackground,
                               fontSize: 15),
                         ),
                         Gap.w4,
@@ -119,7 +119,7 @@ class DayCard extends StatelessWidget {
                                   ? context.appTheme.positive
                                   : _calculateCashFlow < 0
                                       ? context.appTheme.negative
-                                      : context.appTheme.backgroundNegative,
+                                      : context.appTheme.onBackground,
                               fontSize: 15),
                         ),
                       ],

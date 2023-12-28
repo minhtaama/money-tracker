@@ -47,15 +47,13 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: currentAccount != null ? currentAccount!.iconPath : AppIcons.add,
       backgroundColor: currentAccount != null ? currentAccount!.backgroundColor : Colors.transparent,
-      color: currentAccount != null
-          ? currentAccount!.iconColor
-          : context.appTheme.backgroundNegative.withOpacity(0.4),
+      color: currentAccount != null ? currentAccount!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
       height: null,
       width: null,
       border: currentAccount != null
           ? null
           : Border.all(
-              color: context.appTheme.backgroundNegative.withOpacity(0.4),
+              color: context.appTheme.onBackground.withOpacity(0.4),
             ),
       onTap: () async {
         List<Account> accountList = ref.read(accountRepositoryProvider).getList(widget.accountType);
@@ -71,7 +69,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Text(
                         'Choose Account',
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative),
+                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                     ),
                     Gap.h16,
@@ -81,28 +79,25 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       children: List.generate(accountList.length, (index) {
                         final account = accountList[index];
                         return IgnorePointer(
-                          ignoring: widget.otherSelectedAccount?.databaseObject.id ==
-                              account.databaseObject.id,
+                          ignoring: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
                           child: IconWithTextButton(
                             iconPath: account.iconPath,
                             label: account.name,
-                            isDisabled: widget.otherSelectedAccount?.databaseObject.id ==
-                                account.databaseObject.id,
+                            isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
                             labelSize: 18,
                             borderRadius: BorderRadius.circular(16),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             border: Border.all(
                               color: currentAccount?.databaseObject.id == account.databaseObject.id
                                   ? account.backgroundColor
-                                  : context.appTheme.backgroundNegative.withOpacity(0.4),
+                                  : context.appTheme.onBackground.withOpacity(0.4),
                             ),
-                            backgroundColor:
-                                currentAccount?.databaseObject.id == account.databaseObject.id
-                                    ? account.backgroundColor
-                                    : Colors.transparent,
+                            backgroundColor: currentAccount?.databaseObject.id == account.databaseObject.id
+                                ? account.backgroundColor
+                                : Colors.transparent,
                             color: currentAccount?.databaseObject.id == account.databaseObject.id
                                 ? account.iconColor
-                                : context.appTheme.backgroundNegative,
+                                : context.appTheme.onBackground,
                             onTap: () => context.pop<Account>(account),
                             height: null,
                             width: null,
@@ -135,8 +130,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (currentAccount != null &&
-                currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (currentAccount != null && currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               currentAccount = null;
               widget.onChangedAccount(currentAccount);
             } else {

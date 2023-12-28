@@ -27,10 +27,10 @@ class EqualKey extends StatelessWidget {
       isGradient: true,
       child: InkWell(
         onTap: () => onEqual(),
-        highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
+        highlightColor: context.appTheme.onBackground.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
-          child: Text('=', style: kHeader2TextStyle.copyWith(color: context.appTheme.backgroundNegative)),
+          child: Text('=', style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground)),
         ),
       ),
     );
@@ -58,12 +58,12 @@ class DoneKey extends StatelessWidget {
       isGradient: true,
       child: InkWell(
         onTap: () => onDone(),
-        highlightColor: context.appTheme.backgroundNegative.withAlpha(105),
+        highlightColor: context.appTheme.onBackground.withAlpha(105),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: SvgIcon(
             AppIcons.done,
-            color: context.appTheme.accentNegative,
+            color: context.appTheme.onAccent,
             size: 30,
           ),
         ),

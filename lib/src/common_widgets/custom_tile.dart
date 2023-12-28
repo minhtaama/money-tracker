@@ -26,7 +26,7 @@ class CustomTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomInkWell(
-      inkColor: context.appTheme.backgroundNegative,
+      inkColor: context.appTheme.onBackground,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
@@ -42,14 +42,14 @@ class CustomTile extends StatelessWidget {
                         Text(
                           title,
                           style: kHeader2TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative,
+                            color: context.appTheme.onBackground,
                             fontSize: titleSize,
                           ),
                         ),
                         Text(
                           secondaryTitle!,
                           style: kHeader4TextStyle.copyWith(
-                            color: context.appTheme.backgroundNegative,
+                            color: context.appTheme.onBackground,
                           ),
                           overflow: secondaryTitleOverflow ? TextOverflow.fade : null,
                           softWrap: secondaryTitleOverflow ? false : true,
@@ -59,7 +59,7 @@ class CustomTile extends StatelessWidget {
                   : Text(
                       title,
                       style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.backgroundNegative,
+                        color: context.appTheme.onBackground,
                         fontSize: titleSize,
                       ),
                     ),

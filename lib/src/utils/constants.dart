@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 /// Value related to Text. To change more details, use .copyWith()
+const kHeaderTransparent = TextStyle(color: Colors.transparent);
+
+/// Value related to Text. To change more details, use .copyWith()
 const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28);
 
 /// Value related to Text. To change more details, use .copyWith()
@@ -17,10 +20,7 @@ const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 const double kCustomTabBarHeight = 80;
 
 /// Value related to CustomTabBar and CustomTabPage
-const double kExtendedCustomTabBarHeight = 250;
-
-/// Value related to OuterChild of ExtendedTabBar
-const double kExtendedTabBarOuterChildHeight = 35;
+const double kExtendedCustomTabBarHeight = 350;
 
 // Durations
 const Duration kNoDuration = Duration(milliseconds: 0);
@@ -53,13 +53,13 @@ class Gap {
   static get h48 => const SizedBox(height: 48);
 
   static divider(BuildContext context, {double? indent}) => Divider(
-        color: context.appTheme.backgroundNegative.withOpacity(0.2),
+        color: context.appTheme.onBackground.withOpacity(0.2),
         indent: indent,
         endIndent: indent,
       );
 
   static verticalDivider(BuildContext context, {double? indent}) => VerticalDivider(
-        color: context.appTheme.backgroundNegative.withOpacity(0.25),
+        color: context.appTheme.onBackground.withOpacity(0.25),
         thickness: 1,
         indent: indent,
         endIndent: indent,

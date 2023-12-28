@@ -89,7 +89,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
       textAlign: widget.textAlign,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.backgroundNegative,
+        color: context.appTheme.onBackground,
         fontSize: widget.fontSize,
       ),
       decoration: InputDecoration(
@@ -98,8 +98,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
         focusColor: context.appTheme.primary,
         enabledBorder: widget.underLineBorder
             ? UnderlineInputBorder(
-                borderSide:
-                    BorderSide(color: context.appTheme.backgroundNegative.withOpacity(0.4), width: 1),
+                borderSide: BorderSide(color: context.appTheme.onBackground.withOpacity(0.4), width: 1),
               )
             : InputBorder.none,
         focusedBorder: widget.underLineBorder
@@ -114,7 +113,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
             : InputBorder.none,
         hintText: widget.hintText,
         hintStyle: kHeader2TextStyle.copyWith(
-          color: context.appTheme.backgroundNegative.withOpacity(0.5),
+          color: context.appTheme.onBackground.withOpacity(0.5),
           fontSize: widget.hintFontSize,
         ),
         errorStyle: widget.disableErrorText
@@ -158,8 +157,7 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
-      : super(key: key);
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput}) : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__
