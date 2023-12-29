@@ -60,7 +60,7 @@ class ExtendedHomeTab extends ConsumerWidget {
           ],
         )),
         _DateSelector(
-          dateDisplay: displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy),
+          displayDate: displayDate,
           onDateTap: onDateTap,
           onTapLeft: onTapLeft,
           onTapRight: onTapRight,
@@ -73,13 +73,13 @@ class ExtendedHomeTab extends ConsumerWidget {
 class _DateSelector extends StatelessWidget {
   const _DateSelector({
     super.key,
-    required this.dateDisplay,
+    required this.displayDate,
     this.onTapLeft,
     this.onTapRight,
     this.onDateTap,
   });
 
-  final String dateDisplay;
+  final DateTime displayDate;
   final VoidCallback? onTapLeft;
   final VoidCallback? onTapRight;
   final VoidCallback? onDateTap;
@@ -89,7 +89,7 @@ class _DateSelector extends StatelessWidget {
     return Container(
       width: Gap.screenWidth(context),
       height: 64,
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10, bottom: 30),
       decoration: BoxDecoration(
         color: context.appTheme.background0,
         borderRadius: const BorderRadius.only(
@@ -106,14 +106,14 @@ class _DateSelector extends StatelessWidget {
             iconPath: AppIcons.arrowLeft,
             iconColor: context.appTheme.onBackground,
             onTap: onTapLeft,
-            size: 23,
+            size: 25,
             iconPadding: 2,
           ),
           Gap.w8,
           GestureDetector(
             onTap: onDateTap,
             child: SizedBox(
-              width: 145,
+              width: 165,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: AnimatedSwitcher(
@@ -127,13 +127,29 @@ class _DateSelector extends StatelessWidget {
                       child: child,
                     );
                   },
-                  child: Text(
-                    key: ValueKey(dateDisplay),
-                    dateDisplay,
-                    style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.onBackground,
-                      fontSize: 15,
-                      letterSpacing: 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 1.0),
+                    child: Row(
+                      key: ValueKey(displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy)),
+                      children: [
+                        RoundedIconButton(
+                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                              ? AppIcons.today
+                              : AppIcons.turn,
+                          iconColor: context.appTheme.onBackground,
+                          size: 16,
+                          iconPadding: 0,
+                        ),
+                        Gap.w8,
+                        Text(
+                          displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy),
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 15,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -145,7 +161,7 @@ class _DateSelector extends StatelessWidget {
             iconPath: AppIcons.arrowRight,
             iconColor: context.appTheme.onBackground,
             onTap: onTapRight,
-            size: 23,
+            size: 25,
             iconPadding: 2,
           ),
         ],

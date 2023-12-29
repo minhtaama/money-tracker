@@ -66,6 +66,7 @@ class AppIcons {
   static String get sadFace => 'assets/svg/app/sad_face.svg';
   static String get fykFace => 'assets/svg/app/fyk_face.svg';
   static String get switchIcon => 'assets/svg/app/switch.svg';
+  static String get turn => 'assets/svg/app/turn.svg';
 
   static String get defaultIcon => 'assets/svg/app/default.svg';
 

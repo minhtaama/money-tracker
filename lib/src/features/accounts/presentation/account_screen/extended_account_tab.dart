@@ -82,8 +82,8 @@ class _StatementSelector extends StatelessWidget {
       offset: const Offset(0, 0),
       child: Container(
         width: Gap.screenWidth(context),
-        height: 70,
-        padding: const EdgeInsets.only(top: 10),
+        height: 85,
+        padding: const EdgeInsets.only(top: 10, bottom: 35),
         decoration: BoxDecoration(
           color: context.appTheme.background0,
           borderRadius: const BorderRadius.only(
@@ -100,13 +100,11 @@ class _StatementSelector extends StatelessWidget {
               offset: const Offset(0, 1),
               child: RoundedIconButton(
                 iconPath: AppIcons.arrowLeft,
-                iconColor: context.appTheme.isDarkTheme
-                    ? context.appTheme.onBackground
-                    : context.appTheme.onSecondary,
+                iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                 //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
                 onTap: onTapLeft,
-                size: 25,
-                iconPadding: 2,
+                size: 35,
+                iconPadding: 6,
               ),
             ),
             GestureDetector(
@@ -157,14 +155,12 @@ class _StatementSelector extends StatelessWidget {
               offset: const Offset(0, 1),
               child: RoundedIconButton(
                 iconPath: AppIcons.arrowRight,
-                iconColor: context.appTheme.isDarkTheme
-                    ? context.appTheme.onBackground
-                    : context.appTheme.onSecondary,
+                iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
 
                 //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
                 onTap: onTapRight,
-                size: 25,
-                iconPadding: 2,
+                size: 35,
+                iconPadding: 6,
               ),
             ),
           ],

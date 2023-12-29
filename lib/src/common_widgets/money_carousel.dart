@@ -81,7 +81,7 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                     text: 'Cashflow in $pageMonth',
                     onActive: (width) {
                       setState(() {
-                        _betweenButtonsGap = width.clamp(90, 220) + 20;
+                        _betweenButtonsGap = width.clamp(100, 190) + 30;
                       });
                     },
                   );
@@ -99,8 +99,7 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                   widget.leftIconPath != null
                       ? RoundedIconButton(
                           iconPath: widget.leftIconPath!,
-                          size: 32,
-                          iconPadding: 4,
+                          iconPadding: 12,
                           iconColor: context.appTheme.isDarkTheme
                               ? context.appTheme.onBackground
                               : context.appTheme.onSecondary,
@@ -115,8 +114,7 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                   widget.rightIconPath != null
                       ? RoundedIconButton(
                           iconPath: widget.rightIconPath!,
-                          size: 32,
-                          iconPadding: 4,
+                          iconPadding: 12,
                           iconColor: context.appTheme.isDarkTheme
                               ? context.appTheme.onBackground
                               : context.appTheme.onSecondary,
@@ -174,7 +172,7 @@ class _CarouselContentState extends State<CarouselContent> {
           double width = _key.currentContext!.size!.width;
           widget.onActive?.call(width);
         } else {
-          widget.onActive?.call(50);
+          widget.onActive?.call(100);
         }
       });
     }
@@ -183,7 +181,7 @@ class _CarouselContentState extends State<CarouselContent> {
 
   @override
   void didUpdateWidget(covariant CarouselContent oldWidget) {
-    if (widget.isActive && !oldWidget.isActive) {
+    if (widget.isActive && !oldWidget.isActive || widget.amount != oldWidget.amount) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         if (widget.isShowValue && oldWidget.isShowValue) {
           double width = _key.currentContext!.size!.width;
@@ -193,7 +191,7 @@ class _CarouselContentState extends State<CarouselContent> {
     } else if (widget.isActive && oldWidget.isActive) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         if (!widget.isShowValue && oldWidget.isShowValue) {
-          widget.onActive?.call(50);
+          widget.onActive?.call(100);
         } else if (widget.isShowValue && !oldWidget.isShowValue) {
           double width = _key.currentContext!.size!.width;
           widget.onActive?.call(width);

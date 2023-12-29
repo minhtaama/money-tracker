@@ -136,7 +136,7 @@ class AppColors {
     ThemeType.light: AppThemeData(
       isDarkTheme: false,
       primary: const Color(0xff444d36),
-      secondary1: const Color(0xffedf5e4),
+      secondary1: const Color(0xfff7ffed),
       secondary2: const Color(0xffd4e0c5),
       accent1: const Color(0xffb5c99a),
       accent2: const Color(0xFF97a97c),
@@ -147,7 +147,7 @@ class AppColors {
       onSecondary: const Color(0xFF212529),
       onAccent: const Color(0xFFf8f9fa),
       onBackground: const Color(0xFF212529),
-      positive: const Color(0xff444d36),
+      positive: const Color(0xff718059),
       negative: const Color(0xFFa4133c),
       onPositive: AppColors.black,
       onNegative: AppColors.white,
