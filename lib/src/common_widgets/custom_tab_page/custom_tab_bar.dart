@@ -32,7 +32,7 @@ class ExtendedTabBar extends StatelessWidget {
     super.key,
     this.backgroundColor,
     required this.child,
-    this.height = kExtendedCustomTabBarHeight + 20,
+    this.height = kExtendedCustomTabBarHeight + 30,
     this.systemIconBrightness,
   });
   final Color? backgroundColor;

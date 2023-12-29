@@ -7,8 +7,6 @@ import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
-import '../theme_and_ui/colors.dart';
-
 class CLCData {
   CLCData({required this.day, required this.amount});
   final int day;
@@ -87,9 +85,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       return LineTooltipItem(
         '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, touchedSpot.y)} \n',
         kHeader2TextStyle.copyWith(
-          color: context.appTheme.isDarkTheme
-              ? context.appTheme.onBackground
-              : context.appTheme.onSecondary,
+          color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
           fontSize: 13,
         ),
         textAlign: TextAlign.right,
@@ -99,9 +95,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
                 .copyWith(day: touchedSpot.x.toInt())
                 .getFormattedDate(hasYear: false, type: DateTimeType.ddmmmyyyy),
             style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.onBackground
-                  : context.appTheme.onSecondary,
+              color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
               fontSize: 11,
             ),
           ),
@@ -182,7 +176,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       child: LineChart(
         LineChartData(
           maxY: _highestAmount,
-          minY: _lowestAmount - _highestAmount / 3,
+          minY: _lowestAmount - _highestAmount / 2,
           minX: 1,
           maxX: widget.values.last.day.toDouble(),
           baselineY: 0,
