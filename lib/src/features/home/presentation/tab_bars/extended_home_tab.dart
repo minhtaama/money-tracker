@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -10,11 +11,13 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import '../../../../common_widgets/custom_line_chart.dart';
 import '../../../../common_widgets/money_carousel.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
+import '../../../transactions/data/transaction_repo.dart';
 
-class ExtendedHomeTab extends ConsumerWidget {
+class ExtendedHomeTab extends StatefulWidget {
   const ExtendedHomeTab({
     super.key,
     required this.carouselController,
+    required this.onCarouselPageChange,
     required this.initialPageIndex,
     required this.displayDate,
     required this.showNumber,
@@ -24,6 +27,7 @@ class ExtendedHomeTab extends ConsumerWidget {
     required this.onDateTap,
   });
   final PageController carouselController;
+  final void Function(int) onCarouselPageChange;
   final int initialPageIndex;
   final DateTime displayDate;
   final bool showNumber;
@@ -33,37 +37,97 @@ class ExtendedHomeTab extends ConsumerWidget {
   final VoidCallback onDateTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<ExtendedHomeTab> createState() => _ExtendedHomeTabState();
+}
+
+class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
+  _InfoType _type = _InfoType.cashflow;
+
+  String _titleBuilder(String month) {
+    return switch (_type) {
+      _InfoType.cashflow => 'Cashflow in $month',
+      _InfoType.expense => 'Expense in $month',
+      _InfoType.income => 'Income in $month',
+    };
+  }
+
+  double _amountBuilder(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) {
+    final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+
+    double amount = switch (_type) {
+      _InfoType.cashflow => transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
+      _InfoType.expense => transactionRepository.getExpense(dayBeginOfMonth, dayEndOfMonth),
+      _InfoType.income => transactionRepository.getIncome(dayBeginOfMonth, dayEndOfMonth),
+    };
+
+    ref.listen(
+        transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+        (_, __) {
+      amount = switch (_type) {
+        _InfoType.cashflow => transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
+        _InfoType.expense => transactionRepository.getExpense(dayBeginOfMonth, dayEndOfMonth),
+        _InfoType.income => transactionRepository.getIncome(dayBeginOfMonth, dayEndOfMonth),
+      };
+    });
+
+    return amount;
+  }
+
+  bool get _showPrefixSign {
+    return switch (_type) {
+      _InfoType.cashflow => true,
+      _InfoType.expense => false,
+      _InfoType.income => false,
+    };
+  }
+
+  void _onTapSwitchType() {
+    setState(() {
+      _type = switch (_type) {
+        _InfoType.cashflow => _InfoType.expense,
+        _InfoType.expense => _InfoType.income,
+        _InfoType.income => _InfoType.cashflow,
+      };
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const _WelcomeText(),
         Gap.h16,
         MoneyCarousel(
-          controller: carouselController,
-          initialPageIndex: initialPageIndex,
+          controller: widget.carouselController,
+          initialPageIndex: widget.initialPageIndex,
+          onPageChange: widget.onCarouselPageChange,
           leftIconPath: AppIcons.switchIcon,
-          rightIconPath: showNumber ? AppIcons.eye : AppIcons.eyeSlash,
-          onTapRightIcon: onEyeTap,
-          onTapLeftIcon: () {},
+          rightIconPath: widget.showNumber ? AppIcons.eyeSlash : AppIcons.eye,
+          onTapRightIcon: widget.onEyeTap,
+          showPrefixSign: _showPrefixSign,
+          onTapLeftIcon: _onTapSwitchType,
+          titleBuilder: _titleBuilder,
+          amountBuilder: _amountBuilder,
         ),
         Expanded(
-            child: CustomLineChart(
-          currentMonthView: displayDate,
-          values: [
-            // TODO: Make value dynamic
-            CLCData(day: 1, amount: 3500000),
-            CLCData(day: 8, amount: 0),
-            CLCData(day: 15, amount: 5398458),
-            CLCData(day: 23, amount: 4030898),
-            CLCData(day: 31, amount: 5873483),
-          ],
-        )),
+          child: CustomLineChart(
+            currentMonthView: widget.displayDate,
+            values: [
+              // TODO: Make value dynamic
+              CLCData(day: 1, amount: 3500000),
+              CLCData(day: 8, amount: 0),
+              CLCData(day: 15, amount: 5398458),
+              CLCData(day: 23, amount: 4030898),
+              CLCData(day: 31, amount: 5873483),
+            ],
+          ),
+        ),
         _DateSelector(
-          displayDate: displayDate,
-          onDateTap: onDateTap,
-          onTapLeft: onTapLeft,
-          onTapRight: onTapRight,
+          displayDate: widget.displayDate,
+          onDateTap: widget.onDateTap,
+          onTapLeft: widget.onTapLeft,
+          onTapRight: widget.onTapRight,
         ),
       ],
     );
@@ -72,7 +136,6 @@ class ExtendedHomeTab extends ConsumerWidget {
 
 class _DateSelector extends StatelessWidget {
   const _DateSelector({
-    super.key,
     required this.displayDate,
     this.onTapLeft,
     this.onTapRight,
@@ -130,12 +193,14 @@ class _DateSelector extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
-                      key: ValueKey(displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy)),
+                      key: ValueKey(
+                          displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy)),
                       children: [
                         RoundedIconButton(
-                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                              ? AppIcons.today
-                              : AppIcons.turn,
+                          iconPath:
+                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                                  ? AppIcons.today
+                                  : AppIcons.turn,
                           iconColor: context.appTheme.onBackground,
                           size: 16,
                           iconPadding: 0,
@@ -171,106 +236,23 @@ class _DateSelector extends StatelessWidget {
 }
 
 class _WelcomeText extends StatelessWidget {
-  const _WelcomeText({
-    super.key,
-  });
+  const _WelcomeText();
 
   @override
   Widget build(BuildContext context) {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-        fontSize: 14,
+        color:
+            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        fontSize: 15,
       ),
     );
   }
 }
 
-// class _TotalMoney extends ConsumerWidget {
-//   const _TotalMoney({
-//     super.key,
-//     required this.showNumber,
-//     required this.onEyeTap,
-//   });
-//
-//   final bool showNumber;
-//   final VoidCallback onEyeTap;
-//
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final accountRepository = ref.watch(accountRepositoryProvider);
-//
-//     double totalBalance = accountRepository.getTotalBalance();
-//
-//     ref
-//         .watch(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
-//         .whenData((_) {
-//       totalBalance = accountRepository.getTotalBalance();
-//     });
-//
-//     return SizedBox(
-//       height: 38,
-//       child: Row(
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           const Spacer(),
-//           Transform.translate(
-//             offset: const Offset(-7, 2),
-//             child: Text(
-//               context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,
-//               style: kHeader4TextStyle.copyWith(
-//                 color: context.appTheme.isDarkTheme
-//                     ? context.appTheme.onBackground.withOpacity(0.6)
-//                     : context.appTheme.onSecondary.withOpacity(0.6),
-//                 fontSize: 20,
-//               ),
-//               textAlign: TextAlign.right,
-//             ),
-//           ),
-//           EasyRichText(
-//             CalService.formatCurrency(context, totalBalance),
-//             defaultStyle: kHeader4TextStyle.copyWith(
-//                 color: context.appTheme.isDarkTheme
-//                     ? context.appTheme.onBackground.withOpacity(0.6)
-//                     : context.appTheme.onSecondary.withOpacity(0.6),
-//                 fontSize: 18,
-//                 letterSpacing: 1),
-//             textAlign: TextAlign.right,
-//             patternList: [
-//               EasyRichTextPattern(
-//                 targetString: r'[0-9]+',
-//                 style: kHeader3TextStyle.copyWith(
-//                   color: context.appTheme.isDarkTheme
-//                       ? context.appTheme.onBackground.withOpacity(0.8)
-//                       : context.appTheme.onSecondary.withOpacity(0.8),
-//                   fontSize: 20,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           Expanded(
-//             child: Row(
-//               children: [
-//                 const Spacer(),
-//                 Transform.translate(
-//                   offset: const Offset(0, 1),
-//                   child: RoundedIconButton(
-//                     iconPath: !showNumber ? AppIcons.eye : AppIcons.eyeSlash,
-//                     //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
-//                     size: 25,
-//                     iconPadding: 4,
-//                     iconColor:
-//                     context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-//                     onTap: onEyeTap,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+enum _InfoType {
+  cashflow,
+  expense,
+  income,
+}

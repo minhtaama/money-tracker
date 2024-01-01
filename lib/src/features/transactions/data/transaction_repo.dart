@@ -31,14 +31,14 @@ class TransactionRepository {
   //       CreditPaymentType.full => 2,
   //     };
 
-  List<BaseTransaction> getAll(DateTime lower, DateTime upper) {
+  List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
     List<TransactionDb> list =
         realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
   double getNetCashflow(DateTime lower, DateTime upper) {
-    final list = getAll(lower, upper);
+    final list = getTransactions(lower, upper);
     double result = 0;
     for (BaseTransaction txn in list) {
       if (txn is Income) {
@@ -51,8 +51,32 @@ class TransactionRepository {
     return result;
   }
 
+  double getExpense(DateTime lower, DateTime upper) {
+    final list = getTransactions(lower, upper);
+    double result = 0;
+    for (BaseTransaction txn in list) {
+      if (txn is Expense || txn is CreditPayment) {
+        result += txn.amount;
+      }
+    }
+    return result;
+  }
+
+  double getIncome(DateTime lower, DateTime upper) {
+    final list = getTransactions(lower, upper);
+    double result = 0;
+    for (BaseTransaction txn in list) {
+      if (txn is Income) {
+        result += txn.amount;
+      }
+    }
+    return result;
+  }
+
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   void writeNewIncome({
@@ -63,7 +87,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -82,7 +107,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -107,7 +133,8 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -139,7 +166,8 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails:
+            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);

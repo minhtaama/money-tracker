@@ -8,7 +8,6 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../features/calculator_input/application/calculator_service.dart';
-import '../features/transactions/data/transaction_repo.dart';
 import '../utils/constants.dart';
 import '../utils/enums.dart';
 
@@ -17,18 +16,37 @@ class MoneyCarousel extends StatefulWidget {
     super.key,
     required this.controller,
     required this.initialPageIndex,
+    this.onPageChange,
     this.leftIconPath,
     this.rightIconPath,
     this.onTapRightIcon,
     this.onTapLeftIcon,
+    this.showCurrency = true,
+    this.showPrefixSign = true,
+    required this.amountBuilder,
+    required this.titleBuilder,
   });
 
   final PageController controller;
+  final void Function(int)? onPageChange;
   final int initialPageIndex;
   final String? leftIconPath;
   final String? rightIconPath;
   final VoidCallback? onTapRightIcon;
   final VoidCallback? onTapLeftIcon;
+  final bool showCurrency;
+  final bool showPrefixSign;
+
+  /// Safe to use `ref.watch` or `ref.listen` inside this builder (do not use
+  /// `setState()` to update state).
+  ///
+  /// This function returns the display amount based on `dayBeginOfMonth`
+  /// and `dayEndOfMonth` (which is calculated based on the `pageIndex` of [PageView])
+  ///
+  final double Function(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) amountBuilder;
+
+  /// Build the small title under amount
+  final String Function(String month) titleBuilder;
 
   @override
   State<MoneyCarousel> createState() => _MoneyCarouselState();
@@ -52,36 +70,31 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
               setState(() {
                 _currentPageIndex = page;
               });
+              widget.onPageChange?.call(page);
             },
-            physics: const NeverScrollableScrollPhysics(),
+            //physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, pageIndex) {
               DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
               DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-              return Consumer(
-                builder: (context, ref, child) {
-                  final transactionRepository = ref.read(transactionRepositoryRealmProvider);
-
-                  String pageMonth = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
+              String pageMonth =
+                  DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
                       .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
 
-                  double amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
+              return Consumer(
+                builder: (context, ref, child) {
+                  double amount = widget.amountBuilder(ref, dayBeginOfMonth, dayEndOfMonth);
 
-                  ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-                      (_, __) {
-                    setState(() {
-                      amount = transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth);
-                    });
-                  });
-
-                  return CarouselContent(
+                  return _CarouselContent(
                     isActive: _currentPageIndex == pageIndex,
                     isShowValue: context.currentSettings.showBalanceInHomeScreen,
+                    showCurrency: true,
+                    showPrefixSign: widget.showPrefixSign,
                     amount: amount,
-                    text: 'Cashflow in $pageMonth',
-                    onActive: (width) {
+                    text: widget.titleBuilder(pageMonth),
+                    onChange: (width) {
                       setState(() {
-                        _betweenButtonsGap = width.clamp(100, 190) + 30;
+                        _betweenButtonsGap = width.clamp(100, 195) + 30;
                       });
                     },
                   );
@@ -131,37 +144,50 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
   }
 }
 
-class CarouselContent extends StatefulWidget {
-  const CarouselContent({
+class _CarouselContent extends StatefulWidget {
+  const _CarouselContent({
     super.key,
     required this.amount,
     required this.text,
     required this.isActive,
-    this.isShowValue = true,
-    this.onActive,
+    required this.isShowValue,
+    required this.showPrefixSign,
+    required this.showCurrency,
+    this.onChange,
   });
+
   final bool isActive;
   final bool isShowValue;
+  final bool showCurrency;
+  final bool showPrefixSign;
   final String text;
   final double amount;
-  final ValueChanged<double>? onActive;
+  final ValueChanged<double>? onChange;
 
   @override
-  State<CarouselContent> createState() => _CarouselContentState();
+  State<_CarouselContent> createState() => _CarouselContentState();
 }
 
-class _CarouselContentState extends State<CarouselContent> {
+class _CarouselContentState extends State<_CarouselContent> {
   final _key = GlobalKey();
 
-  String _symbol(BuildContext context) {
-    if (widget.amount.roundBySetting(context) == 0 || !widget.isShowValue) {
+  String _prefixSign(BuildContext context) {
+    if (widget.amount.roundBySetting(context) == 0 || !widget.isShowValue || !widget.showPrefixSign) {
       return '';
     }
     if (widget.amount.roundBySetting(context) > 0) {
-      return '+';
+      return '+ ';
     } else {
-      return '-';
+      return '- ';
     }
+  }
+
+  String _currency(BuildContext context) {
+    if (!widget.isShowValue || !widget.showCurrency) {
+      return '';
+    }
+
+    return '${context.currentSettings.currency.symbol} ';
   }
 
   @override
@@ -170,9 +196,9 @@ class _CarouselContentState extends State<CarouselContent> {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         if (widget.isShowValue) {
           double width = _key.currentContext!.size!.width;
-          widget.onActive?.call(width);
+          widget.onChange?.call(width);
         } else {
-          widget.onActive?.call(100);
+          widget.onChange?.call(100);
         }
       });
     }
@@ -180,21 +206,21 @@ class _CarouselContentState extends State<CarouselContent> {
   }
 
   @override
-  void didUpdateWidget(covariant CarouselContent oldWidget) {
-    if (widget.isActive && !oldWidget.isActive || widget.amount != oldWidget.amount) {
+  void didUpdateWidget(covariant _CarouselContent oldWidget) {
+    if (widget.isActive && !oldWidget.isActive) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         if (widget.isShowValue && oldWidget.isShowValue) {
           double width = _key.currentContext!.size!.width;
-          widget.onActive?.call(width);
+          widget.onChange?.call(width);
         }
       });
     } else if (widget.isActive && oldWidget.isActive) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         if (!widget.isShowValue && oldWidget.isShowValue) {
-          widget.onActive?.call(100);
-        } else if (widget.isShowValue && !oldWidget.isShowValue) {
+          widget.onChange?.call(100);
+        } else if (widget.isShowValue && !oldWidget.isShowValue || widget.amount != oldWidget.amount) {
           double width = _key.currentContext!.size!.width;
-          widget.onActive?.call(width);
+          widget.onChange?.call(width);
         }
       });
     }
@@ -218,20 +244,29 @@ class _CarouselContentState extends State<CarouselContent> {
           children: [
             Expanded(
               child: FittedBox(
+                fit: BoxFit.scaleDown,
                 child: Row(
                   key: _key,
+                  textBaseline: TextBaseline.alphabetic,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Transform.translate(
-                      offset: const Offset(-2, 3),
-                      child: Text(
-                        _symbol(context),
-                        style: kHeader3TextStyle.copyWith(
-                          color: context.appTheme.isDarkTheme
-                              ? context.appTheme.onBackground.withOpacity(0.6)
-                              : context.appTheme.onSecondary.withOpacity(0.6),
-                          fontSize: 25,
-                        ),
-                        textAlign: TextAlign.right,
+                    Text(
+                      _prefixSign(context),
+                      style: kHeader3TextStyle.copyWith(
+                        color: context.appTheme.isDarkTheme
+                            ? context.appTheme.onBackground.withOpacity(1)
+                            : context.appTheme.onSecondary.withOpacity(1),
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(
+                      _currency(context),
+                      style: kHeader3TextStyle.copyWith(
+                        color: context.appTheme.isDarkTheme
+                            ? context.appTheme.onBackground.withOpacity(0.6)
+                            : context.appTheme.onSecondary.withOpacity(0.6),
+                        fontSize: 20,
                       ),
                     ),
                     EasyRichText(
