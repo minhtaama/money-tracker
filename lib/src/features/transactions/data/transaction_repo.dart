@@ -25,11 +25,11 @@ class TransactionRepository {
         TransactionType.creditCheckpoint => 5,
       };
 
-  // int _creditPaymentTypeInDb(CreditPaymentType type) => switch (type) {
-  //       CreditPaymentType.underMinimum => 0,
-  //       CreditPaymentType.minimumOrHigher => 1,
-  //       CreditPaymentType.full => 2,
-  //     };
+  Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+  }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
     List<TransactionDb> list =
@@ -51,7 +51,7 @@ class TransactionRepository {
     return result;
   }
 
-  double getExpense(DateTime lower, DateTime upper) {
+  double getExpenseAmount(DateTime lower, DateTime upper) {
     final list = getTransactions(lower, upper);
     double result = 0;
     for (BaseTransaction txn in list) {
@@ -62,7 +62,7 @@ class TransactionRepository {
     return result;
   }
 
-  double getIncome(DateTime lower, DateTime upper) {
+  double getIncomeAmount(DateTime lower, DateTime upper) {
     final list = getTransactions(lower, upper);
     double result = 0;
     for (BaseTransaction txn in list) {
@@ -71,12 +71,6 @@ class TransactionRepository {
       }
     }
     return result;
-  }
-
-  Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   void writeNewIncome({

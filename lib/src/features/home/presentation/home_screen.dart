@@ -51,13 +51,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  void _onCarouselPageChange(int value) {
-    _pageController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
-    setState(() {
-      _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
-    });
-  }
-
   void _previousPage() {
     _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
     _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
@@ -131,7 +124,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       extendedTabBar: ExtendedTabBar(
         child: ExtendedHomeTab(
           carouselController: _carouselController,
-          onCarouselPageChange: _onCarouselPageChange,
           initialPageIndex: _initialPageIndex,
           displayDate: _displayDate,
           showNumber: showTotalBalance,

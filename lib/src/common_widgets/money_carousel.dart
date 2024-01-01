@@ -16,7 +16,6 @@ class MoneyCarousel extends StatefulWidget {
     super.key,
     required this.controller,
     required this.initialPageIndex,
-    this.onPageChange,
     this.leftIconPath,
     this.rightIconPath,
     this.onTapRightIcon,
@@ -28,7 +27,6 @@ class MoneyCarousel extends StatefulWidget {
   });
 
   final PageController controller;
-  final void Function(int)? onPageChange;
   final int initialPageIndex;
   final String? leftIconPath;
   final String? rightIconPath;
@@ -65,12 +63,12 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
       child: Stack(
         children: [
           PageView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             controller: widget.controller,
             onPageChanged: (page) {
               setState(() {
                 _currentPageIndex = page;
               });
-              widget.onPageChange?.call(page);
             },
             //physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, pageIndex) {
@@ -85,18 +83,37 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                 builder: (context, ref, child) {
                   double amount = widget.amountBuilder(ref, dayBeginOfMonth, dayEndOfMonth);
 
-                  return _CarouselContent(
-                    isActive: _currentPageIndex == pageIndex,
-                    isShowValue: context.currentSettings.showBalanceInHomeScreen,
-                    showCurrency: true,
-                    showPrefixSign: widget.showPrefixSign,
-                    amount: amount,
-                    text: widget.titleBuilder(pageMonth),
-                    onChange: (width) {
-                      setState(() {
-                        _betweenButtonsGap = width.clamp(100, 195) + 30;
-                      });
+                  return AnimatedSwitcher(
+                    duration: k250msDuration,
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: Tween<double>(
+                          begin: 0,
+                          end: 1,
+                        ).animate(animation),
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.5),
+                            end: const Offset(0, 0),
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
                     },
+                    child: _CarouselContent(
+                      key: ValueKey(widget.titleBuilder(pageMonth)),
+                      isActive: _currentPageIndex == pageIndex,
+                      isShowValue: context.currentSettings.showBalanceInHomeScreen,
+                      showCurrency: widget.showCurrency,
+                      showPrefixSign: widget.showPrefixSign,
+                      amount: amount,
+                      text: widget.titleBuilder(pageMonth),
+                      onChange: (width) {
+                        setState(() {
+                          _betweenButtonsGap = width.clamp(100, 195) + 30;
+                        });
+                      },
+                    ),
                   );
                 },
               );

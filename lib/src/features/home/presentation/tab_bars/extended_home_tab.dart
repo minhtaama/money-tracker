@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -17,7 +16,6 @@ class ExtendedHomeTab extends StatefulWidget {
   const ExtendedHomeTab({
     super.key,
     required this.carouselController,
-    required this.onCarouselPageChange,
     required this.initialPageIndex,
     required this.displayDate,
     required this.showNumber,
@@ -26,8 +24,8 @@ class ExtendedHomeTab extends StatefulWidget {
     required this.onTapRight,
     required this.onDateTap,
   });
+
   final PageController carouselController;
-  final void Function(int) onCarouselPageChange;
   final int initialPageIndex;
   final DateTime displayDate;
   final bool showNumber;
@@ -52,32 +50,50 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   }
 
   double _amountBuilder(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) {
-    final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
 
     double amount = switch (_type) {
-      _InfoType.cashflow => transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
-      _InfoType.expense => transactionRepository.getExpense(dayBeginOfMonth, dayEndOfMonth),
-      _InfoType.income => transactionRepository.getIncome(dayBeginOfMonth, dayEndOfMonth),
+      _InfoType.cashflow => txnRepo.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
+      _InfoType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+      _InfoType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
     };
 
     ref.listen(
         transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
         (_, __) {
       amount = switch (_type) {
-        _InfoType.cashflow => transactionRepository.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
-        _InfoType.expense => transactionRepository.getExpense(dayBeginOfMonth, dayEndOfMonth),
-        _InfoType.income => transactionRepository.getIncome(dayBeginOfMonth, dayEndOfMonth),
+        _InfoType.cashflow => txnRepo.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
+        _InfoType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+        _InfoType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
       };
     });
 
     return amount;
   }
 
+  List<CLCData> _valuesBuilder(WidgetRef ref) {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+
+    return [
+      CLCData(day: 1, amount: 152600),
+      CLCData(day: 8, amount: 230400),
+      CLCData(day: 15, amount: 545865),
+      CLCData(day: 23, amount: 457356),
+      CLCData(day: 31, amount: 754764),
+    ];
+  }
+
   bool get _showPrefixSign {
     return switch (_type) {
       _InfoType.cashflow => true,
-      _InfoType.expense => false,
-      _InfoType.income => false,
+      _ => false,
+    };
+  }
+
+  bool get _showCurrency {
+    return switch (_type) {
+      _InfoType.cashflow => false,
+      _ => true,
     };
   }
 
@@ -101,26 +117,19 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
         MoneyCarousel(
           controller: widget.carouselController,
           initialPageIndex: widget.initialPageIndex,
-          onPageChange: widget.onCarouselPageChange,
           leftIconPath: AppIcons.switchIcon,
           rightIconPath: widget.showNumber ? AppIcons.eyeSlash : AppIcons.eye,
           onTapRightIcon: widget.onEyeTap,
-          showPrefixSign: _showPrefixSign,
           onTapLeftIcon: _onTapSwitchType,
+          showPrefixSign: _showPrefixSign,
+          showCurrency: _showCurrency,
           titleBuilder: _titleBuilder,
           amountBuilder: _amountBuilder,
         ),
         Expanded(
           child: CustomLineChart(
             currentMonthView: widget.displayDate,
-            values: [
-              // TODO: Make value dynamic
-              CLCData(day: 1, amount: 3500000),
-              CLCData(day: 8, amount: 0),
-              CLCData(day: 15, amount: 5398458),
-              CLCData(day: 23, amount: 4030898),
-              CLCData(day: 31, amount: 5873483),
-            ],
+            valuesBuilder: _valuesBuilder,
           ),
         ),
         _DateSelector(
@@ -176,7 +185,7 @@ class _DateSelector extends StatelessWidget {
           GestureDetector(
             onTap: onDateTap,
             child: SizedBox(
-              width: 165,
+              width: 155,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: AnimatedSwitcher(
@@ -191,10 +200,10 @@ class _DateSelector extends StatelessWidget {
                     );
                   },
                   child: Padding(
+                    key: ValueKey(
+                        displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
-                      key: ValueKey(
-                          displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy)),
                       children: [
                         RoundedIconButton(
                           iconPath:

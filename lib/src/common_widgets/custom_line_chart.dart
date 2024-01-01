@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -13,27 +14,47 @@ class CLCData {
   final double amount;
 }
 
-class CustomLineChart extends StatefulWidget {
+class CustomLineChart extends ConsumerStatefulWidget {
   const CustomLineChart({
     super.key,
     required this.currentMonthView,
-    required this.values,
+    required this.valuesBuilder,
   });
-  final List<CLCData> values;
+  final List<CLCData> Function(WidgetRef) valuesBuilder;
   final DateTime currentMonthView;
 
   @override
-  State<CustomLineChart> createState() => _CustomLineChartState();
+  ConsumerState<CustomLineChart> createState() => _CustomLineChartState();
 }
 
-class _CustomLineChartState extends State<CustomLineChart> {
+class _CustomLineChartState extends ConsumerState<CustomLineChart> {
   late double _lowestAmount;
   late double _highestAmount;
 
-  void findLowestAndHighestAmount() {
+  late List<CLCData> _values;
+
+  @override
+  void initState() {
+    _values = widget.valuesBuilder(ref);
+    _findLowestAndHighestAmount();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomLineChart oldWidget) {
+    if (_values != oldWidget.valuesBuilder(ref)) {
+      setState(() {
+        _values = widget.valuesBuilder(ref);
+        _findLowestAndHighestAmount();
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _findLowestAndHighestAmount() {
     double lowTemp = double.infinity;
     double highTemp = double.negativeInfinity;
-    for (CLCData data in widget.values) {
+    for (CLCData data in _values) {
       if (data.amount < lowTemp) {
         lowTemp = data.amount;
       }
@@ -45,24 +66,8 @@ class _CustomLineChartState extends State<CustomLineChart> {
     _highestAmount = highTemp;
   }
 
-  @override
-  void initState() {
-    findLowestAndHighestAmount();
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant CustomLineChart oldWidget) {
-    if (widget.values != oldWidget.values) {
-      setState(() {
-        findLowestAndHighestAmount();
-      });
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
   Widget _bottomTitleWidgets(double value, TitleMeta meta) {
-    bool isShowTitle = widget.values.map((e) => e.day).contains(value.toInt());
+    bool isShowTitle = _values.map((e) => e.day).contains(value.toInt());
 
     return isShowTitle
         ? Transform.translate(
@@ -85,7 +90,9 @@ class _CustomLineChartState extends State<CustomLineChart> {
       return LineTooltipItem(
         '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, touchedSpot.y)} \n',
         kHeader2TextStyle.copyWith(
-          color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+          color: context.appTheme.isDarkTheme
+              ? context.appTheme.onBackground
+              : context.appTheme.onSecondary,
           fontSize: 13,
         ),
         textAlign: TextAlign.right,
@@ -95,7 +102,9 @@ class _CustomLineChartState extends State<CustomLineChart> {
                 .copyWith(day: touchedSpot.x.toInt())
                 .getFormattedDate(hasYear: false, type: DateTimeType.ddmmmyyyy),
             style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.onBackground
+                  : context.appTheme.onSecondary,
               fontSize: 11,
             ),
           ),
@@ -104,10 +113,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
     }).toList();
   }
 
-  List<TouchedSpotIndicatorData> _touchedIndicators(
-    LineChartBarData barData,
-    List<int> indicators,
-  ) {
+  List<TouchedSpotIndicatorData> _touchedIndicators(LineChartBarData barData, List<int> indicators) {
     return indicators.map((int index) {
       final x = barData.spots[index].x;
 
@@ -146,10 +152,10 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
     final lineChartBarData = [
       LineChartBarData(
-        spots: widget.values.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList(),
+        spots: _values.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList(),
         isCurved: true,
         isStrokeCapRound: true,
-        barWidth: 4.5,
+        barWidth: 5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -177,8 +183,8 @@ class _CustomLineChartState extends State<CustomLineChart> {
         LineChartData(
           maxY: _highestAmount,
           minY: _lowestAmount - _highestAmount / 2,
-          minX: 1,
-          maxX: widget.values.last.day.toDouble(),
+          minX: _values.first.day.toDouble(),
+          maxX: _values.last.day.toDouble(),
           baselineY: 0,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
