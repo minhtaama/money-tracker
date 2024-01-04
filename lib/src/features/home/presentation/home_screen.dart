@@ -93,7 +93,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Gap.h16,
         IconWithText(
           header:
-              'You don\'t have any transactions in ${dayBeginOfMonth.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false, hasYear: false)}.\nCreate a new one by tapping \'+\' button'
+              'You don\'t have any transactions in ${dayBeginOfMonth.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false, hasYear: false)}.\nCreate a new one by tapping \'+\' button'
                   .hardcoded,
           headerSize: 14,
           iconPath: AppIcons.budgets,
@@ -113,7 +113,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
-          secondaryTitle: _displayDate.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
+          secondaryTitle:
+              _displayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);

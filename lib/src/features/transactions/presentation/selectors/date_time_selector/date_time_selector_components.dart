@@ -86,7 +86,7 @@ class _DateTimeWidget extends StatelessWidget {
               child: Center(
                 child: Text(
                   dateTime != null
-                      ? dateTime!.getFormattedDate(type: DateTimeType.ddmmmyyyy, hasYear: false)
+                      ? dateTime!.getFormattedDate(format: DateTimeFormat.ddmmmyyyy, hasYear: false)
                       : '- -   - - -',
                   style: kHeader1TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 15),
                 ),

@@ -39,13 +39,13 @@ class ExtendedHomeTab extends StatefulWidget {
 }
 
 class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
-  _InfoType _type = _InfoType.cashflow;
+  ChartDataType _type = ChartDataType.cashflow;
 
   String _titleBuilder(String month) {
     return switch (_type) {
-      _InfoType.cashflow => 'Cashflow in $month',
-      _InfoType.expense => 'Expense in $month',
-      _InfoType.income => 'Income in $month',
+      ChartDataType.cashflow => 'Cashflow in $month',
+      ChartDataType.expense => 'Expense in $month',
+      ChartDataType.income => 'Income in $month',
     };
   }
 
@@ -53,18 +53,18 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);
 
     double amount = switch (_type) {
-      _InfoType.cashflow => txnRepo.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
-      _InfoType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
-      _InfoType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
     };
 
     ref.listen(
         transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
         (_, __) {
       amount = switch (_type) {
-        _InfoType.cashflow => txnRepo.getNetCashflow(dayBeginOfMonth, dayEndOfMonth),
-        _InfoType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
-        _InfoType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
       };
     });
 
@@ -74,25 +74,23 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   List<CLCData> _valuesBuilder(WidgetRef ref) {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);
 
-    return [
-      CLCData(day: 1, amount: 152600),
-      CLCData(day: 8, amount: 230400),
-      CLCData(day: 15, amount: 545865),
-      CLCData(day: 23, amount: 457356),
-      CLCData(day: 31, amount: 754764),
-    ];
+    final lineData = txnRepo.getLineChartData(_type, widget.displayDate);
+
+    final result = List<CLCData>.from(lineData.entries.map((e) => CLCData(day: e.key, amount: e.value)));
+
+    return result;
   }
 
   bool get _showPrefixSign {
     return switch (_type) {
-      _InfoType.cashflow => true,
+      ChartDataType.cashflow => true,
       _ => false,
     };
   }
 
   bool get _showCurrency {
     return switch (_type) {
-      _InfoType.cashflow => false,
+      ChartDataType.cashflow => false,
       _ => true,
     };
   }
@@ -100,9 +98,9 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   void _onTapSwitchType() {
     setState(() {
       _type = switch (_type) {
-        _InfoType.cashflow => _InfoType.expense,
-        _InfoType.expense => _InfoType.income,
-        _InfoType.income => _InfoType.cashflow,
+        ChartDataType.cashflow => ChartDataType.expense,
+        ChartDataType.expense => ChartDataType.income,
+        ChartDataType.income => ChartDataType.cashflow,
       };
     });
   }
@@ -201,7 +199,7 @@ class _DateSelector extends StatelessWidget {
                   },
                   child: Padding(
                     key: ValueKey(
-                        displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy)),
+                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
                       children: [
@@ -216,7 +214,7 @@ class _DateSelector extends StatelessWidget {
                         ),
                         Gap.w8,
                         Text(
-                          displayDate.getFormattedDate(hasDay: false, type: DateTimeType.ddmmmmyyyy),
+                          displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy),
                           style: kHeader3TextStyle.copyWith(
                             color: context.appTheme.onBackground,
                             fontSize: 15,
@@ -258,10 +256,4 @@ class _WelcomeText extends StatelessWidget {
       ),
     );
   }
-}
-
-enum _InfoType {
-  cashflow,
-  expense,
-  income,
 }

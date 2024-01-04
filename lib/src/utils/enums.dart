@@ -33,13 +33,19 @@ enum ThemeType {
   system,
 }
 
-enum DateTimeType {
+enum DateTimeFormat {
   ddmmyyyy,
   ddmmmyyyy,
   ddmmmmyyyy,
   mmddyyyy,
   mmmddyyyy,
   mmmmddyyyy,
+}
+
+enum ChartDataType {
+  cashflow,
+  expense,
+  income,
 }
 
 /// https://www.xe.com/symbols/

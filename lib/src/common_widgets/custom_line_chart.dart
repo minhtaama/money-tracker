@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'dart:math' as math;
 
 class CLCData {
   CLCData({required this.day, required this.amount});
@@ -36,17 +37,15 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
   @override
   void initState() {
     _values = widget.valuesBuilder(ref);
-    _findLowestAndHighestAmount();
+    //_findLowestAndHighestAmount();
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant CustomLineChart oldWidget) {
     if (_values != oldWidget.valuesBuilder(ref)) {
-      setState(() {
-        _values = widget.valuesBuilder(ref);
-        _findLowestAndHighestAmount();
-      });
+      _values = widget.valuesBuilder(ref);
+      //_findLowestAndHighestAmount();
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -71,7 +70,7 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
 
     return isShowTitle
         ? Transform.translate(
-            offset: const Offset(0, -40),
+            offset: const Offset(0, -20),
             child: SideTitleWidget(
               axisSide: AxisSide.bottom,
               space: 0,
@@ -100,7 +99,7 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
           TextSpan(
             text: widget.currentMonthView
                 .copyWith(day: touchedSpot.x.toInt())
-                .getFormattedDate(hasYear: false, type: DateTimeType.ddmmmyyyy),
+                .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
             style: kHeader3TextStyle.copyWith(
               color: context.appTheme.isDarkTheme
                   ? context.appTheme.onBackground
@@ -155,6 +154,8 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
         spots: _values.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList(),
         isCurved: true,
         isStrokeCapRound: true,
+        preventCurveOverShooting: true,
+        preventCurveOvershootingThreshold: 6,
         barWidth: 5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
@@ -177,36 +178,34 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
       )
     ];
 
-    return Transform.translate(
-      offset: const Offset(0, 32),
-      child: LineChart(
-        LineChartData(
-          maxY: _highestAmount,
-          minY: _lowestAmount - _highestAmount / 2,
-          minX: _values.first.day.toDouble(),
-          maxX: _values.last.day.toDouble(),
-          baselineY: 0,
-          gridData: const FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(
-            show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            bottomTitles: AxisTitles(
-              drawBelowEverything: false,
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 14,
-                interval: 1,
-                getTitlesWidget: _bottomTitleWidgets,
-              ),
+    return LineChart(
+      LineChartData(
+        //maxY: _highestAmount,
+        //minY: _lowestAmount > 0 ? _lowestAmount - _lowestAmount / 2 : _lowestAmount + _lowestAmount / 2,
+        // minX: _values.first.day.toDouble(),
+        // maxX: _values.last.day.toDouble(),
+        gridData: const FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          show: true,
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            drawBelowEverything: false,
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 14,
+              interval: 1,
+              getTitlesWidget: _bottomTitleWidgets,
             ),
           ),
-          lineTouchData: lineTouchData,
-          lineBarsData: lineChartBarData,
         ),
+        lineTouchData: lineTouchData,
+        lineBarsData: lineChartBarData,
       ),
+      duration: k750msDuration,
+      curve: Curves.easeInOut,
     );
   }
 }

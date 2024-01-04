@@ -84,7 +84,7 @@ class DayCard extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                     Text(
-                      dateTime.getFormattedDate(type: DateTimeType.ddmmmmyyyy, hasDay: false),
+                      dateTime.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
                       style:
                           kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
                       textAlign: TextAlign.left,

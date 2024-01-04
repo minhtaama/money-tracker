@@ -136,7 +136,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
               widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedAccountTab(
             account: widget.creditAccount,
-            dateDisplay: _displayStatementDate.getFormattedDate(type: DateTimeType.ddmmyyyy),
+            dateDisplay: _displayStatementDate.getFormattedDate(format: DateTimeFormat.ddmmyyyy),
             onTapLeft: _previousPage,
             onTapRight: _nextPage,
             onTapGoToCurrentDate: () {

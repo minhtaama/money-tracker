@@ -75,9 +75,8 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
               DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
               DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-              String pageMonth =
-                  DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
-                      .getFormattedDate(hasDay: false, hasYear: false, type: DateTimeType.ddmmmmyyyy);
+              String month = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
+                  .getFormattedDate(hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy);
 
               return Consumer(
                 builder: (context, ref, child) {
@@ -101,13 +100,13 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                       );
                     },
                     child: _CarouselContent(
-                      key: ValueKey(widget.titleBuilder(pageMonth)),
+                      key: ValueKey(widget.titleBuilder(month)),
                       isActive: _currentPageIndex == pageIndex,
                       isShowValue: context.currentSettings.showBalanceInHomeScreen,
                       showCurrency: widget.showCurrency,
                       showPrefixSign: widget.showPrefixSign,
                       amount: amount,
-                      text: widget.titleBuilder(pageMonth),
+                      text: widget.titleBuilder(month),
                       onChange: (width) {
                         setState(() {
                           _betweenButtonsGap = width.clamp(100, 195) + 30;

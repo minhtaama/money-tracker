@@ -14,6 +14,10 @@ extension DateTimeExtensions on DateTime {
   /// Returns [DateTime] without timestamp.
   DateTime get onlyYearMonthDay => DateTime(year, month, day);
 
+  bool isSameMonthAs(DateTime date) {
+    return year == date.year && month == date.month;
+  }
+
   int getMonthsDifferent(DateTime date) {
     if (year == date.year) return ((date.month - month).abs() + 1);
 
@@ -38,30 +42,30 @@ extension DateTimeExtensions on DateTime {
   }
 
   String getFormattedDate({
-    DateTimeType type = DateTimeType.ddmmyyyy,
+    DateTimeFormat format = DateTimeFormat.ddmmyyyy,
     bool hasDay = true,
     bool hasMonth = true,
     bool hasYear = true,
   }) {
     NumberFormat formatter = NumberFormat("00");
     String monthF = hasMonth
-        ? switch (type) {
-            DateTimeType.ddmmyyyy || DateTimeType.mmddyyyy => formatter.format(month),
-            DateTimeType.ddmmmmyyyy || DateTimeType.mmmmddyyyy => _monthString(),
-            DateTimeType.ddmmmyyyy || DateTimeType.mmmddyyyy => _monthStringShort(),
+        ? switch (format) {
+            DateTimeFormat.ddmmyyyy || DateTimeFormat.mmddyyyy => formatter.format(month),
+            DateTimeFormat.ddmmmmyyyy || DateTimeFormat.mmmmddyyyy => _monthString(),
+            DateTimeFormat.ddmmmyyyy || DateTimeFormat.mmmddyyyy => _monthStringShort(),
           }
         : '';
     String dayF = hasDay ? formatter.format(day) : '';
     String yearF = hasYear ? year.toString() : '';
 
-    switch (type) {
-      case DateTimeType.ddmmyyyy:
+    switch (format) {
+      case DateTimeFormat.ddmmyyyy:
         return '$dayF${hasDay && hasMonth ? '/' : ''}$monthF${hasMonth && hasYear ? '/' : ''}$yearF';
-      case DateTimeType.ddmmmmyyyy || DateTimeType.ddmmmyyyy:
+      case DateTimeFormat.ddmmmmyyyy || DateTimeFormat.ddmmmyyyy:
         return '$dayF${hasDay && hasMonth ? ' ' : ''}$monthF${hasYear ? ', ' : ''}$yearF';
-      case DateTimeType.mmddyyyy:
+      case DateTimeFormat.mmddyyyy:
         return '$monthF${hasDay && hasMonth ? '/' : ''}$dayF${hasDay && hasYear ? '/' : ''}$yearF';
-      case DateTimeType.mmmmddyyyy || DateTimeType.mmmddyyyy:
+      case DateTimeFormat.mmmmddyyyy || DateTimeFormat.mmmddyyyy:
         return '$monthF${hasDay && hasMonth ? ' ' : ''}$dayF${hasYear ? ', ' : ''}$yearF';
     }
   }
