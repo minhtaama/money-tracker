@@ -9,130 +9,102 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'dart:math' as math;
 
-class CLCData {
-  CLCData({required this.day, required this.amount});
-  final int day;
+/// This class extends [FlSpot], which has `amount` property to store original amount
+///
+/// The X-axis represents day,
+///
+/// The Y-axis represents the ratio of the `amount` at that point to the highest `amount`
+class LineChartSpot extends FlSpot {
+  LineChartSpot(super.x, super.y, {required this.amount});
+
   final double amount;
 }
 
-class CustomLineChart extends ConsumerStatefulWidget {
+class CustomLineChart extends ConsumerWidget {
   const CustomLineChart({
     super.key,
     required this.currentMonthView,
     required this.valuesBuilder,
+    this.chartOffsetY = 0,
   });
-  final List<CLCData> Function(WidgetRef) valuesBuilder;
+  final List<LineChartSpot> Function(WidgetRef) valuesBuilder;
   final DateTime currentMonthView;
+  final double chartOffsetY;
 
   @override
-  ConsumerState<CustomLineChart> createState() => _CustomLineChartState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<LineChartSpot> data = valuesBuilder(ref);
 
-class _CustomLineChartState extends ConsumerState<CustomLineChart> {
-  late double _lowestAmount;
-  late double _highestAmount;
+    double minYSpot = double.maxFinite;
 
-  late List<CLCData> _values;
-
-  @override
-  void initState() {
-    _values = widget.valuesBuilder(ref);
-    //_findLowestAndHighestAmount();
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant CustomLineChart oldWidget) {
-    if (_values != oldWidget.valuesBuilder(ref)) {
-      _values = widget.valuesBuilder(ref);
-      //_findLowestAndHighestAmount();
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  void _findLowestAndHighestAmount() {
-    double lowTemp = double.infinity;
-    double highTemp = double.negativeInfinity;
-    for (CLCData data in _values) {
-      if (data.amount < lowTemp) {
-        lowTemp = data.amount;
-      }
-      if (data.amount > highTemp) {
-        highTemp = data.amount;
+    for (LineChartSpot spot in data) {
+      if (spot.y < minYSpot) {
+        minYSpot = spot.y;
       }
     }
-    _lowestAmount = lowTemp;
-    _highestAmount = highTemp;
-  }
 
-  Widget _bottomTitleWidgets(double value, TitleMeta meta) {
-    bool isShowTitle = _values.map((e) => e.day).contains(value.toInt());
+    Widget bottomTitleWidgets(double value, TitleMeta meta) {
+      bool isShowTitle = data.map((e) => e.x).contains(value.toInt());
 
-    return isShowTitle
-        ? Transform.translate(
-            offset: const Offset(0, -20),
-            child: SideTitleWidget(
-              axisSide: AxisSide.bottom,
-              space: 0,
-              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
-              child: Text(
-                value.toInt().toString(),
-                style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent),
+      return isShowTitle
+          ? Transform.translate(
+              offset: Offset(0, -(6 + chartOffsetY)),
+              child: SideTitleWidget(
+                axisSide: AxisSide.bottom,
+                space: 0,
+                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
+                child: Text(
+                  value.toInt().toString(),
+                  style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent),
+                ),
+              ),
+            )
+          : Gap.noGap;
+    }
+
+    List<LineTooltipItem> lineTooltipItem(List<LineBarSpot> touchedSpots) {
+      return touchedSpots.map((LineBarSpot touchedSpot) {
+        return LineTooltipItem(
+          '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, data[touchedSpot.spotIndex].amount)} \n',
+          kHeader2TextStyle.copyWith(
+            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            fontSize: 13,
+          ),
+          textAlign: TextAlign.right,
+          children: [
+            TextSpan(
+              text: currentMonthView
+                  .copyWith(day: touchedSpot.x.toInt())
+                  .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
+              style: kHeader3TextStyle.copyWith(
+                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                fontSize: 11,
               ),
             ),
-          )
-        : Gap.noGap;
-  }
+          ],
+        );
+      }).toList();
+    }
 
-  List<LineTooltipItem> _lineTooltipItem(List<LineBarSpot> touchedSpots) {
-    return touchedSpots.map((LineBarSpot touchedSpot) {
-      return LineTooltipItem(
-        '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, touchedSpot.y)} \n',
-        kHeader2TextStyle.copyWith(
-          color: context.appTheme.isDarkTheme
-              ? context.appTheme.onBackground
-              : context.appTheme.onSecondary,
-          fontSize: 13,
-        ),
-        textAlign: TextAlign.right,
-        children: [
-          TextSpan(
-            text: widget.currentMonthView
-                .copyWith(day: touchedSpot.x.toInt())
-                .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
-            style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.isDarkTheme
-                  ? context.appTheme.onBackground
-                  : context.appTheme.onSecondary,
-              fontSize: 11,
-            ),
+    List<TouchedSpotIndicatorData> touchedIndicators(LineChartBarData barData, List<int> indicators) {
+      return indicators.map((int index) {
+        final x = barData.spots[index].x;
+
+        /// Indicator Line
+        const flLine = FlLine(color: Colors.transparent, strokeWidth: 0.0);
+
+        final dotData = FlDotData(
+          getDotPainter: (spot, percent, bar, _) => FlDotCirclePainter(
+            radius: 8,
+            color: context.appTheme.accent1.addDark(0.1),
+            strokeColor: Colors.transparent,
           ),
-        ],
-      );
-    }).toList();
-  }
+        );
 
-  List<TouchedSpotIndicatorData> _touchedIndicators(LineChartBarData barData, List<int> indicators) {
-    return indicators.map((int index) {
-      final x = barData.spots[index].x;
+        return TouchedSpotIndicatorData(flLine, dotData);
+      }).toList();
+    }
 
-      /// Indicator Line
-      const flLine = FlLine(color: Colors.transparent, strokeWidth: 0.0);
-
-      final dotData = FlDotData(
-        getDotPainter: (spot, percent, bar, _) => FlDotCirclePainter(
-          radius: 8,
-          color: context.appTheme.accent1.addDark(0.1),
-          strokeColor: Colors.transparent,
-        ),
-      );
-
-      return TouchedSpotIndicatorData(flLine, dotData);
-    }).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final lineTouchData = LineTouchData(
       enabled: true,
       touchSpotThreshold: 50,
@@ -144,18 +116,18 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
         tooltipBgColor: context.appTheme.isDarkTheme
             ? context.appTheme.background0.withOpacity(0.8)
             : context.appTheme.secondary2.withOpacity(0.8),
-        getTooltipItems: _lineTooltipItem,
+        getTooltipItems: lineTooltipItem,
       ),
-      getTouchedSpotIndicator: _touchedIndicators,
+      getTouchedSpotIndicator: touchedIndicators,
     );
 
     final lineChartBarData = [
       LineChartBarData(
-        spots: _values.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList(),
+        spots: data,
         isCurved: true,
         isStrokeCapRound: true,
         preventCurveOverShooting: true,
-        preventCurveOvershootingThreshold: 6,
+        preventCurveOvershootingThreshold: 10,
         barWidth: 5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
@@ -178,34 +150,35 @@ class _CustomLineChartState extends ConsumerState<CustomLineChart> {
       )
     ];
 
-    return LineChart(
-      LineChartData(
-        //maxY: _highestAmount,
-        //minY: _lowestAmount > 0 ? _lowestAmount - _lowestAmount / 2 : _lowestAmount + _lowestAmount / 2,
-        // minX: _values.first.day.toDouble(),
-        // maxX: _values.last.day.toDouble(),
-        gridData: const FlGridData(show: false),
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(
-          show: true,
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            drawBelowEverything: false,
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 14,
-              interval: 1,
-              getTitlesWidget: _bottomTitleWidgets,
+    return Transform.translate(
+      offset: Offset(0, chartOffsetY),
+      child: LineChart(
+        LineChartData(
+          maxY: 1,
+          minY: 0 - (chartOffsetY * 1.2) / 100,
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          titlesData: FlTitlesData(
+            show: true,
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(
+              drawBelowEverything: false,
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 14,
+                interval: 1,
+                getTitlesWidget: bottomTitleWidgets,
+              ),
             ),
           ),
+          lineTouchData: lineTouchData,
+          lineBarsData: lineChartBarData,
         ),
-        lineTouchData: lineTouchData,
-        lineBarsData: lineChartBarData,
+        duration: k550msDuration,
+        curve: Curves.easeOutBack,
       ),
-      duration: k750msDuration,
-      curve: Curves.easeInOut,
     );
   }
 }

@@ -58,9 +58,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
     };
 
-    ref.listen(
-        transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-        (_, __) {
+    ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
       amount = switch (_type) {
         ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
@@ -71,14 +69,10 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
     return amount;
   }
 
-  List<CLCData> _valuesBuilder(WidgetRef ref) {
+  List<LineChartSpot> _valuesBuilder(WidgetRef ref) {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);
 
-    final lineData = txnRepo.getLineChartData(_type, widget.displayDate);
-
-    final result = List<CLCData>.from(lineData.entries.map((e) => CLCData(day: e.key, amount: e.value)));
-
-    return result;
+    return txnRepo.getLineChartSpots(_type, widget.displayDate);
   }
 
   bool get _showPrefixSign {
@@ -128,6 +122,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
           child: CustomLineChart(
             currentMonthView: widget.displayDate,
             valuesBuilder: _valuesBuilder,
+            chartOffsetY: 35,
           ),
         ),
         _DateSelector(
@@ -198,16 +193,14 @@ class _DateSelector extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    key: ValueKey(
-                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                    key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
                       children: [
                         RoundedIconButton(
-                          iconPath:
-                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                                  ? AppIcons.today
-                                  : AppIcons.turn,
+                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                              ? AppIcons.today
+                              : AppIcons.turn,
                           iconColor: context.appTheme.onBackground,
                           size: 16,
                           iconPadding: 0,
@@ -250,8 +243,7 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color:
-            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );
