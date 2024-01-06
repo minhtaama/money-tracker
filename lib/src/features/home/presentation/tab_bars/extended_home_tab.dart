@@ -58,7 +58,9 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
     };
 
-    ref.listen(transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)), (_, __) {
+    ref.listen(
+        transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
+        (_, __) {
       amount = switch (_type) {
         ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
@@ -69,7 +71,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
     return amount;
   }
 
-  List<LineChartSpot> _valuesBuilder(WidgetRef ref) {
+  List<CLCSpot> _valuesBuilder(WidgetRef ref) {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);
 
     return txnRepo.getLineChartSpots(_type, widget.displayDate);
@@ -80,6 +82,21 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.cashflow => true,
       _ => false,
     };
+  }
+
+  CustomLineType get _customLineType {
+    final today = DateTime.now();
+    if (widget.displayDate.isSameMonthAs(today)) {
+      return CustomLineType.solidThenDashed;
+    }
+    if (widget.displayDate.isInMonthAfter(today)) {
+      return CustomLineType.dashed;
+    }
+    if (widget.displayDate.isInMonthBefore(today)) {
+      return CustomLineType.solid;
+    }
+
+    throw ErrorDescription('Whoop whoop');
   }
 
   bool get _showCurrency {
@@ -120,9 +137,10 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
         ),
         Expanded(
           child: CustomLineChart(
-            currentMonthView: widget.displayDate,
+            currentMonth: widget.displayDate,
             valuesBuilder: _valuesBuilder,
             chartOffsetY: 35,
+            type: _customLineType,
           ),
         ),
         _DateSelector(
@@ -193,14 +211,16 @@ class _DateSelector extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                    key: ValueKey(
+                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
                       children: [
                         RoundedIconButton(
-                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                              ? AppIcons.today
-                              : AppIcons.turn,
+                          iconPath:
+                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                                  ? AppIcons.today
+                                  : AppIcons.turn,
                           iconColor: context.appTheme.onBackground,
                           size: 16,
                           iconPadding: 0,
@@ -243,7 +263,8 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color:
+            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );

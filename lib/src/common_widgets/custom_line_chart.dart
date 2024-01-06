@@ -9,42 +9,120 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'dart:math' as math;
 
-/// This class extends [FlSpot], which has `amount` property to store original amount
-///
-/// The X-axis represents day,
-///
-/// The Y-axis represents the ratio of the `amount` at that point to the highest `amount`
-class LineChartSpot extends FlSpot {
-  LineChartSpot(super.x, super.y, {required this.amount});
+class CLCSpot extends FlSpot {
+  /// Custom Line Chart Spot, use with [CustomLineChart]. This class extends [FlSpot],
+  /// which has additional `amount` and `checkpoint` property.
+  ///
+  /// The X-axis represents day,
+  ///
+  /// The Y-axis represents the ratio of the `amount` at that point to the highest `amount`
+  CLCSpot(super.x, super.y, {required this.amount, this.checkpoint = false});
 
+  /// To store original amount
   final double amount;
+
+  /// Is the spot where line turn from solid to dashed.
+  ///
+  /// Only works when type is [CustomLineType.solidThenDashed]
+  final bool checkpoint;
 }
 
 class CustomLineChart extends ConsumerWidget {
   const CustomLineChart({
     super.key,
-    required this.currentMonthView,
+    this.type = CustomLineType.solidThenDashed,
+    required this.currentMonth,
     required this.valuesBuilder,
     this.chartOffsetY = 0,
   });
-  final List<LineChartSpot> Function(WidgetRef) valuesBuilder;
-  final DateTime currentMonthView;
+
+  final CustomLineType type;
+
+  /// To determine value in x-axis (days in month)
+  final DateTime currentMonth;
+
+  final List<CLCSpot> Function(WidgetRef) valuesBuilder;
+
+  /// Offset chart but keep the bottom title at the same spot
   final double chartOffsetY;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<LineChartSpot> data = valuesBuilder(ref);
+    final spots = valuesBuilder(ref);
 
-    double minYSpot = double.maxFinite;
+    final hasCheckpoint = spots.indexWhere((e) => e.checkpoint) != -1;
 
-    for (LineChartSpot spot in data) {
-      if (spot.y < minYSpot) {
-        minYSpot = spot.y;
-      }
-    }
+    final lineChartBarData = [
+      // Always shows, will turns to solid if the chart only use solid line.
+      LineChartBarData(
+        spots: spots,
+        isCurved: true,
+        isStrokeCapRound: false,
+        dashArray: [
+          12,
+          type == CustomLineType.solid || type == CustomLineType.solidThenDashed && !hasCheckpoint
+              ? 0
+              : 8,
+        ],
+        barWidth: type == CustomLineType.solid ? 5 : 3,
+        shadow: context.appTheme.isDarkTheme
+            ? Shadow(
+                color: context.appTheme.accent1,
+                blurRadius: 50,
+              )
+            : const Shadow(color: Colors.transparent),
+        color: context.appTheme.accent1,
+        belowBarData: BarAreaData(
+          show: true,
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+            colors: [
+              context.appTheme.accent1.withOpacity(0.7),
+              context.appTheme.accent1.withOpacity(0.1),
+            ],
+            stops: const [0, 0.8],
+          ),
+        ),
+        dotData: const FlDotData(show: false),
+      ),
+
+      // THE SECOND ONE HERE
+      // Optional solid line. Only shows if there are both solid and dashed line.
+      LineChartBarData(
+        show: type == CustomLineType.solidThenDashed,
+        spots: List<CLCSpot>.from(spots)
+          ..removeRange(
+            hasCheckpoint ? spots.indexWhere((e) => e.checkpoint) + 1 : spots.length,
+            spots.length,
+          ),
+        isCurved: true,
+        isStrokeCapRound: false,
+        barWidth: 5,
+        color: type == CustomLineType.solidThenDashed && hasCheckpoint
+            ? context.appTheme.accent1
+            : Colors.transparent,
+        belowBarData: BarAreaData(
+          show: false,
+        ),
+        dotData: FlDotData(
+          show: true,
+          checkToShowDot: (spot, barData) {
+            return barData.spots.indexOf(spot) == barData.spots.length - 1;
+          },
+          getDotPainter: (spot, percent, bar, index) {
+            return FlDotCirclePainter(
+              radius: 8,
+              color: context.appTheme.accent1,
+              strokeColor: Colors.transparent,
+            );
+          },
+        ),
+      ),
+    ];
 
     Widget bottomTitleWidgets(double value, TitleMeta meta) {
-      bool isShowTitle = data.map((e) => e.x).contains(value.toInt());
+      bool isShowTitle = spots.map((e) => e.x).contains(value.toInt());
 
       return isShowTitle
           ? Transform.translate(
@@ -62,43 +140,68 @@ class CustomLineChart extends ConsumerWidget {
           : Gap.noGap;
     }
 
-    List<LineTooltipItem> lineTooltipItem(List<LineBarSpot> touchedSpots) {
-      return touchedSpots.map((LineBarSpot touchedSpot) {
-        return LineTooltipItem(
-          '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, data[touchedSpot.spotIndex].amount)} \n',
+    List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
+      List<LineTooltipItem?> items = [];
+
+      // loop through EACH touchedSpot of a bar
+      for (int i = 0; i < touchedSpots.length; i++) {
+        final touchedSpot = touchedSpots[i];
+
+        // if touchedSpot is of optional bar, the second one in the list
+        if (touchedSpot.barIndex == 1) {
+          items.add(null);
+          continue;
+        }
+
+        items.add(LineTooltipItem(
+          '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            color: context.appTheme.isDarkTheme
+                ? context.appTheme.onBackground
+                : context.appTheme.onSecondary,
             fontSize: 13,
           ),
           textAlign: TextAlign.right,
           children: [
             TextSpan(
-              text: currentMonthView
+              text: currentMonth
                   .copyWith(day: touchedSpot.x.toInt())
                   .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                color: context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary,
                 fontSize: 11,
               ),
             ),
           ],
-        );
-      }).toList();
+        ));
+      }
+
+      return items;
     }
 
-    List<TouchedSpotIndicatorData> touchedIndicators(LineChartBarData barData, List<int> indicators) {
-      return indicators.map((int index) {
-        final x = barData.spots[index].x;
-
-        /// Indicator Line
-        const flLine = FlLine(color: Colors.transparent, strokeWidth: 0.0);
-
-        final dotData = FlDotData(
-          getDotPainter: (spot, percent, bar, _) => FlDotCirclePainter(
-            radius: 8,
-            color: context.appTheme.accent1.addDark(0.1),
-            strokeColor: Colors.transparent,
+    List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
+      return spotIndex.map((int index) {
+        FlLine flLine = FlLine(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [context.appTheme.accent1, context.appTheme.accent1.withOpacity(0.0)],
+            stops: const [0, 0.75],
           ),
+          strokeWidth: barData.dashArray != null ? 5 : 0,
+        );
+
+        FlDotData dotData = FlDotData(
+          getDotPainter: (spot, percent, bar, index) {
+            //print(bar.barWidth);
+            return FlDotCirclePainter(
+              radius: barData.dashArray != null ? 10 : 0,
+              color: context.appTheme.accent1.addDark(0.1),
+              strokeColor: Colors.transparent,
+            );
+          },
         );
 
         return TouchedSpotIndicatorData(flLine, dotData);
@@ -107,7 +210,7 @@ class CustomLineChart extends ConsumerWidget {
 
     final lineTouchData = LineTouchData(
       enabled: true,
-      touchSpotThreshold: 50,
+      touchSpotThreshold: 100,
       touchTooltipData: LineTouchTooltipData(
         fitInsideHorizontally: true,
         tooltipRoundedRadius: 12,
@@ -120,35 +223,6 @@ class CustomLineChart extends ConsumerWidget {
       ),
       getTouchedSpotIndicator: touchedIndicators,
     );
-
-    final lineChartBarData = [
-      LineChartBarData(
-        spots: data,
-        isCurved: true,
-        isStrokeCapRound: true,
-        preventCurveOverShooting: true,
-        preventCurveOvershootingThreshold: 10,
-        barWidth: 5,
-        shadow: context.appTheme.isDarkTheme
-            ? Shadow(
-                color: context.appTheme.accent1,
-                blurRadius: 50,
-              )
-            : const Shadow(color: Colors.transparent),
-        color: context.appTheme.accent1,
-        belowBarData: BarAreaData(
-          show: true,
-          gradient: LinearGradient(
-            colors: [
-              context.appTheme.accent1.withOpacity(0.65),
-              context.appTheme.accent1.withOpacity(0.3),
-            ],
-            stops: const [0.3, 1],
-          ),
-        ),
-        dotData: const FlDotData(show: false),
-      )
-    ];
 
     return Transform.translate(
       offset: Offset(0, chartOffsetY),
@@ -176,9 +250,11 @@ class CustomLineChart extends ConsumerWidget {
           lineTouchData: lineTouchData,
           lineBarsData: lineChartBarData,
         ),
-        duration: k550msDuration,
+        duration: k750msDuration,
         curve: Curves.easeOutBack,
       ),
     );
   }
 }
+
+enum CustomLineType { dashed, solid, solidThenDashed }

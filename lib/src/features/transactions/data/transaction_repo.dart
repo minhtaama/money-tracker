@@ -26,13 +26,15 @@ class TransactionRepository {
       };
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
+    List<TransactionDb> list = realm.all<TransactionDb>().query(
+        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)',
+        [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
@@ -72,13 +74,21 @@ class TransactionRepository {
     return result;
   }
 
-  List<LineChartSpot> getLineChartSpots(ChartDataType type, DateTime displayDate) {
+  List<CLCSpot> getLineChartSpots(ChartDataType type, DateTime displayDate) {
     final dayBeginOfMonth = DateTime(displayDate.year, displayDate.month);
     final dayEndOfMonth = DateTime(displayDate.year, displayDate.month + 1, 0, 23, 59, 59);
+    final today = DateTime.now();
 
     final days = displayDate.daysInMonth == 31 || displayDate.daysInMonth == 30
         ? [1, 8, 15, 23, dayEndOfMonth.day]
         : [1, 7, 14, 21, dayEndOfMonth.day];
+
+    if (today.isSameMonthAs(displayDate)) {
+      if (!days.contains(today.day)) {
+        int index = days.lastIndexWhere((day) => day < today.day);
+        days.insert(index + 1, today.day);
+      }
+    }
 
     Map<int, double> result = {for (int day in days) day: 0};
 
@@ -163,9 +173,9 @@ class TransactionRepository {
       }
     }
 
-    return List<LineChartSpot>.from(
+    return List<CLCSpot>.from(
       result.entries.map(
-        (e) => LineChartSpot(e.key.toDouble(), getY(e.value), amount: e.value),
+        (e) => CLCSpot(e.key.toDouble(), getY(e.value), amount: e.value, checkpoint: e.key == today.day),
       ),
     );
   }
@@ -178,7 +188,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -197,7 +208,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -222,7 +234,8 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -254,7 +267,8 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails:
+            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);

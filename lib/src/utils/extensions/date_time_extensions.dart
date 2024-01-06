@@ -18,6 +18,14 @@ extension DateTimeExtensions on DateTime {
     return year == date.year && month == date.month;
   }
 
+  bool isInMonthBefore(DateTime date) {
+    return year < date.year || year == date.year && month < date.month;
+  }
+
+  bool isInMonthAfter(DateTime date) {
+    return year > date.year || year == date.year && month > date.month;
+  }
+
   int getMonthsDifferent(DateTime date) {
     if (year == date.year) return ((date.month - month).abs() + 1);
 
