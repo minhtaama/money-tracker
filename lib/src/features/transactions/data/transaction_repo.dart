@@ -175,7 +175,8 @@ class TransactionRepository {
 
     return List<CLCSpot>.from(
       result.entries.map(
-        (e) => CLCSpot(e.key.toDouble(), getY(e.value), amount: e.value, checkpoint: e.key == today.day),
+        (e) => CLCSpot(e.key.toDouble(), getY(e.value),
+            amount: e.value, checkpoint: e.key == today.day && today.isSameMonthAs(displayDate)),
       ),
     );
   }

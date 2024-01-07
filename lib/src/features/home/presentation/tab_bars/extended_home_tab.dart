@@ -140,7 +140,8 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
             currentMonth: widget.displayDate,
             valuesBuilder: _valuesBuilder,
             chartOffsetY: 35,
-            type: _customLineType,
+            primaryLineType: _customLineType,
+            chartDataType: _type,
           ),
         ),
         _DateSelector(

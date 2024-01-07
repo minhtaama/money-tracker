@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'dart:math' as math;
 
 class CLCSpot extends FlSpot {
   /// Custom Line Chart Spot, use with [CustomLineChart]. This class extends [FlSpot],
@@ -30,13 +29,15 @@ class CLCSpot extends FlSpot {
 class CustomLineChart extends ConsumerWidget {
   const CustomLineChart({
     super.key,
-    this.type = CustomLineType.solidThenDashed,
+    this.primaryLineType = CustomLineType.solidThenDashed,
+    this.chartDataType = ChartDataType.cashflow,
     required this.currentMonth,
     required this.valuesBuilder,
     this.chartOffsetY = 0,
   });
 
-  final CustomLineType type;
+  final CustomLineType primaryLineType;
+  final ChartDataType chartDataType;
 
   /// To determine value in x-axis (days in month)
   final DateTime currentMonth;
@@ -50,21 +51,34 @@ class CustomLineChart extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final spots = valuesBuilder(ref);
 
-    final hasCheckpoint = spots.indexWhere((e) => e.checkpoint) != -1;
+    final cpIndex = spots.indexWhere((e) => e.checkpoint);
 
-    final lineChartBarData = [
+    final hasCp = cpIndex != -1;
+
+    final cpPercent = hasCp && primaryLineType == CustomLineType.solidThenDashed
+        ? spots[cpIndex].x / (spots[spots.length - 1].x + 1)
+        : 0.0;
+
+    final optionalBarGradient = LinearGradient(
+      colors: [context.appTheme.accent1, context.appTheme.accent1.withOpacity(0)],
+      stops: [cpPercent, cpPercent + 0.00001],
+    );
+
+    final lineBarsData = [
       // Always shows, will turns to solid if the chart only use solid line.
       LineChartBarData(
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
+        preventCurveOverShooting: true,
         dashArray: [
-          12,
-          type == CustomLineType.solid || type == CustomLineType.solidThenDashed && !hasCheckpoint
+          20,
+          primaryLineType == CustomLineType.solid ||
+                  primaryLineType == CustomLineType.solidThenDashed && !hasCp
               ? 0
-              : 8,
+              : 18,
         ],
-        barWidth: type == CustomLineType.solid ? 5 : 3,
+        barWidth: primaryLineType == CustomLineType.solid ? 5 : 3,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -75,44 +89,38 @@ class CustomLineChart extends ConsumerWidget {
         belowBarData: BarAreaData(
           show: true,
           gradient: LinearGradient(
-            begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              context.appTheme.accent1.withOpacity(0.7),
-              context.appTheme.accent1.withOpacity(0.1),
+              context.appTheme.accent1.withOpacity(0.15),
+              context.appTheme.accent1.withOpacity(0.65),
             ],
-            stops: const [0, 0.8],
+            stops: const [0, 1],
           ),
         ),
         dotData: const FlDotData(show: false),
       ),
 
-      // THE SECOND ONE HERE
-      // Optional solid line. Only shows if there are both solid and dashed line.
+      // Optional solid line, as the second one.
+      // Only shows (logic by gradient) if there are both solid and dashed line.
       LineChartBarData(
-        show: type == CustomLineType.solidThenDashed,
-        spots: List<CLCSpot>.from(spots)
-          ..removeRange(
-            hasCheckpoint ? spots.indexWhere((e) => e.checkpoint) + 1 : spots.length,
-            spots.length,
-          ),
+        spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
+        preventCurveOverShooting: true,
         barWidth: 5,
-        color: type == CustomLineType.solidThenDashed && hasCheckpoint
-            ? context.appTheme.accent1
-            : Colors.transparent,
+        gradient: optionalBarGradient,
         belowBarData: BarAreaData(
           show: false,
         ),
         dotData: FlDotData(
           show: true,
           checkToShowDot: (spot, barData) {
-            return barData.spots.indexOf(spot) == barData.spots.length - 1;
+            return hasCp && barData.spots.indexOf(spot) == cpIndex;
           },
           getDotPainter: (spot, percent, bar, index) {
             return FlDotCirclePainter(
-              radius: 8,
+              radius: 6.5,
               color: context.appTheme.accent1,
               strokeColor: Colors.transparent,
             );
@@ -147,7 +155,7 @@ class CustomLineChart extends ConsumerWidget {
       for (int i = 0; i < touchedSpots.length; i++) {
         final touchedSpot = touchedSpots[i];
 
-        // if touchedSpot is of optional bar, the second one in the list
+        // if touchedSpot is of optional bar (the second one in the list)
         if (touchedSpot.barIndex == 1) {
           items.add(null);
           continue;
@@ -183,21 +191,26 @@ class CustomLineChart extends ConsumerWidget {
 
     List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
       return spotIndex.map((int index) {
-        FlLine flLine = FlLine(
+        bool isOptionalBar = barData.dashArray == null;
+
+        final flLine = FlLine(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [context.appTheme.accent1, context.appTheme.accent1.withOpacity(0.0)],
+            colors: [
+              context.appTheme.accent1.withOpacity(0.45),
+              context.appTheme.accent1.withOpacity(0.0)
+            ],
             stops: const [0, 0.75],
           ),
-          strokeWidth: barData.dashArray != null ? 5 : 0,
+          strokeWidth: isOptionalBar ? 0 : 0,
         );
 
-        FlDotData dotData = FlDotData(
+        final dotData = FlDotData(
           getDotPainter: (spot, percent, bar, index) {
             //print(bar.barWidth);
             return FlDotCirclePainter(
-              radius: barData.dashArray != null ? 10 : 0,
+              radius: isOptionalBar ? 0 : 10,
               color: context.appTheme.accent1.addDark(0.1),
               strokeColor: Colors.transparent,
             );
@@ -209,15 +222,14 @@ class CustomLineChart extends ConsumerWidget {
     }
 
     final lineTouchData = LineTouchData(
-      enabled: true,
-      touchSpotThreshold: 100,
+      touchSpotThreshold: 50,
       touchTooltipData: LineTouchTooltipData(
         fitInsideHorizontally: true,
         tooltipRoundedRadius: 12,
         tooltipHorizontalAlignment: FLHorizontalAlignment.center,
         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         tooltipBgColor: context.appTheme.isDarkTheme
-            ? context.appTheme.background0.withOpacity(0.8)
+            ? context.appTheme.background0.withOpacity(0.9)
             : context.appTheme.secondary2.withOpacity(0.8),
         getTooltipItems: lineTooltipItem,
       ),
@@ -229,7 +241,7 @@ class CustomLineChart extends ConsumerWidget {
       child: LineChart(
         LineChartData(
           maxY: 1,
-          minY: 0 - (chartOffsetY * 1.2) / 100,
+          minY: 0 - (chartOffsetY * 1.4) / 100,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
@@ -248,7 +260,7 @@ class CustomLineChart extends ConsumerWidget {
             ),
           ),
           lineTouchData: lineTouchData,
-          lineBarsData: lineChartBarData,
+          lineBarsData: lineBarsData,
         ),
         duration: k750msDuration,
         curve: Curves.easeOutBack,
