@@ -190,8 +190,8 @@ class _CreditPaymentDetailsDb {
   double? adjustedBalance;
 }
 
-/////////////////////////////////////////////// SETTINGS ////////////////////////////////////////////////
-///////////////////////////////// ALL FIELDS MUST HAVE A DEFAULT VALUE //////////////////////////////////
+///////////////////////////////////// SETTINGS AND PERSISTENT VALUES /////////////////////////////////
+///////////////////////////////// ALL FIELDS MUST HAVE A DEFAULT VALUE ///////////////////////////////
 @RealmModel()
 class _SettingsDb {
   @PrimaryKey()
@@ -214,3 +214,26 @@ class _SettingsDb {
   bool showBalanceInHomeScreen = true;
   bool showDecimalDigits = false;
 }
+
+// @RealmModel()
+// class _Persistent {
+//   @PrimaryKey()
+//   final int id = 0;
+//
+//   int themeIndex = 0;
+//
+//   /// Currently, Realm do not support Dart Enum
+//   ///
+//   /// 0 == ThemeType.light
+//   ///
+//   /// 1 == ThemeType.dark
+//   ///
+//   /// 2, else == ThemeType.system
+//   int themeType = 0;
+//
+//   /// Currently, Realm do not support Dart Enum
+//   int currencyIndex = 101; // Currency.usd
+//
+//   bool showBalanceInHomeScreen = true;
+//   bool showDecimalDigits = false;
+// }

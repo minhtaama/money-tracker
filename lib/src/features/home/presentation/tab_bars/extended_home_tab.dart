@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/transactions/application/transaction_services.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -50,7 +51,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   }
 
   double _amountBuilder(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) {
-    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+    final txnRepo = ref.read(transactionServicesProvider);
 
     double amount = switch (_type) {
       ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
@@ -72,7 +73,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   }
 
   List<CLCSpot> _valuesBuilder(WidgetRef ref) {
-    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+    final txnRepo = ref.read(transactionServicesProvider);
 
     return txnRepo.getLineChartSpots(_type, widget.displayDate);
   }

@@ -121,7 +121,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                 Gap.h8,
                 InlineTextFormField(
                   prefixText: 'Payment amount:',
-                  suffixText: context.currentSettings.currency.code,
+                  suffixText: context.appSettings.currency.code,
                   widget: CalculatorInput(
                       controller: _installmentPaymentController,
                       fontSize: 18,

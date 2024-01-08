@@ -14,19 +14,19 @@ class CalService {
     if (value >= 1000000000.0) {
       final shortValue = value / 1000000000;
       formatter = NumberFormat('###,###.##');
-      return context.currentSettings.showBalanceInHomeScreen ? '${formatter.format(shortValue)} B' : '***';
+      return context.appSettings.showAmount ? '${formatter.format(shortValue)} B' : '***';
     }
 
     if (value >= 100000000.0) {
       final shortValue = value / 1000000;
       formatter = NumberFormat('###,###.##');
-      return context.currentSettings.showBalanceInHomeScreen ? '${formatter.format(shortValue)} M' : '***';
+      return context.appSettings.showAmount ? '${formatter.format(shortValue)} M' : '***';
     }
 
     formatter = NumberFormat.decimalPatternDigits(
-        decimalDigits: context.currentSettings.showDecimalDigits || forceWithDecimalDigits ? 2 : 0);
+        decimalDigits: context.appSettings.showDecimalDigits || forceWithDecimalDigits ? 2 : 0);
 
-    return context.currentSettings.showBalanceInHomeScreen ? formatter.format(value) : '***';
+    return context.appSettings.showAmount ? formatter.format(value) : '***';
   }
 
   /// This function takes the argument only in type __String__. It use Regex to find all

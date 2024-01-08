@@ -148,7 +148,7 @@ class _Amount extends ConsumerWidget {
               ),
               Gap.w8,
               Text(
-                context.currentSettings.currency.code,
+                context.appSettings.currency.code,
                 style: kHeader4TextStyle.copyWith(
                     color: _color(context), fontSize: kHeader1TextStyle.fontSize),
               ),

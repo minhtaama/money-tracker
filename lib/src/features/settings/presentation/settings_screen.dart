@@ -76,7 +76,7 @@ class SettingsScreen extends ConsumerWidget {
               ColorPicker(
                 currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
                 colorsList: AppColors.allThemeData,
-                currentColorIndex: context.currentSettings.themeIndex,
+                currentColorIndex: context.appSettings.themeIndex,
                 onColorTap: (int value) {
                   settingsController.set(themeIndex: value);
                   statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;

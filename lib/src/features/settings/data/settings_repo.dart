@@ -5,8 +5,8 @@ import '../../../../persistent/realm_dto.dart';
 import 'app_settings.dart';
 import '../../../utils/enums.dart';
 
-class SettingsController extends StateNotifier<SettingsData> {
-  SettingsController(this.realm) : super(SettingsData.fromDatabase(realm.find<SettingsDb>(0)!));
+class SettingsController extends StateNotifier<AppSettingsData> {
+  SettingsController(this.realm) : super(AppSettingsData.fromDatabase(realm.find<SettingsDb>(0)!));
 
   final Realm realm;
 
@@ -14,14 +14,14 @@ class SettingsController extends StateNotifier<SettingsData> {
     ThemeType? themeType,
     int? themeIndex,
     Currency? currency,
-    bool? showBalanceInHomeScreen,
+    bool? showAmount,
     bool? showDecimalDigits,
   }) async {
     state = state.copyWith(
       themeType: themeType,
       themeIndex: themeIndex,
       currency: currency,
-      showBalanceInHomeScreen: showBalanceInHomeScreen,
+      showAmount: showAmount,
       showDecimalDigits: showDecimalDigits,
     );
     realm.write(() => realm.add<SettingsDb>(state.toDatabase(), update: true));
@@ -33,7 +33,7 @@ class SettingsController extends StateNotifier<SettingsData> {
 ///
 /// Use **`context.currentSettings`** rather than this provider in child widgets to get
 /// current settings state.
-final settingsControllerProvider = StateNotifierProvider<SettingsController, SettingsData>((ref) {
+final settingsControllerProvider = StateNotifierProvider<SettingsController, AppSettingsData>((ref) {
   final realm = ref.watch(realmProvider);
   return SettingsController(realm);
 });

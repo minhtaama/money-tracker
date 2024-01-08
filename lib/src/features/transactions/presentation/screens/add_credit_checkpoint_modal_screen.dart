@@ -117,7 +117,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
           Gap.h8,
           InlineTextFormField(
             prefixText: 'Oustd. Balance:',
-            suffixText: context.currentSettings.currency.code,
+            suffixText: context.appSettings.currency.code,
             widget: CalculatorInput(
               fontSize: 18,
               isDense: true,

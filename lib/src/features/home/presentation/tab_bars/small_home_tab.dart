@@ -35,7 +35,7 @@ class SmallHomeTab extends ConsumerWidget {
     });
 
     return PageHeading(
-      leadingTitle: context.currentSettings.currency.code,
+      leadingTitle: context.appSettings.currency.code,
       title: CalService.formatCurrency(
         context,
         totalBalance,

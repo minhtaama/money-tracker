@@ -254,7 +254,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           children: [
                             InlineTextFormField(
                               prefixText: 'Bal. after payment:'.hardcoded,
-                              suffixText: context.currentSettings.currency.code,
+                              suffixText: context.appSettings.currency.code,
                               textSize: 14,
                               widget: CalculatorInput(
                                 hintText: stateWatch.userPaymentAmount != null &&

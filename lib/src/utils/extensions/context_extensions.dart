@@ -24,8 +24,8 @@ extension AppThemeBuildContext on BuildContext {
     }
   }
 
-  SettingsData get currentSettings => AppSettings.of(this);
+  AppSettingsData get appSettings => AppSettings.of(this);
 
   AppThemeData get appTheme =>
-      AppColors.allThemeData[currentSettings.themeIndex][_getThemeType(currentSettings.themeType)]!;
+      AppColors.allThemeData[appSettings.themeIndex][_getThemeType(appSettings.themeType)]!;
 }

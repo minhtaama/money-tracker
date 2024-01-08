@@ -547,8 +547,7 @@ class _SummaryCard extends StatelessWidget {
                   _buildText(
                     context,
                     text: 'Carrying-over:',
-                    richText:
-                        '${carryString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText: '${carryString(context, statement)} ${context.appSettings.currency.code}',
                     color: carry.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                   statement.previousStatement.interest > 0
@@ -556,22 +555,20 @@ class _SummaryCard extends StatelessWidget {
                           context,
                           text: 'Interest:',
                           richText:
-                              '~ ${interestString(context, statement)} ${context.currentSettings.currency.code}',
+                              '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
                           color: interest.roundBySetting(context) <= 0 ? 0 : -1,
                         )
                       : Gap.noGap,
                   _buildText(
                     context,
                     text: 'Spent in billing cycle:',
-                    richText:
-                        '${spentString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
                     color: spent.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                   _buildText(
                     context,
                     text: 'Paid for this statement:',
-                    richText:
-                        '${paidString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
                     color: paid.roundBySetting(context) <= 0 ? 0 : 1,
                   ),
                   Gap.divider(context, indent: 0),
@@ -579,7 +576,7 @@ class _SummaryCard extends StatelessWidget {
                     context,
                     text: 'Statement balance:',
                     richText:
-                        '${balanceString(context, statement)} ${context.currentSettings.currency.code}',
+                        '${balanceString(context, statement)} ${context.appSettings.currency.code}',
                     color: balance.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                 ],
@@ -595,15 +592,13 @@ class _SummaryCard extends StatelessWidget {
                   _buildText(
                     context,
                     text: 'Spent at checkpoint:',
-                    richText:
-                        '${spentString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
                     color: spent <= 0 ? 0 : -1,
                   ),
                   _buildText(
                     context,
                     text: 'Paid in grace period:',
-                    richText:
-                        '${paidString(context, statement)} ${context.currentSettings.currency.code}',
+                    richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
                     color: paid <= 0 ? 0 : 1,
                   ),
                   Gap.divider(context, indent: 0),
@@ -611,7 +606,7 @@ class _SummaryCard extends StatelessWidget {
                     context,
                     text: 'Statement balance:',
                     richText:
-                        '${balanceString(context, statement)} ${context.currentSettings.currency.code}',
+                        '${balanceString(context, statement)} ${context.appSettings.currency.code}',
                     color: balance <= 0 ? 0 : -1,
                   ),
                 ],

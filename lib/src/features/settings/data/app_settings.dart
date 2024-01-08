@@ -14,9 +14,9 @@ class AppSettings extends InheritedWidget {
     required super.child,
   });
 
-  final SettingsData data;
+  final AppSettingsData data;
 
-  static SettingsData of(BuildContext context) {
+  static AppSettingsData of(BuildContext context) {
     final settings = context.dependOnInheritedWidgetOfExactType<AppSettings>();
     if (settings != null) {
       return settings.data;
@@ -30,17 +30,17 @@ class AppSettings extends InheritedWidget {
 }
 
 // Access this class through `context.currentSettings`
-class SettingsData {
+class AppSettingsData {
   final int themeIndex;
 
   final ThemeType themeType;
 
   final Currency currency;
 
-  final bool showBalanceInHomeScreen;
+  final bool showAmount;
   final bool showDecimalDigits;
 
-  factory SettingsData.fromDatabase(SettingsDb settingsDb) {
+  factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
     ThemeType themeType = switch (settingsDb.themeType) {
       0 => ThemeType.light,
       1 => ThemeType.dark,
@@ -49,12 +49,12 @@ class SettingsData {
 
     Currency currency = Currency.values[settingsDb.currencyIndex];
 
-    return SettingsData._(
+    return AppSettingsData._(
       themeIndex: settingsDb.themeIndex,
       themeType: themeType,
       currency: currency,
       showDecimalDigits: settingsDb.showDecimalDigits,
-      showBalanceInHomeScreen: settingsDb.showBalanceInHomeScreen,
+      showAmount: settingsDb.showBalanceInHomeScreen,
     );
   }
 
@@ -72,31 +72,31 @@ class SettingsData {
       themeIndex: themeIndex,
       themeType: themeTypeRealmData,
       currencyIndex: currencyRealmData,
-      showBalanceInHomeScreen: showBalanceInHomeScreen,
+      showBalanceInHomeScreen: showAmount,
       showDecimalDigits: showDecimalDigits,
     );
   }
 
-  SettingsData._({
+  AppSettingsData._({
     required this.themeIndex,
     required this.themeType,
     required this.currency,
     required this.showDecimalDigits,
-    required this.showBalanceInHomeScreen,
+    required this.showAmount,
   });
 
-  SettingsData copyWith({
+  AppSettingsData copyWith({
     int? themeIndex,
     ThemeType? themeType,
     Currency? currency,
-    bool? showBalanceInHomeScreen,
+    bool? showAmount,
     bool? showDecimalDigits,
   }) {
-    return SettingsData._(
+    return AppSettingsData._(
       themeIndex: themeIndex ?? this.themeIndex,
       themeType: themeType ?? this.themeType,
       currency: currency ?? this.currency,
-      showBalanceInHomeScreen: showBalanceInHomeScreen ?? this.showBalanceInHomeScreen,
+      showAmount: showAmount ?? this.showAmount,
       showDecimalDigits: showDecimalDigits ?? this.showDecimalDigits,
     );
   }

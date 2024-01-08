@@ -107,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool showTotalBalance = context.currentSettings.showBalanceInHomeScreen;
+    bool showTotalBalance = context.appSettings.showAmount;
 
     return CustomTabPageWithPageView(
       controller: _pageController,
@@ -118,7 +118,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
-            settingsController.set(showBalanceInHomeScreen: showTotalBalance);
+            settingsController.set(showAmount: showTotalBalance);
           },
         ),
       ),
@@ -133,7 +133,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onDateTap: () => _animatedToPage(_initialPageIndex),
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
-            settingsController.set(showBalanceInHomeScreen: showTotalBalance);
+            settingsController.set(showAmount: showTotalBalance);
           },
         ),
       ),

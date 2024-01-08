@@ -114,7 +114,7 @@ class DayCard extends StatelessWidget {
                         ),
                         Gap.w4,
                         Text(
-                          context.currentSettings.currency.code,
+                          context.appSettings.currency.code,
                           style: kHeader4TextStyle.copyWith(
                               color: _calculateCashFlow > 0
                                   ? context.appTheme.positive
@@ -133,7 +133,7 @@ class DayCard extends StatelessWidget {
           Gap.divider(context),
           TransactionsList(
             transactions: transactions,
-            currencyCode: context.currentSettings.currency.code,
+            currencyCode: context.appSettings.currency.code,
             onTransactionTap: onTransactionTap,
           ),
         ],

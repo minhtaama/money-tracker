@@ -24,7 +24,7 @@ class CurrencyIcon extends StatelessWidget {
       borderRadius: BorderRadius.circular(1000),
       child: FittedBox(
         child: Text(
-          context.currentSettings.currency.symbol ?? context.currentSettings.currency.code,
+          context.appSettings.currency.symbol ?? context.appSettings.currency.code,
           style: kHeader1TextStyle.copyWith(
             color: context.appTheme.onBackground,
           ),

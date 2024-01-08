@@ -8,7 +8,7 @@ extension StringHardCoded on String {
 
 extension DoubleExtension on double {
   double roundBySetting(BuildContext context) {
-    if (context.currentSettings.showDecimalDigits) {
+    if (context.appSettings.showDecimalDigits) {
       return double.parse(toStringAsFixed(2));
     } else {
       return roundToDouble();

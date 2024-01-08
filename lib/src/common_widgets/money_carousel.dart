@@ -102,7 +102,7 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                     child: _CarouselContent(
                       key: ValueKey(widget.titleBuilder(month)),
                       isActive: _currentPageIndex == pageIndex,
-                      isShowValue: context.currentSettings.showBalanceInHomeScreen,
+                      isShowValue: context.appSettings.showAmount,
                       showCurrency: widget.showCurrency,
                       showPrefixSign: widget.showPrefixSign,
                       amount: amount,
@@ -203,7 +203,7 @@ class _CarouselContentState extends State<_CarouselContent> {
       return '';
     }
 
-    return '${context.currentSettings.currency.symbol} ';
+    return '${context.appSettings.currency.symbol} ';
   }
 
   @override

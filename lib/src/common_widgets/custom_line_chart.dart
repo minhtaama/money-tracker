@@ -56,27 +56,29 @@ class CustomLineChart extends ConsumerWidget {
     final hasCp = cpIndex != -1;
 
     final cpPercent = hasCp && primaryLineType == CustomLineType.solidThenDashed
-        ? spots[cpIndex].x / (spots[spots.length - 1].x + 1)
+        ? (spots[cpIndex].x - 1) / spots[spots.length - 1].x
         : 0.0;
 
     final optionalBarGradient = LinearGradient(
       colors: [context.appTheme.accent1, context.appTheme.accent1.withOpacity(0)],
-      stops: [cpPercent, cpPercent + 0.00001],
+      stops: [cpPercent, cpPercent + 0.00000001],
     );
 
     final lineBarsData = [
-      // Always shows, will turns to solid if the chart only use solid line.
+      // Main line.
+      // Always shows, default is dashed,
+      // will turns to solid if type is `solid`.
       LineChartBarData(
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
         dashArray: [
-          20,
+          15,
           primaryLineType == CustomLineType.solid ||
                   primaryLineType == CustomLineType.solidThenDashed && !hasCp
               ? 0
-              : 18,
+              : 12,
         ],
         barWidth: primaryLineType == CustomLineType.solid ? 5 : 3,
         shadow: context.appTheme.isDarkTheme
@@ -101,7 +103,7 @@ class CustomLineChart extends ConsumerWidget {
         dotData: const FlDotData(show: false),
       ),
 
-      // Optional solid line, as the second one.
+      // Optional solid line, as `barIndex == 1`.
       // Only shows (logic by gradient) if there are both solid and dashed line.
       LineChartBarData(
         spots: spots,
@@ -130,7 +132,13 @@ class CustomLineChart extends ConsumerWidget {
     ];
 
     Widget bottomTitleWidgets(double value, TitleMeta meta) {
+      final today = DateTime.now();
       bool isShowTitle = spots.map((e) => e.x).contains(value.toInt());
+      bool isToday = value == today.day && currentMonth.isSameMonthAs(today);
+
+      final textStyle = isToday
+          ? kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent)
+          : kHeader4TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent);
 
       return isShowTitle
           ? Transform.translate(
@@ -141,7 +149,7 @@ class CustomLineChart extends ConsumerWidget {
                 fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
                 child: Text(
                   value.toInt().toString(),
-                  style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent),
+                  style: textStyle,
                 ),
               ),
             )
@@ -162,7 +170,7 @@ class CustomLineChart extends ConsumerWidget {
         }
 
         items.add(LineTooltipItem(
-          '${context.currentSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
+          '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
             color: context.appTheme.isDarkTheme
                 ? context.appTheme.onBackground
@@ -195,22 +203,22 @@ class CustomLineChart extends ConsumerWidget {
 
         final flLine = FlLine(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
             colors: [
-              context.appTheme.accent1.withOpacity(0.45),
+              context.appTheme.accent1.withOpacity(0.35),
               context.appTheme.accent1.withOpacity(0.0)
             ],
-            stops: const [0, 0.75],
+            stops: const [0.46, 0.95],
           ),
-          strokeWidth: isOptionalBar ? 0 : 0,
+          strokeWidth: isOptionalBar ? 0 : 50,
         );
 
         final dotData = FlDotData(
           getDotPainter: (spot, percent, bar, index) {
             //print(bar.barWidth);
             return FlDotCirclePainter(
-              radius: isOptionalBar ? 0 : 10,
+              radius: isOptionalBar ? 0 : 8,
               color: context.appTheme.accent1.addDark(0.1),
               strokeColor: Colors.transparent,
             );

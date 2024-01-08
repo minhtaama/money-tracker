@@ -107,7 +107,7 @@ class AccountsListScreen extends ConsumerWidget {
                               // Account Current Balance
                               children: [
                                 Text(
-                                  context.currentSettings.currency.code,
+                                  context.appSettings.currency.code,
                                   style: kHeader4TextStyle.copyWith(
                                       color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
                                 ),
