@@ -211,29 +211,24 @@ class _SettingsDb {
   /// Currently, Realm do not support Dart Enum
   int currencyIndex = 101; // Currency.usd
 
-  bool showBalanceInHomeScreen = true;
   bool showDecimalDigits = false;
 }
 
-// @RealmModel()
-// class _Persistent {
-//   @PrimaryKey()
-//   final int id = 0;
-//
-//   int themeIndex = 0;
-//
-//   /// Currently, Realm do not support Dart Enum
-//   ///
-//   /// 0 == ThemeType.light
-//   ///
-//   /// 1 == ThemeType.dark
-//   ///
-//   /// 2, else == ThemeType.system
-//   int themeType = 0;
-//
-//   /// Currently, Realm do not support Dart Enum
-//   int currencyIndex = 101; // Currency.usd
-//
-//   bool showBalanceInHomeScreen = true;
-//   bool showDecimalDigits = false;
-// }
+@RealmModel()
+class _PersistentValuesDb {
+  @PrimaryKey()
+  final int id = 0;
+
+  int chartDataTypeInHomescreen = 0;
+
+  bool showAmount = true;
+
+  List<_BalanceAtDateTimeDb> balanceAtDateTimes = [];
+}
+
+@RealmModel(ObjectType.embeddedObject)
+class _BalanceAtDateTimeDb {
+  late DateTime date;
+
+  late double amount;
+}

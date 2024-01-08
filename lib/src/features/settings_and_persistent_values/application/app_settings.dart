@@ -6,29 +6,6 @@ import 'package:money_tracker_app/src/features/transactions/presentation/selecto
 
 import '../../../utils/enums.dart';
 
-/// Class for reading SettingsData via InheritedWidget
-class AppSettings extends InheritedWidget {
-  const AppSettings({
-    super.key,
-    required this.data,
-    required super.child,
-  });
-
-  final AppSettingsData data;
-
-  static AppSettingsData of(BuildContext context) {
-    final settings = context.dependOnInheritedWidgetOfExactType<AppSettings>();
-    if (settings != null) {
-      return settings.data;
-    } else {
-      throw StateError('Could not find ancestor widget of type `AppTheme`');
-    }
-  }
-
-  @override
-  bool updateShouldNotify(AppSettings oldWidget) => data != oldWidget.data;
-}
-
 // Access this class through `context.currentSettings`
 class AppSettingsData {
   final int themeIndex;
@@ -37,7 +14,6 @@ class AppSettingsData {
 
   final Currency currency;
 
-  final bool showAmount;
   final bool showDecimalDigits;
 
   factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
@@ -54,7 +30,6 @@ class AppSettingsData {
       themeType: themeType,
       currency: currency,
       showDecimalDigits: settingsDb.showDecimalDigits,
-      showAmount: settingsDb.showBalanceInHomeScreen,
     );
   }
 
@@ -72,7 +47,6 @@ class AppSettingsData {
       themeIndex: themeIndex,
       themeType: themeTypeRealmData,
       currencyIndex: currencyRealmData,
-      showBalanceInHomeScreen: showAmount,
       showDecimalDigits: showDecimalDigits,
     );
   }
@@ -82,21 +56,18 @@ class AppSettingsData {
     required this.themeType,
     required this.currency,
     required this.showDecimalDigits,
-    required this.showAmount,
   });
 
   AppSettingsData copyWith({
     int? themeIndex,
     ThemeType? themeType,
     Currency? currency,
-    bool? showAmount,
     bool? showDecimalDigits,
   }) {
     return AppSettingsData._(
       themeIndex: themeIndex ?? this.themeIndex,
       themeType: themeType ?? this.themeType,
       currency: currency ?? this.currency,
-      showAmount: showAmount ?? this.showAmount,
       showDecimalDigits: showDecimalDigits ?? this.showDecimalDigits,
     );
   }
@@ -243,4 +214,27 @@ class AppThemeData {
     required this.systemIconBrightnessOnExtendedTabBar,
     required this.systemIconBrightnessOnSmallTabBar,
   });
+}
+
+/// Class for reading AppSettingsData via InheritedWidget
+class AppSettings extends InheritedWidget {
+  const AppSettings({
+    super.key,
+    required this.data,
+    required super.child,
+  });
+
+  final AppSettingsData data;
+
+  static AppSettingsData of(BuildContext context) {
+    final settings = context.dependOnInheritedWidgetOfExactType<AppSettings>();
+    if (settings != null) {
+      return settings.data;
+    } else {
+      throw StateError('Could not find ancestor widget of type `AppTheme`');
+    }
+  }
+
+  @override
+  bool updateShouldNotify(AppSettings oldWidget) => data != oldWidget.data;
 }

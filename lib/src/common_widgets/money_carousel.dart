@@ -102,7 +102,7 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                     child: _CarouselContent(
                       key: ValueKey(widget.titleBuilder(month)),
                       isActive: _currentPageIndex == pageIndex,
-                      isShowValue: context.appSettings.showAmount,
+                      isShowValue: context.appPersistentValues.showAmount,
                       showCurrency: widget.showCurrency,
                       showPrefixSign: widget.showPrefixSign,
                       amount: amount,

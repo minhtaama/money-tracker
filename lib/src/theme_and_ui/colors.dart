@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/settings/data/app_settings.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_settings.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';

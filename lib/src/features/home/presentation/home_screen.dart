@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_repo.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/settings_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -27,7 +28,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
-  late final settingsController = ref.read(settingsControllerProvider.notifier);
+  late final persistentController = ref.read(persistentControllerProvider.notifier);
 
   late final PageController _pageController = PageController(initialPage: _initialPageIndex);
   late final PageController _carouselController =
@@ -107,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool showTotalBalance = context.appSettings.showAmount;
+    bool showTotalBalance = context.appPersistentValues.showAmount;
 
     return CustomTabPageWithPageView(
       controller: _pageController,
@@ -118,7 +119,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
-            settingsController.set(showAmount: showTotalBalance);
+            persistentController.set(showAmount: showTotalBalance);
           },
         ),
       ),
@@ -133,7 +134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onDateTap: () => _animatedToPage(_initialPageIndex),
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
-            settingsController.set(showAmount: showTotalBalance);
+            persistentController.set(showAmount: showTotalBalance);
           },
         ),
       ),

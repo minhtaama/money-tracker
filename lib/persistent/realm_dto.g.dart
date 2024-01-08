@@ -715,7 +715,6 @@ class SettingsDb extends _SettingsDb
     int themeIndex = 0,
     int themeType = 0,
     int currencyIndex = 101,
-    bool showBalanceInHomeScreen = true,
     bool showDecimalDigits = false,
   }) {
     if (!_defaultsSet) {
@@ -724,7 +723,6 @@ class SettingsDb extends _SettingsDb
         'themeIndex': 0,
         'themeType': 0,
         'currencyIndex': 101,
-        'showBalanceInHomeScreen': true,
         'showDecimalDigits': false,
       });
     }
@@ -732,8 +730,6 @@ class SettingsDb extends _SettingsDb
     RealmObjectBase.set(this, 'themeIndex', themeIndex);
     RealmObjectBase.set(this, 'themeType', themeType);
     RealmObjectBase.set(this, 'currencyIndex', currencyIndex);
-    RealmObjectBase.set(
-        this, 'showBalanceInHomeScreen', showBalanceInHomeScreen);
     RealmObjectBase.set(this, 'showDecimalDigits', showDecimalDigits);
   }
 
@@ -760,13 +756,6 @@ class SettingsDb extends _SettingsDb
       RealmObjectBase.set(this, 'currencyIndex', value);
 
   @override
-  bool get showBalanceInHomeScreen =>
-      RealmObjectBase.get<bool>(this, 'showBalanceInHomeScreen') as bool;
-  @override
-  set showBalanceInHomeScreen(bool value) =>
-      RealmObjectBase.set(this, 'showBalanceInHomeScreen', value);
-
-  @override
   bool get showDecimalDigits =>
       RealmObjectBase.get<bool>(this, 'showDecimalDigits') as bool;
   @override
@@ -790,8 +779,127 @@ class SettingsDb extends _SettingsDb
       SchemaProperty('themeIndex', RealmPropertyType.int),
       SchemaProperty('themeType', RealmPropertyType.int),
       SchemaProperty('currencyIndex', RealmPropertyType.int),
-      SchemaProperty('showBalanceInHomeScreen', RealmPropertyType.bool),
       SchemaProperty('showDecimalDigits', RealmPropertyType.bool),
+    ]);
+  }
+}
+
+// ignore_for_file: type=lint
+class PersistentValuesDb extends _PersistentValuesDb
+    with RealmEntity, RealmObjectBase, RealmObject {
+  static var _defaultsSet = false;
+
+  PersistentValuesDb(
+    int id, {
+    int chartDataTypeInHomescreen = 0,
+    bool showAmount = true,
+    Iterable<BalanceAtDateTimeDb> balanceAtDateTimes = const [],
+  }) {
+    if (!_defaultsSet) {
+      _defaultsSet = RealmObjectBase.setDefaults<PersistentValuesDb>({
+        'id': 0,
+        'chartDataTypeInHomescreen': 0,
+        'showAmount': true,
+      });
+    }
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(
+        this, 'chartDataTypeInHomescreen', chartDataTypeInHomescreen);
+    RealmObjectBase.set(this, 'showAmount', showAmount);
+    RealmObjectBase.set<RealmList<BalanceAtDateTimeDb>>(
+        this,
+        'balanceAtDateTimes',
+        RealmList<BalanceAtDateTimeDb>(balanceAtDateTimes));
+  }
+
+  PersistentValuesDb._();
+
+  @override
+  int get id => RealmObjectBase.get<int>(this, 'id') as int;
+
+  @override
+  int get chartDataTypeInHomescreen =>
+      RealmObjectBase.get<int>(this, 'chartDataTypeInHomescreen') as int;
+  @override
+  set chartDataTypeInHomescreen(int value) =>
+      RealmObjectBase.set(this, 'chartDataTypeInHomescreen', value);
+
+  @override
+  bool get showAmount => RealmObjectBase.get<bool>(this, 'showAmount') as bool;
+  @override
+  set showAmount(bool value) => RealmObjectBase.set(this, 'showAmount', value);
+
+  @override
+  RealmList<BalanceAtDateTimeDb> get balanceAtDateTimes =>
+      RealmObjectBase.get<BalanceAtDateTimeDb>(this, 'balanceAtDateTimes')
+          as RealmList<BalanceAtDateTimeDb>;
+  @override
+  set balanceAtDateTimes(covariant RealmList<BalanceAtDateTimeDb> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  Stream<RealmObjectChanges<PersistentValuesDb>> get changes =>
+      RealmObjectBase.getChanges<PersistentValuesDb>(this);
+
+  @override
+  PersistentValuesDb freeze() =>
+      RealmObjectBase.freezeObject<PersistentValuesDb>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(PersistentValuesDb._);
+    return const SchemaObject(
+        ObjectType.realmObject, PersistentValuesDb, 'PersistentValuesDb', [
+      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
+      SchemaProperty('chartDataTypeInHomescreen', RealmPropertyType.int),
+      SchemaProperty('showAmount', RealmPropertyType.bool),
+      SchemaProperty('balanceAtDateTimes', RealmPropertyType.object,
+          linkTarget: 'BalanceAtDateTimeDb',
+          collectionType: RealmCollectionType.list),
+    ]);
+  }
+}
+
+// ignore_for_file: type=lint
+class BalanceAtDateTimeDb extends _BalanceAtDateTimeDb
+    with RealmEntity, RealmObjectBase, EmbeddedObject {
+  BalanceAtDateTimeDb(
+    DateTime date,
+    double amount,
+  ) {
+    RealmObjectBase.set(this, 'date', date);
+    RealmObjectBase.set(this, 'amount', amount);
+  }
+
+  BalanceAtDateTimeDb._();
+
+  @override
+  DateTime get date => RealmObjectBase.get<DateTime>(this, 'date') as DateTime;
+  @override
+  set date(DateTime value) => RealmObjectBase.set(this, 'date', value);
+
+  @override
+  double get amount => RealmObjectBase.get<double>(this, 'amount') as double;
+  @override
+  set amount(double value) => RealmObjectBase.set(this, 'amount', value);
+
+  @override
+  Stream<RealmObjectChanges<BalanceAtDateTimeDb>> get changes =>
+      RealmObjectBase.getChanges<BalanceAtDateTimeDb>(this);
+
+  @override
+  BalanceAtDateTimeDb freeze() =>
+      RealmObjectBase.freezeObject<BalanceAtDateTimeDb>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(BalanceAtDateTimeDb._);
+    return const SchemaObject(
+        ObjectType.embeddedObject, BalanceAtDateTimeDb, 'BalanceAtDateTimeDb', [
+      SchemaProperty('date', RealmPropertyType.timestamp),
+      SchemaProperty('amount', RealmPropertyType.double),
     ]);
   }
 }

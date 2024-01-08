@@ -3,11 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
-import 'package:money_tracker_app/src/features/settings/data/settings_repo.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/settings_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/features/settings/data/app_settings.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_settings.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -38,31 +41,34 @@ class MoneyTrackerApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final systemIconBrightness = ref.watch(systemIconBrightnessProvider);
+    final appSettings = ref.watch(settingsControllerProvider);
+    final appPersistentValues = ref.watch(persistentControllerProvider);
 
-    final currentSettings = ref.watch(settingsControllerProvider);
-
-    return AppSettings(
-      data: currentSettings,
-      child: Builder(
-        builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle(
-            systemNavigationBarColor: context.appTheme.background1,
-            systemNavigationBarDividerColor: Colors.transparent,
-            systemNavigationBarIconBrightness: systemIconBrightness,
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: systemIconBrightness,
-          ),
-          child: MaterialApp.router(
-            restorationScopeId: 'app',
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: goRouter,
-            theme: ThemeData(
-              useMaterial3: true,
-              fontFamily: 'WixMadeforDisplay',
-              // For showDatePicker2 colors
-              colorScheme: ColorScheme.fromSwatch()
-                  .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
+    return AppPersistent(
+      data: appPersistentValues,
+      child: AppSettings(
+        data: appSettings,
+        child: Builder(
+          builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              systemNavigationBarColor: context.appTheme.background1,
+              systemNavigationBarDividerColor: Colors.transparent,
+              systemNavigationBarIconBrightness: systemIconBrightness,
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: systemIconBrightness,
+            ),
+            child: MaterialApp.router(
+              restorationScopeId: 'app',
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              routerConfig: goRouter,
+              theme: ThemeData(
+                useMaterial3: true,
+                fontFamily: 'WixMadeforDisplay',
+                // For showDatePicker2 colors
+                colorScheme: ColorScheme.fromSwatch()
+                    .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
+              ),
             ),
           ),
         ),

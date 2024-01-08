@@ -112,9 +112,6 @@ class CustomLineChart extends ConsumerWidget {
         preventCurveOverShooting: true,
         barWidth: 5,
         gradient: optionalBarGradient,
-        belowBarData: BarAreaData(
-          show: false,
-        ),
         dotData: FlDotData(
           show: true,
           checkToShowDot: (spot, barData) {
@@ -270,7 +267,7 @@ class CustomLineChart extends ConsumerWidget {
           lineTouchData: lineTouchData,
           lineBarsData: lineBarsData,
         ),
-        duration: k750msDuration,
+        duration: k950msDuration,
         curve: Curves.easeOutBack,
       ),
     );
