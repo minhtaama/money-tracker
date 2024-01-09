@@ -81,7 +81,7 @@ class CustomLineChart extends ConsumerWidget {
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
-        preventCurveOverShooting: true,
+        //preventCurveOverShooting: true,
         barWidth: primaryLineType == CustomLineType.thick ? 5 : 2.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
@@ -111,7 +111,7 @@ class CustomLineChart extends ConsumerWidget {
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
-        preventCurveOverShooting: true,
+        //preventCurveOverShooting: true,
         barWidth: 5,
         gradient: optionalBarGradient,
         dotData: FlDotData(
