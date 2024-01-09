@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/transactions/application/transaction_services.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -51,33 +52,42 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.expense => 'Expense in $month',
       ChartDataType.income => 'Income in $month',
       ChartDataType.totalAssets => displayDate.isSameMonthAs(today)
-          ? 'Total assets'
+          ? 'Current assets'
           : displayDate.isInMonthBefore(today)
-              ? 'Assets in $month'
+              ? 'Assets left in $month'
               : 'Expected assets in $month',
     };
   }
 
   double _amountBuilder(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) {
-    final txnRepo = ref.read(transactionServicesProvider);
+    final txnServices = ref.read(transactionServicesProvider);
 
     double amount = switch (_type) {
-      ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.totalAssets => txnRepo.getTotalBalance(dayEndOfMonth),
+      ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.income => txnServices.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
     };
 
     ref.listen(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)), (_, __) {
       amount = switch (_type) {
-        ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.totalAssets => txnRepo.getTotalBalance(dayEndOfMonth),
+        ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.income => txnServices.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
       };
     });
 
     return amount;
+  }
+
+  String _extraLineTextBuilder(WidgetRef ref) {
+    final txnServices = ref.read(transactionServicesProvider);
+
+    final amount = CalService.formatCurrency(context, txnServices.getMinMaxAssetsEver()[1]);
+    final symbol = context.appSettings.currency.symbol;
+
+    return 'Highest ever: $symbol $amount';
   }
 
   List<CLCSpot> _valuesBuilder(WidgetRef ref) {
@@ -96,13 +106,13 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   CustomLineType get _customLineType {
     final today = DateTime.now();
     if (widget.displayDate.isSameMonthAs(today)) {
-      return CustomLineType.solidThenDashed;
+      return CustomLineType.thickThenThin;
     }
     if (widget.displayDate.isInMonthAfter(today)) {
-      return CustomLineType.dashed;
+      return CustomLineType.thin;
     }
     if (widget.displayDate.isInMonthBefore(today)) {
-      return CustomLineType.solid;
+      return CustomLineType.thick;
     }
 
     throw ErrorDescription('Whoop whoop');
@@ -150,8 +160,11 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
             currentMonth: widget.displayDate,
             valuesBuilder: _valuesBuilder,
             chartOffsetY: 35,
+            extraLineY: 1,
             primaryLineType: _customLineType,
             chartDataType: _type,
+            showExtraLine: _type == ChartDataType.totalAssets,
+            extraLineText: _extraLineTextBuilder,
           ),
         ),
         _DateSelector(

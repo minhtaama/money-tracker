@@ -22,18 +22,21 @@ class CLCSpot extends FlSpot {
 
   /// Is the spot where line turn from solid to dashed.
   ///
-  /// Only works when type is [CustomLineType.solidThenDashed]
+  /// Only works when type is [CustomLineType.thickThenThin]
   final bool checkpoint;
 }
 
 class CustomLineChart extends ConsumerWidget {
   const CustomLineChart({
     super.key,
-    this.primaryLineType = CustomLineType.solidThenDashed,
+    this.primaryLineType = CustomLineType.thickThenThin,
     this.chartDataType = ChartDataType.cashflow,
     required this.currentMonth,
     required this.valuesBuilder,
     this.chartOffsetY = 0,
+    this.extraLineY,
+    this.showExtraLine = false,
+    this.extraLineText,
   });
 
   final CustomLineType primaryLineType;
@@ -47,6 +50,12 @@ class CustomLineChart extends ConsumerWidget {
   /// Offset chart but keep the bottom title at the same spot
   final double chartOffsetY;
 
+  final double? extraLineY;
+
+  final bool showExtraLine;
+
+  final String Function(WidgetRef)? extraLineText;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spots = valuesBuilder(ref);
@@ -55,7 +64,7 @@ class CustomLineChart extends ConsumerWidget {
 
     final hasCp = cpIndex != -1;
 
-    final cpPercent = hasCp && primaryLineType == CustomLineType.solidThenDashed
+    final cpPercent = hasCp && primaryLineType == CustomLineType.thickThenThin
         ? (spots[cpIndex].x - spots[0].x) / (spots[spots.length - 1].x - spots[0].x)
         : 0.0;
 
@@ -66,20 +75,14 @@ class CustomLineChart extends ConsumerWidget {
 
     final lineBarsData = [
       // Main line.
-      // Always shows, default is dashed,
-      // will turns to solid if type is `solid`.
+      // Always shows, default is thin,
+      // will turns to thick if type is `thick`.
       LineChartBarData(
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        dashArray: [
-          15,
-          primaryLineType == CustomLineType.solid || primaryLineType == CustomLineType.solidThenDashed && !hasCp
-              ? 0
-              : 12,
-        ],
-        barWidth: primaryLineType == CustomLineType.solid ? 5 : 2.5,
+        barWidth: primaryLineType == CustomLineType.thick ? 5 : 2.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -103,7 +106,7 @@ class CustomLineChart extends ConsumerWidget {
       ),
 
       // Optional solid line, as `barIndex == 1`.
-      // Only shows (logic by gradient) if there are both solid and dashed line.
+      // Only shows (logic by gradient) if there are both thick and thin line.
       LineChartBarData(
         spots: spots,
         isCurved: true,
@@ -191,7 +194,7 @@ class CustomLineChart extends ConsumerWidget {
 
     List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
       return spotIndex.map((int index) {
-        bool isOptionalBar = barData.dashArray == null;
+        bool isOptionalBar = barData.belowBarData.show == false;
 
         final flLine = FlLine(
           gradient: LinearGradient(
@@ -233,6 +236,22 @@ class CustomLineChart extends ConsumerWidget {
       getTouchedSpotIndicator: touchedIndicators,
     );
 
+    final titlesData = FlTitlesData(
+      show: true,
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      bottomTitles: AxisTitles(
+        drawBelowEverything: false,
+        sideTitles: SideTitles(
+          showTitles: true,
+          reservedSize: 14,
+          interval: 1,
+          getTitlesWidget: bottomTitleWidgets,
+        ),
+      ),
+    );
+
     return Transform.translate(
       offset: Offset(0, chartOffsetY),
       child: LineChart(
@@ -241,23 +260,34 @@ class CustomLineChart extends ConsumerWidget {
           minY: 0 - (chartOffsetY * 1.4) / 100,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(
-            show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            bottomTitles: AxisTitles(
-              drawBelowEverything: false,
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 14,
-                interval: 1,
-                getTitlesWidget: bottomTitleWidgets,
-              ),
-            ),
-          ),
+          titlesData: titlesData,
           lineTouchData: lineTouchData,
           lineBarsData: lineBarsData,
+          extraLinesData: ExtraLinesData(
+            horizontalLines: extraLineY != null
+                ? [
+                    HorizontalLine(
+                      y: extraLineY!,
+                      strokeWidth: 1.5,
+                      dashArray: [15, 10],
+                      label: HorizontalLineLabel(
+                        show: true,
+                        style: kHeader4TextStyle.copyWith(
+                          fontSize: 11,
+                          color: showExtraLine
+                              ? context.appTheme.accent2.withOpacity(0.8)
+                              : context.appTheme.accent2.withOpacity(0),
+                        ),
+                        alignment: Alignment.bottomRight,
+                        labelResolver: (_) => extraLineText?.call(ref) ?? '',
+                      ),
+                      color: showExtraLine
+                          ? context.appTheme.accent2.withOpacity(0.2)
+                          : context.appTheme.accent2.withOpacity(0),
+                    ),
+                  ]
+                : [],
+          ),
         ),
         duration: k750msDuration,
         curve: Curves.easeOutBack,
@@ -266,4 +296,4 @@ class CustomLineChart extends ConsumerWidget {
   }
 }
 
-enum CustomLineType { dashed, solid, solidThenDashed }
+enum CustomLineType { thin, thick, thickThenThin }

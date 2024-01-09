@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../../../persistent/realm_dto.dart';
 import '../../../common_widgets/custom_line_chart.dart';
 import '../../../utils/enums.dart';
 import '../data/transaction_repo.dart';
-import '../domain/balance_at_date_time.dart';
 import '../domain/transaction_base.dart';
 
 class TransactionServices {
@@ -48,8 +46,8 @@ class TransactionServices {
     return result;
   }
 
-  double getTotalBalance(DateTime displayDate) {
-    final balanceAtDateTimes = repo.getBalanceAtDateTimes();
+  double getTotalAssets(DateTime displayDate) {
+    final balanceAtDateTimes = repo.getSortedBalanceAtDateTimeList();
 
     // Find balDt include displayDate
     int index = balanceAtDateTimes.indexWhere((balDt) => displayDate.isSameMonthAs(balDt.date));
@@ -71,6 +69,25 @@ class TransactionServices {
     return balanceAtDateTimes[index].amount;
   }
 
+  List<double> getMinMaxAssetsEver() {
+    double max = double.negativeInfinity;
+    double min = 0;
+    final balanceAtDateTimes = repo.getSortedBalanceAtDateTimeList();
+    for (var balDt in balanceAtDateTimes) {
+      if (balDt.amount > max) {
+        max = balDt.amount;
+      }
+      if (balDt.amount < min) {
+        min = balDt.amount;
+      }
+    }
+    if (max == double.negativeInfinity) {
+      max = 0;
+    }
+
+    return [min, max];
+  }
+
   List<CLCSpot> getLineChartSpots(ChartDataType type, DateTime displayDate) {
     final dayBeginOfMonth = DateTime(displayDate.year, displayDate.month);
     final dayEndOfMonth = DateTime(displayDate.year, displayDate.month + 1, 0, 23, 59, 59);
@@ -80,7 +97,7 @@ class TransactionServices {
 
     // Modify monthInitialAmount if type is ChartDataType.totalBalance
     if (type == ChartDataType.totalAssets) {
-      final balanceAtDateTimes = repo.getBalanceAtDateTimes();
+      final balanceAtDateTimes = repo.getSortedBalanceAtDateTimeList();
 
       // Find nearest balDt before displayDate
       int index = balanceAtDateTimes.lastIndexWhere((balDt) => displayDate.isInMonthAfter(balDt.date));
@@ -171,12 +188,18 @@ class TransactionServices {
     double max = double.negativeInfinity;
     double min = 0;
 
-    for (var entry in result.entries) {
-      if (entry.value > max) {
-        max = entry.value;
-      }
-      if (entry.value < min) {
-        min = entry.value;
+    if (type == ChartDataType.totalAssets) {
+      final minMax = getMinMaxAssetsEver();
+      min = minMax[0];
+      max = minMax[1];
+    } else {
+      for (var entry in result.entries) {
+        if (entry.value > max) {
+          max = entry.value;
+        }
+        if (entry.value < min) {
+          min = entry.value;
+        }
       }
     }
 
@@ -188,17 +211,17 @@ class TransactionServices {
             ? min.abs() - max.abs()
             : max + minAbs;
 
-    double getY(double value) {
+    double getY(double amount) {
       if (maxFromMin == 0) {
         return 0.0;
       }
-      if (value == 0) {
+      if (amount == 0) {
         return minAbs / maxFromMin;
       }
-      if (value > 0) {
-        return (value + minAbs) / maxFromMin;
+      if (amount > 0) {
+        return (amount + minAbs) / maxFromMin;
       } else {
-        return (minAbs - value.abs()) / maxFromMin;
+        return (minAbs - amount.abs()) / maxFromMin;
       }
     }
 

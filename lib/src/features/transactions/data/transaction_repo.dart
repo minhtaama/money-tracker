@@ -29,8 +29,8 @@ class TransactionRepository {
     return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
-  /// Put this inside realm write transaction to update [BalanceAtDateTime]
-  /// as a de-normalization value of total regular balance
+  /// Put this inside realm write transaction to update [BalanceAtDateTime],
+  /// which is a de-normalization value of total regular balance
   void _updateBalanceAtDateTime(TransactionType type, DateTime dateTime, double amount) {
     amount = switch (type) {
       TransactionType.expense || TransactionType.creditPayment => 0 - amount,
@@ -38,7 +38,7 @@ class TransactionRepository {
       _ => 0,
     };
 
-    List<BalanceAtDateTime> balanceAtDateTimes = getBalanceAtDateTimes();
+    List<BalanceAtDateTime> balanceAtDateTimes = getSortedBalanceAtDateTimeList();
     int index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
 
     if (index != -1) {
@@ -47,9 +47,13 @@ class TransactionRepository {
         db.amount = db.amount + amount;
       }
     } else {
-      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount));
+      final nearestIndexFromTxnDateTime =
+          balanceAtDateTimes.lastIndexWhere((e) => dateTime.isInMonthAfter(e.date.toLocal()));
+      final nearestBalance =
+          nearestIndexFromTxnDateTime == -1 ? 0 : balanceAtDateTimes[nearestIndexFromTxnDateTime].amount;
+      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
 
-      balanceAtDateTimes = getBalanceAtDateTimes();
+      balanceAtDateTimes = getSortedBalanceAtDateTimeList();
       index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
 
       for (int i = index + 1; i < balanceAtDateTimes.length; i++) {
@@ -66,7 +70,8 @@ class TransactionRepository {
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
-  List<BalanceAtDateTime> getBalanceAtDateTimes() {
+  /// A De-normalization list stores total balance in a month
+  List<BalanceAtDateTime> getSortedBalanceAtDateTimeList() {
     List<BalanceAtDateTimeDb> list = realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
 
     return list.map((txn) => BalanceAtDateTime.fromDatabase(txn)).toList();
