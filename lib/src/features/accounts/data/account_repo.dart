@@ -1,16 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../persistent/realm_dto.dart';
 import '../domain/account_base.dart';
 
 class AccountRepositoryRealmDb {
-  AccountRepositoryRealmDb(this.realm);
+  AccountRepositoryRealmDb(this.realm, this.ref);
 
   final Realm realm;
+  final ProviderRef ref;
 
   int _accountTypeInDb(AccountType type) => switch (type) {
         AccountType.regular => 0,
@@ -32,19 +33,6 @@ class AccountRepositoryRealmDb {
   // Account? getAccount(ObjectId objectId) {
   //   AccountDb? accountDb = realm.find<AccountDb>(objectId);
   //   return Account.fromDatabase(accountDb);
-  // }
-
-  // List<BaseTransaction> getTransactionList(Account account) {
-  //   final RealmResults<TransactionDb> transactionListQuery =
-  //       account.databaseObject.transactions.query('TRUEPREDICATE SORT(dateTime ASC)');
-  //   return switch (account) {
-  //     RegularAccount() => transactionListQuery
-  //         .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
-  //         .toList(growable: false),
-  //     CreditAccount() => transactionListQuery
-  //         .map<BaseCreditTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseCreditTransaction)
-  //         .toList(),
-  //   };
   // }
 
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
@@ -76,7 +64,6 @@ class AccountRepositoryRealmDb {
     required int? paymentDueDay,
     required double? apr,
   }) async {
-    TransactionDb? initialTransaction;
     CreditDetailsDb? creditDetailsDb;
 
     final order = getList(null).length;
@@ -88,22 +75,11 @@ class AccountRepositoryRealmDb {
     final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
-    if (type == AccountType.regular) {
-      initialTransaction = TransactionDb(
-        ObjectId(),
-        1,
-        DateTime.now(),
-        balance,
-        account: newAccount,
-        isInitialTransaction: true,
-      ); // transaction type 1 == TransactionType.income
-    }
-
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        realm.add(initialTransaction!);
+        ref.read(transactionRepositoryRealmProvider).writeInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -175,7 +151,7 @@ class AccountRepositoryRealmDb {
 final accountRepositoryProvider = Provider<AccountRepositoryRealmDb>(
   (ref) {
     final realm = ref.watch(realmProvider);
-    return AccountRepositoryRealmDb(realm);
+    return AccountRepositoryRealmDb(realm, ref);
   },
 );
 

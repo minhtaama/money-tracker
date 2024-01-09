@@ -56,7 +56,7 @@ class CustomLineChart extends ConsumerWidget {
     final hasCp = cpIndex != -1;
 
     final cpPercent = hasCp && primaryLineType == CustomLineType.solidThenDashed
-        ? (spots[cpIndex].x - 1) / spots[spots.length - 1].x
+        ? (spots[cpIndex].x - spots[0].x) / (spots[spots.length - 1].x - spots[0].x)
         : 0.0;
 
     final optionalBarGradient = LinearGradient(
@@ -75,12 +75,11 @@ class CustomLineChart extends ConsumerWidget {
         preventCurveOverShooting: true,
         dashArray: [
           15,
-          primaryLineType == CustomLineType.solid ||
-                  primaryLineType == CustomLineType.solidThenDashed && !hasCp
+          primaryLineType == CustomLineType.solid || primaryLineType == CustomLineType.solidThenDashed && !hasCp
               ? 0
               : 12,
         ],
-        barWidth: primaryLineType == CustomLineType.solid ? 5 : 3,
+        barWidth: primaryLineType == CustomLineType.solid ? 5 : 2.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -169,9 +168,7 @@ class CustomLineChart extends ConsumerWidget {
         items.add(LineTooltipItem(
           '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.onBackground
-                : context.appTheme.onSecondary,
+            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
             fontSize: 13,
           ),
           textAlign: TextAlign.right,
@@ -181,9 +178,7 @@ class CustomLineChart extends ConsumerWidget {
                   .copyWith(day: touchedSpot.x.toInt())
                   .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme
-                    ? context.appTheme.onBackground
-                    : context.appTheme.onSecondary,
+                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                 fontSize: 11,
               ),
             ),
@@ -202,11 +197,8 @@ class CustomLineChart extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [
-              context.appTheme.accent1.withOpacity(0.35),
-              context.appTheme.accent1.withOpacity(0.0)
-            ],
-            stops: const [0.46, 0.95],
+            colors: [context.appTheme.accent1.withOpacity(0.35), context.appTheme.accent1.withOpacity(0.0)],
+            stops: const [0.46, 0.8],
           ),
           strokeWidth: isOptionalBar ? 0 : 50,
         );
@@ -267,7 +259,7 @@ class CustomLineChart extends ConsumerWidget {
           lineTouchData: lineTouchData,
           lineBarsData: lineBarsData,
         ),
-        duration: k950msDuration,
+        duration: k750msDuration,
         curve: Curves.easeOutBack,
       ),
     );

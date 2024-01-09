@@ -1,64 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
+import '../../../../persistent/base_model.dart';
 import '../../../utils/enums.dart';
 
 // Access this class through `context.appPersistentValues`
 class AppPersistentValues {
-  //final ChartDataType chartDataTypeInHomescreen;
+  final ChartDataType chartDataTypeInHomescreen;
 
   final bool showAmount;
-
-  //final List<BalanceAtDateTimeDb> balanceAtDateTimes;
 
   factory AppPersistentValues.fromDatabase(PersistentValuesDb persistentValuesDb) {
     ChartDataType chartDataTypeInHomescreen = switch (persistentValuesDb.chartDataTypeInHomescreen) {
       0 => ChartDataType.cashflow,
       1 => ChartDataType.expense,
-      _ => ChartDataType.income,
+      2 => ChartDataType.income,
+      _ => ChartDataType.totalBalance,
     };
 
     return AppPersistentValues._(
-      //chartDataTypeInHomescreen: chartDataTypeInHomescreen,
+      chartDataTypeInHomescreen: chartDataTypeInHomescreen,
       showAmount: persistentValuesDb.showAmount,
-      //balanceAtDateTimes: persistentValuesDb.balanceAtDateTimes,
     );
   }
 
   PersistentValuesDb toDatabase() {
-    // int typeRealmData = switch (chartDataTypeInHomescreen) {
-    //   ChartDataType.cashflow => 0,
-    //   ChartDataType.expense => 1,
-    //   ChartDataType.income => 2,
-    // };
+    int typeRealmData = switch (chartDataTypeInHomescreen) {
+      ChartDataType.cashflow => 0,
+      ChartDataType.expense => 1,
+      ChartDataType.income => 2,
+      ChartDataType.totalBalance => 3,
+    };
 
     return PersistentValuesDb(
       0,
-      //chartDataTypeInHomescreen: typeRealmData,
+      chartDataTypeInHomescreen: typeRealmData,
       showAmount: showAmount,
-      //balanceAtDateTimes: balanceAtDateTimes,
     );
   }
 
   AppPersistentValues._({
-    //required this.chartDataTypeInHomescreen,
+    required this.chartDataTypeInHomescreen,
     required this.showAmount,
-    //required this.balanceAtDateTimes,
   });
 
   AppPersistentValues copyWith({
     ChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
-    List<BalanceAtDateTimeDb>? balanceAtDateTimes,
   }) {
     return AppPersistentValues._(
-      //chartDataTypeInHomescreen: chartDataTypeInHomescreen ?? this.chartDataTypeInHomescreen,
+      chartDataTypeInHomescreen: chartDataTypeInHomescreen ?? this.chartDataTypeInHomescreen,
       showAmount: showAmount ?? this.showAmount,
-      //balanceAtDateTimes: balanceAtDateTimes ?? this.balanceAtDateTimes,
     );
   }
 }
 
 /// Class for reading AppPersistentValues via InheritedWidget
+/// No need to change this class when add property
 class AppPersistent extends InheritedWidget {
   const AppPersistent({
     super.key,

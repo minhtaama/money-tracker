@@ -47,6 +47,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.cashflow => 'Cashflow in $month',
       ChartDataType.expense => 'Expense in $month',
       ChartDataType.income => 'Income in $month',
+      ChartDataType.totalBalance => 'Balance in $month',
     };
   }
 
@@ -57,15 +58,15 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
       ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
       ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+      ChartDataType.totalBalance => txnRepo.getTotalBalance(dayEndOfMonth),
     };
 
-    ref.listen(
-        transactionChangesRealmProvider(DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth)),
-        (_, __) {
+    ref.listen(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)), (_, __) {
       amount = switch (_type) {
         ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+        ChartDataType.totalBalance => txnRepo.getTotalBalance(dayEndOfMonth),
       };
     });
 
@@ -112,7 +113,8 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       _type = switch (_type) {
         ChartDataType.cashflow => ChartDataType.expense,
         ChartDataType.expense => ChartDataType.income,
-        ChartDataType.income => ChartDataType.cashflow,
+        ChartDataType.income => ChartDataType.totalBalance,
+        ChartDataType.totalBalance => ChartDataType.cashflow,
       };
     });
   }
@@ -213,16 +215,14 @@ class _DateSelector extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    key: ValueKey(
-                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                    key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
                       children: [
                         RoundedIconButton(
-                          iconPath:
-                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                                  ? AppIcons.today
-                                  : AppIcons.turn,
+                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                              ? AppIcons.today
+                              : AppIcons.turn,
                           iconColor: context.appTheme.onBackground,
                           size: 16,
                           iconPadding: 0,
@@ -265,8 +265,7 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color:
-            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );

@@ -217,6 +217,7 @@ class AppThemeData {
 }
 
 /// Class for reading AppSettingsData via InheritedWidget
+/// No need to change this class when add property
 class AppSettings extends InheritedWidget {
   const AppSettings({
     super.key,

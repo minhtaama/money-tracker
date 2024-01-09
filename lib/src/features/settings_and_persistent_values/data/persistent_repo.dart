@@ -14,20 +14,20 @@ class PersistentController extends Notifier<AppPersistentValues> {
   Future<void> set({
     ChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
-    List<BalanceAtDateTimeDb>? balanceAtDateTimes,
   }) async {
     final realm = ref.read(realmProvider);
+
     state = state.copyWith(
       chartDataTypeInHomescreen: chartDataTypeInHomescreen,
       showAmount: showAmount,
-      balanceAtDateTimes: balanceAtDateTimes,
     );
+
     realm.write(() => realm.add<PersistentValuesDb>(state.toDatabase(), update: true));
   }
 }
 
 /// This provider should be call only at the root widget to provide data for `AppPersistent`
-/// and to use `set()` function in setting features.
+/// or to use `set()` function or to get `AppPersistentValues` in other repos.
 ///
 /// Use **`context.appPersistentValues`** rather than this provider in child widgets to get
 /// current settings state.

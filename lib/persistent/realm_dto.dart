@@ -219,15 +219,19 @@ class _PersistentValuesDb {
   @PrimaryKey()
   final int id = 0;
 
+  // ChartDataType.cashflow => 0
+  // ChartDataType.expense => 1
+  // ChartDataType.income => 2, else
   int chartDataTypeInHomescreen = 0;
 
   bool showAmount = true;
-
-  List<_BalanceAtDateTimeDb> balanceAtDateTimes = [];
 }
 
-@RealmModel(ObjectType.embeddedObject)
+@RealmModel()
 class _BalanceAtDateTimeDb {
+  @PrimaryKey()
+  late ObjectId id;
+
   late DateTime date;
 
   late double amount;

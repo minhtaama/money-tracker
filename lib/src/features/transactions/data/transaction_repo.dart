@@ -4,11 +4,11 @@ import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
-import '../../../common_widgets/custom_line_chart.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
+import '../domain/balance_at_date_time.dart';
 import '../domain/transaction_base.dart';
 
 class TransactionRepository {
@@ -26,16 +26,50 @@ class TransactionRepository {
       };
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+  }
+
+  /// Put this inside realm write transaction to update [PersistentValues.balanceAtDateTimes]
+  /// as a de-normalization value of total regular balance
+  void _updateBalanceAtDateTime(TransactionType type, DateTime dateTime, double amount) {
+    amount = switch (type) {
+      TransactionType.expense || TransactionType.creditPayment => 0 - amount,
+      TransactionType.income => amount,
+      _ => 0,
+    };
+
+    List<BalanceAtDateTime> balanceAtDateTimes = getBalanceAtDateTimes();
+    int index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
+
+    if (index != -1) {
+      for (int i = index; i < balanceAtDateTimes.length; i++) {
+        BalanceAtDateTimeDb db = balanceAtDateTimes[i].databaseObject;
+        db.amount = db.amount + amount;
+      }
+    } else {
+      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount));
+
+      balanceAtDateTimes = getBalanceAtDateTimes();
+      index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
+
+      for (int i = index + 1; i < balanceAtDateTimes.length; i++) {
+        BalanceAtDateTimeDb db = balanceAtDateTimes[i].databaseObject;
+        db.amount = db.amount + amount;
+      }
+    }
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm.all<TransactionDb>().query(
-        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)',
-        [lower, upper]).toList();
+    List<TransactionDb> list = realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
+  }
+
+  List<BalanceAtDateTime> getBalanceAtDateTimes() {
+    List<BalanceAtDateTimeDb> list = realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
+
+    return list.map((txn) => BalanceAtDateTime.fromDatabase(txn)).toList();
   }
 
   void writeNewIncome({
@@ -46,8 +80,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -55,7 +88,28 @@ class TransactionRepository {
 
     realm.write(() {
       realm.add(newTransaction);
+      _updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
     });
+  }
+
+  /// **Do not call this function in Widgets**
+  void writeInitialBalance({
+    required double balance,
+    required AccountDb newAccount,
+  }) {
+    final today = DateTime.now();
+
+    final initialTransaction = TransactionDb(
+      ObjectId(),
+      _transactionTypeInDb(TransactionType.income),
+      today,
+      balance,
+      account: newAccount,
+      isInitialTransaction: true,
+    ); // transaction type 1 == TransactionType.income
+
+    realm.add(initialTransaction);
+    _updateBalanceAtDateTime(TransactionType.income, today, balance);
   }
 
   void writeNewExpense({
@@ -66,8 +120,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -75,6 +128,7 @@ class TransactionRepository {
 
     realm.write(() {
       realm.add(newTransaction);
+      _updateBalanceAtDateTime(TransactionType.expense, dateTime, amount);
     });
   }
 
@@ -92,8 +146,7 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -125,8 +178,7 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails:
-            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);
@@ -160,6 +212,7 @@ class TransactionRepository {
 
     realm.write(() {
       realm.add(newTransaction);
+      _updateBalanceAtDateTime(TransactionType.creditPayment, dateTime, amount);
     });
   }
 

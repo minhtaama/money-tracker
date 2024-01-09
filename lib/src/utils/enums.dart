@@ -46,6 +46,7 @@ enum ChartDataType {
   cashflow,
   expense,
   income,
+  totalBalance,
 }
 
 /// https://www.xe.com/symbols/

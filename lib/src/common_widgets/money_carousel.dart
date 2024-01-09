@@ -78,6 +78,9 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
               String month = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
                   .getFormattedDate(hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy);
 
+              // print(dayBeginOfMonth);
+              // print(dayEndOfMonth);
+
               return Consumer(
                 builder: (context, ref, child) {
                   double amount = widget.amountBuilder(ref, dayBeginOfMonth, dayEndOfMonth);
