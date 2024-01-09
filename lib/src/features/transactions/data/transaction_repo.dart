@@ -29,7 +29,7 @@ class TransactionRepository {
     return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
-  /// Put this inside realm write transaction to update [PersistentValues.balanceAtDateTimes]
+  /// Put this inside realm write transaction to update [BalanceAtDateTime]
   /// as a de-normalization value of total regular balance
   void _updateBalanceAtDateTime(TransactionType type, DateTime dateTime, double amount) {
     amount = switch (type) {

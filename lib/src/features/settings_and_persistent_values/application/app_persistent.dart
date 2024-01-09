@@ -14,7 +14,7 @@ class AppPersistentValues {
       0 => ChartDataType.cashflow,
       1 => ChartDataType.expense,
       2 => ChartDataType.income,
-      _ => ChartDataType.totalBalance,
+      _ => ChartDataType.totalAssets,
     };
 
     return AppPersistentValues._(
@@ -28,7 +28,7 @@ class AppPersistentValues {
       ChartDataType.cashflow => 0,
       ChartDataType.expense => 1,
       ChartDataType.income => 2,
-      ChartDataType.totalBalance => 3,
+      ChartDataType.totalAssets => 3,
     };
 
     return PersistentValuesDb(

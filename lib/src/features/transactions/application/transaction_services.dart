@@ -79,7 +79,7 @@ class TransactionServices {
     final double monthInitialAmount;
 
     // Modify monthInitialAmount if type is ChartDataType.totalBalance
-    if (type == ChartDataType.totalBalance) {
+    if (type == ChartDataType.totalAssets) {
       final balanceAtDateTimes = repo.getBalanceAtDateTimes();
 
       // Find nearest balDt before displayDate
@@ -116,7 +116,7 @@ class TransactionServices {
     void updateAmount(int day, BaseTransaction txn) {
       result.updateAll((key, value) {
         if (key >= day) {
-          if (type == ChartDataType.cashflow || type == ChartDataType.totalBalance) {
+          if (type == ChartDataType.cashflow || type == ChartDataType.totalAssets) {
             if (txn is CreditPayment || txn is Expense) {
               return value -= txn.amount;
             }
@@ -134,7 +134,7 @@ class TransactionServices {
         .where(
           (txn) => switch (type) {
             ChartDataType.cashflow ||
-            ChartDataType.totalBalance =>
+            ChartDataType.totalAssets =>
               txn is Income || txn is Expense || txn is CreditPayment,
             ChartDataType.expense => txn is Expense || txn is CreditPayment,
             ChartDataType.income => txn is Income,

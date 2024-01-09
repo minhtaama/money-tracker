@@ -44,7 +44,7 @@ class MoneyCarousel extends StatefulWidget {
   final double Function(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) amountBuilder;
 
   /// Build the small title under amount
-  final String Function(String month) titleBuilder;
+  final String Function(String month, int pageIndex) titleBuilder;
 
   @override
   State<MoneyCarousel> createState() => _MoneyCarouselState();
@@ -70,16 +70,12 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                 _currentPageIndex = page;
               });
             },
-            //physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, pageIndex) {
               DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
               DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
               String month = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
                   .getFormattedDate(hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy);
-
-              // print(dayBeginOfMonth);
-              // print(dayEndOfMonth);
 
               return Consumer(
                 builder: (context, ref, child) {
@@ -103,13 +99,13 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                       );
                     },
                     child: _CarouselContent(
-                      key: ValueKey(widget.titleBuilder(month)),
+                      key: ValueKey(widget.titleBuilder(month, pageIndex)),
                       isActive: _currentPageIndex == pageIndex,
                       isShowValue: context.appPersistentValues.showAmount,
                       showCurrency: widget.showCurrency,
                       showPrefixSign: widget.showPrefixSign,
                       amount: amount,
-                      text: widget.titleBuilder(month),
+                      text: widget.titleBuilder(month, pageIndex),
                       onChange: (width) {
                         setState(() {
                           _betweenButtonsGap = width.clamp(100, 195) + 30;

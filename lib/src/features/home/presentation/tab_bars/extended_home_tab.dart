@@ -40,14 +40,21 @@ class ExtendedHomeTab extends StatefulWidget {
 }
 
 class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
-  ChartDataType _type = ChartDataType.cashflow;
+  ChartDataType _type = ChartDataType.totalAssets;
 
-  String _titleBuilder(String month) {
+  String _titleBuilder(String month, int pageIndex) {
+    final today = DateTime.now();
+    final displayDate = DateTime(Calendar.minDate.year, pageIndex);
+
     return switch (_type) {
       ChartDataType.cashflow => 'Cashflow in $month',
       ChartDataType.expense => 'Expense in $month',
       ChartDataType.income => 'Income in $month',
-      ChartDataType.totalBalance => 'Balance in $month',
+      ChartDataType.totalAssets => displayDate.isSameMonthAs(today)
+          ? 'Total assets'
+          : displayDate.isInMonthBefore(today)
+              ? 'Assets in $month'
+              : 'Expected assets in $month',
     };
   }
 
@@ -58,7 +65,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
       ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
       ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.totalBalance => txnRepo.getTotalBalance(dayEndOfMonth),
+      ChartDataType.totalAssets => txnRepo.getTotalBalance(dayEndOfMonth),
     };
 
     ref.listen(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)), (_, __) {
@@ -66,7 +73,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
         ChartDataType.cashflow => txnRepo.getCashflow(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.expense => txnRepo.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.income => txnRepo.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.totalBalance => txnRepo.getTotalBalance(dayEndOfMonth),
+        ChartDataType.totalAssets => txnRepo.getTotalBalance(dayEndOfMonth),
       };
     });
 
@@ -111,10 +118,10 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   void _onTapSwitchType() {
     setState(() {
       _type = switch (_type) {
+        ChartDataType.totalAssets => ChartDataType.cashflow,
         ChartDataType.cashflow => ChartDataType.expense,
         ChartDataType.expense => ChartDataType.income,
-        ChartDataType.income => ChartDataType.totalBalance,
-        ChartDataType.totalBalance => ChartDataType.cashflow,
+        ChartDataType.income => ChartDataType.totalAssets,
       };
     });
   }

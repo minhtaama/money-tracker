@@ -43,10 +43,10 @@ enum DateTimeFormat {
 }
 
 enum ChartDataType {
+  totalAssets,
   cashflow,
   expense,
   income,
-  totalBalance,
 }
 
 /// https://www.xe.com/symbols/
