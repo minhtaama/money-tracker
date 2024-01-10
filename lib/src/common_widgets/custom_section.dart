@@ -77,7 +77,7 @@ class _CustomSectionState extends State<CustomSection> {
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       padding: EdgeInsets.zero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           widget.title != null
               ? Padding(
@@ -98,9 +98,11 @@ class _CustomSectionState extends State<CustomSection> {
             color: widget.isWrapByCard ? null : Colors.transparent,
             clip: widget.sectionsClipping,
             child: widget.onReorder == null
-                ? Column(
-                    crossAxisAlignment: widget.crossAxisAlignment,
-                    children: _children,
+                ? Center(
+                    child: Column(
+                      crossAxisAlignment: widget.crossAxisAlignment,
+                      children: _children,
+                    ),
                   )
                 : ReorderableColumn(
                     crossAxisAlignment: widget.crossAxisAlignment,
