@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_line_chart.dart';
+import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_line_chart.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
 

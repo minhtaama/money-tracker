@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
-import '../../../../persistent/base_model.dart';
 import '../../../utils/enums.dart';
 
 // Access this class through `context.appPersistentValues`

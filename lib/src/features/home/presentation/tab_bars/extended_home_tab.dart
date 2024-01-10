@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/application/transaction_services.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -9,8 +8,9 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-import '../../../../common_widgets/custom_line_chart.dart';
-import '../../../../common_widgets/money_carousel.dart';
+import '../../../charts_and_carousel/application/custom_line_chart_services.dart';
+import '../../../charts_and_carousel/presentation/custom_line_chart.dart';
+import '../../../charts_and_carousel/presentation/money_carousel.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 

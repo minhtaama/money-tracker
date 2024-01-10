@@ -81,8 +81,8 @@ class CustomLineChart extends ConsumerWidget {
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
-        //preventCurveOverShooting: true,
-        barWidth: primaryLineType == CustomLineType.thick ? 5 : 2.5,
+        preventCurveOverShooting: true,
+        barWidth: primaryLineType == CustomLineType.thick ? 5.5 : 2.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -111,7 +111,7 @@ class CustomLineChart extends ConsumerWidget {
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
-        //preventCurveOverShooting: true,
+        preventCurveOverShooting: true,
         barWidth: 5,
         gradient: optionalBarGradient,
         dotData: FlDotData(
@@ -275,14 +275,14 @@ class CustomLineChart extends ConsumerWidget {
                         style: kHeader4TextStyle.copyWith(
                           fontSize: 11,
                           color: showExtraLine
-                              ? context.appTheme.accent2.withOpacity(0.8)
+                              ? context.appTheme.accent2.withOpacity(0.6)
                               : context.appTheme.accent2.withOpacity(0),
                         ),
                         alignment: Alignment.bottomRight,
                         labelResolver: (_) => extraLineText?.call(ref) ?? '',
                       ),
                       color: showExtraLine
-                          ? context.appTheme.accent2.withOpacity(0.2)
+                          ? context.appTheme.accent2.withOpacity(0.15)
                           : context.appTheme.accent2.withOpacity(0),
                     ),
                   ]

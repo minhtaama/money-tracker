@@ -7,9 +7,9 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../features/calculator_input/application/calculator_service.dart';
-import '../utils/constants.dart';
-import '../utils/enums.dart';
+import '../../calculator_input/application/calculator_service.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/enums.dart';
 
 class MoneyCarousel extends StatefulWidget {
   const MoneyCarousel({

@@ -1,17 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../../common_widgets/custom_line_chart.dart';
+import '../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../utils/enums.dart';
-import '../data/transaction_repo.dart';
-import '../domain/transaction_base.dart';
+import '../../transactions/data/transaction_repo.dart';
+import '../../transactions/domain/transaction_base.dart';
 
-class TransactionServices {
-  TransactionServices(this.repo);
+class CustomLineChartServices {
+  CustomLineChartServices(this.transactionRepo);
 
-  final TransactionRepository repo;
+  final TransactionRepository transactionRepo;
 
   double getCashflow(DateTime lower, DateTime upper) {
-    final list = repo.getTransactions(lower, upper);
+    final list = transactionRepo.getTransactions(lower, upper);
     double result = 0;
     for (BaseTransaction txn in list) {
       if (txn is Income) {
@@ -25,7 +25,7 @@ class TransactionServices {
   }
 
   double getExpenseAmount(DateTime lower, DateTime upper) {
-    final list = repo.getTransactions(lower, upper);
+    final list = transactionRepo.getTransactions(lower, upper);
     double result = 0;
     for (BaseTransaction txn in list) {
       if (txn is Expense || txn is CreditPayment) {
@@ -36,7 +36,7 @@ class TransactionServices {
   }
 
   double getIncomeAmount(DateTime lower, DateTime upper) {
-    final list = repo.getTransactions(lower, upper);
+    final list = transactionRepo.getTransactions(lower, upper);
     double result = 0;
     for (BaseTransaction txn in list) {
       if (txn is Income) {
@@ -47,7 +47,7 @@ class TransactionServices {
   }
 
   double getTotalAssets(DateTime displayDate) {
-    final balanceAtDateTimes = repo.getSortedBalanceAtDateTimeList();
+    final balanceAtDateTimes = transactionRepo.getSortedBalanceAtDateTimeList();
 
     // Find balDt include displayDate
     int index = balanceAtDateTimes.indexWhere((balDt) => displayDate.isSameMonthAs(balDt.date));
@@ -57,22 +57,18 @@ class TransactionServices {
       index = balanceAtDateTimes.lastIndexWhere((balDt) => displayDate.isInMonthAfter(balDt.date));
     }
 
-    // print(index);
-
     // If not found
     if (index == -1) {
       return 0;
     }
 
-    // print(balanceAtDateTimes[index].date);
-    // print(displayDate);
     return balanceAtDateTimes[index].amount;
   }
 
   List<double> getMinMaxAssetsEver() {
     double max = double.negativeInfinity;
     double min = 0;
-    final balanceAtDateTimes = repo.getSortedBalanceAtDateTimeList();
+    final balanceAtDateTimes = transactionRepo.getSortedBalanceAtDateTimeList();
     for (var balDt in balanceAtDateTimes) {
       if (balDt.amount > max) {
         max = balDt.amount;
@@ -97,7 +93,7 @@ class TransactionServices {
 
     // Modify monthInitialAmount if type is ChartDataType.totalBalance
     if (type == ChartDataType.totalAssets) {
-      final balanceAtDateTimes = repo.getSortedBalanceAtDateTimeList();
+      final balanceAtDateTimes = transactionRepo.getSortedBalanceAtDateTimeList();
 
       // Find nearest balDt before displayDate
       int index = balanceAtDateTimes.lastIndexWhere((balDt) => displayDate.isInMonthAfter(balDt.date));
@@ -146,7 +142,7 @@ class TransactionServices {
       });
     }
 
-    final txns = repo
+    final txns = transactionRepo
         .getTransactions(dayBeginOfMonth, dayEndOfMonth)
         .where(
           (txn) => switch (type) {
@@ -236,10 +232,10 @@ class TransactionServices {
 
 /////////////////// PROVIDERS //////////////////////////
 
-final transactionServicesProvider = Provider<TransactionServices>(
+final transactionServicesProvider = Provider<CustomLineChartServices>(
   (ref) {
     final repo = ref.watch(transactionRepositoryRealmProvider);
 
-    return TransactionServices(repo);
+    return CustomLineChartServices(repo);
   },
 );

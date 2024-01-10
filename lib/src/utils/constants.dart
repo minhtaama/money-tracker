@@ -20,7 +20,7 @@ const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
 const double kCustomTabBarHeight = 80;
 
 /// Value related to CustomTabBar and CustomTabPage
-const double kExtendedCustomTabBarHeight = 350;
+const double kExtendedCustomTabBarHeight = 400;
 
 const double kMoneyCarouselViewFraction = 0.55;
 
