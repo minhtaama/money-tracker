@@ -10,7 +10,7 @@ import 'package:money_tracker_app/src/features/icons_and_colors/presentation/sel
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/select_currency_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_credit_payment_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_regular_txn_modal_screen.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transaction_details_modal.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/transaction_details_modal.dart';
 import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_screen.dart';
 import '../common_widgets/modal_bottom_sheets.dart';
 import '../features/settings_and_persistent_values/presentation/settings_screen.dart';
@@ -163,8 +163,7 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'creditAccountScreen',
                   parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) =>
-                      CreditAccountScreen(creditAccount: state.extra as CreditAccount),
+                  builder: (context, state) => CreditAccountScreen(creditAccount: state.extra as CreditAccount),
                 ),
                 GoRoute(
                   path: 'addAccount',
