@@ -100,7 +100,7 @@ class RoundedIconButton extends StatelessWidget {
                   child: FittedBox(
                     child: SvgIcon(
                       iconPath,
-                      color: iconColor,
+                      color: iconColor ?? context.appTheme.onBackground,
                     ),
                   ),
                 ),

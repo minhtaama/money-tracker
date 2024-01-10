@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -20,14 +20,31 @@ import '../../../../utils/enums.dart';
 import '../../../category/domain/category.dart';
 import '../../domain/transaction_base.dart';
 
-class TransactionDetailsModalScreen extends ConsumerWidget {
-  const TransactionDetailsModalScreen({super.key, required this.transaction});
+class TransactionDetailsModalScreen extends ConsumerStatefulWidget {
+  const TransactionDetailsModalScreen({super.key, required this.objectIdHexString});
 
-  final BaseTransaction transaction;
+  final String objectIdHexString;
+
+  @override
+  ConsumerState<TransactionDetailsModalScreen> createState() => _TransactionDetailsModalScreenState();
+}
+
+class _TransactionDetailsModalScreenState extends ConsumerState<TransactionDetailsModalScreen> {
+  bool _isEditMode = false;
+
+  late BaseTransaction _transaction;
+
+  @override
+  void initState() {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+    _transaction = txnRepo.getTransaction(widget.objectIdHexString);
+    // TODO: implement initState
+    super.initState();
+  }
 
   String get _title {
-    return switch (transaction) {
-      Income() => (transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
+    return switch (_transaction) {
+      Income() => (_transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
       CreditSpending() => 'Credit Spending'.hardcoded,
@@ -37,22 +54,28 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final accountRepo = ref.watch(accountRepositoryProvider);
-
+  Widget build(BuildContext context) {
     return CustomSection(
       title: _title,
-      subTitle: _DateTime(transaction: transaction),
+      subTitle: _DateTime(transaction: _transaction),
+      subIcons: RoundedIconButton(
+        iconPath: AppIcons.edit,
+        size: 38,
+        iconPadding: 8,
+        onTap: () => setState(() {
+          _isEditMode = true;
+        }),
+      ),
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
       sections: [
-        _Amount(transaction: transaction),
+        _Amount(transaction: _transaction),
         Gap.h8,
-        transaction is CreditSpending ? Gap.h8 : Gap.noGap,
+        widget.objectIdHexString is CreditSpending ? Gap.h8 : Gap.noGap,
         Gap.divider(context, indent: 6),
         Row(
           children: [
-            transaction is Transfer
+            widget.objectIdHexString is Transfer
                 ? const TxnTransferLine(
                     height: 100,
                     width: 30,
@@ -60,20 +83,20 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
                     opacity: 0.5,
                   )
                 : Gap.noGap,
-            transaction is Transfer ? Gap.w4 : Gap.noGap,
+            widget.objectIdHexString is Transfer ? Gap.w4 : Gap.noGap,
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(model: transaction.account!),
-                  switch (transaction) {
+                  _AccountCard(model: _transaction.account!),
+                  switch (_transaction) {
                     IBaseTransactionWithCategory() =>
-                      transaction is Income && (transaction as Income).isInitialTransaction
+                      _transaction is Income && (_transaction as Income).isInitialTransaction
                           ? Gap.noGap
                           : _CategoryCard(
-                              model: (transaction as IBaseTransactionWithCategory).category!,
-                              categoryTag: (transaction as IBaseTransactionWithCategory).categoryTag,
+                              model: (_transaction as IBaseTransactionWithCategory).category!,
+                              categoryTag: (_transaction as IBaseTransactionWithCategory).categoryTag,
                             ),
-                    Transfer() => _AccountCard(model: (transaction as Transfer).transferAccount!),
+                    Transfer() => _AccountCard(model: (_transaction as Transfer).transferAccount!),
                     CreditPayment() || CreditCheckpoint() => Gap.noGap,
                   },
                 ],
@@ -81,7 +104,7 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
             ),
           ],
         ),
-        transaction.note != null ? _Note(note: transaction.note!) : Gap.noGap,
+        _transaction.note != null ? _Note(note: _transaction.note!) : Gap.noGap,
         Gap.h16,
       ],
     );

@@ -187,7 +187,7 @@ final goRouter = GoRouter(
         context,
         state,
         hasHandle: true,
-        child: TransactionDetailsModalScreen(transaction: state.extra as BaseTransaction),
+        child: TransactionDetailsModalScreen(objectIdHexString: state.extra as String),
       ),
     ),
   ],

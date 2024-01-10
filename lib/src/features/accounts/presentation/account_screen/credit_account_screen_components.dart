@@ -1,14 +1,7 @@
 part of 'credit_account_screen.dart';
 
 class _Header extends StatelessWidget {
-  const _Header(
-      {super.key,
-      this.dateTime,
-      required this.h1,
-      this.h2,
-      this.dateColor,
-      this.dateBgColor,
-      this.color});
+  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});
 
   final DateTime? dateTime;
   final Color? dateColor;
@@ -37,14 +30,12 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(
-                      fontSize: 16, color: color ?? context.appTheme.onBackground),
+                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.onBackground),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(
-                            fontSize: 14, color: color ?? context.appTheme.onBackground),
+                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: color ?? context.appTheme.onBackground),
                       )
                     : Gap.noGap,
               ],
@@ -69,7 +60,7 @@ class _Transaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction),
+        onTap: () => context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
@@ -115,7 +106,7 @@ class _InstallmentPayTransaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction),
+        onTap: () => context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
@@ -301,8 +292,7 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.appSettings.currency.code}'
                                   .hardcoded,
-                              style: kHeader3TextStyle.copyWith(
-                                  fontSize: 12, color: context.appTheme.onBackground),
+                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
