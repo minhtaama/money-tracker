@@ -21,7 +21,7 @@ class MoneyCarousel extends StatefulWidget {
     this.onTapRightIcon,
     this.onTapLeftIcon,
     this.showCurrency = true,
-    this.showPrefixSign = true,
+    this.showPrefixSign = PrefixSign.showAll,
     required this.amountBuilder,
     required this.titleBuilder,
   });
@@ -33,7 +33,7 @@ class MoneyCarousel extends StatefulWidget {
   final VoidCallback? onTapRightIcon;
   final VoidCallback? onTapLeftIcon;
   final bool showCurrency;
-  final bool showPrefixSign;
+  final PrefixSign showPrefixSign;
 
   /// Safe to use `ref.watch` or `ref.listen` inside this builder (do not use
   /// `setState()` to update state).
@@ -159,6 +159,12 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
   }
 }
 
+enum PrefixSign {
+  hideAll,
+  showAll,
+  onlyMinusSign,
+}
+
 class _CarouselContent extends StatefulWidget {
   const _CarouselContent({
     super.key,
@@ -174,7 +180,7 @@ class _CarouselContent extends StatefulWidget {
   final bool isActive;
   final bool isShowValue;
   final bool showCurrency;
-  final bool showPrefixSign;
+  final PrefixSign showPrefixSign;
   final String text;
   final double amount;
   final ValueChanged<double>? onChange;
@@ -187,13 +193,20 @@ class _CarouselContentState extends State<_CarouselContent> {
   final _key = GlobalKey();
 
   String _prefixSign(BuildContext context) {
-    if (widget.amount.roundBySetting(context) == 0 || !widget.isShowValue || !widget.showPrefixSign) {
+    if (widget.amount.roundBySetting(context) == 0 || !widget.isShowValue) {
       return '';
     }
+
     if (widget.amount.roundBySetting(context) > 0) {
-      return '+ ';
+      return switch (widget.showPrefixSign) {
+        PrefixSign.showAll => '+ ',
+        _ => '',
+      };
     } else {
-      return '- ';
+      return switch (widget.showPrefixSign) {
+        PrefixSign.onlyMinusSign || PrefixSign.showAll => '- ',
+        _ => '',
+      };
     }
   }
 

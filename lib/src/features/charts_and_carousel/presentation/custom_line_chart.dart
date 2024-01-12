@@ -26,13 +26,13 @@ class CLCSpot extends FlSpot {
   final bool checkpoint;
 }
 
-class CustomLineChart extends ConsumerWidget {
+class CustomLineChart extends StatelessWidget {
   const CustomLineChart({
     super.key,
     this.primaryLineType = CustomLineType.thickThenThin,
     this.chartDataType = ChartDataType.cashflow,
     required this.currentMonth,
-    required this.valuesBuilder,
+    required this.spots,
     this.chartOffsetY = 0,
     this.extraLineY,
     this.showExtraLine = false,
@@ -45,7 +45,7 @@ class CustomLineChart extends ConsumerWidget {
   /// To determine value in x-axis (days in month)
   final DateTime currentMonth;
 
-  final List<CLCSpot> Function(WidgetRef) valuesBuilder;
+  final List<CLCSpot> spots;
 
   /// Offset chart but keep the bottom title at the same spot
   final double chartOffsetY;
@@ -54,12 +54,10 @@ class CustomLineChart extends ConsumerWidget {
 
   final bool showExtraLine;
 
-  final String Function(WidgetRef)? extraLineText;
+  final String? extraLineText;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final spots = valuesBuilder(ref);
-
+  Widget build(BuildContext context) {
     final cpIndex = spots.indexWhere((e) => e.checkpoint);
 
     final hasCp = cpIndex != -1;
@@ -82,7 +80,7 @@ class CustomLineChart extends ConsumerWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: primaryLineType == CustomLineType.thick ? 5.5 : 2.5,
+        barWidth: primaryLineType == CustomLineType.thick ? 5 : 2.5,
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -171,7 +169,9 @@ class CustomLineChart extends ConsumerWidget {
         items.add(LineTooltipItem(
           '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            color: context.appTheme.isDarkTheme
+                ? context.appTheme.onBackground
+                : context.appTheme.onSecondary,
             fontSize: 13,
           ),
           textAlign: TextAlign.right,
@@ -181,7 +181,9 @@ class CustomLineChart extends ConsumerWidget {
                   .copyWith(day: touchedSpot.x.toInt())
                   .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                color: context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary,
                 fontSize: 11,
               ),
             ),
@@ -200,7 +202,10 @@ class CustomLineChart extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [context.appTheme.accent1.withOpacity(0.35), context.appTheme.accent1.withOpacity(0.0)],
+            colors: [
+              context.appTheme.accent1.withOpacity(0.35),
+              context.appTheme.accent1.withOpacity(0.0)
+            ],
             stops: const [0.46, 0.8],
           ),
           strokeWidth: isOptionalBar ? 0 : 50,
@@ -256,7 +261,7 @@ class CustomLineChart extends ConsumerWidget {
       offset: Offset(0, chartOffsetY),
       child: LineChart(
         LineChartData(
-          maxY: 1,
+          maxY: 1.05,
           minY: 0 - (chartOffsetY * 1.4) / 100,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
@@ -279,7 +284,7 @@ class CustomLineChart extends ConsumerWidget {
                               : context.appTheme.accent2.withOpacity(0),
                         ),
                         alignment: Alignment.bottomRight,
-                        labelResolver: (_) => extraLineText?.call(ref) ?? '',
+                        labelResolver: (_) => extraLineText ?? '',
                       ),
                       color: showExtraLine
                           ? context.appTheme.accent2.withOpacity(0.15)

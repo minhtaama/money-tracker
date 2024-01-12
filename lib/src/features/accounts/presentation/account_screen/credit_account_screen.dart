@@ -62,12 +62,9 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
 
-  bool _showCurrentDateButton = false;
-
   void _onPageChange(int value) {
     _displayStatementDate =
         DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
-    _isShowGoToCurrentDateButton();
     setState(() {});
   }
 
@@ -81,15 +78,6 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
 
   void _animatedToPage(int page) {
     _controller.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-  }
-
-  void _isShowGoToCurrentDateButton() {
-    if (_displayStatementDate.year == _today.year &&
-        _displayStatementDate.month == _initialStatementMonth) {
-      _showCurrentDateButton = false;
-    } else {
-      _showCurrentDateButton = true;
-    }
   }
 
   @override
@@ -225,8 +213,11 @@ class _ListState extends State<_List> {
             color: AppColors.greyBorder(context),
           ),
         ),
-        Column(
-          children: buildList(context, widget.statement, _topKey, _bottomKey),
+        Material(
+          color: Colors.transparent,
+          child: Column(
+            children: buildList(context, widget.statement, _topKey, _bottomKey),
+          ),
         ),
       ],
     );

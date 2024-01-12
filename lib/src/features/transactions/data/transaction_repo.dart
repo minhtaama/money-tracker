@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
@@ -26,7 +27,9 @@ class TransactionRepository {
       };
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   /// Put this inside realm write transaction to update [BalanceAtDateTime],
@@ -51,7 +54,8 @@ class TransactionRepository {
           balanceAtDateTimes.lastIndexWhere((e) => dateTime.isInMonthAfter(e.date.toLocal()));
       final nearestBalance =
           nearestIndexFromTxnDateTime == -1 ? 0 : balanceAtDateTimes[nearestIndexFromTxnDateTime].amount;
-      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
+      realm
+          .add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
 
       balanceAtDateTimes = getSortedBalanceAtDateTimeList();
       index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
@@ -64,9 +68,9 @@ class TransactionRepository {
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
+    List<TransactionDb> list = realm.all<TransactionDb>().query(
+        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)',
+        [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
@@ -81,7 +85,8 @@ class TransactionRepository {
 
   /// A De-normalization list stores total balance in a month
   List<BalanceAtDateTime> getSortedBalanceAtDateTimeList() {
-    List<BalanceAtDateTimeDb> list = realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
+    List<BalanceAtDateTimeDb> list =
+        realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
 
     return list.map((txn) => BalanceAtDateTime.fromDatabase(txn)).toList();
   }
@@ -94,7 +99,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -134,7 +140,8 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -160,7 +167,8 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -192,7 +200,8 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails:
+            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);
@@ -527,10 +536,9 @@ final transactionRepositoryRealmProvider = Provider<TransactionRepository>(
   },
 );
 
-final transactionChangesRealmProvider =
-    StreamProvider.autoDispose.family<RealmResultsChanges<TransactionDb>, DateTimeRange>(
-  (ref, range) {
+final transactionChangesRealmProvider = StreamProvider.autoDispose<RealmResultsChanges<TransactionDb>>(
+  (ref) {
     final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
-    return transactionRepo._watchListChanges(range.start, range.end);
+    return transactionRepo._watchListChanges(Calendar.minDate, Calendar.maxDate);
   },
 );

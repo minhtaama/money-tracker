@@ -14,7 +14,7 @@ import '../../../charts_and_carousel/presentation/money_carousel.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
-class ExtendedHomeTab extends StatefulWidget {
+class ExtendedHomeTab extends ConsumerStatefulWidget {
   const ExtendedHomeTab({
     super.key,
     required this.carouselController,
@@ -37,10 +37,10 @@ class ExtendedHomeTab extends StatefulWidget {
   final VoidCallback onDateTap;
 
   @override
-  State<ExtendedHomeTab> createState() => _ExtendedHomeTabState();
+  ConsumerState<ExtendedHomeTab> createState() => _ExtendedHomeTabState();
 }
 
-class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
+class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   ChartDataType _type = ChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {
@@ -52,7 +52,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.expense => 'Expense in $month',
       ChartDataType.income => 'Income in $month',
       ChartDataType.totalAssets => displayDate.isSameMonthAs(today)
-          ? 'Current assets'
+          ? 'Assets in current month'
           : displayDate.isInMonthBefore(today)
               ? 'Assets left in $month'
               : 'Expected assets in $month',
@@ -60,7 +60,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
   }
 
   double _amountBuilder(WidgetRef ref, DateTime dayBeginOfMonth, DateTime dayEndOfMonth) {
-    final txnServices = ref.read(transactionServicesProvider);
+    final txnServices = ref.read(customLineChartServicesProvider);
 
     double amount = switch (_type) {
       ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
@@ -69,7 +69,7 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
       ChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
     };
 
-    ref.listen(transactionChangesRealmProvider(DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)), (_, __) {
+    ref.listen(transactionChangesRealmProvider, (_, __) {
       amount = switch (_type) {
         ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
@@ -81,25 +81,11 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
     return amount;
   }
 
-  String _extraLineTextBuilder(WidgetRef ref) {
-    final txnServices = ref.read(transactionServicesProvider);
-
-    final amount = CalService.formatCurrency(context, txnServices.getMinMaxAssetsEver()[1]);
-    final symbol = context.appSettings.currency.symbol;
-
-    return 'Highest ever: $symbol $amount';
-  }
-
-  List<CLCSpot> _valuesBuilder(WidgetRef ref) {
-    final txnRepo = ref.read(transactionServicesProvider);
-
-    return txnRepo.getLineChartSpots(_type, widget.displayDate);
-  }
-
-  bool get _showPrefixSign {
+  PrefixSign get _showPrefixSign {
     return switch (_type) {
-      ChartDataType.cashflow => true,
-      _ => false,
+      ChartDataType.cashflow => PrefixSign.showAll,
+      ChartDataType.totalAssets => PrefixSign.onlyMinusSign,
+      _ => PrefixSign.hideAll,
     };
   }
 
@@ -138,6 +124,21 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    final chartServices = ref.watch(customLineChartServicesProvider);
+
+    CLCData data = chartServices.getLineChartData(_type, widget.displayDate);
+    double avg = chartServices.getAverageAssets();
+
+    ref.listen(transactionChangesRealmProvider, (previous, next) {
+      data = chartServices.getLineChartData(_type, widget.displayDate);
+      avg = chartServices.getAverageAssets();
+    });
+
+    final extraLineText =
+        'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+
+    final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -158,13 +159,13 @@ class _ExtendedHomeTabState extends State<ExtendedHomeTab> {
         Expanded(
           child: CustomLineChart(
             currentMonth: widget.displayDate,
-            valuesBuilder: _valuesBuilder,
+            spots: data.spots,
             chartOffsetY: 35,
-            extraLineY: 1,
+            extraLineY: extraLineY,
             primaryLineType: _customLineType,
             chartDataType: _type,
             showExtraLine: _type == ChartDataType.totalAssets,
-            extraLineText: _extraLineTextBuilder,
+            extraLineText: extraLineText,
           ),
         ),
         _DateSelector(
@@ -235,14 +236,16 @@ class _DateSelector extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                    key: ValueKey(
+                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
                       children: [
                         RoundedIconButton(
-                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                              ? AppIcons.today
-                              : AppIcons.turn,
+                          iconPath:
+                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                                  ? AppIcons.today
+                                  : AppIcons.turn,
                           iconColor: context.appTheme.onBackground,
                           size: 16,
                           iconPadding: 0,
@@ -285,7 +288,8 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color:
+            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );

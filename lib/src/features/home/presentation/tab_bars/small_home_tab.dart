@@ -27,10 +27,7 @@ class SmallHomeTab extends ConsumerWidget {
 
     double totalBalance = accountRepository.getTotalBalance();
 
-    ref
-        .watch(transactionChangesRealmProvider(
-            DateTimeRange(start: Calendar.minDate, end: Calendar.maxDate)))
-        .whenData((_) {
+    ref.watch(transactionChangesRealmProvider).whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
 

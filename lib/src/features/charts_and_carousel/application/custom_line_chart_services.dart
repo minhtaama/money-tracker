@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../charts_and_carousel/presentation/custom_line_chart.dart';
@@ -65,26 +66,19 @@ class CustomLineChartServices {
     return balanceAtDateTimes[index].amount;
   }
 
-  List<double> getMinMaxAssetsEver() {
-    double max = double.negativeInfinity;
-    double min = 0;
+  double getAverageAssets() {
+    double avg = 0;
     final balanceAtDateTimes = transactionRepo.getSortedBalanceAtDateTimeList();
     for (var balDt in balanceAtDateTimes) {
-      if (balDt.amount > max) {
-        max = balDt.amount;
-      }
-      if (balDt.amount < min) {
-        min = balDt.amount;
-      }
+      avg += balDt.amount;
     }
-    if (max == double.negativeInfinity) {
-      max = 0;
+    if (balanceAtDateTimes.isEmpty) {
+      return 0;
     }
-
-    return [min, max];
+    return avg / balanceAtDateTimes.length;
   }
 
-  List<CLCSpot> getLineChartSpots(ChartDataType type, DateTime displayDate) {
+  CLCData getLineChartData(ChartDataType type, DateTime displayDate) {
     final dayBeginOfMonth = DateTime(displayDate.year, displayDate.month);
     final dayEndOfMonth = DateTime(displayDate.year, displayDate.month + 1, 0, 23, 59, 59);
     final today = DateTime.now();
@@ -184,18 +178,19 @@ class CustomLineChartServices {
     double max = double.negativeInfinity;
     double min = 0;
 
+    for (var entry in result.entries) {
+      if (entry.value > max) {
+        max = entry.value;
+      }
+      if (entry.value < min) {
+        min = entry.value;
+      }
+    }
+
     if (type == ChartDataType.totalAssets) {
-      final minMax = getMinMaxAssetsEver();
-      min = minMax[0];
-      max = minMax[1];
-    } else {
-      for (var entry in result.entries) {
-        if (entry.value > max) {
-          max = entry.value;
-        }
-        if (entry.value < min) {
-          min = entry.value;
-        }
+      final avg = getAverageAssets();
+      if (avg > max) {
+        max = avg;
       }
     }
 
@@ -221,18 +216,33 @@ class CustomLineChartServices {
       }
     }
 
-    return List<CLCSpot>.from(
-      result.entries.map(
-        (e) => CLCSpot(e.key.toDouble(), getY(e.value),
-            amount: e.value, checkpoint: e.key == today.day && today.isSameMonthAs(displayDate)),
+    return CLCData(
+      maxAmount: max,
+      minAmount: min,
+      spots: List<CLCSpot>.from(
+        result.entries.map(
+          (e) => CLCSpot(e.key.toDouble(), getY(e.value),
+              amount: e.value, checkpoint: e.key == today.day && today.isSameMonthAs(displayDate)),
+        ),
       ),
     );
   }
 }
 
+@immutable
+class CLCData {
+  final List<CLCSpot> spots;
+
+  /// if type is totalAssets, average amount ever will be used to compare too.
+  final double maxAmount;
+  final double minAmount;
+
+  const CLCData({required this.spots, required this.maxAmount, required this.minAmount});
+}
+
 /////////////////// PROVIDERS //////////////////////////
 
-final transactionServicesProvider = Provider<CustomLineChartServices>(
+final customLineChartServicesProvider = Provider<CustomLineChartServices>(
   (ref) {
     final repo = ref.watch(transactionRepositoryRealmProvider);
 
