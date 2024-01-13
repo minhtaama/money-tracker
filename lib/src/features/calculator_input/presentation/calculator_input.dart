@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 import 'package:intl/intl.dart';
@@ -157,7 +155,8 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.resultOutput}) : super(key: key);
+  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
+      : super(key: key);
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__
@@ -189,10 +188,10 @@ class _CalculatorState extends State<_Calculator> {
 
     _previousExpression = '';
 
-    if (kDebugMode) {
-      print('rawString: $_rawString');
-      print('formatted: $_formattedString');
-    }
+    // if (kDebugMode) {
+    //   print('rawString: $_rawString');
+    //   print('formatted: $_formattedString');
+    // }
 
     super.initState();
   }
@@ -269,10 +268,10 @@ class _CalculatorState extends State<_Calculator> {
 
     setState(() {});
 
-    if (kDebugMode) {
-      print('rawString: $_rawString');
-      print('formatted: $_formattedString');
-    }
+    // if (kDebugMode) {
+    //   print('rawString: $_rawString');
+    //   print('formatted: $_formattedString');
+    // }
   }
 
   void _backspace() {
@@ -293,10 +292,10 @@ class _CalculatorState extends State<_Calculator> {
 
     setState(() {});
 
-    if (kDebugMode) {
-      print('rawString: $_rawString');
-      print('formatted: $_formattedString');
-    }
+    // if (kDebugMode) {
+    //   print('rawString: $_rawString');
+    //   print('formatted: $_formattedString');
+    // }
   }
 
   /// Calculate the expression
@@ -320,10 +319,10 @@ class _CalculatorState extends State<_Calculator> {
 
       setState(() {});
 
-      if (kDebugMode) {
-        print('rawString: $_rawString');
-        print('formatted: $_formattedString');
-      }
+      // if (kDebugMode) {
+      //   print('rawString: $_rawString');
+      //   print('formatted: $_formattedString');
+      // }
     } catch (_) {
       if (kDebugMode) {
         print(_.toString());
@@ -336,10 +335,10 @@ class _CalculatorState extends State<_Calculator> {
     _formattedString = _formatNumberInGroup(_rawString);
     _previousExpression = '';
     setState(() {});
-    if (kDebugMode) {
-      print('rawString: $_rawString');
-      print('formatted: $_formattedString');
-    }
+    // if (kDebugMode) {
+    //   print('rawString: $_rawString');
+    //   print('formatted: $_formattedString');
+    // }
   }
 
   /// This function takes the argument only in type __String__. It use Regex to find all

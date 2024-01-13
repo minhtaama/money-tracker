@@ -21,7 +21,8 @@ class CreditPaymentFormState {
 
   final Statement? statement;
 
-  double get totalBalanceAmount => statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
+  double get totalBalanceAmount =>
+      statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
 
   CreditPaymentFormState._({
     this.statement,
@@ -57,7 +58,8 @@ class CreditPaymentFormState {
       isFullPayment: isFullPayment != null ? isFullPayment() : this.isFullPayment,
       adjustment: adjustment != null ? adjustment() : this.adjustment,
       userPaymentAmount: userPaymentAmount != null ? userPaymentAmount() : this.userPaymentAmount,
-      userRemainingAmount: userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
+      userRemainingAmount:
+          userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
     );
   }
 
@@ -93,7 +95,8 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
         // Because: afterAdjustedAmount = userPaymentAmount + adjustment
         // Then: userRemaining = totalBalance - afterAdjustedAmount
         // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
-        adjustment: () => state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
+        adjustment: () =>
+            state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
   }
 
   void changePaymentInput(BuildContext context, String value) {
@@ -103,9 +106,10 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
     );
 
     if (state.userPaymentAmount != null &&
-        (state.userPaymentAmount! > state.totalBalanceAmount ||
-            state.isFullPayment ||
-            state.userPaymentAmount!.roundBySetting(context) == state.totalBalanceAmount.roundBySetting(context))) {
+        //(state.userPaymentAmount! > state.totalBalanceAmount ||
+        (state.isFullPayment ||
+            state.userPaymentAmount!.roundBySetting(context) ==
+                state.totalBalanceAmount.roundBySetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       state = state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
@@ -118,9 +122,9 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
 
     if (state.isFullPayment && state.userPaymentAmount != null) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
-      state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
+      state = state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {
-      state.copyWith(adjustment: () => null);
+      state = state.copyWith(adjustment: () => null);
     }
   }
 
