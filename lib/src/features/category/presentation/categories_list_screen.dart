@@ -19,7 +19,7 @@ import 'category_list_tile.dart';
 import 'edit_category_modal_screen.dart';
 
 class CategoriesListScreen extends ConsumerWidget {
-  const CategoriesListScreen({Key? key}) : super(key: key);
+  const CategoriesListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,10 +45,7 @@ class CategoriesListScreen extends ConsumerWidget {
                 Category model = list[index];
                 return CategoryListTile(
                   key: ValueKey(index),
-                  iconPath: model.iconPath,
-                  backgroundColor: model.backgroundColor,
-                  iconColor: model.iconColor,
-                  name: model.name,
+                  model: model,
                   onMenuTap: () {
                     showCustomModalBottomSheet(
                       context: context,
@@ -85,6 +82,7 @@ class CategoriesListScreen extends ConsumerWidget {
         children: [
           CustomSection(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            isWrapByCard: false,
             title: 'Income',
             onReorder: (oldIndex, newIndex) {
               categoryRepository.reorder(CategoryType.income, oldIndex, newIndex);
@@ -93,6 +91,7 @@ class CategoriesListScreen extends ConsumerWidget {
           ),
           CustomSection(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            isWrapByCard: false,
             title: 'Expense',
             onReorder: (oldIndex, newIndex) {
               categoryRepository.reorder(CategoryType.expense, oldIndex, newIndex);

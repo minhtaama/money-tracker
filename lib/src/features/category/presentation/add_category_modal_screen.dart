@@ -15,7 +15,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class AddCategoryModalScreen extends ConsumerStatefulWidget {
-  const AddCategoryModalScreen({Key? key}) : super(key: key);
+  const AddCategoryModalScreen({super.key});
 
   @override
   ConsumerState<AddCategoryModalScreen> createState() => _AddCategoryModalScreenState();

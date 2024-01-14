@@ -17,8 +17,7 @@ import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../domain/category_tag.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
-  const CategoryTagSelector({Key? key, this.category, required this.onTagSelected, this.fading})
-      : super(key: key);
+  const CategoryTagSelector({super.key, this.category, required this.onTagSelected, this.fading});
   final Color? fading;
   final ValueSetter<CategoryTag?> onTagSelected;
   final Category? category;
@@ -109,7 +108,7 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             child: Row(
               children: [
                 Expanded(
-                  child: ChosenTag(chosenTag: _chosenTag?.name),
+                  child: _ChosenTag(chosenTag: _chosenTag?.name),
                 ),
                 AnimatedContainer(
                   duration: k250msDuration,
@@ -230,8 +229,8 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
   }
 }
 
-class ChosenTag extends StatelessWidget {
-  const ChosenTag({
+class _ChosenTag extends StatelessWidget {
+  const _ChosenTag({
     super.key,
     required String? chosenTag,
   }) : _chosenTag = chosenTag;
@@ -265,8 +264,7 @@ class ChosenTag extends StatelessWidget {
 
 class CategoryTagWidget extends StatelessWidget {
   const CategoryTagWidget(
-      {Key? key, required this.categoryTag, required this.onTap, required this.onLongPress})
-      : super(key: key);
+      {super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
   final ValueSetter<CategoryTag> onLongPress;
@@ -274,7 +272,7 @@ class CategoryTagWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 175),
+      constraints: const BoxConstraints(maxWidth: 175, minHeight: 35),
       child: IntrinsicWidth(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
@@ -317,8 +315,8 @@ class CategoryTagWidget extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton({Key? key, this.focusNode, this.category, required this.onEditingComplete})
-      : super(key: key);
+  const AddCategoryTagButton(
+      {super.key, this.focusNode, this.category, required this.onEditingComplete});
   final FocusNode? focusNode;
   final Category? category;
   final ValueSetter<CategoryTag> onEditingComplete;
