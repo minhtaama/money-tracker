@@ -33,38 +33,23 @@ class SummaryScreen extends StatelessWidget {
           onTap: () => context.push(RoutePath.accounts),
           title: 'Accounts',
           icon: AppIcons.accounts,
-          child: const SizedBox(
-            height: 300,
-          ),
         ),
         SummaryCard(
           onTap: () => context.push(RoutePath.categories),
           title: 'Category',
           icon: AppIcons.categories,
-          child: const SizedBox(
-            height: 300,
-          ),
         ),
         SummaryCard(
           title: 'Budget',
           icon: AppIcons.budgets,
-          child: SizedBox(
-            height: 300,
-          ),
         ),
         SummaryCard(
           title: 'Saving',
           icon: AppIcons.savings,
-          child: SizedBox(
-            height: 300,
-          ),
         ),
         SummaryCard(
           title: 'Reports',
           icon: AppIcons.reports,
-          child: SizedBox(
-            height: 300,
-          ),
         ),
       ],
     );
