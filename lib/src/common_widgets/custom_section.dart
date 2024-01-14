@@ -5,6 +5,8 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:reorderables/reorderables.dart';
 import 'dart:math' as math;
 
+import '../theme_and_ui/colors.dart';
+
 class CustomSection extends StatefulWidget {
   const CustomSection({
     super.key,
@@ -31,14 +33,12 @@ class CustomSection extends StatefulWidget {
   State<CustomSection> createState() => _CustomSectionState();
 }
 
-class _CustomSectionState extends State<CustomSection> {
-  List<Widget> _children = [];
+class _CustomSectionState extends State<CustomSection> with SingleTickerProviderStateMixin {
+  late List<Widget> _children = _generateTiles();
 
-  @override
-  void initState() {
-    super.initState();
-    _children = _generateTiles();
-  }
+  late final _controller = AnimationController(vsync: this, duration: k250msDuration);
+
+  late final _animation = _controller.drive(CurveTween(curve: Curves.easeOutBack));
 
   @override
   void didUpdateWidget(CustomSection oldWidget) {
@@ -124,24 +124,41 @@ class _CustomSectionState extends State<CustomSection> {
                     crossAxisAlignment: widget.crossAxisAlignment,
                     scrollController: ScrollController(),
                     draggingWidgetOpacity: 0,
+                    reorderAnimationDuration: k250msDuration,
+                    onReorderStarted: (_) => _controller.forward(from: 0),
                     // This callback build the widget when dragging is happening
                     buildDraggableFeedback: (context, constraint, feedback) {
-                      Widget tile = Transform(
-                        transform: Matrix4.identity()
-                          ..scale(1.035)
-                          ..rotateZ(math.pi * 0.025 * (math.Random().nextBool() ? -1 : 1)),
-                        alignment: Alignment.center,
-                        child: SectionTile(
-                          isHasDivider: false,
-                          child: (feedback as SectionTile).child,
-                        ),
-                      );
-                      return Container(
+                      return ConstrainedBox(
                         constraints: constraint,
-                        child: Material(color: Colors.transparent, child: tile),
+                        child: Material(
+                            color: Colors.transparent,
+                            child: AnimatedBuilder(
+                              animation: _animation,
+                              builder: (context, child) {
+                                return Transform(
+                                  alignment: Alignment.center,
+                                  transform: Matrix4.identity()
+                                    ..scale(1.0 + 0.04 * _animation.value)
+                                    ..rotateZ(math.pi * 0.025 * _animation.value),
+                                  child: Container(
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.black.withOpacity(0.2),
+                                        blurRadius: 13 * _animation.value,
+                                        offset: Offset(2 * _animation.value, 30 * _animation.value),
+                                        spreadRadius: -13,
+                                      )
+                                    ]),
+                                    child: child!,
+                                  ),
+                                );
+                              },
+                              child: (feedback as SectionTile).child,
+                            )),
                       );
                     },
                     onReorder: (oldIndex, newIndex) {
+                      _controller.reverse(from: 1);
                       _onReorder(oldIndex, newIndex);
                       widget.onReorder!.call(oldIndex, newIndex);
                     },
