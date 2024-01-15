@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CardItem extends StatelessWidget {
   /// A common widget for this project
   const CardItem(
-      {Key? key,
+      {super.key,
       this.child,
       this.color,
       this.height,
@@ -12,13 +13,13 @@ class CardItem extends StatelessWidget {
       this.constraints,
       this.isGradient = false,
       this.borderRadius,
+      this.boxShadow,
       this.border,
       this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
       this.elevation = 1,
       this.clip = true,
-      this.alignment})
-      : super(key: key);
+      this.alignment});
   final Color? color;
   final double? height;
   final double? width;
@@ -28,6 +29,7 @@ class CardItem extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final BorderRadiusGeometry? borderRadius;
   final BoxBorder? border;
+  final List<BoxShadow>? boxShadow;
   final bool isGradient;
   final Widget? child;
   final Alignment? alignment;
@@ -37,7 +39,9 @@ class CardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final defaultBgColor = context.appTheme.background0;
 
-    return Container(
+    return AnimatedContainer(
+      duration: k250msDuration,
+      curve: Curves.easeOut,
       margin: margin,
       constraints: constraints,
       alignment: alignment,
@@ -47,22 +51,23 @@ class CardItem extends StatelessWidget {
         color: color ?? defaultBgColor,
         borderRadius: borderRadius ?? BorderRadius.circular(16),
         border: border,
-        boxShadow: elevation == 0
-            ? []
-            : [
-                BoxShadow(
-                  color: Colors.black.withOpacity(elevation * 0.1),
-                  blurRadius: 0.5 + elevation,
-                  spreadRadius: 0.5 * elevation,
-                  offset: Offset(0, 1 + elevation),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 0,
-                  spreadRadius: 0.2,
-                  offset: const Offset(0, 0),
-                ),
-              ],
+        boxShadow: boxShadow ??
+            (elevation == 0
+                ? []
+                : [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(elevation * 0.1),
+                      blurRadius: 0.5 + elevation,
+                      spreadRadius: 0.5 * elevation,
+                      offset: Offset(0, 1 + elevation),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 0,
+                      spreadRadius: 0.2,
+                      offset: const Offset(0, 0),
+                    ),
+                  ]),
         gradient: isGradient
             ? LinearGradient(
                 begin: Alignment.bottomLeft,

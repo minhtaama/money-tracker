@@ -22,14 +22,14 @@ class CLCSpot extends FlSpot {
 
   /// Is the spot where line turn from solid to dashed.
   ///
-  /// Only works when type is [CustomLineType.thickThenThin]
+  /// Only works when type is [CustomLineType.solidToDashed]
   final bool checkpoint;
 }
 
 class CustomLineChart extends StatelessWidget {
   const CustomLineChart({
     super.key,
-    this.primaryLineType = CustomLineType.thickThenThin,
+    this.primaryLineType = CustomLineType.solidToDashed,
     this.chartDataType = ChartDataType.cashflow,
     required this.currentMonth,
     required this.spots,
@@ -62,7 +62,7 @@ class CustomLineChart extends StatelessWidget {
 
     final hasCp = cpIndex != -1;
 
-    final cpPercent = hasCp && primaryLineType == CustomLineType.thickThenThin
+    final cpPercent = hasCp && primaryLineType == CustomLineType.solidToDashed
         ? (spots[cpIndex].x - spots[0].x) / (spots[spots.length - 1].x - spots[0].x)
         : 0.0;
 
@@ -73,14 +73,15 @@ class CustomLineChart extends StatelessWidget {
 
     final lineBarsData = [
       // Main line.
-      // Always shows, default is thin,
-      // will turns to thick if type is `thick`.
+      // Always shows, has BelowBarData, default is dashed,
+      // will turns to solid if only type is `solid`.
       LineChartBarData(
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: primaryLineType == CustomLineType.thick ? 5 : 2.5,
+        barWidth: primaryLineType == CustomLineType.solid ? 5 : 2.5,
+        dashArray: [12, primaryLineType == CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -103,8 +104,8 @@ class CustomLineChart extends StatelessWidget {
         dotData: const FlDotData(show: false),
       ),
 
-      // Optional solid line, as `barIndex == 1`.
-      // Only shows (logic by gradient) if there are both thick and thin line.
+      // Optional solid line, as `barIndex == 1` and do not have BelowBarData
+      // Only shows (logic by gradient) if there are both solid and dashed line.
       LineChartBarData(
         spots: spots,
         isCurved: true,
@@ -169,9 +170,7 @@ class CustomLineChart extends StatelessWidget {
         items.add(LineTooltipItem(
           '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.onBackground
-                : context.appTheme.onSecondary,
+            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
             fontSize: 13,
           ),
           textAlign: TextAlign.right,
@@ -181,9 +180,7 @@ class CustomLineChart extends StatelessWidget {
                   .copyWith(day: touchedSpot.x.toInt())
                   .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme
-                    ? context.appTheme.onBackground
-                    : context.appTheme.onSecondary,
+                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                 fontSize: 11,
               ),
             ),
@@ -202,10 +199,7 @@ class CustomLineChart extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [
-              context.appTheme.accent1.withOpacity(0.35),
-              context.appTheme.accent1.withOpacity(0.0)
-            ],
+            colors: [context.appTheme.accent1.withOpacity(0.35), context.appTheme.accent1.withOpacity(0.0)],
             stops: const [0.46, 0.8],
           ),
           strokeWidth: isOptionalBar ? 0 : 50,
@@ -261,7 +255,7 @@ class CustomLineChart extends StatelessWidget {
       offset: Offset(0, chartOffsetY),
       child: LineChart(
         LineChartData(
-          maxY: 1.05,
+          maxY: 1.025,
           minY: 0 - (chartOffsetY * 1.4) / 100,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
@@ -277,7 +271,7 @@ class CustomLineChart extends StatelessWidget {
                       dashArray: [15, 10],
                       label: HorizontalLineLabel(
                         show: true,
-                        style: kHeader4TextStyle.copyWith(
+                        style: kHeader2TextStyle.copyWith(
                           fontSize: 11,
                           color: showExtraLine
                               ? context.appTheme.accent2.withOpacity(0.6)
@@ -301,4 +295,4 @@ class CustomLineChart extends StatelessWidget {
   }
 }
 
-enum CustomLineType { thin, thick, thickThenThin }
+enum CustomLineType { dashed, solid, solidToDashed }
