@@ -80,7 +80,7 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: primaryLineType == CustomLineType.solid ? 5 : 2.5,
+        barWidth: primaryLineType == CustomLineType.solid ? 3.5 : 2.5,
         dashArray: [12, primaryLineType == CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
@@ -111,7 +111,7 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: 5,
+        barWidth: 3.5,
         gradient: optionalBarGradient,
         dotData: FlDotData(
           show: true,

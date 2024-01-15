@@ -152,6 +152,7 @@ class AppThemeData {
   final Color background0;
 
   /// __Light Mode:__
+  /// * DO NOT USE COLOR HAS BRIGHTNESS > 99%
   /// * [ScaffoldWithBottomNavBar]'s color
   /// * [SmallHomeTab]'s background color
   /// * [BottomAppBarWithFAB]'s background

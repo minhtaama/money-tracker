@@ -111,6 +111,8 @@ class _TransactionDetailsModalScreenState extends ConsumerState<TransactionDetai
   }
 }
 
+/////////////// SCREEN COMPONENTS /////////////////
+
 class _Amount extends ConsumerWidget {
   const _Amount({required this.isEditMode, required this.transaction});
 
@@ -198,6 +200,7 @@ class _DateTime extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2.0),
       child: _NeumorphicEditWrap(
         isEditMode: isEditMode,
+        onTap: () => print('tapped'),
         child: Row(
           children: [
             Text(
@@ -228,6 +231,7 @@ class _AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _NeumorphicEditCardWrap(
       isEditMode: isEditMode,
+      onTap: () => print('tapped'),
       backgroundColor: model.backgroundColor,
       child: Stack(
         children: [
@@ -239,7 +243,7 @@ class _AccountCard extends StatelessWidget {
                 ..scale(7.0),
               child: SvgIcon(
                 model.iconPath,
-                color: isEditMode ? context.appTheme.onBackground.withOpacity(0.55) : model.iconColor.withOpacity(0.55),
+                color: isEditMode ? model.backgroundColor.withOpacity(0.55) : model.iconColor.withOpacity(0.55),
               ),
             ),
           ),
@@ -301,8 +305,8 @@ class _CategoryCard extends StatelessWidget {
                 iconPath: model.iconPath,
                 size: 50,
                 iconPadding: 7,
-                backgroundColor: isEditMode ? context.appTheme.onBackground.withOpacity(0.0) : model.backgroundColor,
-                iconColor: isEditMode ? context.appTheme.onBackground : model.iconColor,
+                backgroundColor: model.backgroundColor,
+                iconColor: model.iconColor,
               ),
               Gap.w16,
               Expanded(
@@ -369,20 +373,24 @@ class _Note extends StatelessWidget {
   }
 }
 
+///////////// COMPONENTS FOR EDIT MODE ///////////
+
 class _NeumorphicEditWrap extends StatelessWidget {
   const _NeumorphicEditWrap({
     required this.isEditMode,
+    this.onTap,
     this.withPadding = true,
     required this.child,
   });
 
   final bool isEditMode;
+  final VoidCallback? onTap;
   final bool withPadding;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.06) : AppColors.white;
+    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
     final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
     final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
@@ -391,8 +399,7 @@ class _NeumorphicEditWrap extends StatelessWidget {
         AnimatedContainer(
           duration: k250msDuration,
           curve: Curves.easeOut,
-          padding:
-              isEditMode && withPadding ? const EdgeInsets.symmetric(vertical: 8, horizontal: 12) : EdgeInsets.zero,
+          padding: isEditMode && withPadding ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
           margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
           decoration: BoxDecoration(
             color: containerColor,
@@ -412,7 +419,20 @@ class _NeumorphicEditWrap extends StatelessWidget {
               ),
             ],
           ),
-          child: child,
+          child: Material(
+            color: Colors.transparent,
+            child: CustomInkWell(
+              onTap: isEditMode ? onTap : null,
+              inkColor: AppColors.grey(context),
+              borderRadius: BorderRadius.circular(16),
+              child: AnimatedPadding(
+                duration: k250msDuration,
+                curve: Curves.easeOut,
+                padding: isEditMode ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
+                child: child,
+              ),
+            ),
+          ),
         ),
         Positioned(
           top: 1,
@@ -436,14 +456,16 @@ class _NeumorphicEditWrap extends StatelessWidget {
 }
 
 class _NeumorphicEditCardWrap extends StatelessWidget {
-  const _NeumorphicEditCardWrap({required this.isEditMode, required this.backgroundColor, required this.child});
+  const _NeumorphicEditCardWrap(
+      {required this.isEditMode, this.onTap, required this.backgroundColor, required this.child});
   final bool isEditMode;
+  final VoidCallback? onTap;
   final Color backgroundColor;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.06) : AppColors.white;
+    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
     final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
     final bgEditColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
@@ -454,7 +476,7 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
           CardItem(
             margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
             elevation: 0,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: EdgeInsets.zero,
             color: isEditMode ? bgEditColor : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
             boxShadow: [
               BoxShadow(
@@ -471,7 +493,14 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
               ),
             ],
             constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
-            child: child,
+            child: CustomInkWell(
+              onTap: isEditMode ? onTap : null,
+              inkColor: AppColors.grey(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: child,
+              ),
+            ),
           ),
           Positioned(
             top: 1,
@@ -503,7 +532,7 @@ class _EditButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.06) : AppColors.white;
+    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
     final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
     final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
@@ -527,10 +556,11 @@ class _EditButton extends StatelessWidget {
           blurRadius: 4,
         ),
       ],
-      padding: EdgeInsets.zero,
+      padding: isEditMode ? const EdgeInsets.symmetric(vertical: 4, horizontal: 4) : EdgeInsets.zero,
       margin: EdgeInsets.zero,
       child: CustomInkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         inkColor: context.appTheme.onBackground,
         child: Stack(
           alignment: Alignment.center,
@@ -549,7 +579,7 @@ class _EditButton extends StatelessWidget {
               duration: k250msDuration,
               opacity: isEditMode ? 1 : 0,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(5.0),
                 child: FittedBox(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -563,7 +593,7 @@ class _EditButton extends StatelessWidget {
                       Gap.w8,
                       Text(
                         'DONE',
-                        style: kHeader2TextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
+                        style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
                         textAlign: TextAlign.center,
                       ),
                     ],
