@@ -188,7 +188,7 @@ class AppColors {
     ),
   };
 
-  static const white = Color(0xFFFCFCFC);
+  static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF111111);
 
   static Color grey(BuildContext context) =>
