@@ -1,143 +1,39 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
-import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
-import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
-import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../../common_widgets/card_item.dart';
-import '../../../../common_widgets/custom_section.dart';
-import '../../../../utils/constants.dart';
-import '../../../../utils/enums.dart';
-import '../../../category/domain/category.dart';
-import '../../domain/transaction_base.dart';
-
-class TransactionDetailsModalScreen extends ConsumerStatefulWidget {
-  const TransactionDetailsModalScreen({super.key, required this.objectIdHexString});
-
-  final String objectIdHexString;
-
-  @override
-  ConsumerState<TransactionDetailsModalScreen> createState() => _TransactionDetailsModalScreenState();
-}
-
-class _TransactionDetailsModalScreenState extends ConsumerState<TransactionDetailsModalScreen> {
-  bool _isEditMode = false;
-
-  late BaseTransaction _transaction;
-
-  @override
-  void initState() {
-    final txnRepo = ref.read(transactionRepositoryRealmProvider);
-    _transaction = txnRepo.getTransaction(widget.objectIdHexString);
-    super.initState();
-  }
-
-  String get _title {
-    return switch (_transaction) {
-      Income() => (_transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
-      Expense() => 'Expense'.hardcoded,
-      Transfer() => 'Transfer'.hardcoded,
-      CreditSpending() => 'Credit Spending'.hardcoded,
-      CreditPayment() => 'Credit Payment'.hardcoded,
-      CreditCheckpoint() => 'Credit Checkpoint'.hardcoded,
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomSection(
-      title: _title,
-      subTitle: _DateTime(isEditMode: _isEditMode, transaction: _transaction),
-      subIcons: _EditButton(
-        isEditMode: _isEditMode,
-        onTap: () => setState(() {
-          _isEditMode = !_isEditMode;
-        }),
-      ),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      isWrapByCard: false,
-      sections: [
-        _Amount(isEditMode: _isEditMode, transaction: _transaction),
-        Gap.h8,
-        _transaction is CreditSpending ? Gap.h8 : Gap.noGap,
-        Gap.divider(context, indent: 6),
-        Row(
-          children: [
-            _transaction is Transfer
-                ? const TxnTransferLine(
-                    height: 100,
-                    width: 30,
-                    strokeWidth: 1.5,
-                    opacity: 0.5,
-                  )
-                : Gap.noGap,
-            _transaction is Transfer ? Gap.w4 : Gap.noGap,
-            Expanded(
-              child: Column(
-                children: [
-                  _AccountCard(isEditMode: _isEditMode, model: _transaction.account!),
-                  switch (_transaction) {
-                    IBaseTransactionWithCategory() =>
-                      _transaction is Income && (_transaction as Income).isInitialTransaction
-                          ? Gap.noGap
-                          : _CategoryCard(
-                              isEditMode: _isEditMode,
-                              model: (_transaction as IBaseTransactionWithCategory).category!,
-                              categoryTag: (_transaction as IBaseTransactionWithCategory).categoryTag,
-                            ),
-                    Transfer() =>
-                      _AccountCard(isEditMode: _isEditMode, model: (_transaction as Transfer).transferAccount!),
-                    CreditPayment() || CreditCheckpoint() => Gap.noGap,
-                  },
-                ],
-              ),
-            ),
-          ],
-        ),
-        _transaction.note != null ? _Note(isEditMode: _isEditMode, note: _transaction.note!) : Gap.noGap,
-        Gap.h16,
-      ],
-    );
-  }
-}
+part of 'transaction_details_modal_screen.dart';
 
 /////////////// SCREEN COMPONENTS /////////////////
 
 class _Amount extends ConsumerWidget {
-  const _Amount({required this.isEditMode, required this.transaction});
+  const _Amount({
+    required this.isEditMode,
+    required this.transactionType,
+    required this.amount,
+    this.onEditModeTap,
+  });
 
   final bool isEditMode;
-  final BaseTransaction transaction;
+  final TransactionType transactionType;
+  final double amount;
+  final VoidCallback? onEditModeTap;
 
   String get _iconPath {
-    return switch (transaction) {
-      Income() => AppIcons.download,
-      Expense() => AppIcons.upload,
-      Transfer() => AppIcons.transfer,
-      CreditSpending() => AppIcons.upload,
-      CreditPayment() => AppIcons.upload,
-      CreditCheckpoint() => AppIcons.transfer
+    return switch (transactionType) {
+      TransactionType.income => AppIcons.income,
+      TransactionType.expense => AppIcons.expense,
+      TransactionType.transfer => AppIcons.transfer,
+      TransactionType.creditSpending => AppIcons.receiptDollar,
+      TransactionType.creditPayment => AppIcons.handCoin,
+      TransactionType.creditCheckpoint => AppIcons.receiptEdit,
     };
   }
 
   Color _color(BuildContext context) {
-    return switch (transaction) {
-      Income() => context.appTheme.positive,
-      Expense() => context.appTheme.negative,
-      Transfer() => context.appTheme.onBackground,
-      CreditSpending() => context.appTheme.negative,
-      CreditPayment() => context.appTheme.negative,
-      CreditCheckpoint() => AppColors.grey(context),
+    return switch (transactionType) {
+      TransactionType.income => context.appTheme.positive,
+      TransactionType.expense => context.appTheme.negative,
+      TransactionType.transfer => context.appTheme.onBackground,
+      TransactionType.creditSpending => context.appTheme.negative,
+      TransactionType.creditPayment => context.appTheme.negative,
+      TransactionType.creditCheckpoint => AppColors.grey(context),
     };
   }
 
@@ -165,11 +61,12 @@ class _Amount extends ConsumerWidget {
         Flexible(
           child: _NeumorphicEditWrap(
             isEditMode: isEditMode,
+            onTap: onEditModeTap,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  CalService.formatCurrency(context, transaction.amount),
+                  CalService.formatCurrency(context, amount),
                   style: kHeader1TextStyle.copyWith(
                     color: _color(context),
                   ),
@@ -189,10 +86,11 @@ class _Amount extends ConsumerWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime({required this.isEditMode, required this.transaction});
+  const _DateTime({required this.isEditMode, required this.dateTime, this.onEditModeTap});
 
   final bool isEditMode;
-  final BaseTransaction transaction;
+  final DateTime dateTime;
+  final VoidCallback? onEditModeTap;
 
   @override
   Widget build(BuildContext context) {
@@ -200,17 +98,17 @@ class _DateTime extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2.0),
       child: _NeumorphicEditWrap(
         isEditMode: isEditMode,
-        onTap: () => print('tapped'),
+        onTap: onEditModeTap,
         child: Row(
           children: [
             Text(
-              '${transaction.dateTime.hour}:${transaction.dateTime.minute}',
+              '${dateTime.hour}:${dateTime.minute}',
               style: kHeader2TextStyle.copyWith(
                   color: context.appTheme.onBackground, fontSize: kHeader4TextStyle.fontSize),
             ),
             Gap.w8,
             Text(
-              transaction.dateTime.getFormattedDate(format: DateTimeFormat.mmmmddyyyy),
+              dateTime.getFormattedDate(format: DateTimeFormat.mmmmddyyyy),
               style: kHeader4TextStyle.copyWith(
                 color: context.appTheme.onBackground,
               ),
@@ -223,16 +121,17 @@ class _DateTime extends StatelessWidget {
 }
 
 class _AccountCard extends StatelessWidget {
-  const _AccountCard({required this.isEditMode, required this.model});
+  const _AccountCard({required this.isEditMode, required this.account, this.onEditModeTap});
   final bool isEditMode;
-  final Account model;
+  final Account account;
+  final VoidCallback? onEditModeTap;
 
   @override
   Widget build(BuildContext context) {
     return _NeumorphicEditCardWrap(
       isEditMode: isEditMode,
-      onTap: () => print('tapped'),
-      backgroundColor: model.backgroundColor,
+      onTap: onEditModeTap,
+      backgroundColor: account.backgroundColor,
       child: Stack(
         children: [
           Positioned(
@@ -242,8 +141,8 @@ class _AccountCard extends StatelessWidget {
                 ..translate(-120.0, -30.0)
                 ..scale(7.0),
               child: SvgIcon(
-                model.iconPath,
-                color: isEditMode ? model.backgroundColor.withOpacity(0.55) : model.iconColor.withOpacity(0.55),
+                account.iconPath,
+                color: isEditMode ? account.backgroundColor.withOpacity(0.55) : account.iconColor.withOpacity(0.55),
               ),
             ),
           ),
@@ -252,10 +151,11 @@ class _AccountCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                model is CreditAccount ? 'CREDIT ACCOUNT:' : 'ACCOUNT:',
+                account is CreditAccount ? 'CREDIT ACCOUNT:' : 'ACCOUNT:',
                 style: kHeader2TextStyle.copyWith(
-                    color:
-                        isEditMode ? context.appTheme.onBackground.withOpacity(0.6) : model.iconColor.withOpacity(0.6),
+                    color: isEditMode
+                        ? context.appTheme.onBackground.withOpacity(0.6)
+                        : account.iconColor.withOpacity(0.6),
                     fontSize: 11),
               ),
               Gap.h4,
@@ -263,9 +163,9 @@ class _AccountCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      model.name,
+                      account.name,
                       style: kHeader2TextStyle.copyWith(
-                          color: isEditMode ? context.appTheme.onBackground : model.iconColor, fontSize: 20),
+                          color: isEditMode ? context.appTheme.onBackground : account.iconColor, fontSize: 20),
                     ),
                   ),
                   Gap.w48,
@@ -280,17 +180,19 @@ class _AccountCard extends StatelessWidget {
 }
 
 class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({required this.isEditMode, required this.model, this.categoryTag});
+  const _CategoryCard({required this.isEditMode, required this.category, this.categoryTag, this.onEditModeTap});
 
   final bool isEditMode;
-  final Category model;
+  final Category category;
   final CategoryTag? categoryTag;
+  final VoidCallback? onEditModeTap;
 
   @override
   Widget build(BuildContext context) {
     return _NeumorphicEditCardWrap(
       isEditMode: isEditMode,
-      backgroundColor: model.backgroundColor.withOpacity(0.35),
+      onTap: onEditModeTap,
+      backgroundColor: category.backgroundColor.withOpacity(0.35),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -302,11 +204,11 @@ class _CategoryCard extends StatelessWidget {
           Row(
             children: [
               RoundedIconButton(
-                iconPath: model.iconPath,
+                iconPath: category.iconPath,
                 size: 50,
                 iconPadding: 7,
-                backgroundColor: model.backgroundColor,
-                iconColor: model.iconColor,
+                backgroundColor: category.backgroundColor,
+                iconColor: category.iconColor,
               ),
               Gap.w16,
               Expanded(
@@ -315,7 +217,7 @@ class _CategoryCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      model.name,
+                      category.name,
                       style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
                     ),
                     categoryTag != null
@@ -336,14 +238,16 @@ class _CategoryCard extends StatelessWidget {
 }
 
 class _Note extends StatelessWidget {
-  const _Note({required this.isEditMode, required this.note});
+  const _Note({required this.isEditMode, required this.note, this.onEditModeTap});
   final bool isEditMode;
   final String note;
+  final VoidCallback? onEditModeTap;
 
   @override
   Widget build(BuildContext context) {
     return _NeumorphicEditWrap(
       isEditMode: isEditMode,
+      onTap: onEditModeTap,
       withPadding: false,
       child: CardItem(
         color: Colors.transparent,
@@ -605,5 +509,79 @@ class _EditButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _WrapSelections<T extends BaseModelWithIcon> extends StatelessWidget {
+  const _WrapSelections(
+      {super.key, required this.title, required this.isDisable, this.selectedItem, required this.list});
+
+  final String title;
+  final List<T> list;
+  final T? selectedItem;
+  final bool Function(T element) isDisable;
+
+  @override
+  Widget build(BuildContext context) {
+    return list.isNotEmpty
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Gap.h16,
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  title,
+                  style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
+                ),
+              ),
+              Gap.h16,
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: List.generate(list.length, (index) {
+                  final element = list[index];
+                  return IgnorePointer(
+                    ignoring: isDisable(element),
+                    child: IconWithTextButton(
+                      iconPath: element.iconPath,
+                      label: element.name,
+                      isDisabled: isDisable(element),
+                      labelSize: 18,
+                      borderRadius: BorderRadius.circular(16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      border: Border.all(
+                        color: selectedItem == element
+                            ? element.backgroundColor
+                            : context.appTheme.onBackground.withOpacity(0.4),
+                      ),
+                      backgroundColor: selectedItem == element ? element.backgroundColor : Colors.transparent,
+                      color: selectedItem == element ? element.iconColor : context.appTheme.onBackground,
+                      onTap: () => selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
+                      height: null,
+                      width: null,
+                    ),
+                  );
+                }),
+              ),
+              Gap.h32,
+              Gap.h32,
+            ],
+          )
+        : Column(
+            children: [
+              Gap.h8,
+              IconWithText(
+                header: 'No account.\n Tap here to create a first one'.hardcoded,
+                headerSize: 14,
+                iconPath: AppIcons.accounts,
+                onTap: () {
+                  context.pop();
+                  context.push(RoutePath.addAccount);
+                },
+              ),
+              Gap.h48,
+            ],
+          );
   }
 }

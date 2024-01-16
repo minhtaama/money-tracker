@@ -26,8 +26,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -43,9 +42,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
     if (_formKey.currentState!.validate()) {
       final transactionRepo = ref.read(transactionRepositoryRealmProvider);
 
-      if (_stateRead.type == TransactionType.income) {
+      if (widget.transactionType == TransactionType.income) {
         transactionRepo.writeNewIncome(
-          dateTime: _stateRead.dateTime,
+          dateTime: _stateRead.dateTime!,
           amount: _stateRead.amount!,
           category: _stateRead.category!,
           tag: _stateRead.tag,
@@ -53,9 +52,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           note: _stateRead.note,
         );
       }
-      if (_stateRead.type == TransactionType.expense) {
+      if (widget.transactionType == TransactionType.expense) {
         transactionRepo.writeNewExpense(
-          dateTime: _stateRead.dateTime,
+          dateTime: _stateRead.dateTime!,
           amount: _stateRead.amount!,
           category: _stateRead.category!,
           tag: _stateRead.tag,
@@ -63,9 +62,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           note: _stateRead.note,
         );
       }
-      if (_stateRead.type == TransactionType.transfer) {
+      if (widget.transactionType == TransactionType.transfer) {
         transactionRepo.writeNewTransfer(
-            dateTime: _stateRead.dateTime,
+            dateTime: _stateRead.dateTime!,
             amount: _stateRead.amount!,
             account: _stateRead.account!,
             toAccount: _stateRead.toAccount!,
@@ -118,15 +117,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(
-                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) => _categoryValidator(),
-                            onChangedCategory: (newCategory) =>
-                                _stateController.changeCategory(newCategory),
+                            onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
                           )
                         : AccountFormSelector(
                             accountType: AccountType.regular,

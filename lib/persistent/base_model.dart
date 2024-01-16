@@ -28,4 +28,18 @@ abstract class BaseModelWithIcon<T extends RealmObject> extends BaseModel<T> {
   final Color iconColor;
   final Color backgroundColor;
   final String iconPath;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BaseModelWithIcon &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          iconColor == other.iconColor &&
+          backgroundColor == other.backgroundColor &&
+          iconPath == other.iconPath;
+
+  @override
+  int get hashCode =>
+      runtimeType.hashCode ^ name.hashCode ^ iconColor.hashCode ^ backgroundColor.hashCode ^ iconPath.hashCode;
 }

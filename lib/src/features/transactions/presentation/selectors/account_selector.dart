@@ -15,11 +15,11 @@ import '../../../accounts/domain/account_base.dart';
 
 class AccountSelector extends ConsumerStatefulWidget {
   const AccountSelector({
-    Key? key,
+    super.key,
     required this.accountType,
     required this.onChangedAccount,
     this.otherSelectedAccount,
-  }) : super(key: key);
+  });
 
   final ValueChanged<Account?> onChangedAccount;
   final AccountType accountType;

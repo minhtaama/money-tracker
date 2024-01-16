@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
@@ -7,8 +8,7 @@ import '../../../category/domain/category.dart';
 import '../../../category/domain/category_tag.dart';
 
 class RegularTransactionFormState {
-  final TransactionType type;
-  final DateTime dateTime;
+  final DateTime? dateTime;
   final double? amount;
   final String? note;
   final CategoryTag? tag;
@@ -16,14 +16,18 @@ class RegularTransactionFormState {
   final RegularAccount? account;
   final RegularAccount? toAccount;
 
-  factory RegularTransactionFormState.initial(TransactionType type) => RegularTransactionFormState._(
-        type: type,
+  factory RegularTransactionFormState.initial(TransactionType? type) {
+    if (type != null) {
+      return RegularTransactionFormState._(
         dateTime: DateTime.now(),
       );
+    }
+
+    return RegularTransactionFormState._();
+  }
 
   RegularTransactionFormState._({
-    required this.type,
-    required this.dateTime,
+    this.dateTime,
     this.amount,
     this.note,
     this.tag,
@@ -33,7 +37,6 @@ class RegularTransactionFormState {
   });
 
   RegularTransactionFormState copyWith({
-    // TransactionType Function()? type,
     DateTime? Function()? dateTime,
     double? Function()? amount,
     String? Function()? note,
@@ -43,8 +46,7 @@ class RegularTransactionFormState {
     RegularAccount? Function()? toAccount,
   }) {
     return RegularTransactionFormState._(
-      type: type,
-      dateTime: dateTime != null ? dateTime()! : this.dateTime,
+      dateTime: dateTime != null ? dateTime() : this.dateTime,
       amount: amount != null ? amount() : this.amount,
       note: note != null ? note() : this.note,
       tag: tag != null ? tag() : this.tag,
@@ -55,14 +57,51 @@ class RegularTransactionFormState {
   }
 }
 
-class RegularTransactionFormController extends AutoDisposeFamilyNotifier<RegularTransactionFormState, TransactionType> {
+class RegularTransactionFormController
+    extends AutoDisposeFamilyNotifier<RegularTransactionFormState, TransactionType?> {
   @override
-  RegularTransactionFormState build(TransactionType arg) {
+  RegularTransactionFormState build(TransactionType? arg) {
     return RegularTransactionFormState.initial(arg);
   }
 
   void _resetCategoryTag() {
     state = state.copyWith(tag: () => null);
+  }
+
+  void setStateFromTransaction(BaseRegularTransaction transaction) {
+    switch (transaction) {
+      case IBaseTransactionWithCategory():
+        state = state.copyWith(
+          dateTime: () => transaction.dateTime,
+          amount: () => transaction.amount,
+          note: () => transaction.note,
+          account: () => transaction.account as RegularAccount,
+          tag: () => (transaction as IBaseTransactionWithCategory).categoryTag,
+          category: () => (transaction as IBaseTransactionWithCategory).category,
+        );
+        break;
+      case Transfer():
+        state = state.copyWith(
+          dateTime: () => transaction.dateTime,
+          amount: () => transaction.amount,
+          note: () => transaction.note,
+          account: () => transaction.account as RegularAccount,
+          toAccount: () => (transaction).transferAccount,
+        );
+        break;
+    }
+  }
+
+  void setStateToAllNull() {
+    state = state.copyWith(
+      dateTime: () => null,
+      amount: () => null,
+      note: () => null,
+      account: () => null,
+      toAccount: () => null,
+      tag: () => null,
+      category: () => null,
+    );
   }
 
   void changeAmount(String value) {
@@ -95,8 +134,9 @@ class RegularTransactionFormController extends AutoDisposeFamilyNotifier<Regular
   }
 }
 
+/// Set arg to `null` if edit mode (initial state has properties all `null`)
 final regularTransactionFormNotifierProvider =
-    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType>(
+    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(
         () {
   return RegularTransactionFormController();
 });
