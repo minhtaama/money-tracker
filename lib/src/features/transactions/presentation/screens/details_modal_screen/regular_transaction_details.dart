@@ -98,14 +98,36 @@ extension _RegularDetailsExtension on _RegularDetailsState {
 
     final returnedValue = await showCustomModalBottomSheet<Account>(
       context: context,
-      child: _WrapSelections(
-        title: 'ChangeAccount',
+      child: _ModelWithIconSelector(
+        title: 'Change Account',
         selectedItem: _stateRead.account,
-        isDisable: (e) => _transactionAccount.databaseObject.id == e.databaseObject.id,
+        isDisable: (e) => widget.transaction.account == e,
         list: accountList,
       ),
     );
 
     _stateController.changeAccount(returnedValue as RegularAccount?);
+  }
+
+  void _changeCategory(Category? currentCategory, CategoryTag? currentTag) async {
+    final CategoryType categoryType = switch (widget.transaction) {
+      Expense() || CreditSpending() => CategoryType.expense,
+      Income() => CategoryType.income,
+      CreditCheckpoint() || Transfer() => throw StateError('Can not call this function with this type'),
+    };
+
+    List<Category> categoryList = ref.read(categoryRepositoryRealmProvider).getList(categoryType);
+
+    final returnedCategory = await showCustomModalBottomSheet<Category>(
+      context: context,
+      child: _ModelWithIconSelector<Category>(
+        title: 'Change Account',
+        selectedItem: _stateRead.category,
+        isDisable: (e) => (widget.transaction as IBaseTransactionWithCategory).category == e,
+        list: categoryList,
+      ),
+    );
+
+    _stateController.changeCategory(returnedCategory);
   }
 }

@@ -19,8 +19,27 @@ class SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: CardItem(
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.appTheme.background0,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 1,
+              spreadRadius: 1,
+              offset: const Offset(0, 1),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 0,
+              spreadRadius: 0.2,
+              offset: const Offset(0, 0),
+            ),
+          ],
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Row(
           children: [
             SvgIcon(

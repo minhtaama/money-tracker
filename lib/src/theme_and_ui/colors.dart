@@ -57,7 +57,7 @@ class AppColors {
     ThemeType.light: AppThemeData(
       isDarkTheme: false,
       primary: const Color(0xFF495057),
-      secondary1: const Color(0xFFadb5bd),
+      secondary1: const Color(0xffc7d0d9),
       secondary2: const Color(0xFFced4da),
       accent1: const Color(0xFF495057),
       accent2: const Color(0xFF343a40),

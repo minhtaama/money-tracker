@@ -512,8 +512,8 @@ class _EditButton extends StatelessWidget {
   }
 }
 
-class _WrapSelections<T extends BaseModelWithIcon> extends StatelessWidget {
-  const _WrapSelections(
+class _ModelWithIconSelector<T extends BaseModelWithIcon> extends StatelessWidget {
+  const _ModelWithIconSelector(
       {super.key, required this.title, required this.isDisable, this.selectedItem, required this.list});
 
   final String title;

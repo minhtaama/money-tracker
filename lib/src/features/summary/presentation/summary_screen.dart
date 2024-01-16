@@ -11,7 +11,7 @@ import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/icons.dart';
 
 class SummaryScreen extends StatelessWidget {
-  const SummaryScreen({Key? key}) : super(key: key);
+  const SummaryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

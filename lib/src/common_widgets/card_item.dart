@@ -6,6 +6,7 @@ class CardItem extends StatelessWidget {
   /// A common widget for this project
   const CardItem(
       {super.key,
+      this.duration,
       this.child,
       this.color,
       this.height,
@@ -20,6 +21,7 @@ class CardItem extends StatelessWidget {
       this.elevation = 1,
       this.clip = true,
       this.alignment});
+  final Duration? duration;
   final Color? color;
   final double? height;
   final double? width;
@@ -40,7 +42,7 @@ class CardItem extends StatelessWidget {
     final defaultBgColor = context.appTheme.background0;
 
     return AnimatedContainer(
-      duration: k250msDuration,
+      duration: duration ?? k250msDuration,
       curve: Curves.easeOut,
       margin: margin,
       constraints: constraints,
