@@ -128,6 +128,19 @@ class _AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color iconColor() {
+      final double colorLuminance = account.backgroundColor.computeLuminance();
+      if (colorLuminance > 0.4) {
+        if (!context.appTheme.isDarkTheme) {
+          return account.backgroundColor.addDark(colorLuminance / 3);
+        } else {
+          return account.backgroundColor;
+        }
+      } else {
+        return account.backgroundColor;
+      }
+    }
+
     return _NeumorphicEditCardWrap(
       isEditMode: isEditMode,
       onTap: onEditModeTap,
@@ -142,7 +155,7 @@ class _AccountCard extends StatelessWidget {
                 ..scale(7.0),
               child: SvgIcon(
                 account.iconPath,
-                color: isEditMode ? account.backgroundColor.withOpacity(0.55) : account.iconColor.withOpacity(0.55),
+                color: isEditMode ? iconColor() : account.iconColor.withOpacity(0.55),
               ),
             ),
           ),
