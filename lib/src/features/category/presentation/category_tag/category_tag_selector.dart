@@ -17,27 +17,29 @@ import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../domain/category_tag.dart';
 
 class CategoryTagSelector extends ConsumerStatefulWidget {
-  const CategoryTagSelector({super.key, this.category, required this.onTagSelected, this.fading});
+  const CategoryTagSelector(
+      {super.key, this.category, required this.onTagSelected, this.fading, this.initialChosenTag});
   final Color? fading;
   final ValueSetter<CategoryTag?> onTagSelected;
   final Category? category;
+  final CategoryTag? initialChosenTag;
 
   @override
-  ConsumerState<CategoryTagSelector> createState() => _CategoryTagListState();
+  ConsumerState<CategoryTagSelector> createState() => _CategoryTagSelectorState();
 }
 
-class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
+class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
   late final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
 
   final _key = GlobalKey();
 
   late final FocusNode _focusNode = FocusNode();
 
-  late Category? currentCategory = widget.category;
+  late Category? _currentCategory = widget.category;
 
-  late List<CategoryTag>? _tags = categoryRepo.getTagList(currentCategory);
+  late List<CategoryTag>? _tags = categoryRepo.getTagList(_currentCategory);
 
-  CategoryTag? _chosenTag;
+  late CategoryTag? _chosenTag = widget.initialChosenTag;
 
   late bool _showTextField = _tags == null || _tags!.isEmpty;
   double _rowWidth = 1;
@@ -55,10 +57,14 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   @override
   void didUpdateWidget(covariant CategoryTagSelector oldWidget) {
-    currentCategory = widget.category;
-    _tags = categoryRepo.getTagList(currentCategory);
+    _currentCategory = widget.category;
+    _tags = categoryRepo.getTagList(_currentCategory);
     _showTextField = _tags == null || _tags!.isEmpty;
-    if (currentCategory == null) {
+
+    if (widget.initialChosenTag != oldWidget.initialChosenTag && widget.initialChosenTag != null) {
+      _chosenTag = widget.initialChosenTag;
+    }
+    if (_currentCategory == null || _currentCategory != oldWidget.category) {
       _chosenTag = null;
     }
     super.didUpdateWidget(oldWidget);
@@ -85,8 +91,8 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(categoryTagsChangesRealmProvider(currentCategory)).whenData((_) {
-      _tags = categoryRepo.getTagList(currentCategory);
+    ref.watch(categoryTagsChangesRealmProvider(_currentCategory)).whenData((_) {
+      _tags = categoryRepo.getTagList(_currentCategory);
     });
 
     return Row(
@@ -102,25 +108,25 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             margin: EdgeInsets.zero,
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.secondary1.withOpacity(0.8)
-                : context.appTheme.primary,
+            color: _currentCategory?.backgroundColor,
             child: Row(
               children: [
                 Expanded(
-                  child: _ChosenTag(chosenTag: _chosenTag?.name),
+                  child: _ChosenTag(
+                    chosenTag: _chosenTag?.name,
+                    category: _currentCategory,
+                  ),
                 ),
                 AnimatedContainer(
-                  duration: k250msDuration,
+                  duration: k1msDuration,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   width: _chosenTag != null ? 30 : 0,
                   child: FittedBox(
                     clipBehavior: Clip.antiAlias,
                     child: RoundedIconButton(
                       iconPath: AppIcons.close,
-                      iconColor: context.appTheme.isDarkTheme
-                          ? context.appTheme.onSecondary
-                          : context.appTheme.onPrimary,
+                      iconColor:
+                          context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
                       backgroundColor: Colors.transparent,
                       iconPadding: 7,
                       onTap: () {
@@ -188,22 +194,18 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
             : Gap.noGap,
         AnimatedContainer(
           duration: k250msDuration,
-          width: _showTextField ||
-                  _chosenTag != null ||
-                  _tags == null ||
-                  currentCategory == null ||
-                  _tags!.isEmpty
+          width: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null || _tags!.isEmpty
               ? 0
               : 16,
           height: 25,
-          child: _showTextField || _chosenTag != null || _tags == null || currentCategory == null
+          child: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null
               ? null
               : Gap.verticalDivider(context),
         ),
         AnimatedContainer(
           duration: k250msDuration,
           curve: Curves.easeOut,
-          width: _tags == null || currentCategory == null || _tags!.isEmpty || _showTextField
+          width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
               ? _rowWidth
               : _chosenTag != null
                   ? 0
@@ -232,19 +234,21 @@ class _CategoryTagListState extends ConsumerState<CategoryTagSelector> {
 class _ChosenTag extends StatelessWidget {
   const _ChosenTag({
     super.key,
-    required String? chosenTag,
-  }) : _chosenTag = chosenTag;
+    this.chosenTag,
+    required this.category,
+  });
 
-  final String? _chosenTag;
+  final String? chosenTag;
+  final Category? category;
 
   @override
   Widget build(BuildContext context) {
     return EasyRichText(
-      _chosenTag != null ? '# $_chosenTag' : '',
+      chosenTag != null ? '# $chosenTag' : '',
       softWrap: false,
       overflow: TextOverflow.ellipsis,
       defaultStyle: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
+        color: category?.iconColor,
         fontSize: 18,
       ),
       patternList: [
@@ -252,8 +256,7 @@ class _ChosenTag extends StatelessWidget {
           targetString: '#',
           hasSpecialCharacters: true,
           style: kHeader4TextStyle.copyWith(
-            color:
-                context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
+            color: category?.iconColor,
             fontSize: 18,
           ),
         )
@@ -263,8 +266,7 @@ class _ChosenTag extends StatelessWidget {
 }
 
 class CategoryTagWidget extends StatelessWidget {
-  const CategoryTagWidget(
-      {super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
+  const CategoryTagWidget({super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
   final ValueSetter<CategoryTag> onLongPress;
@@ -315,8 +317,7 @@ class CategoryTagWidget extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton(
-      {super.key, this.focusNode, this.category, required this.onEditingComplete});
+  const AddCategoryTagButton({super.key, this.focusNode, this.category, required this.onEditingComplete});
   final FocusNode? focusNode;
   final Category? category;
   final ValueSetter<CategoryTag> onEditingComplete;
@@ -383,8 +384,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
             CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
-            categoryRepo.reorderTagToTop(
-                widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
+            categoryRepo.reorderTagToTop(widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
 
             widget.onEditingComplete(newTag!);
 

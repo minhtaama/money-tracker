@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
+import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -31,6 +32,7 @@ import '../../../domain/transaction_base.dart';
 import '../../controllers/add_regular_txn_form_controller.dart';
 
 part 'components.dart';
+part 'selectors.dart';
 part 'credit_payment_details.dart';
 part 'credit_spending_details.dart';
 part 'regular_transaction_details.dart';

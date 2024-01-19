@@ -288,8 +288,8 @@ class CustomLineChart extends StatelessWidget {
                 : [],
           ),
         ),
-        duration: k750msDuration,
-        curve: Curves.easeOutBack,
+        duration: k550msDuration,
+        curve: Curves.easeInOutCubic,
       ),
     );
   }

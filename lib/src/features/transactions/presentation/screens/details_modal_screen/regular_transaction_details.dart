@@ -57,7 +57,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                   _AccountCard(
                     isEditMode: _isEditMode,
                     account: stateWatch.account ?? widget.transaction.account!,
-                    onEditModeTap: () => _changeAccount(stateWatch.account),
+                    onEditModeTap: _changeAccount,
                   ),
                   switch (widget.transaction) {
                     IBaseTransactionWithCategory() =>
@@ -65,8 +65,12 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                           ? Gap.noGap
                           : _CategoryCard(
                               isEditMode: _isEditMode,
-                              category: (widget.transaction as IBaseTransactionWithCategory).category!,
-                              categoryTag: (widget.transaction as IBaseTransactionWithCategory).categoryTag,
+                              category:
+                                  stateWatch.category ?? (widget.transaction as IBaseTransactionWithCategory).category!,
+                              categoryTag:
+                                  stateWatch.tag ?? (widget.transaction as IBaseTransactionWithCategory).categoryTag,
+                              // TODO: user can make tag turn to null
+                              onEditModeTap: () => _changeCategory(),
                             ),
                     Transfer() =>
                       _AccountCard(isEditMode: _isEditMode, account: (widget.transaction as Transfer).transferAccount!),
@@ -93,15 +97,14 @@ extension _RegularDetailsExtension on _RegularDetailsState {
     };
   }
 
-  void _changeAccount(Account? currentAccount) async {
+  void _changeAccount() async {
     List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
 
     final returnedValue = await showCustomModalBottomSheet<Account>(
       context: context,
       child: _ModelWithIconSelector(
         title: 'Change Account',
-        selectedItem: _stateRead.account,
-        isDisable: (e) => widget.transaction.account == e,
+        selectedItem: _stateRead.account ?? widget.transaction.account,
         list: accountList,
       ),
     );
@@ -109,25 +112,20 @@ extension _RegularDetailsExtension on _RegularDetailsState {
     _stateController.changeAccount(returnedValue as RegularAccount?);
   }
 
-  void _changeCategory(Category? currentCategory, CategoryTag? currentTag) async {
-    final CategoryType categoryType = switch (widget.transaction) {
-      Expense() || CreditSpending() => CategoryType.expense,
-      Income() => CategoryType.income,
-      CreditCheckpoint() || Transfer() => throw StateError('Can not call this function with this type'),
-    };
-
-    List<Category> categoryList = ref.read(categoryRepositoryRealmProvider).getList(categoryType);
-
-    final returnedCategory = await showCustomModalBottomSheet<Category>(
+  void _changeCategory() async {
+    final returnedCategory = await showCustomModalBottomSheet<List<dynamic>>(
       context: context,
-      child: _ModelWithIconSelector<Category>(
-        title: 'Change Account',
-        selectedItem: _stateRead.category,
-        isDisable: (e) => (widget.transaction as IBaseTransactionWithCategory).category == e,
-        list: categoryList,
-      ),
+      child: _CategorySelector(
+          transaction: widget.transaction,
+          category: _stateRead.category ?? (widget.transaction as IBaseTransactionWithCategory).category,
+          tag: _stateRead.tag ?? (widget.transaction as IBaseTransactionWithCategory).categoryTag),
     );
 
-    _stateController.changeCategory(returnedCategory);
+    if (returnedCategory != null) {
+      _stateController.changeCategory(returnedCategory[0] as Category?);
+      _stateController.changeCategoryTag(returnedCategory[1] as CategoryTag?);
+    }
+
+    //_stateController.changeCategory(returnedCategory);
   }
 }

@@ -21,6 +21,7 @@ class IconWithTextButton extends StatelessWidget {
     this.isDisabled = false,
     this.onTap,
     this.color,
+    this.inkColor,
     this.iconSize,
   }) : super(key: key);
 
@@ -30,6 +31,7 @@ class IconWithTextButton extends StatelessWidget {
   final double? labelSize;
   final Color backgroundColor;
   final Color? color;
+  final Color? inkColor;
   final double? height;
   final double? width;
   final EdgeInsets? padding;
@@ -52,7 +54,7 @@ class IconWithTextButton extends StatelessWidget {
       isGradient: true,
       child: CustomInkWell(
         onTap: onTap,
-        inkColor: color ?? context.appTheme.onPrimary,
+        inkColor: inkColor ?? color ?? context.appTheme.onPrimary,
         child: Padding(
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),
           child: IntrinsicWidth(
