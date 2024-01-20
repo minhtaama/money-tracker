@@ -11,7 +11,6 @@ class _RegularDetails extends ConsumerStatefulWidget {
 
 class _RegularDetailsState extends ConsumerState<_RegularDetails> {
   bool _isEditMode = false;
-  late final _transactionAccount = widget.transaction.account as RegularAccount;
 
   late final _stateController = ref.read(regularTransactionFormNotifierProvider(null).notifier);
 
@@ -36,7 +35,8 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
         _Amount(
           isEditMode: _isEditMode,
           transactionType: widget.transaction.type,
-          amount: widget.transaction.amount,
+          amount: stateWatch.amount ?? widget.transaction.amount,
+          onEditModeTap: _changeAmount,
         ),
         Gap.h8,
         Gap.divider(context, indent: 6),
@@ -65,22 +65,25 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                           ? Gap.noGap
                           : _CategoryCard(
                               isEditMode: _isEditMode,
-                              category:
-                                  stateWatch.category ?? (widget.transaction as IBaseTransactionWithCategory).category!,
-                              categoryTag:
-                                  stateWatch.tag ?? (widget.transaction as IBaseTransactionWithCategory).categoryTag,
+                              category: stateWatch.category ??
+                                  (widget.transaction as IBaseTransactionWithCategory).category!,
+                              categoryTag: stateWatch.tag ??
+                                  (widget.transaction as IBaseTransactionWithCategory).categoryTag,
                               // TODO: user can make tag turn to null
                               onEditModeTap: () => _changeCategory(),
                             ),
-                    Transfer() =>
-                      _AccountCard(isEditMode: _isEditMode, account: (widget.transaction as Transfer).transferAccount!),
+                    Transfer() => _AccountCard(
+                        isEditMode: _isEditMode,
+                        account: (widget.transaction as Transfer).transferAccount!),
                   },
                 ],
               ),
             ),
           ],
         ),
-        widget.transaction.note != null ? _Note(isEditMode: _isEditMode, note: widget.transaction.note!) : Gap.noGap,
+        widget.transaction.note != null
+            ? _Note(isEditMode: _isEditMode, note: widget.transaction.note!)
+            : Gap.noGap,
         Gap.h16,
       ],
     );
@@ -90,8 +93,9 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
 extension _RegularDetailsExtension on _RegularDetailsState {
   String get _title {
     return switch (widget.transaction) {
-      Income() =>
-        (widget.transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
+      Income() => (widget.transaction as Income).isInitialTransaction
+          ? 'Initial Balance'.hardcoded
+          : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
     };
@@ -125,7 +129,16 @@ extension _RegularDetailsExtension on _RegularDetailsState {
       _stateController.changeCategory(returnedCategory[0] as Category?);
       _stateController.changeCategoryTag(returnedCategory[1] as CategoryTag?);
     }
+  }
 
-    //_stateController.changeCategory(returnedCategory);
+  void _changeAmount() async {
+    final newAmount = await showCalculatorModalScreen(
+      context,
+      initialValue: _stateRead.amount ?? widget.transaction.amount,
+    );
+
+    if (newAmount != null) {
+      _stateController.changeAmount(newAmount);
+    }
   }
 }

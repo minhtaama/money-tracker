@@ -3,10 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'layout/calculator_layout.dart';
+
+Future<String?> showCalculatorModalScreen(BuildContext context, {double? initialValue}) {
+  final valString = CalService.formatCurrency(context, initialValue ?? 0);
+
+  return showCustomModalBottomSheet<String>(
+      context: context,
+      wrapWithScrollView: true,
+      child: _Calculator(
+        popOnDone: false,
+        initialValue: valString,
+        resultOutput: (value) {
+          final numVal = CalService.formatNumberInGroup(value);
+          context.pop<String?>(numVal);
+        },
+      ));
+}
 
 class CalculatorInput extends StatefulWidget {
   /// This class is the entry point to open a calculator. In this class, the `onFormattedResultOutput`
@@ -129,9 +146,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
       onTap: () {
         showCustomModalBottomSheet(
             context: context,
-            //hasHandle: false,
             wrapWithScrollView: true,
-            //enableDrag: false,
             child: _Calculator(
               initialValue: _controller.text,
               resultOutput: (value) {
@@ -155,8 +170,12 @@ class _Calculator extends StatefulWidget {
   /// current input if user want to update their calculation. By pressing the "=" button,
   /// the function will be calculated and the result will return as an argument in
   /// `formattedResultOutput`.
-  const _Calculator({Key? key, required this.initialValue, required this.resultOutput})
-      : super(key: key);
+  const _Calculator({
+    super.key,
+    required this.initialValue,
+    required this.resultOutput,
+    this.popOnDone = true,
+  });
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__
@@ -164,6 +183,8 @@ class _Calculator extends StatefulWidget {
 
   /// The value returned, which has no format and has type __String__
   final ValueChanged<String> resultOutput;
+
+  final bool popOnDone;
 
   @override
   State<_Calculator> createState() => _CalculatorState();
@@ -215,7 +236,9 @@ class _CalculatorState extends State<_Calculator> {
             onAC: _ac,
             onDone: () {
               _equal();
-              context.pop();
+              if (widget.popOnDone) {
+                context.pop();
+              }
             },
           ),
           Gap.h16,
