@@ -247,7 +247,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 }
 
 extension _Details on _DateTimeSelectorCreditState {
-  Widget _dayBuilder(
+  Widget _dayBuilder(BuildContext context,
       {required DateTime date,
       BoxDecoration? decoration,
       bool? isDisabled,

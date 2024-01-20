@@ -11,6 +11,7 @@ import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
 import '../domain/balance_at_date_time.dart';
 import '../domain/transaction_base.dart';
+import '../presentation/controllers/regular_txn_form_controller.dart';
 
 class TransactionRepository {
   TransactionRepository(this.realm);
@@ -259,14 +260,9 @@ class TransactionRepository {
     });
   }
 
-  void editIncome(
-    Income transaction, {
-    required DateTime? dateTime,
-    required double? amount,
-    required Category? category,
-    required CategoryTag? tag,
-    required RegularAccount? account,
-    required String? note,
+  void editRegularTransaction(
+    BaseRegularTransaction transaction, {
+    required RegularTransactionFormState state,
   }) {
     TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
 
@@ -275,125 +271,33 @@ class TransactionRepository {
     }
 
     realm.write(() {
-      if (dateTime != null) {
-        txnDb.dateTime = dateTime;
+      if (state.dateTime != null) {
+        txnDb.dateTime = state.dateTime!;
       }
-      if (amount != null) {
-        txnDb.amount = amount;
+      if (state.amount != null) {
+        txnDb.amount = state.amount!;
       }
-      if (category != null) {
-        txnDb.category = category.databaseObject;
+      if (state.category != null) {
+        txnDb.category = state.category!.databaseObject;
       }
-      if (tag != null) {
-        txnDb.categoryTag = tag.databaseObject;
+      if (state.tag != null) {
+        if (state.tag == CategoryTag.noTag) {
+          txnDb.categoryTag = null;
+        } else {
+          txnDb.categoryTag = state.tag!.databaseObject;
+        }
       }
-      if (account != null) {
-        txnDb.account = account.databaseObject;
+      if (state.account != null) {
+        txnDb.account = state.account!.databaseObject;
       }
-      if (note != null) {
-        txnDb.note = note;
+      if (state.toAccount != null) {
+        txnDb.transferAccount = state.toAccount!.databaseObject;
       }
-
-      //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
-    });
-  }
-
-  void editInitialBalance(
-    Income initialTransaction, {
-    required double? balance,
-  }) {
-    TransactionDb? txnDb = realm.find<TransactionDb>(initialTransaction.databaseObject.id);
-
-    if (txnDb == null) {
-      throw StateError('Can not find transaction from ObjectId');
-    }
-
-    realm.write(() {
-      if (balance != null) {
-        txnDb.amount = balance;
-      }
-      //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
-    });
-  }
-
-  void editExpense(
-    Expense transaction, {
-    required DateTime? dateTime,
-    required double? amount,
-    required Category? category,
-    required CategoryTag? tag,
-    required RegularAccount? account,
-    required String? note,
-  }) {
-    TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
-
-    if (txnDb == null) {
-      throw StateError('Can not find transaction from ObjectId');
-    }
-
-    realm.write(() {
-      if (dateTime != null) {
-        txnDb.dateTime = dateTime;
-      }
-      if (amount != null) {
-        txnDb.amount = amount;
-      }
-      if (category != null) {
-        txnDb.category = category.databaseObject;
-      }
-      if (tag != null) {
-        txnDb.categoryTag = tag.databaseObject;
-      }
-      if (account != null) {
-        txnDb.account = account.databaseObject;
-      }
-      if (note != null) {
-        txnDb.note = note;
+      if (state.note != null) {
+        txnDb.note = state.note;
       }
 
-      //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
-    });
-  }
-
-  void editTransfer(
-    Transfer transaction, {
-    required DateTime? dateTime,
-    required double? amount,
-    required RegularAccount? account,
-    required RegularAccount? toAccount,
-    required String? note,
-    required double? fee,
-    required bool? isChargeOnDestinationAccount,
-  }) {
-    TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
-
-    if (txnDb == null) {
-      throw StateError('Can not find transaction from ObjectId');
-    }
-
-    realm.write(() {
-      if (dateTime != null) {
-        txnDb.dateTime = dateTime;
-      }
-      if (amount != null) {
-        txnDb.amount = amount;
-      }
-      if (account != null) {
-        txnDb.account = account.databaseObject;
-      }
-      if (toAccount != null) {
-        txnDb.transferAccount = toAccount.databaseObject;
-      }
-      if (note != null) {
-        txnDb.note = note;
-      }
-
-      //TODO: logic for transfer fee
-
-      // if (fee != null || isChargeOnDestinationAccount != null) {
-      //   txnDb.transferFee = TransferFeeDb(amount: fee ?? txnDb.transferFee.amount );
-      // }
-
+      // TODO: UPDATE BALANCE LOGIC!!!!!!!!!!
       //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
     });
   }

@@ -5,12 +5,14 @@ part of 'transaction_details_modal_screen.dart';
 class _Amount extends ConsumerWidget {
   const _Amount({
     required this.isEditMode,
+    this.isEdited = false,
     required this.transactionType,
     required this.amount,
     this.onEditModeTap,
   });
 
   final bool isEditMode;
+  final bool isEdited;
   final TransactionType transactionType;
   final double amount;
   final VoidCallback? onEditModeTap;
@@ -61,6 +63,7 @@ class _Amount extends ConsumerWidget {
         Flexible(
           child: _NeumorphicEditWrap(
             isEditMode: isEditMode,
+            isEdited: isEdited,
             onTap: onEditModeTap,
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -74,7 +77,8 @@ class _Amount extends ConsumerWidget {
                 Gap.w8,
                 Text(
                   context.appSettings.currency.code,
-                  style: kHeader4TextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
+                  style: kHeader4TextStyle.copyWith(
+                      color: _color(context), fontSize: kHeader1TextStyle.fontSize),
                 ),
               ],
             ),
@@ -86,9 +90,11 @@ class _Amount extends ConsumerWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime({required this.isEditMode, required this.dateTime, this.onEditModeTap});
+  const _DateTime(
+      {required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
 
   final bool isEditMode;
+  final bool isEdited;
   final DateTime dateTime;
   final VoidCallback? onEditModeTap;
 
@@ -98,6 +104,7 @@ class _DateTime extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2.0),
       child: _NeumorphicEditWrap(
         isEditMode: isEditMode,
+        isEdited: isEdited,
         onTap: onEditModeTap,
         child: Row(
           children: [
@@ -121,8 +128,10 @@ class _DateTime extends StatelessWidget {
 }
 
 class _AccountCard extends StatelessWidget {
-  const _AccountCard({required this.isEditMode, required this.account, this.onEditModeTap});
+  const _AccountCard(
+      {required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
   final bool isEditMode;
+  final bool isEdited;
   final Account account;
   final VoidCallback? onEditModeTap;
 
@@ -143,6 +152,7 @@ class _AccountCard extends StatelessWidget {
 
     return _NeumorphicEditCardWrap(
       isEditMode: isEditMode,
+      isEdited: isEdited,
       onTap: onEditModeTap,
       backgroundColor: account.backgroundColor,
       child: Stack(
@@ -178,7 +188,8 @@ class _AccountCard extends StatelessWidget {
                     child: Text(
                       account.name,
                       style: kHeader2TextStyle.copyWith(
-                          color: isEditMode ? context.appTheme.onBackground : account.iconColor, fontSize: 20),
+                          color: isEditMode ? context.appTheme.onBackground : account.iconColor,
+                          fontSize: 20),
                     ),
                   ),
                   Gap.w48,
@@ -193,9 +204,15 @@ class _AccountCard extends StatelessWidget {
 }
 
 class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({required this.isEditMode, required this.category, this.categoryTag, this.onEditModeTap});
+  const _CategoryCard(
+      {required this.isEditMode,
+      this.isEdited = false,
+      required this.category,
+      this.categoryTag,
+      this.onEditModeTap});
 
   final bool isEditMode;
+  final bool isEdited;
   final Category category;
   final CategoryTag? categoryTag;
   final VoidCallback? onEditModeTap;
@@ -204,6 +221,7 @@ class _CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _NeumorphicEditCardWrap(
       isEditMode: isEditMode,
+      isEdited: isEdited,
       onTap: onEditModeTap,
       backgroundColor: category.backgroundColor.withOpacity(0.35),
       child: Column(
@@ -211,7 +229,8 @@ class _CategoryCard extends StatelessWidget {
         children: [
           Text(
             'CATEGORY:',
-            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+            style: kHeader2TextStyle.copyWith(
+                color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
           ),
           Gap.h8,
           Row(
@@ -231,12 +250,14 @@ class _CategoryCard extends StatelessWidget {
                   children: [
                     Text(
                       category.name,
-                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
+                      style:
+                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
                     ),
-                    categoryTag != null
+                    categoryTag != null && categoryTag != CategoryTag.noTag
                         ? Text(
                             '# ${categoryTag!.name}',
-                            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
+                            style: kHeader3TextStyle.copyWith(
+                                color: context.appTheme.onBackground, fontSize: 15),
                           )
                         : const SizedBox(),
                   ],
@@ -251,8 +272,9 @@ class _CategoryCard extends StatelessWidget {
 }
 
 class _Note extends StatelessWidget {
-  const _Note({required this.isEditMode, required this.note, this.onEditModeTap});
+  const _Note({required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeTap});
   final bool isEditMode;
+  final bool isEdited;
   final String note;
   final VoidCallback? onEditModeTap;
 
@@ -260,6 +282,7 @@ class _Note extends StatelessWidget {
   Widget build(BuildContext context) {
     return _NeumorphicEditWrap(
       isEditMode: isEditMode,
+      isEdited: isEdited,
       onTap: onEditModeTap,
       withPadding: false,
       child: CardItem(
@@ -273,7 +296,8 @@ class _Note extends StatelessWidget {
           children: [
             Text(
               'NOTE:',
-              style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+              style: kHeader2TextStyle.copyWith(
+                  color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
             ),
             Gap.h4,
             Text(
@@ -297,26 +321,33 @@ class _NeumorphicEditWrap extends StatelessWidget {
     required this.isEditMode,
     this.onTap,
     this.withPadding = true,
+    this.isEdited = false,
     required this.child,
   });
 
   final bool isEditMode;
+  final bool isEdited;
   final VoidCallback? onTap;
   final bool withPadding;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow =
+        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow =
+        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final containerColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return Stack(
       children: [
         AnimatedContainer(
           duration: k250msDuration,
           curve: Curves.easeOut,
-          padding: isEditMode && withPadding ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
+          padding: isEditMode && withPadding
+              ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6)
+              : EdgeInsets.zero,
           margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
           decoration: BoxDecoration(
             color: containerColor,
@@ -345,8 +376,10 @@ class _NeumorphicEditWrap extends StatelessWidget {
               child: AnimatedPadding(
                 duration: k250msDuration,
                 curve: Curves.easeOut,
-                padding: isEditMode ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
-                child: child,
+                padding: isEditMode
+                    ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6)
+                    : EdgeInsets.zero,
+                child: FittedBox(child: child),
               ),
             ),
           ),
@@ -360,8 +393,8 @@ class _NeumorphicEditWrap extends StatelessWidget {
             duration: k250msDuration,
             child: RoundedIconButton(
               iconPath: AppIcons.edit,
-              iconColor: context.appTheme.onAccent,
-              backgroundColor: context.appTheme.accent2,
+              iconColor: isEdited ? context.appTheme.onNegative : context.appTheme.onAccent,
+              backgroundColor: isEdited ? context.appTheme.negative : context.appTheme.accent2,
               size: 20,
               iconPadding: 4,
             ),
@@ -374,17 +407,25 @@ class _NeumorphicEditWrap extends StatelessWidget {
 
 class _NeumorphicEditCardWrap extends StatelessWidget {
   const _NeumorphicEditCardWrap(
-      {required this.isEditMode, this.onTap, required this.backgroundColor, required this.child});
+      {required this.isEditMode,
+      this.isEdited = false,
+      this.onTap,
+      required this.backgroundColor,
+      required this.child});
   final bool isEditMode;
+  final bool isEdited;
   final VoidCallback? onTap;
   final Color backgroundColor;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final bgEditColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow =
+        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow =
+        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final bgEditColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
@@ -394,7 +435,9 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
             margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
             elevation: 0,
             padding: EdgeInsets.zero,
-            color: isEditMode ? bgEditColor : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+            color: isEditMode
+                ? bgEditColor
+                : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
             boxShadow: [
               BoxShadow(
                 color: isEditMode
@@ -428,8 +471,8 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
               curve: Curves.easeOut,
               child: RoundedIconButton(
                 iconPath: AppIcons.edit,
-                iconColor: context.appTheme.onAccent,
-                backgroundColor: context.appTheme.accent2,
+                iconColor: isEdited ? context.appTheme.onNegative : context.appTheme.onAccent,
+                backgroundColor: isEdited ? context.appTheme.negative : context.appTheme.accent2,
                 size: 20,
                 iconPadding: 4,
               ),
@@ -449,9 +492,12 @@ class _EditButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow =
+        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow =
+        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final containerColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return CardItem(
       width: isEditMode ? 75 : 40,
@@ -510,7 +556,8 @@ class _EditButton extends StatelessWidget {
                       Gap.w8,
                       Text(
                         'DONE',
-                        style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
+                        style: kHeader2TextStyle.copyWith(
+                            fontSize: 15, color: context.appTheme.onBackground),
                         textAlign: TextAlign.center,
                       ),
                     ],

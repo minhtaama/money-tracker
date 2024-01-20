@@ -18,10 +18,7 @@ Future<String?> showCalculatorModalScreen(BuildContext context, {double? initial
       child: _Calculator(
         popOnDone: false,
         initialValue: valString,
-        resultOutput: (value) {
-          final numVal = CalService.formatNumberInGroup(value);
-          context.pop<String?>(numVal);
-        },
+        resultOutput: (value) => context.pop<String?>(value),
       ));
 }
 

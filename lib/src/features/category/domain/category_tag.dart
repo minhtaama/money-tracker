@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:realm/realm.dart';
 
 import '../../../../persistent/base_model.dart';
 
@@ -18,5 +20,24 @@ class CategoryTag extends BaseModel<CategoryTagDb> {
     );
   }
 
+  /// Use when user edit a transaction and remove its category tag
+  static CategoryTag get noTag {
+    return CategoryTag._(
+      CategoryTagDb(ObjectId.fromTimestamp(Calendar.minDate), 'noTag'),
+      'noTag',
+    );
+  }
+
   const CategoryTag._(super.realmObject, this.name);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CategoryTag &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          databaseObject == databaseObject;
+
+  @override
+  int get hashCode => databaseObject.hashCode ^ name.hashCode;
 }

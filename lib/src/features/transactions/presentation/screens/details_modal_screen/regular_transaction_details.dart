@@ -1,7 +1,7 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _RegularDetails extends ConsumerStatefulWidget {
-  const _RegularDetails({super.key, required this.transaction});
+  const _RegularDetails({required this.transaction});
 
   final BaseRegularTransaction transaction;
 
@@ -12,6 +12,7 @@ class _RegularDetails extends ConsumerStatefulWidget {
 class _RegularDetailsState extends ConsumerState<_RegularDetails> {
   bool _isEditMode = false;
 
+  late final _txnRepo = ref.read(transactionRepositoryRealmProvider);
   late final _stateController = ref.read(regularTransactionFormNotifierProvider(null).notifier);
 
   RegularTransactionFormState get _stateRead => ref.read(regularTransactionFormNotifierProvider(null));
@@ -22,10 +23,18 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
 
     return CustomSection(
       title: _title,
-      subTitle: _DateTime(isEditMode: _isEditMode, dateTime: widget.transaction.dateTime),
+      subTitle: _DateTime(
+        isEditMode: _isEditMode,
+        isEdited: stateWatch.dateTime != null,
+        dateTime: stateWatch.dateTime ?? widget.transaction.dateTime,
+        onEditModeTap: _changeDateTime,
+      ),
       subIcons: _EditButton(
         isEditMode: _isEditMode,
         onTap: () => setState(() {
+          if (_isEditMode) {
+            _txnRepo.editRegularTransaction(widget.transaction, state: _stateRead);
+          }
           _isEditMode = !_isEditMode;
         }),
       ),
@@ -34,6 +43,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
       sections: [
         _Amount(
           isEditMode: _isEditMode,
+          isEdited: stateWatch.amount != null,
           transactionType: widget.transaction.type,
           amount: stateWatch.amount ?? widget.transaction.amount,
           onEditModeTap: _changeAmount,
@@ -55,7 +65,11 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
               child: Column(
                 children: [
                   _AccountCard(
-                    isEditMode: _isEditMode,
+                    isEditMode: (widget.transaction is Income &&
+                            (widget.transaction as Income).isInitialTransaction)
+                        ? false
+                        : _isEditMode,
+                    isEdited: stateWatch.account != null,
                     account: stateWatch.account ?? widget.transaction.account!,
                     onEditModeTap: _changeAccount,
                   ),
@@ -65,16 +79,20 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                           ? Gap.noGap
                           : _CategoryCard(
                               isEditMode: _isEditMode,
+                              isEdited: stateWatch.category != null || stateWatch.tag != null,
                               category: stateWatch.category ??
                                   (widget.transaction as IBaseTransactionWithCategory).category!,
                               categoryTag: stateWatch.tag ??
                                   (widget.transaction as IBaseTransactionWithCategory).categoryTag,
-                              // TODO: user can make tag turn to null
-                              onEditModeTap: () => _changeCategory(),
+                              onEditModeTap: _changeCategory,
                             ),
                     Transfer() => _AccountCard(
                         isEditMode: _isEditMode,
-                        account: (widget.transaction as Transfer).transferAccount!),
+                        isEdited: stateWatch.toAccount != null,
+                        account:
+                            stateWatch.toAccount ?? (widget.transaction as Transfer).transferAccount!,
+                        onEditModeTap: _changeToAccount,
+                      ),
                   },
                 ],
               ),
@@ -90,7 +108,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
   }
 }
 
-extension _RegularDetailsExtension on _RegularDetailsState {
+extension _RegularDetailsFunctionsAndGetter on _RegularDetailsState {
   String get _title {
     return switch (widget.transaction) {
       Income() => (widget.transaction as Income).isInitialTransaction
@@ -106,7 +124,7 @@ extension _RegularDetailsExtension on _RegularDetailsState {
 
     final returnedValue = await showCustomModalBottomSheet<Account>(
       context: context,
-      child: _ModelWithIconSelector(
+      child: _ModelWithIconEditSelector(
         title: 'Change Account',
         selectedItem: _stateRead.account ?? widget.transaction.account,
         list: accountList,
@@ -116,10 +134,25 @@ extension _RegularDetailsExtension on _RegularDetailsState {
     _stateController.changeAccount(returnedValue as RegularAccount?);
   }
 
+  void _changeToAccount() async {
+    List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
+
+    final returnedValue = await showCustomModalBottomSheet<Account>(
+      context: context,
+      child: _ModelWithIconEditSelector(
+        title: 'Change Destination:',
+        selectedItem: _stateRead.toAccount ?? (widget.transaction as Transfer).transferAccount,
+        list: accountList,
+      ),
+    );
+
+    _stateController.changeToAccount(returnedValue as RegularAccount?);
+  }
+
   void _changeCategory() async {
     final returnedCategory = await showCustomModalBottomSheet<List<dynamic>>(
       context: context,
-      child: _CategorySelector(
+      child: _CategoryEditSelector(
           transaction: widget.transaction,
           category: _stateRead.category ?? (widget.transaction as IBaseTransactionWithCategory).category,
           tag: _stateRead.tag ?? (widget.transaction as IBaseTransactionWithCategory).categoryTag),
@@ -139,6 +172,17 @@ extension _RegularDetailsExtension on _RegularDetailsState {
 
     if (newAmount != null) {
       _stateController.changeAmount(newAmount);
+    }
+  }
+
+  void _changeDateTime() async {
+    final newDateTime = await showRegularDateTimeSelectorDialog(
+      context,
+      current: _stateRead.dateTime ?? widget.transaction.dateTime,
+    );
+
+    if (newDateTime != null) {
+      _stateController.changeDateTime(newDateTime);
     }
   }
 }

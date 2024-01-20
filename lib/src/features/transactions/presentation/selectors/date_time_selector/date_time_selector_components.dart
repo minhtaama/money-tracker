@@ -289,13 +289,14 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
           required int year})?
       yearBuilder,
   Widget? Function(
-          {required DateTime date,
-          BoxDecoration? decoration,
-          bool? isDisabled,
-          bool? isSelected,
-          bool? isToday,
-          TextStyle? textStyle})?
-      dayBuilder,
+    BuildContext context, {
+    required DateTime date,
+    BoxDecoration? decoration,
+    bool? isDisabled,
+    bool? isSelected,
+    bool? isToday,
+    TextStyle? textStyle,
+  })? dayBuilder,
 }) {
   return CalendarDatePicker2WithActionButtonsConfig(
       calendarType: CalendarDatePicker2Type.single,
@@ -333,6 +334,21 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
           fontSize: 15,
           color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
       yearBuilder: yearBuilder,
-      dayBuilder: dayBuilder,
+      dayBuilder: (
+              {required DateTime date,
+              BoxDecoration? decoration,
+              bool? isDisabled,
+              bool? isSelected,
+              bool? isToday,
+              TextStyle? textStyle}) =>
+          dayBuilder != null
+              ? dayBuilder(context,
+                  date: date,
+                  decoration: decoration,
+                  isDisabled: isDisabled,
+                  isSelected: isSelected,
+                  isToday: isToday,
+                  textStyle: textStyle)
+              : null,
       controlsHeight: controlsHeight ?? 40);
 }

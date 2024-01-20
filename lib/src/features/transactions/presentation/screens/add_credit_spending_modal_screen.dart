@@ -7,7 +7,7 @@ import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/controllers/add_credit_spending_form_controller.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';

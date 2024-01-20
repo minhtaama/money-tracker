@@ -1,7 +1,80 @@
 part of 'date_time_selector_components.dart';
 
+Widget _dayBuilderRegular(BuildContext context,
+    {required DateTime date,
+    BoxDecoration? decoration,
+    bool? isDisabled,
+    bool? isSelected,
+    bool? isToday,
+    TextStyle? textStyle}) {
+  return Align(
+    alignment: Alignment.center,
+    child: Container(
+      height: 33,
+      width: 33,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(1000),
+        border: isToday != null && isToday
+            ? Border.all(
+                color: isDisabled != null && isDisabled
+                    ? AppColors.greyBgr(context)
+                    : context.appTheme.primary,
+              )
+            : null,
+        color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
+      ),
+      child: Center(
+        child: Text(
+          date.day.toString(),
+          style: kHeader4TextStyle.copyWith(
+            color: isDisabled != null && isDisabled
+                ? AppColors.greyBgr(context)
+                : isSelected != null && isSelected
+                    ? context.appTheme.onPrimary
+                    : context.appTheme.onBackground,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<DateTime?> showRegularDateTimeSelectorDialog(BuildContext context,
+    {required DateTime current}) async {
+  return _showCustomCalendarDialog(
+      context: context,
+      builder: (_, __) {
+        DateTime result = current;
+        return _CustomCalendarDialog(
+          config: _customConfig(context, dayBuilder: _dayBuilderRegular),
+          currentDay: result,
+          contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
+            return _CustomTimePickSpinner(
+              time: result,
+              onTimeChange: (dateTime) {
+                result = result.copyWith(
+                  hour: dateTime.hour,
+                  minute: dateTime.minute,
+                );
+              },
+            );
+          },
+          onActionButtonTap: (dateTime) {
+            if (dateTime != null) {
+              result = result.copyWith(
+                day: dateTime.day,
+                month: dateTime.month,
+                year: dateTime.year,
+              );
+            }
+            context.pop<DateTime>(result);
+          },
+        );
+      });
+}
+
 class DateTimeSelector extends StatefulWidget {
-  const DateTimeSelector({Key? key, required this.onChanged}) : super(key: key);
+  const DateTimeSelector({super.key, required this.onChanged});
 
   final ValueSetter<DateTime> onChanged;
 
@@ -12,43 +85,6 @@ class DateTimeSelector extends StatefulWidget {
 class _DateTimeSelectorState extends State<DateTimeSelector> {
   late DateTime _outputDateTime = DateTime.now();
   //late DateTime _selectedDay = DateTime.now();
-
-  Widget _dayBuilder(
-      {required DateTime date,
-      BoxDecoration? decoration,
-      bool? isDisabled,
-      bool? isSelected,
-      bool? isToday,
-      TextStyle? textStyle}) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        height: 33,
-        width: 33,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(1000),
-          border: isToday != null && isToday
-              ? Border.all(
-                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
-                )
-              : null,
-          color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
-        ),
-        child: Center(
-          child: Text(
-            date.day.toString(),
-            style: kHeader4TextStyle.copyWith(
-              color: isDisabled != null && isDisabled
-                  ? AppColors.greyBgr(context)
-                  : isSelected != null && isSelected
-                      ? context.appTheme.onPrimary
-                      : context.appTheme.onBackground,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +104,9 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
+                        year: _outputDateTime.year,
+                        month: _outputDateTime.month,
+                        day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -80,13 +118,13 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                     context: context,
                     builder: (_, __) {
                       return _CustomCalendarDialog(
-                        config: _customConfig(context, dayBuilder: _dayBuilder),
+                        config: _customConfig(context, dayBuilder: _dayBuilderRegular),
                         currentDay: _outputDateTime,
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             setState(() {
-                              _outputDateTime =
-                                  dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                              _outputDateTime = dateTime.copyWith(
+                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                             });
                             context.pop();
                           }
@@ -110,7 +148,11 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
 
 class DateSelector extends StatefulWidget {
   const DateSelector(
-      {super.key, required this.onChanged, required this.labelBuilder, this.initial, this.selectableDayPredicate});
+      {super.key,
+      required this.onChanged,
+      required this.labelBuilder,
+      this.initial,
+      this.selectableDayPredicate});
 
   final DateTime? initial;
   final bool Function(DateTime)? selectableDayPredicate;
@@ -133,43 +175,6 @@ class _DateSelectorState extends State<DateSelector> {
     super.didUpdateWidget(oldWidget);
   }
 
-  Widget _dayBuilder(
-      {required DateTime date,
-      BoxDecoration? decoration,
-      bool? isDisabled,
-      bool? isSelected,
-      bool? isToday,
-      TextStyle? textStyle}) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        height: 33,
-        width: 33,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(1000),
-          border: isToday != null && isToday
-              ? Border.all(
-                  color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
-                )
-              : null,
-          color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
-        ),
-        child: Center(
-          child: Text(
-            date.day.toString(),
-            style: kHeader4TextStyle.copyWith(
-              color: isDisabled != null && isDisabled
-                  ? AppColors.greyBgr(context)
-                  : isSelected != null && isSelected
-                      ? context.appTheme.onPrimary
-                      : context.appTheme.onBackground,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -181,13 +186,17 @@ class _DateSelectorState extends State<DateSelector> {
             context: context,
             builder: (_, __) {
               return _CustomCalendarDialog(
-                config: _customConfig(context,
-                    dayBuilder: _dayBuilder, selectableDayPredicate: widget.selectableDayPredicate),
+                config: _customConfig(
+                  context,
+                  dayBuilder: _dayBuilderRegular,
+                  selectableDayPredicate: widget.selectableDayPredicate,
+                ),
                 currentDay: _outputDateTime,
                 onActionButtonTap: (dateTime) {
                   if (dateTime != null) {
                     setState(() {
-                      _outputDateTime = dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                      _outputDateTime =
+                          dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                     });
                     context.pop();
                   }

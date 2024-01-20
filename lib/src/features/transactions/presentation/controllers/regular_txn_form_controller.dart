@@ -68,42 +68,6 @@ class RegularTransactionFormController
     state = state.copyWith(tag: () => null);
   }
 
-  void setStateFromTransaction(BaseRegularTransaction transaction) {
-    switch (transaction) {
-      case IBaseTransactionWithCategory():
-        state = state.copyWith(
-          dateTime: () => transaction.dateTime,
-          amount: () => transaction.amount,
-          note: () => transaction.note,
-          account: () => transaction.account as RegularAccount,
-          tag: () => (transaction as IBaseTransactionWithCategory).categoryTag,
-          category: () => (transaction as IBaseTransactionWithCategory).category,
-        );
-        break;
-      case Transfer():
-        state = state.copyWith(
-          dateTime: () => transaction.dateTime,
-          amount: () => transaction.amount,
-          note: () => transaction.note,
-          account: () => transaction.account as RegularAccount,
-          toAccount: () => (transaction).transferAccount,
-        );
-        break;
-    }
-  }
-
-  void setStateToAllNull() {
-    state = state.copyWith(
-      dateTime: () => null,
-      amount: () => null,
-      note: () => null,
-      account: () => null,
-      toAccount: () => null,
-      tag: () => null,
-      category: () => null,
-    );
-  }
-
   void changeAmount(String value) {
     state = state.copyWith(amount: () => CalService.formatToDouble(value));
   }
@@ -135,8 +99,7 @@ class RegularTransactionFormController
 }
 
 /// Set arg to `null` if edit mode (initial state has properties all `null`)
-final regularTransactionFormNotifierProvider =
-    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(
-        () {
+final regularTransactionFormNotifierProvider = AutoDisposeNotifierProviderFamily<
+    RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(() {
   return RegularTransactionFormController();
 });

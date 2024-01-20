@@ -1,7 +1,7 @@
 part of 'transaction_details_modal_screen.dart';
 
-class _ModelWithIconSelector<T extends BaseModelWithIcon> extends StatelessWidget {
-  const _ModelWithIconSelector({
+class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessWidget {
+  const _ModelWithIconEditSelector({
     super.key,
     required this.title,
     this.isDisable,
@@ -52,12 +52,14 @@ class _ModelWithIconSelector<T extends BaseModelWithIcon> extends StatelessWidge
                             ? element.backgroundColor
                             : context.appTheme.onBackground.withOpacity(0.4),
                       ),
-                      backgroundColor: selectedItem == element ? element.backgroundColor : Colors.transparent,
+                      backgroundColor:
+                          selectedItem == element ? element.backgroundColor : Colors.transparent,
                       color: selectedItem == element ? element.iconColor : context.appTheme.onBackground,
                       inkColor: element.backgroundColor,
                       onTap: onItemTap != null
                           ? () => onItemTap?.call(element)
-                          : () => selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
+                          : () =>
+                              selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
                       height: null,
                       width: null,
                     ),
@@ -82,18 +84,19 @@ class _ModelWithIconSelector<T extends BaseModelWithIcon> extends StatelessWidge
   }
 }
 
-class _CategorySelector extends ConsumerStatefulWidget {
-  const _CategorySelector({super.key, required this.transaction, required this.category, required this.tag});
+class _CategoryEditSelector extends ConsumerStatefulWidget {
+  const _CategoryEditSelector(
+      {super.key, required this.transaction, required this.category, required this.tag});
 
   final BaseTransaction transaction;
   final Category? category;
   final CategoryTag? tag;
 
   @override
-  ConsumerState<_CategorySelector> createState() => _CategorySelectorState();
+  ConsumerState<_CategoryEditSelector> createState() => _CategoryEditSelectorState();
 }
 
-class _CategorySelectorState extends ConsumerState<_CategorySelector> {
+class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
   late Category? _selectedCategory = widget.category;
   late CategoryTag? _selectedTag = widget.tag;
 
@@ -109,7 +112,7 @@ class _CategorySelectorState extends ConsumerState<_CategorySelector> {
   late final _categoryList = ref.read(categoryRepositoryRealmProvider).getList(_categoryType);
 
   @override
-  void didUpdateWidget(covariant _CategorySelector oldWidget) {
+  void didUpdateWidget(covariant _CategoryEditSelector oldWidget) {
     if (widget.category != oldWidget.category) {
       _selectedCategory = widget.category;
     }
@@ -124,14 +127,14 @@ class _CategorySelectorState extends ConsumerState<_CategorySelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _ModelWithIconSelector(
+        _ModelWithIconEditSelector(
           title: 'Choose Category:'.hardcoded,
           withBottomGap: false,
           list: _categoryList,
           selectedItem: _selectedCategory,
           onItemTap: (category) => setState(() {
             _selectedCategory = category;
-            _selectedTag = null;
+            _selectedTag = CategoryTag.noTag;
           }),
         ),
         Gap.h16,
@@ -145,6 +148,9 @@ class _CategorySelectorState extends ConsumerState<_CategorySelector> {
           initialChosenTag: _selectedTag,
           onTagSelected: (tag) => setState(() {
             _selectedTag = tag;
+          }),
+          onTagDeSelected: () => setState(() {
+            _selectedTag = CategoryTag.noTag;
           }),
         ),
         Gap.h24,
