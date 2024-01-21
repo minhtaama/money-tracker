@@ -16,9 +16,7 @@ Widget _dayBuilderRegular(BuildContext context,
         borderRadius: BorderRadius.circular(1000),
         border: isToday != null && isToday
             ? Border.all(
-                color: isDisabled != null && isDisabled
-                    ? AppColors.greyBgr(context)
-                    : context.appTheme.primary,
+                color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
               )
             : null,
         color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
@@ -39,9 +37,8 @@ Widget _dayBuilderRegular(BuildContext context,
   );
 }
 
-Future<DateTime?> showRegularDateTimeSelectorDialog(BuildContext context,
-    {required DateTime current}) async {
-  return _showCustomCalendarDialog(
+Future<DateTime?> showRegularDateTimeSelectorDialog(BuildContext context, {required DateTime current}) async {
+  return showCustomDialog(
       context: context,
       builder: (_, __) {
         DateTime result = current;
@@ -104,9 +101,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year,
-                        month: _outputDateTime.month,
-                        day: _outputDateTime.day);
+                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -114,7 +109,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               CustomInkWell(
                 inkColor: AppColors.grey(context),
                 onTap: () async {
-                  await _showCustomCalendarDialog(
+                  await showCustomDialog(
                     context: context,
                     builder: (_, __) {
                       return _CustomCalendarDialog(
@@ -123,8 +118,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             setState(() {
-                              _outputDateTime = dateTime.copyWith(
-                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                              _outputDateTime =
+                                  dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                             });
                             context.pop();
                           }
@@ -148,11 +143,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
 
 class DateSelector extends StatefulWidget {
   const DateSelector(
-      {super.key,
-      required this.onChanged,
-      required this.labelBuilder,
-      this.initial,
-      this.selectableDayPredicate});
+      {super.key, required this.onChanged, required this.labelBuilder, this.initial, this.selectableDayPredicate});
 
   final DateTime? initial;
   final bool Function(DateTime)? selectableDayPredicate;
@@ -182,7 +173,7 @@ class _DateSelectorState extends State<DateSelector> {
         borderRadius: BorderRadius.circular(1000),
         inkColor: AppColors.grey(context),
         onTap: () async {
-          await _showCustomCalendarDialog(
+          await showCustomDialog(
             context: context,
             builder: (_, __) {
               return _CustomCalendarDialog(
@@ -195,8 +186,7 @@ class _DateSelectorState extends State<DateSelector> {
                 onActionButtonTap: (dateTime) {
                   if (dateTime != null) {
                     setState(() {
-                      _outputDateTime =
-                          dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                      _outputDateTime = dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                     });
                     context.pop();
                   }

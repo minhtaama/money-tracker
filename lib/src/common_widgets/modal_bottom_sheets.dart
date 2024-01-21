@@ -6,6 +6,39 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 import 'icon_with_text_button.dart';
 
+Future<T?> showCustomDialog<T>({
+  required BuildContext context,
+  required Widget Function(BuildContext, StateSetter) builder,
+}) {
+  return showDialog<T>(
+    useRootNavigator: false,
+    context: context,
+    builder: (_) {
+      return StatefulBuilder(builder: builder);
+    },
+  );
+}
+
+Future<T?> showCustomDialog2<T>({
+  required BuildContext context,
+  required Widget child,
+}) {
+  return showCustomDialog(
+    context: context,
+    builder: (_, __) {
+      return Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: AlertDialog(
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: context.appTheme.negative,
+          elevation: 5,
+          content: child,
+        ),
+      );
+    },
+  );
+}
+
 /// This is a helper function to show a confirmation of user
 Future<T?> showConfirmModalBottomSheet<T>({
   required BuildContext context,
@@ -18,11 +51,9 @@ Future<T?> showConfirmModalBottomSheet<T>({
     context: context,
     elevation: 0,
     enableDrag: false,
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -84,11 +115,9 @@ Future<T?> showCustomModalBottomSheet<T>(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -118,11 +147,9 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
     {required Widget child, bool hasHandle = true}) {
   return ModalBottomSheetPage(
     hasHandle: hasHandle,
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    modalBarrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    modalBarrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     child: child,
   );
 }
@@ -179,8 +206,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
               ? Stack(
                   children: [
                     AnimatedPadding(
-                      padding:
-                          EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
                       duration: const Duration(milliseconds: 0),
                       child: SingleChildScrollView(child: child),
                     ),

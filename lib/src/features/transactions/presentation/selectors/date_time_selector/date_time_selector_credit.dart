@@ -78,9 +78,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           elevation: 0,
-          border: Border.all(
-              color:
-                  context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+          border:
+              Border.all(color: context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -94,8 +93,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
                       if (_outputDateTime != null) {
                         setState(() {
-                          _outputDateTime =
-                              _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                          _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
                         });
                         widget.onChanged(_outputDateTime!, _outputStatement);
                       }
@@ -105,7 +103,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                     inkColor: AppColors.grey(context),
                     onTap: () async {
                       if (widget.creditAccount != null) {
-                        await _showCustomCalendarDialog(
+                        await showCustomDialog(
                           context: context,
                           builder: (context, setState) {
                             return _CustomCalendarDialog(
@@ -120,7 +118,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                               onActionButtonTap: (dateTime) async {
                                 if (dateTime != null) {
                                   if (dateTime.isBefore(_lastCheckpointDateTime)) {
-                                    _showCustomCalendarDialog(
+                                    showCustomDialog(
                                         context: context,
                                         builder: (_, __) {
                                           return Padding(
@@ -133,14 +131,13 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                                 iconPath: AppIcons.sadFace,
                                                 color: context.appTheme.onNegative,
                                                 header:
-                                                    'You can only add transaction after [latest checkpoint]'
-                                                        .hardcoded,
+                                                    'You can only add transaction after [latest checkpoint]'.hardcoded,
                                               ),
                                             ),
                                           );
                                         });
                                   } else if (!dateTime.isAfter(_canAddTransactionSinceDateTime)) {
-                                    _showCustomCalendarDialog(
+                                    showCustomDialog(
                                         context: context,
                                         builder: (_, __) {
                                           return Padding(
@@ -160,7 +157,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                           );
                                         });
                                   } else if (dateTime.isAfter(_todayStatementDueDate)) {
-                                    _showCustomCalendarDialog(
+                                    showCustomDialog(
                                         context: context,
                                         builder: (_, __) {
                                           return Padding(
@@ -193,10 +190,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                                   .hardcoded,
                                         )
                                       : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
-                                              .copyWith(
-                                                  month:
-                                                      widget.creditAccount!.earliestPayableDate!.month -
-                                                          1))
+                                              .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
                                           ? IconWithText(
                                               iconPath: AppIcons.done,
                                               header: 'No transactions before this time'.hardcoded,
@@ -205,10 +199,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                               ? CreditInfo(
                                                   chosenDateTime: selectedDay,
                                                   showPaymentAmount: widget.isForPayment &&
-                                                      !selectedDay.isBefore(
-                                                          widget.creditAccount!.earliestPayableDate!),
-                                                  statement:
-                                                      widget.creditAccount!.statementAt(selectedDay),
+                                                      !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
+                                                  statement: widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
                                                   }),
@@ -263,8 +255,7 @@ extension _Details on _DateTimeSelectorCreditState {
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
         ? Border.all(
-            color:
-                isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
           )
         : null;
 
@@ -304,13 +295,11 @@ extension _Details on _DateTimeSelectorCreditState {
                   _isDueDate(date) ? icon(AppIcons.handCoin) : Gap.noGap,
                   _hasSpendingTransaction(date)
                       ? icon(AppIcons.receiptDollar,
-                          color:
-                              context.appTheme.negative.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.negative.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                   _hasPaymentTransaction(date)
                       ? icon(AppIcons.receiptCheck,
-                          color:
-                              context.appTheme.positive.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.positive.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                 ],
               ),

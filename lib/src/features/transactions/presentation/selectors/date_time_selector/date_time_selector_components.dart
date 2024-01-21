@@ -17,6 +17,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../../../common_widgets/modal_bottom_sheets.dart';
 import '../../../../../common_widgets/svg_icon.dart';
 import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/statement/statement.dart';
@@ -43,8 +44,7 @@ class _CustomTimePickSpinner extends StatelessWidget {
           alignment: Alignment.center,
           normalTextStyle: kHeader3TextStyle.copyWith(
               height: 0, color: context.appTheme.onBackground.withOpacity(0.4), fontSize: 15),
-          highlightedTextStyle:
-              kHeader1TextStyle.copyWith(height: 0.9, color: context.appTheme.primary, fontSize: 25),
+          highlightedTextStyle: kHeader1TextStyle.copyWith(height: 0.9, color: context.appTheme.primary, fontSize: 25),
           isForce2Digits: true,
           onTimeChange: (value) {
             onTimeChange?.call(value.toLocal());
@@ -204,8 +204,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       surfaceTintColor: Colors.transparent,
-      backgroundColor:
-          context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+      backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
       contentPadding: EdgeInsets.zero,
       actions: [
         IconWithTextButton(
@@ -229,8 +228,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-              child:
-                  widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             SizedBox(
@@ -257,18 +255,6 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
       ),
     );
   }
-}
-
-Future<T?> _showCustomCalendarDialog<T>({
-  required BuildContext context,
-  required Widget Function(BuildContext, StateSetter) builder,
-}) {
-  return showDialog<T>(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) {
-        return StatefulBuilder(builder: builder);
-      });
 }
 
 ////////////////////// CONFIG //////////////////////
@@ -304,8 +290,7 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       lastDate: lastDate,
       firstDayOfWeek: firstDayOfWeek,
       selectableDayPredicate: selectableDayPredicate,
-      selectedDayHighlightColor:
-          context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary,
+      selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary,
       selectedRangeHighlightColor: context.appTheme.isDarkTheme
           ? context.appTheme.secondary1.withOpacity(0.5)
           : context.appTheme.primary.withOpacity(0.5),
@@ -321,18 +306,14 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       ),
       weekdayLabelTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
       selectedDayTextStyle: kHeader4TextStyle.copyWith(
-          color:
-              context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
+          color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
       selectedYearTextStyle: kHeader4TextStyle.copyWith(
-          color:
-              context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
+          color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
       yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
       cancelButtonTextStyle: kHeader2TextStyle.copyWith(
-          fontSize: 15,
-          color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
+          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
       okButtonTextStyle: kHeader2TextStyle.copyWith(
-          fontSize: 15,
-          color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
+          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
       yearBuilder: yearBuilder,
       dayBuilder: (
               {required DateTime date,
