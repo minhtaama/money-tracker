@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../utils/constants.dart';
 import 'icon_with_text_button.dart';
 
@@ -73,17 +74,17 @@ Future<T?> showConfirmModalBottomSheet<T>({
                 children: [
                   IconWithTextButton(
                     iconPath: AppIcons.back,
-                    label: 'No',
+                    label: 'No, go back!'.hardcoded,
                     color: context.appTheme.onBackground,
-                    backgroundColor: AppColors.grey(context),
+                    backgroundColor: AppColors.greyBgr(context),
                     onTap: () => context.pop(),
                   ),
-                  const Expanded(child: SizedBox()),
+                  const Spacer(),
                   IconWithTextButton(
                     iconPath: confirmIcon ?? AppIcons.delete,
                     label: confirmLabel,
-                    color: context.appTheme.onAccent,
-                    backgroundColor: context.appTheme.accent1,
+                    color: context.appTheme.onNegative,
+                    backgroundColor: context.appTheme.negative,
                     onTap: () {
                       onConfirm();
                       context.pop();

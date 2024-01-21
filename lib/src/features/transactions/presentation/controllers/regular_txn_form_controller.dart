@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/account_base.dart';
@@ -68,6 +69,21 @@ class RegularTransactionFormController
     state = state.copyWith(tag: () => null);
   }
 
+  void setStateToAllNull() {
+    Future.delayed(
+      k150msDuration,
+      () => state = state.copyWith(
+        dateTime: () => null,
+        amount: () => null,
+        note: () => null,
+        tag: () => null,
+        category: () => null,
+        account: () => null,
+        toAccount: () => null,
+      ),
+    );
+  }
+
   void changeAmount(String value) {
     state = state.copyWith(amount: () => CalService.formatToDouble(value));
   }
@@ -99,7 +115,8 @@ class RegularTransactionFormController
 }
 
 /// Set arg to `null` if edit mode (initial state has properties all `null`)
-final regularTransactionFormNotifierProvider = AutoDisposeNotifierProviderFamily<
-    RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(() {
+final regularTransactionFormNotifierProvider =
+    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(
+        () {
   return RegularTransactionFormController();
 });

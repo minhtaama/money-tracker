@@ -26,7 +26,6 @@ import '../../../../../common_widgets/custom_text_form_field.dart';
 import '../../../../../common_widgets/icon_with_text.dart';
 import '../../../../../common_widgets/icon_with_text_button.dart';
 import '../../../../../common_widgets/modal_bottom_sheets.dart';
-import '../../../../../routing/app_router.dart';
 import '../../../../../utils/constants.dart';
 import '../../../../../utils/enums.dart';
 import '../../../../accounts/data/account_repo.dart';
@@ -35,7 +34,6 @@ import '../../../domain/transaction_base.dart';
 import '../../controllers/regular_txn_form_controller.dart';
 
 part 'components.dart';
-part 'edit_selectors.dart';
 part 'credit_payment_details.dart';
 part 'credit_spending_details.dart';
 part 'regular_transaction_details.dart';
@@ -48,13 +46,24 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final txnRepo = ref.watch(transactionRepositoryRealmProvider);
-    final BaseTransaction transaction = txnRepo.getTransaction(objectIdHexString);
 
-    return switch (transaction) {
-      BaseRegularTransaction() => _RegularDetails(transaction: transaction),
-      CreditSpending() => _SpendingDetails(transaction: transaction),
-      CreditPayment() => _PaymentDetails(transaction: transaction),
-      CreditCheckpoint() => const Placeholder(),
-    };
+    try {
+      BaseTransaction transaction = txnRepo.getTransaction(objectIdHexString);
+
+      ref.watch(transactionStreamProvider(objectIdHexString)).whenData(
+            (value) => transaction = value,
+          );
+      return switch (transaction) {
+        BaseRegularTransaction() => _RegularDetails(transaction: transaction as BaseRegularTransaction),
+        CreditSpending() => _SpendingDetails(transaction: transaction as CreditSpending),
+        CreditPayment() => _PaymentDetails(transaction: transaction as CreditPayment),
+        CreditCheckpoint() => const Placeholder(),
+      };
+    } catch (e) {
+      return IconWithText(
+        iconPath: AppIcons.delete,
+        text: 'Transaction deleted!'.hardcoded,
+      );
+    }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -13,8 +12,8 @@ import '../domain/balance_at_date_time.dart';
 import '../domain/transaction_base.dart';
 import '../presentation/controllers/regular_txn_form_controller.dart';
 
-class TransactionRepository {
-  TransactionRepository(this.realm);
+class TransactionRepositoryRealmDb {
+  TransactionRepositoryRealmDb(this.realm);
 
   final Realm realm;
 
@@ -28,20 +27,12 @@ class TransactionRepository {
       };
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   /// Put this inside realm write transaction to update [BalanceAtDateTime],
   /// which is a de-normalization value of total regular balance
-  void _updateBalanceAtDateTime(TransactionType type, DateTime dateTime, double amount) {
-    amount = switch (type) {
-      TransactionType.expense || TransactionType.creditPayment => 0 - amount,
-      TransactionType.income => amount,
-      _ => 0,
-    };
-
+  void _updateBalanceAtDateTime(DateTime dateTime, double amount) {
     List<BalanceAtDateTime> balanceAtDateTimes = getSortedBalanceAtDateTimeList();
     int index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
 
@@ -55,8 +46,7 @@ class TransactionRepository {
           balanceAtDateTimes.lastIndexWhere((e) => dateTime.isInMonthAfter(e.date.toLocal()));
       final nearestBalance =
           nearestIndexFromTxnDateTime == -1 ? 0 : balanceAtDateTimes[nearestIndexFromTxnDateTime].amount;
-      realm
-          .add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
+      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
 
       balanceAtDateTimes = getSortedBalanceAtDateTimeList();
       index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
@@ -66,12 +56,16 @@ class TransactionRepository {
         db.amount = db.amount + amount;
       }
     }
+
+    // Remove BalanceAtDateTime has amount == 0 to prevent wrong calculation.
+    final emptyBalAtDateTime = realm.all<BalanceAtDateTimeDb>().query(r'amount == $0', [0.0]);
+    realm.deleteMany(emptyBalAtDateTime);
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm.all<TransactionDb>().query(
-        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)',
-        [lower, upper]).toList();
+    List<TransactionDb> list = realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
@@ -84,36 +78,27 @@ class TransactionRepository {
     throw StateError('transaction id is not found');
   }
 
+  Stream<BaseTransaction> _watchTransaction(String objectIdHexString) {
+    ObjectId objId = ObjectId.fromHexString(objectIdHexString);
+    final txnDb = realm.find<TransactionDb>(objId)?.changes;
+    if (txnDb != null) {
+      return txnDb.map((event) => BaseTransaction.fromDatabase(event.object));
+    }
+    throw StateError('transaction id is not found');
+  }
+
   /// A De-normalization list stores total balance in a month
   List<BalanceAtDateTime> getSortedBalanceAtDateTimeList() {
-    List<BalanceAtDateTimeDb> list =
-        realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
+    List<BalanceAtDateTimeDb> list = realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
 
     return list.map((txn) => BalanceAtDateTime.fromDatabase(txn)).toList();
   }
+}
 
-  void writeNewIncome({
-    required DateTime dateTime,
-    required double amount,
-    required Category category,
-    required CategoryTag? tag,
-    required RegularAccount account,
-    required String? note,
-  }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
-        note: note,
-        category: category.databaseObject,
-        categoryTag: tag?.databaseObject,
-        account: account.databaseObject);
-
-    realm.write(() {
-      realm.add(newTransaction);
-      _updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
-    });
-  }
-
+extension WriteTransaction on TransactionRepositoryRealmDb {
   /// **Do not call this function in Widgets**
+  ///
+  /// Only to call in [AccountRepositoryRealmDb]
   void writeInitialBalance({
     required double balance,
     required AccountDb newAccount,
@@ -130,7 +115,27 @@ class TransactionRepository {
     ); // transaction type 1 == TransactionType.income
 
     realm.add(initialTransaction);
-    _updateBalanceAtDateTime(TransactionType.income, today, balance);
+    _updateBalanceAtDateTime(today, balance);
+  }
+
+  void writeNewIncome({
+    required DateTime dateTime,
+    required double amount,
+    required Category category,
+    required CategoryTag? tag,
+    required RegularAccount account,
+    required String? note,
+  }) {
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+        note: note,
+        category: category.databaseObject,
+        categoryTag: tag?.databaseObject,
+        account: account.databaseObject);
+
+    realm.write(() {
+      realm.add(newTransaction);
+      _updateBalanceAtDateTime(dateTime, amount);
+    });
   }
 
   void writeNewExpense({
@@ -141,8 +146,7 @@ class TransactionRepository {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -150,7 +154,7 @@ class TransactionRepository {
 
     realm.write(() {
       realm.add(newTransaction);
-      _updateBalanceAtDateTime(TransactionType.expense, dateTime, amount);
+      _updateBalanceAtDateTime(dateTime, -amount);
     });
   }
 
@@ -168,8 +172,7 @@ class TransactionRepository {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -201,8 +204,7 @@ class TransactionRepository {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails:
-            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);
@@ -236,7 +238,7 @@ class TransactionRepository {
 
     realm.write(() {
       realm.add(newTransaction);
-      _updateBalanceAtDateTime(TransactionType.creditPayment, dateTime, amount);
+      _updateBalanceAtDateTime(dateTime, -amount);
     });
   }
 
@@ -259,27 +261,46 @@ class TransactionRepository {
       realm.add(newTransaction);
     });
   }
+}
 
+extension EditTransaction on TransactionRepositoryRealmDb {
   void editRegularTransaction(
     BaseRegularTransaction transaction, {
     required RegularTransactionFormState state,
   }) {
-    TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
-
-    if (txnDb == null) {
-      throw StateError('Can not find transaction from ObjectId');
-    }
+    final txnDb = transaction.databaseObject;
 
     realm.write(() {
       if (state.dateTime != null) {
+        if (transaction.type == TransactionType.income) {
+          _updateBalanceAtDateTime(transaction.dateTime, -transaction.amount);
+          _updateBalanceAtDateTime(state.dateTime!, transaction.amount);
+        }
+
+        if (transaction.type == TransactionType.expense) {
+          _updateBalanceAtDateTime(transaction.dateTime, transaction.amount);
+          _updateBalanceAtDateTime(state.dateTime!, -transaction.amount);
+        }
+
         txnDb.dateTime = state.dateTime!;
       }
+
       if (state.amount != null) {
+        if (transaction.type == TransactionType.income) {
+          _updateBalanceAtDateTime(transaction.dateTime, state.amount! - transaction.amount);
+        }
+
+        if (transaction.type == TransactionType.expense) {
+          _updateBalanceAtDateTime(transaction.dateTime, -(state.amount! - transaction.amount));
+        }
+
         txnDb.amount = state.amount!;
       }
+
       if (state.category != null) {
         txnDb.category = state.category!.databaseObject;
       }
+
       if (state.tag != null) {
         if (state.tag == CategoryTag.noTag) {
           txnDb.categoryTag = null;
@@ -287,18 +308,18 @@ class TransactionRepository {
           txnDb.categoryTag = state.tag!.databaseObject;
         }
       }
+
       if (state.account != null) {
         txnDb.account = state.account!.databaseObject;
       }
+
       if (state.toAccount != null) {
         txnDb.transferAccount = state.toAccount!.databaseObject;
       }
+
       if (state.note != null) {
         txnDb.note = state.note;
       }
-
-      // TODO: UPDATE BALANCE LOGIC!!!!!!!!!!
-      //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
     });
   }
 
@@ -429,20 +450,40 @@ class TransactionRepository {
       //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
     });
   }
+
+  void deleteTransaction(BaseTransaction transaction) {
+    final double deleteAmount = switch (transaction) {
+      Transfer() || CreditSpending() || CreditCheckpoint() => 0,
+      Income() => -transaction.amount,
+      Expense() || CreditPayment() => transaction.amount,
+    };
+
+    realm.write(() {
+      _updateBalanceAtDateTime(transaction.dateTime, deleteAmount);
+      realm.delete<TransactionDb>(transaction.databaseObject);
+    });
+  }
 }
 
 /////////////////// PROVIDERS //////////////////////////
 
-final transactionRepositoryRealmProvider = Provider<TransactionRepository>(
+final transactionRepositoryRealmProvider = Provider<TransactionRepositoryRealmDb>(
   (ref) {
     final realm = ref.watch(realmProvider);
-    return TransactionRepository(realm);
+    return TransactionRepositoryRealmDb(realm);
   },
 );
 
-final transactionChangesRealmProvider = StreamProvider.autoDispose<RealmResultsChanges<TransactionDb>>(
+final transactionsChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<TransactionDb>>(
   (ref) {
     final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges(Calendar.minDate, Calendar.maxDate);
+  },
+);
+
+final transactionStreamProvider = StreamProvider.autoDispose.family<BaseTransaction, String>(
+  (ref, val) {
+    final transactionRepo = ref.watch(transactionRepositoryRealmProvider);
+    return transactionRepo._watchTransaction(val);
   },
 );

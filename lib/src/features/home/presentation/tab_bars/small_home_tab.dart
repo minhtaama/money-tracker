@@ -27,7 +27,7 @@ class SmallHomeTab extends ConsumerWidget {
 
     double totalBalance = accountRepository.getTotalBalance();
 
-    ref.watch(transactionChangesRealmProvider).whenData((_) {
+    ref.watch(transactionsChangesStreamProvider).whenData((_) {
       totalBalance = accountRepository.getTotalBalance();
     });
 

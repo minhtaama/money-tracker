@@ -9,7 +9,7 @@ import '../../transactions/domain/transaction_base.dart';
 class CustomLineChartServices {
   CustomLineChartServices(this.transactionRepo);
 
-  final TransactionRepository transactionRepo;
+  final TransactionRepositoryRealmDb transactionRepo;
 
   double getCashflow(DateTime lower, DateTime upper) {
     final list = transactionRepo.getTransactions(lower, upper);

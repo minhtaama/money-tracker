@@ -17,12 +17,14 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
     return CustomSection(
       title: 'Credit Payment'.hardcoded,
       subTitle: _DateTime(isEditMode: _isEditMode, dateTime: widget.transaction.dateTime),
-      subIcons: _EditButton(
-        isEditMode: _isEditMode,
-        onTap: () => setState(() {
-          _isEditMode = !_isEditMode;
-        }),
-      ),
+      subIcons: [
+        _EditButton(
+          isEditMode: _isEditMode,
+          onTap: () => setState(() {
+            _isEditMode = !_isEditMode;
+          }),
+        ),
+      ],
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
       sections: [

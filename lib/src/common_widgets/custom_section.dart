@@ -22,7 +22,7 @@ class CustomSection extends StatefulWidget {
 
   final String? title;
   final Widget? subTitle;
-  final Widget? subIcons;
+  final List<Widget>? subIcons;
   final bool isWrapByCard;
   final bool sectionsClipping;
   final void Function(int oldIndex, int newIndex)? onReorder;
@@ -89,8 +89,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                 children: [
                   widget.title != null
                       ? Padding(
-                          padding:
-                              widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                          padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
                           child: Text(
                             widget.title!,
                             style: kHeader2TextStyle.copyWith(
@@ -103,13 +102,12 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                 ],
               ),
               const Spacer(),
-              widget.subIcons ?? Gap.noGap,
+              ...?widget.subIcons,
             ],
           ),
           CardItem(
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
-            margin:
-                widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
+            margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
             elevation: widget.isWrapByCard ? 1 : 0,
             color: widget.isWrapByCard ? null : Colors.transparent,
             clip: widget.sectionsClipping,

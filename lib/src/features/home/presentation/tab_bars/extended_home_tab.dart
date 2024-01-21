@@ -69,7 +69,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       ChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
     };
 
-    ref.listen(transactionChangesRealmProvider, (_, __) {
+    ref.listen(transactionsChangesStreamProvider, (_, __) {
       amount = switch (_type) {
         ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
         ChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
@@ -129,7 +129,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
     CLCData data = chartServices.getLineChartData(_type, widget.displayDate);
     double avg = chartServices.getAverageAssets();
 
-    ref.listen(transactionChangesRealmProvider, (previous, next) {
+    ref.listen(transactionsChangesStreamProvider, (previous, next) {
       data = chartServices.getLineChartData(_type, widget.displayDate);
       avg = chartServices.getAverageAssets();
     });

@@ -8,7 +8,7 @@ import 'card_item.dart';
 
 class IconWithTextButton extends StatelessWidget {
   const IconWithTextButton({
-    Key? key,
+    super.key,
     required this.iconPath,
     required this.label,
     this.labelSize,
@@ -23,7 +23,7 @@ class IconWithTextButton extends StatelessWidget {
     this.color,
     this.inkColor,
     this.iconSize,
-  }) : super(key: key);
+  });
 
   final String iconPath;
   final double? iconSize;
@@ -56,30 +56,28 @@ class IconWithTextButton extends StatelessWidget {
         onTap: onTap,
         inkColor: inkColor ?? color ?? context.appTheme.onPrimary,
         child: Padding(
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),
-          child: IntrinsicWidth(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SvgIcon(
-                  iconPath,
-                  color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
-                  size: iconSize ?? 30,
-                ),
-                Gap.w8,
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      label,
-                      style: kHeader2TextStyle.copyWith(
-                        color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
-                        fontSize: labelSize,
-                      ),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgIcon(
+                iconPath,
+                color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                size: iconSize ?? 30,
+              ),
+              Gap.w4,
+              Flexible(
+                child: FittedBox(
+                  child: Text(
+                    label,
+                    style: kHeader2TextStyle.copyWith(
+                      color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                      fontSize: labelSize,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
