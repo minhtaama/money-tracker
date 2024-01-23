@@ -27,7 +27,9 @@ class TransactionRepositoryRealmDb {
       };
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   /// Put this inside realm write transaction to update [BalanceAtDateTime],
@@ -46,7 +48,8 @@ class TransactionRepositoryRealmDb {
           balanceAtDateTimes.lastIndexWhere((e) => dateTime.isInMonthAfter(e.date.toLocal()));
       final nearestBalance =
           nearestIndexFromTxnDateTime == -1 ? 0 : balanceAtDateTimes[nearestIndexFromTxnDateTime].amount;
-      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
+      realm
+          .add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
 
       balanceAtDateTimes = getSortedBalanceAtDateTimeList();
       index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
@@ -63,9 +66,9 @@ class TransactionRepositoryRealmDb {
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
+    List<TransactionDb> list = realm.all<TransactionDb>().query(
+        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)',
+        [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
@@ -89,7 +92,8 @@ class TransactionRepositoryRealmDb {
 
   /// A De-normalization list stores total balance in a month
   List<BalanceAtDateTime> getSortedBalanceAtDateTimeList() {
-    List<BalanceAtDateTimeDb> list = realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
+    List<BalanceAtDateTimeDb> list =
+        realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
 
     return list.map((txn) => BalanceAtDateTime.fromDatabase(txn)).toList();
   }
@@ -126,7 +130,8 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -146,7 +151,8 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -172,7 +178,8 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
+    final newTransaction = TransactionDb(
+        ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
         note: note,
         account: account.databaseObject,
         transferAccount: toAccount.databaseObject,
@@ -204,7 +211,8 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
         account: account.databaseObject,
-        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+        creditInstallmentDetails:
+            monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
 
     realm.write(() {
       realm.add(newTransaction);
@@ -287,11 +295,13 @@ extension EditTransaction on TransactionRepositoryRealmDb {
 
       if (state.amount != null) {
         if (transaction.type == TransactionType.income) {
-          _updateBalanceAtDateTime(transaction.dateTime, state.amount! - transaction.amount);
+          _updateBalanceAtDateTime(
+              state.dateTime ?? transaction.dateTime, state.amount! - transaction.amount);
         }
 
         if (transaction.type == TransactionType.expense) {
-          _updateBalanceAtDateTime(transaction.dateTime, -(state.amount! - transaction.amount));
+          _updateBalanceAtDateTime(
+              state.dateTime ?? transaction.dateTime, -(state.amount! - transaction.amount));
         }
 
         txnDb.amount = state.amount!;
