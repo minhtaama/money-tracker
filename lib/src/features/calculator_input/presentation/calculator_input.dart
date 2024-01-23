@@ -16,9 +16,7 @@ Future<String?> showCalculatorModalScreen(BuildContext context, {double? initial
       context: context,
       wrapWithScrollView: true,
       child: _Calculator(
-        popOnDone: false,
         initialValue: valString,
-        resultOutput: (value) => context.pop<String?>(value),
       ));
 }
 
@@ -170,8 +168,7 @@ class _Calculator extends StatefulWidget {
   const _Calculator({
     super.key,
     required this.initialValue,
-    required this.resultOutput,
-    this.popOnDone = true,
+    this.resultOutput,
   });
 
   /// The initial number value in type __String__. It can be in grouping thousand
@@ -179,9 +176,7 @@ class _Calculator extends StatefulWidget {
   final String initialValue;
 
   /// The value returned, which has no format and has type __String__
-  final ValueChanged<String> resultOutput;
-
-  final bool popOnDone;
+  final ValueChanged<String>? resultOutput;
 
   @override
   State<_Calculator> createState() => _CalculatorState();
@@ -233,9 +228,7 @@ class _CalculatorState extends State<_Calculator> {
             onAC: _ac,
             onDone: () {
               _equal();
-              if (widget.popOnDone) {
-                context.pop();
-              }
+              context.pop<String>(_formattedString);
             },
           ),
           Gap.h16,
@@ -335,7 +328,7 @@ class _CalculatorState extends State<_Calculator> {
       _formattedString = _formatNumberInGroup(_rawString);
 
       // Push the raw result to the callback
-      widget.resultOutput(_formattedString);
+      widget.resultOutput?.call(_formattedString);
 
       setState(() {});
 

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transactions_list.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 class DayCard extends StatelessWidget {
@@ -36,6 +39,8 @@ class DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now().onlyYearMonthDay;
+
     return CardItem(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -50,22 +55,17 @@ class DayCard extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: dateTime.weekday == 6 || dateTime.weekday == 7
-                        ? context.appTheme.accent1
+                        ? context.appTheme.negative.withOpacity(0.7)
                         : AppColors.greyBgr(context),
                     borderRadius: BorderRadius.circular(8),
-                    border: dateTime.year == DateTime.now().year &&
-                            dateTime.month == DateTime.now().month &&
-                            dateTime.day == DateTime.now().day
-                        ? Border.all(color: context.appTheme.onBackground)
-                        : null,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   child: Text(
-                    dateTime.day.toString(),
+                    NumberFormat('00').format(dateTime.day),
                     style: kHeader1TextStyle.copyWith(
                       fontSize: 20,
                       color: dateTime.weekday == 6 || dateTime.weekday == 7
-                          ? context.appTheme.onAccent
+                          ? context.appTheme.onNegative
                           : context.appTheme.onBackground,
                     ),
                     textAlign: TextAlign.left,
@@ -75,14 +75,23 @@ class DayCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      dateTime.weekdayString(),
-                      style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.onBackground,
-                        fontSize: 15,
-                      ),
-                      textAlign: TextAlign.left,
+                    Row(
+                      children: [
+                        Text(
+                          dateTime.weekdayString(),
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        Gap.w8,
+                        dateTime.onlyYearMonthDay.isAtSameMomentAs(today)
+                            ? TxnInfo('Today'.hardcoded, color: context.appTheme.accent2)
+                            : Gap.noGap,
+                      ],
                     ),
+                    Gap.h2,
                     Text(
                       dateTime.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
                       style:

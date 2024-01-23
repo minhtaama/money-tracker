@@ -9,11 +9,11 @@ import 'txn_components.dart';
 
 class TransactionsList extends StatelessWidget {
   const TransactionsList({
-    Key? key,
+    super.key,
     required this.transactions,
     required this.currencyCode,
     this.onTransactionTap,
-  }) : super(key: key);
+  });
 
   final List<BaseTransaction> transactions;
   final String currencyCode;

@@ -31,21 +31,30 @@ class TxnDot extends StatelessWidget {
 }
 
 class TxnInfo extends StatelessWidget {
-  const TxnInfo(this.text, {super.key});
+  const TxnInfo(this.text, {super.key, this.color});
 
   final String text;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final lum = color?.computeLuminance();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.greyBgr(context),
+        color: color ?? AppColors.greyBgr(context),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
         text,
-        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 9),
+        style: kHeader4TextStyle.copyWith(
+            color: lum == null
+                ? context.appTheme.onBackground
+                : lum > 0.5
+                    ? AppColors.black
+                    : AppColors.white,
+            fontSize: 9),
       ),
     );
   }

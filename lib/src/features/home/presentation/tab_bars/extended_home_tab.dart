@@ -52,7 +52,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       ChartDataType.expense => 'Expense in $month',
       ChartDataType.income => 'Income in $month',
       ChartDataType.totalAssets => displayDate.isSameMonthAs(today)
-          ? 'Current month assets'
+          ? 'Current assets'
           : displayDate.isInMonthBefore(today)
               ? 'Assets left in $month'
               : 'Expected assets in $month',
@@ -134,7 +134,8 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    final extraLineText =
+        'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
@@ -235,14 +236,16 @@ class _DateSelector extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                    key: ValueKey(
+                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                     padding: const EdgeInsets.only(top: 1.0),
                     child: Row(
                       children: [
                         RoundedIconButton(
-                          iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                              ? AppIcons.today
-                              : AppIcons.turn,
+                          iconPath:
+                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                                  ? AppIcons.today
+                                  : AppIcons.turn,
                           iconColor: context.appTheme.onBackground,
                           size: 16,
                           iconPadding: 0,
@@ -285,7 +288,8 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color:
+            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );

@@ -48,6 +48,7 @@ class Gap {
   static get w40 => const SizedBox(width: 40);
   static get w48 => const SizedBox(width: 48);
 
+  static get h2 => const SizedBox(height: 2);
   static get h4 => const SizedBox(height: 4);
   static get h8 => const SizedBox(height: 8);
   static get h12 => const SizedBox(height: 12);
