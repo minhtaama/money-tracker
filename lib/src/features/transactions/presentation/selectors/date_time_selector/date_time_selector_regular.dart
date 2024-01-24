@@ -37,7 +37,7 @@ Widget _dayBuilderRegular(BuildContext context,
   );
 }
 
-Future<DateTime?> showRegularDateTimeSelectorDialog(BuildContext context, {required DateTime current}) async {
+Future<DateTime?> showRegularDateTimeEditDialog(BuildContext context, {required DateTime current}) async {
   return showCustomDialog(
       context: context,
       builder: (_, __) {

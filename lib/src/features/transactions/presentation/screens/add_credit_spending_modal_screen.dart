@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
@@ -36,7 +37,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
       ref.read(transactionRepositoryRealmProvider).writeNewCreditSpending(
-            dateTime: _stateRead.dateTime,
+            dateTime: _stateRead.dateTime!,
             amount: _stateRead.amount!,
             tag: _stateRead.tag,
             note: _stateRead.note,
@@ -51,6 +52,14 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
 
   void _changeInstallmentControllerText() =>
       _installmentPaymentController.text = _stateRead.installmentAmountString(context) ?? '0';
+
+  @override
+  void initState() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      _stateController.changeDateTime(DateTime.now());
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {

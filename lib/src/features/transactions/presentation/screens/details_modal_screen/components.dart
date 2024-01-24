@@ -78,8 +78,7 @@ class _Amount extends ConsumerWidget {
                   Gap.w8,
                   Text(
                     context.appSettings.currency.code,
-                    style: kHeader4TextStyle.copyWith(
-                        color: _color(context), fontSize: kHeader1TextStyle.fontSize),
+                    style: kHeader4TextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
                   ),
                 ],
               ),
@@ -92,8 +91,7 @@ class _Amount extends ConsumerWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime(
-      {required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
+  const _DateTime({required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
 
   final bool isEditMode;
   final bool isEdited;
@@ -131,8 +129,7 @@ class _DateTime extends StatelessWidget {
 }
 
 class _AccountCard extends StatelessWidget {
-  const _AccountCard(
-      {required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
+  const _AccountCard({required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
   final bool isEditMode;
   final bool isEdited;
   final Account account;
@@ -191,8 +188,7 @@ class _AccountCard extends StatelessWidget {
                     child: Text(
                       account.name,
                       style: kHeader2TextStyle.copyWith(
-                          color: isEditMode ? context.appTheme.onBackground : account.iconColor,
-                          fontSize: 20),
+                          color: isEditMode ? context.appTheme.onBackground : account.iconColor, fontSize: 20),
                     ),
                   ),
                   Gap.w48,
@@ -208,11 +204,7 @@ class _AccountCard extends StatelessWidget {
 
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard(
-      {required this.isEditMode,
-      this.isEdited = false,
-      required this.category,
-      this.categoryTag,
-      this.onEditModeTap});
+      {required this.isEditMode, this.isEdited = false, required this.category, this.categoryTag, this.onEditModeTap});
 
   final bool isEditMode;
   final bool isEdited;
@@ -232,8 +224,7 @@ class _CategoryCard extends StatelessWidget {
         children: [
           Text(
             'CATEGORY:',
-            style: kHeader2TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
           ),
           Gap.h8,
           Row(
@@ -253,14 +244,12 @@ class _CategoryCard extends StatelessWidget {
                   children: [
                     Text(
                       category.name,
-                      style:
-                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
                     ),
                     categoryTag != null && categoryTag != CategoryTag.noTag
                         ? Text(
                             '# ${categoryTag!.name}',
-                            style: kHeader3TextStyle.copyWith(
-                                color: context.appTheme.onBackground, fontSize: 15),
+                            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
                           )
                         : const SizedBox(),
                   ],
@@ -275,8 +264,7 @@ class _CategoryCard extends StatelessWidget {
 }
 
 class _Note extends StatelessWidget {
-  const _Note(
-      {required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeChanged});
+  const _Note({required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeChanged});
   final bool isEditMode;
   final bool isEdited;
   final String? note;
@@ -295,8 +283,7 @@ class _Note extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
               'NOTE:',
-              style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+              style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
             ),
           ),
           Gap.h4,
@@ -335,21 +322,16 @@ class _NeumorphicEditWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow =
-        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow =
-        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return Stack(
       children: [
         AnimatedContainer(
           duration: k250msDuration,
           curve: Curves.easeOut,
-          padding: isEditMode && withPadding
-              ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6)
-              : EdgeInsets.zero,
+          padding: isEditMode && withPadding ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
           margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
           decoration: BoxDecoration(
             color: containerColor,
@@ -378,9 +360,7 @@ class _NeumorphicEditWrap extends StatelessWidget {
               child: AnimatedPadding(
                 duration: k250msDuration,
                 curve: Curves.easeOut,
-                padding: isEditMode
-                    ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6)
-                    : EdgeInsets.zero,
+                padding: isEditMode ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
                 child: child,
               ),
             ),
@@ -422,12 +402,9 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow =
-        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow =
-        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final bgEditColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final bgEditColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
@@ -437,9 +414,7 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
             margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
             elevation: 0,
             padding: EdgeInsets.zero,
-            color: isEditMode
-                ? bgEditColor
-                : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+            color: isEditMode ? bgEditColor : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
             boxShadow: [
               BoxShadow(
                 color: isEditMode
@@ -494,12 +469,9 @@ class _EditButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow =
-        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow =
-        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return CardItem(
       width: isEditMode ? 75 : 40,
@@ -558,8 +530,7 @@ class _EditButton extends StatelessWidget {
                       Gap.w8,
                       Text(
                         'DONE',
-                        style: kHeader2TextStyle.copyWith(
-                            fontSize: 15, color: context.appTheme.onBackground),
+                        style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -575,15 +546,17 @@ class _EditButton extends StatelessWidget {
 }
 
 class _DeleteButton extends StatelessWidget {
-  const _DeleteButton({required this.isEditMode, required this.onConfirm});
+  const _DeleteButton(
+      {required this.isEditMode, required this.onConfirm, this.isDisable = false, this.disableText = ''});
 
   final bool isEditMode;
+  final bool isDisable;
+  final String disableText;
   final VoidCallback onConfirm;
 
   @override
   Widget build(BuildContext context) {
-    final containerColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return CardItem(
       width: isEditMode ? 0 : 40,
@@ -594,12 +567,21 @@ class _DeleteButton extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: CustomInkWell(
         onTap: () async {
-          showConfirmModalBottomSheet(
-            context: context,
-            label: 'Are you sure you want to delete this transaction?'.hardcoded,
-            confirmLabel: 'Yes, delete'.hardcoded,
-            onConfirm: onConfirm,
-          );
+          isDisable
+              ? showCustomDialog2(
+                  context: context,
+                  child: IconWithText(
+                    iconPath: AppIcons.sadFace,
+                    color: context.appTheme.onNegative,
+                    header: disableText,
+                  ),
+                )
+              : showConfirmModalBottomSheet(
+                  context: context,
+                  label: 'Are you sure you want to delete this transaction?'.hardcoded,
+                  confirmLabel: 'Yes, delete'.hardcoded,
+                  onConfirm: onConfirm,
+                );
         },
         borderRadius: BorderRadius.circular(1000),
         inkColor: context.appTheme.onBackground,
@@ -611,7 +593,7 @@ class _DeleteButton extends StatelessWidget {
             child: FittedBox(
               child: SvgIcon(
                 AppIcons.delete,
-                color: context.appTheme.onBackground,
+                color: context.appTheme.onBackground.withOpacity(isDisable ? 0.3 : 1),
               ),
             ),
           ),
@@ -675,14 +657,12 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
                             ? element.backgroundColor
                             : context.appTheme.onBackground.withOpacity(0.4),
                       ),
-                      backgroundColor:
-                          selectedItem == element ? element.backgroundColor : Colors.transparent,
+                      backgroundColor: selectedItem == element ? element.backgroundColor : Colors.transparent,
                       color: selectedItem == element ? element.iconColor : context.appTheme.onBackground,
                       inkColor: element.backgroundColor,
                       onTap: onItemTap != null
                           ? () => onItemTap?.call(element)
-                          : () =>
-                              selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
+                          : () => selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
                       height: null,
                       width: null,
                     ),

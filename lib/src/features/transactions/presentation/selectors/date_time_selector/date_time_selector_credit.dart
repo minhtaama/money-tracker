@@ -1,5 +1,180 @@
 part of 'date_time_selector_components.dart';
 
+Future<DateTime?> showCreditDateTimeEditDialog(BuildContext context,
+    {required DateTime current, required CreditAccount creditAccount}) async {
+  final DateTime lastCheckpointDateTime = creditAccount.lastCheckpointDateTime;
+  final DateTime canAddTransactionSinceDateTime = creditAccount.canAddTransactionSinceDateTime;
+  final DateTime todayStatementDueDate = creditAccount.todayStatementDueDate;
+  final int statementDay = creditAccount.statementDay;
+
+  final paymentTxnsDateTime = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  final dueDates = creditAccount.statementsList.map((e) => e.dueDate.onlyYearMonthDay).toList();
+  if (creditAccount.statementsList.isNotEmpty) {
+    dueDates.add(creditAccount.statementsList.first.previousStatement.dueDate);
+  }
+
+  final dateOfPaymentBefore = paymentTxnsDateTime.lastWhere(
+    (dt) => !dt.onlyYearMonthDay.isAfter(current.onlyYearMonthDay),
+    orElse: () => Calendar.minDate,
+  );
+  final dateOfPaymentAfter = paymentTxnsDateTime.firstWhere(
+    (dt) => dt.onlyYearMonthDay.isAfter(current.onlyYearMonthDay),
+    orElse: () => Calendar.maxDate,
+  );
+
+  bool canAddTransaction(DateTime dateTime) {
+    return !dateTime.isBefore(lastCheckpointDateTime) &&
+        dateTime.isAfter(canAddTransactionSinceDateTime) &&
+        !dateTime.isAfter(todayStatementDueDate) &&
+        !dateTime.isBefore(dateOfPaymentBefore) &&
+        dateTime.isBefore(dateOfPaymentAfter);
+  }
+
+  Widget dayBuilder(BuildContext context,
+      {required DateTime date,
+      BoxDecoration? decoration,
+      bool? isDisabled,
+      bool? isSelected,
+      bool? isToday,
+      TextStyle? textStyle}) {
+    final dateTimeYMD = date.onlyYearMonthDay;
+
+    final hasSpendingTransaction = dateTimeYMD.isAtSameMomentAs(current.onlyYearMonthDay);
+    final hasPaymentTransaction =
+        dateTimeYMD.isAtSameMomentAs(dateOfPaymentBefore) || dateTimeYMD.isAtSameMomentAs(dateOfPaymentAfter);
+    final isDueDate = dueDates.contains(dateTimeYMD);
+    final isStatementDate = date.day == statementDay;
+
+    final foregroundColor = isDisabled != null && isDisabled
+        ? AppColors.greyBgr(context)
+        : isSelected != null && isSelected
+            ? context.appTheme.onPrimary
+            : context.appTheme.onBackground.withOpacity(canAddTransaction(date) ? 1 : 0.33);
+
+    final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
+    final bgrBorder = isToday != null && isToday
+        ? Border.all(
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+          )
+        : null;
+
+    Widget icon(String path, {Color? color}) =>
+        Expanded(child: SvgIcon(path, color: color ?? foregroundColor, size: 23));
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          height: 33,
+          width: 33,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(1000),
+            border: bgrBorder,
+            color: bgrColor,
+          ),
+        ),
+        !isStatementDate && !isDueDate && !hasPaymentTransaction && !hasSpendingTransaction || isSelected!
+            ? Text(
+                date.day.toString(),
+                style: kHeader3TextStyle.copyWith(
+                    color: foregroundColor, height: 0.99, fontSize: kHeader4TextStyle.fontSize),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  isStatementDate ? icon(AppIcons.budgets) : Gap.noGap,
+                  isDueDate ? icon(AppIcons.handCoin) : Gap.noGap,
+                  hasSpendingTransaction
+                      ? icon(AppIcons.receiptDollar,
+                          color: context.appTheme.negative.withOpacity(canAddTransaction(date) ? 1 : 0.33))
+                      : Gap.noGap,
+                  hasPaymentTransaction
+                      ? icon(AppIcons.receiptCheck,
+                          color: context.appTheme.positive.withOpacity(canAddTransaction(date) ? 1 : 0.33))
+                      : Gap.noGap,
+                ],
+              ),
+      ],
+    );
+  }
+
+  return showCustomDialog(
+      context: context,
+      builder: (_, __) {
+        DateTime result = current;
+        return _CustomCalendarDialog(
+          config: _customConfig(
+            context,
+            firstDate: null,
+            selectableDayPredicate: null,
+            dayBuilder: dayBuilder,
+          ),
+          currentDay: current,
+          currentMonthView: current,
+          contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
+            return _CustomTimePickSpinner(
+              time: result,
+              onTimeChange: (dateTime) {
+                result = result.copyWith(
+                  hour: dateTime.hour,
+                  minute: dateTime.minute,
+                );
+              },
+            );
+          },
+          onActionButtonTap: (dateTime) async {
+            if (dateTime != null) {
+              if (dateTime.isBefore(lastCheckpointDateTime)) {
+                showCustomDialog2(
+                  context: context,
+                  child: IconWithText(
+                    iconPath: AppIcons.sadFace,
+                    color: context.appTheme.onNegative,
+                    header: 'You can only select day after [latest checkpoint]'.hardcoded,
+                  ),
+                );
+              } else if (!dateTime.isAfter(canAddTransactionSinceDateTime)) {
+                showCustomDialog2(
+                  context: context,
+                  child: IconWithText(
+                    iconPath: AppIcons.sadFace,
+                    color: context.appTheme.onNegative,
+                    header: 'Oops! You can only select day since [the statement contains the latest payment]'.hardcoded,
+                  ),
+                );
+              } else if (dateTime.isAfter(todayStatementDueDate)) {
+                showCustomDialog2(
+                  context: context,
+                  child: IconWithText(
+                    iconPath: AppIcons.sadFace,
+                    color: context.appTheme.onNegative,
+                    header: 'Oops! This is future statement!'.hardcoded,
+                  ),
+                );
+              } else if (dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter)) {
+                showCustomDialog2(
+                  context: context,
+                  child: IconWithText(
+                    iconPath: AppIcons.sadFace,
+                    color: context.appTheme.onNegative,
+                    header: 'Oops! There is a payment between the current date and the selected date'.hardcoded,
+                  ),
+                );
+              } else {
+                result = result.copyWith(
+                  day: dateTime.day,
+                  month: dateTime.month,
+                  year: dateTime.year,
+                );
+
+                context.pop<DateTime>(result);
+              }
+            }
+          },
+        );
+      });
+}
+
 class DateTimeSelectorCredit extends ConsumerStatefulWidget {
   const DateTimeSelectorCredit(
       {super.key,
@@ -118,62 +293,34 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                               onActionButtonTap: (dateTime) async {
                                 if (dateTime != null) {
                                   if (dateTime.isBefore(_lastCheckpointDateTime)) {
-                                    showCustomDialog(
-                                        context: context,
-                                        builder: (_, __) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: AlertDialog(
-                                              surfaceTintColor: Colors.transparent,
-                                              backgroundColor: context.appTheme.negative,
-                                              elevation: 5,
-                                              content: IconWithText(
-                                                iconPath: AppIcons.sadFace,
-                                                color: context.appTheme.onNegative,
-                                                header:
-                                                    'You can only add transaction after [latest checkpoint]'.hardcoded,
-                                              ),
-                                            ),
-                                          );
-                                        });
+                                    showCustomDialog2(
+                                      context: context,
+                                      child: IconWithText(
+                                        iconPath: AppIcons.sadFace,
+                                        color: context.appTheme.onNegative,
+                                        header: 'You can only add transaction after [latest checkpoint]'.hardcoded,
+                                      ),
+                                    );
                                   } else if (!dateTime.isAfter(_canAddTransactionSinceDateTime)) {
-                                    showCustomDialog(
-                                        context: context,
-                                        builder: (_, __) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: AlertDialog(
-                                              surfaceTintColor: Colors.transparent,
-                                              backgroundColor: context.appTheme.negative,
-                                              elevation: 5,
-                                              content: IconWithText(
-                                                iconPath: AppIcons.sadFace,
-                                                color: context.appTheme.onNegative,
-                                                header:
-                                                    'Oops! You can only add transactions since [the statement contains the latest payment]'
-                                                        .hardcoded,
-                                              ),
-                                            ),
-                                          );
-                                        });
+                                    showCustomDialog2(
+                                      context: context,
+                                      child: IconWithText(
+                                        iconPath: AppIcons.sadFace,
+                                        color: context.appTheme.onNegative,
+                                        header:
+                                            'Oops! You can only add transactions since [the statement contains the latest payment]'
+                                                .hardcoded,
+                                      ),
+                                    );
                                   } else if (dateTime.isAfter(_todayStatementDueDate)) {
-                                    showCustomDialog(
-                                        context: context,
-                                        builder: (_, __) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: AlertDialog(
-                                              surfaceTintColor: Colors.transparent,
-                                              backgroundColor: context.appTheme.negative,
-                                              elevation: 5,
-                                              content: IconWithText(
-                                                iconPath: AppIcons.sadFace,
-                                                color: context.appTheme.onNegative,
-                                                header: 'Oops! This is future statement!'.hardcoded,
-                                              ),
-                                            ),
-                                          );
-                                        });
+                                    showCustomDialog2(
+                                      context: context,
+                                      child: IconWithText(
+                                        iconPath: AppIcons.sadFace,
+                                        color: context.appTheme.onNegative,
+                                        header: 'Oops! This is future statement!'.hardcoded,
+                                      ),
+                                    );
                                   } else {
                                     _submit(dateTime);
                                   }
@@ -307,19 +454,6 @@ extension _Details on _DateTimeSelectorCreditState {
     );
   }
 
-  // DateTime get _earliestMonthViewable {
-  //   if (widget.creditAccount == null) {
-  //     throw ErrorDescription('Must specify a credit account first');
-  //   }
-  //
-  //   if (widget.creditAccount!.earliestPayableDate == null) {
-  //     return DateTime(DateTime.now().year, DateTime.now().month);
-  //   }
-  //
-  //   return DateTime(widget.creditAccount!.earliestPayableDate!.year,
-  //       widget.creditAccount!.earliestPayableDate!.month - 1);
-  // }
-
   bool _canAddTransaction(DateTime dateTime) {
     if (widget.creditAccount == null) {
       throw ErrorDescription('Must specify a credit account first');
@@ -384,21 +518,4 @@ extension _Details on _DateTimeSelectorCreditState {
   bool _isStatementDate(DateTime dateTime) {
     return dateTime.day == _statementDay;
   }
-
-  // bool _selectableDayPredicate(DateTime date) {
-  //   if (widget.creditAccount == null) {
-  //     throw ErrorDescription('Must specify a credit account first');
-  //   }
-  //
-  //   if (widget.creditAccount!.earliestPayableDate == null) {
-  //     return false;
-  //   }
-  //
-  //   if (date.isAfter(widget.creditAccount!.earliestPayableDate!) ||
-  //       date.isAtSameMomentAs(widget.creditAccount!.earliestPayableDate!)) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
 }

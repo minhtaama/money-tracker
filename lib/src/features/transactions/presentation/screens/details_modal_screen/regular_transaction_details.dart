@@ -198,7 +198,7 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   }
 
   void _changeDateTime() async {
-    final newDateTime = await showRegularDateTimeSelectorDialog(
+    final newDateTime = await showRegularDateTimeEditDialog(
       context,
       current: _stateRead.dateTime ?? _transaction.dateTime,
     );

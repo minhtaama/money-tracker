@@ -35,6 +35,10 @@ class AccountRepositoryRealmDb {
   //   return Account.fromDatabase(accountDb);
   // }
 
+  Account? getAccount(AccountDb accountDb) {
+    return Account.fromDatabase(accountDb);
+  }
+
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
     return realm.all<AccountDb>().changes;
   }

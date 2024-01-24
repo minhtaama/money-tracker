@@ -8,7 +8,7 @@ import '../../../category/domain/category.dart';
 import '../../../category/domain/category_tag.dart';
 
 class CreditSpendingFormState {
-  final DateTime dateTime;
+  final DateTime? dateTime;
   final double? amount;
   final String? note;
   final CategoryTag? tag;
@@ -24,10 +24,10 @@ class CreditSpendingFormState {
     return null;
   }
 
-  factory CreditSpendingFormState.initial() => CreditSpendingFormState._(dateTime: DateTime.now());
+  factory CreditSpendingFormState.initial() => CreditSpendingFormState._();
 
   CreditSpendingFormState._({
-    required this.dateTime,
+    this.dateTime,
     this.amount,
     this.note,
     this.tag,

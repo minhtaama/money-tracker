@@ -32,6 +32,7 @@ import '../../../../../utils/enums.dart';
 import '../../../../accounts/data/account_repo.dart';
 import '../../../../category/domain/category.dart';
 import '../../../domain/transaction_base.dart';
+import '../../controllers/credit_spending_form_controller.dart';
 import '../../controllers/regular_txn_form_controller.dart';
 
 part 'components.dart';
