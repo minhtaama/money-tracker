@@ -44,10 +44,6 @@ class RealmDataStore {
 
     realm.add(CategoryDb(ObjectId(), 0, 'Food and Beverage', 8, 'Food', 4, order: 0));
     realm.add(CategoryDb(ObjectId(), 1, 'Salary', 8, 'Business', 13, order: 1));
-
-    realm.add(AccountDb(ObjectId(), 0, 'Cash', 14, 'Business', 8, order: 0));
-    realm.add(AccountDb(ObjectId(), 0, 'Vietcombank', 1, 'Business', 11, order: 1));
-    realm.add(AccountDb(ObjectId(), 1, 'VPBank', 18, 'Business', 6, order: 2));
   }
 }
 
