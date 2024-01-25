@@ -41,12 +41,10 @@ class TransactionsList extends StatelessWidget {
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
-                        Transfer() =>
-                          _TransferDetails(transaction: transaction, currencyCode: currencyCode),
+                        Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
                         IBaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
-                        CreditPayment() =>
-                          _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
+                        CreditPayment() => _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditCheckpoint() => Gap.noGap,
                         //TODO: styling checkpoint
                       },
@@ -81,24 +79,23 @@ class _WithCategoryDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            TxnAccountIcon(transaction: transaction),
+            Gap.w4,
+            Flexible(child: TxnAccountName(transaction: transaction)),
+            Gap.w4,
+            transaction is CreditSpending ? TxnInfo('Credit'.hardcoded) : Gap.noGap,
+          ],
+        ),
+        Gap.h4,
+        Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TxnCategoryIcon(transaction: transaction as IBaseTransactionWithCategory),
             Gap.w4,
             Expanded(child: TxnCategoryName(transaction: transaction as IBaseTransactionWithCategory)),
           ],
-        ),
-        IntrinsicWidth(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              TxnAccountIcon(transaction: transaction),
-              Gap.w4,
-              Expanded(child: TxnAccountName(transaction: transaction)),
-              Gap.w4,
-              transaction is CreditSpending ? const TxnCreditIcon() : Gap.noGap,
-            ],
-          ),
         ),
       ],
     );
@@ -161,12 +158,12 @@ class _PaymentDetails extends StatelessWidget {
                   TxnInfo('Payment'.hardcoded),
                 ],
               ),
-              Gap.h4,
+              Gap.h8,
               Row(
                 children: [
                   TxnAccountName(transaction: transaction),
                   Gap.w4,
-                  const TxnCreditIcon(),
+                  TxnInfo('Credit'.hardcoded),
                 ],
               ),
             ],

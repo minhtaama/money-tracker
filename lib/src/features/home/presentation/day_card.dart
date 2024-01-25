@@ -54,19 +54,18 @@ class DayCard extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: dateTime.weekday == 6 || dateTime.weekday == 7
-                        ? context.appTheme.negative.withOpacity(0.7)
-                        : AppColors.greyBgr(context),
+                    color: AppColors.greyBgr(context),
                     borderRadius: BorderRadius.circular(8),
+                    border: dateTime.onlyYearMonthDay.isAtSameMomentAs(today)
+                        ? Border.all(color: context.appTheme.onBackground.withOpacity(0.7), width: 2)
+                        : null,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   child: Text(
                     NumberFormat('00').format(dateTime.day),
                     style: kHeader1TextStyle.copyWith(
                       fontSize: 20,
-                      color: dateTime.weekday == 6 || dateTime.weekday == 7
-                          ? context.appTheme.onNegative
-                          : context.appTheme.onBackground,
+                      color: context.appTheme.onBackground,
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -75,27 +74,20 @@ class DayCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          dateTime.weekdayString(),
-                          style: kHeader3TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 14,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        Gap.w8,
-                        dateTime.onlyYearMonthDay.isAtSameMomentAs(today)
-                            ? TxnInfo('Today'.hardcoded, color: context.appTheme.accent2)
-                            : Gap.noGap,
-                      ],
+                    Text(
+                      dateTime.weekdayString(),
+                      style: kHeader3TextStyle.copyWith(
+                        color: dateTime.weekday == 6 || dateTime.weekday == 7
+                            ? context.appTheme.negative
+                            : context.appTheme.onBackground,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.left,
                     ),
                     Gap.h2,
                     Text(
                       dateTime.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
-                      style:
-                          kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
+                      style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],

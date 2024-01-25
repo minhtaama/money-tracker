@@ -129,7 +129,7 @@ Future<DateTime?> showCreditDateTimeEditDialog(BuildContext context,
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
-                    color: context.appTheme.onNegative,
+                    color: context.appTheme.onBackground,
                     header: 'You can only select day after [latest checkpoint]'.hardcoded,
                   ),
                 );
@@ -138,7 +138,7 @@ Future<DateTime?> showCreditDateTimeEditDialog(BuildContext context,
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
-                    color: context.appTheme.onNegative,
+                    color: context.appTheme.onBackground,
                     header: 'Oops! You can only select day since [the statement contains the latest payment]'.hardcoded,
                   ),
                 );
@@ -147,7 +147,7 @@ Future<DateTime?> showCreditDateTimeEditDialog(BuildContext context,
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
-                    color: context.appTheme.onNegative,
+                    color: context.appTheme.onBackground,
                     header: 'Oops! This is future statement!'.hardcoded,
                   ),
                 );
@@ -156,7 +156,7 @@ Future<DateTime?> showCreditDateTimeEditDialog(BuildContext context,
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
-                    color: context.appTheme.onNegative,
+                    color: context.appTheme.onBackground,
                     header: 'Oops! There is a payment between the current date and the selected date'.hardcoded,
                   ),
                 );
@@ -297,7 +297,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                       context: context,
                                       child: IconWithText(
                                         iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onNegative,
+                                        color: context.appTheme.onBackground,
                                         header: 'You can only add transaction after [latest checkpoint]'.hardcoded,
                                       ),
                                     );
@@ -306,7 +306,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                       context: context,
                                       child: IconWithText(
                                         iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onNegative,
+                                        color: context.appTheme.onBackground,
                                         header:
                                             'Oops! You can only add transactions since [the statement contains the latest payment]'
                                                 .hardcoded,
@@ -317,7 +317,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                       context: context,
                                       child: IconWithText(
                                         iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onNegative,
+                                        color: context.appTheme.onBackground,
                                         header: 'Oops! This is future statement!'.hardcoded,
                                       ),
                                     );

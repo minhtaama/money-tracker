@@ -572,7 +572,7 @@ class _DeleteButton extends StatelessWidget {
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
-                    color: context.appTheme.onNegative,
+                    color: context.appTheme.onBackground,
                     header: disableText,
                   ),
                 )

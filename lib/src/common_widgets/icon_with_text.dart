@@ -16,6 +16,7 @@ class IconWithText extends StatelessWidget {
     this.headerSize,
     this.text,
     this.textSize,
+    this.forceIconOnTop = false,
   });
 
   final String? iconPath;
@@ -26,6 +27,7 @@ class IconWithText extends StatelessWidget {
   final double? textSize;
   final VoidCallback? onTap;
   final Color? color;
+  final bool forceIconOnTop;
 
   @override
   Widget build(BuildContext context) {
@@ -36,33 +38,52 @@ class IconWithText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Wrap(
-            runAlignment: WrapAlignment.center,
-            runSpacing: 2,
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              SvgIcon(
-                iconPath ?? AppIcons.minus,
-                size: iconSize ?? 40,
-                color: color ?? AppColors.grey(context),
-              ),
-              header != null ? Gap.w4 : Gap.noGap,
-              header != null
-                  ? Text(
-                      header!,
-                      style: kHeader2TextStyle.copyWith(
-                          color: color ?? AppColors.grey(context), fontSize: headerSize ?? 14),
-                      textAlign: TextAlign.center,
-                    )
-                  : Gap.noGap,
-            ],
-          ),
+          forceIconOnTop
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SvgIcon(
+                      iconPath ?? AppIcons.minus,
+                      size: iconSize ?? 40,
+                      color: color ?? AppColors.grey(context),
+                    ),
+                    header != null ? Gap.h8 : Gap.noGap,
+                    header != null
+                        ? Text(
+                            header!,
+                            style: kHeader2TextStyle.copyWith(
+                                color: color ?? AppColors.grey(context), fontSize: headerSize ?? 14),
+                            textAlign: TextAlign.center,
+                          )
+                        : Gap.noGap,
+                  ],
+                )
+              : Wrap(
+                  runAlignment: WrapAlignment.center,
+                  runSpacing: 2,
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    SvgIcon(
+                      iconPath ?? AppIcons.minus,
+                      size: iconSize ?? 40,
+                      color: color ?? AppColors.grey(context),
+                    ),
+                    header != null ? Gap.w4 : Gap.noGap,
+                    header != null
+                        ? Text(
+                            header!,
+                            style: kHeader2TextStyle.copyWith(
+                                color: color ?? AppColors.grey(context), fontSize: headerSize ?? 14),
+                            textAlign: TextAlign.center,
+                          )
+                        : Gap.noGap,
+                  ],
+                ),
           text != null
               ? Text(
                   text!,
-                  style: kHeader4TextStyle.copyWith(
-                      color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
+                  style: kHeader4TextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,

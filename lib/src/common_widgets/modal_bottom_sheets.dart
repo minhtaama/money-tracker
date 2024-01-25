@@ -31,7 +31,7 @@ Future<T?> showCustomDialog2<T>({
         padding: const EdgeInsets.all(12.0),
         child: AlertDialog(
           surfaceTintColor: Colors.transparent,
-          backgroundColor: context.appTheme.negative,
+          backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
           elevation: 5,
           content: child,
         ),

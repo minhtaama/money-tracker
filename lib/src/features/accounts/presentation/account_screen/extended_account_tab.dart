@@ -45,9 +45,6 @@ class ExtendedAccountTab extends ConsumerWidget {
               ),
             ),
             Gap.w8,
-            const TxnCreditIcon(
-              size: 22,
-            ),
           ],
         ),
         const Spacer(),
