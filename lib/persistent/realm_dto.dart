@@ -187,7 +187,7 @@ class _CreditInstallmentDetailsDb {
 class _CreditPaymentDetailsDb {
   bool isFullPayment = false;
 
-  double? adjustedBalance;
+  double adjustment = 0;
 }
 
 ///////////////////////////////////// SETTINGS AND PERSISTENT VALUES /////////////////////////////////

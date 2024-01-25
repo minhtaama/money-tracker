@@ -41,19 +41,16 @@ class CreditAccount extends Account {
 extension CreditAccountMethods on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
-  List<CreditCheckpoint> get checkpointTransactions =>
-      transactionsList.whereType<CreditCheckpoint>().toList();
+  List<CreditCheckpoint> get checkpointTransactions => transactionsList.whereType<CreditCheckpoint>().toList();
 
-  DateTime get lastCheckpointDateTime {
-    CreditCheckpoint? lastCheckpoint =
-        checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+  DateTime get latestCheckpointDateTime {
+    CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
 
     return lastCheckpoint?.dateTime.onlyYearMonthDay ?? Calendar.minDate;
   }
 
-  DateTime get canAddTransactionSinceDateTime {
-    Statement? statement =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+  DateTime get latestStatementDueDate {
+    Statement? statement = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
     return statement?.previousStatement.dueDate.onlyYearMonthDay ?? Calendar.minDate;
   }
@@ -65,6 +62,13 @@ extension CreditAccountMethods on CreditAccount {
     } else {
       return today.copyWith(day: paymentDueDay, month: today.month + 1);
     }
+  }
+
+  ///Find the next [CreditPayment] from since this [CreditSpending] date time
+  ///
+  /// Throw state error if no payment is found
+  CreditPayment getNextPayment({required CreditSpending from}) {
+    return paymentTransactions.firstWhere((payment) => payment.dateTime.isAfter(from.dateTime.onlyYearMonthDay));
   }
 
   /// Return `null` if account has no transaction.
@@ -80,8 +84,7 @@ extension CreditAccountMethods on CreditAccount {
 
     // If statement is already in credit account statements list
     for (Statement statement in statementsList) {
-      if (date.compareTo(statement.previousStatement.dueDate) > 0 &&
-          date.compareTo(statement.dueDate) <= 0) {
+      if (date.compareTo(statement.previousStatement.dueDate) > 0 && date.compareTo(statement.dueDate) <= 0) {
         return statement;
       }
     }
@@ -98,8 +101,7 @@ extension CreditAccountMethods on CreditAccount {
       while (upperGapAtDueDate != null && upperGapAtDueDate
           ? date.isAfter(list[list.length - 1].dueDate)
           : startDate.compareTo(date) <= 0) {
-        final endDate =
-            startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
         final previousStatement = list.last.carryToNextStatement;
 

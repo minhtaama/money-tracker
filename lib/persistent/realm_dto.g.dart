@@ -657,15 +657,16 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
 
   CreditPaymentDetailsDb({
     bool isFullPayment = false,
-    double? adjustedBalance,
+    double adjustment = 0,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<CreditPaymentDetailsDb>({
         'isFullPayment': false,
+        'adjustment': 0,
       });
     }
     RealmObjectBase.set(this, 'isFullPayment', isFullPayment);
-    RealmObjectBase.set(this, 'adjustedBalance', adjustedBalance);
+    RealmObjectBase.set(this, 'adjustment', adjustment);
   }
 
   CreditPaymentDetailsDb._();
@@ -678,11 +679,11 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
       RealmObjectBase.set(this, 'isFullPayment', value);
 
   @override
-  double? get adjustedBalance =>
-      RealmObjectBase.get<double>(this, 'adjustedBalance') as double?;
+  double get adjustment =>
+      RealmObjectBase.get<double>(this, 'adjustment') as double;
   @override
-  set adjustedBalance(double? value) =>
-      RealmObjectBase.set(this, 'adjustedBalance', value);
+  set adjustment(double value) =>
+      RealmObjectBase.set(this, 'adjustment', value);
 
   @override
   Stream<RealmObjectChanges<CreditPaymentDetailsDb>> get changes =>
@@ -699,8 +700,7 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
     return const SchemaObject(ObjectType.embeddedObject, CreditPaymentDetailsDb,
         'CreditPaymentDetailsDb', [
       SchemaProperty('isFullPayment', RealmPropertyType.bool),
-      SchemaProperty('adjustedBalance', RealmPropertyType.double,
-          optional: true),
+      SchemaProperty('adjustment', RealmPropertyType.double),
     ]);
   }
 }

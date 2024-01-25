@@ -103,136 +103,131 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
       _tags = categoryRepo.getTagList(_currentCategory);
     });
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      key: _key,
+    return Stack(
       children: [
-        AnimatedContainer(
-          duration: k250msDuration,
-          curve: Curves.easeOut,
-          width: _chosenTag != null ? _rowWidth : 0,
-          child: CardItem(
-            elevation: 0,
-            margin: EdgeInsets.zero,
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            color: _currentCategory?.backgroundColor,
-            child: Row(
-              children: [
-                Expanded(
-                  child: _ChosenTag(
-                    chosenTag: _chosenTag?.name,
-                    category: _currentCategory,
-                  ),
-                ),
-                AnimatedContainer(
-                  duration: k1msDuration,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  width: _chosenTag != null ? 30 : 0,
-                  child: FittedBox(
-                    clipBehavior: Clip.antiAlias,
-                    child: RoundedIconButton(
-                      iconPath: AppIcons.close,
-                      iconColor:
-                          context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
-                      backgroundColor: Colors.transparent,
-                      iconPadding: 7,
-                      onTap: () {
-                        setState(() {
-                          _chosenTag = null;
-                        });
-                        widget.onTagDeSelected?.call();
-                      },
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-        _tags != null && widget.category != null
-            ? Expanded(
-                child: SizedBox(
-                  height: 50,
-                  child: ShaderMask(
-                    shaderCallback: (Rect rect) {
-                      return LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          widget.fading ?? context.appTheme.background1,
-                          Colors.transparent,
-                          Colors.transparent,
-                          widget.fading ?? context.appTheme.background1
-                        ],
-                        stops: const [0.0, 0.03, 0.97, 1.0],
-                      ).createShader(rect);
-                    },
-                    blendMode: BlendMode.dstOut,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: List.generate(
-                        _tags!.length,
-                        (index) {
-                          return CategoryTagWidget(
-                            categoryTag: _tags![index],
-                            onTap: (tag) {
-                              categoryRepo.reorderTagToTop(widget.category!, index);
-                              setState(
-                                () {
-                                  _chosenTag = tag;
-                                  _tags = categoryRepo.getTagList(widget.category!);
-                                  widget.onTagSelected(_chosenTag);
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          key: _key,
+          children: [
+            _tags != null && widget.category != null
+                ? Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ShaderMask(
+                        shaderCallback: (Rect rect) {
+                          return LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              widget.fading ?? context.appTheme.background1,
+                              Colors.transparent,
+                              Colors.transparent,
+                              widget.fading ?? context.appTheme.background1
+                            ],
+                            stops: const [0.0, 0.03, 0.97, 1.0],
+                          ).createShader(rect);
+                        },
+                        blendMode: BlendMode.dstOut,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: List.generate(
+                            _tags!.length,
+                            (index) {
+                              return CategoryTagWidget(
+                                categoryTag: _tags![index],
+                                onTap: (tag) {
+                                  categoryRepo.reorderTagToTop(widget.category!, index);
+                                  setState(
+                                    () {
+                                      _chosenTag = tag;
+                                      _tags = categoryRepo.getTagList(widget.category!);
+                                      widget.onTagSelected(_chosenTag);
+                                    },
+                                  );
                                 },
+                                onLongPress: (tag) => showCustomModalBottomSheet(
+                                  context: context,
+                                  child: EditCategoryTag(
+                                    tag,
+                                    category: widget.category!,
+                                  ),
+                                ),
                               );
                             },
-                            onLongPress: (tag) => showCustomModalBottomSheet(
-                              context: context,
-                              child: EditCategoryTag(
-                                tag,
-                                category: widget.category!,
-                              ),
-                            ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  )
+                : Gap.noGap,
+            AnimatedContainer(
+              duration: k250msDuration,
+              width: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null || _tags!.isEmpty
+                  ? 0
+                  : 16,
+              height: 25,
+              child: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null
+                  ? null
+                  : Gap.verticalDivider(context),
+            ),
+            AnimatedContainer(
+              duration: k250msDuration,
+              curve: Curves.easeOut,
+              width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
+                  ? _rowWidth
+                  : _chosenTag != null
+                      ? 0
+                      : 50,
+              child: ClipRect(
+                child: AddCategoryTagButton(
+                    focusNode: _focusNode,
+                    category: widget.category,
+                    onEditingComplete: (tag) {
+                      categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
+                      setState(
+                        () {
+                          _chosenTag = tag;
+                          _tags = categoryRepo.getTagList(widget.category!);
+                          widget.onTagSelected(_chosenTag);
+                        },
+                      );
+                    }),
+              ),
+            ),
+          ],
+        ),
+        CardItem(
+          width: _chosenTag != null ? _rowWidth : 0,
+          height: 50,
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(horizontal: _chosenTag != null ? 12 : 0),
+          color: _currentCategory?.backgroundColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: _ChosenTag(
+                  chosenTag: _chosenTag?.name,
+                  category: _currentCategory,
+                ),
+              ),
+              Flexible(
+                child: RoundedIconButton(
+                  iconPath: AppIcons.close,
+                  iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
+                  backgroundColor: Colors.transparent,
+                  size: 35,
+                  iconPadding: 7,
+                  onTap: () {
+                    setState(() {
+                      _chosenTag = null;
+                    });
+                    widget.onTagDeSelected?.call();
+                  },
                 ),
               )
-            : Gap.noGap,
-        AnimatedContainer(
-          duration: k250msDuration,
-          width: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null || _tags!.isEmpty
-              ? 0
-              : 16,
-          height: 25,
-          child: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null
-              ? null
-              : Gap.verticalDivider(context),
-        ),
-        AnimatedContainer(
-          duration: k250msDuration,
-          curve: Curves.easeOut,
-          width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
-              ? _rowWidth
-              : _chosenTag != null
-                  ? 0
-                  : 50,
-          child: ClipRect(
-            child: AddCategoryTagButton(
-                focusNode: _focusNode,
-                category: widget.category,
-                onEditingComplete: (tag) {
-                  categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
-                  setState(
-                    () {
-                      _chosenTag = tag;
-                      _tags = categoryRepo.getTagList(widget.category!);
-                      widget.onTagSelected(_chosenTag);
-                    },
-                  );
-                }),
+            ],
           ),
         ),
       ],

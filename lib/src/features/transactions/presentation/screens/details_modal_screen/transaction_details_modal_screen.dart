@@ -36,9 +36,9 @@ import '../../controllers/credit_spending_form_controller.dart';
 import '../../controllers/regular_txn_form_controller.dart';
 
 part 'components.dart';
-part 'credit_payment_details.dart';
-part 'credit_spending_details.dart';
-part 'regular_transaction_details.dart';
+part 'payment_details.dart';
+part 'spending_details.dart';
+part 'regular_details.dart';
 
 class TransactionDetailsModalScreen extends ConsumerWidget {
   const TransactionDetailsModalScreen({super.key, required this.objectIdHexString});

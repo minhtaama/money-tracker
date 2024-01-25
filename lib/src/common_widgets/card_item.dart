@@ -42,8 +42,8 @@ class CardItem extends StatelessWidget {
     final defaultBgColor = context.appTheme.background0;
 
     return AnimatedContainer(
-      duration: duration ?? k250msDuration,
-      curve: Curves.easeOut,
+      duration: duration ?? k350msDuration,
+      curve: Curves.easeInOut,
       margin: margin,
       constraints: constraints,
       alignment: alignment,

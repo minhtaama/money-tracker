@@ -24,9 +24,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
   @override
   void initState() {
     try {
-      _creditAccount.paymentTransactions
-          .map((e) => e.dateTime.onlyYearMonthDay)
-          .firstWhere((dateTime) => dateTime.isAfter(_transaction.dateTime.onlyYearMonthDay));
+      _creditAccount.getNextPayment(from: _transaction);
       _canDelete = false;
     } catch (e) {
       _canDelete = true;
@@ -58,9 +56,19 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
       subIcons: [
         _EditButton(
           isEditMode: _isEditMode,
-          onTap: () => setState(() {
-            _isEditMode = !_isEditMode;
-          }),
+          onTap: () {
+            if (_isEditMode) {
+              if (_submit()) {
+                setState(() {
+                  _isEditMode = !_isEditMode;
+                });
+              }
+            } else {
+              setState(() {
+                _isEditMode = !_isEditMode;
+              });
+            }
+          },
         ),
         _DeleteButton(
           isEditMode: _isEditMode,
@@ -157,28 +165,14 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
 
   bool _isNoteEdited(CreditSpendingFormState state) => state.note != null && state.note != _transaction.note;
 
-  // bool _submit() {
-  //   if (_transaction is Transfer &&
-  //       (_stateRead.account ?? _transaction.account) ==
-  //           (_stateRead.toAccount ?? (_transaction as Transfer).transferAccount)) {
-  //     showCustomDialog2(
-  //       context: context,
-  //       child: IconWithText(
-  //         iconPath: AppIcons.sadFace,
-  //         color: context.appTheme.onNegative,
-  //         header: 'Oops! Can not transfer in same account!'.hardcoded,
-  //       ),
-  //     );
-  //     return false;
-  //   }
-  //
-  //   final txnRepo = ref.read(transactionRepositoryRealmProvider);
-  //   txnRepo.editRegularTransaction(_transaction, state: _stateRead);
-  //
-  //   _stateController.setStateToAllNull();
-  //
-  //   return true;
-  // }
+  bool _submit() {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+    txnRepo.editCreditSpending(_transaction, state: _stateRead);
+
+    _stateController.setStateToAllNull();
+
+    return true;
+  }
 
   void _delete() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);

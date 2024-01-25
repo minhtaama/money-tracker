@@ -2,8 +2,8 @@ part of 'date_time_selector_components.dart';
 
 Future<DateTime?> showCreditDateTimeEditDialog(BuildContext context,
     {required DateTime current, required CreditAccount creditAccount}) async {
-  final DateTime lastCheckpointDateTime = creditAccount.lastCheckpointDateTime;
-  final DateTime canAddTransactionSinceDateTime = creditAccount.canAddTransactionSinceDateTime;
+  final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
+  final DateTime canAddTransactionSinceDateTime = creditAccount.latestStatementDueDate;
   final DateTime todayStatementDueDate = creditAccount.todayStatementDueDate;
   final int statementDay = creditAccount.statementDay;
 
@@ -195,8 +195,8 @@ class DateTimeSelectorCredit extends ConsumerStatefulWidget {
 }
 
 class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit> {
-  late DateTime _lastCheckpointDateTime = widget.creditAccount!.lastCheckpointDateTime;
-  late DateTime _canAddTransactionSinceDateTime = widget.creditAccount!.canAddTransactionSinceDateTime;
+  late DateTime _lastCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
+  late DateTime _canAddTransactionSinceDateTime = widget.creditAccount!.latestStatementDueDate;
   late DateTime _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
 
   late DateTime? _outputDateTime = widget.initialDate;
@@ -227,8 +227,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     if (widget.creditAccount != null) {
       _statementDay = widget.creditAccount!.statementDay;
       _outputDateTime = widget.initialDate;
-      _lastCheckpointDateTime = widget.creditAccount!.lastCheckpointDateTime;
-      _canAddTransactionSinceDateTime = widget.creditAccount!.canAddTransactionSinceDateTime;
+      _lastCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
+      _canAddTransactionSinceDateTime = widget.creditAccount!.latestStatementDueDate;
       _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
     }
     super.didUpdateWidget(oldWidget);

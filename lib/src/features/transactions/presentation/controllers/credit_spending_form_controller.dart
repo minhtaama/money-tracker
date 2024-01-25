@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../../utils/constants.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../../category/domain/category.dart';
@@ -38,7 +39,6 @@ class CreditSpendingFormState {
   });
 
   CreditSpendingFormState copyWith({
-    // TransactionType Function()? type,
     DateTime? Function()? dateTime,
     double? Function()? amount,
     String? Function()? note,
@@ -49,7 +49,7 @@ class CreditSpendingFormState {
     double? Function()? installmentAmount,
   }) {
     return CreditSpendingFormState._(
-      dateTime: dateTime != null ? dateTime()! : this.dateTime,
+      dateTime: dateTime != null ? dateTime() : this.dateTime,
       amount: amount != null ? amount() : this.amount,
       note: note != null ? note() : this.note,
       tag: tag != null ? tag() : this.tag,
@@ -75,6 +75,22 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     state = state.copyWith(
       installmentPeriod: () => null,
       installmentAmount: () => null,
+    );
+  }
+
+  void setStateToAllNull() {
+    Future.delayed(
+      k150msDuration,
+      () => state = state.copyWith(
+        dateTime: () => null,
+        amount: () => null,
+        note: () => null,
+        tag: () => null,
+        category: () => null,
+        creditAccount: () => null,
+        installmentPeriod: () => null,
+        installmentAmount: () => null,
+      ),
     );
   }
 
