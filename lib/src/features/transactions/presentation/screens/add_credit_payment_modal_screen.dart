@@ -37,6 +37,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   final _remainingInputController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  bool _showHelpBox = true;
+
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
   CreditPaymentFormState get _stateRead => ref.read(creditPaymentFormNotifierProvider);
@@ -47,11 +49,17 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
     _paymentInputController.text = value;
     _remainingInputController.clear();
     _stateController.changePaymentInput(context, value);
+    setState(() {
+      _showHelpBox = true;
+    });
   }
 
   void _onRemainingInputChange(String value) {
     _remainingInputController.text = value;
     _stateController.changeRemainingInput(value);
+    setState(() {
+      _showHelpBox = true;
+    });
   }
 
   void _onToggleFullPaymentCheckbox(bool value) {
@@ -201,16 +209,19 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 ),
                 Gap.h4,
                 HelpBox(
-                  isShow: _stateController.isPaymentTooHighThanBalance(context),
+                  isShow: _showHelpBox && _stateController.isPaymentTooHighThanBalance(context),
                   iconPath: AppIcons.sadFace,
                   margin: const EdgeInsets.only(top: 8),
                   header: 'Too high than balance to pay!'.hardcoded,
                   text:
                       'Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount'
                           .hardcoded,
+                  onCloseTap: () => setState(() {
+                    _showHelpBox = false;
+                  }),
                 ),
                 HelpBox(
-                  isShow: _stateController.isPaymentQuiteHighThanBalance(context),
+                  isShow: _showHelpBox && _stateController.isPaymentQuiteHighThanBalance(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
@@ -219,31 +230,43 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                   text:
                       'Are there some hidden fee or some small transaction you forgot to add? If not a full payment, you must specify the balance after payment amount'
                           .hardcoded,
+                  onCloseTap: () => setState(() {
+                    _showHelpBox = false;
+                  }),
                 ),
                 HelpBox(
-                  isShow: _stateController.isPaymentCloseToBalance(context),
+                  isShow: _showHelpBox && _stateController.isPaymentCloseToBalance(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
                   color: context.appTheme.onPositive,
                   header: 'Close to balance to pay!'.hardcoded,
                   text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
+                  onCloseTap: () => setState(() {
+                    _showHelpBox = false;
+                  }),
                 ),
                 HelpBox(
-                  isShow: _stateController.isPaymentEqualBalance(context),
+                  isShow: _showHelpBox && _stateController.isPaymentEqualBalance(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
                   color: context.appTheme.onPositive,
                   header: 'Exact balance to pay!'.hardcoded,
+                  onCloseTap: () => setState(() {
+                    _showHelpBox = false;
+                  }),
                 ),
                 HelpBox(
-                  isShow: _stateController.isNoNeedPayment(context),
+                  isShow: _showHelpBox && _stateController.isNoNeedPayment(context),
                   iconPath: AppIcons.fykFace,
                   margin: const EdgeInsets.only(top: 8),
                   backgroundColor: context.appTheme.positive,
                   color: context.appTheme.onPositive,
                   header: 'No balance left to pay!'.hardcoded,
+                  onCloseTap: () => setState(() {
+                    _showHelpBox = false;
+                  }),
                 ),
                 !_stateController.isNoNeedPayment(context)
                     ? CustomCheckbox(
@@ -261,8 +284,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                         stateWatch.totalBalanceAmount.roundBySetting(context) -
                                                 stateWatch.userPaymentAmount!.roundBySetting(context) >
                                             0
-                                    ? CalService.formatCurrency(context,
-                                        stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                    ? CalService.formatCurrency(
+                                        context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                     : '???',
                                 textAlign: TextAlign.right,
                                 controller: _remainingInputController,

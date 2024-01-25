@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../../utils/constants.dart';
 import '../../../accounts/domain/account_base.dart';
 import '../../../accounts/domain/statement/statement.dart';
 import '../../../calculator_input/application/calculator_service.dart';
@@ -21,8 +22,7 @@ class CreditPaymentFormState {
 
   final Statement? statement;
 
-  double get totalBalanceAmount =>
-      statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
+  double get totalBalanceAmount => statement == null || dateTime == null ? 0 : statement!.getBalanceAmountAt(dateTime!);
 
   CreditPaymentFormState._({
     this.statement,
@@ -58,8 +58,7 @@ class CreditPaymentFormState {
       isFullPayment: isFullPayment != null ? isFullPayment() : this.isFullPayment,
       adjustment: adjustment != null ? adjustment() : this.adjustment,
       userPaymentAmount: userPaymentAmount != null ? userPaymentAmount() : this.userPaymentAmount,
-      userRemainingAmount:
-          userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
+      userRemainingAmount: userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
     );
   }
 
@@ -88,15 +87,31 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
     state = state.copyWith(dateTime: () => null, statement: () => null);
   }
 
+  void setStateToAllNull() {
+    Future.delayed(
+      k150msDuration,
+      () => state = state.copyWith(
+        statement: () => null,
+        dateTime: () => null,
+        note: () => null,
+        creditAccount: () => null,
+        fromRegularAccount: () => null,
+        isFullPayment: () => false,
+        adjustment: () => null,
+        userPaymentAmount: () => null,
+        userRemainingAmount: () => null,
+      ),
+    );
+  }
+
   void changeRemainingInput(String value) {
     state = state.copyWith(userRemainingAmount: () => CalService.formatToDouble(value));
 
     state = state.copyWith(
         // Because: afterAdjustedAmount = userPaymentAmount + adjustment
-        // Then: userRemaining = totalBalance - afterAdjustedAmount
+        // And: userRemaining = totalBalance - afterAdjustedAmount
         // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
-        adjustment: () =>
-            state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
+        adjustment: () => state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
   }
 
   void changePaymentInput(BuildContext context, String value) {
@@ -108,8 +123,7 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
     if (state.userPaymentAmount != null &&
         //(state.userPaymentAmount! > state.totalBalanceAmount ||
         (state.isFullPayment ||
-            state.userPaymentAmount!.roundBySetting(context) ==
-                state.totalBalanceAmount.roundBySetting(context))) {
+            state.userPaymentAmount!.roundBySetting(context) == state.totalBalanceAmount.roundBySetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       state = state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {

@@ -19,6 +19,7 @@ class HelpBox extends StatefulWidget {
     required this.header,
     required this.isShow,
     this.text,
+    this.onCloseTap,
   });
 
   final bool isShow;
@@ -30,6 +31,7 @@ class HelpBox extends StatefulWidget {
   final String? text;
   final EdgeInsets? margin;
   final BoxConstraints? constraints;
+  final VoidCallback? onCloseTap;
 
   @override
   State<HelpBox> createState() => _HelpBoxState();
@@ -73,9 +75,12 @@ class _HelpBoxState extends State<HelpBox> {
                             iconColor: widget.color ?? context.appTheme.onNegative,
                             size: 35,
                             iconPadding: 9,
-                            onTap: () => setState(() {
-                              _isShow = !_isShow;
-                            }),
+                            onTap: () {
+                              setState(() {
+                                _isShow = !_isShow;
+                              });
+                              widget.onCloseTap?.call();
+                            },
                           ),
                         ],
                       ),
