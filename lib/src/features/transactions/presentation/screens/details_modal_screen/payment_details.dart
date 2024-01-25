@@ -12,18 +12,53 @@ class _PaymentDetails extends ConsumerStatefulWidget {
 class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
   bool _isEditMode = false;
 
+  late CreditPayment _transaction = widget.transaction;
+
+  late final _creditAccount =
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
+
+  late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
+
+  late final bool _canDelete = _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
+
+  @override
+  void didUpdateWidget(covariant _PaymentDetails oldWidget) {
+    setState(() {
+      _transaction = widget.transaction;
+    });
+    super.didUpdateWidget(oldWidget);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final stateWatch = ref.watch(creditPaymentFormNotifierProvider);
+
     return CustomSection(
       title: 'Credit Payment'.hardcoded,
       subTitle: _DateTime(isEditMode: _isEditMode, dateTime: widget.transaction.dateTime),
       subIcons: [
         _EditButton(
           isEditMode: _isEditMode,
-          onTap: () => setState(() {
-            _isEditMode = !_isEditMode;
-          }),
+          onTap: () {
+            // if (_isEditMode) {
+            //   if (_submit()) {
+            //     setState(() {
+            //       _isEditMode = !_isEditMode;
+            //     });
+            //   }
+            // } else {
+            //   setState(() {
+            //     _isEditMode = !_isEditMode;
+            //   });
+            // }
+          },
         ),
+        _DeleteButton(
+          isEditMode: _isEditMode,
+          isDisable: !_canDelete,
+          disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+          onConfirm: _delete,
+        )
       ],
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
@@ -47,17 +82,97 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
             Expanded(
               child: Column(
                 children: [
-                  _AccountCard(isEditMode: _isEditMode, account: widget.transaction.transferAccount!),
-                  _AccountCard(isEditMode: _isEditMode, account: widget.transaction.account!),
+                  _AccountCard(
+                    isEditMode: _isEditMode,
+                    isEdited: _isFromAccountEdited(stateWatch),
+                    account: stateWatch.fromRegularAccount ?? _transaction.transferAccount!,
+                    onEditModeTap: _changeFromAccount,
+                  ),
+                  _AccountCard(isEditMode: false, account: widget.transaction.account!),
                 ],
               ),
             ),
           ],
         ),
         Gap.noGap,
-        _Note(isEditMode: _isEditMode, note: widget.transaction.note),
+        _Note(
+          isEditMode: _isEditMode,
+          isEdited: _isNoteEdited(stateWatch),
+          note: stateWatch.note ?? _transaction.note,
+          onEditModeChanged: _changeNote,
+        ),
         Gap.h16,
       ],
     );
+  }
+}
+
+extension _PaymentDetailsStateMethod on _PaymentDetailsState {
+  CreditPaymentFormState get _stateRead => ref.read(creditPaymentFormNotifierProvider);
+
+  // void _changeAmount() async {
+  //   final newAmount = await showCalculatorModalScreen(
+  //     context,
+  //     initialValue: _stateRead.amount ?? _transaction.amount,
+  //   );
+  //
+  //   if (newAmount != null && mounted) {
+  //     _stateController.changeAmount(context, newAmount);
+  //   }
+  // }
+
+  // void _changeDateTime() async {
+  //   final newDateTime = await showCreditDateTimeEditDialog(
+  //     context,
+  //     creditAccount: _creditAccount,
+  //     current: _transaction.dateTime,
+  //   );
+  //
+  //   if (newDateTime != null) {
+  //     _stateController.changeDateTime(newDateTime);
+  //   }
+  // }
+
+  void _changeFromAccount() async {
+    List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
+
+    final returnedValue = await showCustomModalBottomSheet<Account>(
+      context: context,
+      child: _ModelWithIconEditSelector(
+        title: 'Change Origin:',
+        selectedItem: _stateRead.fromRegularAccount ?? _transaction.transferAccount,
+        list: accountList,
+      ),
+    );
+
+    _stateController.changeFromAccount(returnedValue as RegularAccount?);
+  }
+
+  void _changeNote(String value) => _stateController.changeNote(value);
+
+  // bool _isAmountEdited(CreditPaymentFormState state) => state.amount != null && state.amount != _transaction.amount;
+
+  bool _isFromAccountEdited(CreditPaymentFormState state) =>
+      state.fromRegularAccount != null && state.fromRegularAccount != _transaction.transferAccount;
+
+  bool _isDateTimeEdited(CreditPaymentFormState state) =>
+      state.dateTime != null && state.dateTime != _transaction.dateTime;
+
+  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
+
+  // bool _submit() {
+  //   final txnRepo = ref.read(transactionRepositoryRealmProvider);
+  //   txnRepo.editCreditSpending(_transaction, state: _stateRead);
+  //
+  //   _stateController.setStateToAllNull();
+  //
+  //   return true;
+  // }
+
+  void _delete() {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+    txnRepo.deleteTransaction(_transaction);
+
+    context.pop();
   }
 }

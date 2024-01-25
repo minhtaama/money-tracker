@@ -145,7 +145,7 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
     final returnedValue = await showCustomModalBottomSheet<Account>(
       context: context,
       child: _ModelWithIconEditSelector(
-        title: 'Change Account',
+        title: 'Change Origin:',
         selectedItem: _stateRead.account ?? _transaction.account,
         list: accountList,
       ),

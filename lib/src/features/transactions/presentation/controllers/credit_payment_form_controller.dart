@@ -152,7 +152,7 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
     state = state.copyWith(creditAccount: () => creditAccount);
   }
 
-  void changeRegularAccount(RegularAccount? regularAccount) {
+  void changeFromAccount(RegularAccount? regularAccount) {
     state = state.copyWith(fromRegularAccount: () => regularAccount);
   }
 

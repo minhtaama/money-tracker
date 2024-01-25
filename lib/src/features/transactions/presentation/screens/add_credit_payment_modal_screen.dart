@@ -76,7 +76,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   }
 
   void _onRegularAccountChange(Account? newAccount) {
-    _stateController.changeRegularAccount(newAccount as RegularAccount?);
+    _stateController.changeFromAccount(newAccount as RegularAccount?);
   }
 
   void _submit() {
