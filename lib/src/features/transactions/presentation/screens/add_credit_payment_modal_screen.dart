@@ -57,9 +57,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   void _onRemainingInputChange(String value) {
     _remainingInputController.text = value;
     _stateController.changeRemainingInput(value);
-    setState(() {
-      _showHelpBox = true;
-    });
   }
 
   void _onToggleFullPaymentCheckbox(bool value) {
