@@ -116,14 +116,12 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
             ),
           ],
         ),
-        _transaction.note != null
-            ? _Note(
-                isEditMode: _isEditMode,
-                isEdited: _isNoteEdited(stateWatch),
-                note: stateWatch.note ?? _transaction.note,
-                onEditModeChanged: _changeNote,
-              )
-            : Gap.noGap,
+        _Note(
+          isEditMode: _isEditMode,
+          isEdited: _isNoteEdited(stateWatch),
+          note: stateWatch.note ?? _transaction.note,
+          onEditModeChanged: _changeNote,
+        ),
         Gap.h16,
       ],
     );

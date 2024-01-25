@@ -366,7 +366,7 @@ class TxnNote extends StatelessWidget {
                   )
                 : Gap.noGap,
             _categoryTag != null && transaction.note != null ? Gap.h4 : Gap.noGap,
-            transaction.note != null
+            transaction.note != null && transaction.note!.isNotEmpty
                 ? Text(
                     transaction.note!,
                     style: kHeader4TextStyle.copyWith(

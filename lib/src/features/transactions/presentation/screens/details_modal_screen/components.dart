@@ -275,29 +275,37 @@ class _Note extends StatelessWidget {
     return _NeumorphicEditWrap(
       isEditMode: isEditMode,
       isEdited: isEdited,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Gap.h8,
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text(
-              'NOTE:',
-              style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
-            ),
+      child: AnimatedOpacity(
+        duration: k250msDuration,
+        opacity: (note == null || note!.isEmpty) && !isEditMode ? 0 : 1,
+        child: HideableContainer(
+          hidden: (note == null || note!.isEmpty) && !isEditMode,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Gap.h8,
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  'NOTE:',
+                  style:
+                      kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                ),
+              ),
+              Gap.h4,
+              CustomTextFormField(
+                autofocus: false,
+                enabled: isEditMode,
+                focusColor: context.appTheme.accent1,
+                withOutlineBorder: true,
+                hintText: 'Add note ...',
+                initialValue: note,
+                textInputAction: TextInputAction.done,
+                onChanged: onEditModeChanged ?? (_) {},
+              ),
+            ],
           ),
-          Gap.h4,
-          CustomTextFormField(
-            autofocus: false,
-            enabled: isEditMode,
-            focusColor: context.appTheme.accent1,
-            withOutlineBorder: true,
-            hintText: 'Note ...',
-            initialValue: note,
-            textInputAction: TextInputAction.done,
-            onChanged: onEditModeChanged ?? (_) {},
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _PaymentDetails extends ConsumerStatefulWidget {
-  const _PaymentDetails({super.key, required this.transaction});
+  const _PaymentDetails({required this.transaction});
 
   final CreditPayment transaction;
 
@@ -35,9 +35,27 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
         ),
         Gap.h8,
         Gap.divider(context, indent: 6),
-        _AccountCard(isEditMode: _isEditMode, account: widget.transaction.account!),
+        Row(
+          children: [
+            const TxnTransferLine(
+              height: 100,
+              width: 30,
+              strokeWidth: 1.5,
+              opacity: 0.5,
+            ),
+            Gap.w4,
+            Expanded(
+              child: Column(
+                children: [
+                  _AccountCard(isEditMode: _isEditMode, account: widget.transaction.transferAccount!),
+                  _AccountCard(isEditMode: _isEditMode, account: widget.transaction.account!),
+                ],
+              ),
+            ),
+          ],
+        ),
         Gap.noGap,
-        widget.transaction.note != null ? _Note(isEditMode: _isEditMode, note: widget.transaction.note!) : Gap.noGap,
+        _Note(isEditMode: _isEditMode, note: widget.transaction.note),
         Gap.h16,
       ],
     );

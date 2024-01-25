@@ -97,14 +97,12 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
           categoryTag: stateWatch.tag ?? _transaction.categoryTag,
           onEditModeTap: _changeCategory,
         ),
-        widget.transaction.note != null
-            ? _Note(
-                isEditMode: _isEditMode,
-                isEdited: _isNoteEdited(stateWatch),
-                note: stateWatch.note ?? _transaction.note,
-                onEditModeChanged: _changeNote,
-              )
-            : Gap.noGap,
+        _Note(
+          isEditMode: _isEditMode,
+          isEdited: _isNoteEdited(stateWatch),
+          note: stateWatch.note ?? _transaction.note,
+          onEditModeChanged: _changeNote,
+        ),
         Gap.h16,
       ],
     );
