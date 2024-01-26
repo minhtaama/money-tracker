@@ -14,12 +14,14 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late CreditPayment _transaction = widget.transaction;
 
-  late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
+  late final _creditAccount = ref
+      .read(accountRepositoryProvider)
+      .getAccount(_transaction.account!.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
-  late final bool _canDelete = _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
+  late final bool _canDelete =
+      _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
 
   @override
   void didUpdateWidget(covariant _PaymentDetails oldWidget) {
@@ -35,11 +37,19 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
     return CustomSection(
       title: 'Credit Payment'.hardcoded,
-      subTitle: _DateTime(isEditMode: _isEditMode, dateTime: widget.transaction.dateTime),
+      subTitle: _DateTime(
+        isEditMode: _isEditMode,
+        isEdited: _isDateTimeEdited(stateWatch),
+        dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+        onEditModeTap: _changeDateTime,
+      ),
       subIcons: [
         _EditButton(
           isEditMode: _isEditMode,
           onTap: () {
+            setState(() {
+              _isEditMode = !_isEditMode;
+            });
             // if (_isEditMode) {
             //   if (_submit()) {
             //     setState(() {
@@ -56,7 +66,8 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
         _DeleteButton(
           isEditMode: _isEditMode,
           isDisable: !_canDelete,
-          disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+          disableText:
+              'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
           onConfirm: _delete,
         )
       ],
@@ -121,17 +132,17 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   //   }
   // }
 
-  // void _changeDateTime() async {
-  //   final newDateTime = await showCreditDateTimeEditDialog(
-  //     context,
-  //     creditAccount: _creditAccount,
-  //     current: _transaction.dateTime,
-  //   );
-  //
-  //   if (newDateTime != null) {
-  //     _stateController.changeDateTime(newDateTime);
-  //   }
-  // }
+  void _changeDateTime() async {
+    final newDateTime = await showCreditPaymentDateTimeEditDialog(
+      context,
+      creditAccount: _creditAccount,
+      current: _transaction.dateTime,
+    );
+
+    if (newDateTime != null) {
+      _stateController.changeDateTime(newDateTime, null);
+    }
+  }
 
   void _changeFromAccount() async {
     List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
@@ -158,7 +169,8 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   bool _isDateTimeEdited(CreditPaymentFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditPaymentFormState state) =>
+      state.note != null && state.note != _transaction.note;
 
   // bool _submit() {
   //   final txnRepo = ref.read(transactionRepositoryRealmProvider);
