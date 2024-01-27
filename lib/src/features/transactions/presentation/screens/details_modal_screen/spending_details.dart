@@ -10,17 +10,17 @@ class _SpendingDetails extends ConsumerStatefulWidget {
 }
 
 class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
+  final _installmentPaymentController = TextEditingController();
+
   bool _isEditMode = false;
+  late final bool _canDelete;
 
   late CreditSpending _transaction = widget.transaction;
 
-  late final _creditAccount = ref
-      .read(accountRepositoryProvider)
-      .getAccount(_transaction.account!.databaseObject) as CreditAccount;
+  late final _creditAccount =
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
-
-  late final bool _canDelete;
 
   @override
   void initState() {
@@ -82,13 +82,27 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
       isWrapByCard: false,
       sections: [
         _Amount(
-          isEditMode: _isEditMode,
+          isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
           isEdited: _isAmountEdited(stateWatch),
           transactionType: TransactionType.creditSpending,
           amount: stateWatch.amount ?? _transaction.amount,
           onEditModeTap: _changeAmount,
         ),
-        Gap.h16,
+        Gap.h12,
+        _InstallmentDetails(
+            isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
+            isEdited: _isInstallmentEdited(stateWatch),
+            installmentController: _installmentPaymentController,
+            transaction: _transaction,
+            initialValues: [
+              _transaction.hasInstallment,
+              _transaction.paymentAmount,
+              _transaction.monthsToPay,
+            ],
+            onToggle: _onToggleHasInstallment,
+            onFormattedInstallmentOutput: _changeInstallmentAmount,
+            onMonthOutput: _changeInstallmentPeriod),
+        Gap.h8,
         Gap.divider(context, indent: 6),
         _AccountCard(isEditMode: false, account: widget.transaction.account!),
         _CategoryCard(
@@ -135,9 +149,27 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
     );
 
     if (newAmount != null && mounted) {
-      _stateController.changeAmount(context, newAmount);
+      _stateController.changeAmount(context, newAmount, initialTransaction: _transaction);
+      _changeInstallmentControllerText();
     }
   }
+
+  void _onToggleHasInstallment(bool value) {
+    _stateController.changeEditHasInstallment(value);
+    _changeInstallmentControllerText();
+  }
+
+  void _changeInstallmentAmount(String value) {
+    _stateController.changeInstallmentAmount(value);
+  }
+
+  void _changeInstallmentPeriod(String value) {
+    _stateController.changeInstallmentPeriod(context, int.tryParse(value), initialTransaction: _transaction);
+    _changeInstallmentControllerText();
+  }
+
+  void _changeInstallmentControllerText() =>
+      _installmentPaymentController.text = _stateRead.installmentAmountString(context) ?? '0';
 
   void _changeDateTime() async {
     final newDateTime = await showCreditSpendingDateTimeEditDialog(
@@ -157,14 +189,21 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
       (state.category != null || state.tag != null) &&
       (state.category != _transaction.category || state.tag != _transaction.categoryTag);
 
-  bool _isAmountEdited(CreditSpendingFormState state) =>
-      state.amount != null && state.amount != _transaction.amount;
+  bool _isAmountEdited(CreditSpendingFormState state) => state.amount != null && state.amount != _transaction.amount;
 
   bool _isDateTimeEdited(CreditSpendingFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditSpendingFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditSpendingFormState state) => state.note != null && state.note != _transaction.note;
+
+  bool _isInstallmentEdited(CreditSpendingFormState state) =>
+      state.installmentPeriod != null || state.installmentAmount != null;
+
+  bool _canEditAmount(CreditSpendingFormState state) =>
+      (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
+          .isAfter(_creditAccount.latestStatementDueDate) &&
+      (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
+          .isAfter(_creditAccount.latestCheckpointDateTime);
 
   bool _submit() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);

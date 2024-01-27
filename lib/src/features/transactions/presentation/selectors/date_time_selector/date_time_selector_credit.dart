@@ -40,8 +40,8 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
     final dateTimeYMD = date.onlyYearMonthDay;
 
     final hasSpendingTransaction = dateTimeYMD.isAtSameMomentAs(current.onlyYearMonthDay);
-    final hasPaymentTransaction = dateTimeYMD.isAtSameMomentAs(dateOfPaymentBefore) ||
-        dateTimeYMD.isAtSameMomentAs(dateOfPaymentAfter);
+    final hasPaymentTransaction =
+        dateTimeYMD.isAtSameMomentAs(dateOfPaymentBefore) || dateTimeYMD.isAtSameMomentAs(dateOfPaymentAfter);
     final isDueDate = dueDates.contains(dateTimeYMD);
     final isStatementDate = date.day == statementDay;
 
@@ -54,8 +54,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
         ? Border.all(
-            color:
-                isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
           )
         : null;
 
@@ -74,8 +73,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
             color: bgrColor,
           ),
         ),
-        !isStatementDate && !isDueDate && !hasPaymentTransaction && !hasSpendingTransaction ||
-                isSelected!
+        !isStatementDate && !isDueDate && !hasPaymentTransaction && !hasSpendingTransaction || isSelected!
             ? Text(
                 date.day.toString(),
                 style: kHeader3TextStyle.copyWith(
@@ -88,13 +86,11 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
                   isDueDate ? icon(AppIcons.handCoin) : Gap.noGap,
                   hasSpendingTransaction
                       ? icon(AppIcons.receiptDollar,
-                          color:
-                              context.appTheme.negative.withOpacity(canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.negative.withOpacity(canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                   hasPaymentTransaction
                       ? icon(AppIcons.receiptCheck,
-                          color:
-                              context.appTheme.positive.withOpacity(canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.positive.withOpacity(canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                 ],
               ),
@@ -143,9 +139,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
                     color: context.appTheme.onBackground,
-                    header:
-                        'Oops! You can only select day since [the statement contains the latest payment]'
-                            .hardcoded,
+                    header: 'Oops! You can only select day since [the statement contains the latest payment]'.hardcoded,
                   ),
                 );
               } else if (dateTime.isAfter(todayStatementDueDate)) {
@@ -157,15 +151,13 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
                     header: 'Oops! This is future statement!'.hardcoded,
                   ),
                 );
-              } else if (dateTime.isBefore(dateOfPaymentBefore) ||
-                  !dateTime.isBefore(dateOfPaymentAfter)) {
+              } else if (dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter)) {
                 showCustomDialog2(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
                     color: context.appTheme.onBackground,
-                    header: 'Oops! There is a payment between the current date and the selected date'
-                        .hardcoded,
+                    header: 'Oops! There is a payment between the current date and the selected date'.hardcoded,
                   ),
                 );
               } else {
@@ -183,15 +175,15 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
       });
 }
 
-Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
+/// Return a list has index 0 is [DateTime], index 1 is [Statement]?
+Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
     {required DateTime current, required CreditAccount creditAccount}) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
   final DateTime canAddTransactionSinceDateTime = creditAccount.latestStatementDueDate;
   final DateTime todayStatementDueDate = creditAccount.todayStatementDueDate;
   final int statementDay = creditAccount.statementDay;
 
-  final spendingTxnsDateTime =
-      creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  final spendingTxnsDateTime = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final dueDates = creditAccount.statementsList.map((e) => e.dueDate.onlyYearMonthDay).toList();
   if (creditAccount.statementsList.isNotEmpty) {
     dueDates.add(creditAccount.statementsList.first.previousStatement.dueDate);
@@ -224,8 +216,8 @@ Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
     final dateTimeYMD = date.onlyYearMonthDay;
 
     final hasPayment = dateTimeYMD.isAtSameMomentAs(current.onlyYearMonthDay);
-    final hasSpending = dateTimeYMD.isAtSameMomentAs(dateOfSpendingBefore) ||
-        dateTimeYMD.isAtSameMomentAs(dateOfSpendingAfter);
+    final hasSpending =
+        dateTimeYMD.isAtSameMomentAs(dateOfSpendingBefore) || dateTimeYMD.isAtSameMomentAs(dateOfSpendingAfter);
     final isDueDate = dueDates.contains(dateTimeYMD);
     final isStatementDate = date.day == statementDay;
 
@@ -238,8 +230,7 @@ Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
         ? Border.all(
-            color:
-                isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
           )
         : null;
 
@@ -271,13 +262,11 @@ Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                   isDueDate ? icon(AppIcons.handCoin) : Gap.noGap,
                   hasPayment
                       ? icon(AppIcons.receiptCheck,
-                          color:
-                              context.appTheme.positive.withOpacity(canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.positive.withOpacity(canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                   hasSpending
                       ? icon(AppIcons.receiptDollar,
-                          color:
-                              context.appTheme.negative.withOpacity(canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.negative.withOpacity(canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                 ],
               ),
@@ -326,9 +315,7 @@ Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
                     color: context.appTheme.onBackground,
-                    header:
-                        'Oops! You can only select day since [the statement contains the latest payment]'
-                            .hardcoded,
+                    header: 'Oops! You can only select day since [the statement contains the latest payment]'.hardcoded,
                   ),
                 );
               } else if (dateTime.isAfter(todayStatementDueDate)) {
@@ -340,8 +327,7 @@ Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                     header: 'Oops! This is future statement!'.hardcoded,
                   ),
                 );
-              } else if (!dateTime.isAfter(dateOfSpendingBefore) ||
-                  dateTime.isAfter(dateOfSpendingAfter)) {
+              } else if (!dateTime.isAfter(dateOfSpendingBefore) || dateTime.isAfter(dateOfSpendingAfter)) {
                 showCustomDialog2(
                   context: context,
                   child: IconWithText(
@@ -356,8 +342,9 @@ Future<DateTime?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                   month: dateTime.month,
                   year: dateTime.year,
                 );
+                final statement = creditAccount.statementAt(result);
 
-                context.pop<DateTime>(result);
+                context.pop<List<dynamic>>([result, statement]);
               }
             }
           },
@@ -443,9 +430,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           elevation: 0,
-          border: Border.all(
-              color:
-                  context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+          border:
+              Border.all(color: context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -459,8 +445,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
                       if (_outputDateTime != null) {
                         setState(() {
-                          _outputDateTime =
-                              _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
+                          _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
                         });
                         widget.onChanged(_outputDateTime!, _outputStatement);
                       }
@@ -490,8 +475,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                       child: IconWithText(
                                         iconPath: AppIcons.sadFace,
                                         color: context.appTheme.onBackground,
-                                        header: 'You can only add transaction after [latest checkpoint]'
-                                            .hardcoded,
+                                        header: 'You can only add transaction after [latest checkpoint]'.hardcoded,
                                       ),
                                     );
                                   } else if (!dateTime.isAfter(_canAddTransactionSinceDateTime)) {
@@ -530,10 +514,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                                   .hardcoded,
                                         )
                                       : monthView.isBefore(widget.creditAccount!.earliestPayableDate!
-                                              .copyWith(
-                                                  month:
-                                                      widget.creditAccount!.earliestPayableDate!.month -
-                                                          1))
+                                              .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))
                                           ? IconWithText(
                                               iconPath: AppIcons.done,
                                               header: 'No transactions before this time'.hardcoded,
@@ -542,10 +523,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                                               ? CreditInfo(
                                                   chosenDateTime: selectedDay,
                                                   showPaymentAmount: widget.isForPayment &&
-                                                      !selectedDay.isBefore(
-                                                          widget.creditAccount!.earliestPayableDate!),
-                                                  statement:
-                                                      widget.creditAccount!.statementAt(selectedDay),
+                                                      !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
+                                                  statement: widget.creditAccount!.statementAt(selectedDay),
                                                   onDateTap: (dateTime) => setState(() {
                                                     _currentMonthView = dateTime;
                                                   }),
@@ -600,8 +579,7 @@ extension _Details on _DateTimeSelectorCreditState {
     final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
     final bgrBorder = isToday != null && isToday
         ? Border.all(
-            color:
-                isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
           )
         : null;
 
@@ -641,13 +619,11 @@ extension _Details on _DateTimeSelectorCreditState {
                   _isDueDate(date) ? icon(AppIcons.handCoin) : Gap.noGap,
                   _hasSpendingTransaction(date)
                       ? icon(AppIcons.receiptDollar,
-                          color:
-                              context.appTheme.negative.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.negative.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                   _hasPaymentTransaction(date)
                       ? icon(AppIcons.receiptCheck,
-                          color:
-                              context.appTheme.positive.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
+                          color: context.appTheme.positive.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
                 ],
               ),

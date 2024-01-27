@@ -32,10 +32,10 @@ class _Amount extends ConsumerWidget {
     return switch (transactionType) {
       TransactionType.income => context.appTheme.positive,
       TransactionType.expense => context.appTheme.negative,
-      TransactionType.transfer => context.appTheme.onBackground,
-      TransactionType.creditSpending => context.appTheme.negative,
+      TransactionType.transfer => AppColors.grey(context),
+      TransactionType.creditSpending => context.appTheme.onBackground,
       TransactionType.creditPayment => context.appTheme.negative,
-      TransactionType.creditCheckpoint => AppColors.grey(context),
+      TransactionType.creditCheckpoint => context.appTheme.onBackground,
     };
   }
 
@@ -86,6 +86,131 @@ class _Amount extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _InstallmentDetails extends StatelessWidget {
+  const _InstallmentDetails(
+      {super.key,
+      required this.isEditMode,
+      required this.isEdited,
+      this.installmentController,
+      required this.transaction,
+      required this.initialValues,
+      required this.onToggle,
+      required this.onFormattedInstallmentOutput,
+      required this.onMonthOutput});
+
+  final bool isEditMode;
+  final bool isEdited;
+  final TextEditingController? installmentController;
+  final CreditSpending transaction;
+
+  /// index 0: [bool] - installmentToggle
+  ///
+  /// index 1: [double]? - installmentAmount
+  ///
+  /// index 2: [int]? - month to pay
+  final List<dynamic> initialValues;
+  final ValueSetter<bool> onToggle;
+  final ValueSetter<String> onFormattedInstallmentOutput;
+  final ValueSetter<String> onMonthOutput;
+
+  @override
+  Widget build(BuildContext context) {
+    return _NeumorphicEditWrap(
+      isEditMode: isEditMode,
+      isEdited: isEdited,
+      withPadding: false,
+      child: AnimatedCrossFade(
+          duration: k250msDuration,
+          firstChild: Transform.translate(
+            offset: const Offset(0, -5),
+            child: CustomCheckbox(
+              initialValue: (initialValues[0] as bool),
+              label: 'Installment payment'.hardcoded,
+              onChanged: onToggle,
+              optionalWidget: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InlineTextFormField(
+                    prefixText: 'Payment Period:'.hardcoded,
+                    suffixText: 'month(s)'.hardcoded,
+                    onChanged: onMonthOutput,
+                    hintText: initialValues[2] != null ? (initialValues[2] as int).toString() : '',
+                  ),
+                  Gap.h8,
+                  InlineTextFormField(
+                    prefixText: 'Amount:'.hardcoded,
+                    suffixText: context.appSettings.currency.code,
+                    widget: CalculatorInput(
+                        controller: installmentController,
+                        fontSize: 18,
+                        isDense: true,
+                        textAlign: TextAlign.end,
+                        formattedResultOutput: onFormattedInstallmentOutput,
+                        focusColor: context.appTheme.secondary1,
+                        hintText: initialValues[1] != null
+                            ? CalService.formatNumberInGroup((initialValues[1] as double).toString())
+                            : ''),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          secondChild: Container(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: [
+                Gap.w12,
+                RoundedIconButton(
+                  iconPath: transaction.hasInstallment ? AppIcons.installment : AppIcons.handCoin,
+                  iconColor: context.appTheme.negative,
+                  iconPadding: 0,
+                  size: 26,
+                ),
+                Gap.w12,
+                transaction.hasInstallment
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Installment payment in ${transaction.monthsToPay} months'.hardcoded,
+                            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                          ),
+                          Gap.h2,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            textBaseline: TextBaseline.alphabetic,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            children: [
+                              TxnAmount(
+                                currencyCode: context.appSettings.currency.code,
+                                transaction: transaction,
+                                fontSize: 18,
+                                color: context.appTheme.negative,
+                                showPaymentAmount: true,
+                              ),
+                              Text(
+                                '/month'.hardcoded,
+                                style: kHeader3TextStyle.copyWith(
+                                  fontSize: 16,
+                                  color: context.appTheme.onBackground,
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      )
+                    : Text(
+                        'Pay before due date'.hardcoded,
+                        style: kHeader3TextStyle.copyWith(color: context.appTheme.negative, fontSize: 16),
+                      ),
+              ],
+            ),
+          ),
+          crossFadeState: isEditMode ? CrossFadeState.showFirst : CrossFadeState.showSecond),
     );
   }
 }
@@ -571,7 +696,7 @@ class _DeleteButton extends StatelessWidget {
       height: isEditMode ? 0 : 40,
       color: containerColor,
       elevation: 0,
-      margin: EdgeInsets.zero,
+      margin: EdgeInsets.only(left: isEditMode ? 0 : 6),
       padding: EdgeInsets.zero,
       child: CustomInkWell(
         onTap: () async {
@@ -586,7 +711,7 @@ class _DeleteButton extends StatelessWidget {
                 )
               : showConfirmModalBottomSheet(
                   context: context,
-                  label: 'Are you sure you want to delete this transaction?'.hardcoded,
+                  label: 'Delete this transaction?'.hardcoded,
                   confirmLabel: 'Yes, delete'.hardcoded,
                   onConfirm: onConfirm,
                 );

@@ -14,6 +14,7 @@ class CustomCheckbox extends StatefulWidget {
     this.checkboxBackgroundColor,
     this.labelStyle,
     this.showOptionalWidgetWhenValueIsFalse = false,
+    this.initialValue = false,
   });
 
   final String label;
@@ -24,13 +25,14 @@ class CustomCheckbox extends StatefulWidget {
   final Color? optionalWidgetBackgroundColor;
   final Color? checkboxBackgroundColor;
   final bool showOptionalWidgetWhenValueIsFalse;
+  final bool initialValue;
 
   @override
   State<CustomCheckbox> createState() => _CustomCheckboxState();
 }
 
 class _CustomCheckboxState extends State<CustomCheckbox> {
-  bool _value = false;
+  late bool _value = widget.initialValue;
 
   @override
   Widget build(BuildContext context) {

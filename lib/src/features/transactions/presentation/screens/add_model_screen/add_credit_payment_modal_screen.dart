@@ -20,10 +20,10 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../accounts/domain/account_base.dart';
-import '../../../accounts/domain/statement/statement.dart';
-import '../../../calculator_input/presentation/calculator_input.dart';
-import '../selectors/forms.dart';
+import '../../../../accounts/domain/account_base.dart';
+import '../../../../accounts/domain/statement/statement.dart';
+import '../../../../calculator_input/presentation/calculator_input.dart';
+import '../../selectors/forms.dart';
 
 class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
   const AddCreditPaymentModalScreen({super.key});

@@ -14,12 +14,12 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../../common_widgets/inline_text_form_field.dart';
-import '../../../accounts/domain/account_base.dart';
-import '../../../accounts/domain/statement/statement.dart';
-import '../../../calculator_input/presentation/calculator_input.dart';
-import '../selectors/date_time_selector/date_time_selector_components.dart';
-import '../selectors/forms.dart';
+import '../../../../../common_widgets/inline_text_form_field.dart';
+import '../../../../accounts/domain/account_base.dart';
+import '../../../../accounts/domain/statement/statement.dart';
+import '../../../../calculator_input/presentation/calculator_input.dart';
+import '../../selectors/date_time_selector/date_time_selector_components.dart';
+import '../../selectors/forms.dart';
 
 class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {
   const AddCreditCheckpointModalScreen({super.key, required this.account});
@@ -56,8 +56,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
 
   @override
   void initState() {
-    _dateTime =
-        DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
+    _dateTime = DateTime.now().copyWith(day: _creditAccount.statementDay, month: DateTime.now().month + 1);
     _statement = _creditAccount.statementAt(_dateTime);
     super.initState();
   }
@@ -88,9 +87,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             isShow: true,
             iconPath: AppIcons.fykFace,
             header: 'For your knowledge'.hardcoded,
-            text:
-                'Add [transactions has installment payment going through this checkpoint] first, if any.'
-                    .hardcoded,
+            text: 'Add [transactions has installment payment going through this checkpoint] first, if any.'.hardcoded,
           ),
           Gap.h8,
           Row(
@@ -153,8 +150,7 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
 
   String? _oustdBalanceValidator() {
-    if (CalService.formatToDouble(_calOutputFormattedAmount)! <
-        _unpaidInstallmentsAmount.roundBySetting(context)) {
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount.roundBySetting(context)) {
       return 'Must higher than unpaid installments amount'.hardcoded;
     }
 

@@ -50,13 +50,12 @@ class AppIcons {
   static String get reports => 'assets/svg/app/report.svg';
   static String get coins => 'assets/svg/app/coins.svg';
   static String get backspace => 'assets/svg/app/backspace.svg';
-  static String get today => 'assets/svg/app/today.svg';
   static String get download => 'assets/svg/app/download.svg';
   static String get upload => 'assets/svg/app/upload.svg';
   static String get minus => 'assets/svg/app/minus.svg';
   static String get close => 'assets/svg/app/close.svg';
   static String get installment => 'assets/svg/app/installment.svg';
-  static String get fullPayment => 'assets/svg/app/fullPayment.svg';
+  static String get today => 'assets/svg/app/fullPayment.svg';
   static String get handCoin => 'assets/svg/app/hand_coin.svg';
   static String get receiptCheck => 'assets/svg/app/receipt_check.svg';
   static String get receiptDollar => 'assets/svg/app/receipt_dollar.svg';

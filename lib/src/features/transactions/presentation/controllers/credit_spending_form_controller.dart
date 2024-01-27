@@ -7,6 +7,7 @@ import '../../../accounts/domain/account_base.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../../category/domain/category.dart';
 import '../../../category/domain/category_tag.dart';
+import '../../domain/transaction_base.dart';
 
 class CreditSpendingFormState {
   final DateTime? dateTime;
@@ -15,6 +16,7 @@ class CreditSpendingFormState {
   final CategoryTag? tag;
   final Category? category;
   final CreditAccount? creditAccount;
+  final bool? hasInstallment;
   final int? installmentPeriod;
   final double? installmentAmount;
 
@@ -34,6 +36,7 @@ class CreditSpendingFormState {
     this.tag,
     this.category,
     this.creditAccount,
+    this.hasInstallment,
     this.installmentPeriod,
     this.installmentAmount,
   });
@@ -47,6 +50,7 @@ class CreditSpendingFormState {
     CreditAccount? Function()? creditAccount,
     int? Function()? installmentPeriod,
     double? Function()? installmentAmount,
+    bool? Function()? hasInstallment,
   }) {
     return CreditSpendingFormState._(
       dateTime: dateTime != null ? dateTime() : this.dateTime,
@@ -57,6 +61,7 @@ class CreditSpendingFormState {
       creditAccount: creditAccount != null ? creditAccount() : this.creditAccount,
       installmentPeriod: installmentPeriod != null ? installmentPeriod() : this.installmentPeriod,
       installmentAmount: installmentAmount != null ? installmentAmount() : this.installmentAmount,
+      hasInstallment: hasInstallment != null ? hasInstallment() : this.hasInstallment,
     );
   }
 }
@@ -94,11 +99,16 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     );
   }
 
-  void changeAmount(BuildContext context, String value) {
+  void changeAmount(BuildContext context, String value, {CreditSpending? initialTransaction}) {
     state = state.copyWith(amount: () => CalService.formatToDouble(value));
+
     if (state.installmentPeriod != null) {
       state = state.copyWith(
         installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
+      );
+    } else if (initialTransaction != null) {
+      state = state.copyWith(
+        installmentAmount: () => (state.amount! / initialTransaction.monthsToPay!).roundBySetting(context),
       );
     } else {
       _resetInstallment();
@@ -122,13 +132,19 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     state = state.copyWith(creditAccount: () => account);
   }
 
-  void changeInstallmentPeriod(BuildContext context, int? period) {
+  void changeInstallmentPeriod(BuildContext context, int? period, {CreditSpending? initialTransaction}) {
     state = state.copyWith(installmentPeriod: () => period);
 
     if (state.installmentPeriod != null) {
-      state = state.copyWith(
-        installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
-      );
+      if (state.amount != null) {
+        state = state.copyWith(
+          installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
+        );
+      } else if (initialTransaction != null) {
+        state = state.copyWith(
+          installmentAmount: () => (initialTransaction.amount / state.installmentPeriod!).roundBySetting(context),
+        );
+      }
     } else {
       _resetInstallment();
     }
@@ -140,6 +156,15 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
 
   void changeNote(String note) {
     state = state.copyWith(note: () => note);
+  }
+
+  void changeEditHasInstallment(bool value) {
+    if (!value) {
+      state = state.copyWith(hasInstallment: () => false);
+      _resetInstallment();
+    } else {
+      state = state.copyWith(hasInstallment: () => true);
+    }
   }
 }
 

@@ -12,6 +12,7 @@ import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
 import '../domain/balance_at_date_time.dart';
 import '../domain/transaction_base.dart';
+import '../presentation/controllers/credit_payment_form_controller.dart';
 import '../presentation/controllers/regular_txn_form_controller.dart';
 
 class TransactionRepositoryRealmDb {
@@ -329,7 +330,7 @@ extension EditTransaction on TransactionRepositoryRealmDb {
     CreditSpending transaction, {
     required CreditSpendingFormState state,
   }) {
-    TransactionDb? txnDb = transaction.databaseObject;
+    final txnDb = transaction.databaseObject;
 
     realm.write(() {
       if (state.dateTime != null) {
@@ -371,12 +372,14 @@ extension EditTransaction on TransactionRepositoryRealmDb {
         txnDb.note = state.note;
       }
 
-      // if (monthsToPay != null) {
-      //   creditInstallmentDb?.monthsToPay = monthsToPay;
-      // }
-      // if (paymentAmount != null) {
-      //   creditInstallmentDb?.paymentAmount = paymentAmount;
-      // }
+      if (state.hasInstallment == null || state.hasInstallment!) {
+        txnDb.creditInstallmentDetails = CreditInstallmentDetailsDb(
+          monthsToPay: state.installmentPeriod ?? transaction.monthsToPay,
+          paymentAmount: state.installmentAmount ?? transaction.paymentAmount,
+        );
+      } else if (!state.hasInstallment!) {
+        txnDb.creditInstallmentDetails = null;
+      }
 
       //TODO: logic for installment details
     });
@@ -384,79 +387,61 @@ extension EditTransaction on TransactionRepositoryRealmDb {
 
   void editCreditPayment(
     CreditPayment transaction, {
-    required DateTime? dateTime,
-    required double? amount,
-    required RegularAccount? fromAccount,
-    required String? note,
-    required bool? isFullPayment,
-    required double? adjustment,
+    required CreditPaymentFormState state,
   }) {
-    TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
-
-    if (txnDb == null) {
-      throw StateError('Can not find transaction from ObjectId');
-    }
+    final txnDb = transaction.databaseObject;
 
     realm.write(() {
-      if (dateTime != null) {
-        txnDb.dateTime = dateTime;
-      }
-      if (amount != null) {
-        txnDb.amount = amount;
-      }
-      if (fromAccount != null) {
-        txnDb.transferAccount = fromAccount.databaseObject;
-      }
-      if (note != null) {
-        txnDb.note = note;
+      if (state.dateTime != null) {
+        _updateBalanceAtDateTime(transaction.dateTime, transaction.amount);
+        _updateBalanceAtDateTime(state.dateTime!, -transaction.amount);
+
+        txnDb.dateTime = state.dateTime!;
       }
 
-      //TODO: logic for adjustment and full payment?
+      if (state.fromRegularAccount != null) {
+        txnDb.transferAccount = state.fromRegularAccount!.databaseObject;
+      }
 
-      // if (isFullPayment != null) {
-
-      // }
-      // if (adjustment != null) {
-
-      // }
-
-      //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
+      if (state.note != null) {
+        txnDb.note = state.note;
+      }
     });
   }
 
-  void editCreditCheckpoint(
-    CreditCheckpoint transaction, {
-    required DateTime? dateTime,
-    required double? amount,
-    required CreditAccount? account,
-    required List<CreditSpending>? finishedInstallments,
-  }) {
-    TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
-
-    if (txnDb == null) {
-      throw StateError('Can not find transaction from ObjectId');
-    }
-
-    realm.write(() {
-      if (dateTime != null) {
-        txnDb.dateTime = dateTime;
-      }
-      if (amount != null) {
-        txnDb.amount = amount;
-      }
-      if (account != null) {
-        txnDb.account = account.databaseObject;
-      }
-
-      //TODO: logic for finishedInstallments?
-
-      // if (finishedInstallments != null) {
-      //   txnDb.creditCheckpointFinishedInstallments = finishedInstallments;
-      // }
-
-      //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
-    });
-  }
+  // void editCreditCheckpoint(
+  //   CreditCheckpoint transaction, {
+  //   required DateTime? dateTime,
+  //   required double? amount,
+  //   required CreditAccount? account,
+  //   required List<CreditSpending>? finishedInstallments,
+  // }) {
+  //   TransactionDb? txnDb = realm.find<TransactionDb>(transaction.databaseObject.id);
+  //
+  //   if (txnDb == null) {
+  //     throw StateError('Can not find transaction from ObjectId');
+  //   }
+  //
+  //   realm.write(() {
+  //     if (dateTime != null) {
+  //       txnDb.dateTime = dateTime;
+  //     }
+  //     if (amount != null) {
+  //       txnDb.amount = amount;
+  //     }
+  //     if (account != null) {
+  //       txnDb.account = account.databaseObject;
+  //     }
+  //
+  //     //TODO: logic for finishedInstallments?
+  //
+  //     // if (finishedInstallments != null) {
+  //     //   txnDb.creditCheckpointFinishedInstallments = finishedInstallments;
+  //     // }
+  //
+  //     //_updateBalanceAtDateTime(TransactionType.income, dateTime, amount);
+  //   });
+  // }
 
   void deleteTransaction(BaseTransaction transaction) {
     final double deleteAmount = switch (transaction) {

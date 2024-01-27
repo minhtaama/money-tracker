@@ -14,14 +14,12 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late CreditPayment _transaction = widget.transaction;
 
-  late final _creditAccount = ref
-      .read(accountRepositoryProvider)
-      .getAccount(_transaction.account!.databaseObject) as CreditAccount;
+  late final _creditAccount =
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
-  late final bool _canDelete =
-      _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
+  late final bool _canDelete = _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
 
   @override
   void didUpdateWidget(covariant _PaymentDetails oldWidget) {
@@ -47,27 +45,23 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
         _EditButton(
           isEditMode: _isEditMode,
           onTap: () {
-            setState(() {
-              _isEditMode = !_isEditMode;
-            });
-            // if (_isEditMode) {
-            //   if (_submit()) {
-            //     setState(() {
-            //       _isEditMode = !_isEditMode;
-            //     });
-            //   }
-            // } else {
-            //   setState(() {
-            //     _isEditMode = !_isEditMode;
-            //   });
-            // }
+            if (_isEditMode) {
+              if (_submit()) {
+                setState(() {
+                  _isEditMode = !_isEditMode;
+                });
+              }
+            } else {
+              setState(() {
+                _isEditMode = !_isEditMode;
+              });
+            }
           },
         ),
         _DeleteButton(
           isEditMode: _isEditMode,
           isDisable: !_canDelete,
-          disableText:
-              'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+          disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
           onConfirm: _delete,
         )
       ],
@@ -75,7 +69,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
       isWrapByCard: false,
       sections: [
         _Amount(
-          isEditMode: _isEditMode,
+          isEditMode: false,
           transactionType: TransactionType.creditPayment,
           amount: widget.transaction.amount,
         ),
@@ -121,26 +115,15 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   CreditPaymentFormState get _stateRead => ref.read(creditPaymentFormNotifierProvider);
 
-  // void _changeAmount() async {
-  //   final newAmount = await showCalculatorModalScreen(
-  //     context,
-  //     initialValue: _stateRead.amount ?? _transaction.amount,
-  //   );
-  //
-  //   if (newAmount != null && mounted) {
-  //     _stateController.changeAmount(context, newAmount);
-  //   }
-  // }
-
   void _changeDateTime() async {
-    final newDateTime = await showCreditPaymentDateTimeEditDialog(
+    final returnedValue = await showCreditPaymentDateTimeEditDialog(
       context,
       creditAccount: _creditAccount,
       current: _transaction.dateTime,
     );
 
-    if (newDateTime != null) {
-      _stateController.changeDateTime(newDateTime, null);
+    if (returnedValue != null) {
+      _stateController.changeDateTime(returnedValue[0], returnedValue[1]);
     }
   }
 
@@ -161,25 +144,22 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
 
   void _changeNote(String value) => _stateController.changeNote(value);
 
-  // bool _isAmountEdited(CreditPaymentFormState state) => state.amount != null && state.amount != _transaction.amount;
-
   bool _isFromAccountEdited(CreditPaymentFormState state) =>
       state.fromRegularAccount != null && state.fromRegularAccount != _transaction.transferAccount;
 
   bool _isDateTimeEdited(CreditPaymentFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditPaymentFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
 
-  // bool _submit() {
-  //   final txnRepo = ref.read(transactionRepositoryRealmProvider);
-  //   txnRepo.editCreditSpending(_transaction, state: _stateRead);
-  //
-  //   _stateController.setStateToAllNull();
-  //
-  //   return true;
-  // }
+  bool _submit() {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+    txnRepo.editCreditPayment(_transaction, state: _stateRead);
+
+    _stateController.setStateToAllNull();
+
+    return true;
+  }
 
   void _delete() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);

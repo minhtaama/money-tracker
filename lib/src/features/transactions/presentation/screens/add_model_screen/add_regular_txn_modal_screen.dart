@@ -12,9 +12,9 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../accounts/domain/account_base.dart';
-import '../../../calculator_input/presentation/calculator_input.dart';
-import '../selectors/forms.dart';
+import '../../../../accounts/domain/account_base.dart';
+import '../../../../calculator_input/presentation/calculator_input.dart';
+import '../../selectors/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
   const AddRegularTxnModalScreen(this.transactionType, {super.key});
@@ -26,8 +26,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -118,15 +117,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(
-                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) => _categoryValidator(),
-                            onChangedCategory: (newCategory) =>
-                                _stateController.changeCategory(newCategory),
+                            onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
                           )
                         : AccountFormSelector(
                             accountType: AccountType.regular,

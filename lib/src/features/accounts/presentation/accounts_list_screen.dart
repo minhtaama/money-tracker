@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_credit_checkpoint_modal_screen.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -75,8 +75,7 @@ class AccountsListScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   model.name,
-                                  style:
-                                      kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
+                                  style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 22),
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                 ),
@@ -91,8 +90,7 @@ class AccountsListScreen extends ConsumerWidget {
                                         ),
                                         child: Text(
                                           'Credit',
-                                          style: kHeader4TextStyle.copyWith(
-                                              color: model.backgroundColor, fontSize: 12),
+                                          style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
                                         ),
                                       )
                                     : Gap.noGap,

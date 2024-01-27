@@ -8,30 +8,12 @@ class HideableContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      duration: k350msDuration,
-      reverseDuration: k350msDuration,
-      firstChild: Gap.noGap,
-      secondChild: child,
-      crossFadeState: hidden ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      layoutBuilder: (Widget topChild, Key topChildKey, Widget bottomChild, Key bottomChildKey) {
-        return Stack(
-          clipBehavior: Clip.none,
-          children: <Widget>[
-            Positioned(
-              key: bottomChildKey,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: bottomChild,
-            ),
-            Positioned(
-              key: topChildKey,
-              child: topChild,
-            ),
-          ],
-        );
-      },
+    return SizedBox(
+      width: double.infinity,
+      child: AnimatedSize(
+        duration: k250msDuration,
+        child: hidden ? Gap.noGap : child,
+      ),
     );
   }
 }
