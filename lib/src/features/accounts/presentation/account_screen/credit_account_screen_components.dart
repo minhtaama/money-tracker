@@ -62,7 +62,7 @@ class _Transaction extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: () => context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
             children: [
               _DateTime(
@@ -70,23 +70,34 @@ class _Transaction extends StatelessWidget {
               ),
               Gap.w4,
               Expanded(
-                child: _Details(
-                  transaction: transaction,
-                  statement: statement,
+                child: CardItem(
+                  margin: const EdgeInsets.only(left: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  elevation: 0.7,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _Details(
+                          transaction: transaction,
+                          statement: statement,
+                        ),
+                      ),
+                      transaction is! CreditCheckpoint
+                          ? TxnAmount(
+                              currencyCode: context.appSettings.currency.code,
+                              transaction: transaction,
+                              fontSize: 15,
+                              color: transaction is CreditSpending
+                                  ? (transaction as CreditSpending).hasInstallment
+                                      ? AppColors.grey(context)
+                                      : context.appTheme.negative
+                                  : context.appTheme.positive,
+                            )
+                          : Gap.noGap,
+                    ],
+                  ),
                 ),
               ),
-              transaction is! CreditCheckpoint
-                  ? TxnAmount(
-                      currencyCode: context.appSettings.currency.code,
-                      transaction: transaction,
-                      fontSize: 15,
-                      color: transaction is CreditSpending
-                          ? (transaction as CreditSpending).hasInstallment
-                              ? AppColors.grey(context)
-                              : context.appTheme.negative
-                          : context.appTheme.positive,
-                    )
-                  : Gap.noGap,
             ],
           ),
         ),
@@ -108,37 +119,48 @@ class _InstallmentPayTransaction extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: () => context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
             children: [
               const _DateTime(),
               Gap.w4,
-              TxnCategoryIcon(
-                transaction: transaction,
-                color: context.appTheme.negative,
-              ),
-              Gap.w4,
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Instm. payment of:',
-                      style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
-                    ),
-                    TxnCategoryName(
-                      transaction: transaction,
-                      fontSize: 14,
-                    )
-                  ],
+                child: CardItem(
+                  margin: const EdgeInsets.only(left: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  elevation: 0.7,
+                  child: Row(
+                    children: [
+                      TxnCategoryIcon(
+                        transaction: transaction,
+                        color: context.appTheme.negative,
+                      ),
+                      Gap.w8,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Instm. payment of:',
+                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
+                            ),
+                            TxnCategoryName(
+                              transaction: transaction,
+                              fontSize: 14,
+                            )
+                          ],
+                        ),
+                      ),
+                      Gap.w4,
+                      TxnAmount(
+                        currencyCode: context.appSettings.currency.code,
+                        transaction: transaction,
+                        showPaymentAmount: true,
+                        color: context.appTheme.negative,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Gap.w4,
-              TxnAmount(
-                currencyCode: context.appSettings.currency.code,
-                transaction: transaction,
-                showPaymentAmount: true,
-                color: context.appTheme.negative,
               ),
             ],
           ),
@@ -195,7 +217,7 @@ class _Spending extends StatelessWidget {
           transaction: transaction,
           color: transaction.hasInstallment ? null : context.appTheme.negative,
         ),
-        Gap.w4,
+        Gap.w8,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +260,7 @@ class _Payment extends StatelessWidget {
           color: context.appTheme.positive,
           size: 20,
         ),
-        Gap.w4,
+        Gap.w8,
         Expanded(
           child: Text(
             'Payment'.hardcoded,
@@ -268,7 +290,7 @@ class _Checkpoint extends StatelessWidget {
           color: context.appTheme.onBackground,
           size: 20,
         ),
-        Gap.w4,
+        Gap.w8,
         Expanded(
           child: Row(
             children: [
@@ -332,7 +354,7 @@ class _DateTime extends StatelessWidget {
     return dateTime != null
         ? Container(
             decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.greyBgr(context),
+              color: backgroundColor ?? AppColors.greyBorder(context),
               borderRadius: BorderRadius.circular(8),
             ),
             width: 25,
