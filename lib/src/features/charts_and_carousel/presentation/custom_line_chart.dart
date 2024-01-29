@@ -29,6 +29,7 @@ class CLCSpot extends FlSpot {
 class CustomLineChart extends StatelessWidget {
   const CustomLineChart({
     super.key,
+    this.controller,
     this.primaryLineType = CustomLineType.solidToDashed,
     this.chartDataType = ChartDataType.cashflow,
     required this.currentMonth,
@@ -38,6 +39,8 @@ class CustomLineChart extends StatelessWidget {
     this.showExtraLine = false,
     this.extraLineText,
   });
+
+  final ScrollController? controller;
 
   final CustomLineType primaryLineType;
   final ChartDataType chartDataType;
@@ -170,7 +173,9 @@ class CustomLineChart extends StatelessWidget {
         items.add(LineTooltipItem(
           '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            color: context.appTheme.isDarkTheme
+                ? context.appTheme.onBackground
+                : context.appTheme.onSecondary,
             fontSize: 13,
           ),
           textAlign: TextAlign.right,
@@ -180,7 +185,9 @@ class CustomLineChart extends StatelessWidget {
                   .copyWith(day: touchedSpot.x.toInt())
                   .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                color: context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary,
                 fontSize: 11,
               ),
             ),
@@ -199,7 +206,10 @@ class CustomLineChart extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [context.appTheme.accent1.withOpacity(0.35), context.appTheme.accent1.withOpacity(0.0)],
+            colors: [
+              context.appTheme.accent1.withOpacity(0.35),
+              context.appTheme.accent1.withOpacity(0.0)
+            ],
             stops: const [0.46, 0.8],
           ),
           strokeWidth: isOptionalBar ? 0 : 50,
@@ -251,45 +261,54 @@ class CustomLineChart extends StatelessWidget {
       ),
     );
 
-    return Transform.translate(
-      offset: Offset(0, chartOffsetY),
-      child: LineChart(
-        LineChartData(
-          maxY: 1.025,
-          minY: 0 - (chartOffsetY * 1.4) / 100,
-          gridData: const FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          titlesData: titlesData,
-          lineTouchData: lineTouchData,
-          lineBarsData: lineBarsData,
-          extraLinesData: ExtraLinesData(
-            horizontalLines: extraLineY != null
-                ? [
-                    HorizontalLine(
-                      y: extraLineY!,
-                      strokeWidth: 1.5,
-                      dashArray: [15, 10],
-                      label: HorizontalLineLabel(
-                        show: true,
-                        style: kHeader2TextStyle.copyWith(
-                          fontSize: 11,
+    return SingleChildScrollView(
+      controller: controller,
+      clipBehavior: Clip.none,
+      scrollDirection: Axis.horizontal,
+      primary: false,
+      child: Transform.translate(
+        offset: Offset(0, chartOffsetY),
+        child: SizedBox(
+          width: kDayColumnLineChartWidth * spots.length,
+          child: LineChart(
+            LineChartData(
+              maxY: 1.025,
+              minY: 0 - (chartOffsetY * 1.4) / 100,
+              gridData: const FlGridData(show: false),
+              borderData: FlBorderData(show: false),
+              titlesData: titlesData,
+              lineTouchData: lineTouchData,
+              lineBarsData: lineBarsData,
+              extraLinesData: ExtraLinesData(
+                horizontalLines: extraLineY != null
+                    ? [
+                        HorizontalLine(
+                          y: extraLineY!,
+                          strokeWidth: 1.5,
+                          dashArray: [15, 10],
+                          label: HorizontalLineLabel(
+                            show: true,
+                            style: kHeader2TextStyle.copyWith(
+                              fontSize: 11,
+                              color: showExtraLine
+                                  ? context.appTheme.accent2.withOpacity(0.6)
+                                  : context.appTheme.accent2.withOpacity(0),
+                            ),
+                            alignment: Alignment.bottomRight,
+                            labelResolver: (_) => extraLineText ?? '',
+                          ),
                           color: showExtraLine
-                              ? context.appTheme.accent2.withOpacity(0.6)
+                              ? context.appTheme.accent2.withOpacity(0.15)
                               : context.appTheme.accent2.withOpacity(0),
                         ),
-                        alignment: Alignment.bottomRight,
-                        labelResolver: (_) => extraLineText ?? '',
-                      ),
-                      color: showExtraLine
-                          ? context.appTheme.accent2.withOpacity(0.15)
-                          : context.appTheme.accent2.withOpacity(0),
-                    ),
-                  ]
-                : [],
+                      ]
+                    : [],
+              ),
+            ),
+            duration: k550msDuration,
+            curve: Curves.easeInOutCubic,
           ),
         ),
-        duration: k550msDuration,
-        curve: Curves.easeInOutCubic,
       ),
     );
   }

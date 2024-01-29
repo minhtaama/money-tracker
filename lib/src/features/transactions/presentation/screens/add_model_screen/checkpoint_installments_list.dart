@@ -8,13 +8,13 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../common_widgets/custom_inkwell.dart';
-import '../../../routing/app_router.dart';
-import '../../../theme_and_ui/colors.dart';
-import '../../../utils/constants.dart';
-import '../../transactions/domain/transaction_base.dart';
-import '../../transactions/presentation/transaction/txn_components.dart';
-import '../domain/statement/statement.dart';
+import '../../../../../common_widgets/custom_inkwell.dart';
+import '../../../../../routing/app_router.dart';
+import '../../../../../theme_and_ui/colors.dart';
+import '../../../../../utils/constants.dart';
+import '../../../domain/transaction_base.dart';
+import '../../transaction/txn_components.dart';
+import '../../../../accounts/domain/statement/statement.dart';
 
 class CheckpointInstallmentsList extends StatelessWidget {
   const CheckpointInstallmentsList({
@@ -118,7 +118,9 @@ class _ListState extends State<_List> {
                         ins.monthsLeft,
                         isDone: _installmentsMarkAsDone.contains(ins),
                         onMarkAsDone: (isDone) {
-                          isDone ? _installmentsMarkAsDone.add(ins) : _installmentsMarkAsDone.remove(ins);
+                          isDone
+                              ? _installmentsMarkAsDone.add(ins)
+                              : _installmentsMarkAsDone.remove(ins);
                           setState(() {
                             widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
                           });
@@ -162,7 +164,8 @@ class _ListState extends State<_List> {
 }
 
 class _InstallmentDetails extends StatefulWidget {
-  const _InstallmentDetails(this.transaction, this.monthsLeft, {required this.isDone, required this.onMarkAsDone});
+  const _InstallmentDetails(this.transaction, this.monthsLeft,
+      {required this.isDone, required this.onMarkAsDone});
 
   final CreditSpending transaction;
   final int monthsLeft;
@@ -210,7 +213,8 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
         borderRadius: BorderRadius.circular(12),
         onTap: _isDone
             ? null
-            : () => context.push(RoutePath.transaction, extra: widget.transaction.databaseObject.id.hexString),
+            : () => context.push(RoutePath.transaction,
+                extra: widget.transaction.databaseObject.id.hexString),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 6),
           child: Row(
@@ -242,7 +246,8 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                                 ? Text(
                                     categoryTag,
                                     style: kHeader3TextStyle.copyWith(
-                                        fontSize: 11, color: context.appTheme.onBackground.withOpacity(0.7)),
+                                        fontSize: 11,
+                                        color: context.appTheme.onBackground.withOpacity(0.7)),
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                   )

@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../utils/enums.dart';
 import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
+import 'dart:math' as math;
 
 class CustomLineChartServices {
   CustomLineChartServices(this.transactionRepo);
@@ -101,22 +104,24 @@ class CustomLineChartServices {
       monthInitialAmount = 0;
     }
 
-    final days = displayDate.daysInMonth == 31 || displayDate.daysInMonth == 30
-        ? [1, 8, 15, 23, dayEndOfMonth.day]
-        : [1, 7, 14, 21, dayEndOfMonth.day];
+    // final days = displayDate.daysInMonth == 31 || displayDate.daysInMonth == 30
+    //     ? [1, 8, 15, 23, dayEndOfMonth.day]
+    //     : [1, 7, 14, 21, dayEndOfMonth.day];
+    //
+    // // Modify days list if today is in displayDate
+    // if (today.isSameMonthAs(displayDate)) {
+    //   if (!days.contains(today.day)) {
+    //     int index = days.indexWhere((day) => day <= (today.day + 2) && day >= (today.day - 3));
+    //     if (index != -1) {
+    //       days[index] = today.day;
+    //     } else {
+    //       index = days.lastIndexWhere((day) => day < today.day);
+    //       days.insert(index + 1, today.day);
+    //     }
+    //   }
+    // }
 
-    // Modify days list if today is in displayDate
-    if (today.isSameMonthAs(displayDate)) {
-      if (!days.contains(today.day)) {
-        int index = days.indexWhere((day) => day <= (today.day + 1) && day >= (today.day - 3));
-        if (index != -1) {
-          days[index] = today.day;
-        } else {
-          index = days.lastIndexWhere((day) => day < today.day);
-          days.insert(index + 1, today.day);
-        }
-      }
-    }
+    final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
 
     Map<int, double> result = {for (int day in days) day: monthInitialAmount};
 
@@ -226,6 +231,40 @@ class CustomLineChartServices {
         ),
       ),
     );
+  }
+
+  void animateLineChartPosition(ScrollController controller, DateTime currentMonth) {
+    final position = controller.position;
+    final today = DateTime.now();
+
+    if (currentMonth.isInMonthAfter(today)) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        controller.animateTo(
+          position.minScrollExtent,
+          duration: k1000msDuration,
+          curve: Curves.easeInOutCubic,
+        );
+      });
+    } else if (currentMonth.isInMonthBefore(today)) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        controller.animateTo(
+          position.maxScrollExtent,
+          duration: k1000msDuration,
+          curve: Curves.easeInOutCubic,
+        );
+      });
+    } else if (currentMonth.isSameMonthAs(today)) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        final todayOffset = ((today.day - 4.5) * kDayColumnLineChartWidth)
+            .clamp(position.minScrollExtent, position.maxScrollExtent);
+
+        controller.animateTo(
+          todayOffset,
+          duration: k1000msDuration,
+          curve: Curves.easeInOutCubic,
+        );
+      });
+    }
   }
 }
 

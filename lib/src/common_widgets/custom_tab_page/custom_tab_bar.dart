@@ -31,17 +31,49 @@ class ExtendedTabBar extends StatelessWidget {
   const ExtendedTabBar({
     super.key,
     this.backgroundColor,
-    required this.child,
     this.height = kExtendedCustomTabBarHeight + 30,
     this.systemIconBrightness,
+    required this.child,
+    this.toolBar,
   });
   final Color? backgroundColor;
   final Widget child;
   final double height;
   final Brightness? systemIconBrightness;
+  final Widget? toolBar;
 
   @override
   Widget build(BuildContext context) {
-    return child;
+    return Column(
+      children: [
+        Expanded(child: child),
+        toolBar != null ? _ExtendedToolBar(child: toolBar!) : Gap.noGap,
+      ],
+    );
+  }
+}
+
+class _ExtendedToolBar extends StatelessWidget {
+  const _ExtendedToolBar({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: const Offset(0, 0),
+      child: Container(
+        width: Gap.screenWidth(context),
+        padding: const EdgeInsets.only(top: 10, bottom: 30),
+        decoration: BoxDecoration(
+          color: context.appTheme.background0,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: child,
+      ),
+    );
   }
 }

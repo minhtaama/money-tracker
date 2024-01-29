@@ -37,7 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
 
   //late int _currentPageIndex = _initialPageIndex;
-  late DateTime _displayDate = _today;
+  late DateTime _currentDisplayDate = _today;
 
   // TODO: filter
   // DateTime? _minDate;
@@ -47,7 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _onPageChange(int value) {
     _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
     setState(() {
-      _displayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
+      _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
     });
   }
 
@@ -74,7 +74,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -114,7 +115,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
-          secondaryTitle: _displayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
+          secondaryTitle:
+              _currentDisplayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
@@ -123,14 +125,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       extendedTabBar: ExtendedTabBar(
-        child: ExtendedHomeTab(
-          carouselController: _carouselController,
-          initialPageIndex: _initialPageIndex,
-          displayDate: _displayDate,
-          showNumber: showTotalBalance,
+        toolBar: DateSelector(
+          displayDate: _currentDisplayDate,
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
           onDateTap: () => _animatedToPage(_initialPageIndex),
+        ),
+        child: ExtendedHomeTab(
+          carouselController: _carouselController,
+          initialPageIndex: _initialPageIndex,
+          displayDate: _currentDisplayDate,
+          showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
             persistentController.set(showAmount: showTotalBalance);
@@ -144,7 +149,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList =
+            transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
           transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);

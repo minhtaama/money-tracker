@@ -31,9 +31,12 @@ const Duration k150msDuration = Duration(milliseconds: 150);
 const Duration k250msDuration = Duration(milliseconds: 250);
 const Duration k350msDuration = Duration(milliseconds: 350);
 const Duration k550msDuration = Duration(milliseconds: 550);
+const Duration k1000msDuration = Duration(milliseconds: 1000);
 
 /// Value related to BottomAppBar
 const double kBottomAppBarHeight = 75.0;
+
+const double kDayColumnLineChartWidth = 50.0;
 
 /// [Gap] is a quick way to display a [SizedBox] widget
 class Gap {

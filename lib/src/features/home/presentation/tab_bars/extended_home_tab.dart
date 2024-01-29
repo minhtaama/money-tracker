@@ -22,9 +22,6 @@ class ExtendedHomeTab extends ConsumerStatefulWidget {
     required this.displayDate,
     required this.showNumber,
     required this.onEyeTap,
-    required this.onTapLeft,
-    required this.onTapRight,
-    required this.onDateTap,
   });
 
   final PageController carouselController;
@@ -32,15 +29,14 @@ class ExtendedHomeTab extends ConsumerStatefulWidget {
   final DateTime displayDate;
   final bool showNumber;
   final VoidCallback onEyeTap;
-  final VoidCallback onTapLeft;
-  final VoidCallback onTapRight;
-  final VoidCallback onDateTap;
 
   @override
   ConsumerState<ExtendedHomeTab> createState() => _ExtendedHomeTabState();
 }
 
 class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
+  final ScrollController _controller = ScrollController();
+
   ChartDataType _type = ChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {
@@ -123,6 +119,16 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   }
 
   @override
+  void didUpdateWidget(covariant ExtendedHomeTab oldWidget) {
+    final chartServicesRead = ref.read(customLineChartServicesProvider);
+
+    if (widget.displayDate != oldWidget.displayDate) {
+      chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
@@ -158,6 +164,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
         ),
         Expanded(
           child: CustomLineChart(
+            controller: _controller,
             currentMonth: widget.displayDate,
             spots: data.spots,
             chartOffsetY: 35,
@@ -168,19 +175,14 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
             extraLineText: extraLineText,
           ),
         ),
-        _DateSelector(
-          displayDate: widget.displayDate,
-          onDateTap: widget.onDateTap,
-          onTapLeft: widget.onTapLeft,
-          onTapRight: widget.onTapRight,
-        ),
       ],
     );
   }
 }
 
-class _DateSelector extends StatelessWidget {
-  const _DateSelector({
+class DateSelector extends StatelessWidget {
+  const DateSelector({
+    super.key,
     required this.displayDate,
     this.onTapLeft,
     this.onTapRight,
@@ -194,88 +196,76 @@ class _DateSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: Gap.screenWidth(context),
-      height: 64,
-      padding: const EdgeInsets.only(top: 10, bottom: 30),
-      decoration: BoxDecoration(
-        color: context.appTheme.background0,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RoundedIconButton(
+          iconPath: AppIcons.arrowLeft,
+          iconColor: context.appTheme.onBackground,
+          onTap: onTapLeft,
+          size: 25,
+          iconPadding: 2,
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RoundedIconButton(
-            iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.onBackground,
-            onTap: onTapLeft,
-            size: 25,
-            iconPadding: 2,
-          ),
-          Gap.w8,
-          GestureDetector(
-            onTap: onDateTap,
-            child: SizedBox(
-              width: 155,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: AnimatedSwitcher(
-                  duration: k150msDuration,
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: Tween<double>(
-                        begin: 0,
-                        end: 1,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  child: Padding(
-                    key: ValueKey(
-                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
-                    padding: const EdgeInsets.only(top: 1.0),
-                    child: Row(
-                      children: [
-                        RoundedIconButton(
-                          iconPath:
-                              displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                                  ? AppIcons.today
-                                  : AppIcons.turn,
-                          iconColor: context.appTheme.onBackground,
-                          size: 16,
-                          iconPadding: 0,
+        Gap.w8,
+        GestureDetector(
+          onTap: onDateTap,
+          child: SizedBox(
+            width: 155,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: AnimatedSwitcher(
+                duration: k150msDuration,
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: Tween<double>(
+                      begin: 0,
+                      end: 1,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+                child: Padding(
+                  key: ValueKey(
+                      displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                  padding: const EdgeInsets.only(top: 1.0),
+                  child: Row(
+                    children: [
+                      RoundedIconButton(
+                        iconPath:
+                            displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                                ? AppIcons.today
+                                : AppIcons.turn,
+                        iconColor: context.appTheme.onBackground,
+                        size: 16,
+                        iconPadding: 0,
+                      ),
+                      Gap.w8,
+                      Text(
+                        displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy),
+                        style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 15,
+                          letterSpacing: 0.5,
                         ),
-                        Gap.w8,
-                        Text(
-                          displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy),
-                          style: kHeader3TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 15,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-          Gap.w8,
-          RoundedIconButton(
-            iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.onBackground,
-            onTap: onTapRight,
-            size: 25,
-            iconPadding: 2,
-          ),
-        ],
-      ),
+        ),
+        Gap.w8,
+        RoundedIconButton(
+          iconPath: AppIcons.arrowRight,
+          iconColor: context.appTheme.onBackground,
+          onTap: onTapRight,
+          size: 25,
+          iconPadding: 2,
+        ),
+      ],
     );
   }
 }

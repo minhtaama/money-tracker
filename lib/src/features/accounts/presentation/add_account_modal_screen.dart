@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
@@ -19,7 +18,6 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../calculator_input/presentation/calculator_input.dart';
@@ -78,7 +76,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
     if (dateTime.day.toString().endsWith('1')) {
       suffix = 'st';
     } else if (dateTime.day.toString().endsWith('2')) {
-      suffix == 'nd';
+      suffix = 'nd';
     } else if (dateTime.day.toString().endsWith('3')) {
       suffix = 'rd';
     }
