@@ -4,18 +4,69 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import '../../../../common_widgets/rounded_icon_button.dart';
-import '../../domain/account_base.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../charts_and_carousel/application/custom_line_chart_services.dart';
+import '../../../../charts_and_carousel/presentation/custom_line_chart.dart';
+import '../../../../transactions/data/transaction_repo.dart';
+import '../../../domain/account_base.dart';
 
-class ExtendedAccountTab extends ConsumerWidget {
-  const ExtendedAccountTab({
+class ExtendedCreditAccountTab extends ConsumerStatefulWidget {
+  const ExtendedCreditAccountTab({
     super.key,
     required this.account,
+    required this.displayDate,
   });
   final Account account;
+  final DateTime displayDate;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExtendedCreditAccountTab> createState() => _ExtendedCreditAccountTabState();
+}
+
+class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccountTab> {
+  late final _chartServicesRead = ref.read(customLineChartServicesProvider);
+  final ScrollController _controller = ScrollController();
+
+  CustomLineType get _customLineType {
+    final today = DateTime.now();
+    if (widget.displayDate.isSameMonthAs(today)) {
+      return CustomLineType.solidToDashed;
+    }
+    if (widget.displayDate.isInMonthAfter(today)) {
+      return CustomLineType.dashed;
+    }
+    if (widget.displayDate.isInMonthBefore(today)) {
+      return CustomLineType.solid;
+    }
+
+    throw ErrorDescription('Whoop whoop');
+  }
+
+  @override
+  void initState() {
+    _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant ExtendedCreditAccountTab oldWidget) {
+    if (widget.displayDate != oldWidget.displayDate) {
+      _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chartServices = ref.watch(customLineChartServicesProvider);
+
+    CLCData data = chartServices.getCreditCLCData(widget.account as CreditAccount, widget.displayDate);
+
+    ref.listen(transactionsChangesStreamProvider, (_, __) {
+      data = chartServices.getCreditCLCData(widget.account as CreditAccount, widget.displayDate);
+    });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -29,14 +80,23 @@ class ExtendedAccountTab extends ConsumerWidget {
               iconPath: AppIcons.back,
             ),
             Text(
-              account.name,
+              widget.account.name,
               style: kHeader2TextStyle.copyWith(
-                color: account.iconColor,
+                color: widget.account.iconColor,
                 fontSize: 18,
               ),
             ),
             Gap.w8,
           ],
+        ),
+        Expanded(
+          child: CustomLineChart(
+            controller: _controller,
+            currentMonth: widget.displayDate,
+            spots: data.spots,
+            chartOffsetY: 35,
+            primaryLineType: _customLineType,
+          ),
         ),
       ],
     );

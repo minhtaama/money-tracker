@@ -7,28 +7,28 @@ import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
-import 'package:money_tracker_app/src/features/accounts/presentation/account_screen/extended_account_tab.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/account_screen/credit/extended_credit_account_tab.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../../common_widgets/card_item.dart';
-import '../../../../common_widgets/custom_inkwell.dart';
-import '../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
-import '../../../../common_widgets/modal_bottom_sheets.dart';
-import '../../../../common_widgets/svg_icon.dart';
-import '../../../../routing/app_router.dart';
-import '../../../../theme_and_ui/colors.dart';
-import '../../../../theme_and_ui/icons.dart';
-import '../../../../utils/constants.dart';
-import '../../../../utils/enums.dart';
-import '../../../calculator_input/application/calculator_service.dart';
-import '../../../transactions/domain/transaction_base.dart';
-import '../../../transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
-import '../../../transactions/presentation/transaction/txn_components.dart';
-import '../../domain/account_base.dart';
-import '../../domain/statement/statement.dart';
+import '../../../../../common_widgets/card_item.dart';
+import '../../../../../common_widgets/custom_inkwell.dart';
+import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
+import '../../../../../common_widgets/modal_bottom_sheets.dart';
+import '../../../../../common_widgets/svg_icon.dart';
+import '../../../../../routing/app_router.dart';
+import '../../../../../theme_and_ui/colors.dart';
+import '../../../../../theme_and_ui/icons.dart';
+import '../../../../../utils/constants.dart';
+import '../../../../../utils/enums.dart';
+import '../../../../calculator_input/application/calculator_service.dart';
+import '../../../../transactions/domain/transaction_base.dart';
+import '../../../../transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
+import '../../../../transactions/presentation/transaction/txn_components.dart';
+import '../../../domain/account_base.dart';
+import '../../../domain/statement/statement.dart';
 
 part 'credit_account_screen_components.dart';
 
@@ -130,7 +130,10 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
               _animatedToPage(_initialPageIndex);
             },
           ),
-          child: ExtendedAccountTab(account: widget.creditAccount),
+          child: ExtendedCreditAccountTab(
+            account: widget.creditAccount,
+            displayDate: _displayStatementDate,
+          ),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -218,8 +221,7 @@ class _ListState extends State<_List> {
         Material(
           color: Colors.transparent,
           child: Column(
-            verticalDirection: VerticalDirection.up,
-            children: buildList(context, widget.statement, _bottomKey, _topKey),
+            children: buildList(context, widget.statement, _topKey, _bottomKey),
           ),
         ),
       ],

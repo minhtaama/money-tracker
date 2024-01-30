@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/statement/statement.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../accounts/domain/account_base.dart';
 import '../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../utils/enums.dart';
 import '../../transactions/data/transaction_repo.dart';
@@ -13,6 +15,36 @@ class CustomLineChartServices {
   CustomLineChartServices(this.transactionRepo);
 
   final TransactionRepositoryRealmDb transactionRepo;
+
+  void animateLineChartPosition(ScrollController controller, DateTime currentMonth) {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      final position = controller.position;
+      final today = DateTime.now();
+
+      if (currentMonth.isInMonthAfter(today)) {
+        controller.animateTo(
+          position.minScrollExtent,
+          duration: k1000msDuration,
+          curve: Curves.easeInOutCubic,
+        );
+      } else if (currentMonth.isInMonthBefore(today)) {
+        controller.animateTo(
+          position.maxScrollExtent,
+          duration: k1000msDuration,
+          curve: Curves.easeInOutCubic,
+        );
+      } else if (currentMonth.isSameMonthAs(today)) {
+        final todayOffset = ((today.day - 4.5) * kDayColumnLineChartWidth)
+            .clamp(position.minScrollExtent, position.maxScrollExtent);
+
+        controller.animateTo(
+          todayOffset,
+          duration: k1000msDuration,
+          curve: Curves.easeInOutCubic,
+        );
+      }
+    });
+  }
 
   double getCashflow(DateTime lower, DateTime upper) {
     final list = transactionRepo.getTransactions(lower, upper);
@@ -81,7 +113,7 @@ class CustomLineChartServices {
     return avg / balanceAtDateTimes.length;
   }
 
-  CLCData getLineChartData(ChartDataType type, DateTime displayDate) {
+  CLCData getHomeScreenCLCData(ChartDataType type, DateTime displayDate) {
     final dayBeginOfMonth = DateTime(displayDate.year, displayDate.month);
     final dayEndOfMonth = DateTime(displayDate.year, displayDate.month + 1, 0, 23, 59, 59);
     final today = DateTime.now();
@@ -233,38 +265,110 @@ class CustomLineChartServices {
     );
   }
 
-  void animateLineChartPosition(ScrollController controller, DateTime currentMonth) {
-    final position = controller.position;
+  CLCData getCreditCLCData(CreditAccount account, DateTime displayDate) {
     final today = DateTime.now();
 
-    if (currentMonth.isInMonthAfter(today)) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        controller.animateTo(
-          position.minScrollExtent,
-          duration: k1000msDuration,
-          curve: Curves.easeInOutCubic,
-        );
-      });
-    } else if (currentMonth.isInMonthBefore(today)) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        controller.animateTo(
-          position.maxScrollExtent,
-          duration: k1000msDuration,
-          curve: Curves.easeInOutCubic,
-        );
-      });
-    } else if (currentMonth.isSameMonthAs(today)) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        final todayOffset = ((today.day - 4.5) * kDayColumnLineChartWidth)
-            .clamp(position.minScrollExtent, position.maxScrollExtent);
+    final statement = account.statementAt(displayDate);
 
-        controller.animateTo(
-          todayOffset,
-          duration: k1000msDuration,
-          curve: Curves.easeInOutCubic,
-        );
+    final double carryOver;
+    final List<BaseCreditTransaction> txns;
+
+    if (statement != null) {
+      carryOver = statement.previousStatement.balanceToPay;
+      txns =
+          statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
+    } else {
+      carryOver = 0;
+      txns = [];
+    }
+
+    //final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
+    final List<int> days = [1];
+    for (BaseCreditTransaction txn in txns) {
+      if (!days.contains(txn.dateTime.day)) {
+        days.add(txn.dateTime.day);
+      }
+    }
+    days.add(displayDate.daysInMonth);
+
+    Map<int, double> result = {for (int day in days) day: carryOver};
+
+    void updateAmount(int day, BaseCreditTransaction txn) {
+      result.updateAll((key, value) {
+        if (key >= day) {
+          if (txn is CreditPayment) {
+            return value += txn.amount;
+          }
+
+          return value -= txn.amount;
+        }
+
+        return value;
       });
     }
+
+    if (txns.isNotEmpty) {
+      for (int i = 0; i <= txns.length - 1; i++) {
+        final txn = txns[i];
+        final tDay = txn.dateTime.day;
+
+        if (tDay == days[0]) {
+          updateAmount(days[0], txn);
+        }
+
+        for (int j = 1; j <= days.length - 1; j++) {
+          if (tDay > days[j - 1] && tDay <= days[j]) {
+            updateAmount(days[j], txn);
+            break;
+          }
+        }
+      }
+    }
+
+    double max = double.negativeInfinity;
+    double min = 0;
+
+    for (var entry in result.entries) {
+      if (entry.value > max) {
+        max = entry.value;
+      }
+      if (entry.value < min) {
+        min = entry.value;
+      }
+    }
+
+    final minAbs = min.abs();
+
+    final maxFromMin = max == min
+        ? 0
+        : max < 0 && min < 0
+            ? min.abs() - max.abs()
+            : max + minAbs;
+
+    double getY(double amount) {
+      if (maxFromMin == 0) {
+        return 0.0;
+      }
+      if (amount == 0) {
+        return minAbs / maxFromMin;
+      }
+      if (amount > 0) {
+        return (amount + minAbs) / maxFromMin;
+      } else {
+        return (minAbs - amount.abs()) / maxFromMin;
+      }
+    }
+
+    return CLCData(
+      maxAmount: max,
+      minAmount: min,
+      spots: List<CLCSpot>.from(
+        result.entries.map(
+          (e) => CLCSpot(e.key.toDouble(), getY(e.value),
+              amount: e.value, checkpoint: e.key == today.day && today.isSameMonthAs(displayDate)),
+        ),
+      ),
+    );
   }
 }
 

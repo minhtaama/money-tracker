@@ -1,12 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'dart:math' as math;
 
 class CLCSpot extends FlSpot {
   /// Custom Line Chart Spot, use with [CustomLineChart]. This class extends [FlSpot],
@@ -31,7 +31,6 @@ class CustomLineChart extends StatelessWidget {
     super.key,
     this.controller,
     this.primaryLineType = CustomLineType.solidToDashed,
-    this.chartDataType = ChartDataType.cashflow,
     required this.currentMonth,
     required this.spots,
     this.chartOffsetY = 0,
@@ -43,7 +42,6 @@ class CustomLineChart extends StatelessWidget {
   final ScrollController? controller;
 
   final CustomLineType primaryLineType;
-  final ChartDataType chartDataType;
 
   /// To determine value in x-axis (days in month)
   final DateTime currentMonth;
@@ -261,6 +259,9 @@ class CustomLineChart extends StatelessWidget {
       ),
     );
 
+    const maxY = 1.025;
+    final minY = 0 - (chartOffsetY * 1.4) / 100;
+
     return SingleChildScrollView(
       controller: controller,
       clipBehavior: Clip.none,
@@ -269,11 +270,11 @@ class CustomLineChart extends StatelessWidget {
       child: Transform.translate(
         offset: Offset(0, chartOffsetY),
         child: SizedBox(
-          width: kDayColumnLineChartWidth * spots.length,
+          width: math.max(kDayColumnLineChartWidth * spots.length, Gap.screenWidth(context)),
           child: LineChart(
             LineChartData(
-              maxY: 1.025,
-              minY: 0 - (chartOffsetY * 1.4) / 100,
+              maxY: maxY,
+              minY: minY,
               gridData: const FlGridData(show: false),
               borderData: FlBorderData(show: false),
               titlesData: titlesData,
@@ -294,7 +295,9 @@ class CustomLineChart extends StatelessWidget {
                                   ? context.appTheme.accent2.withOpacity(0.6)
                                   : context.appTheme.accent2.withOpacity(0),
                             ),
-                            alignment: Alignment.bottomRight,
+                            alignment: extraLineY! < (maxY - minY) / 2
+                                ? Alignment.topRight
+                                : Alignment.bottomRight,
                             labelResolver: (_) => extraLineText ?? '',
                           ),
                           color: showExtraLine

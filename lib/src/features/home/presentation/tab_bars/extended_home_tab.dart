@@ -35,6 +35,7 @@ class ExtendedHomeTab extends ConsumerStatefulWidget {
 }
 
 class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
+  late final _chartServicesRead = ref.read(customLineChartServicesProvider);
   final ScrollController _controller = ScrollController();
 
   ChartDataType _type = ChartDataType.totalAssets;
@@ -119,11 +120,15 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   }
 
   @override
-  void didUpdateWidget(covariant ExtendedHomeTab oldWidget) {
-    final chartServicesRead = ref.read(customLineChartServicesProvider);
+  void initState() {
+    _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
+    super.initState();
+  }
 
+  @override
+  void didUpdateWidget(covariant ExtendedHomeTab oldWidget) {
     if (widget.displayDate != oldWidget.displayDate) {
-      chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
+      _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -132,11 +137,11 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   Widget build(BuildContext context) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getLineChartData(_type, widget.displayDate);
+    CLCData data = chartServices.getHomeScreenCLCData(_type, widget.displayDate);
     double avg = chartServices.getAverageAssets();
 
     ref.listen(transactionsChangesStreamProvider, (previous, next) {
-      data = chartServices.getLineChartData(_type, widget.displayDate);
+      data = chartServices.getHomeScreenCLCData(_type, widget.displayDate);
       avg = chartServices.getAverageAssets();
     });
 
@@ -168,11 +173,10 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
             currentMonth: widget.displayDate,
             spots: data.spots,
             chartOffsetY: 35,
-            extraLineY: extraLineY,
+            //extraLineY: extraLineY,
             primaryLineType: _customLineType,
-            chartDataType: _type,
-            showExtraLine: _type == ChartDataType.totalAssets,
-            extraLineText: extraLineText,
+            //showExtraLine: _type == ChartDataType.totalAssets,
+            //extraLineText: extraLineText,
           ),
         ),
       ],
