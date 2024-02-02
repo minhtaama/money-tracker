@@ -27,21 +27,6 @@ class ExtendedCreditAccountTab extends ConsumerStatefulWidget {
 class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccountTab> {
   late final _chartServicesRead = ref.read(customLineChartServicesProvider);
 
-  CustomLineType get _customLineType {
-    final today = DateTime.now();
-    if (widget.displayDate.isSameMonthAs(today)) {
-      return CustomLineType.solidToDashed;
-    }
-    if (widget.displayDate.isInMonthAfter(today)) {
-      return CustomLineType.dashed;
-    }
-    if (widget.displayDate.isInMonthBefore(today)) {
-      return CustomLineType.solid;
-    }
-
-    throw ErrorDescription('Whoop whoop');
-  }
-
   @override
   Widget build(BuildContext context) {
     final chartServices = ref.watch(customLineChartServicesProvider);
@@ -77,9 +62,9 @@ class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccount
         Expanded(
           child: CustomLineChart(
             currentMonth: widget.displayDate,
-            spots: data.spots,
-            chartOffsetY: 35,
-            primaryLineType: _customLineType,
+            data: data,
+            offsetY: 35,
+            isForCredit: true,
           ),
         ),
       ],

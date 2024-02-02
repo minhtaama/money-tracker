@@ -86,21 +86,6 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
     };
   }
 
-  CustomLineType get _customLineType {
-    final today = DateTime.now();
-    if (widget.displayDate.isSameMonthAs(today)) {
-      return CustomLineType.solidToDashed;
-    }
-    if (widget.displayDate.isInMonthAfter(today)) {
-      return CustomLineType.dashed;
-    }
-    if (widget.displayDate.isInMonthBefore(today)) {
-      return CustomLineType.solid;
-    }
-
-    throw ErrorDescription('Whoop whoop');
-  }
-
   bool get _showCurrency {
     return switch (_type) {
       ChartDataType.cashflow => false,
@@ -156,14 +141,9 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
         Expanded(
           child: CustomLineChart(
             currentMonth: widget.displayDate,
-            spots: data.spots,
-            primaryLineType: _customLineType,
-            bottomLabels: widget.displayDate.daysInMonth == 31 || widget.displayDate.daysInMonth == 30
-                ? [1, 8, 15, 23, widget.displayDate.daysInMonth]
-                : [1, 7, 14, 21, widget.displayDate.daysInMonth],
-            chartOffsetY: 35,
-            extraLineY: extraLineY,
-            showExtraLine: _type == ChartDataType.totalAssets,
+            data: data,
+            offsetY: 35,
+            extraLineY: _type == ChartDataType.totalAssets ? extraLineY : null,
             extraLineText: extraLineText,
           ),
         ),

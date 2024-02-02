@@ -11,8 +11,8 @@ import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
 import 'dart:math' as math;
 
-class CustomLineChartServices {
-  CustomLineChartServices(this.transactionRepo);
+class LineChartServices {
+  LineChartServices(this.transactionRepo);
 
   final TransactionRepositoryRealmDb transactionRepo;
 
@@ -106,23 +106,6 @@ class CustomLineChartServices {
       monthInitialAmount = 0;
     }
 
-    // final days = displayDate.daysInMonth == 31 || displayDate.daysInMonth == 30
-    //     ? [1, 8, 15, 23, dayEndOfMonth.day]
-    //     : [1, 7, 14, 21, dayEndOfMonth.day];
-    //
-    // // Modify days list if today is in displayDate
-    // if (today.isSameMonthAs(displayDate)) {
-    //   if (!days.contains(today.day)) {
-    //     int index = days.indexWhere((day) => day <= (today.day + 2) && day >= (today.day - 3));
-    //     if (index != -1) {
-    //       days[index] = today.day;
-    //     } else {
-    //       index = days.lastIndexWhere((day) => day < today.day);
-    //       days.insert(index + 1, today.day);
-    //     }
-    //   }
-    // }
-
     final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
 
     Map<int, double> result = {for (int day in days) day: monthInitialAmount};
@@ -156,15 +139,7 @@ class CustomLineChartServices {
         )
         .toList();
 
-    if (txns.isEmpty) {
-      result.addEntries([
-        MapEntry(days[0], monthInitialAmount),
-        MapEntry(days[1], monthInitialAmount),
-        MapEntry(days[2], monthInitialAmount),
-        MapEntry(days[3], monthInitialAmount),
-        MapEntry(days[4], monthInitialAmount),
-      ]);
-    } else {
+    if (txns.isNotEmpty) {
       for (int i = 0; i <= txns.length - 1; i++) {
         final txn = txns[i];
         final tDay = txn.dateTime.day;
@@ -235,37 +210,38 @@ class CustomLineChartServices {
     );
   }
 
-  CLCData getCreditCLCData(CreditAccount account, DateTime displayDate) {
-    final today = DateTime.now();
-
-    final statement = account.statementAt(displayDate);
+  CLCData getCreditCLCData(CreditAccount account, DateTime displayStatementDate) {
+    final today = DateTime.now().onlyYearMonthDay;
+    final creditLimit = account.creditLimit;
+    final statement = account.statementAt(displayStatementDate);
 
     final double carryOver;
     final List<BaseCreditTransaction> txns;
+    final List<DateTime> days;
 
     if (statement != null) {
       carryOver = statement.previousStatement.balanceToPay;
       txns =
           statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
+      days = [
+        for (DateTime day = statement.startDate;
+            !day.isAfter(statement.dueDate);
+            day = day.copyWith(day: day.day + 1))
+          day
+      ];
     } else {
       carryOver = 0;
       txns = [];
+      days = [];
     }
 
-    //final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
-    final List<int> days = [1];
-    for (BaseCreditTransaction txn in txns) {
-      if (!days.contains(txn.dateTime.day)) {
-        days.add(txn.dateTime.day);
-      }
-    }
-    days.add(displayDate.daysInMonth);
+    print(days.map((e) => '${e.day}/${e.month}'));
 
-    Map<int, double> result = {for (int day in days) day: carryOver};
+    Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - carryOver};
 
-    void updateAmount(int day, BaseCreditTransaction txn) {
+    void updateAmount(DateTime day, BaseCreditTransaction txn) {
       result.updateAll((key, value) {
-        if (key >= day) {
+        if (!key.isBefore(day)) {
           if (txn is CreditPayment) {
             return value += txn.amount;
           }
@@ -280,14 +256,14 @@ class CustomLineChartServices {
     if (txns.isNotEmpty) {
       for (int i = 0; i <= txns.length - 1; i++) {
         final txn = txns[i];
-        final tDay = txn.dateTime.day;
+        final tDay = txn.dateTime.onlyYearMonthDay;
 
-        if (tDay == days[0]) {
+        if (tDay.isAtSameMomentAs(days[0])) {
           updateAmount(days[0], txn);
         }
 
         for (int j = 1; j <= days.length - 1; j++) {
-          if (tDay > days[j - 1] && tDay <= days[j]) {
+          if (tDay.isAfter(days[j - 1]) && !tDay.isAfter(days[j])) {
             updateAmount(days[j], txn);
             break;
           }
@@ -295,13 +271,10 @@ class CustomLineChartServices {
       }
     }
 
-    double max = double.negativeInfinity;
+    double max = creditLimit;
     double min = 0;
 
     for (var entry in result.entries) {
-      if (entry.value > max) {
-        max = entry.value;
-      }
       if (entry.value < min) {
         min = entry.value;
       }
@@ -332,10 +305,16 @@ class CustomLineChartServices {
     return CLCData(
       maxAmount: max,
       minAmount: min,
+      dateTimesToShow: [statement?.startDate, statement?.statementDate, statement?.dueDate],
       spots: List<CLCSpot>.from(
         result.entries.map(
-          (e) => CLCSpot(e.key.toDouble(), getY(e.value),
-              amount: e.value, checkpoint: e.key == today.day && today.isSameMonthAs(displayDate)),
+          (e) => CLCSpot(
+            e.key.getDaysDifferent(statement!.startDate).toDouble(),
+            getY(e.value),
+            amount: e.value,
+            dateTime: e.key.onlyYearMonthDay,
+            checkpoint: e.key == today,
+          ),
         ),
       ),
     );
@@ -350,15 +329,19 @@ class CLCData {
   final double maxAmount;
   final double minAmount;
 
-  const CLCData({required this.spots, required this.maxAmount, required this.minAmount});
+  /// Only for credit: startDate -> statementDate -> dueDate
+  final List<DateTime?>? dateTimesToShow;
+
+  const CLCData(
+      {required this.spots, required this.maxAmount, required this.minAmount, this.dateTimesToShow});
 }
 
 /////////////////// PROVIDERS //////////////////////////
 
-final customLineChartServicesProvider = Provider<CustomLineChartServices>(
+final customLineChartServicesProvider = Provider<LineChartServices>(
   (ref) {
     final repo = ref.watch(transactionRepositoryRealmProvider);
 
-    return CustomLineChartServices(repo);
+    return LineChartServices(repo);
   },
 );
