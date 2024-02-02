@@ -120,20 +120,6 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   }
 
   @override
-  void initState() {
-    _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant ExtendedHomeTab oldWidget) {
-    if (widget.displayDate != oldWidget.displayDate) {
-      _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
@@ -169,14 +155,16 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
         ),
         Expanded(
           child: CustomLineChart(
-            controller: _controller,
             currentMonth: widget.displayDate,
             spots: data.spots,
-            chartOffsetY: 35,
-            //extraLineY: extraLineY,
             primaryLineType: _customLineType,
-            //showExtraLine: _type == ChartDataType.totalAssets,
-            //extraLineText: extraLineText,
+            bottomLabels: widget.displayDate.daysInMonth == 31 || widget.displayDate.daysInMonth == 30
+                ? [1, 8, 15, 23, widget.displayDate.daysInMonth]
+                : [1, 7, 14, 21, widget.displayDate.daysInMonth],
+            chartOffsetY: 35,
+            extraLineY: extraLineY,
+            showExtraLine: _type == ChartDataType.totalAssets,
+            extraLineText: extraLineText,
           ),
         ),
       ],

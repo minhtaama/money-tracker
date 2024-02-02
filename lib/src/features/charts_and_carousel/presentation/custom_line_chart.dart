@@ -26,20 +26,18 @@ class CLCSpot extends FlSpot {
   final bool checkpoint;
 }
 
-class CustomLineChart extends StatefulWidget {
+class CustomLineChart extends StatelessWidget {
   const CustomLineChart({
     super.key,
-    this.controller,
     this.primaryLineType = CustomLineType.solidToDashed,
     required this.currentMonth,
     required this.spots,
+    this.bottomLabels = const [],
     this.chartOffsetY = 0,
-    this.extraLineY,
     this.showExtraLine = false,
+    this.extraLineY,
     this.extraLineText,
   });
-
-  final ScrollController? controller;
 
   final CustomLineType primaryLineType;
 
@@ -51,34 +49,25 @@ class CustomLineChart extends StatefulWidget {
   /// Offset chart but keep the bottom title at the same spot
   final double chartOffsetY;
 
-  final double? extraLineY;
-
   final bool showExtraLine;
+
+  final List<int> bottomLabels;
+
+  final double? extraLineY;
 
   final String? extraLineText;
 
   @override
-  State<CustomLineChart> createState() => _CustomLineChartState();
-}
-
-class _CustomLineChartState extends State<CustomLineChart> {
-  final maxY = 1.025;
-  late final minY = 0 - (widget.chartOffsetY * 1.4) / 100;
-
-  late double _chartFullWidth =
-      math.max(kDayColumnLineChartWidth * widget.spots.length, Gap.screenWidth(context));
-
-  bool _ignoreChart = false;
-
-  @override
   Widget build(BuildContext context) {
-    final cpIndex = widget.spots.indexWhere((e) => e.checkpoint);
+    const maxY = 1.025;
+    final minY = 0 - (chartOffsetY * 1.4) / 100;
+
+    final cpIndex = spots.indexWhere((e) => e.checkpoint);
 
     final hasCp = cpIndex != -1;
 
-    final cpPercent = hasCp && widget.primaryLineType == CustomLineType.solidToDashed
-        ? (widget.spots[cpIndex].x - widget.spots[0].x) /
-            (widget.spots[widget.spots.length - 1].x - widget.spots[0].x)
+    final cpPercent = hasCp && primaryLineType == CustomLineType.solidToDashed
+        ? (spots[cpIndex].x - spots[0].x) / (spots[spots.length - 1].x - spots[0].x)
         : 0.0;
 
     final optionalBarGradient = LinearGradient(
@@ -91,12 +80,12 @@ class _CustomLineChartState extends State<CustomLineChart> {
       // Always shows, has BelowBarData, default is dashed,
       // will turns to solid if only type is `solid`.
       LineChartBarData(
-        spots: widget.spots,
+        spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: widget.primaryLineType == CustomLineType.solid ? 3.5 : 2.5,
-        dashArray: [12, widget.primaryLineType == CustomLineType.solid ? 0 : 8],
+        barWidth: primaryLineType == CustomLineType.solid ? 3.5 : 2.5,
+        dashArray: [12, primaryLineType == CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
                 color: context.appTheme.accent1,
@@ -107,13 +96,13 @@ class _CustomLineChartState extends State<CustomLineChart> {
         belowBarData: BarAreaData(
           show: true,
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
             colors: [
-              context.appTheme.accent1.withOpacity(0.15),
+              context.appTheme.accent1.withOpacity(0),
               context.appTheme.accent1.withOpacity(0.65),
             ],
-            stops: const [0, 1],
+            stops: const [0.15, 0.9],
           ),
         ),
         dotData: const FlDotData(show: false),
@@ -122,7 +111,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       // Optional solid line, as `barIndex == 1` and do not have BelowBarData
       // Only shows (logic by gradient) if there are both solid and dashed line.
       LineChartBarData(
-        spots: widget.spots,
+        spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
@@ -146,16 +135,20 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
     Widget bottomTitleWidgets(double value, TitleMeta meta) {
       final today = DateTime.now();
-      bool isShowTitle = widget.spots.map((e) => e.x).contains(value.toInt());
-      bool isToday = value == today.day && widget.currentMonth.isSameMonthAs(today);
+
+      bool isToday = value == today.day && currentMonth.isSameMonthAs(today);
+
+      bool isShowTitle = bottomLabels.isEmpty
+          ? spots.map((e) => e.x).contains(value.toInt())
+          : bottomLabels.contains(value.toInt());
 
       final textStyle = isToday
-          ? kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent)
-          : kHeader4TextStyle.copyWith(fontSize: 12, color: context.appTheme.onAccent);
+          ? kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground)
+          : kHeader4TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(
-              offset: Offset(0, -(6 + widget.chartOffsetY)),
+              offset: Offset(0, -(6 + chartOffsetY)),
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
@@ -183,7 +176,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
         }
 
         items.add(LineTooltipItem(
-          '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, widget.spots[touchedSpot.spotIndex].amount)} \n',
+          '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, spots[touchedSpot.spotIndex].amount)} \n',
           kHeader2TextStyle.copyWith(
             color: context.appTheme.isDarkTheme
                 ? context.appTheme.onBackground
@@ -193,7 +186,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
           textAlign: TextAlign.right,
           children: [
             TextSpan(
-              text: widget.currentMonth
+              text: currentMonth
                   .copyWith(day: touchedSpot.x.toInt())
                   .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy),
               style: kHeader3TextStyle.copyWith(
@@ -214,18 +207,20 @@ class _CustomLineChartState extends State<CustomLineChart> {
       return spotIndex.map((int index) {
         bool isOptionalBar = barData.belowBarData.show == false;
 
-        final flLine = FlLine(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              context.appTheme.accent1.withOpacity(0.35),
-              context.appTheme.accent1.withOpacity(0.0)
-            ],
-            stops: const [0.46, 0.8],
-          ),
-          strokeWidth: isOptionalBar ? 0 : 50,
-        );
+        // final flLine = FlLine(
+        //   gradient: LinearGradient(
+        //     begin: Alignment.bottomCenter,
+        //     end: Alignment.topCenter,
+        //     colors: [
+        //       context.appTheme.accent1.withOpacity(0.35),
+        //       context.appTheme.accent1.withOpacity(0.0)
+        //     ],
+        //     stops: const [0.46, 0.8],
+        //   ),
+        //   strokeWidth: isOptionalBar ? 0 : 3,
+        // );
+
+        const flLine = FlLine(color: Colors.transparent);
 
         final dotData = FlDotData(
           getDotPainter: (spot, percent, bar, index) {
@@ -273,79 +268,46 @@ class _CustomLineChartState extends State<CustomLineChart> {
       ),
     );
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onDoubleTap: () {
-        setState(() {
-          _chartFullWidth += 50;
-        });
-      },
-      onScaleStart: (details) {},
-      onScaleUpdate: (details) {
-        //print(details.pointerCount);
-        if (details.pointerCount == 2 && details.scale != 0) {
-          setState(() {
-            _chartFullWidth = _chartFullWidth * details.scale;
-          });
-          print(details.scale);
-        }
-      },
-      child: SingleChildScrollView(
-        controller: widget.controller,
-        physics: NeverScrollableScrollPhysics(),
-        clipBehavior: Clip.none,
-        scrollDirection: Axis.horizontal,
-        primary: false,
-        child: Transform.translate(
-          offset: Offset(0, widget.chartOffsetY),
-          child: AnimatedContainer(
-            duration: k1msDuration,
-            width: _chartFullWidth,
-            child: IgnorePointer(
-              ignoring: true,
-              child: LineChart(
-                LineChartData(
-                  maxY: maxY,
-                  minY: minY,
-                  gridData: const FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
-                  titlesData: titlesData,
-                  lineTouchData: lineTouchData,
-                  lineBarsData: lineBarsData,
-                  extraLinesData: ExtraLinesData(
-                    horizontalLines: widget.extraLineY != null
-                        ? [
-                            HorizontalLine(
-                              y: widget.extraLineY!,
-                              strokeWidth: 1.5,
-                              dashArray: [15, 10],
-                              label: HorizontalLineLabel(
-                                show: true,
-                                style: kHeader2TextStyle.copyWith(
-                                  fontSize: 11,
-                                  color: widget.showExtraLine
-                                      ? context.appTheme.accent2.withOpacity(0.6)
-                                      : context.appTheme.accent2.withOpacity(0),
-                                ),
-                                alignment: widget.extraLineY! < (maxY - minY) / 2
-                                    ? Alignment.topRight
-                                    : Alignment.bottomRight,
-                                labelResolver: (_) => widget.extraLineText ?? '',
-                              ),
-                              color: widget.showExtraLine
-                                  ? context.appTheme.accent2.withOpacity(0.15)
-                                  : context.appTheme.accent2.withOpacity(0),
-                            ),
-                          ]
-                        : [],
-                  ),
-                ),
-                duration: k550msDuration,
-                curve: Curves.easeInOutCubic,
-              ),
-            ),
+    return Transform.translate(
+      offset: Offset(0, chartOffsetY),
+      child: LineChart(
+        LineChartData(
+          maxY: maxY,
+          minY: minY,
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          titlesData: titlesData,
+          lineTouchData: lineTouchData,
+          lineBarsData: lineBarsData,
+          extraLinesData: ExtraLinesData(
+            horizontalLines: extraLineY != null
+                ? [
+                    HorizontalLine(
+                      y: extraLineY!,
+                      strokeWidth: 1.5,
+                      dashArray: [12, 8],
+                      label: HorizontalLineLabel(
+                        show: true,
+                        style: kHeader2TextStyle.copyWith(
+                          fontSize: 11,
+                          color: showExtraLine
+                              ? context.appTheme.accent2.withOpacity(0.3)
+                              : context.appTheme.accent2.withOpacity(0),
+                        ),
+                        alignment:
+                            extraLineY! < (maxY - minY) / 2 ? Alignment.topRight : Alignment.bottomRight,
+                        labelResolver: (_) => extraLineText ?? '',
+                      ),
+                      color: showExtraLine
+                          ? context.appTheme.accent2.withOpacity(0.15)
+                          : context.appTheme.accent2.withOpacity(0),
+                    ),
+                  ]
+                : [],
           ),
         ),
+        duration: k550msDuration,
+        curve: Curves.easeInOut,
       ),
     );
   }

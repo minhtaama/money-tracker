@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:realm/realm.dart';
-import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 import 'custom_tab_bar.dart';
-import 'dart:math' as math;
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -308,7 +304,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                   boxShadow: [
                     BoxShadow(
                       color: context.appTheme.onBackground
-                          .withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.3),
+                          .withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.5),
                       blurRadius: 30,
                     )
                   ]),

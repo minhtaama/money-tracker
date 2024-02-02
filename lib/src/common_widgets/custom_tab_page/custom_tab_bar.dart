@@ -67,6 +67,14 @@ class _ExtendedToolBar extends StatelessWidget {
         padding: const EdgeInsets.only(top: 10, bottom: 30),
         decoration: BoxDecoration(
           color: context.appTheme.background0,
+          boxShadow: context.appTheme.isDarkTheme
+              ? []
+              : [
+                  BoxShadow(
+                    color: context.appTheme.onBackground.withOpacity(0.3),
+                    blurRadius: 12,
+                  )
+                ],
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),

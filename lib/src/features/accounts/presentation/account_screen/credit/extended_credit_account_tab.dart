@@ -26,7 +26,6 @@ class ExtendedCreditAccountTab extends ConsumerStatefulWidget {
 
 class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccountTab> {
   late final _chartServicesRead = ref.read(customLineChartServicesProvider);
-  final ScrollController _controller = ScrollController();
 
   CustomLineType get _customLineType {
     final today = DateTime.now();
@@ -41,20 +40,6 @@ class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccount
     }
 
     throw ErrorDescription('Whoop whoop');
-  }
-
-  @override
-  void initState() {
-    _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant ExtendedCreditAccountTab oldWidget) {
-    if (widget.displayDate != oldWidget.displayDate) {
-      _chartServicesRead.animateLineChartPosition(_controller, widget.displayDate);
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -91,7 +76,6 @@ class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccount
         ),
         Expanded(
           child: CustomLineChart(
-            controller: _controller,
             currentMonth: widget.displayDate,
             spots: data.spots,
             chartOffsetY: 35,

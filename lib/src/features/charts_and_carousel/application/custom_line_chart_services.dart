@@ -16,36 +16,6 @@ class CustomLineChartServices {
 
   final TransactionRepositoryRealmDb transactionRepo;
 
-  void animateLineChartPosition(ScrollController controller, DateTime currentMonth) {
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      final position = controller.position;
-      final today = DateTime.now();
-
-      if (currentMonth.isInMonthAfter(today)) {
-        controller.animateTo(
-          position.minScrollExtent,
-          duration: k1000msDuration,
-          curve: Curves.easeInOutCubic,
-        );
-      } else if (currentMonth.isInMonthBefore(today)) {
-        controller.animateTo(
-          position.maxScrollExtent,
-          duration: k1000msDuration,
-          curve: Curves.easeInOutCubic,
-        );
-      } else if (currentMonth.isSameMonthAs(today)) {
-        final todayOffset = ((today.day - 4.5) * kDayColumnLineChartWidth)
-            .clamp(position.minScrollExtent, position.maxScrollExtent);
-
-        controller.animateTo(
-          todayOffset,
-          duration: k1000msDuration,
-          curve: Curves.easeInOutCubic,
-        );
-      }
-    });
-  }
-
   double getCashflow(DateTime lower, DateTime upper) {
     final list = transactionRepo.getTransactions(lower, upper);
     double result = 0;
