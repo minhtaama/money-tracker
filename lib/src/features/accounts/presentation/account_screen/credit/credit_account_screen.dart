@@ -57,14 +57,12 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
     }
   }
 
-  late DateTime _displayStatementDate =
-      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
 
   void _onPageChange(int value) {
-    _displayStatementDate =
-        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -120,8 +118,7 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor:
-              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           toolBar: StatementSelector(
             dateDisplay: _displayStatementDate.getFormattedDate(format: DateTimeFormat.ddmmyyyy),
             onTapLeft: _previousPage,
@@ -139,9 +136,10 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
         itemBuilder: (context, ref, pageIndex) {
-          final today = DateTime(
-              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement = widget.creditAccount.statementAt(today, upperGapAtDueDate: true);
+          final currentDateTime =
+              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          print('list ${statement?.startDate}');
           return statement != null
               ? [
                   _SummaryCard(statement: statement),
@@ -228,8 +226,7 @@ class _ListState extends State<_List> {
     );
   }
 
-  List<Widget> buildList(
-      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     DateTime tempDate = statement.startDate;
@@ -242,8 +239,7 @@ class _ListState extends State<_List> {
     if (statement.transactionsInBillingCycle.isEmpty) {
       _addH0(list, statement, topKey);
       _addH1(list, statement);
-      if (_today.isAfter(statement.previousStatement.dueDate) &&
-          _today.isBefore(statement.statementDate)) {
+      if (_today.isAfter(statement.previousDueDate) && _today.isBefore(statement.statementDate)) {
         _addHToday(list, statement);
       }
     }
@@ -258,32 +254,27 @@ class _ListState extends State<_List> {
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isBefore(statement.previousStatement.dueDate) &&
-                tempDate.isBefore(_today) &&
-                !txnDateTime.isBefore(_today)) {
+            _today.isBefore(statement.previousDueDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
       }
 
-      if (tempDate.isBefore(statement.previousStatement.dueDate) &&
-          !txnDateTime.isBefore(statement.previousStatement.dueDate)) {
+      if (tempDate.isBefore(statement.previousDueDate) && !txnDateTime.isBefore(statement.previousDueDate)) {
         triggerAddPreviousDueDateHeader = false;
         _addH1(list, statement);
       }
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.previousStatement.dueDate) &&
-                tempDate.isBefore(_today) &&
-                !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.previousDueDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
       }
 
       if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
-          txnDateTime.isAtSameMomentAs(statement.previousStatement.dueDate) ||
+          txnDateTime.isAtSameMomentAs(statement.previousDueDate) ||
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
@@ -300,7 +291,7 @@ class _ListState extends State<_List> {
       if (i == statement.transactionsInBillingCycle.length - 1 &&
           triggerAddTodayHeaderInBillingCycle &&
           _today.isBefore(statement.statementDate) &&
-          _today.isAfter(statement.previousStatement.dueDate)) {
+          _today.isAfter(statement.previousDueDate)) {
         _addHToday(list, statement);
       }
     }
@@ -329,9 +320,7 @@ class _ListState extends State<_List> {
 
       if (triggerAddTodayHeaderInGracePeriod) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.statementDate) &&
-                tempDate.isBefore(_today) &&
-                !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.statementDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInGracePeriod = false;
 
           _addHToday(list, statement);
@@ -343,8 +332,7 @@ class _ListState extends State<_List> {
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(
-            key: i == statement.transactionsInGracePeriod.length - 1 &&
-                    txnDateTime.isAtSameMomentAs(statement.dueDate)
+            key: i == statement.transactionsInGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.dueDate)
                 ? bottomKey
                 : null,
             statement: statement,
@@ -363,8 +351,7 @@ class _ListState extends State<_List> {
         _addHToday(list, statement);
       }
 
-      if (i == statement.transactionsInGracePeriod.length - 1 &&
-          triggerAddPaymentDueDateHeaderAtTheEnd) {
+      if (i == statement.transactionsInGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
         _addH3(list, statement, bottomKey: bottomKey);
       }
     }
@@ -385,7 +372,7 @@ class _ListState extends State<_List> {
   void _addH1(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        dateTime: statement.previousStatement.dueDate,
+        dateTime: statement.previousDueDate,
         h1: 'Previous due date'.hardcoded,
         h2: 'End of last grace period'.hardcoded,
       ),
@@ -397,9 +384,7 @@ class _ListState extends State<_List> {
     list.add(
       _Header(
         dateTime: statement.statementDate,
-        h1: statement.checkpoint != null
-            ? 'Statement date with checkpoint'.hardcoded
-            : 'Statement date'.hardcoded,
+        h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
         color: context.appTheme.primary,
         dateColor: context.appTheme.onPrimary,
@@ -413,7 +398,7 @@ class _ListState extends State<_List> {
         key: bottomKey,
         dateTime: statement.dueDate,
         h1: 'Payment due date'.hardcoded,
-        h2: statement.previousStatement.balanceToPay > 0
+        h2: statement.balanceToPayAtStartDateAfterPaid > 0
             ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
             : 'Pay-in-full before this day for interest-free',
       ),
@@ -458,9 +443,8 @@ class _SummaryCard extends StatelessWidget {
                   child: Text(
                     text,
                     style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.isDarkTheme
-                          ? context.appTheme.onBackground
-                          : context.appTheme.onSecondary,
+                      color:
+                          context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                       fontSize: 15,
                     ),
                   ),
@@ -544,12 +528,11 @@ class _SummaryCard extends StatelessWidget {
                   richText: '${carryString(context, statement)} ${context.appSettings.currency.code}',
                   color: carry.roundBySetting(context) <= 0 ? 0 : -1,
                 ),
-                statement.previousStatement.interest > 0
+                statement.interestFromPrevious > 0
                     ? _buildText(
                         context,
                         text: 'Interest:',
-                        richText:
-                            '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
+                        richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
                         color: interest.roundBySetting(context) <= 0 ? 0 : -1,
                       )
                     : Gap.noGap,
@@ -571,8 +554,7 @@ class _SummaryCard extends StatelessWidget {
                   child: _buildText(
                     context,
                     text: 'Balance:',
-                    richText:
-                        '${balanceString(context, statement)} ${context.appSettings.currency.code}',
+                    richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
                     color: balance.roundBySetting(context) <= 0 ? 0 : -1,
                   ),
                 ),
@@ -612,12 +594,11 @@ class _SummaryCard extends StatelessWidget {
 }
 
 extension _StatementDetails on _SummaryCard {
-  double get interest => statement.previousStatement.interest;
-  double get carry => statement.previousStatement.balanceToPay;
-  double get spent =>
-      statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
+  double get interest => statement.interestFromPrevious;
+  double get carry => statement.balanceToPayAtStartDateAfterPaid;
+  double get spent => statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
   double get paid => statement.paidForThisStatement;
-  double get balance => statement.balance;
+  double get balance => statement.balanceRemaining;
 
   String? interestString(BuildContext context, Statement statement) {
     return CalService.formatCurrency(context, interest, forceWithDecimalDigits: true);

@@ -10,7 +10,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
   final paymentTxnsDateTime = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final dueDates = creditAccount.statementsList.map((e) => e.dueDate.onlyYearMonthDay).toList();
   if (creditAccount.statementsList.isNotEmpty) {
-    dueDates.add(creditAccount.statementsList.first.previousStatement.dueDate);
+    dueDates.add(creditAccount.statementsList.first.previousDueDate);
   }
 
   final dateOfPaymentBefore = paymentTxnsDateTime.lastWhere(
@@ -186,7 +186,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
   final spendingTxnsDateTime = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final dueDates = creditAccount.statementsList.map((e) => e.dueDate.onlyYearMonthDay).toList();
   if (creditAccount.statementsList.isNotEmpty) {
-    dueDates.add(creditAccount.statementsList.first.previousStatement.dueDate);
+    dueDates.add(creditAccount.statementsList.first.previousDueDate);
   }
 
   final dateOfSpendingBefore = spendingTxnsDateTime.lastWhere(
@@ -683,7 +683,7 @@ extension _Details on _DateTimeSelectorCreditState {
     }
     final list = widget.creditAccount!.statementsList.map((e) => e.dueDate.onlyYearMonthDay).toList();
     if (widget.creditAccount!.statementsList.isNotEmpty) {
-      list.add(widget.creditAccount!.statementsList.first.previousStatement.dueDate);
+      list.add(widget.creditAccount!.statementsList.first.previousDueDate);
     }
     final dateTimeYMD = dateTime.onlyYearMonthDay;
     if (list.contains(dateTimeYMD)) {

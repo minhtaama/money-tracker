@@ -213,40 +213,65 @@ class LineChartServices {
   CLCData getCreditCLCData(CreditAccount account, DateTime displayStatementDate) {
     final today = DateTime.now().onlyYearMonthDay;
     final creditLimit = account.creditLimit;
-    final statement = account.statementAt(displayStatementDate);
+    final statement = account.statementAt(displayStatementDate, upperGapAtDueDate: true);
 
-    final double carryOver;
+    final double balanceAtStartDate;
+    final double balanceAtEndDate;
+    final double balanceToPayAtEndDate;
+    final double balanceRemaining;
     final List<BaseCreditTransaction> txns;
     final List<DateTime> days;
+    final DateTime startDate;
+    final DateTime statementDate;
+    final DateTime dueDate;
 
     if (statement != null) {
-      carryOver = statement.previousStatement.balanceToPay;
-      txns =
-          statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
-      days = [
-        for (DateTime day = statement.startDate;
-            !day.isAfter(statement.dueDate);
-            day = day.copyWith(day: day.day + 1))
-          day
-      ];
+      balanceAtStartDate = statement.balanceAtStartDate;
+      balanceAtEndDate = statement.balanceAtEndDate;
+      balanceToPayAtEndDate = statement.balanceToPayAtEndDate;
+      balanceRemaining = statement.balanceRemaining;
+      txns = statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
+      startDate = statement.startDate;
+      statementDate = statement.statementDate;
+      dueDate = statement.dueDate;
     } else {
-      carryOver = 0;
+      balanceAtStartDate = 0;
+      balanceAtEndDate = 0;
+      balanceToPayAtEndDate = 0;
+      balanceRemaining = 0;
       txns = [];
-      days = [];
+      startDate = DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
+      statementDate = startDate.copyWith(month: startDate.month + 1);
+      dueDate = account.statementDay >= account.paymentDueDay
+          ? startDate.copyWith(month: startDate.month + 2, day: account.paymentDueDay).onlyYearMonthDay
+          : startDate.copyWith(month: startDate.month + 1, day: account.paymentDueDay).onlyYearMonthDay;
     }
 
-    print(days.map((e) => '${e.day}/${e.month}'));
+    print(startDate);
 
-    Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - carryOver};
+    // Credit amount after full payment
+    // (creditLimit - balanceAtEndDate) is the amount of total spent (include installment)
+    // then add the amount must pay: (balanceToPayAtEndDate)
+    final creditAfterFullPayment = creditLimit - balanceAtEndDate + balanceToPayAtEndDate;
+
+    days = [for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day];
+
+    Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - balanceAtStartDate};
 
     void updateAmount(DateTime day, BaseCreditTransaction txn) {
       result.updateAll((key, value) {
         if (!key.isBefore(day)) {
           if (txn is CreditPayment) {
-            return value += txn.amount;
+            return value += txn.afterAdjustedAmount;
           }
 
-          return value -= txn.amount;
+          if (txn is CreditSpending) {
+            return value -= txn.amount;
+          }
+
+          if (txn is CreditCheckpoint) {
+            return value = txn.amount;
+          }
         }
 
         return value;
@@ -271,8 +296,8 @@ class LineChartServices {
       }
     }
 
-    double max = creditLimit;
-    double min = 0;
+    double min = creditLimit - balanceAtStartDate;
+    double max = min < 0 ? 0 : creditLimit;
 
     for (var entry in result.entries) {
       if (entry.value < min) {
@@ -280,36 +305,40 @@ class LineChartServices {
       }
     }
 
-    final minAbs = min.abs();
-
     final maxFromMin = max == min
         ? 0
         : max < 0 && min < 0
             ? min.abs() - max.abs()
-            : max + minAbs;
+            : max >= 0 && min >= 0
+                ? max - min
+                : max + min.abs();
 
     double getY(double amount) {
       if (maxFromMin == 0) {
-        return 0.0;
+        return 1.0;
       }
       if (amount == 0) {
-        return minAbs / maxFromMin;
+        return min.abs() / maxFromMin;
       }
       if (amount > 0) {
-        return (amount + minAbs) / maxFromMin;
+        return (amount - min.abs()) / maxFromMin;
       } else {
-        return (minAbs - amount.abs()) / maxFromMin;
+        return (min.abs() - amount.abs()) / maxFromMin;
       }
     }
 
-    return CLCData(
+    double getX(DateTime dateTime) => dateTime.getDaysDifferent(startDate).toDouble();
+
+    return CLCDataForCredit(
       maxAmount: max,
       minAmount: min,
-      dateTimesToShow: [statement?.startDate, statement?.statementDate, statement?.dueDate],
+      dateTimesToShow: [startDate, statementDate, dueDate],
+      extraLineY: getY(creditAfterFullPayment),
+      balanceRemaining: balanceRemaining,
       spots: List<CLCSpot>.from(
         result.entries.map(
           (e) => CLCSpot(
-            e.key.getDaysDifferent(statement!.startDate).toDouble(),
+            getX(e.key),
             getY(e.value),
             amount: e.value,
             dateTime: e.key.onlyYearMonthDay,
@@ -329,11 +358,25 @@ class CLCData {
   final double maxAmount;
   final double minAmount;
 
-  /// Only for credit: startDate -> statementDate -> dueDate
-  final List<DateTime?>? dateTimesToShow;
+  const CLCData({required this.spots, required this.maxAmount, required this.minAmount});
+}
 
-  const CLCData(
-      {required this.spots, required this.maxAmount, required this.minAmount, this.dateTimesToShow});
+class CLCDataForCredit extends CLCData {
+  /// Only for credit: startDate -> statementDate -> dueDate
+  final List<DateTime> dateTimesToShow;
+
+  final double extraLineY;
+
+  final double balanceRemaining;
+
+  const CLCDataForCredit({
+    required super.spots,
+    required super.maxAmount,
+    required super.minAmount,
+    required this.dateTimesToShow,
+    required this.extraLineY,
+    required this.balanceRemaining,
+  });
 }
 
 /////////////////// PROVIDERS //////////////////////////

@@ -110,7 +110,7 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        preventCurveOvershootingThreshold: -10,
+        preventCurveOvershootingThreshold: 0,
         barWidth: _customLineType == CustomLineType.solid ? 3.5 : 2.5,
         dashArray: [12, _customLineType == CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
@@ -144,7 +144,7 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        preventCurveOvershootingThreshold: -10,
+        preventCurveOvershootingThreshold: 0,
         barWidth: 3.5,
         gradient: optionalBarGradient,
         dotData: FlDotData(
@@ -197,11 +197,20 @@ class CustomLineChart extends StatelessWidget {
     }
 
     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
-      final spot = spots.firstWhere((spot) => spot.x == value);
+      final spot = spots.firstWhere((spot) => spot.x == value, orElse: () => CLCSpot(0, 0, amount: 0));
 
-      final isShowTitle = data.dateTimesToShow?.contains(spot.dateTime) ?? false;
+      final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
 
-      final icon = spot.dateTime == data.dateTimesToShow?[2] ? AppIcons.handCoin : AppIcons.budgets;
+      final icon =
+          spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[2] ? AppIcons.handCoin : AppIcons.budgets;
+
+      final crossAlignment = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[0]
+          ? CrossAxisAlignment.start
+          : spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[2]
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center;
+
+      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(
@@ -209,11 +218,22 @@ class CustomLineChart extends StatelessWidget {
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
-                fitInside:
-                    SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 0),
-                child: SvgIcon(
-                  icon,
-                  color: context.appTheme.onBackground,
+                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+                child: FittedBox(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: crossAlignment,
+                    children: [
+                      SvgIcon(
+                        icon,
+                        color: context.appTheme.onBackground,
+                      ),
+                      Text(
+                        spot.dateTime!.getFormattedDate(hasYear: false),
+                        style: textStyle,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             )
@@ -234,19 +254,16 @@ class CustomLineChart extends StatelessWidget {
         }
 
         final amount = spots[touchedSpot.spotIndex].amount;
-        final dateTime = spots[touchedSpot.spotIndex]
-                .dateTime
-                ?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
-            currentMonth
-                .copyWith(day: touchedSpot.x.toInt())
-                .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
+        final dateTime =
+            spots[touchedSpot.spotIndex].dateTime?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
+                currentMonth
+                    .copyWith(day: touchedSpot.x.toInt())
+                    .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
 
         items.add(LineTooltipItem(
           '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme
-                ? context.appTheme.onBackground
-                : context.appTheme.onSecondary,
+            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
             fontSize: 13,
           ),
           textAlign: TextAlign.right,
@@ -254,9 +271,7 @@ class CustomLineChart extends StatelessWidget {
             TextSpan(
               text: dateTime,
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme
-                    ? context.appTheme.onBackground
-                    : context.appTheme.onSecondary,
+                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                 fontSize: 11,
               ),
             ),
@@ -312,7 +327,7 @@ class CustomLineChart extends StatelessWidget {
         drawBelowEverything: false,
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: 14,
+          reservedSize: isForCredit ? 30 : 14,
           interval: 1,
           getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : bottomTitleWidgets,
         ),
@@ -334,8 +349,7 @@ class CustomLineChart extends StatelessWidget {
                         ? context.appTheme.accent2.withOpacity(0.3)
                         : context.appTheme.accent2.withOpacity(0),
                   ),
-                  alignment:
-                      extraLineY! < (maxY - minY) / 2 ? Alignment.topRight : Alignment.bottomRight,
+                  alignment: extraLineY! < (maxY - minY) / 2 ? Alignment.topRight : Alignment.bottomRight,
                   labelResolver: (_) => extraLineText ?? '',
                 ),
                 color: extraLineY != null

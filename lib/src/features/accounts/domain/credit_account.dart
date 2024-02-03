@@ -52,7 +52,7 @@ extension CreditAccountMethods on CreditAccount {
   DateTime get latestStatementDueDate {
     Statement? statement = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
-    return statement?.previousStatement.dueDate.onlyYearMonthDay ?? Calendar.minDate;
+    return statement?.previousDueDate.onlyYearMonthDay ?? Calendar.minDate;
   }
 
   DateTime get todayStatementDueDate {
@@ -74,6 +74,8 @@ extension CreditAccountMethods on CreditAccount {
   /// Return `null` if account has no transaction.
   ///
   /// Get whole `Statement` object contains the `dateTime`
+  ///
+  /// If `upperGapAtDueDate` is true, will returns statement that dateTime is in grace period.
   Statement? statementAt(DateTime dateTime, {bool? upperGapAtDueDate}) {
     if (statementsList.isEmpty) {
       return null;
@@ -84,7 +86,7 @@ extension CreditAccountMethods on CreditAccount {
 
     // If statement is already in credit account statements list
     for (Statement statement in statementsList) {
-      if (date.compareTo(statement.previousStatement.dueDate) > 0 && date.compareTo(statement.dueDate) <= 0) {
+      if (date.compareTo(statement.previousDueDate) > 0 && date.compareTo(statement.dueDate) <= 0) {
         return statement;
       }
     }

@@ -4,12 +4,12 @@ part of 'statement.dart';
 class StatementWithAverageDailyBalance extends Statement {
   const StatementWithAverageDailyBalance._(
     this._interest,
+    super._previousStatement,
     super._spentInBillingCycle,
     super._spentInBillingCycleExcludeInstallments,
     super._paidInBillingCycle,
     super._paidInGracePeriod, {
     required super.apr,
-    required super.previousStatement,
     required super.checkpoint,
     required super.startDate,
     required super.endDate,
@@ -50,7 +50,7 @@ class StatementWithAverageDailyBalance extends Statement {
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
     double tCurrentBalance =
-        previousStatement._balanceAtEndDate + previousStatement.interest + installmentsAmount;
+        previousStatement._balanceAtEndDate + previousStatement.interestToThisStatement + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -95,11 +95,11 @@ class StatementWithAverageDailyBalance extends Statement {
 
     return StatementWithAverageDailyBalance._(
       interest,
+      previousStatement,
       totalSpentInBillingCycle,
       spentInBillingCycleExcludeInstallments,
       paidInBillingCycle,
       paidInGracePeriod,
-      previousStatement: previousStatement,
       checkpoint: checkpoint,
       startDate: startDate,
       endDate: endDate,

@@ -326,7 +326,7 @@ extension AccountGettersExtension on Account {
         final limit = (this as CreditAccount).creditLimit;
         try {
           final latestStatement = (this as CreditAccount).statementsList.last;
-          return limit - latestStatement.balance;
+          return limit - latestStatement.balanceRemaining;
         } catch (_) {
           return limit;
         }
