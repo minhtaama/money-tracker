@@ -1,6 +1,8 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/statement/statement.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../charts_and_carousel/presentation/custom_line_chart.dart';
@@ -201,7 +203,7 @@ class LineChartServices {
       spots: List<CLCSpot>.from(
         result.entries.map(
           (e) => CLCSpot(e.key.toDouble(), getY(e.value),
-              amount: e.value, checkpoint: e.key == today.day && today.isSameMonthAs(displayDate)),
+              amount: e.value, isToday: e.key == today.day && today.isSameMonthAs(displayDate)),
         ),
       ),
     );
@@ -219,6 +221,7 @@ class LineChartServices {
     final List<BaseCreditTransaction> txns;
     final List<DateTime> days;
     final DateTime startDate;
+    final DateTime previousDueDate;
     final DateTime statementDate;
     final DateTime dueDate;
 
@@ -229,6 +232,7 @@ class LineChartServices {
       balanceRemaining = statement.balanceRemaining;
       txns = statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
       startDate = statement.startDate;
+      previousDueDate = statement.previousDueDate;
       statementDate = statement.statementDate;
       dueDate = statement.dueDate;
     } else {
@@ -238,6 +242,7 @@ class LineChartServices {
       balanceRemaining = 0;
       txns = [];
       startDate = DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
+      previousDueDate = Calendar.minDate;
       statementDate = startDate.copyWith(month: startDate.month + 1);
       dueDate = account.statementDay >= account.paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: account.paymentDueDay).onlyYearMonthDay
@@ -327,17 +332,18 @@ class LineChartServices {
     return CLCDataForCredit(
       maxAmount: max,
       minAmount: min,
-      dateTimesToShow: [startDate, statementDate, dueDate],
+      dateTimesToShow: [startDate, previousDueDate, statementDate, dueDate],
       extraLineY: getY(creditAfterFullPayment),
       balanceRemaining: balanceRemaining,
-      spots: List<CLCSpot>.from(
+      spots: List<CLCSpotForCredit>.from(
         result.entries.map(
-          (e) => CLCSpot(
+          (e) => CLCSpotForCredit(
             getX(e.key),
             getY(e.value),
             amount: e.value,
             dateTime: e.key.onlyYearMonthDay,
-            checkpoint: e.key == today,
+            isToday: e.key == today,
+            isStatementDay: e.key == statementDate,
           ),
         ),
       ),
@@ -372,6 +378,36 @@ class CLCDataForCredit extends CLCData {
     required this.extraLineY,
     required this.balanceRemaining,
   });
+}
+
+class CLCSpot extends FlSpot {
+  /// Custom Line Chart Spot, use with [CustomLineChart]. This class extends [FlSpot],
+  /// which has additional `amount` and `checkpoint` property.
+  ///
+  /// The X-axis represents day,
+  ///
+  /// The Y-axis represents the ratio of the `amount` at that point to the highest `amount`
+  CLCSpot(super.x, super.y, {required this.amount, this.isToday = false, this.dateTime});
+
+  /// To store original amount of y-axis
+  final double amount;
+
+  /// To store original value (as DateTime) of x-axis.
+  ///
+  /// If null, use x-axis to represent bottom labels.
+  final DateTime? dateTime;
+
+  /// Is the spot where line turn from solid to dashed.
+  ///
+  /// Only works when type is [_CustomLineType.solidToDashed]
+  final bool isToday;
+}
+
+class CLCSpotForCredit extends CLCSpot {
+  CLCSpotForCredit(super.x, super.y,
+      {required super.amount, super.dateTime, super.isToday = false, required this.isStatementDay});
+
+  final bool isStatementDay;
 }
 
 /////////////////// PROVIDERS //////////////////////////

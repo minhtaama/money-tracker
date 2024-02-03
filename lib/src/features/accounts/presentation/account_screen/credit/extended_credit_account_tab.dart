@@ -47,7 +47,7 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
               RoundedIconButton(
                 onTap: () => context.pop(),
                 backgroundColor: Colors.transparent,
-                iconColor: context.appTheme.onBackground,
+                iconColor: account.iconColor,
                 iconPath: AppIcons.back,
               ),
               Gap.w8,
