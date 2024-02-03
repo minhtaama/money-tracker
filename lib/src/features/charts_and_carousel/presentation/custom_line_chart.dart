@@ -11,6 +11,8 @@ import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
+import '../../../theme_and_ui/colors.dart';
+
 enum _CustomLineType { dashed, solid, solidToDashed }
 
 class CLCSpot extends FlSpot {
@@ -245,6 +247,7 @@ class CustomLineChart extends StatelessWidget {
 
     List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
       List<LineTooltipItem?> items = [];
+      final lum = color?.computeLuminance();
 
       // loop through EACH touchedSpot of a bar
       for (int i = 0; i < touchedSpots.length; i++) {
@@ -266,7 +269,11 @@ class CustomLineChart extends StatelessWidget {
         items.add(LineTooltipItem(
           '${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, amount)} \n',
           kHeader2TextStyle.copyWith(
-            color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            color: lum == null
+                ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                : lum > 0.5
+                    ? AppColors.black
+                    : AppColors.white,
             fontSize: 13,
             // TODO: COLOR HERE
           ),
@@ -275,7 +282,11 @@ class CustomLineChart extends StatelessWidget {
             TextSpan(
               text: dateTime,
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                color: lum == null
+                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    : lum > 0.5
+                        ? AppColors.black
+                        : AppColors.white,
                 fontSize: 11,
               ),
             ),
