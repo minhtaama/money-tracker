@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../../transactions/data/transaction_repo.dart';
 import '../../../domain/account_base.dart';
 
-class ExtendedCreditAccountTab extends ConsumerStatefulWidget {
+class ExtendedCreditAccountTab extends ConsumerWidget {
   const ExtendedCreditAccountTab({
     super.key,
     required this.account,
@@ -22,20 +22,13 @@ class ExtendedCreditAccountTab extends ConsumerStatefulWidget {
   final DateTime displayDate;
 
   @override
-  ConsumerState<ExtendedCreditAccountTab> createState() => _ExtendedCreditAccountTabState();
-}
-
-class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccountTab> {
-  late final _chartServicesRead = ref.read(customLineChartServicesProvider);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getCreditCLCData(widget.account as CreditAccount, widget.displayDate);
+    CLCData data = chartServices.getCreditCLCData(account as CreditAccount, displayDate);
 
     ref.listen(transactionsChangesStreamProvider, (_, __) {
-      data = chartServices.getCreditCLCData(widget.account as CreditAccount, widget.displayDate);
+      data = chartServices.getCreditCLCData(account as CreditAccount, displayDate);
     });
 
     final extraLineY = (data as CLCDataForCredit).extraLineY;
@@ -45,28 +38,36 @@ class _ExtendedCreditAccountTabState extends ConsumerState<ExtendedCreditAccount
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            RoundedIconButton(
-              onTap: () => context.pop(),
-              backgroundColor: Colors.transparent,
-              iconColor: context.appTheme.onBackground,
-              iconPath: AppIcons.back,
-            ),
-            Text(
-              widget.account.name,
-              style: kHeader2TextStyle.copyWith(
-                color: widget.account.iconColor,
-                fontSize: 18,
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            textBaseline: TextBaseline.alphabetic,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RoundedIconButton(
+                onTap: () => context.pop(),
+                backgroundColor: Colors.transparent,
+                iconColor: context.appTheme.onBackground,
+                iconPath: AppIcons.back,
               ),
-            ),
-            Gap.w8,
-          ],
+              Gap.w8,
+              Text(
+                account.name,
+                style: kHeader2TextStyle.copyWith(
+                  color: account.iconColor,
+                  fontSize: 28,
+                ),
+              ),
+              Gap.w16,
+              TxnInfo('Credit', color: account.iconColor),
+              const Spacer(),
+            ],
+          ),
         ),
         Expanded(
           child: CustomLineChart(
-            currentMonth: widget.displayDate,
+            currentMonth: displayDate,
+            color: account.iconColor,
             data: data,
             offsetY: 35,
             isForCredit: true,

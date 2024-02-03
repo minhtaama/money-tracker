@@ -139,7 +139,6 @@ class _CreditAccountScreenState extends State<CreditAccountScreen> {
           final currentDateTime =
               DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
           final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
-          print('list ${statement?.startDate}');
           return statement != null
               ? [
                   _SummaryCard(statement: statement),

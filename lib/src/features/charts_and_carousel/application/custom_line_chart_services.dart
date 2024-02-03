@@ -1,15 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/statement/statement.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../utils/enums.dart';
 import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
-import 'dart:math' as math;
 
 class LineChartServices {
   LineChartServices(this.transactionRepo);
@@ -246,8 +243,6 @@ class LineChartServices {
           ? startDate.copyWith(month: startDate.month + 2, day: account.paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: account.paymentDueDay).onlyYearMonthDay;
     }
-
-    print(startDate);
 
     // Credit amount after full payment
     // (creditLimit - balanceAtEndDate) is the amount of total spent (include installment)
