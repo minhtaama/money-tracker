@@ -127,12 +127,14 @@ extension StatementGetters on Statement {
 
   /// Only count the spending transaction in billing cycle. Not include
   /// spendings with installment.
+  ///
   double get spentInBillingCycleExcludeInstallments =>
       checkpoint?.unpaidToPay ?? _spentInBillingCycleExcludeInstallments;
 
   double get spentInGracePeriod => _spentInGracePeriod;
 
   /// installments to pay. Not included in any of startDate getters
+  ///
   double get installmentsAmountToPay {
     if (checkpoint != null) {
       return 0;
@@ -200,9 +202,11 @@ extension StatementGetters on Statement {
 
   /// The interest from previous statement to this statement
   /// Not include in any other getters
+  ///
   double get interestFromPrevious => _previousStatement.interestToThisStatement;
 
   /// The balance remaining
+  ///
   double get balanceToPayRemaining {
     double value;
     if (checkpoint == null) {
@@ -226,6 +230,7 @@ extension StatementGetters on Statement {
   ///
   /// The "Next [Statement]" in the statement list will
   /// access to "This Current [Statement]" info through [_previousStatement] property
+  ///
   PreviousStatement get carryToNextStatement {
     final balanceAtEndDate = checkpoint?.oustdBalance ??
         double.parse(

@@ -36,6 +36,7 @@ class StatementPayOnlyInGracePeriod extends Statement {
     double spentInBillingCycle = 0;
     double spentInBillingCycleExcludeInstallments = 0;
     double spentInGracePeriod = 0;
+    double spentInGracePeriodExcludeInstallments = 0;
     double paidInBillingCycleInPreviousGracePeriod = 0;
     double paidInGracePeriod = 0;
 
@@ -87,6 +88,10 @@ class StatementPayOnlyInGracePeriod extends Statement {
 
       if (txn is CreditSpending) {
         spentInGracePeriod += txn.amount;
+
+        if (!txn.hasInstallment) {
+          spentInGracePeriodExcludeInstallments += txn.amount;
+        }
       }
 
       if (txn is CreditPayment) {
@@ -107,8 +112,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
       spentInBillingCycle: spentInBillingCycle,
       spentInBillingCycleExcludeInstallments: spentInBillingCycleExcludeInstallments,
       spentInGracePeriod: spentInGracePeriod,
-      spentInGracePeriodExcludeInstallments: 0,
-      paidInBillingCycle: 0,
+      spentInGracePeriodExcludeInstallments: spentInGracePeriodExcludeInstallments,
+      paidInBillingCycle: paidInBillingCycleInPreviousGracePeriod,
       paidInBillingCycleInPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod,
       paidInGracePeriod: paidInGracePeriod,
       checkpoint: checkpoint,
@@ -146,7 +151,7 @@ class StatementPayOnlyInGracePeriod extends Statement {
         x = checkpoint!.unpaidToPay - _paidInGracePeriod;
       }
     } else {
-      x = (spentToPayAtStartDate - _paidInBillingCycleInPreviousGracePeriod) +
+      x = (spentToPayAtStartDate - _paidInBillingCycle) +
           interestFromPrevious +
           installmentsAmountToPay +
           spentInBillingCycleExcludeInstallments -

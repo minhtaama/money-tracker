@@ -70,6 +70,20 @@ extension CreditAccountMethods on CreditAccount {
     }
   }
 
+  bool isInGracePeriod(DateTime dateTime) {
+    if (paymentDueDay < statementDay) {
+      if (dateTime.day <= paymentDueDay || dateTime.day >= statementDay) {
+        return true;
+      }
+      return false;
+    } else {
+      if (dateTime.day <= paymentDueDay && dateTime.day >= statementDay) {
+        return true;
+      }
+      return false;
+    }
+  }
+
   ///Find the next [CreditPayment] from since this [CreditSpending] date time
   ///
   /// Throw state error if no payment is found
