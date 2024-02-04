@@ -161,7 +161,6 @@ class StatementWithAverageDailyBalance extends Statement {
 
   @override
   double balanceToPayAt(DateTime dateTime) {
-    print('c');
     double x;
 
     double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
