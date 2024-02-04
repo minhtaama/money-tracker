@@ -11,7 +11,7 @@ import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../transactions/domain/transaction_base.dart';
 
-import 'statement/statement.dart';
+import 'statement/base_class/statement.dart';
 
 part 'regular_account.dart';
 part 'credit_account.dart';
@@ -30,20 +30,29 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    final statementType = switch (accountDb.creditDetails!.statementType) {
+      0 => StatementType.withAverageDailyBalance,
+      _ => StatementType.payOnlyInGracePeriod,
+    };
+
+    DateTime? earliestPayableDate =
+        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate =
+        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
-      earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+      earliestStatementDate =
+          DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
     }
 
     // only year, month and day
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate =
+            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -61,6 +70,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
         latestStatementDate: latestStatementDate,
         accountTransactionsList: transactionsList,
         apr: accountDb.creditDetails!.apr,
+        statementType: statementType,
       );
     }
 
@@ -76,6 +86,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       paymentDueDay: accountDb.creditDetails!.paymentDueDay,
       transactionsList: transactionsList,
       statementsList: statementsList,
+      statementType: statementType,
       earliestStatementDate: earliestStatementDate,
       earliestPayableDate: earliestPayableDate,
     );
@@ -84,7 +95,8 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>(
+            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -125,6 +137,13 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     if (accountDb == null) {
       return null;
     }
+
+    final statementType = switch (accountDb.creditDetails?.statementType) {
+      null => null,
+      0 => StatementType.withAverageDailyBalance,
+      _ => StatementType.payOnlyInGracePeriod,
+    };
+
     return switch (accountDb.type) {
       0 => RegularAccount._(
           accountDb,
@@ -147,6 +166,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
           transactionsList: const [],
           statementsList: const [],
+          statementType: statementType!,
           earliestStatementDate: null,
           earliestPayableDate: null,
         ),
@@ -170,6 +190,7 @@ extension CreditAccountExtension on Account {
     required DateTime earliestStatementDate,
     required DateTime latestStatementDate,
     required List<BaseCreditTransaction> accountTransactionsList,
+    required StatementType statementType,
   }) {
     final statementsList = <Statement>[];
 
@@ -179,7 +200,8 @@ extension CreditAccountExtension on Account {
 
     // Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
-      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate =
+          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
@@ -244,7 +266,7 @@ extension CreditAccountExtension on Account {
       }
 
       Statement statement = Statement.create(
-        StatementType.withAverageDailyBalance,
+        statementType,
         previousStatement: previousStatement,
         checkpoint: checkpoint,
         startDate: startDate,
@@ -279,7 +301,8 @@ extension CreditAccountExtension on Account {
 
     for (CreditSpending spending in txn.finishedInstallments) {
       if (installmentsToAddToStatement.map((e) => e.txn).contains(spending)) {
-        installmentsToAddToStatement.removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
+        installmentsToAddToStatement
+            .removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
         installmentCountsMapToMutate.remove(spending);
       }
     }
@@ -326,7 +349,7 @@ extension AccountGettersExtension on Account {
         final limit = (this as CreditAccount).creditLimit;
         try {
           final latestStatement = (this as CreditAccount).statementsList.last;
-          return limit - latestStatement.balanceRemaining;
+          return limit - latestStatement.balanceToPayRemaining;
         } catch (_) {
           return limit;
         }

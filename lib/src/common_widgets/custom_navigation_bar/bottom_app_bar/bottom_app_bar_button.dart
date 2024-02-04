@@ -27,7 +27,8 @@ class BottomAppBarButton extends StatelessWidget {
     EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 35 : 30, right: isLeft ? 30 : 35);
     BorderRadius borderRadius = BorderRadius.circular(38);
 
-    Color backgroundColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
+    Color backgroundColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
 
     return Expanded(
       child: Padding(
@@ -37,13 +38,13 @@ class BottomAppBarButton extends StatelessWidget {
           borderRadius: borderRadius,
           splashColor: backgroundColor.withAlpha(105),
           highlightColor: Colors.transparent,
-          child: CardItem(
-            color: isSelected ? backgroundColor : backgroundColor.withOpacity(0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             height: kBottomAppBarHeight - 28,
-            borderRadius: borderRadius,
-            margin: EdgeInsets.zero,
-            isGradient: isSelected ? (context.appTheme.isDarkTheme ? false : true) : false,
-            elevation: 0,
+            decoration: BoxDecoration(
+              color: isSelected ? backgroundColor : backgroundColor.withOpacity(0),
+              borderRadius: borderRadius,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
@@ -53,8 +54,12 @@ class BottomAppBarButton extends StatelessWidget {
                   child: SvgIcon(
                     item.iconData,
                     color: isSelected
-                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground)
-                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground),
+                        ? (context.appTheme.isDarkTheme
+                            ? context.appTheme.secondary1
+                            : context.appTheme.onBackground)
+                        : (context.appTheme.isDarkTheme
+                            ? context.appTheme.secondary1
+                            : context.appTheme.onBackground),
                   ),
                 ),
                 Gap.w4,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_radio.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
@@ -39,6 +40,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   int colorIndex = 0;
 
   AccountType accountType = AccountType.regular;
+  StatementType statementType = StatementType.withAverageDailyBalance;
 
   String calculatorOutput = '0';
 
@@ -60,6 +62,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         colorIndex: colorIndex,
         statementDay: statementDay,
         paymentDueDay: paymentDueDay,
+        statementType: statementType,
         apr: CalService.formatToDouble(apr),
       );
       context.pop();
@@ -165,6 +168,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               });
             },
           ),
+          Gap.h8,
           HideableContainer(
             hidden: accountType != AccountType.credit,
             child: Container(
@@ -175,7 +179,16 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Text(
+                      'Credit preferences:',
+                      style:
+                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                    ),
+                  ),
                   Row(
                     children: [
                       Text(
@@ -232,7 +245,53 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               ),
             ),
           ),
-          Gap.h24,
+          Gap.h8,
+          HideableContainer(
+            hidden: accountType != AccountType.credit,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.greyBorder(context)),
+              ),
+              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                    child: Text(
+                      'Payment & Interest preferences:',
+                      style:
+                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                    ),
+                  ),
+                  CustomRadio<StatementType>(
+                    label: 'Using Average Daily Balance'.hardcoded,
+                    subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'
+                        .hardcoded,
+                    value: StatementType.withAverageDailyBalance,
+                    groupValue: statementType,
+                    onChanged: (value) => setState(() {
+                      statementType = value!;
+                    }),
+                  ),
+                  CustomRadio<StatementType>(
+                    label: 'Payment only in grace period',
+                    subLabel:
+                        'Can not make payment in billing cycle, interest is calculated by other method.'
+                            .hardcoded,
+                    value: StatementType.payOnlyInGracePeriod,
+                    groupValue: statementType,
+                    onChanged: (value) => setState(() {
+                      statementType = value!;
+                    }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Gap.h8,
           Align(
             alignment: Alignment.centerRight,
             child: IconWithTextButton(

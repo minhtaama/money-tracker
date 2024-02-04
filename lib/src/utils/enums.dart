@@ -25,6 +25,7 @@ enum AccountType {
 
 enum StatementType {
   withAverageDailyBalance,
+  payOnlyInGracePeriod,
 }
 
 enum ThemeType {

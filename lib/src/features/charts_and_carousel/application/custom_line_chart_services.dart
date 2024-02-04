@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/statement/statement.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/statement/base_class/statement.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../accounts/domain/account_base.dart';
@@ -214,9 +214,10 @@ class LineChartServices {
     final creditLimit = account.creditLimit;
     final statement = account.statementAt(displayStatementDate, upperGapAtDueDate: true);
 
-    final double balanceAtStartDate;
-    final double balanceAtEndDate;
-    final double balanceToPayAtEndDate;
+    final double amountAtStartDate;
+    final double amountAtEndDate;
+    final double amountToPayAtEndDate;
+    final double spentInGracePeriod;
     final double balanceRemaining;
     final List<BaseCreditTransaction> txns;
     final List<DateTime> days;
@@ -226,22 +227,26 @@ class LineChartServices {
     final DateTime dueDate;
 
     if (statement != null) {
-      balanceAtStartDate = statement.balanceAtStartDate;
-      balanceAtEndDate = statement.balanceAtEndDate;
-      balanceToPayAtEndDate = statement.balanceToPayAtEndDate;
-      balanceRemaining = statement.balanceRemaining;
-      txns = statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
+      amountAtStartDate = statement.totalSpentAtStartDate + statement.interestFromPrevious;
+      amountAtEndDate = statement.totalSpentAtEndDate + statement.interestFromPrevious;
+      amountToPayAtEndDate = statement.spentToPayAtEndDate + statement.interestFromPrevious;
+      spentInGracePeriod = statement.spentInGracePeriod;
+      balanceRemaining = statement.balanceToPayRemaining;
+      txns =
+          statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
       startDate = statement.startDate;
       previousDueDate = statement.previousDueDate;
       statementDate = statement.statementDate;
       dueDate = statement.dueDate;
     } else {
-      balanceAtStartDate = 0;
-      balanceAtEndDate = 0;
-      balanceToPayAtEndDate = 0;
+      amountAtStartDate = 0;
+      amountAtEndDate = 0;
+      amountToPayAtEndDate = 0;
+      spentInGracePeriod = 0;
       balanceRemaining = 0;
       txns = [];
-      startDate = DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
+      startDate =
+          DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
       previousDueDate = Calendar.minDate;
       statementDate = startDate.copyWith(month: startDate.month + 1);
       dueDate = account.statementDay >= account.paymentDueDay
@@ -250,13 +255,16 @@ class LineChartServices {
     }
 
     // Credit amount after full payment
-    // (creditLimit - balanceAtEndDate) is the amount of total spent (include installment)
-    // then add the amount must pay: (balanceToPayAtEndDate)
-    final creditAfterFullPayment = creditLimit - balanceAtEndDate + balanceToPayAtEndDate;
+    // (creditLimit - amountAtEndDate) is the amount of total spent (include installment)
+    // then add the amount must pay: (amountToPayAtEndDate)
+    final creditAfterFullPayment =
+        creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
 
-    days = [for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day];
+    days = [
+      for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day
+    ];
 
-    Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - balanceAtStartDate};
+    Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - amountAtStartDate};
 
     void updateAmount(DateTime day, BaseCreditTransaction txn) {
       result.updateAll((key, value) {
@@ -296,7 +304,7 @@ class LineChartServices {
       }
     }
 
-    double min = creditLimit - balanceAtStartDate;
+    double min = creditLimit - amountAtStartDate;
     double max = min < 0 ? 0 : creditLimit;
 
     for (var entry in result.entries) {

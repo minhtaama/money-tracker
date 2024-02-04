@@ -67,23 +67,33 @@ class AccountRepositoryRealmDb {
     required int? statementDay,
     required int? paymentDueDay,
     required double? apr,
+    required StatementType? statementType,
   }) async {
     CreditDetailsDb? creditDetailsDb;
 
     final order = getList(null).length;
 
     if (type == AccountType.credit) {
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, apr: apr!);
+      final statementTypeDb = switch (statementType!) {
+        StatementType.withAverageDailyBalance => 0,
+        StatementType.payOnlyInGracePeriod => 1,
+      };
+
+      creditDetailsDb =
+          CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(
+        ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref.read(transactionRepositoryRealmProvider).writeInitialBalance(balance: balance, newAccount: newAccount);
+        ref
+            .read(transactionRepositoryRealmProvider)
+            .writeInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -98,7 +108,8 @@ class AccountRepositoryRealmDb {
     final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    TransactionDb? initialTransaction =
+        accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
       realm.write(() {

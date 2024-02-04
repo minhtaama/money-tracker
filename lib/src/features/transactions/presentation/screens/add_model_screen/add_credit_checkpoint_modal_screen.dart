@@ -16,7 +16,7 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../accounts/domain/account_base.dart';
-import '../../../../accounts/domain/statement/statement.dart';
+import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../selectors/date_time_selector/date_time_selector_components.dart';
 import '../../selectors/forms.dart';

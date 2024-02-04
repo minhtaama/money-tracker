@@ -21,7 +21,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../accounts/domain/account_base.dart';
-import '../../../../accounts/domain/statement/statement.dart';
+import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../selectors/forms.dart';
 
@@ -281,8 +281,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                         stateWatch.totalBalanceAmount.roundBySetting(context) -
                                                 stateWatch.userPaymentAmount!.roundBySetting(context) >
                                             0
-                                    ? CalService.formatCurrency(
-                                        context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                    ? CalService.formatCurrency(context,
+                                        stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                     : '???',
                                 textAlign: TextAlign.right,
                                 controller: _remainingInputController,

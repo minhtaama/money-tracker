@@ -14,7 +14,7 @@ import '../../../../../theme_and_ui/colors.dart';
 import '../../../../../utils/constants.dart';
 import '../../../domain/transaction_base.dart';
 import '../../transaction/txn_components.dart';
-import '../../../../accounts/domain/statement/statement.dart';
+import '../../../../accounts/domain/statement/base_class/statement.dart';
 
 class CheckpointInstallmentsList extends StatelessWidget {
   const CheckpointInstallmentsList({

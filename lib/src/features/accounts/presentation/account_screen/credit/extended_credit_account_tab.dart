@@ -18,17 +18,17 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
     required this.account,
     required this.displayDate,
   });
-  final Account account;
+  final CreditAccount account;
   final DateTime displayDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getCreditCLCData(account as CreditAccount, displayDate);
+    CLCData data = chartServices.getCreditCLCData(account, displayDate);
 
     ref.listen(transactionsChangesStreamProvider, (_, __) {
-      data = chartServices.getCreditCLCData(account as CreditAccount, displayDate);
+      data = chartServices.getCreditCLCData(account, displayDate);
     });
 
     final extraLineY = (data as CLCDataForCredit).extraLineY;
@@ -51,16 +51,20 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
                 iconPath: AppIcons.back,
               ),
               Gap.w8,
-              Text(
-                account.name,
-                style: kHeader2TextStyle.copyWith(
-                  color: account.iconColor,
-                  fontSize: 28,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    account.name,
+                    style: kHeader2TextStyle.copyWith(
+                      color: account.iconColor,
+                      fontSize: 28,
+                    ),
+                  ),
                 ),
               ),
               Gap.w16,
               TxnInfo('Credit', color: account.iconColor),
-              const Spacer(),
             ],
           ),
         ),
@@ -105,7 +109,9 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            iconColor: context.appTheme.isDarkTheme
+                ? context.appTheme.onBackground
+                : context.appTheme.onSecondary,
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapLeft,
             size: 35,
@@ -144,8 +150,9 @@ class StatementSelector extends StatelessWidget {
                       key: ValueKey(dateDisplay),
                       dateDisplay,
                       style: kHeader2TextStyle.copyWith(
-                        color:
-                            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                        color: context.appTheme.isDarkTheme
+                            ? context.appTheme.onBackground
+                            : context.appTheme.onSecondary,
                         fontSize: 16,
                       ),
                     ),
@@ -159,7 +166,9 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+            iconColor: context.appTheme.isDarkTheme
+                ? context.appTheme.onBackground
+                : context.appTheme.onSecondary,
 
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapRight,

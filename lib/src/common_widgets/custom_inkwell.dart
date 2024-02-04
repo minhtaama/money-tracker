@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class CustomInkWell extends StatelessWidget {
   const CustomInkWell({
-    Key? key,
+    super.key,
     this.onTap,
     this.onLongPress,
     this.borderRadius,
     this.inkColor,
     required this.child,
-  }) : super(key: key);
+  });
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final Widget child;

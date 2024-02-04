@@ -143,7 +143,8 @@ class CreditDetailsDb extends _CreditDetailsDb
   CreditDetailsDb(
     double creditBalance,
     int statementDay,
-    int paymentDueDay, {
+    int paymentDueDay,
+    int statementType, {
     double apr = 5,
   }) {
     if (!_defaultsSet) {
@@ -155,6 +156,7 @@ class CreditDetailsDb extends _CreditDetailsDb
     RealmObjectBase.set(this, 'apr', apr);
     RealmObjectBase.set(this, 'statementDay', statementDay);
     RealmObjectBase.set(this, 'paymentDueDay', paymentDueDay);
+    RealmObjectBase.set(this, 'statementType', statementType);
   }
 
   CreditDetailsDb._();
@@ -185,6 +187,13 @@ class CreditDetailsDb extends _CreditDetailsDb
       RealmObjectBase.set(this, 'paymentDueDay', value);
 
   @override
+  int get statementType =>
+      RealmObjectBase.get<int>(this, 'statementType') as int;
+  @override
+  set statementType(int value) =>
+      RealmObjectBase.set(this, 'statementType', value);
+
+  @override
   Stream<RealmObjectChanges<CreditDetailsDb>> get changes =>
       RealmObjectBase.getChanges<CreditDetailsDb>(this);
 
@@ -202,6 +211,7 @@ class CreditDetailsDb extends _CreditDetailsDb
       SchemaProperty('apr', RealmPropertyType.double),
       SchemaProperty('statementDay', RealmPropertyType.int),
       SchemaProperty('paymentDueDay', RealmPropertyType.int),
+      SchemaProperty('statementType', RealmPropertyType.int),
     ]);
   }
 }

@@ -1,7 +1,14 @@
 part of 'credit_account_screen.dart';
 
 class _Header extends StatelessWidget {
-  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});
+  const _Header(
+      {super.key,
+      this.dateTime,
+      required this.h1,
+      this.h2,
+      this.dateColor,
+      this.dateBgColor,
+      this.color});
 
   final DateTime? dateTime;
   final Color? dateColor;
@@ -30,12 +37,14 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.onBackground),
+                  style: kHeader2TextStyle.copyWith(
+                      fontSize: 16, color: color ?? context.appTheme.onBackground),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: color ?? context.appTheme.onBackground),
+                        style: kHeader3TextStyle.copyWith(
+                            fontSize: 14, color: color ?? context.appTheme.onBackground),
                       )
                     : Gap.noGap,
               ],
@@ -142,7 +151,8 @@ class _InstallmentPayTransaction extends StatelessWidget {
                           children: [
                             Text(
                               'Instm. payment of:',
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: AppColors.grey(context)),
                             ),
                             TxnCategoryName(
                               transaction: transaction,
@@ -314,7 +324,8 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.appSettings.currency.code}'
                                   .hardcoded,
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: context.appTheme.onBackground),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -357,7 +368,7 @@ class _DateTime extends StatelessWidget {
               color: backgroundColor ?? AppColors.greyBorder(context),
               borderRadius: BorderRadius.circular(8),
             ),
-            width: 25,
+            width: 26,
             constraints: const BoxConstraints(minHeight: 18),
             padding: const EdgeInsets.all(3),
             child: Center(

@@ -65,6 +65,10 @@ class _CreditDetailsDb {
   late int statementDay;
 
   late int paymentDueDay;
+
+  // 0 => withAverageDailyBalance,
+  // 1, else => payOnlyInGracePeriod,
+  late int statementType;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////
