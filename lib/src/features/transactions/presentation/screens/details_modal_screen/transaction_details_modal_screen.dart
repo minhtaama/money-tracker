@@ -16,7 +16,6 @@ import 'package:money_tracker_app/src/features/category/presentation/category_ta
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_payment_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -37,6 +36,7 @@ import '../../../../../utils/enums.dart';
 import '../../../../accounts/data/account_repo.dart';
 import '../../../../category/domain/category.dart';
 import '../../../domain/transaction_base.dart';
+import '../../components/txn_components.dart';
 import '../../controllers/credit_spending_form_controller.dart';
 import '../../controllers/regular_txn_form_controller.dart';
 

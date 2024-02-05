@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/txn_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -109,9 +109,7 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.isDarkTheme
-                ? context.appTheme.onBackground
-                : context.appTheme.onSecondary,
+            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapLeft,
             size: 35,
@@ -150,9 +148,8 @@ class StatementSelector extends StatelessWidget {
                       key: ValueKey(dateDisplay),
                       dateDisplay,
                       style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground
-                            : context.appTheme.onSecondary,
+                        color:
+                            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
                         fontSize: 16,
                       ),
                     ),
@@ -166,9 +163,7 @@ class StatementSelector extends StatelessWidget {
           offset: const Offset(0, 1),
           child: RoundedIconButton(
             iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.isDarkTheme
-                ? context.appTheme.onBackground
-                : context.appTheme.onSecondary,
+            iconColor: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
 
             //backgroundColor: context.appTheme.secondaryNegative.withOpacity(0.25),
             onTap: onTapRight,

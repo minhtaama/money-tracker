@@ -13,7 +13,7 @@ import 'package:money_tracker_app/src/features/calculator_input/application/calc
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_payment_form_controller.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/credit_payment_info.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';

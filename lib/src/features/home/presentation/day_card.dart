@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/transactions_list.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/transaction/txn_components.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/transactions_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 class DayCard extends StatelessWidget {

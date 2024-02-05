@@ -26,7 +26,7 @@ import '../../../../../utils/enums.dart';
 import '../../../../calculator_input/application/calculator_service.dart';
 import '../../../../transactions/domain/transaction_base.dart';
 import '../../../../transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
-import '../../../../transactions/presentation/transaction/txn_components.dart';
+import '../../../../transactions/presentation/components/txn_components.dart';
 import '../../../domain/account_base.dart';
 import '../../../domain/statement/base_class/statement.dart';
 
