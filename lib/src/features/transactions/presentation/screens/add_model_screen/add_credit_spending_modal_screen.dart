@@ -17,7 +17,7 @@ import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../data/transaction_repo.dart';
-import '../../selectors/forms.dart';
+import '../../../../selectors/presentation/forms.dart';
 
 class AddCreditSpendingModalScreen extends ConsumerStatefulWidget {
   const AddCreditSpendingModalScreen({super.key});

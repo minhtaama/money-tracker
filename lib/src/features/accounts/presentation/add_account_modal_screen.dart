@@ -13,7 +13,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
+import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -185,8 +185,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Text(
                       'Credit preferences:',
-                      style:
-                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                     ),
                   ),
                   Row(
@@ -262,14 +261,12 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                     child: Text(
                       'Payment & Interest preferences:',
-                      style:
-                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                     ),
                   ),
                   CustomRadio<StatementType>(
                     label: 'Using Average Daily Balance'.hardcoded,
-                    subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'
-                        .hardcoded,
+                    subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'.hardcoded,
                     value: StatementType.withAverageDailyBalance,
                     groupValue: statementType,
                     onChanged: (value) => setState(() {
@@ -279,8 +276,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   CustomRadio<StatementType>(
                     label: 'Payment only in grace period',
                     subLabel:
-                        'Can not make payment in billing cycle, interest is calculated by other method.'
-                            .hardcoded,
+                        'Can not make payment in billing cycle, interest is calculated by other method.'.hardcoded,
                     value: StatementType.payOnlyInGracePeriod,
                     groupValue: statementType,
                     onChanged: (value) => setState(() {

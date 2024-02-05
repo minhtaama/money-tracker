@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/selectors/date_time_selector/date_time_selector_components.dart';
+import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector_components.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
-import '../../../../utils/constants.dart';
-import '../../../../utils/enums.dart';
-import '../../../accounts/domain/account_base.dart';
-import '../../../accounts/domain/statement/base_class/statement.dart';
-import '../../../category/domain/category.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/enums.dart';
+import '../../accounts/domain/account_base.dart';
+import '../../accounts/domain/statement/base_class/statement.dart';
+import '../../category/domain/category.dart';
 import 'account_selector.dart';
 import 'category_selector.dart';
 
@@ -15,41 +15,36 @@ class CategoryFormSelector extends FormField<Category> {
       {super.key,
       required TransactionType transactionType,
       required ValueChanged<Category?> onChangedCategory,
-      FormFieldSetter<Category>? onSaved,
-      FormFieldValidator<Category>? validator,
-      Category? initialValue,
-      AutovalidateMode? autovalidateMode = AutovalidateMode.onUserInteraction})
-      : super(
-            onSaved: onSaved,
-            validator: validator,
-            initialValue: initialValue,
-            autovalidateMode: autovalidateMode,
-            builder: (FormFieldState<Category> state) {
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  CategorySelector(
-                      transactionType: transactionType,
-                      onChangedCategory: (newCategory) {
-                        state.didChange(newCategory);
-                        onChangedCategory(newCategory);
-                      }),
-                  AnimatedOpacity(
-                    opacity: state.errorText != null ? 1 : 0,
-                    duration: k250msDuration,
-                    child: state.errorText != null
-                        ? _AlertBox(
-                            errorText: state.errorText!,
-                            yOffset: -35,
-                          )
-                        : Gap.noGap,
-                  ),
-                  // state.errorText != null
-                  //     ? const AlertBox(offset: Offset(90, -33), errorText: '!')
-                  //     : Gap.noGap,
-                ],
-              );
-            });
+      super.onSaved,
+      super.validator,
+      super.initialValue,
+      super.autovalidateMode = AutovalidateMode.onUserInteraction})
+      : super(builder: (FormFieldState<Category> state) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              CategorySelector(
+                  transactionType: transactionType,
+                  onChangedCategory: (newCategory) {
+                    state.didChange(newCategory);
+                    onChangedCategory(newCategory);
+                  }),
+              AnimatedOpacity(
+                opacity: state.errorText != null ? 1 : 0,
+                duration: k250msDuration,
+                child: state.errorText != null
+                    ? _AlertBox(
+                        errorText: state.errorText!,
+                        yOffset: -35,
+                      )
+                    : Gap.noGap,
+              ),
+              // state.errorText != null
+              //     ? const AlertBox(offset: Offset(90, -33), errorText: '!')
+              //     : Gap.noGap,
+            ],
+          );
+        });
 }
 
 class AccountFormSelector extends FormField<Account> {
@@ -58,39 +53,34 @@ class AccountFormSelector extends FormField<Account> {
     required AccountType accountType,
     required ValueChanged<Account?> onChangedAccount,
     Account? otherSelectedAccount,
-    FormFieldSetter<Account>? onSaved,
-    FormFieldValidator<Account>? validator,
-    Account? initialValue,
-    AutovalidateMode? autovalidateMode = AutovalidateMode.onUserInteraction,
-  }) : super(
-            onSaved: onSaved,
-            validator: validator,
-            initialValue: initialValue,
-            autovalidateMode: autovalidateMode,
-            builder: (FormFieldState<Account> state) {
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  AccountSelector(
-                      accountType: accountType,
-                      otherSelectedAccount: otherSelectedAccount,
-                      onChangedAccount: (newAccount) {
-                        state.didChange(newAccount);
-                        onChangedAccount(newAccount);
-                      }),
-                  AnimatedOpacity(
-                    opacity: state.errorText != null ? 1 : 0,
-                    duration: k250msDuration,
-                    child: state.errorText != null
-                        ? _AlertBox(
-                            errorText: state.errorText!,
-                            yOffset: -35,
-                          )
-                        : Gap.noGap,
-                  ),
-                ],
-              );
-            });
+    super.onSaved,
+    super.validator,
+    super.initialValue,
+    super.autovalidateMode = AutovalidateMode.onUserInteraction,
+  }) : super(builder: (FormFieldState<Account> state) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              AccountSelector(
+                  accountType: accountType,
+                  otherSelectedAccount: otherSelectedAccount,
+                  onChangedAccount: (newAccount) {
+                    state.didChange(newAccount);
+                    onChangedAccount(newAccount);
+                  }),
+              AnimatedOpacity(
+                opacity: state.errorText != null ? 1 : 0,
+                duration: k250msDuration,
+                child: state.errorText != null
+                    ? _AlertBox(
+                        errorText: state.errorText!,
+                        yOffset: -35,
+                      )
+                    : Gap.noGap,
+              ),
+            ],
+          );
+        });
 }
 
 class CreditDateTimeFormSelector extends FormField<DateTime?> {
