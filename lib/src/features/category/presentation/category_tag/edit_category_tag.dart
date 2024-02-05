@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/custom_section.dart';
 import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../../../common_widgets/icon_with_text_button.dart';
-import '../../../../common_widgets/modal_bottom_sheets.dart';
+import '../../../../common_widgets/modal_and_dialog.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';

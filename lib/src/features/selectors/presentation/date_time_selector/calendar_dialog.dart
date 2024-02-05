@@ -1,0 +1,114 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/transaction/credit_payment_info.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../../common_widgets/modal_and_dialog.dart';
+import '../../../../common_widgets/svg_icon.dart';
+import '../../../../theme_and_ui/icons.dart';
+import '../../../accounts/domain/statement/base_class/statement.dart';
+
+part 'date_time_selector_credit.dart';
+part 'date_time_selector_regular.dart';
+part 'date_time_selector_edit.dart';
+part 'components.dart';
+part 'config.dart';
+
+class _CustomCalendarDialog extends StatefulWidget {
+  const _CustomCalendarDialog(
+      {required this.config,
+      this.currentDay,
+      this.currentMonthView,
+      required this.onActionButtonTap,
+      this.contentBuilder});
+
+  final CalendarDatePicker2Config config;
+  final DateTime? currentDay;
+  final DateTime? currentMonthView;
+  final ValueSetter<DateTime?>? onActionButtonTap;
+  final Widget? Function({required DateTime monthView, DateTime? selectedDay})? contentBuilder;
+
+  @override
+  State<_CustomCalendarDialog> createState() => _CustomCalendarDialogState();
+}
+
+class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
+  late DateTime _currentMonthView = widget.currentMonthView ?? DateTime.now();
+  late DateTime? _selectedDay = widget.currentDay;
+
+  @override
+  void didUpdateWidget(covariant _CustomCalendarDialog oldWidget) {
+    if (widget.currentMonthView != null) {
+      _currentMonthView = widget.currentMonthView!;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      surfaceTintColor: Colors.transparent,
+      backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+      contentPadding: EdgeInsets.zero,
+      actions: [
+        IconWithTextButton(
+          iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
+          label: _selectedDay != null ? 'Select'.hardcoded : 'Back'.hardcoded,
+          height: 30,
+          width: 100,
+          labelSize: 13,
+          iconSize: 20,
+          isDisabled: _selectedDay == null,
+          backgroundColor: context.appTheme.primary,
+          color: context.appTheme.onPrimary,
+          onTap: () {
+            widget.onActionButtonTap?.call(_selectedDay);
+          },
+        ),
+      ],
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+            ),
+            widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
+            SizedBox(
+              height: 300,
+              width: 350,
+              child: CalendarDatePicker2(
+                config: widget.config,
+                value: [_selectedDay],
+                displayedMonthDate: _currentMonthView,
+                onDisplayedMonthChanged: (dateTime) {
+                  setState(() {
+                    _currentMonthView = dateTime;
+                  });
+                },
+                onValueChanged: (dateList) {
+                  setState(() {
+                    _selectedDay = dateList[0];
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -231,7 +231,7 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
     if (_transaction is Transfer &&
         (_stateRead.account ?? _transaction.account) ==
             (_stateRead.toAccount ?? (_transaction as Transfer).transferAccount)) {
-      showCustomDialog2(
+      showCustomDialog(
         context: context,
         child: IconWithText(
           iconPath: AppIcons.sadFace,

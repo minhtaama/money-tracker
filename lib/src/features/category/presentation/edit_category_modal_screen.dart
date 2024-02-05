@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';

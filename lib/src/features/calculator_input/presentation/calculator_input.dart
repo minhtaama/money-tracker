@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';

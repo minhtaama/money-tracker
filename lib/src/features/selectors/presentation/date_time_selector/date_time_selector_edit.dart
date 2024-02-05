@@ -1,7 +1,47 @@
-part of 'date_time_selector_components.dart';
+part of 'calendar_dialog.dart';
 
-Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
-    {required DateTime current, required CreditAccount creditAccount, required Statement statement}) async {
+Future<DateTime?> showRegularDateTimeEditDialog(
+  BuildContext context, {
+  required DateTime current,
+}) async {
+  return showStatefulDialog(
+      context: context,
+      builder: (_, __) {
+        DateTime result = current;
+        return _CustomCalendarDialog(
+          config: _customConfig(context, dayBuilder: _dayBuilderRegular),
+          currentDay: result,
+          contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
+            return _CustomTimePickSpinner(
+              time: result,
+              onTimeChange: (dateTime) {
+                result = result.copyWith(
+                  hour: dateTime.hour,
+                  minute: dateTime.minute,
+                );
+              },
+            );
+          },
+          onActionButtonTap: (dateTime) {
+            if (dateTime != null) {
+              result = result.copyWith(
+                day: dateTime.day,
+                month: dateTime.month,
+                year: dateTime.year,
+              );
+            }
+            context.pop<DateTime>(result);
+          },
+        );
+      });
+}
+
+Future<DateTime?> showCreditSpendingDateTimeEditDialog(
+  BuildContext context, {
+  required DateTime current,
+  required CreditAccount creditAccount,
+  required Statement statement,
+}) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
   final DateTime previousDueDate = statement.previousDueDate;
   final DateTime dueDate = statement.dueDate;
@@ -93,7 +133,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
     );
   }
 
-  return showCustomDialog(
+  return showStatefulDialog(
       context: context,
       builder: (_, __) {
         DateTime result = current;
@@ -120,7 +160,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
           onActionButtonTap: (dateTime) async {
             if (dateTime != null) {
               if (dateTime.isBefore(lastCheckpointDateTime)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -129,7 +169,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
                   ),
                 );
               } else if (!dateTime.isAfter(previousDueDate)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -138,7 +178,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
                   ),
                 );
               } else if (dateTime.isAfter(dueDate)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -147,7 +187,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
                   ),
                 );
               } else if (dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -171,8 +211,12 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(BuildContext context,
 }
 
 /// Return a list has index 0 is [DateTime], index 1 is [Statement]?
-Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
-    {required DateTime current, required CreditAccount creditAccount, required Statement statement}) async {
+Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
+  BuildContext context, {
+  required DateTime current,
+  required CreditAccount creditAccount,
+  required Statement statement,
+}) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
   final DateTime previousDueDate = statement.previousDueDate;
   final DateTime statementDate = statement.statementDate;
@@ -274,7 +318,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
     );
   }
 
-  return showCustomDialog(
+  return showStatefulDialog(
       context: context,
       builder: (_, __) {
         DateTime result = current;
@@ -301,7 +345,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
           onActionButtonTap: (dateTime) async {
             if (dateTime != null) {
               if (dateTime.isBefore(lastCheckpointDateTime)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -310,7 +354,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                   ),
                 );
               } else if (!dateTime.isAfter(previousDueDate)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -319,7 +363,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                   ),
                 );
               } else if (dateTime.isAfter(dueDate)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -328,7 +372,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                   ),
                 );
               } else if (!dateTime.isAfter(dateOfSpendingBefore) || dateTime.isAfter(dateOfSpendingAfter)) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,
@@ -338,7 +382,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(BuildContext context,
                 );
               } else if (dateTime.isBefore(statementDate) &&
                   creditAccount.statementType == StatementType.payOnlyInGracePeriod) {
-                showCustomDialog2(
+                showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,

@@ -1,74 +1,4 @@
-part of 'date_time_selector_components.dart';
-
-Widget _dayBuilderRegular(BuildContext context,
-    {required DateTime date,
-    BoxDecoration? decoration,
-    bool? isDisabled,
-    bool? isSelected,
-    bool? isToday,
-    TextStyle? textStyle}) {
-  return Align(
-    alignment: Alignment.center,
-    child: Container(
-      height: 33,
-      width: 33,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(1000),
-        border: isToday != null && isToday
-            ? Border.all(
-                color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
-              )
-            : null,
-        color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
-      ),
-      child: Center(
-        child: Text(
-          date.day.toString(),
-          style: kHeader4TextStyle.copyWith(
-            color: isDisabled != null && isDisabled
-                ? AppColors.greyBgr(context)
-                : isSelected != null && isSelected
-                    ? context.appTheme.onPrimary
-                    : context.appTheme.onBackground,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-Future<DateTime?> showRegularDateTimeEditDialog(BuildContext context, {required DateTime current}) async {
-  return showCustomDialog(
-      context: context,
-      builder: (_, __) {
-        DateTime result = current;
-        return _CustomCalendarDialog(
-          config: _customConfig(context, dayBuilder: _dayBuilderRegular),
-          currentDay: result,
-          contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
-            return _CustomTimePickSpinner(
-              time: result,
-              onTimeChange: (dateTime) {
-                result = result.copyWith(
-                  hour: dateTime.hour,
-                  minute: dateTime.minute,
-                );
-              },
-            );
-          },
-          onActionButtonTap: (dateTime) {
-            if (dateTime != null) {
-              result = result.copyWith(
-                day: dateTime.day,
-                month: dateTime.month,
-                year: dateTime.year,
-              );
-            }
-            context.pop<DateTime>(result);
-          },
-        );
-      });
-}
+part of 'calendar_dialog.dart';
 
 class DateTimeSelector extends StatefulWidget {
   const DateTimeSelector({super.key, required this.onChanged});
@@ -109,7 +39,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               CustomInkWell(
                 inkColor: AppColors.grey(context),
                 onTap: () async {
-                  await showCustomDialog(
+                  await showStatefulDialog(
                     context: context,
                     builder: (_, __) {
                       return _CustomCalendarDialog(
@@ -173,7 +103,7 @@ class _DateSelectorState extends State<DateSelector> {
         borderRadius: BorderRadius.circular(1000),
         inkColor: AppColors.grey(context),
         onTap: () async {
-          await showCustomDialog(
+          await showStatefulDialog(
             context: context,
             builder: (_, __) {
               return _CustomCalendarDialog(
@@ -203,4 +133,41 @@ class _DateSelectorState extends State<DateSelector> {
       ),
     );
   }
+}
+
+Widget _dayBuilderRegular(BuildContext context,
+    {required DateTime date,
+    BoxDecoration? decoration,
+    bool? isDisabled,
+    bool? isSelected,
+    bool? isToday,
+    TextStyle? textStyle}) {
+  return Align(
+    alignment: Alignment.center,
+    child: Container(
+      height: 33,
+      width: 33,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(1000),
+        border: isToday != null && isToday
+            ? Border.all(
+                color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+              )
+            : null,
+        color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
+      ),
+      child: Center(
+        child: Text(
+          date.day.toString(),
+          style: kHeader4TextStyle.copyWith(
+            color: isDisabled != null && isDisabled
+                ? AppColors.greyBgr(context)
+                : isSelected != null && isSelected
+                    ? context.appTheme.onPrimary
+                    : context.appTheme.onBackground,
+          ),
+        ),
+      ),
+    ),
+  );
 }

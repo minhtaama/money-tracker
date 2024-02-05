@@ -17,7 +17,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../../../common_widgets/modal_bottom_sheets.dart';
+import '../../../common_widgets/modal_and_dialog.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
 import '../domain/account_base.dart';
@@ -138,8 +138,7 @@ class _AccountTile extends StatelessWidget {
                             ),
                             child: Text(
                               'Credit',
-                              style:
-                                  kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
+                              style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
                             ),
                           )
                         : Gap.noGap,
@@ -156,8 +155,7 @@ class _AccountTile extends StatelessWidget {
                   children: [
                     Text(
                       context.appSettings.currency.code,
-                      style: kHeader4TextStyle.copyWith(
-                          color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
+                      style: kHeader4TextStyle.copyWith(color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
                     ),
                     Gap.w8,
                     Expanded(
@@ -220,8 +218,7 @@ class _CreditDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Transform.translate(
-                offset: const Offset(-2, 0),
-                child: SvgIcon(AppIcons.budgets, color: model.iconColor, size: 20)),
+                offset: const Offset(-2, 0), child: SvgIcon(AppIcons.budgets, color: model.iconColor, size: 20)),
             Text(
               ': Day ${_dateBuilder(model.statementDay)}',
               style: kHeader3TextStyle.copyWith(color: model.iconColor, fontSize: 13),

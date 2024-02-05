@@ -1,4 +1,4 @@
-part of 'date_time_selector_components.dart';
+part of 'calendar_dialog.dart';
 
 class DateTimeSelectorCredit extends ConsumerStatefulWidget {
   const DateTimeSelectorCredit(
@@ -23,6 +23,12 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
   late DateTime _latestCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
   late DateTime _latestStatementDueDate = widget.creditAccount!.latestStatementDueDate;
   late DateTime _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
+  late Iterable<DateTime> _paymentDateTimes =
+      widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  late Iterable<DateTime> _spendingDateTimes =
+      widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  late Iterable<DateTime> _checkpointDateTimes =
+      widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
 
   late DateTime? _outputDateTime = widget.initialDate;
   Statement? _outputStatement;
@@ -31,8 +37,6 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
   int _selectedMinute = DateTime.now().minute;
 
   DateTime _currentMonthView = DateTime.now();
-
-  late int? _statementDay = widget.creditAccount?.statementDay;
 
   final _key = GlobalKey();
   Size _size = const Size(0.0, 0.0);
@@ -50,11 +54,13 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
   @override
   void didUpdateWidget(covariant DateTimeSelectorCredit oldWidget) {
     if (widget.creditAccount != null) {
-      _statementDay = widget.creditAccount!.statementDay;
       _outputDateTime = widget.initialDate;
       _latestCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
       _latestStatementDueDate = widget.creditAccount!.latestStatementDueDate;
       _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
+      _paymentDateTimes = widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _spendingDateTimes = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _checkpointDateTimes = widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -67,6 +73,39 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
     widget.onChanged(_outputDateTime!, _outputStatement);
     context.pop();
+  }
+
+  Widget _contentBuilder(StateSetter setState, {required DateTime monthView, DateTime? selectedDay}) {
+    if (widget.creditAccount!.earliestPayableDate == null) {
+      return IconWithText(
+        iconPath: AppIcons.done,
+        header: 'This credit account currently has no credit/BNPL transaction needed to pay'.hardcoded,
+      );
+    }
+
+    if (monthView.isBefore(widget.creditAccount!.earliestPayableDate!
+        .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))) {
+      return IconWithText(
+        iconPath: AppIcons.done,
+        header: 'No transactions before this time'.hardcoded,
+      );
+    }
+
+    if (selectedDay != null) {
+      return CreditInfo(
+        chosenDateTime: selectedDay,
+        showPaymentAmount: widget.isForPayment && !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
+        statement: widget.creditAccount!.statementAt(selectedDay, upperGapAtDueDate: true),
+        onDateTap: (dateTime) => setState(() {
+          _currentMonthView = dateTime;
+        }),
+      );
+    }
+
+    return IconWithText(
+      iconPath: AppIcons.today,
+      header: 'Select a payment day.\n Spending transaction can be paid will be displayed here'.hardcoded,
+    );
   }
 
   @override
@@ -103,101 +142,22 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                     inkColor: AppColors.grey(context),
                     onTap: () async {
                       if (widget.creditAccount != null) {
-                        await showCustomDialog(
+                        await showStatefulDialog(
                           context: context,
                           builder: (context, setState) {
                             return _CustomCalendarDialog(
-                              config: _customConfig(
-                                context,
-                                firstDate: null,
-                                selectableDayPredicate: null,
-                                dayBuilder: _dayBuilder,
-                              ),
+                              config: _customConfig(context, dayBuilder: _dayBuilder),
                               currentDay: _outputDateTime,
                               currentMonthView: _currentMonthView,
                               onActionButtonTap: (dateTime) {
-                                if (dateTime != null) {
-                                  if (dateTime.isBefore(_latestCheckpointDateTime)) {
-                                    showCustomDialog2(
-                                      context: context,
-                                      child: IconWithText(
-                                        iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onBackground,
-                                        header: 'You can only add transaction after [latest checkpoint]'.hardcoded,
-                                      ),
-                                    );
-                                  } else if (!dateTime.isAfter(_latestStatementDueDate)) {
-                                    showCustomDialog2(
-                                      context: context,
-                                      child: IconWithText(
-                                        iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onBackground,
-                                        header:
-                                            'Oops! You can only add transactions since [the statement contains the latest payment]'
-                                                .hardcoded,
-                                      ),
-                                    );
-                                  } else if (dateTime.isAfter(_todayStatementDueDate)) {
-                                    showCustomDialog2(
-                                      context: context,
-                                      child: IconWithText(
-                                        iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onBackground,
-                                        header: 'Oops! This is future statement!'.hardcoded,
-                                      ),
-                                    );
-                                  } else if (!widget.creditAccount!.isInGracePeriod(dateTime) &&
-                                      widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod &&
-                                      widget.isForPayment) {
-                                    showCustomDialog2(
-                                      context: context,
-                                      child: IconWithText(
-                                        iconPath: AppIcons.sadFace,
-                                        color: context.appTheme.onBackground,
-                                        header: 'Oops! Can only pay in grace period (Account preference)'.hardcoded,
-                                      ),
-                                    );
-                                  } else {
-                                    _submit(dateTime);
-                                  }
+                                if (dateTime != null && _canSubmit(dateTime)) {
+                                  _submit(dateTime);
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
                                 return AnimatedSize(
                                   duration: k150msDuration,
-                                  child: widget.creditAccount!.earliestPayableDate == null
-                                      ? IconWithText(
-                                          iconPath: AppIcons.done,
-                                          header:
-                                              'This credit account currently has no credit/BNPL transaction needed to pay'
-                                                  .hardcoded,
-                                        )
-                                      : monthView.isBefore(
-                                          widget.creditAccount!.earliestPayableDate!.copyWith(
-                                            month: widget.creditAccount!.earliestPayableDate!.month - 1,
-                                          ),
-                                        )
-                                          ? IconWithText(
-                                              iconPath: AppIcons.done,
-                                              header: 'No transactions before this time'.hardcoded,
-                                            )
-                                          : selectedDay != null
-                                              ? CreditInfo(
-                                                  chosenDateTime: selectedDay,
-                                                  showPaymentAmount: widget.isForPayment &&
-                                                      !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
-                                                  statement: widget.creditAccount!
-                                                      .statementAt(selectedDay, upperGapAtDueDate: true),
-                                                  onDateTap: (dateTime) => setState(() {
-                                                    _currentMonthView = dateTime;
-                                                  }),
-                                                )
-                                              : IconWithText(
-                                                  iconPath: AppIcons.today,
-                                                  header:
-                                                      'Select a payment day.\n Spending transaction can be paid will be displayed here'
-                                                          .hardcoded,
-                                                ),
+                                  child: _contentBuilder(setState, monthView: monthView, selectedDay: selectedDay),
                                 );
                               },
                             );
@@ -235,6 +195,14 @@ extension _Details on _DateTimeSelectorCreditState {
     bool? isToday,
     TextStyle? textStyle,
   }) {
+    final dateTimeYMD = date.onlyYearMonthDay;
+
+    bool isDueDate = date.day == widget.creditAccount!.paymentDueDay;
+    bool isStatementDate = date.day == widget.creditAccount!.statementDay;
+    bool hasPaymentTransaction = _paymentDateTimes.contains(dateTimeYMD);
+    bool hasSpendingTransaction = _spendingDateTimes.contains(dateTimeYMD);
+    bool hasCheckpointTransaction = _checkpointDateTimes.contains(dateTimeYMD);
+
     final foregroundColor = isDisabled != null && isDisabled
         ? AppColors.greyBgr(context)
         : isSelected != null && isSelected
@@ -264,11 +232,7 @@ extension _Details on _DateTimeSelectorCreditState {
             color: bgrColor,
           ),
         ),
-        !_isStatementDate(date) &&
-                    !_isDueDate(date) &&
-                    !_hasSpendingTransaction(date) &&
-                    !_hasPaymentTransaction(date) ||
-                isSelected!
+        !isStatementDate && !isDueDate && !hasSpendingTransaction && !hasPaymentTransaction || isSelected!
             ? Text(
                 date.day.toString(),
                 style: kHeader3TextStyle.copyWith(
@@ -277,17 +241,17 @@ extension _Details on _DateTimeSelectorCreditState {
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _isStatementDate(date)
-                      ? _hasCheckpointTransaction(date)
+                  isStatementDate
+                      ? hasCheckpointTransaction
                           ? icon(AppIcons.statementCheckpoint)
                           : icon(AppIcons.budgets)
                       : Gap.noGap,
-                  _isDueDate(date) ? icon(AppIcons.handCoin) : Gap.noGap,
-                  _hasSpendingTransaction(date)
+                  isDueDate ? icon(AppIcons.handCoin) : Gap.noGap,
+                  hasSpendingTransaction
                       ? icon(AppIcons.receiptDollar,
                           color: context.appTheme.negative.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
-                  _hasPaymentTransaction(date)
+                  hasPaymentTransaction
                       ? icon(AppIcons.receiptCheck,
                           color: context.appTheme.positive.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
                       : Gap.noGap,
@@ -314,51 +278,46 @@ extension _Details on _DateTimeSelectorCreditState {
         !dateTime.isAfter(_todayStatementDueDate);
   }
 
-  bool _hasSpendingTransaction(DateTime dateTime) {
-    if (widget.creditAccount == null) {
-      throw ErrorDescription('Must specify a credit account first');
-    }
-    final list = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-    final dateTimeYMD = dateTime.onlyYearMonthDay;
-    if (list.contains(dateTimeYMD)) {
-      return true;
-    }
-    return false;
-  }
+  bool _canSubmit(DateTime dateTime) {
+    final beforeLatestCheckpoint = dateTime.isBefore(_latestCheckpointDateTime);
+    final notInLatestStatement = !dateTime.isAfter(_latestStatementDueDate);
+    final inFuture = dateTime.isAfter(_todayStatementDueDate);
+    final canPayOnlyInGracePeriod = widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod;
+    final isPayment = widget.isForPayment;
+    final notInGracePeriod = !widget.creditAccount!.isInGracePeriod(dateTime);
 
-  bool _hasCheckpointTransaction(DateTime dateTime) {
-    if (widget.creditAccount == null) {
-      throw ErrorDescription('Must specify a credit account first');
-    }
-    final list = widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-    final dateTimeYMD = dateTime.onlyYearMonthDay;
-    if (list.contains(dateTimeYMD)) {
-      return true;
-    }
-    return false;
-  }
-
-  bool _hasPaymentTransaction(DateTime dateTime) {
-    if (widget.creditAccount == null) {
-      throw ErrorDescription('Must specify a credit account first');
-    }
-    final list = widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-    final dateTimeYMD = dateTime.onlyYearMonthDay;
-    if (list.contains(dateTimeYMD)) {
-      return true;
-    }
-    return false;
-  }
-
-  bool _isDueDate(DateTime dateTime) {
-    if (widget.creditAccount == null) {
-      throw ErrorDescription('Must specify a credit account first');
+    if (beforeLatestCheckpoint) {
+      showErrorDialog(
+        context,
+        'You can only add transaction after [latest checkpoint]'.hardcoded,
+      );
+      return false;
     }
 
-    return dateTime.day == widget.creditAccount!.paymentDueDay;
-  }
+    if (notInLatestStatement) {
+      showErrorDialog(
+        context,
+        'Oops! You can only add transactions since [the statement contains the latest payment]'.hardcoded,
+      );
+      return false;
+    }
 
-  bool _isStatementDate(DateTime dateTime) {
-    return dateTime.day == _statementDay;
+    if (inFuture) {
+      showErrorDialog(
+        context,
+        'Oops! This is future statement!'.hardcoded,
+      );
+      return false;
+    }
+
+    if (isPayment && canPayOnlyInGracePeriod && notInGracePeriod) {
+      showErrorDialog(
+        context,
+        'Oops! Can only pay in grace period (Account preference)'.hardcoded,
+      );
+      return false;
+    }
+
+    return true;
   }
 }

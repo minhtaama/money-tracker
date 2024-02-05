@@ -5,9 +5,10 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../utils/constants.dart';
+import 'icon_with_text.dart';
 import 'icon_with_text_button.dart';
 
-Future<T?> showCustomDialog<T>({
+Future<T?> showStatefulDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext, StateSetter) builder,
 }) {
@@ -20,11 +21,11 @@ Future<T?> showCustomDialog<T>({
   );
 }
 
-Future<T?> showCustomDialog2<T>({
+Future<T?> showCustomDialog<T>({
   required BuildContext context,
   required Widget child,
 }) {
-  return showCustomDialog(
+  return showStatefulDialog(
     context: context,
     builder: (_, __) {
       return Padding(
@@ -37,6 +38,17 @@ Future<T?> showCustomDialog2<T>({
         ),
       );
     },
+  );
+}
+
+Future<void> showErrorDialog(BuildContext context, String text) {
+  return showCustomDialog(
+    context: context,
+    child: IconWithText(
+      iconPath: AppIcons.sadFace,
+      color: context.appTheme.onBackground,
+      header: text,
+    ),
   );
 }
 

@@ -701,7 +701,7 @@ class _DeleteButton extends StatelessWidget {
       child: CustomInkWell(
         onTap: () async {
           isDisable
-              ? showCustomDialog2(
+              ? showCustomDialog(
                   context: context,
                   child: IconWithText(
                     iconPath: AppIcons.sadFace,

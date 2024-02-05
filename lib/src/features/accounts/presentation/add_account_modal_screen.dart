@@ -13,7 +13,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector_components.dart';
+import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/calendar_dialog.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';

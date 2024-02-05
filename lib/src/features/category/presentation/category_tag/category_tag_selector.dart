@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_bottom_sheets.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
