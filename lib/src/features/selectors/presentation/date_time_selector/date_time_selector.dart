@@ -20,9 +20,9 @@ import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../accounts/domain/statement/base_class/statement.dart';
 
-part 'date_time_selector_credit.dart';
-part 'date_time_selector_regular.dart';
-part 'date_time_selector_edit.dart';
+part 'for_credit_wrapper.dart';
+part 'for_regular_wrapper.dart';
+part 'for_editing_show_dialog.dart';
 part 'components.dart';
 part 'config.dart';
 

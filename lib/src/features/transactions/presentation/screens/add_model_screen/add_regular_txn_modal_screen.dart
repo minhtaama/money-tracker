@@ -7,7 +7,7 @@ import 'package:money_tracker_app/src/features/category/presentation/category_ta
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
-import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/calendar_dialog.dart';
+import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/calendar_dialog.dart';
+import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
 import '../../../utils/constants.dart';

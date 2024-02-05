@@ -18,7 +18,7 @@ import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
-import '../../../../selectors/presentation/date_time_selector/calendar_dialog.dart';
+import '../../../../selectors/presentation/date_time_selector/date_time_selector.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {

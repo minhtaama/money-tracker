@@ -1,4 +1,4 @@
-part of 'calendar_dialog.dart';
+part of 'date_time_selector.dart';
 
 class DateTimeSelectorCredit extends ConsumerStatefulWidget {
   const DateTimeSelectorCredit(

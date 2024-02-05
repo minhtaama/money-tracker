@@ -1,4 +1,4 @@
-part of 'calendar_dialog.dart';
+part of 'date_time_selector.dart';
 
 class _CustomTimePickSpinner extends StatelessWidget {
   const _CustomTimePickSpinner({this.time, this.onTimeChange});

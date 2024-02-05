@@ -15,11 +15,10 @@ import '../../../utils/enums.dart';
 
 class CategorySelector extends ConsumerStatefulWidget {
   const CategorySelector({
-    Key? key,
+    super.key,
     required this.transactionType,
     required this.onChangedCategory,
-  })  : assert(transactionType != TransactionType.transfer),
-        super(key: key);
+  }) : assert(transactionType != TransactionType.transfer);
 
   final ValueChanged<Category?> onChangedCategory;
   final TransactionType transactionType;

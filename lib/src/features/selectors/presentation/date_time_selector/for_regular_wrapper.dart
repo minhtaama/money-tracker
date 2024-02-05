@@ -1,4 +1,4 @@
-part of 'calendar_dialog.dart';
+part of 'date_time_selector.dart';
 
 class DateTimeSelector extends StatefulWidget {
   const DateTimeSelector({super.key, required this.onChanged});
