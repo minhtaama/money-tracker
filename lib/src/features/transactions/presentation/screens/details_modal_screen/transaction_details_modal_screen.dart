@@ -30,6 +30,7 @@ import '../../../../../common_widgets/icon_with_text.dart';
 import '../../../../../common_widgets/icon_with_text_button.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../../common_widgets/modal_and_dialog.dart';
+import '../../../../../routing/app_router.dart';
 import '../../../../../utils/constants.dart';
 import '../../../../../utils/enums.dart';
 import '../../../../accounts/data/account_repo.dart';
@@ -42,9 +43,8 @@ import '../../controllers/regular_txn_form_controller.dart';
 part 'components.dart';
 part 'payment_details.dart';
 part 'spending_details.dart';
+part 'installment_details.dart';
 part 'regular_details.dart';
-
-enum TransactionScreenType { editable, uneditable, installmentDetailOfSpending }
 
 class TransactionDetailsModalScreen extends ConsumerWidget {
   const TransactionDetailsModalScreen({
@@ -55,8 +55,6 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
 
   final String objectIdHexString;
   final TransactionScreenType screenType;
-
-  //TODO: installment page
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +69,9 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
 
       return switch (transaction) {
         BaseRegularTransaction() => _RegularDetails(screenType, transaction: transaction as BaseRegularTransaction),
-        CreditSpending() => _SpendingDetails(screenType, transaction: transaction as CreditSpending),
+        CreditSpending() => screenType == TransactionScreenType.installmentToPay
+            ? _InstallmentDetails(transaction: transaction as CreditSpending)
+            : _SpendingDetails(screenType, transaction: transaction as CreditSpending),
         CreditPayment() => _PaymentDetails(screenType, transaction: transaction as CreditPayment),
         CreditCheckpoint() => const Placeholder(),
       };

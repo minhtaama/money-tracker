@@ -4,16 +4,16 @@ import '../../../utils/enums.dart';
 
 // Access this class through `context.appPersistentValues`
 class AppPersistentValues {
-  final ChartDataType chartDataTypeInHomescreen;
+  final LineChartDataType chartDataTypeInHomescreen;
 
   final bool showAmount;
 
   factory AppPersistentValues.fromDatabase(PersistentValuesDb persistentValuesDb) {
-    ChartDataType chartDataTypeInHomescreen = switch (persistentValuesDb.chartDataTypeInHomescreen) {
-      0 => ChartDataType.cashflow,
-      1 => ChartDataType.expense,
-      2 => ChartDataType.income,
-      _ => ChartDataType.totalAssets,
+    LineChartDataType chartDataTypeInHomescreen = switch (persistentValuesDb.chartDataTypeInHomescreen) {
+      0 => LineChartDataType.cashflow,
+      1 => LineChartDataType.expense,
+      2 => LineChartDataType.income,
+      _ => LineChartDataType.totalAssets,
     };
 
     return AppPersistentValues._(
@@ -24,10 +24,10 @@ class AppPersistentValues {
 
   PersistentValuesDb toDatabase() {
     int typeRealmData = switch (chartDataTypeInHomescreen) {
-      ChartDataType.cashflow => 0,
-      ChartDataType.expense => 1,
-      ChartDataType.income => 2,
-      ChartDataType.totalAssets => 3,
+      LineChartDataType.cashflow => 0,
+      LineChartDataType.expense => 1,
+      LineChartDataType.income => 2,
+      LineChartDataType.totalAssets => 3,
     };
 
     return PersistentValuesDb(
@@ -43,7 +43,7 @@ class AppPersistentValues {
   });
 
   AppPersistentValues copyWith({
-    ChartDataType? chartDataTypeInHomescreen,
+    LineChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
   }) {
     return AppPersistentValues._(

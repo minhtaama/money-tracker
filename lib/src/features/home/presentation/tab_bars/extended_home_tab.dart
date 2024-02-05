@@ -38,17 +38,17 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   late final _chartServicesRead = ref.read(customLineChartServicesProvider);
   final ScrollController _controller = ScrollController();
 
-  ChartDataType _type = ChartDataType.totalAssets;
+  LineChartDataType _type = LineChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {
     final today = DateTime.now();
     final displayDate = DateTime(Calendar.minDate.year, pageIndex);
 
     return switch (_type) {
-      ChartDataType.cashflow => 'Cashflow in $month',
-      ChartDataType.expense => 'Expense in $month',
-      ChartDataType.income => 'Income in $month',
-      ChartDataType.totalAssets => displayDate.isSameMonthAs(today)
+      LineChartDataType.cashflow => 'Cashflow in $month',
+      LineChartDataType.expense => 'Expense in $month',
+      LineChartDataType.income => 'Income in $month',
+      LineChartDataType.totalAssets => displayDate.isSameMonthAs(today)
           ? 'Current assets'
           : displayDate.isInMonthBefore(today)
               ? 'Assets left in $month'
@@ -60,18 +60,18 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
     final txnServices = ref.read(customLineChartServicesProvider);
 
     double amount = switch (_type) {
-      ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.income => txnServices.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
-      ChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
+      LineChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
+      LineChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+      LineChartDataType.income => txnServices.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+      LineChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
     };
 
     ref.listen(transactionsChangesStreamProvider, (_, __) {
       amount = switch (_type) {
-        ChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.income => txnServices.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
-        ChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
+        LineChartDataType.cashflow => txnServices.getCashflow(dayBeginOfMonth, dayEndOfMonth),
+        LineChartDataType.expense => txnServices.getExpenseAmount(dayBeginOfMonth, dayEndOfMonth),
+        LineChartDataType.income => txnServices.getIncomeAmount(dayBeginOfMonth, dayEndOfMonth),
+        LineChartDataType.totalAssets => txnServices.getTotalAssets(dayEndOfMonth),
       };
     });
 
@@ -80,15 +80,15 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
 
   PrefixSign get _showPrefixSign {
     return switch (_type) {
-      ChartDataType.cashflow => PrefixSign.showAll,
-      ChartDataType.totalAssets => PrefixSign.onlyMinusSign,
+      LineChartDataType.cashflow => PrefixSign.showAll,
+      LineChartDataType.totalAssets => PrefixSign.onlyMinusSign,
       _ => PrefixSign.hideAll,
     };
   }
 
   bool get _showCurrency {
     return switch (_type) {
-      ChartDataType.cashflow => false,
+      LineChartDataType.cashflow => false,
       _ => true,
     };
   }
@@ -96,10 +96,10 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
   void _onTapSwitchType() {
     setState(() {
       _type = switch (_type) {
-        ChartDataType.totalAssets => ChartDataType.cashflow,
-        ChartDataType.cashflow => ChartDataType.expense,
-        ChartDataType.expense => ChartDataType.income,
-        ChartDataType.income => ChartDataType.totalAssets,
+        LineChartDataType.totalAssets => LineChartDataType.cashflow,
+        LineChartDataType.cashflow => LineChartDataType.expense,
+        LineChartDataType.expense => LineChartDataType.income,
+        LineChartDataType.income => LineChartDataType.totalAssets,
       };
     });
   }
@@ -116,8 +116,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText =
-        'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
@@ -143,7 +142,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
             currentMonth: widget.displayDate,
             data: data,
             offsetY: 35,
-            extraLineY: _type == ChartDataType.totalAssets ? extraLineY : null,
+            extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
             extraLineText: extraLineText,
           ),
         ),
@@ -199,16 +198,14 @@ class DateSelector extends StatelessWidget {
                   );
                 },
                 child: Padding(
-                  key: ValueKey(
-                      displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                  key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                   padding: const EdgeInsets.only(top: 1.0),
                   child: Row(
                     children: [
                       RoundedIconButton(
-                        iconPath:
-                            displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
-                                ? AppIcons.today
-                                : AppIcons.turn,
+                        iconPath: displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth)
+                            ? AppIcons.today
+                            : AppIcons.turn,
                         iconColor: context.appTheme.onBackground,
                         size: 16,
                         iconPadding: 0,
@@ -250,8 +247,7 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color:
-            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );

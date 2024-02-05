@@ -6,7 +6,6 @@ import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/screens/details_modal_screen/transaction_details_modal_screen.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -16,6 +15,7 @@ import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../routing/app_router.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
+import '../../../../utils/enums.dart';
 import '../../../accounts/domain/statement/base_class/statement.dart';
 import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
@@ -82,13 +82,13 @@ class _ListState extends State<_List> {
   final _key = GlobalKey();
   double _height = 0;
 
-  List<_InstallmentPayTransaction> buildInstallmentTransactionTile(BuildContext context) {
+  List<_InstallmentToPayTransaction> buildInstallmentTransactionTile(BuildContext context) {
     if (txnsInstallment.isEmpty) {
-      return <_InstallmentPayTransaction>[];
+      return <_InstallmentToPayTransaction>[];
     }
-    final list = <_InstallmentPayTransaction>[];
+    final list = <_InstallmentToPayTransaction>[];
     for (int i = 0; i < txnsInstallment.length; i++) {
-      list.add(_InstallmentPayTransaction(
+      list.add(_InstallmentToPayTransaction(
         transaction: txnsInstallment[i],
       ));
     }
@@ -374,8 +374,8 @@ class _Transaction extends StatelessWidget {
   }
 }
 
-class _InstallmentPayTransaction extends StatelessWidget {
-  const _InstallmentPayTransaction({required this.transaction});
+class _InstallmentToPayTransaction extends StatelessWidget {
+  const _InstallmentToPayTransaction({required this.transaction});
   final CreditSpending transaction;
 
   @override
@@ -385,7 +385,8 @@ class _InstallmentPayTransaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
+        onTap: () => context.push(RoutePath.transaction,
+            extra: [transaction.databaseObject.id.hexString, TransactionScreenType.installmentToPay]),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           child: Row(

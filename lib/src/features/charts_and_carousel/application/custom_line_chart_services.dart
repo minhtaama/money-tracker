@@ -82,7 +82,7 @@ class LineChartServices {
     return avg / balanceAtDateTimes.length;
   }
 
-  CLCData getHomeScreenCLCData(ChartDataType type, DateTime displayDate) {
+  CLCData getHomeScreenCLCData(LineChartDataType type, DateTime displayDate) {
     final dayBeginOfMonth = DateTime(displayDate.year, displayDate.month);
     final dayEndOfMonth = DateTime(displayDate.year, displayDate.month + 1, 0, 23, 59, 59);
     final today = DateTime.now();
@@ -90,7 +90,7 @@ class LineChartServices {
     final double monthInitialAmount;
 
     // Modify monthInitialAmount if type is ChartDataType.totalBalance
-    if (type == ChartDataType.totalAssets) {
+    if (type == LineChartDataType.totalAssets) {
       final balanceAtDateTimes = transactionRepo.getSortedBalanceAtDateTimeList();
 
       // Find nearest balDt before displayDate
@@ -112,7 +112,7 @@ class LineChartServices {
     void updateAmount(int day, BaseTransaction txn) {
       result.updateAll((key, value) {
         if (key >= day) {
-          if (type == ChartDataType.cashflow || type == ChartDataType.totalAssets) {
+          if (type == LineChartDataType.cashflow || type == LineChartDataType.totalAssets) {
             if (txn is CreditPayment || txn is Expense) {
               return value -= txn.amount;
             }
@@ -129,11 +129,11 @@ class LineChartServices {
         .getTransactions(dayBeginOfMonth, dayEndOfMonth)
         .where(
           (txn) => switch (type) {
-            ChartDataType.cashflow ||
-            ChartDataType.totalAssets =>
+            LineChartDataType.cashflow ||
+            LineChartDataType.totalAssets =>
               txn is Income || txn is Expense || txn is CreditPayment,
-            ChartDataType.expense => txn is Expense || txn is CreditPayment,
-            ChartDataType.income => txn is Income,
+            LineChartDataType.expense => txn is Expense || txn is CreditPayment,
+            LineChartDataType.income => txn is Income,
           },
         )
         .toList();
@@ -168,7 +168,7 @@ class LineChartServices {
       }
     }
 
-    if (type == ChartDataType.totalAssets) {
+    if (type == LineChartDataType.totalAssets) {
       final avg = getAverageAssets();
       if (avg > max) {
         max = avg;
@@ -232,8 +232,7 @@ class LineChartServices {
       amountToPayAtEndDate = statement.spentToPayAtEndDate + statement.interestFromPrevious;
       spentInGracePeriod = statement.spentInGracePeriod;
       balanceRemaining = statement.balanceToPayRemaining;
-      txns =
-          statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
+      txns = statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
       startDate = statement.startDate;
       previousDueDate = statement.previousDueDate;
       statementDate = statement.statementDate;
@@ -245,8 +244,7 @@ class LineChartServices {
       spentInGracePeriod = 0;
       balanceRemaining = 0;
       txns = [];
-      startDate =
-          DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
+      startDate = DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
       previousDueDate = Calendar.minDate;
       statementDate = startDate.copyWith(month: startDate.month + 1);
       dueDate = account.statementDay >= account.paymentDueDay
@@ -257,12 +255,9 @@ class LineChartServices {
     // Credit amount after full payment
     // (creditLimit - amountAtEndDate) is the amount of total spent (include installment)
     // then add the amount must pay: (amountToPayAtEndDate)
-    final creditAfterFullPayment =
-        creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
+    final creditAfterFullPayment = creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
 
-    days = [
-      for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day
-    ];
+    days = [for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day];
 
     Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - amountAtStartDate};
 

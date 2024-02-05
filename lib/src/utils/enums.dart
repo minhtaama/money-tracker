@@ -5,35 +5,22 @@ enum TransactionType {
   creditSpending,
   creditPayment,
   creditCheckpoint,
+  installmentToPay,
 }
 
-enum CreditPaymentType {
-  underMinimum,
-  minimumOrHigher,
-  full,
-}
+enum CreditPaymentType { underMinimum, minimumOrHigher, full }
 
-enum CategoryType {
-  income,
-  expense,
-}
+enum CategoryType { income, expense }
 
-enum AccountType {
-  regular,
-  credit,
-}
+enum AccountType { regular, credit }
 
-enum StatementType {
-  withAverageDailyBalance,
-  payOnlyInGracePeriod,
-}
+enum StatementType { withAverageDailyBalance, payOnlyInGracePeriod }
 
-enum ThemeType {
-  light,
-  dark,
-  system,
-}
+enum ThemeType { light, dark, system }
 
+enum TransactionScreenType { editable, uneditable, installmentToPay }
+
+// TODO: Change 2 format: short and long date time
 enum DateTimeFormat {
   ddmmyyyy,
   ddmmmyyyy,
@@ -43,12 +30,7 @@ enum DateTimeFormat {
   mmmmddyyyy,
 }
 
-enum ChartDataType {
-  totalAssets,
-  cashflow,
-  expense,
-  income,
-}
+enum LineChartDataType { totalAssets, cashflow, expense, income }
 
 /// https://www.xe.com/symbols/
 enum Currency {

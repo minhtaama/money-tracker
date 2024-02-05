@@ -419,7 +419,7 @@ class _ListState extends State<_List> {
   void _addInstallments(List<Widget> list, Statement statement) {
     list.addAll(
       statement.installments.map((instm) => instm.txn).map(
-            (txn) => _InstallmentPayTransaction(
+            (txn) => _InstallmentToPayTransaction(
               transaction: txn,
             ),
           ),

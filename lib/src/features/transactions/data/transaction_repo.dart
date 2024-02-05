@@ -27,6 +27,7 @@ class TransactionRepositoryRealmDb {
         TransactionType.creditSpending => 3,
         TransactionType.creditPayment => 4,
         TransactionType.creditCheckpoint => 5,
+        TransactionType.installmentToPay => throw StateError('Can not put this type into database'),
       };
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {

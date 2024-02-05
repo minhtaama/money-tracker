@@ -25,6 +25,7 @@ class _Amount extends ConsumerWidget {
       TransactionType.creditSpending => AppIcons.receiptDollar,
       TransactionType.creditPayment => AppIcons.handCoin,
       TransactionType.creditCheckpoint => AppIcons.receiptEdit,
+      TransactionType.installmentToPay => AppIcons.installment,
     };
   }
 
@@ -36,6 +37,7 @@ class _Amount extends ConsumerWidget {
       TransactionType.creditSpending => context.appTheme.onBackground,
       TransactionType.creditPayment => context.appTheme.negative,
       TransactionType.creditCheckpoint => context.appTheme.onBackground,
+      TransactionType.installmentToPay => context.appTheme.negative,
     };
   }
 
@@ -90,8 +92,8 @@ class _Amount extends ConsumerWidget {
   }
 }
 
-class _InstallmentDetails extends StatelessWidget {
-  const _InstallmentDetails(
+class _InstallmentOfSpendingDetails extends StatelessWidget {
+  const _InstallmentOfSpendingDetails(
       {super.key,
       required this.isEditMode,
       required this.isEdited,

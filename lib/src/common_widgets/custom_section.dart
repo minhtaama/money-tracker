@@ -80,28 +80,31 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       padding: EdgeInsets.zero,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  widget.title != null
-                      ? Padding(
-                          padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
-                          child: Text(
-                            widget.title!,
-                            style: kHeader2TextStyle.copyWith(
-                              color: context.appTheme.onBackground.withOpacity(0.85),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    widget.title != null
+                        ? Padding(
+                            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                            child: Text(
+                              widget.title!,
+                              style: kHeader2TextStyle.copyWith(
+                                color: context.appTheme.onBackground.withOpacity(0.85),
+                              ),
                             ),
-                          ),
-                        )
-                      : Gap.noGap,
-                  widget.subTitle ?? Gap.noGap,
-                ],
+                          )
+                        : Gap.noGap,
+                    widget.subTitle ?? Gap.noGap,
+                  ],
+                ),
               ),
-              const Spacer(),
               ...?widget.subIcons,
             ],
           ),

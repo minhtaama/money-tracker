@@ -12,7 +12,7 @@ class PersistentController extends Notifier<AppPersistentValues> {
   }
 
   Future<void> set({
-    ChartDataType? chartDataTypeInHomescreen,
+    LineChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
   }) async {
     final realm = ref.read(realmProvider);

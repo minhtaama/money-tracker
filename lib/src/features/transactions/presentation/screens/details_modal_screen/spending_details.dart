@@ -92,7 +92,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
           onEditModeTap: _changeAmount,
         ),
         Gap.h12,
-        _InstallmentDetails(
+        _InstallmentOfSpendingDetails(
             isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
             isEdited: _isInstallmentEdited(stateWatch),
             installmentController: _installmentPaymentController,
