@@ -1,9 +1,10 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _RegularDetails extends ConsumerStatefulWidget {
-  const _RegularDetails({required this.transaction});
+  const _RegularDetails(this.screenType, {required this.transaction});
 
   final BaseRegularTransaction transaction;
+  final TransactionScreenType screenType;
 
   @override
   ConsumerState<_RegularDetails> createState() => _RegularDetailsState();
@@ -36,30 +37,32 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
         dateTime: stateWatch.dateTime ?? _transaction.dateTime,
         onEditModeTap: _changeDateTime,
       ),
-      subIcons: [
-        _EditButton(
-          isEditMode: _isEditMode,
-          onTap: () {
-            if (_isEditMode) {
-              if (_submit()) {
-                setState(() {
-                  _isEditMode = !_isEditMode;
-                });
-              }
-            } else {
-              setState(() {
-                _isEditMode = !_isEditMode;
-              });
-            }
-          },
-        ),
-        _transaction is Income && (_transaction as Income).isInitialTransaction
-            ? Gap.noGap
-            : _DeleteButton(
+      subIcons: widget.screenType == TransactionScreenType.editable
+          ? [
+              _EditButton(
                 isEditMode: _isEditMode,
-                onConfirm: _delete,
+                onTap: () {
+                  if (_isEditMode) {
+                    if (_submit()) {
+                      setState(() {
+                        _isEditMode = !_isEditMode;
+                      });
+                    }
+                  } else {
+                    setState(() {
+                      _isEditMode = !_isEditMode;
+                    });
+                  }
+                },
               ),
-      ],
+              _transaction is Income && (_transaction as Income).isInitialTransaction
+                  ? Gap.noGap
+                  : _DeleteButton(
+                      isEditMode: _isEditMode,
+                      onConfirm: _delete,
+                    ),
+            ]
+          : null,
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
       sections: [

@@ -16,7 +16,6 @@ import '../common_widgets/modal_and_dialog.dart';
 import '../features/settings_and_persistent_values/presentation/settings_screen.dart';
 import '../features/summary/presentation/summary_screen.dart';
 import '../features/home/presentation/home_screen.dart';
-import '../features/transactions/domain/transaction_base.dart';
 import '../features/transactions/presentation/screens/add_model_screen/add_credit_spending_modal_screen.dart';
 import '../utils/enums.dart';
 
@@ -183,12 +182,27 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/transaction',
       parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) => showModalBottomSheetPage(
-        context,
-        state,
-        hasHandle: true,
-        child: TransactionDetailsModalScreen(objectIdHexString: state.extra as String),
-      ),
+      pageBuilder: (context, state) {
+        final String objectIdHexString;
+        final TransactionScreenType screenType;
+        if (state.extra is List) {
+          objectIdHexString = (state.extra as List<dynamic>)[0] as String;
+          screenType = (state.extra as List<dynamic>)[1] as TransactionScreenType;
+        } else {
+          objectIdHexString = state.extra as String;
+          screenType = TransactionScreenType.editable;
+        }
+
+        return showModalBottomSheetPage(
+          context,
+          state,
+          hasHandle: true,
+          child: TransactionDetailsModalScreen(
+            objectIdHexString: objectIdHexString,
+            screenType: screenType,
+          ),
+        );
+      },
     ),
   ],
 );

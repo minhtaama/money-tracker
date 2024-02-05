@@ -1,9 +1,10 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _SpendingDetails extends ConsumerStatefulWidget {
-  const _SpendingDetails({required this.transaction});
+  const _SpendingDetails(this.screenType, {required this.transaction});
 
   final CreditSpending transaction;
+  final TransactionScreenType screenType;
 
   @override
   ConsumerState<_SpendingDetails> createState() => _SpendingDetailsState();
@@ -54,30 +55,32 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
         dateTime: stateWatch.dateTime ?? _transaction.dateTime,
         onEditModeTap: _changeDateTime,
       ),
-      subIcons: [
-        _EditButton(
-          isEditMode: _isEditMode,
-          onTap: () {
-            if (_isEditMode) {
-              if (_submit()) {
-                setState(() {
-                  _isEditMode = !_isEditMode;
-                });
-              }
-            } else {
-              setState(() {
-                _isEditMode = !_isEditMode;
-              });
-            }
-          },
-        ),
-        _DeleteButton(
-          isEditMode: _isEditMode,
-          isDisable: !_canDelete,
-          disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
-          onConfirm: _delete,
-        )
-      ],
+      subIcons: widget.screenType == TransactionScreenType.editable
+          ? [
+              _EditButton(
+                isEditMode: _isEditMode,
+                onTap: () {
+                  if (_isEditMode) {
+                    if (_submit()) {
+                      setState(() {
+                        _isEditMode = !_isEditMode;
+                      });
+                    }
+                  } else {
+                    setState(() {
+                      _isEditMode = !_isEditMode;
+                    });
+                  }
+                },
+              ),
+              _DeleteButton(
+                isEditMode: _isEditMode,
+                isDisable: !_canDelete,
+                disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
+                onConfirm: _delete,
+              )
+            ]
+          : null,
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
       sections: [

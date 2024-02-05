@@ -1,9 +1,10 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _PaymentDetails extends ConsumerStatefulWidget {
-  const _PaymentDetails({required this.transaction});
+  const _PaymentDetails(this.screenType, {required this.transaction});
 
   final CreditPayment transaction;
+  final TransactionScreenType screenType;
 
   @override
   ConsumerState<_PaymentDetails> createState() => _PaymentDetailsState();
@@ -41,30 +42,32 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
         dateTime: stateWatch.dateTime ?? _transaction.dateTime,
         onEditModeTap: _changeDateTime,
       ),
-      subIcons: [
-        _EditButton(
-          isEditMode: _isEditMode,
-          onTap: () {
-            if (_isEditMode) {
-              if (_submit()) {
-                setState(() {
-                  _isEditMode = !_isEditMode;
-                });
-              }
-            } else {
-              setState(() {
-                _isEditMode = !_isEditMode;
-              });
-            }
-          },
-        ),
-        _DeleteButton(
-          isEditMode: _isEditMode,
-          isDisable: !_canDelete,
-          disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
-          onConfirm: _delete,
-        )
-      ],
+      subIcons: widget.screenType == TransactionScreenType.editable
+          ? [
+              _EditButton(
+                isEditMode: _isEditMode,
+                onTap: () {
+                  if (_isEditMode) {
+                    if (_submit()) {
+                      setState(() {
+                        _isEditMode = !_isEditMode;
+                      });
+                    }
+                  } else {
+                    setState(() {
+                      _isEditMode = !_isEditMode;
+                    });
+                  }
+                },
+              ),
+              _DeleteButton(
+                isEditMode: _isEditMode,
+                isDisable: !_canDelete,
+                disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+                onConfirm: _delete,
+              )
+            ]
+          : null,
       crossAxisAlignment: CrossAxisAlignment.start,
       isWrapByCard: false,
       sections: [

@@ -26,7 +26,6 @@ import '../../../../../common_widgets/card_item.dart';
 import '../../../../../common_widgets/custom_checkbox.dart';
 import '../../../../../common_widgets/custom_section.dart';
 import '../../../../../common_widgets/custom_text_form_field.dart';
-import '../../../../../common_widgets/help_button.dart';
 import '../../../../../common_widgets/icon_with_text.dart';
 import '../../../../../common_widgets/icon_with_text_button.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
@@ -45,10 +44,19 @@ part 'payment_details.dart';
 part 'spending_details.dart';
 part 'regular_details.dart';
 
+enum TransactionScreenType { editable, uneditable, installmentDetailOfSpending }
+
 class TransactionDetailsModalScreen extends ConsumerWidget {
-  const TransactionDetailsModalScreen({super.key, required this.objectIdHexString});
+  const TransactionDetailsModalScreen({
+    super.key,
+    required this.objectIdHexString,
+    required this.screenType,
+  });
 
   final String objectIdHexString;
+  final TransactionScreenType screenType;
+
+  //TODO: installment page
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,10 +68,11 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
       ref.watch(transactionStreamProvider(objectIdHexString)).whenData(
             (value) => transaction = value,
           );
+
       return switch (transaction) {
-        BaseRegularTransaction() => _RegularDetails(transaction: transaction as BaseRegularTransaction),
-        CreditSpending() => _SpendingDetails(transaction: transaction as CreditSpending),
-        CreditPayment() => _PaymentDetails(transaction: transaction as CreditPayment),
+        BaseRegularTransaction() => _RegularDetails(screenType, transaction: transaction as BaseRegularTransaction),
+        CreditSpending() => _SpendingDetails(screenType, transaction: transaction as CreditSpending),
+        CreditPayment() => _PaymentDetails(screenType, transaction: transaction as CreditPayment),
         CreditCheckpoint() => const Placeholder(),
       };
     } catch (e) {

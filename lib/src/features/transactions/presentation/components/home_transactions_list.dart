@@ -7,8 +7,8 @@ import '../../../../utils/constants.dart';
 import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
-class TransactionsList extends StatelessWidget {
-  const TransactionsList({
+class HomeTransactionsList extends StatelessWidget {
+  const HomeTransactionsList({
     super.key,
     required this.transactions,
     required this.currencyCode,
