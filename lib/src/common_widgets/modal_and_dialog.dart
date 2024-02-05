@@ -10,7 +10,7 @@ import 'icon_with_text_button.dart';
 
 Future<T?> showStatefulDialog<T>({
   required BuildContext context,
-  required Widget Function(BuildContext, StateSetter) builder,
+  required Widget Function(BuildContext context, StateSetter stateSetter) builder,
 }) {
   return showDialog<T>(
     useRootNavigator: false,
@@ -25,9 +25,10 @@ Future<T?> showCustomDialog<T>({
   required BuildContext context,
   required Widget child,
 }) {
-  return showStatefulDialog(
+  return showDialog(
+    useRootNavigator: false,
     context: context,
-    builder: (_, __) {
+    builder: (context) {
       return Padding(
         padding: const EdgeInsets.all(12.0),
         child: AlertDialog(
@@ -41,15 +42,19 @@ Future<T?> showCustomDialog<T>({
   );
 }
 
-Future<void> showErrorDialog(BuildContext context, String text) {
-  return showCustomDialog(
-    context: context,
-    child: IconWithText(
-      iconPath: AppIcons.sadFace,
-      color: context.appTheme.onBackground,
-      header: text,
-    ),
-  );
+Future<void> showErrorDialog(BuildContext context, String text, {bool enable = true}) {
+  if (enable) {
+    return showCustomDialog(
+      context: context,
+      child: IconWithText(
+        iconPath: AppIcons.sadFace,
+        color: context.appTheme.onBackground,
+        header: text,
+      ),
+    );
+  }
+
+  return Future<void>(() => null);
 }
 
 /// This is a helper function to show a confirmation of user

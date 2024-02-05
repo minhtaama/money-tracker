@@ -65,7 +65,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     super.didUpdateWidget(oldWidget);
   }
 
-  void _submit(DateTime dateTime) {
+  void _submitDay(DateTime dateTime) {
     _currentMonthView = dateTime;
 
     _outputDateTime = dateTime.copyWith(hour: _selectedHour, minute: _selectedMinute);
@@ -75,7 +75,19 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     context.pop();
   }
 
-  Widget _contentBuilder(StateSetter setState, {required DateTime monthView, DateTime? selectedDay}) {
+  void _updateTime(DateTime dateTime) {
+    _selectedHour = dateTime.hour;
+    _selectedMinute = dateTime.minute;
+
+    if (_outputDateTime != null) {
+      setState(() {
+        _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
+      });
+      widget.onChanged(_outputDateTime!, _outputStatement);
+    }
+  }
+
+  Widget _contentBuilder(StateSetter setState, DateTime monthView, DateTime? selectedDay) {
     if (widget.creditAccount!.earliestPayableDate == null) {
       return IconWithText(
         iconPath: AppIcons.done,
@@ -126,17 +138,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                 key: _key,
                 children: [
                   _CustomTimePickSpinner(
-                    onTimeChange: (newTime) {
-                      _selectedHour = newTime.hour;
-                      _selectedMinute = newTime.minute;
-
-                      if (_outputDateTime != null) {
-                        setState(() {
-                          _outputDateTime = _outputDateTime!.copyWith(hour: _selectedHour, minute: _selectedMinute);
-                        });
-                        widget.onChanged(_outputDateTime!, _outputStatement);
-                      }
-                    },
+                    onTimeChange: _updateTime,
                   ),
                   CustomInkWell(
                     inkColor: AppColors.grey(context),
@@ -150,14 +152,14 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
                               currentDay: _outputDateTime,
                               currentMonthView: _currentMonthView,
                               onActionButtonTap: (dateTime) {
-                                if (dateTime != null && _canSubmit(dateTime)) {
-                                  _submit(dateTime);
+                                if (dateTime != null && _canSubmit(dateTime, showDialog: true)) {
+                                  _submitDay(dateTime);
                                 }
                               },
                               contentBuilder: ({required DateTime monthView, DateTime? selectedDay}) {
                                 return AnimatedSize(
                                   duration: k150msDuration,
-                                  child: _contentBuilder(setState, monthView: monthView, selectedDay: selectedDay),
+                                  child: _contentBuilder(setState, monthView, selectedDay),
                                 );
                               },
                             );
@@ -197,88 +199,22 @@ extension _Details on _DateTimeSelectorCreditState {
   }) {
     final dateTimeYMD = date.onlyYearMonthDay;
 
-    bool isDueDate = date.day == widget.creditAccount!.paymentDueDay;
-    bool isStatementDate = date.day == widget.creditAccount!.statementDay;
-    bool hasPaymentTransaction = _paymentDateTimes.contains(dateTimeYMD);
-    bool hasSpendingTransaction = _spendingDateTimes.contains(dateTimeYMD);
-    bool hasCheckpointTransaction = _checkpointDateTimes.contains(dateTimeYMD);
-
-    final foregroundColor = isDisabled != null && isDisabled
-        ? AppColors.greyBgr(context)
-        : isSelected != null && isSelected
-            ? context.appTheme.onPrimary
-            : context.appTheme.onBackground.withOpacity(_canAddTransaction(date) ? 1 : 0.33);
-
-    final bgrColor = isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
-
-    final bgrBorder = isToday != null && isToday
-        ? Border.all(
-            color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
-          )
-        : null;
-
-    Widget icon(String path, {Color? color}) =>
-        Expanded(child: SvgIcon(path, color: color ?? foregroundColor, size: 23));
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          height: 33,
-          width: 33,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(1000),
-            border: bgrBorder,
-            color: bgrColor,
-          ),
-        ),
-        !isStatementDate && !isDueDate && !hasSpendingTransaction && !hasPaymentTransaction || isSelected!
-            ? Text(
-                date.day.toString(),
-                style: kHeader3TextStyle.copyWith(
-                    color: foregroundColor, height: 0.99, fontSize: kHeader4TextStyle.fontSize),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  isStatementDate
-                      ? hasCheckpointTransaction
-                          ? icon(AppIcons.statementCheckpoint)
-                          : icon(AppIcons.budgets)
-                      : Gap.noGap,
-                  isDueDate ? icon(AppIcons.handCoin) : Gap.noGap,
-                  hasSpendingTransaction
-                      ? icon(AppIcons.receiptDollar,
-                          color: context.appTheme.negative.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
-                      : Gap.noGap,
-                  hasPaymentTransaction
-                      ? icon(AppIcons.receiptCheck,
-                          color: context.appTheme.positive.withOpacity(_canAddTransaction(date) ? 1 : 0.33))
-                      : Gap.noGap,
-                ],
-              ),
-      ],
+    return _DayBuilder.forCredit(
+      context,
+      date,
+      isDisabled,
+      isSelected,
+      isToday,
+      canAddTransaction: _canSubmit(date),
+      hasPayment: _paymentDateTimes.contains(dateTimeYMD),
+      hasSpending: _spendingDateTimes.contains(dateTimeYMD),
+      hasCheckpoint: _checkpointDateTimes.contains(dateTimeYMD),
+      isStatementDay: date.day == widget.creditAccount!.statementDay,
+      isDueDay: date.day == widget.creditAccount!.paymentDueDay,
     );
   }
 
-  bool _canAddTransaction(DateTime dateTime) {
-    if (widget.creditAccount == null) {
-      throw ErrorDescription('Must specify a credit account first');
-    }
-
-    if (widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod && widget.isForPayment) {
-      return !dateTime.isBefore(_latestCheckpointDateTime) &&
-          dateTime.isAfter(_latestStatementDueDate) &&
-          !dateTime.isAfter(_todayStatementDueDate) &&
-          widget.creditAccount!.isInGracePeriod(dateTime);
-    }
-
-    return !dateTime.isBefore(_latestCheckpointDateTime) &&
-        dateTime.isAfter(_latestStatementDueDate) &&
-        !dateTime.isAfter(_todayStatementDueDate);
-  }
-
-  bool _canSubmit(DateTime dateTime) {
+  bool _canSubmit(DateTime dateTime, {bool showDialog = false}) {
     final beforeLatestCheckpoint = dateTime.isBefore(_latestCheckpointDateTime);
     final notInLatestStatement = !dateTime.isAfter(_latestStatementDueDate);
     final inFuture = dateTime.isAfter(_todayStatementDueDate);
@@ -290,6 +226,7 @@ extension _Details on _DateTimeSelectorCreditState {
       showErrorDialog(
         context,
         'You can only add transaction after [latest checkpoint]'.hardcoded,
+        enable: showDialog,
       );
       return false;
     }
@@ -298,6 +235,7 @@ extension _Details on _DateTimeSelectorCreditState {
       showErrorDialog(
         context,
         'Oops! You can only add transactions since [the statement contains the latest payment]'.hardcoded,
+        enable: showDialog,
       );
       return false;
     }
@@ -306,6 +244,7 @@ extension _Details on _DateTimeSelectorCreditState {
       showErrorDialog(
         context,
         'Oops! This is future statement!'.hardcoded,
+        enable: showDialog,
       );
       return false;
     }
@@ -314,6 +253,7 @@ extension _Details on _DateTimeSelectorCreditState {
       showErrorDialog(
         context,
         'Oops! Can only pay in grace period (Account preference)'.hardcoded,
+        enable: showDialog,
       );
       return false;
     }

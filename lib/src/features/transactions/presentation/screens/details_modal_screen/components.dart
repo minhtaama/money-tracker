@@ -701,14 +701,7 @@ class _DeleteButton extends StatelessWidget {
       child: CustomInkWell(
         onTap: () async {
           isDisable
-              ? showCustomDialog(
-                  context: context,
-                  child: IconWithText(
-                    iconPath: AppIcons.sadFace,
-                    color: context.appTheme.onBackground,
-                    header: disableText,
-                  ),
-                )
+              ? showErrorDialog(context, disableText)
               : showConfirmModalBottomSheet(
                   context: context,
                   label: 'Delete this transaction?'.hardcoded,

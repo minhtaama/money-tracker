@@ -17,9 +17,8 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
 
   late CreditSpending _transaction = widget.transaction;
 
-  late final _creditAccount = ref
-      .read(accountRepositoryProvider)
-      .getAccount(_transaction.account!.databaseObject) as CreditAccount;
+  late final _creditAccount =
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
 
@@ -165,8 +164,7 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
   }
 
   void _changeInstallmentPeriod(String value) {
-    _stateController.changeInstallmentPeriod(context, int.tryParse(value),
-        initialTransaction: _transaction);
+    _stateController.changeInstallmentPeriod(context, int.tryParse(value), initialTransaction: _transaction);
     _changeInstallmentControllerText();
   }
 
@@ -180,7 +178,8 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
       context,
       creditAccount: _creditAccount,
       statement: statement!,
-      current: _transaction.dateTime,
+      dbDateTime: _transaction.dateTime,
+      selectedDateTime: _stateRead.dateTime,
     );
 
     if (newDateTime != null) {
@@ -194,14 +193,12 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
       (state.category != null || state.tag != null) &&
       (state.category != _transaction.category || state.tag != _transaction.categoryTag);
 
-  bool _isAmountEdited(CreditSpendingFormState state) =>
-      state.amount != null && state.amount != _transaction.amount;
+  bool _isAmountEdited(CreditSpendingFormState state) => state.amount != null && state.amount != _transaction.amount;
 
   bool _isDateTimeEdited(CreditSpendingFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditSpendingFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditSpendingFormState state) => state.note != null && state.note != _transaction.note;
 
   bool _isInstallmentEdited(CreditSpendingFormState state) =>
       state.installmentPeriod != null || state.installmentAmount != null;

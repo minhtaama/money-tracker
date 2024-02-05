@@ -1,5 +1,152 @@
 part of 'calendar_dialog.dart';
 
+class _DayBuilder {
+  static Widget background(
+    BuildContext context,
+    bool? isDisabled,
+    bool? isSelected,
+    bool? isToday,
+    Color bgrColor,
+    Border? bgrBorder,
+  ) {
+    return Container(
+      height: 33,
+      width: 33,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(1000),
+        border: bgrBorder,
+        color: bgrColor,
+      ),
+    );
+  }
+
+  static Widget dayWithIcon(
+    BuildContext context,
+    Color foregroundColor,
+    bool canAddTransaction,
+    bool hasPayment,
+    bool hasSpending,
+    bool hasCheckpoint,
+    bool isStatementDay,
+    bool isDueDay,
+  ) {
+    Widget icon(String path, {Color? color}) =>
+        Expanded(child: SvgIcon(path, color: color ?? foregroundColor, size: 23));
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        isStatementDay
+            ? hasCheckpoint
+                ? icon(AppIcons.statementCheckpoint)
+                : icon(AppIcons.budgets)
+            : Gap.noGap,
+        isDueDay ? icon(AppIcons.handCoin) : Gap.noGap,
+        hasSpending
+            ? icon(
+                AppIcons.receiptDollar,
+                color: context.appTheme.negative.withOpacity(canAddTransaction ? 1 : 0.33),
+              )
+            : Gap.noGap,
+        hasPayment
+            ? icon(
+                AppIcons.receiptCheck,
+                color: context.appTheme.positive.withOpacity(canAddTransaction ? 1 : 0.33),
+              )
+            : Gap.noGap,
+      ],
+    );
+  }
+
+  static Widget normalDay(
+    DateTime date,
+    Color foregroundColor,
+  ) {
+    return Text(
+      date.day.toString(),
+      style: kHeader3TextStyle.copyWith(color: foregroundColor, height: 0.99, fontSize: kHeader4TextStyle.fontSize),
+    );
+  }
+
+  static Color foregroundColor(
+    BuildContext context,
+    bool? isDisabled,
+    bool? isSelected,
+    bool canAddTransaction,
+  ) {
+    if (isDisabled != null && isDisabled) {
+      return AppColors.greyBgr(context);
+    }
+
+    if (isSelected != null && isSelected) {
+      return context.appTheme.onPrimary;
+    }
+
+    return context.appTheme.onBackground.withOpacity(canAddTransaction ? 1 : 0.33);
+  }
+
+  static Color bgrColor(
+    BuildContext context,
+    bool? isDisabled,
+    bool? isSelected,
+    bool canAddTransaction,
+  ) {
+    return isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent;
+  }
+
+  static Border? bgrBorder(
+    BuildContext context,
+    bool? isDisabled,
+    bool? isToday,
+    bool canAddTransaction,
+  ) {
+    if (isToday != null && isToday) {
+      return Border.all(
+        color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+      );
+    }
+
+    return null;
+  }
+
+  static Widget forCredit(
+    BuildContext context,
+    DateTime date,
+    bool? isDisabled,
+    bool? isSelected,
+    bool? isToday, {
+    required bool canAddTransaction,
+    required bool hasPayment,
+    required bool hasSpending,
+    required bool hasCheckpoint,
+    required bool isStatementDay,
+    required bool isDueDay,
+  }) {
+    final foregroundColor = _DayBuilder.foregroundColor(context, isDisabled, isSelected, canAddTransaction);
+    final bgrColor = _DayBuilder.bgrColor(context, isDisabled, isSelected, canAddTransaction);
+    final bgrBorder = _DayBuilder.bgrBorder(context, isDisabled, isToday, canAddTransaction);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        _DayBuilder.background(context, isDisabled, isSelected, isToday, bgrColor, bgrBorder),
+        !isStatementDay && !isDueDay && !hasSpending && !hasPayment || isSelected!
+            ? _DayBuilder.normalDay(date, foregroundColor)
+            : _DayBuilder.dayWithIcon(
+                context,
+                foregroundColor,
+                canAddTransaction,
+                hasPayment,
+                hasSpending,
+                hasCheckpoint,
+                isStatementDay,
+                isDueDay,
+              )
+      ],
+    );
+  }
+}
+
 CalendarDatePicker2WithActionButtonsConfig _customConfig(
   BuildContext context, {
   DateTime? firstDate,

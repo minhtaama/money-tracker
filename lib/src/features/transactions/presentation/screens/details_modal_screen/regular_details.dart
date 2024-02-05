@@ -198,7 +198,8 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   void _changeDateTime() async {
     final newDateTime = await showRegularDateTimeEditDialog(
       context,
-      current: _stateRead.dateTime ?? _transaction.dateTime,
+      dbDateTime: _stateRead.dateTime ?? _transaction.dateTime,
+      selectedDateTime: _stateRead.dateTime,
     );
 
     if (newDateTime != null) {
@@ -228,17 +229,13 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   bool _isNoteEdited(RegularTransactionFormState state) => state.note != null && state.note != _transaction.note;
 
   bool _submit() {
-    if (_transaction is Transfer &&
-        (_stateRead.account ?? _transaction.account) ==
-            (_stateRead.toAccount ?? (_transaction as Transfer).transferAccount)) {
-      showCustomDialog(
-        context: context,
-        child: IconWithText(
-          iconPath: AppIcons.sadFace,
-          color: context.appTheme.onNegative,
-          header: 'Oops! Can not transfer in same account!'.hardcoded,
-        ),
-      );
+    final isTransfer = _transaction is Transfer;
+    final toSameAccount = (_stateRead.account ?? _transaction.account) ==
+        (_stateRead.toAccount ?? (_transaction as Transfer).transferAccount);
+
+    if (isTransfer && toSameAccount) {
+      showErrorDialog(context, 'Oops! Can not transfer in same account!'.hardcoded);
+
       return false;
     }
 
