@@ -233,10 +233,11 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
 
   bool _submit() {
     final isTransfer = _transaction is Transfer;
-    final toSameAccount = (_stateRead.account ?? _transaction.account) ==
-        (_stateRead.toAccount ?? (_transaction as Transfer).transferAccount);
+    final transferToSameAccount = isTransfer &&
+        (_stateRead.account ?? _transaction.account) ==
+            (_stateRead.toAccount ?? (_transaction as Transfer).transferAccount);
 
-    if (isTransfer && toSameAccount) {
+    if (transferToSameAccount) {
       showErrorDialog(context, 'Oops! Can not transfer in same account!'.hardcoded);
 
       return false;
