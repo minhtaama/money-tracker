@@ -73,7 +73,7 @@ class TransactionRepositoryRealmDb {
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
-  BaseTransaction getTransaction(String objectIdHexString) {
+  BaseTransaction getTransactionFromHex(String objectIdHexString) {
     ObjectId objId = ObjectId.fromHexString(objectIdHexString);
     final txnDb = realm.find<TransactionDb>(objId);
     if (txnDb != null) {

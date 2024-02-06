@@ -6,11 +6,11 @@ import 'package:money_tracker_app/src/features/transactions/presentation/compone
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import '../../../../../common_widgets/rounded_icon_button.dart';
-import '../../../../charts_and_carousel/application/custom_line_chart_services.dart';
-import '../../../../charts_and_carousel/presentation/custom_line_chart.dart';
-import '../../../../transactions/data/transaction_repo.dart';
-import '../../../domain/account_base.dart';
+import '../../../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../../charts_and_carousel/application/custom_line_chart_services.dart';
+import '../../../../../charts_and_carousel/presentation/custom_line_chart.dart';
+import '../../../../../transactions/data/transaction_repo.dart';
+import '../../../../domain/account_base.dart';
 
 class ExtendedCreditAccountTab extends ConsumerWidget {
   const ExtendedCreditAccountTab({

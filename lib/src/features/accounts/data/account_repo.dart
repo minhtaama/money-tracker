@@ -30,17 +30,30 @@ class AccountRepositoryRealmDb {
     return _realmResults(type).map((accountDb) => Account.fromDatabase(accountDb)!).toList();
   }
 
-  // Account? getAccount(ObjectId objectId) {
-  //   AccountDb? accountDb = realm.find<AccountDb>(objectId);
-  //   return Account.fromDatabase(accountDb);
-  // }
-
   Account? getAccount(AccountDb accountDb) {
     return Account.fromDatabase(accountDb);
   }
 
+  Account getAccountFromHex(String objectIdHexString) {
+    ObjectId objId = ObjectId.fromHexString(objectIdHexString);
+    final txnDb = realm.find<AccountDb>(objId);
+    if (txnDb != null) {
+      return Account.fromDatabase(txnDb)!;
+    }
+    throw StateError('Account id is not found');
+  }
+
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
     return realm.all<AccountDb>().changes;
+  }
+
+  Stream<Account> _watchAccount(String objectIdHexString) {
+    ObjectId objId = ObjectId.fromHexString(objectIdHexString);
+    final txnDb = realm.find<AccountDb>(objId)?.changes;
+    if (txnDb != null) {
+      return txnDb.map((event) => Account.fromDatabase(event.object)!);
+    }
+    throw StateError('transaction id is not found');
   }
 
   double getTotalBalance({bool includeCreditAccount = false}) {
@@ -79,21 +92,17 @@ class AccountRepositoryRealmDb {
         StatementType.payOnlyInGracePeriod => 1,
       };
 
-      creditDetailsDb =
-          CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
+      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(
-        ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref
-            .read(transactionRepositoryRealmProvider)
-            .writeInitialBalance(balance: balance, newAccount: newAccount);
+        ref.read(transactionRepositoryRealmProvider).writeInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -108,8 +117,7 @@ class AccountRepositoryRealmDb {
     final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction =
-        accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
       realm.write(() {
@@ -174,5 +182,12 @@ final accountsChangesProvider = StreamProvider.autoDispose<void>(
   (ref) {
     final accountRepo = ref.watch(accountRepositoryProvider);
     return accountRepo._watchListChanges();
+  },
+);
+
+final accountStreamProvider = StreamProvider.autoDispose.family<Account, String>(
+  (ref, val) {
+    final accountRepo = ref.watch(accountRepositoryProvider);
+    return accountRepo._watchAccount(val);
   },
 );

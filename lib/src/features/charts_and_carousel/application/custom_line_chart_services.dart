@@ -347,6 +347,7 @@ class LineChartServices {
             dateTime: e.key.onlyYearMonthDay,
             isToday: e.key == today,
             isStatementDay: e.key == statementDate,
+            isPreviousDueDay: e.key == previousDueDate,
           ),
         ),
       ),
@@ -407,10 +408,18 @@ class CLCSpot extends FlSpot {
 }
 
 class CLCSpotForCredit extends CLCSpot {
-  CLCSpotForCredit(super.x, super.y,
-      {required super.amount, super.dateTime, super.isToday = false, required this.isStatementDay});
+  CLCSpotForCredit(
+    super.x,
+    super.y, {
+    required super.amount,
+    super.dateTime,
+    super.isToday = false,
+    required this.isStatementDay,
+    required this.isPreviousDueDay,
+  });
 
   final bool isStatementDay;
+  final bool isPreviousDueDay;
 }
 
 /////////////////// PROVIDERS //////////////////////////

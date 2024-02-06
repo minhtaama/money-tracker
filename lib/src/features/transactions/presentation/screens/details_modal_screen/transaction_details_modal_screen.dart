@@ -61,7 +61,7 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
     final txnRepo = ref.watch(transactionRepositoryRealmProvider);
 
     try {
-      BaseTransaction transaction = txnRepo.getTransaction(objectIdHexString);
+      BaseTransaction transaction = txnRepo.getTransactionFromHex(objectIdHexString);
 
       ref.watch(transactionStreamProvider(objectIdHexString)).whenData(
             (value) => transaction = value,

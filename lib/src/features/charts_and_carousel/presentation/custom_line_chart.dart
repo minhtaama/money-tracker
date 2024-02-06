@@ -77,12 +77,27 @@ class CustomLineChart extends StatelessWidget {
         ? (spots[todayIndex].x - spots[0].x + 0.2) / (spots[spots.length - 1].x - spots[0].x)
         : 0.0;
 
-    final optionalBarGradient = LinearGradient(
+    final optionalLineGradient = LinearGradient(
       colors: [color ?? context.appTheme.accent1, color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)],
       stops: [todayPercent, todayPercent + 0.00000001],
     );
 
-    final statementIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+    Gradient mainBelowLineGradient() {
+      bool isDashed = _customLineType == _CustomLineType.dashed;
+
+      return LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          color?.withOpacity(isDashed ? 0.1 : 0.35) ?? context.appTheme.accent1.withOpacity(isDashed ? 0.1 : 0.35),
+          color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0),
+        ],
+        stops: const [0, 0.85],
+      );
+    }
+
+    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
 
     final lineBarsData = [
       // Main line.
@@ -94,7 +109,7 @@ class CustomLineChart extends StatelessWidget {
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
         preventCurveOvershootingThreshold: 0,
-        barWidth: _customLineType == _CustomLineType.solid ? 3 : 1,
+        barWidth: _customLineType == _CustomLineType.solid ? 3 : 1.5,
         dashArray: [12, _customLineType == _CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
@@ -105,29 +120,9 @@ class CustomLineChart extends StatelessWidget {
         color: color ?? context.appTheme.accent1,
         belowBarData: BarAreaData(
           show: true,
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0),
-              color?.withOpacity(0.55) ?? context.appTheme.accent1.withOpacity(0.55),
-            ],
-            stops: const [0.15, 0.9],
-          ),
+          gradient: mainBelowLineGradient(),
         ),
-        dotData: FlDotData(
-          show: isForCredit,
-          checkToShowDot: (spot, barData) {
-            return isForCredit && barData.spots.indexOf(spot) == statementIndex;
-          },
-          getDotPainter: (spot, percent, bar, index) {
-            return FlDotCirclePainter(
-              radius: 3.5,
-              color: color ?? context.appTheme.accent1,
-              strokeColor: Colors.transparent,
-            );
-          },
-        ),
+        dotData: const FlDotData(show: false),
         isStepLineChart: isForCredit,
         lineChartStepData: const LineChartStepData(stepDirection: 0),
       ),
@@ -141,15 +136,17 @@ class CustomLineChart extends StatelessWidget {
         preventCurveOverShooting: true,
         preventCurveOvershootingThreshold: 0,
         barWidth: 3,
-        gradient: optionalBarGradient,
+        gradient: optionalLineGradient,
         dotData: FlDotData(
           show: true,
           checkToShowDot: (spot, barData) {
-            return hasToday && barData.spots.indexOf(spot) == todayIndex;
+            return hasToday && barData.spots.indexOf(spot) == todayIndex ||
+                isForCredit && barData.spots.indexOf(spot) == statementDayIndex ||
+                isForCredit && barData.spots.indexOf(spot) == previousDueDayIndex;
           },
           getDotPainter: (spot, percent, bar, index) {
             return FlDotCirclePainter(
-              radius: 3.5,
+              radius: 4,
               color: color ?? context.appTheme.accent1,
               strokeColor: Colors.transparent,
             );
@@ -193,7 +190,7 @@ class CustomLineChart extends StatelessWidget {
 
     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
       final spot = spots.firstWhere((spot) => spot.x == value,
-          orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false));
+          orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
 
       final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
 

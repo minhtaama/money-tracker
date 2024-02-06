@@ -1,4 +1,197 @@
-part of 'credit_account_screen.dart';
+part of '../credit_details.dart';
+
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({required this.statement});
+
+  final Statement statement;
+
+  Widget _buildText(BuildContext context, {String? text, String? richText, int color = 0}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        children: [
+          text != null
+              ? Expanded(
+                  child: Text(
+                    text,
+                    style: kHeader3TextStyle.copyWith(
+                      color:
+                          context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+                      fontSize: 15,
+                    ),
+                  ),
+                )
+              : Gap.noGap,
+          richText != null
+              ? EasyRichText(
+                  richText,
+                  defaultStyle: kHeader3TextStyle.copyWith(
+                    color: color < 0
+                        ? context.appTheme.negative
+                        : color > 0
+                            ? context.appTheme.positive
+                            : context.appTheme.isDarkTheme
+                                ? context.appTheme.onBackground
+                                : context.appTheme.onSecondary,
+                    fontSize: 15,
+                  ),
+                  textAlign: TextAlign.right,
+                  patternList: [
+                    EasyRichTextPattern(
+                      targetString: '.',
+                      hasSpecialCharacters: true,
+                      style: kHeader1TextStyle.copyWith(
+                        color: color < 0
+                            ? context.appTheme.negative
+                            : color > 0
+                                ? context.appTheme.positive
+                                : context.appTheme.isDarkTheme
+                                    ? context.appTheme.onBackground
+                                    : context.appTheme.onSecondary,
+                        fontSize: 15,
+                      ),
+                    ),
+                    EasyRichTextPattern(
+                      targetString: ',',
+                      hasSpecialCharacters: true,
+                      style: kHeader1TextStyle.copyWith(
+                        color: color < 0
+                            ? context.appTheme.negative
+                            : color > 0
+                                ? context.appTheme.positive
+                                : context.appTheme.isDarkTheme
+                                    ? context.appTheme.onBackground
+                                    : context.appTheme.onSecondary,
+                        fontSize: 15,
+                      ),
+                    ),
+                    EasyRichTextPattern(
+                      targetString: '[0-9]+',
+                      style: kHeader1TextStyle.copyWith(
+                        color: color < 0
+                            ? context.appTheme.negative
+                            : color > 0
+                                ? context.appTheme.positive
+                                : context.appTheme.isDarkTheme
+                                    ? context.appTheme.onBackground
+                                    : context.appTheme.onSecondary,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                )
+              : Gap.noGap,
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
+      child: statement.checkpoint == null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildText(
+                  context,
+                  text: 'Carrying-over:',
+                  richText: '${carryString(context, statement)} ${context.appSettings.currency.code}',
+                  color: carry.roundBySetting(context) <= 0 ? 0 : -1,
+                ),
+                statement.interestFromPrevious > 0
+                    ? _buildText(
+                        context,
+                        text: 'Interest:',
+                        richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
+                        color: interest.roundBySetting(context) <= 0 ? 0 : -1,
+                      )
+                    : Gap.noGap,
+                _buildText(
+                  context,
+                  text: 'Spent in billing cycle:',
+                  richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
+                  color: spent.roundBySetting(context) <= 0 ? 0 : -1,
+                ),
+                _buildText(
+                  context,
+                  text: 'Paid for this statement:',
+                  richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
+                  color: paid.roundBySetting(context) <= 0 ? 0 : 1,
+                ),
+                Gap.h8,
+                CardItem(
+                  margin: EdgeInsets.zero,
+                  child: _buildText(
+                    context,
+                    text: 'Balance:',
+                    richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
+                    color: balance.roundBySetting(context) <= 0 ? 0 : -1,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                IconWithText(
+                  iconPath: AppIcons.statementCheckpoint,
+                  iconSize: 30,
+                  header: 'This statement has checkpoint',
+                ),
+                Gap.divider(context, indent: 0),
+                _buildText(
+                  context,
+                  text: 'Spent at checkpoint:',
+                  richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
+                  color: spent <= 0 ? 0 : -1,
+                ),
+                _buildText(
+                  context,
+                  text: 'Paid in grace period:',
+                  richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
+                  color: paid <= 0 ? 0 : 1,
+                ),
+                Gap.divider(context, indent: 0),
+                _buildText(
+                  context,
+                  text: 'Statement balance:',
+                  richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
+                  color: balance <= 0 ? 0 : -1,
+                ),
+              ],
+            ),
+    );
+  }
+}
+
+extension _StatementDetails on _SummaryCard {
+  double get interest => statement.interestFromPrevious;
+  double get carry => statement.spentToPayAtStartDateWithPrvGracePayment;
+  double get spent => statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
+  double get paid => statement.paidForThisStatement;
+  double get balance => statement.balanceToPayRemaining;
+
+  String? interestString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, interest, forceWithDecimalDigits: true);
+  }
+
+  String? carryString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, carry, forceWithDecimalDigits: true);
+  }
+
+  String? spentString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, spent, forceWithDecimalDigits: true);
+  }
+
+  String? paidString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, paid, forceWithDecimalDigits: true);
+  }
+
+  String? balanceString(BuildContext context, Statement statement) {
+    return CalService.formatCurrency(context, math.max(0, balance), forceWithDecimalDigits: true);
+  }
+}
 
 class _Header extends StatelessWidget {
   const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});

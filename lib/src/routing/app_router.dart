@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
-import 'package:money_tracker_app/src/features/accounts/presentation/account_screen/credit/credit_account_screen.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/credit/credit_details.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
@@ -33,7 +34,7 @@ class RoutePath {
   static String get categories => '/summary/categories';
   static String get addCategory => '/summary/categories/addCategory';
   static String get accounts => '/summary/accounts';
-  static String get creditAccountScreen => '/summary/accounts/creditAccountScreen';
+  static String get accountScreen => '/summary/accounts/accountScreen';
   static String get addAccount => '/summary/accounts/addAccount';
   static String get transaction => '/transaction';
 }
@@ -160,9 +161,9 @@ final goRouter = GoRouter(
               builder: (context, state) => const AccountsListScreen(),
               routes: [
                 GoRoute(
-                  path: 'creditAccountScreen',
+                  path: 'accountScreen',
                   parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => CreditAccountScreen(creditAccount: state.extra as CreditAccount),
+                  builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
                 ),
                 GoRoute(
                   path: 'addAccount',

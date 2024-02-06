@@ -9,7 +9,6 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -17,7 +16,6 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../../../common_widgets/modal_and_dialog.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
 import '../domain/account_base.dart';
@@ -82,7 +80,7 @@ class AccountsListScreen extends ConsumerWidget {
 }
 
 class _AccountTile extends StatelessWidget {
-  const _AccountTile({super.key, required this.model});
+  const _AccountTile({required this.model});
 
   final Account model;
 
@@ -91,7 +89,7 @@ class _AccountTile extends StatelessWidget {
     return CustomInkWell(
       onTap: () {
         if (model is CreditAccount) {
-          context.push(RoutePath.creditAccountScreen, extra: model);
+          context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString);
         }
         // TODO: Add regular account screen
       },
@@ -178,7 +176,7 @@ class _AccountTile extends StatelessWidget {
 }
 
 class _CreditDetails extends StatelessWidget {
-  const _CreditDetails({super.key, required this.model});
+  const _CreditDetails({required this.model});
 
   final CreditAccount model;
 
