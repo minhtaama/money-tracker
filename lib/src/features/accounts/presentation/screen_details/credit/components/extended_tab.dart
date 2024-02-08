@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/features/transactions/presentation/compone
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../../../charts_and_carousel/presentation/custom_line_chart.dart';
@@ -33,7 +34,8 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
 
     final extraLineY = (data as CLCDataForCredit).extraLineY;
     final extraLineText =
-        'Payment required: ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}';
+        'Payment required: ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}'
+            .hardcoded;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,6 +74,7 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
           child: CustomLineChart(
             currentMonth: displayDate,
             color: account.iconColor,
+            todayDotColor: account.backgroundColor,
             data: data,
             offsetY: 35,
             isForCredit: true,

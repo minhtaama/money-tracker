@@ -25,6 +25,7 @@ class CustomLineChart extends StatelessWidget {
     this.extraLineText,
     this.isForCredit = false,
     this.color,
+    this.todayDotColor,
   });
 
   /// To determine value in x-axis (days in month)
@@ -42,6 +43,8 @@ class CustomLineChart extends StatelessWidget {
   final bool isForCredit;
 
   final Color? color;
+
+  final Color? todayDotColor;
 
   _CustomLineType get _customLineType {
     final today = DateTime.now();
@@ -72,6 +75,9 @@ class CustomLineChart extends StatelessWidget {
     final todayIndex = spots.indexWhere((e) => e.isToday);
     final hasToday = todayIndex != -1;
 
+    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
+
     // 0.2 is added for step chart to display correctly
     final todayPercent = hasToday && _customLineType == _CustomLineType.solidToDashed
         ? (spots[todayIndex].x - spots[0].x + 0.2) / (spots[spots.length - 1].x - spots[0].x)
@@ -96,8 +102,36 @@ class CustomLineChart extends StatelessWidget {
       );
     }
 
-    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
-    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
+    Alignment extraLineLabelAlignment() {
+      if (extraLineY == null) {
+        return Alignment.topRight;
+      }
+
+      bool isLeft = false;
+
+      double avgYBegin = 0;
+      double avgYEnd = 0;
+
+      for (int i = 0; i <= spots.length / 2; i++) {
+        avgYBegin += spots[i].y;
+      }
+      for (int i = spots.length - 1; i >= spots.length / 2; i--) {
+        avgYEnd += spots[i].y;
+      }
+
+      avgYBegin = (avgYBegin / (spots.length / 2)).clamp(0, 1);
+      avgYEnd = (avgYEnd / (spots.length / 2)).clamp(0, 1);
+
+      if (todayIndex >= spots.length / 2) {
+        isLeft = true;
+      }
+
+      if (isLeft) {
+        return avgYBegin > extraLineY! ? Alignment.bottomLeft : Alignment.topLeft;
+      } else {
+        return avgYEnd > extraLineY! ? Alignment.bottomRight : Alignment.topRight;
+      }
+    }
 
     final lineBarsData = [
       // Main line.
@@ -145,6 +179,14 @@ class CustomLineChart extends StatelessWidget {
                 isForCredit && barData.spots.indexOf(spot) == previousDueDayIndex;
           },
           getDotPainter: (spot, percent, bar, index) {
+            if (hasToday && index == todayIndex) {
+              return FlDotTodayPainter(
+                context,
+                color: color ?? context.appTheme.accent1,
+                dotColor: todayDotColor ?? context.appTheme.secondary1,
+                textPadding: const EdgeInsets.all(4),
+              );
+            }
             return FlDotCirclePainter(
               radius: 4,
               color: color ?? context.appTheme.accent1,
@@ -419,7 +461,7 @@ class CustomLineChart extends StatelessWidget {
                                 ? context.appTheme.onBackground.withOpacity(0)
                                 : context.appTheme.onSecondary.withOpacity(0)),
                   ),
-                  alignment: extraLineY! < (maxY - minY) / 2 ? Alignment.topRight : Alignment.bottomRight,
+                  alignment: extraLineLabelAlignment(),
                   labelResolver: (_) => extraLineText ?? '',
                 ),
                 color: extraLineY != null
@@ -454,4 +496,138 @@ class CustomLineChart extends StatelessWidget {
       ),
     );
   }
+}
+
+class FlDotTodayPainter extends FlDotPainter {
+  /// This class is an implementation of a [FlDotPainter] that draws
+  /// a circled shape and a "today" indicator
+  FlDotTodayPainter(
+    this.context, {
+    required this.color,
+    this.dotRadius = 4.0,
+    this.cornerRadius = 4.0,
+    this.dotColor,
+    this.dotStrokeWidth = 2.5,
+    this.offsetFromDot = const Offset(20, -30),
+    this.textPadding = EdgeInsets.zero,
+  });
+
+  BuildContext context;
+
+  Color color;
+
+  double dotRadius;
+
+  /// Optional color for dot color
+  Color? dotColor;
+
+  /// The stroke width to use for the circle
+  double dotStrokeWidth;
+
+  Offset offsetFromDot;
+
+  EdgeInsets textPadding;
+
+  double cornerRadius;
+
+  double get _colorLum => color.computeLuminance();
+
+  void _drawDot(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    if (dotStrokeWidth != 0.0) {
+      canvas.drawCircle(
+        offsetInCanvas,
+        dotRadius + (dotStrokeWidth / 2),
+        Paint()
+          ..color = color
+          ..strokeWidth = dotStrokeWidth
+          ..style = PaintingStyle.stroke,
+      );
+    }
+
+    canvas.drawCircle(
+      offsetInCanvas,
+      dotRadius,
+      Paint()
+        ..color = dotColor ?? color
+        ..style = PaintingStyle.fill,
+    );
+  }
+
+  void _drawText(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    final textSpan = TextSpan(
+      text: 'Today'.hardcoded,
+      style: kHeader3TextStyle.copyWith(
+        color: _colorLum < 0.5 ? AppColors.white : AppColors.black,
+        fontSize: 10,
+      ),
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    )..layout(
+        minWidth: 0,
+        maxWidth: 150,
+      );
+
+    bool isTextOutOfScreen = false;
+
+    // Offset to center with the dot
+    Offset textOffset = Offset(
+      offsetInCanvas.dx + offsetFromDot.dx - (textPainter.width / 2),
+      offsetInCanvas.dy + offsetFromDot.dy + textPadding.top,
+    );
+
+    // Re-calculate the offset with screen width
+    if (textOffset.dx + textPainter.width > Gap.screenWidth(context)) {
+      textOffset = Offset(
+        Gap.screenWidth(context) - textPainter.width - (textPadding.horizontal / 2) - (dotRadius * 2) - 5,
+        textOffset.dy,
+      );
+
+      isTextOutOfScreen = true;
+    }
+
+    canvas.drawRRect(
+      RRect.fromLTRBAndCorners(
+        textOffset.dx - textPadding.left,
+        textOffset.dy - textPadding.top,
+        textOffset.dx + textPainter.width + textPadding.right,
+        textOffset.dy + textPainter.height + textPadding.bottom,
+        topLeft: Radius.circular(cornerRadius),
+        topRight: Radius.circular(cornerRadius),
+        bottomRight: Radius.circular(isTextOutOfScreen ? 0 : cornerRadius),
+        bottomLeft: Radius.circular(isTextOutOfScreen ? cornerRadius : 0),
+      ),
+      Paint()
+        ..color = color.withOpacity(0.7)
+        ..style = PaintingStyle.fill,
+    );
+
+    textPainter.paint(canvas, textOffset);
+  }
+
+  /// Implementation of the parent class to draw the circle
+  @override
+  void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+    _drawDot(canvas, spot, offsetInCanvas);
+
+    _drawText(canvas, spot, offsetInCanvas);
+  }
+
+  /// Implementation of the parent class to get the size of the circle
+  @override
+  Size getSize(FlSpot spot) {
+    return Size(dotRadius * 2, dotRadius * 2);
+  }
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        color,
+        dotRadius,
+        dotColor,
+        dotStrokeWidth,
+      ];
 }

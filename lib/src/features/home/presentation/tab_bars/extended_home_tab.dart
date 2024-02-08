@@ -120,6 +120,14 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
+    Color lerpWithBg(Color color) {
+      if (context.appTheme.isDarkTheme) {
+        return Color.lerp(color, context.appTheme.background2, 0.5)!;
+      } else {
+        return Color.lerp(color, context.appTheme.secondary1, 0.75)!;
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -144,6 +152,11 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
             offsetY: 35,
             extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
             extraLineText: extraLineText,
+            todayDotColor: _type == LineChartDataType.expense
+                ? lerpWithBg(context.appTheme.negative)
+                : _type == LineChartDataType.income
+                    ? lerpWithBg(context.appTheme.positive)
+                    : null,
           ),
         ),
       ],
