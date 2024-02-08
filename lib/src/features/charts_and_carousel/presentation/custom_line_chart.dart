@@ -142,7 +142,6 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        preventCurveOvershootingThreshold: 0,
         barWidth: _customLineType == _CustomLineType.solid ? 3 : 1.5,
         dashArray: [12, _customLineType == _CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
@@ -168,7 +167,6 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        preventCurveOvershootingThreshold: 0,
         barWidth: 3,
         gradient: optionalLineGradient,
         dotData: FlDotData(
@@ -180,11 +178,24 @@ class CustomLineChart extends StatelessWidget {
           },
           getDotPainter: (spot, percent, bar, index) {
             if (hasToday && index == todayIndex) {
+              bool boxUnderDot = false;
+              if (index >= (spots.length - 1) - 3) {
+                if (spots[index].y > spots[index - 1].y) {
+                  boxUnderDot = true;
+                }
+              } else {
+                if (spots[index + 1].y > spots[index].y) {
+                  boxUnderDot = true;
+                }
+              }
+
+              //TODO: add some more when index + 2 is higher...
+
               return FlDotTodayPainter(
                 context,
                 color: color ?? context.appTheme.accent1,
                 dotColor: todayDotColor ?? context.appTheme.secondary1,
-                textPadding: const EdgeInsets.all(4),
+                boxUnderDot: boxUnderDot,
               );
             }
             return FlDotCirclePainter(
@@ -394,7 +405,6 @@ class CustomLineChart extends StatelessWidget {
 
         final dotData = FlDotData(
           getDotPainter: (spot, percent, bar, index) {
-            //print(bar.barWidth);
             return FlDotCirclePainter(
               radius: isOptionalBar ? 0 : 5,
               color: color?.addDark(0.1) ?? context.appTheme.accent1.addDark(0.1),
@@ -505,11 +515,11 @@ class FlDotTodayPainter extends FlDotPainter {
     this.context, {
     required this.color,
     this.dotRadius = 4.0,
-    this.cornerRadius = 4.0,
+    this.cornerRadius = 6.0,
     this.dotColor,
     this.dotStrokeWidth = 2.5,
-    this.offsetFromDot = const Offset(20, -30),
-    this.textPadding = EdgeInsets.zero,
+    this.textPadding = const EdgeInsets.all(4),
+    this.boxUnderDot = false,
   });
 
   BuildContext context;
@@ -524,11 +534,11 @@ class FlDotTodayPainter extends FlDotPainter {
   /// The stroke width to use for the circle
   double dotStrokeWidth;
 
-  Offset offsetFromDot;
-
   EdgeInsets textPadding;
 
   double cornerRadius;
+
+  bool boxUnderDot;
 
   double get _colorLum => color.computeLuminance();
 
@@ -573,6 +583,8 @@ class FlDotTodayPainter extends FlDotPainter {
 
     bool isTextOutOfScreen = false;
 
+    final offsetFromDot = Offset(20, boxUnderDot ? 12 : -30);
+
     // Offset to center with the dot
     Offset textOffset = Offset(
       offsetInCanvas.dx + offsetFromDot.dx - (textPainter.width / 2),
@@ -595,10 +607,10 @@ class FlDotTodayPainter extends FlDotPainter {
         textOffset.dy - textPadding.top,
         textOffset.dx + textPainter.width + textPadding.right,
         textOffset.dy + textPainter.height + textPadding.bottom,
-        topLeft: Radius.circular(cornerRadius),
-        topRight: Radius.circular(cornerRadius),
-        bottomRight: Radius.circular(isTextOutOfScreen ? 0 : cornerRadius),
-        bottomLeft: Radius.circular(isTextOutOfScreen ? cornerRadius : 0),
+        topLeft: Radius.circular(!isTextOutOfScreen && boxUnderDot ? 0 : cornerRadius),
+        topRight: Radius.circular(isTextOutOfScreen && boxUnderDot ? 0 : cornerRadius),
+        bottomRight: Radius.circular(isTextOutOfScreen && !boxUnderDot ? 0 : cornerRadius),
+        bottomLeft: Radius.circular(!isTextOutOfScreen && !boxUnderDot ? 0 : cornerRadius),
       ),
       Paint()
         ..color = color.withOpacity(0.7)

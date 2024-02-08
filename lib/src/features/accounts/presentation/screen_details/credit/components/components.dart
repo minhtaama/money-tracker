@@ -173,23 +173,23 @@ extension _StatementDetails on _SummaryCard {
   double get balance => statement.balanceToPayRemaining;
 
   String? interestString(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, interest, forceWithDecimalDigits: true);
+    return CalService.formatCurrency(context, interest);
   }
 
   String? carryString(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, carry, forceWithDecimalDigits: true);
+    return CalService.formatCurrency(context, carry);
   }
 
   String? spentString(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, spent, forceWithDecimalDigits: true);
+    return CalService.formatCurrency(context, spent);
   }
 
   String? paidString(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, paid, forceWithDecimalDigits: true);
+    return CalService.formatCurrency(context, paid);
   }
 
   String? balanceString(BuildContext context, Statement statement) {
-    return CalService.formatCurrency(context, math.max(0, balance), forceWithDecimalDigits: true);
+    return CalService.formatCurrency(context, math.max(0, balance));
   }
 }
 
