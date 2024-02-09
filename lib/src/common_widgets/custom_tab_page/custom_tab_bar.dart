@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../utils/constants.dart';
 
@@ -66,7 +67,7 @@ class _ExtendedToolBar extends StatelessWidget {
         width: Gap.screenWidth(context),
         padding: const EdgeInsets.only(top: 10, bottom: 30),
         decoration: BoxDecoration(
-          color: context.appTheme.background0,
+          color: context.appTheme.background1.addDark(0.04),
           boxShadow: context.appTheme.isDarkTheme
               ? []
               : [

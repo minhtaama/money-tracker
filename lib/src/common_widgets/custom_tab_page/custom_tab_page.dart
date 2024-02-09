@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_tab_page/expanded_page_view.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'custom_tab_bar.dart';
@@ -121,8 +122,10 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   late final double _sheetMinFraction = 1.0 - kExtendedCustomTabBarHeight / Gap.screenHeight(context);
   late final double _sheetMaxFraction = 1.0 - kCustomTabBarHeight / Gap.screenHeight(context);
   late final double _sheetMinHeight = _sheetMinFraction * Gap.screenHeight(context);
+
   late final double _triggerSmallTabBarHeight =
       Gap.screenHeight(context) - Gap.statusBarHeight(context) - kCustomTabBarHeight;
+
   late final double _triggerDividerOffset = 30;
 
   late final PageController _controller = widget.controller ?? PageController();
@@ -296,36 +299,43 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             return Container(
               height: Gap.screenHeight(context),
               decoration: BoxDecoration(
-                  color: context.appTheme.background1,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.appTheme.onBackground
-                          .withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.5),
-                      blurRadius: 30,
-                    )
-                  ]),
-              child: PageView.builder(
-                controller: _controller,
-                onPageChanged: (index) {
-                  widget.onPageChanged?.call(index);
-                },
-                itemCount: widget.pageItemCount,
-                itemBuilder: (context, pageIndex) => Consumer(
-                  builder: (_, ref, __) {
-                    return _CustomListView(
-                      controller: scrollController,
-                      isInsideCustomTabPageWithPageView: true,
-                      smallTabBar: widget.smallTabBar,
-                      extendedTabBar: widget.extendedTabBar,
-                      onOffsetChange: (value) => _onListViewOffsetChange(value),
-                      children: widget.itemBuilder(context, ref, pageIndex),
-                    );
-                  },
+                color: context.appTheme.background1,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.appTheme.onBackground
+                        .withOpacity(context.appTheme.isDarkTheme ? 0.08 : 0.1),
+                    blurRadius: 30,
+                    offset: const Offset(10, 0),
+                  )
+                ],
+              ),
+              child: _CustomListView(
+                controller: scrollController,
+                isInsideCustomTabPageWithPageView: true,
+                smallTabBar: widget.smallTabBar,
+                extendedTabBar: widget.extendedTabBar,
+                onOffsetChange: (value) => _onListViewOffsetChange(value),
+                children: [
+                  widget.extendedTabBar?.toolBar ?? Gap.noGap,
+                  ExpandablePageView(
+                    controller: _controller,
+                    onPageChanged: (index) {
+                      widget.onPageChanged?.call(index);
+                    },
+                    itemCount: widget.pageItemCount,
+                    itemBuilder: (context, pageIndex) => Consumer(
+                      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                        return Column(
+                          children: widget.itemBuilder(context, ref, pageIndex),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             );
           },
