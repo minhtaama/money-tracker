@@ -5,7 +5,8 @@ class _SummaryCard extends StatelessWidget {
 
   final Statement statement;
 
-  Widget _buildText(BuildContext context, {String? text, String? richText, int color = 0}) {
+  Widget _buildText(BuildContext context,
+      {String? text, String? richText, int color = 0, bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -14,11 +15,15 @@ class _SummaryCard extends StatelessWidget {
               ? Expanded(
                   child: Text(
                     text,
-                    style: kHeader3TextStyle.copyWith(
-                      color:
-                          context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-                      fontSize: 15,
-                    ),
+                    style: bold
+                        ? kHeader2TextStyle.copyWith(
+                            color: context.appTheme.onBackground.withOpacity(0.9),
+                            fontSize: 18,
+                          )
+                        : kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground.withOpacity(0.75),
+                            fontSize: 15,
+                          ),
                   ),
                 )
               : Gap.noGap,
@@ -33,7 +38,7 @@ class _SummaryCard extends StatelessWidget {
                             : context.appTheme.isDarkTheme
                                 ? context.appTheme.onBackground
                                 : context.appTheme.onSecondary,
-                    fontSize: 15,
+                    fontSize: bold ? 18 : 15,
                   ),
                   textAlign: TextAlign.right,
                   patternList: [
@@ -75,7 +80,7 @@ class _SummaryCard extends StatelessWidget {
                                 : context.appTheme.isDarkTheme
                                     ? context.appTheme.onBackground
                                     : context.appTheme.onSecondary,
-                        fontSize: 15,
+                        fontSize: bold ? 18 : 15,
                       ),
                     ),
                   ],
@@ -104,7 +109,8 @@ class _SummaryCard extends StatelessWidget {
                     ? _buildText(
                         context,
                         text: 'Interest:',
-                        richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
+                        richText:
+                            '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
                         color: interest.roundBySetting(context) <= 0 ? 0 : -1,
                       )
                     : Gap.noGap,
@@ -116,19 +122,17 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 _buildText(
                   context,
-                  text: 'Paid for this statement:',
+                  text: 'Paid for statement:',
                   richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
                   color: paid.roundBySetting(context) <= 0 ? 0 : 1,
                 ),
                 Gap.h8,
-                CardItem(
-                  margin: EdgeInsets.zero,
-                  child: _buildText(
-                    context,
-                    text: 'Balance:',
-                    richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
-                    color: balance.roundBySetting(context) <= 0 ? 0 : -1,
-                  ),
+                _buildText(
+                  context,
+                  text: 'Balance:',
+                  bold: true,
+                  richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
+                  color: balance.roundBySetting(context) <= 0 ? 0 : -1,
                 ),
               ],
             )
@@ -152,9 +156,10 @@ class _SummaryCard extends StatelessWidget {
                   richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
                   color: paid <= 0 ? 0 : 1,
                 ),
-                Gap.divider(context, indent: 0),
+                Gap.h4,
                 _buildText(
                   context,
+                  bold: true,
                   text: 'Statement balance:',
                   richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
                   color: balance <= 0 ? 0 : -1,
@@ -168,7 +173,8 @@ class _SummaryCard extends StatelessWidget {
 extension _StatementDetails on _SummaryCard {
   double get interest => statement.interestFromPrevious;
   double get carry => statement.spentToPayAtStartDateWithPrvGracePayment;
-  double get spent => statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
+  double get spent =>
+      statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
   double get paid => statement.paidForThisStatement;
   double get balance => statement.balanceToPayRemaining;
 
@@ -194,7 +200,14 @@ extension _StatementDetails on _SummaryCard {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});
+  const _Header(
+      {super.key,
+      this.dateTime,
+      required this.h1,
+      this.h2,
+      this.dateColor,
+      this.dateBgColor,
+      this.color});
 
   final DateTime? dateTime;
   final Color? dateColor;
@@ -223,12 +236,14 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.onBackground),
+                  style: kHeader2TextStyle.copyWith(
+                      fontSize: 16, color: color ?? context.appTheme.onBackground),
                 ),
                 h2 != null
                     ? Text(
                         h2!,
-                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: color ?? context.appTheme.onBackground),
+                        style: kHeader3TextStyle.copyWith(
+                            fontSize: 14, color: color ?? context.appTheme.onBackground),
                       )
                     : Gap.noGap,
               ],
@@ -336,7 +351,8 @@ class _InstallmentToPayTransaction extends StatelessWidget {
                           children: [
                             Text(
                               'Instm. payment of:',
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: AppColors.grey(context)),
                             ),
                             TxnCategoryName(
                               transaction: transaction,
@@ -508,7 +524,8 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.appSettings.currency.code}'
                                   .hardcoded,
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: context.appTheme.onBackground),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )

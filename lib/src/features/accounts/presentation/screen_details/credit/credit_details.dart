@@ -19,6 +19,7 @@ import '../../../../../common_widgets/card_item.dart';
 import '../../../../../common_widgets/custom_inkwell.dart';
 import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import '../../../../../common_widgets/modal_and_dialog.dart';
+import '../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../common_widgets/svg_icon.dart';
 import '../../../../../routing/app_router.dart';
 import '../../../../../theme_and_ui/colors.dart';
@@ -60,12 +61,16 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
     }
   }
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate =
+      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
+  late int _currentPageIndex = _initialPageIndex;
 
   void _onPageChange(int value) {
-    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _currentPageIndex = value;
+    _displayStatementDate =
+        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -121,15 +126,8 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          toolBar: StatementSelector(
-            dateDisplay: _displayStatementDate.getFormattedDate(format: DateTimeFormat.ddmmyyyy),
-            onTapLeft: _previousPage,
-            onTapRight: _nextPage,
-            onTapGoToCurrentDate: () {
-              _animatedToPage(_initialPageIndex);
-            },
-          ),
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedCreditAccountTab(
             account: widget.creditAccount,
             displayDate: _displayStatementDate,
@@ -138,26 +136,139 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
+        toolBarHeight: 50,
+        toolBar: StatementSelector(
+          isToday: _currentPageIndex == _initialPageIndex,
+          dateDisplay: _displayStatementDate.getFormattedDate(format: DateTimeFormat.ddmmyyyy),
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onTapGoToCurrentDate: () {
+            _animatedToPage(_initialPageIndex);
+          },
+        ),
         itemBuilder: (context, ref, pageIndex) {
-          final currentDateTime =
-              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          final currentDateTime = DateTime(
+              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement =
+              widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
+                  Gap.divider(context, indent: 24),
                   _SummaryCard(statement: statement),
                   Gap.h4,
-                  Gap.divider(context, indent: 35),
+                  Gap.divider(context, indent: 24),
                   _TransactionList(statement: statement),
                   Gap.h48,
                 ]
               : [
                   IconWithText(
                     iconPath: AppIcons.done,
+                    forceIconOnTop: true,
                     header: 'No transactions has made before this day'.hardcoded,
                   ),
                 ];
         },
       ),
+    );
+  }
+}
+
+class StatementSelector extends StatelessWidget {
+  const StatementSelector({
+    super.key,
+    required this.isToday,
+    required this.dateDisplay,
+    this.onTapLeft,
+    this.onTapRight,
+    this.onTapGoToCurrentDate,
+  });
+
+  final bool isToday;
+  final String dateDisplay;
+  final VoidCallback? onTapLeft;
+  final VoidCallback? onTapRight;
+  final VoidCallback? onTapGoToCurrentDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Gap.w24,
+        GestureDetector(
+          onTap: onTapGoToCurrentDate,
+          child: SizedBox(
+            width: 180,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Statement date',
+                  style: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground.withOpacity(0.7)
+                        : context.appTheme.onSecondary.withOpacity(0.7),
+                    fontSize: 12,
+                  ),
+                ),
+                AnimatedSwitcher(
+                  duration: k150msDuration,
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: Tween<double>(
+                        begin: 0,
+                        end: 1,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        key: ValueKey(dateDisplay),
+                        dateDisplay,
+                        style: kHeader2TextStyle.copyWith(
+                          color: context.appTheme.onBackground.withOpacity(0.9),
+                          fontSize: 22,
+                        ),
+                      ),
+                      Gap.w8,
+                      !isToday
+                          ? RoundedIconButton(
+                              iconPath: AppIcons.turn,
+                              iconColor: context.appTheme.onBackground,
+                              size: 20,
+                              iconPadding: 0,
+                            )
+                          : Gap.noGap,
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const Spacer(),
+        RoundedIconButton(
+          iconPath: AppIcons.arrowLeft,
+          iconColor: context.appTheme.onBackground,
+          onTap: onTapLeft,
+          size: 34,
+          iconPadding: 5,
+        ),
+        Gap.w24,
+        RoundedIconButton(
+          iconPath: AppIcons.arrowRight,
+          iconColor: context.appTheme.onBackground,
+          onTap: onTapRight,
+          size: 34,
+          iconPadding: 5,
+        ),
+        Gap.w16,
+      ],
     );
   }
 }

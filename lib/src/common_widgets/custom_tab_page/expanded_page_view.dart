@@ -31,7 +31,8 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
   final Map<int, double> _heights = {};
 
   double get _currentHeight => _heights[_currentPage] != null
-      ? math.max(Gap.screenHeight(context) - kExtendedCustomTabBarHeight, _heights[_currentPage]!)
+      ? math.max(Gap.screenHeight(context) - kCustomTabBarHeight - kBottomAppBarHeight - 50,
+          _heights[_currentPage]!)
       : Gap.screenHeight(context);
 
   @override
@@ -54,7 +55,7 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
     return TweenAnimationBuilder<double>(
       curve: Curves.easeInOutCubic,
       tween: Tween<double>(begin: 0, end: _currentHeight),
-      duration: const Duration(milliseconds: 500),
+      duration: k1msDuration,
       builder: (context, value, child) => SizedBox(height: value, child: child),
       child: PageView.builder(
         controller: _pageController,

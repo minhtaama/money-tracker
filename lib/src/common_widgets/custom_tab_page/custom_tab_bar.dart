@@ -35,22 +35,15 @@ class ExtendedTabBar extends StatelessWidget {
     this.height = kExtendedCustomTabBarHeight + 30,
     this.systemIconBrightness,
     required this.child,
-    this.toolBar,
   });
   final Color? backgroundColor;
   final Widget child;
   final double height;
   final Brightness? systemIconBrightness;
-  final Widget? toolBar;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(child: child),
-        toolBar != null ? _ExtendedToolBar(child: toolBar!) : Gap.noGap,
-      ],
-    );
+    return child;
   }
 }
 

@@ -96,16 +96,19 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
     required this.smallTabBar,
     this.extendedTabBar,
     this.toolBar,
+    this.toolBarHeight = kCustomToolBarHeight,
     this.controller,
     this.onPageChanged,
     required this.itemBuilder,
     this.pageItemCount,
     this.onDragLeft,
     this.onDragRight,
-  });
+  }) : assert(toolBarHeight <= kCustomTabBarHeight);
+
   final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final Widget? toolBar;
+  final double toolBarHeight;
   final PageController? controller;
   final int? pageItemCount;
   final List<Widget> Function(BuildContext, WidgetRef, int) itemBuilder;
@@ -119,12 +122,17 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
 
 class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView>
     with TickerProviderStateMixin {
-  late final double _sheetMinFraction = 1.0 - kExtendedCustomTabBarHeight / Gap.screenHeight(context);
-  late final double _sheetMaxFraction = 1.0 - kCustomTabBarHeight / Gap.screenHeight(context);
-  late final double _sheetMinHeight = _sheetMinFraction * Gap.screenHeight(context);
+  late final double _sheetMinFraction =
+      1.0 - kExtendedCustomTabBarHeight / (Gap.screenHeight(context) - Gap.statusBarHeight(context));
 
-  late final double _triggerSmallTabBarHeight =
-      Gap.screenHeight(context) - Gap.statusBarHeight(context) - kCustomTabBarHeight;
+  late final double _sheetMaxFraction = 1.0 -
+      (kCustomTabBarHeight - widget.toolBarHeight) /
+          (Gap.screenHeight(context) - Gap.statusBarHeight(context));
+
+  late final double _sheetMinHeight = _sheetMinFraction * Gap.screenHeight(context);
+  late final double _sheetMaxHeight = _sheetMaxFraction * Gap.screenHeight(context);
+
+  late final double _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
 
   late final double _triggerDividerOffset = 30;
 
@@ -264,7 +272,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
           offset: Offset(0, -_translateAController.value),
           child: Container(
             width: double.infinity,
-            height: widget.extendedTabBar!.height + Gap.statusBarHeight(context),
+            height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 25,
             decoration: BoxDecoration(
               color: widget.extendedTabBar?.backgroundColor ??
                   (context.appTheme.isDarkTheme
@@ -274,7 +282,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             margin: EdgeInsets.zero,
             padding: EdgeInsets.only(
               top: Gap.statusBarHeight(context),
-              bottom: 30,
+              bottom: 22,
             ),
             child: widget.extendedTabBar,
           ),
@@ -320,10 +328,23 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                 extendedTabBar: widget.extendedTabBar,
                 onOffsetChange: (value) => _onListViewOffsetChange(value),
                 children: [
-                  widget.extendedTabBar?.toolBar ?? Gap.noGap,
+                  widget.toolBar != null
+                      ? Transform.translate(
+                          offset: const Offset(0, -7),
+                          child: SizedBox(
+                            height: widget.toolBarHeight,
+                            child: widget.toolBar,
+                          ),
+                        )
+                      : Gap.noGap,
+                  widget.toolBar != null ? Gap.h8 : Gap.noGap,
                   ExpandablePageView(
                     controller: _controller,
                     onPageChanged: (index) {
+                      if (_showSmallTabBarDivider == true) {
+                        _fadeDividerAController.reverse(from: 1);
+                        _showSmallTabBarDivider = false;
+                      }
                       widget.onPageChanged?.call(index);
                     },
                     itemCount: widget.pageItemCount,
@@ -402,6 +423,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   Widget build(BuildContext context) {
     return ListView.builder(
       physics: const ClampingScrollPhysics(),
+      //padding: const EdgeInsets.only(top: 12, bottom: kBottomAppBarHeight),
       controller: _scrollController,
       itemCount: widget.isInsideCustomTabPageWithPageView
           ? widget.children.length + 1
