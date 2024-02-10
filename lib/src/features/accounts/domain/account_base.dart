@@ -348,8 +348,9 @@ extension AccountGettersExtension on Account {
       case CreditAccount():
         final limit = (this as CreditAccount).creditLimit;
         try {
-          final latestStatement = (this as CreditAccount).statementsList.last;
-          return limit - latestStatement.balanceToPayRemaining;
+          final todayStatement =
+              (this as CreditAccount).statementAt(DateTime.now(), upperGapAtDueDate: true);
+          return limit - todayStatement!.balanceToPayRemaining - todayStatement.spentInGracePeriod;
         } catch (_) {
           return limit;
         }
