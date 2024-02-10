@@ -64,7 +64,7 @@ class _List extends StatefulWidget {
 class _ListState extends State<_List> {
   final List<Installment> _installmentsMarkAsDone = [];
 
-  late List<Installment> _installmentsList = widget.statement.installments;
+  late List<Installment> _installmentsList = widget.statement.transactions.installmentsToPay;
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _ListState extends State<_List> {
   @override
   void didUpdateWidget(covariant _List oldWidget) {
     setState(() {
-      _installmentsList = widget.statement.installments;
+      _installmentsList = widget.statement.transactions.installmentsToPay;
       _installmentsMarkAsDone.clear();
       widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
     });
@@ -84,7 +84,7 @@ class _ListState extends State<_List> {
 
   double get _totalUnpaid {
     double result = 0;
-    for (Installment ins in widget.statement.installments) {
+    for (Installment ins in widget.statement.transactions.installmentsToPay) {
       result += ins.txn.paymentAmount!.roundBySetting(context) * ins.monthsLeft;
     }
     for (Installment ins in _installmentsMarkAsDone) {
@@ -118,7 +118,9 @@ class _ListState extends State<_List> {
                         ins.monthsLeft,
                         isDone: _installmentsMarkAsDone.contains(ins),
                         onMarkAsDone: (isDone) {
-                          isDone ? _installmentsMarkAsDone.add(ins) : _installmentsMarkAsDone.remove(ins);
+                          isDone
+                              ? _installmentsMarkAsDone.add(ins)
+                              : _installmentsMarkAsDone.remove(ins);
                           setState(() {
                             widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
                           });
@@ -162,7 +164,8 @@ class _ListState extends State<_List> {
 }
 
 class _InstallmentDetails extends StatefulWidget {
-  const _InstallmentDetails(this.transaction, this.monthsLeft, {required this.isDone, required this.onMarkAsDone});
+  const _InstallmentDetails(this.transaction, this.monthsLeft,
+      {required this.isDone, required this.onMarkAsDone});
 
   final CreditSpending transaction;
   final int monthsLeft;
@@ -210,7 +213,8 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
         borderRadius: BorderRadius.circular(12),
         onTap: _isDone
             ? null
-            : () => context.push(RoutePath.transaction, extra: widget.transaction.databaseObject.id.hexString),
+            : () => context.push(RoutePath.transaction,
+                extra: widget.transaction.databaseObject.id.hexString),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 6),
           child: Row(
@@ -242,7 +246,8 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                                 ? Text(
                                     categoryTag,
                                     style: kHeader3TextStyle.copyWith(
-                                        fontSize: 11, color: context.appTheme.onBackground.withOpacity(0.7)),
+                                        fontSize: 11,
+                                        color: context.appTheme.onBackground.withOpacity(0.7)),
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                   )

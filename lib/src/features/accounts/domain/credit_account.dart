@@ -58,7 +58,7 @@ extension CreditAccountMethods on CreditAccount {
     Statement? statement =
         paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
-    return statement?.previousDueDate.onlyYearMonthDay ?? Calendar.minDate;
+    return statement?.date.previousDue.onlyYearMonthDay ?? Calendar.minDate;
   }
 
   DateTime get todayStatementDueDate {
@@ -107,22 +107,22 @@ extension CreditAccountMethods on CreditAccount {
 
     // If statement is already in credit account statements list
     for (Statement statement in statementsList) {
-      if (date.compareTo(statement.previousDueDate) > 0 && date.compareTo(statement.dueDate) <= 0) {
+      if (date.compareTo(statement.date.previousDue) > 0 && date.compareTo(statement.date.due) <= 0) {
         return statement;
       }
     }
 
     // Get future statement
-    if (date.compareTo(latestStatement.dueDate) > 0) {
+    if (date.compareTo(latestStatement.date.due) > 0) {
       final list = [latestStatement];
 
-      DateTime startDate = latestStatement.endDate.copyWith(day: latestStatement.endDate.day + 1);
+      DateTime startDate = latestStatement.date.end.copyWith(day: latestStatement.date.end.day + 1);
       DateTime dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
       while (upperGapAtDueDate != null && upperGapAtDueDate
-          ? date.isAfter(list[list.length - 1].dueDate)
+          ? date.isAfter(list[list.length - 1].date.due)
           : startDate.compareTo(date) <= 0) {
         final endDate =
             startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;

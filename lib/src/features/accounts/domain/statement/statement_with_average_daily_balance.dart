@@ -5,21 +5,12 @@ class StatementWithAverageDailyBalance extends Statement {
   const StatementWithAverageDailyBalance._(
     this._interest, {
     required super.previousStatement,
-    required super.spentInBillingCycle,
-    required super.spentInBillingCycleExcludeInstallments,
-    required super.spentInGracePeriod,
-    required super.spentInGracePeriodExcludeInstallments,
-    required super.paidInBillingCycle,
-    required super.paidInBillingCycleInPreviousGracePeriod,
-    required super.paidInGracePeriod,
+    required super.spent,
+    required super.paid,
     required super.apr,
     required super.checkpoint,
-    required super.startDate,
-    required super.endDate,
-    required super.dueDate,
-    required super.installments,
-    required super.transactionsInBillingCycle,
-    required super.transactionsInGracePeriod,
+    required super.date,
+    required super.transactions,
   });
 
   factory StatementWithAverageDailyBalance._create({
@@ -49,7 +40,7 @@ class StatementWithAverageDailyBalance extends Statement {
 
     //////////// TEMPORARY VARIABLES FOR THE LOOP /////////////////
     // Calculate sum of daily balance from `tCheckpointDateTime` to current Txn DateTime
-    // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
+    // If this is the first Txn in the list, `tCheckpointDateTime` is `statement.date.start`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
     double tCurrentBalance = previousStatement.balanceAtEndDate +
@@ -112,20 +103,30 @@ class StatementWithAverageDailyBalance extends Statement {
     return StatementWithAverageDailyBalance._(
       interest,
       previousStatement: previousStatement,
-      spentInBillingCycle: spentInBillingCycle,
-      spentInBillingCycleExcludeInstallments: spentInBillingCycleExcludeInstallments,
-      spentInGracePeriod: spentInGracePeriod,
-      spentInGracePeriodExcludeInstallments: spentInGracePeriodExcludeInstallments,
-      paidInBillingCycle: paidInBillingCycle,
-      paidInBillingCycleInPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod,
-      paidInGracePeriod: paidInGracePeriod,
+      spent: (
+        inBillingCycle: (
+          all: spentInBillingCycle,
+          excludeInstallments: spentInBillingCycleExcludeInstallments
+        ),
+        inGracePeriod: (
+          all: spentInGracePeriod,
+          excludeInstallments: spentInGracePeriodExcludeInstallments
+        )
+      ),
+      paid: (
+        inBillingCycle: (
+          all: paidInBillingCycle,
+          inPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod
+        ),
+        inGracePeriod: paidInGracePeriod,
+      ),
       checkpoint: checkpoint,
-      startDate: startDate,
-      endDate: endDate,
-      dueDate: dueDate,
-      installments: installments,
-      transactionsInBillingCycle: txnsInBillingCycle,
-      transactionsInGracePeriod: txnsInGracePeriod,
+      date: (start: startDate, end: endDate, due: dueDate),
+      transactions: (
+        installmentsToPay: installments,
+        inBillingCycle: txnsInBillingCycle,
+        inGracePeriod: txnsInGracePeriod
+      ),
       apr: apr,
     );
   }
@@ -139,21 +140,21 @@ class StatementWithAverageDailyBalance extends Statement {
   @override
   double get paidForThisStatement {
     if (checkpoint != null) {
-      return math.max(0, _paidInGracePeriod - _spentInGracePeriodExcludeInstallments);
+      return math.max(0, _paid.inGracePeriod - _spent.inGracePeriod.excludeInstallments);
     }
 
     // Only count surplus amount of payment in previous grace period
     // for this statement
     final paidInPreviousGracePeriodSurplusForThisStatement =
-        math.max(0, _paidInBillingCycleInPreviousGracePeriod - spentToPayAtStartDate);
+        math.max(0, _paid.inBillingCycle.inPreviousGracePeriod - spentToPayAtStartDate);
 
     final paidInBillingCycleAfterPreviousDueDate =
-        _paidInBillingCycle - _paidInBillingCycleInPreviousGracePeriod;
+        _paid.inBillingCycle.all - _paid.inBillingCycle.inPreviousGracePeriod;
 
     // Can be higher than spent amount in billing cycle.
     final paidAmount = paidInPreviousGracePeriodSurplusForThisStatement +
         paidInBillingCycleAfterPreviousDueDate +
-        _paidInGracePeriod;
+        _paid.inGracePeriod;
 
     // Math.min to remove surplus amount of payment in grace period
     return math.min(spentInBillingCycleExcludeInstallments, paidAmount);
@@ -166,7 +167,7 @@ class StatementWithAverageDailyBalance extends Statement {
     double spentInBillingCycleBeforeDateTimeExcludeInstallments = 0;
     double spentInGracePeriodBeforeDateTimeExcludeInstallments = 0;
 
-    for (BaseCreditTransaction txn in transactionsInGracePeriod) {
+    for (BaseCreditTransaction txn in transactions.inGracePeriod) {
       if (txn is CreditSpending &&
           !txn.hasInstallment &&
           txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
@@ -174,7 +175,7 @@ class StatementWithAverageDailyBalance extends Statement {
       }
     }
 
-    for (BaseCreditTransaction txn in transactionsInBillingCycle) {
+    for (BaseCreditTransaction txn in transactions.inBillingCycle) {
       if (txn is CreditSpending &&
           !txn.hasInstallment &&
           txn.dateTime.onlyYearMonthDay.isBefore(dateTime.onlyYearMonthDay)) {
@@ -183,12 +184,12 @@ class StatementWithAverageDailyBalance extends Statement {
     }
 
     if (checkpoint != null) {
-      if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
+      if (!dateTime.onlyYearMonthDay.isAfter(date.end)) {
         x = 0;
       } else {
         x = checkpoint!.unpaidToPay +
             spentInGracePeriodBeforeDateTimeExcludeInstallments -
-            _paidInGracePeriod;
+            _paid.inGracePeriod;
       }
     } else {
       x = spentToPayAtStartDate +
@@ -196,8 +197,8 @@ class StatementWithAverageDailyBalance extends Statement {
           installmentsAmountToPay +
           spentInBillingCycleBeforeDateTimeExcludeInstallments +
           spentInGracePeriodBeforeDateTimeExcludeInstallments -
-          _paidInGracePeriod -
-          _paidInBillingCycle;
+          _paid.inGracePeriod -
+          _paid.inBillingCycle.all;
     }
 
     if (x < 0) {

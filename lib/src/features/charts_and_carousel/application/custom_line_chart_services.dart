@@ -232,11 +232,13 @@ class LineChartServices {
       amountToPayAtEndDate = statement.spentToPayAtEndDate + statement.interestFromPrevious;
       spentInGracePeriod = statement.spentInGracePeriod;
       balanceRemaining = statement.balanceToPayRemaining;
-      txns = statement.transactionsInBillingCycle.followedBy(statement.transactionsInGracePeriod).toList();
-      startDate = statement.startDate;
-      previousDueDate = statement.previousDueDate;
-      statementDate = statement.statementDate;
-      dueDate = statement.dueDate;
+      txns = statement.transactions.inBillingCycle
+          .followedBy(statement.transactions.inGracePeriod)
+          .toList();
+      startDate = statement.date.start;
+      previousDueDate = statement.date.previousDue;
+      statementDate = statement.date.statement;
+      dueDate = statement.date.due;
     } else {
       amountAtStartDate = 0;
       amountAtEndDate = 0;
@@ -244,7 +246,8 @@ class LineChartServices {
       spentInGracePeriod = 0;
       balanceRemaining = 0;
       txns = [];
-      startDate = DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
+      startDate =
+          DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
       previousDueDate = Calendar.minDate;
       statementDate = startDate.copyWith(month: startDate.month + 1);
       dueDate = account.statementDay >= account.paymentDueDay
@@ -255,9 +258,12 @@ class LineChartServices {
     // Credit amount after full payment
     // (creditLimit - amountAtEndDate) is the amount of total spent (include installment)
     // then add the amount must pay: (amountToPayAtEndDate)
-    final creditAfterFullPayment = creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
+    final creditAfterFullPayment =
+        creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
 
-    days = [for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day];
+    days = [
+      for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day
+    ];
 
     Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - amountAtStartDate};
 

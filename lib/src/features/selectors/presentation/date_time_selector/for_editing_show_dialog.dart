@@ -45,12 +45,13 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
   required Statement statement,
 }) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
-  final DateTime previousDueDate = statement.previousDueDate;
-  final DateTime dueDate = statement.dueDate;
+  final DateTime previousDueDate = statement.date.previousDue;
+  final DateTime dueDate = statement.date.due;
 
   final paymentDateTimes = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final spendingDateTimes = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-  final checkpointDateTimes = creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  final checkpointDateTimes =
+      creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
 
   final dateOfPaymentBefore = paymentDateTimes.lastWhere(
     (dt) => !dt.onlyYearMonthDay.isAfter(dbDateTime.onlyYearMonthDay),
@@ -65,7 +66,8 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
     final beforeLastCheckpoint = dateTime.isBefore(lastCheckpointDateTime);
     final inPreviousStatement = !dateTime.isAfter(previousDueDate);
     final inNextStatement = dateTime.isAfter(dueDate);
-    final notBetweenPayments = dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter);
+    final notBetweenPayments =
+        dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter);
 
     if (beforeLastCheckpoint) {
       showErrorDialog(
@@ -174,13 +176,14 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
   required Statement statement,
 }) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
-  final DateTime previousDueDate = statement.previousDueDate;
-  final DateTime statementDate = statement.statementDate;
-  final DateTime dueDate = statement.dueDate;
+  final DateTime previousDueDate = statement.date.previousDue;
+  final DateTime statementDate = statement.date.statement;
+  final DateTime dueDate = statement.date.due;
 
   final paymentDateTimes = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final spendingDateTimes = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-  final checkpointDateTimes = creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  final checkpointDateTimes =
+      creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
 
   final dateOfSpendingBefore = spendingDateTimes.lastWhere(
     (dt) => !dt.onlyYearMonthDay.isAfter(dbDateTime.onlyYearMonthDay),
@@ -196,7 +199,8 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
     final beforeLastCheckpoint = dateTime.isBefore(lastCheckpointDateTime);
     final inPreviousStatement = !dateTime.isAfter(previousDueDate);
     final inNextStatement = dateTime.isAfter(dueDate);
-    final notBetweenSpendings = !dateTime.isAfter(dateOfSpendingBefore) || dateTime.isAfter(dateOfSpendingAfter);
+    final notBetweenSpendings =
+        !dateTime.isAfter(dateOfSpendingBefore) || dateTime.isAfter(dateOfSpendingAfter);
     final canPayOnlyInGracePeriod = creditAccount.statementType == StatementType.payOnlyInGracePeriod;
     final notInGracePeriod = dateTime.isBefore(statementDate);
 
