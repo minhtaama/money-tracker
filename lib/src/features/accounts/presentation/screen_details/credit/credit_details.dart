@@ -226,6 +226,7 @@ class StatementSelector extends StatelessWidget {
                     );
                   },
                   child: Row(
+                    key: ValueKey(dateDisplay),
                     children: [
                       Text(
                         key: ValueKey(dateDisplay),
