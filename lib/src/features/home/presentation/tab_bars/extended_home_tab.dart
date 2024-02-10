@@ -146,11 +146,12 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
           titleBuilder: _titleBuilder,
           amountBuilder: _amountBuilder,
         ),
+        Gap.h32,
         Expanded(
           child: CustomLineChart(
             currentMonth: widget.displayDate,
             data: data,
-            offsetY: 35,
+            offsetLabelUp: 22,
             extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
             extraLineText: extraLineText,
             todayDotColor: _type == LineChartDataType.expense

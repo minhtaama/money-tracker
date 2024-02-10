@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
-import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
@@ -53,7 +52,6 @@ class MoneyTrackerApp extends ConsumerWidget {
             value: SystemUiOverlayStyle(
               systemNavigationBarColor: context.appTheme.background1,
               systemNavigationBarDividerColor: Colors.transparent,
-              systemNavigationBarIconBrightness: systemIconBrightness,
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: systemIconBrightness,
             ),

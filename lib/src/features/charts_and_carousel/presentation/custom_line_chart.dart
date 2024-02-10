@@ -20,7 +20,7 @@ class CustomLineChart extends StatelessWidget {
     super.key,
     required this.currentMonth,
     required this.data,
-    this.offsetY = 0,
+    this.offsetLabelUp = 0,
     this.extraLineY,
     this.extraLineText,
     this.isForCredit = false,
@@ -34,7 +34,7 @@ class CustomLineChart extends StatelessWidget {
   final CLCData data;
 
   /// Offset chart but keep the bottom title at the same spot
-  final double offsetY;
+  final double offsetLabelUp;
 
   final double? extraLineY;
 
@@ -68,15 +68,17 @@ class CustomLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const maxY = 1.025;
-    final minY = 0 - (offsetY * 1.4) / 100;
+    final minY = 0 - (offsetLabelUp * 1.4) / 100;
 
     final spots = data.spots;
 
     final todayIndex = spots.indexWhere((e) => e.isToday);
     final hasToday = todayIndex != -1;
 
-    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
-    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
+    final statementDayIndex =
+        isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+    final previousDueDayIndex =
+        isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
 
     // 0.2 is added for step chart to display correctly
     final todayPercent = hasToday && _customLineType == _CustomLineType.solidToDashed
@@ -84,7 +86,10 @@ class CustomLineChart extends StatelessWidget {
         : 0.0;
 
     final optionalLineGradient = LinearGradient(
-      colors: [color ?? context.appTheme.accent1, color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)],
+      colors: [
+        color ?? context.appTheme.accent1,
+        color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)
+      ],
       stops: [todayPercent, todayPercent + 0.00000001],
     );
 
@@ -95,10 +100,11 @@ class CustomLineChart extends StatelessWidget {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          color?.withOpacity(isDashed ? 0.1 : 0.35) ?? context.appTheme.accent1.withOpacity(isDashed ? 0.1 : 0.35),
+          color?.withOpacity(isDashed ? 0.1 : 0.35) ??
+              context.appTheme.accent1.withOpacity(isDashed ? 0.1 : 0.35),
           color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0),
         ],
-        stops: const [0, 0.85],
+        stops: [0, context.appTheme.isDarkTheme ? 1 : 0.85],
       );
     }
 
@@ -227,7 +233,7 @@ class CustomLineChart extends StatelessWidget {
 
       return isShowTitle
           ? Transform.translate(
-              offset: Offset(0, -(6 + offsetY)),
+              offset: Offset(0, -(6 + offsetLabelUp)),
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
@@ -243,7 +249,8 @@ class CustomLineChart extends StatelessWidget {
 
     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
       final spot = spots.firstWhere((spot) => spot.x == value,
-          orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
+          orElse: () =>
+              CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
 
       final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
 
@@ -258,15 +265,17 @@ class CustomLineChart extends StatelessWidget {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.center;
 
-      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+      final textStyle =
+          kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(
-              offset: Offset(0, -(6 + offsetY)),
+              offset: Offset(0, -(6 + offsetLabelUp)),
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
-                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+                fitInside:
+                    SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
                 child: FittedBox(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -304,12 +313,14 @@ class CustomLineChart extends StatelessWidget {
 
         final spot = spots[touchedSpot.spotIndex];
         final symbol = context.appSettings.currency.symbol;
-        final dateTime = spot.dateTime?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
-            currentMonth
-                .copyWith(day: touchedSpot.x.toInt())
-                .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
+        final dateTime =
+            spot.dateTime?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
+                currentMonth
+                    .copyWith(day: touchedSpot.x.toInt())
+                    .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
 
-        final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
+        final line1 =
+            isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
 
         String line2() {
           if (isForCredit) {
@@ -343,13 +354,16 @@ class CustomLineChart extends StatelessWidget {
             ? 'Oustd. Bal: $symbol${CalService.formatCurrency(context, (data as CLCDataForCredit).maxAmount - spot.amount)}\n'
             : dateTime;
 
-        final line4 = isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
+        final line4 =
+            isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
 
         items.add(LineTooltipItem(
           line1,
           kHeader2TextStyle.copyWith(
             color: lum == null
-                ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                ? (context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary)
                 : lum > 0.5
                     ? AppColors.black
                     : AppColors.white,
@@ -361,7 +375,9 @@ class CustomLineChart extends StatelessWidget {
               text: line2(),
               style: kHeader2TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -372,7 +388,9 @@ class CustomLineChart extends StatelessWidget {
               text: line3,
               style: kHeader3TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -383,7 +401,9 @@ class CustomLineChart extends StatelessWidget {
               text: line4,
               style: kHeader3TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -488,22 +508,19 @@ class CustomLineChart extends StatelessWidget {
           : [],
     );
 
-    return Transform.translate(
-      offset: Offset(0, offsetY),
-      child: LineChart(
-        LineChartData(
-          maxY: maxY,
-          minY: minY,
-          gridData: const FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          titlesData: titlesData,
-          lineTouchData: lineTouchData,
-          lineBarsData: lineBarsData,
-          extraLinesData: extraLinesData,
-        ),
-        duration: k550msDuration,
-        curve: Curves.easeInOut,
+    return LineChart(
+      LineChartData(
+        maxY: maxY,
+        minY: minY,
+        gridData: const FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        titlesData: titlesData,
+        lineTouchData: lineTouchData,
+        lineBarsData: lineBarsData,
+        extraLinesData: extraLinesData,
       ),
+      duration: k550msDuration,
+      curve: Curves.easeInOut,
     );
   }
 }
@@ -594,7 +611,11 @@ class FlDotTodayPainter extends FlDotPainter {
     // Re-calculate the offset with screen width
     if (textOffset.dx + textPainter.width > Gap.screenWidth(context)) {
       textOffset = Offset(
-        Gap.screenWidth(context) - textPainter.width - (textPadding.horizontal / 2) - (dotRadius * 2) - 5,
+        Gap.screenWidth(context) -
+            textPainter.width -
+            (textPadding.horizontal / 2) -
+            (dotRadius * 2) -
+            5,
         textOffset.dy,
       );
 

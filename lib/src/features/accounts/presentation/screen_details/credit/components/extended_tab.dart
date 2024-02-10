@@ -70,13 +70,14 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
             ],
           ),
         ),
+        Gap.h16,
         Expanded(
           child: CustomLineChart(
             currentMonth: displayDate,
             color: account.iconColor,
             todayDotColor: account.backgroundColor,
             data: data,
-            offsetY: 35,
+            offsetLabelUp: 18,
             isForCredit: true,
             extraLineY: extraLineY,
             extraLineText: extraLineText,

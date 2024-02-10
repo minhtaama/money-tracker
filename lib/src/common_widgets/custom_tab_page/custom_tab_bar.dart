@@ -8,11 +8,9 @@ class SmallTabBar extends StatelessWidget {
     super.key,
     required this.child,
     this.height = kCustomTabBarHeight,
-    this.systemIconBrightness,
   });
   final Widget child;
   final double height;
-  final Brightness? systemIconBrightness;
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +31,11 @@ class ExtendedTabBar extends StatelessWidget {
     super.key,
     this.backgroundColor,
     this.height = kExtendedCustomTabBarHeight + 30,
-    this.systemIconBrightness,
     required this.child,
   });
   final Color? backgroundColor;
   final Widget child;
   final double height;
-  final Brightness? systemIconBrightness;
 
   @override
   Widget build(BuildContext context) {
