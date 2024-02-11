@@ -77,7 +77,7 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
             color: account.iconColor,
             todayDotColor: account.backgroundColor,
             data: data,
-            offsetLabelUp: 18,
+            offsetLabelUp: 50,
             isForCredit: true,
             extraLineY: extraLineY,
             extraLineText: extraLineText,

@@ -287,7 +287,7 @@ extension StatementGetters on Statement {
     StmCarryWithInterestData bring = (
       totalBalance: (atEndPoint.totalRemaining - _rawPaid.inGracePeriod).roundTo2DP(),
       balanceToPay: x,
-      interest: (x > 0 || _previousStatement.balanceToPay > 0) && checkpoint == null ? _interest : 0.0,
+      interest: (x > 0 || carry.balanceToPay > 0) && checkpoint == null ? _interest : 0.0,
     );
 
     return PreviousStatement._(

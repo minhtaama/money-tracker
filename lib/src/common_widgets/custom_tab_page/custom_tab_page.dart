@@ -365,7 +365,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
       },
       child: Container(
         width: double.infinity,
-        height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 25,
+        height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
         color: bgColor,
         padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
         child: widget.extendedTabBar,
@@ -384,9 +384,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 0.2),
-            blurRadius: 20,
-            offset: const Offset(10, 0),
+            color: AppColors.black.withOpacity(context.appTheme.isDarkTheme ? 0.0 : 0.1),
+            blurRadius: 30,
           )
         ],
       ),

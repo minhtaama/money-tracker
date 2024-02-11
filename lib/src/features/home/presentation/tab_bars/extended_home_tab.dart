@@ -116,8 +116,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText =
-        'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
@@ -151,14 +150,9 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
           child: CustomLineChart(
             currentMonth: widget.displayDate,
             data: data,
-            offsetLabelUp: 22,
+            offsetLabelUp: 34,
             extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
             extraLineText: extraLineText,
-            todayDotColor: _type == LineChartDataType.expense
-                ? lerpWithBg(context.appTheme.negative)
-                : _type == LineChartDataType.income
-                    ? lerpWithBg(context.appTheme.positive)
-                    : null,
           ),
         ),
       ],
@@ -174,8 +168,7 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color:
-            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );
