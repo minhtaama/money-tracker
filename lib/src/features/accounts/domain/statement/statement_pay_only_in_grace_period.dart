@@ -142,10 +142,10 @@ class StatementPayOnlyInGracePeriod extends Statement {
         x = checkpoint!.unpaidToPay - _rawPaid.inGracePeriod;
       }
     } else {
-      x = (spentToPayAtStartDate - _rawPaid.inBillingCycle.all) +
-          interestFromPrevious +
+      x = carry.toPay.includeGracePayment +
+          carry.interest +
           installmentsAmountToPay +
-          spentInBillingCycleExcludeInstallments -
+          _rawSpent.inBillingCycle.excludeInstallments -
           _rawPaid.inGracePeriod;
     }
 

@@ -122,7 +122,7 @@ extension CreditAccountMethods on CreditAccount {
           : startDate.compareTo(date) <= 0) {
         final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
-        final previousStatement = list.last.carryToNextStatement;
+        final previousStatement = list.last.bringToNextStatement;
 
         Statement statement = Statement.create(
           statementType,

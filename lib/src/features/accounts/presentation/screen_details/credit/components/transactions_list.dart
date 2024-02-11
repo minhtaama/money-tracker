@@ -239,7 +239,7 @@ class _TransactionListState extends State<_TransactionList> {
         key: bottomKey,
         dateTime: statement.date.due,
         h1: 'Payment due date'.hardcoded,
-        h2: statement.spentToPayAtStartDateWithPrvGracePayment > 0
+        h2: statement.carry.toPay.includeGracePayment > 0
             ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
             : 'Pay-in-full before this day for interest-free',
       ),

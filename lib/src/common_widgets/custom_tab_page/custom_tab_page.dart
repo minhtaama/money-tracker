@@ -292,7 +292,9 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                     builder: (context, ref, _) => Column(
                       children: [
                         ...widget.itemBuilder(context, ref, pageIndex),
-                        Gap.h32,
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.bottom + 32,
+                        )
                       ],
                     ),
                   ),
@@ -447,6 +449,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
     return ListView.builder(
       controller: _scrollController,
       itemCount: widget.forPageView ? widget.children.length : widget.children.length + 2,
+      padding: const EdgeInsets.only(top: 25),
       itemBuilder: (context, index) {
         if (!widget.forPageView) {
           if (index == 0) {

@@ -31,8 +31,7 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
 
   final Map<int, double> _heights = {};
 
-  late final _sheetViewPort =
-      Gap.screenHeight(context) - kCustomTabBarHeight - kBottomAppBarHeight - kCustomToolBarHeight;
+  late final _sheetViewPort = Gap.screenHeight(context) - kCustomTabBarHeight - kCustomToolBarHeight;
 
   double get _currentHeight =>
       _heights[_currentPage] != null ? math.max(_sheetViewPort, _heights[_currentPage]!) : _sheetViewPort;

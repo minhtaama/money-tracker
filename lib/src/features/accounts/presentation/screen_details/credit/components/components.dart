@@ -104,7 +104,7 @@ class _SummaryCard extends StatelessWidget {
                   richText: '${carryString(context, statement)} ${context.appSettings.currency.code}',
                   color: carry.roundBySetting(context) <= 0 ? 0 : -1,
                 ),
-                statement.interestFromPrevious > 0
+                statement.carry.interest > 0
                     ? _buildText(
                         context,
                         text: 'Interest:',
@@ -169,9 +169,9 @@ class _SummaryCard extends StatelessWidget {
 }
 
 extension _StatementDetails on _SummaryCard {
-  double get interest => statement.interestFromPrevious;
-  double get carry => statement.spentToPayAtStartDateWithPrvGracePayment;
-  double get spent => statement.spentInBillingCycleExcludeInstallments + statement.installmentsAmountToPay;
+  double get interest => statement.carry.interest;
+  double get carry => statement.carry.toPay.includeGracePayment;
+  double get spent => statement.spent.inBillingCycle.excludeInstallments + statement.installmentsAmountToPay;
   double get paid => statement.paid;
   double get balance => statement.balanceToPayRemaining;
 
