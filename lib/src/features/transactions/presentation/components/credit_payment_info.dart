@@ -237,7 +237,7 @@ class _ListState extends State<_List> {
                                             : widget.chosenDateTime!.isAtSameMomentAs(widget.statement!.date.due),
                                         dateTime: widget.statement!.date.due,
                                         h1: 'Payment due date'.hardcoded,
-                                        h2: widget.statement!.carry.toPay.includeGracePayment > 0
+                                        h2: widget.statement!.carry.balanceToPay > 0
                                             ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
                                             : 'Pay-in-full before this day for interest-free',
                                       )
@@ -784,7 +784,7 @@ extension _ListGetters on State<_List> {
     if (widget.statement == null) {
       return null;
     }
-    return CalService.formatCurrency(context, widget.statement!.carry.toPay.includeGracePayment);
+    return CalService.formatCurrency(context, widget.statement!.carry.balanceToPay);
   }
 
   DateTime get nextStatementDateTime =>

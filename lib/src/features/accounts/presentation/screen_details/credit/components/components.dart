@@ -170,7 +170,7 @@ class _SummaryCard extends StatelessWidget {
 
 extension _StatementDetails on _SummaryCard {
   double get interest => statement.carry.interest;
-  double get carry => statement.carry.toPay.includeGracePayment;
+  double get carry => statement.carry.balanceToPay;
   double get spent => statement.spent.inBillingCycle.toPay + statement.installmentsToPay;
   double get paid => statement.paid;
   double get balance => statement.balance;

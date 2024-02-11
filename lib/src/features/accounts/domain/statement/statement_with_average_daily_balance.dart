@@ -132,7 +132,7 @@ class StatementWithAverageDailyBalance extends Statement {
     // Only count surplus amount of payment in previous grace period
     // for this statement
     final paidInPreviousGracePeriodSurplusForThisStatement =
-        math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - carry.toPay.excludeGracePayment);
+        math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.remainingToPay);
 
     final paidInBillingCycleAfterPreviousDueDate =
         _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod;
@@ -176,7 +176,7 @@ class StatementWithAverageDailyBalance extends Statement {
         x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _rawPaid.inGracePeriod;
       }
     } else {
-      x = carry.toPay.excludeGracePayment +
+      x = startPoint.remainingToPay +
           carry.interest +
           installmentsToPay +
           spentInBillingCycleBeforeDateTimeExcludeInstallments +

@@ -85,26 +85,25 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
         children: [
           Row(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    widget.title != null
-                        ? Padding(
-                            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
-                            child: Text(
-                              widget.title!,
-                              style: kHeader2TextStyle.copyWith(
-                                color: context.appTheme.onBackground.withOpacity(0.85),
-                              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  widget.title != null
+                      ? Padding(
+                          padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                          child: Text(
+                            widget.title!,
+                            style: kHeader2TextStyle.copyWith(
+                              color: context.appTheme.onBackground.withOpacity(0.85),
                             ),
-                          )
-                        : Gap.noGap,
-                    widget.subTitle ?? Gap.noGap,
-                  ],
-                ),
+                          ),
+                        )
+                      : Gap.noGap,
+                  widget.subTitle ?? Gap.noGap,
+                ],
               ),
+              const Spacer(),
               ...?widget.subIcons,
             ],
           ),

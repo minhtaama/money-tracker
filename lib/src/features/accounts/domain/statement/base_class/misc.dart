@@ -66,14 +66,16 @@ typedef StmSpentData = ({
 });
 
 typedef StmCarryWithInterestData = ({
-  ({double excludeGracePayment, double includeGracePayment}) total,
-  ({double excludeGracePayment, double includeGracePayment}) toPay,
+  double totalBalance,
+  double balanceToPay,
   double interest,
 });
 
 typedef StmCarryWithoutInterestData = ({
-  ({double excludeGracePayment, double includeGracePayment}) total,
-  ({double excludeGracePayment, double includeGracePayment}) toPay,
+  double totalBalance,
+  double balanceToPay,
 });
 
-typedef StmTotalSpentData = ({double all, double toPay});
+typedef StmEndPoint = ({double totalSpent, double spentToPay});
+
+typedef StmStartPoint = ({double totalRemaining, double remainingToPay});
