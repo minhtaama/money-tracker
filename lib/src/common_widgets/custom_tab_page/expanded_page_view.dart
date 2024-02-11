@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
 import '../../utils/constants.dart';
 
@@ -42,6 +41,12 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
     _pageController = widget.controller ?? PageController();
     _currentPage = _pageController?.initialPage ?? 0;
     _pageController?.addListener(_updatePage);
+  }
+
+  @override
+  void didUpdateWidget(covariant ExpandablePageView oldWidget) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -109,6 +114,12 @@ class SizeReportingWidget extends StatefulWidget {
 
 class _SizeReportingWidgetState extends State<SizeReportingWidget> {
   Size? _oldSize;
+
+  @override
+  void didUpdateWidget(covariant SizeReportingWidget oldWidget) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _notifySize());
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {

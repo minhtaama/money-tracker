@@ -43,8 +43,7 @@ class StatementWithAverageDailyBalance extends Statement {
     // If this is the first Txn in the list, `tCheckpointDateTime` is `statement.date.start`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance =
-        previousStatement.balanceAtEndDate + previousStatement.interestToThisStatement + installmentsAmount;
+    double tCurrentBalance = previousStatement.balanceAtEndDate + previousStatement.interest + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 

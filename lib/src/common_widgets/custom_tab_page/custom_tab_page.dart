@@ -241,17 +241,20 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
     if (_isShowSmallTabBar) {
       statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
-    } else if (widget.extendedTabBar?.backgroundColor != null) {
-      final lum = widget.extendedTabBar!.backgroundColor!.computeLuminance();
+      return;
+    }
 
+    if (widget.extendedTabBar?.backgroundColor != null) {
+      final lum = widget.extendedTabBar!.backgroundColor!.computeLuminance();
       if (lum < 0.5) {
         statusBrnNotifier.state = Brightness.light;
       } else {
         statusBrnNotifier.state = Brightness.dark;
       }
-    } else {
-      statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
+      return;
     }
+
+    statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
   }
 
   @override

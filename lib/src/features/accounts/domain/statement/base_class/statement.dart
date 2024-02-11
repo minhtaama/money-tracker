@@ -211,13 +211,13 @@ extension StatementGetters on Statement {
   StmCarryWithInterestData get carry => (
         total: (
           excludeGracePayment: _previousStatement.balanceAtEndDate,
-          includeGracePayment: _previousStatement.balanceAtEndDateWithPrvGracePayment,
+          includeGracePayment: _previousStatement.balance,
         ),
         toPay: (
           excludeGracePayment: _previousStatement.balanceToPayAtEndDate,
-          includeGracePayment: _previousStatement.balanceToPayAtEndDateWithPrvGracePayment,
+          includeGracePayment: _previousStatement.balanceToPay,
         ),
-        interest: _previousStatement.interestToThisStatement,
+        interest: _previousStatement.interest,
       );
 
   /// ## Installments to pay. Not included in any of [carry] getters
@@ -259,30 +259,32 @@ extension StatementGetters on Statement {
   /// access to "This Current [Statement]" info through [_previousStatement] property
   ///
   PreviousStatement get bringToNextStatement {
+    // = carry.total.excludeGracePayment of next Statement
     final balanceAtEndDate =
         checkpoint?.oustdBalance ?? (totalSpent.all + carry.interest + -_rawPaid.inBillingCycle.all).roundTo2DP();
 
-    final balanceAtEndDateWithPrvGracePayment = (balanceAtEndDate - _rawPaid.inGracePeriod).roundTo2DP();
-
+    // = carry.toPay.excludeGracePayment of next Statement
     final balanceToPayAtEndDate =
         checkpoint?.unpaidToPay ?? (totalSpent.toPay + carry.interest + -_rawPaid.inBillingCycle.all).roundTo2DP();
 
-    final balanceToPayAtEndDateWithPrvGracePayment =
-        math.max(0.0, balanceToPayAtEndDate - _rawPaid.inGracePeriod).roundTo2DP();
+    // = carry.total.includeGracePayment of next Statement
+    final balance = (balanceAtEndDate - _rawPaid.inGracePeriod).roundTo2DP(); // negative !?
 
-    final interestCarryToNextStatement = checkpoint != null
+    // = carry.toPay.includeGracePayment of next Statement
+    final balanceToPay = (balanceToPayAtEndDate - _rawPaid.inGracePeriod).roundTo2DP(); // negative !?
+
+    final interest = checkpoint != null
         ? 0.0
-        : balanceToPayAtEndDateWithPrvGracePayment > 0 ||
-                _previousStatement.balanceToPayAtEndDateWithPrvGracePayment > 0
+        : balanceToPay > 0 || _previousStatement.balanceToPay > 0
             ? _interest
             : 0.0;
 
     return PreviousStatement._(
       math.max(0, balanceToPayAtEndDate),
       math.max(0, balanceAtEndDate),
-      balanceAtEndDateWithPrvGracePayment: math.max(0, balanceAtEndDateWithPrvGracePayment),
-      balanceToPayAtEndDateWithPrvGracePayment: math.max(0, balanceToPayAtEndDateWithPrvGracePayment),
-      interestToThisStatement: interestCarryToNextStatement,
+      balance: math.max(0, balance),
+      balanceToPay: math.max(0, balanceToPay),
+      interest: interest,
       dueDate: date.due,
     );
   }
