@@ -34,8 +34,7 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state =
-          context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -77,8 +76,7 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: !context.appTheme.isDarkTheme
-                        ? BorderSide(
-                            color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                        ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
                         : BorderSide.none,
                   ),
                 ),
@@ -122,8 +120,7 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   ConsumerState<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
 }
 
-class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView>
-    with TickerProviderStateMixin {
+class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView> with TickerProviderStateMixin {
   late final double _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
   late final double _triggerDividerOffset = 30;
 
@@ -293,7 +290,10 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                   itemCount: widget.pageItemCount,
                   itemBuilder: (_, pageIndex) => Consumer(
                     builder: (context, ref, _) => Column(
-                      children: widget.itemBuilder(context, ref, pageIndex),
+                      children: [
+                        ...widget.itemBuilder(context, ref, pageIndex),
+                        Gap.h32,
+                      ],
                     ),
                   ),
                 ),
@@ -322,8 +322,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
-                                  width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -339,8 +338,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(
-                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),
@@ -448,7 +446,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      itemCount: widget.forPageView ? widget.children.length + 1 : widget.children.length + 2,
+      itemCount: widget.forPageView ? widget.children.length : widget.children.length + 2,
       itemBuilder: (context, index) {
         if (!widget.forPageView) {
           if (index == 0) {
@@ -461,7 +459,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
           }
         }
 
-        return index == widget.children.length ? const SizedBox(height: 30) : widget.children[index];
+        return widget.children[index];
       },
     );
   }

@@ -18,29 +18,23 @@ sealed class Statement {
   /// This is the outstanding balance at [endDate] of statement
   final Checkpoint? checkpoint;
 
-  /// Installment transactions happens before this statement, but need to pay at this statement
+  /// **Installments to pay**: Amount to pay of installments transactions happens before this statement,
+  ///
   /// **Billing cycle**: From [startDate] to [endDate]
+  ///
   /// **Grace Period**: From the day after [endDate] to [dueDate]
-  final ({
-    List<Installment> installmentsToPay,
-    List<BaseCreditTransaction> inBillingCycle,
-    List<BaseCreditTransaction> inGracePeriod,
-  }) transactions;
+  final StmTxnsData transactions;
 
   final PreviousStatement _previousStatement;
 
   /// Use [date] getter instead for more property
   final ({DateTime start, DateTime end, DateTime due}) _date;
 
-  final ({
-    ({double all, double excludeInstallments}) inBillingCycle,
-    ({double all, double excludeInstallments}) inGracePeriod,
-  }) _spent;
+  /// Without checking for checkpoint at [date.statement]
+  final _StmRawSpentData _rawSpent;
 
-  final ({
-    ({double all, double inPreviousGracePeriod}) inBillingCycle,
-    double inGracePeriod,
-  }) _paid;
+  /// Without checking for checkpoint at [date.statement]
+  final _StmRawPaidData _rawPaid;
 
   /// This is the interest of this statement, only used to add
   /// to [PreviousStatement] in [carryToNextStatement] (to next [Statement]),
@@ -50,9 +44,13 @@ sealed class Statement {
   ///
   abstract final double _interest;
 
-  /// Need to override because of the different whether the statement
-  /// is allow to pay directly in billing cycle.
-  double get paidForThisStatement;
+  /// The total amount of payment that is for this statement
+  /// Will not be counted twice with payment-in-previous-grace-period amount
+  /// for previous statement. Read the code for more understanding.
+  ///
+  /// For each statement type, will need to override because of the different
+  /// whether the statement is allow to pay directly in billing cycle.
+  double get paid;
 
   /// Need to override because of the different whether the statement
   /// is allow to pay directly in billing cycle.
@@ -97,21 +95,15 @@ sealed class Statement {
   const Statement({
     required PreviousStatement previousStatement,
     required ({DateTime start, DateTime end, DateTime due}) date,
-    required ({
-      ({double all, double excludeInstallments}) inBillingCycle,
-      ({double all, double excludeInstallments}) inGracePeriod,
-    }) spent,
-    required ({
-      ({double all, double inPreviousGracePeriod}) inBillingCycle,
-      double inGracePeriod,
-    }) paid,
+    required _StmRawSpentData rawSpent,
+    required _StmRawPaidData rawPaid,
     required this.apr,
     required this.checkpoint,
     required this.transactions,
   })  : _date = date,
         _previousStatement = previousStatement,
-        _spent = spent,
-        _paid = paid;
+        _rawSpent = rawSpent,
+        _rawPaid = rawPaid;
 
   @override
   String toString() {
@@ -120,27 +112,21 @@ sealed class Statement {
 }
 
 extension StatementGetters on Statement {
-  ({
-    DateTime start,
-    DateTime end,
-    DateTime due,
-    DateTime previousDue,
-    DateTime statement,
-  }) get date => (
+  StmDateData get date => (
         start: _date.start,
         end: _date.end,
         due: _date.due,
         previousDue: _previousStatement.dueDate,
-        statement: date.start.copyWith(month: date.start.month + 1)
+        statement: _date.start.copyWith(month: _date.start.month + 1)
       );
 
   /// Only count the spending transaction in billing cycle. Not include
   /// spendings with installment.
   ///
   double get spentInBillingCycleExcludeInstallments =>
-      checkpoint?.unpaidToPay ?? _spent.inBillingCycle.excludeInstallments;
+      checkpoint?.unpaidToPay ?? _rawSpent.inBillingCycle.excludeInstallments;
 
-  double get spentInGracePeriod => _spent.inGracePeriod.all;
+  double get spentInGracePeriod => _rawSpent.inGracePeriod.all;
 
   /// installments to pay. Not included in any of startDate getters
   ///
@@ -172,15 +158,14 @@ extension StatementGetters on Statement {
   ///
   /// Do not include **[interestFromPrevious]**, **[installmentsAmountToPay]**.
   ///
-  double get totalSpentAtStartDateWithPrvGracePayment =>
-      _previousStatement.balanceAtEndDateWithPrvGracePayment;
+  double get totalSpentAtStartDateWithPrvGracePayment => _previousStatement.balanceAtEndDateWithPrvGracePayment;
 
   /// = **[totalSpentAtStartDate]** (include **spendings-has-installment**) +
   /// **`spent-in-billing-cycle-of-this-statement`**.
   ///
-  /// Do not include [paidForThisStatement] and [interestFromPrevious].
+  /// Do not include [paid] and [interestFromPrevious].
   ///
-  double get totalSpentAtEndDate => totalSpentAtStartDate + _spent.inBillingCycle.all;
+  double get totalSpentAtEndDate => totalSpentAtStartDate + _rawSpent.inBillingCycle.all;
 
   /// Spent amount left to pay _from previous statement's end date_ of credit account
   /// at start date of this statement (exclude **spendings-has-installment**).
@@ -197,14 +182,13 @@ extension StatementGetters on Statement {
   ///
   /// Do not include **[interestFromPrevious]**, **[installmentsAmountToPay]**.
   ///
-  double get spentToPayAtStartDateWithPrvGracePayment =>
-      _previousStatement.balanceToPayAtEndDateWithPrvGracePayment;
+  double get spentToPayAtStartDateWithPrvGracePayment => _previousStatement.balanceToPayAtEndDateWithPrvGracePayment;
 
   /// = **[spentToPayAtStartDate]** (exclude **spendings-has-installment**) +
   /// **[installmentsAmountToPay]** +
   /// **[spentInBillingCycleExcludeInstallments]**.
   ///
-  /// Do not include [paidForThisStatement] and [interestFromPrevious].
+  /// Do not include [paid] and [interestFromPrevious].
   ///
   double get spentToPayAtEndDate =>
       spentToPayAtStartDate + installmentsAmountToPay + spentInBillingCycleExcludeInstallments;
@@ -223,9 +207,9 @@ extension StatementGetters on Statement {
               spentToPayAtStartDateWithPrvGracePayment +
               spentInBillingCycleExcludeInstallments +
               installmentsAmountToPay) -
-          paidForThisStatement;
+          paid;
     } else {
-      value = spentInBillingCycleExcludeInstallments - paidForThisStatement;
+      value = spentInBillingCycleExcludeInstallments - paid;
     }
 
     // Just to make sure it is not under 0
@@ -243,15 +227,12 @@ extension StatementGetters on Statement {
   PreviousStatement get carryToNextStatement {
     final balanceAtEndDate = checkpoint?.oustdBalance ??
         double.parse(
-          (totalSpentAtStartDate +
-                  interestFromPrevious +
-                  _spent.inBillingCycle.all -
-                  _paid.inBillingCycle.all)
+          (totalSpentAtStartDate + interestFromPrevious + _rawSpent.inBillingCycle.all - _rawPaid.inBillingCycle.all)
               .toStringAsFixed(2),
         );
 
     final balanceAtEndDateWithPrvGracePayment = double.parse(
-      (balanceAtEndDate - _paid.inGracePeriod).toStringAsFixed(2),
+      (balanceAtEndDate - _rawPaid.inGracePeriod).toStringAsFixed(2),
     );
 
     final balanceToPayAtEndDate = checkpoint?.unpaidToPay ??
@@ -259,13 +240,13 @@ extension StatementGetters on Statement {
           (spentToPayAtStartDate +
                   interestFromPrevious +
                   installmentsAmountToPay +
-                  _spent.inBillingCycle.excludeInstallments -
-                  _paid.inBillingCycle.all)
+                  _rawSpent.inBillingCycle.excludeInstallments -
+                  _rawPaid.inBillingCycle.all)
               .toStringAsFixed(2),
         );
 
     final balanceToPayAtEndDateWithPrvGracePayment = double.parse(
-      math.max(0, balanceToPayAtEndDate - _paid.inGracePeriod).toStringAsFixed(2),
+      math.max(0, balanceToPayAtEndDate - _rawPaid.inGracePeriod).toStringAsFixed(2),
     );
 
     final interestCarryToNextStatement = checkpoint != null
@@ -318,15 +299,15 @@ extension StatementFunctions on Statement {
   List<BaseCreditTransaction> transactionsIn(DateTime dateTime) {
     final List<BaseCreditTransaction> list = List.empty(growable: true);
 
-    final txnList = dateTime.onlyYearMonthDay.isAfter(date.end)
-        ? transactions.inGracePeriod
-        : transactions.inBillingCycle;
+    final txnList =
+        dateTime.onlyYearMonthDay.isAfter(date.end) ? transactions.inGracePeriod : transactions.inBillingCycle;
 
     for (BaseCreditTransaction txn in txnList) {
       if (txn.dateTime.onlyYearMonthDay.isAtSameMomentAs(dateTime.onlyYearMonthDay)) {
         list.add(txn);
       }
     }
+
     return list;
   }
 }

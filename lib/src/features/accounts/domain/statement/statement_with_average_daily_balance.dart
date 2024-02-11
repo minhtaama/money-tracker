@@ -5,8 +5,8 @@ class StatementWithAverageDailyBalance extends Statement {
   const StatementWithAverageDailyBalance._(
     this._interest, {
     required super.previousStatement,
-    required super.spent,
-    required super.paid,
+    required super.rawSpent,
+    required super.rawPaid,
     required super.apr,
     required super.checkpoint,
     required super.date,
@@ -43,9 +43,8 @@ class StatementWithAverageDailyBalance extends Statement {
     // If this is the first Txn in the list, `tCheckpointDateTime` is `statement.date.start`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.balanceAtEndDate +
-        previousStatement.interestToThisStatement +
-        installmentsAmount;
+    double tCurrentBalance =
+        previousStatement.balanceAtEndDate + previousStatement.interestToThisStatement + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -103,21 +102,12 @@ class StatementWithAverageDailyBalance extends Statement {
     return StatementWithAverageDailyBalance._(
       interest,
       previousStatement: previousStatement,
-      spent: (
-        inBillingCycle: (
-          all: spentInBillingCycle,
-          excludeInstallments: spentInBillingCycleExcludeInstallments
-        ),
-        inGracePeriod: (
-          all: spentInGracePeriod,
-          excludeInstallments: spentInGracePeriodExcludeInstallments
-        )
+      rawSpent: (
+        inBillingCycle: (all: spentInBillingCycle, excludeInstallments: spentInBillingCycleExcludeInstallments),
+        inGracePeriod: (all: spentInGracePeriod, excludeInstallments: spentInGracePeriodExcludeInstallments)
       ),
-      paid: (
-        inBillingCycle: (
-          all: paidInBillingCycle,
-          inPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod
-        ),
+      rawPaid: (
+        inBillingCycle: (all: paidInBillingCycle, inPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod),
         inGracePeriod: paidInGracePeriod,
       ),
       checkpoint: checkpoint,
@@ -134,27 +124,24 @@ class StatementWithAverageDailyBalance extends Statement {
   @override
   final double _interest;
 
-  /// The total amount of payment that is for this statement
-  /// Will not be counted twice with payment-in-previous-grace-period amount
-  /// for previous statement. Read the code for more understanding.
   @override
-  double get paidForThisStatement {
+  double get paid {
     if (checkpoint != null) {
-      return math.max(0, _paid.inGracePeriod - _spent.inGracePeriod.excludeInstallments);
+      return math.max(0, _rawPaid.inGracePeriod - _rawSpent.inGracePeriod.excludeInstallments);
     }
 
     // Only count surplus amount of payment in previous grace period
     // for this statement
     final paidInPreviousGracePeriodSurplusForThisStatement =
-        math.max(0, _paid.inBillingCycle.inPreviousGracePeriod - spentToPayAtStartDate);
+        math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - spentToPayAtStartDate);
 
     final paidInBillingCycleAfterPreviousDueDate =
-        _paid.inBillingCycle.all - _paid.inBillingCycle.inPreviousGracePeriod;
+        _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod;
 
     // Can be higher than spent amount in billing cycle.
     final paidAmount = paidInPreviousGracePeriodSurplusForThisStatement +
         paidInBillingCycleAfterPreviousDueDate +
-        _paid.inGracePeriod;
+        _rawPaid.inGracePeriod;
 
     // Math.min to remove surplus amount of payment in grace period
     return math.min(spentInBillingCycleExcludeInstallments, paidAmount);
@@ -187,9 +174,7 @@ class StatementWithAverageDailyBalance extends Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(date.end)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay +
-            spentInGracePeriodBeforeDateTimeExcludeInstallments -
-            _paid.inGracePeriod;
+        x = checkpoint!.unpaidToPay + spentInGracePeriodBeforeDateTimeExcludeInstallments - _rawPaid.inGracePeriod;
       }
     } else {
       x = spentToPayAtStartDate +
@@ -197,8 +182,8 @@ class StatementWithAverageDailyBalance extends Statement {
           installmentsAmountToPay +
           spentInBillingCycleBeforeDateTimeExcludeInstallments +
           spentInGracePeriodBeforeDateTimeExcludeInstallments -
-          _paid.inGracePeriod -
-          _paid.inBillingCycle.all;
+          _rawPaid.inGracePeriod -
+          _rawPaid.inBillingCycle.all;
     }
 
     if (x < 0) {

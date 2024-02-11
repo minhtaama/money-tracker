@@ -5,8 +5,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
   const StatementPayOnlyInGracePeriod._(
     this._interest, {
     required super.previousStatement,
-    required super.spent,
-    required super.paid,
+    required super.rawSpent,
+    required super.rawPaid,
     required super.apr,
     required super.checkpoint,
     required super.date,
@@ -42,9 +42,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
     // If this is the first Txn in the list, `tCheckpointDateTime` is `statement.date.start`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.balanceAtEndDate +
-        previousStatement.interestToThisStatement +
-        installmentsAmount;
+    double tCurrentBalance =
+        previousStatement.balanceAtEndDate + previousStatement.interestToThisStatement + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -100,17 +99,11 @@ class StatementPayOnlyInGracePeriod extends Statement {
     return StatementPayOnlyInGracePeriod._(
       interest,
       previousStatement: previousStatement,
-      spent: (
-        inBillingCycle: (
-          all: spentInBillingCycle,
-          excludeInstallments: spentInBillingCycleExcludeInstallments
-        ),
-        inGracePeriod: (
-          all: spentInGracePeriod,
-          excludeInstallments: spentInGracePeriodExcludeInstallments
-        )
+      rawSpent: (
+        inBillingCycle: (all: spentInBillingCycle, excludeInstallments: spentInBillingCycleExcludeInstallments),
+        inGracePeriod: (all: spentInGracePeriod, excludeInstallments: spentInGracePeriodExcludeInstallments)
       ),
-      paid: (
+      rawPaid: (
         inBillingCycle: (
           all: paidInBillingCycleInPreviousGracePeriod,
           inPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod
@@ -131,11 +124,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
   @override
   final double _interest;
 
-  /// The total amount of payment that is for this statement
-  /// Will not be counted twice with payment-in-previous-grace-period amount
-  /// for previous statement. Read the code for more understanding.
   @override
-  double get paidForThisStatement => _paid.inGracePeriod;
+  double get paid => _rawPaid.inGracePeriod;
 
   @override
   double balanceToPayAt(DateTime dateTime) {
@@ -149,14 +139,14 @@ class StatementPayOnlyInGracePeriod extends Statement {
       if (!dateTime.onlyYearMonthDay.isAfter(date.end)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay - _paid.inGracePeriod;
+        x = checkpoint!.unpaidToPay - _rawPaid.inGracePeriod;
       }
     } else {
-      x = (spentToPayAtStartDate - _paid.inBillingCycle.all) +
+      x = (spentToPayAtStartDate - _rawPaid.inBillingCycle.all) +
           interestFromPrevious +
           installmentsAmountToPay +
           spentInBillingCycleExcludeInstallments -
-          _paid.inGracePeriod;
+          _rawPaid.inGracePeriod;
     }
 
     if (x < 0) {
