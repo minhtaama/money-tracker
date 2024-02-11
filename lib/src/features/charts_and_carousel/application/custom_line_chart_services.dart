@@ -228,10 +228,10 @@ class LineChartServices {
 
     if (statement != null) {
       amountAtStartDate = statement.carry.total.excludeGracePayment + statement.carry.interest;
-      amountAtEndDate = statement.spentAtEnd.total + statement.carry.interest;
-      amountToPayAtEndDate = statement.spentAtEnd.toPay + statement.carry.interest;
+      amountAtEndDate = statement.totalSpent.all + statement.carry.interest;
+      amountToPayAtEndDate = statement.totalSpent.toPay + statement.carry.interest;
       spentInGracePeriod = statement.spent.inGracePeriod;
-      balanceRemaining = statement.balanceToPayRemaining;
+      balanceRemaining = statement.balance;
       txns = statement.transactions.inBillingCycle.followedBy(statement.transactions.inGracePeriod).toList();
       startDate = statement.date.start;
       previousDueDate = statement.date.previousDue;

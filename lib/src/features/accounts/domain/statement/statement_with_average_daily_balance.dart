@@ -103,8 +103,8 @@ class StatementWithAverageDailyBalance extends Statement {
       interest,
       previousStatement: previousStatement,
       rawSpent: (
-        inBillingCycle: (all: spentInBillingCycle, excludeInstallments: spentInBillingCycleExcludeInstallments),
-        inGracePeriod: (all: spentInGracePeriod, excludeInstallments: spentInGracePeriodExcludeInstallments)
+        inBillingCycle: (all: spentInBillingCycle, toPay: spentInBillingCycleExcludeInstallments),
+        inGracePeriod: (all: spentInGracePeriod, toPay: spentInGracePeriodExcludeInstallments)
       ),
       rawPaid: (
         inBillingCycle: (all: paidInBillingCycle, inPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod),
@@ -127,7 +127,7 @@ class StatementWithAverageDailyBalance extends Statement {
   @override
   double get paid {
     if (checkpoint != null) {
-      return math.max(0, _rawPaid.inGracePeriod - _rawSpent.inGracePeriod.excludeInstallments);
+      return math.max(0, _rawPaid.inGracePeriod - _rawSpent.inGracePeriod.toPay);
     }
 
     // Only count surplus amount of payment in previous grace period
@@ -144,7 +144,7 @@ class StatementWithAverageDailyBalance extends Statement {
         _rawPaid.inGracePeriod;
 
     // Math.min to remove surplus amount of payment in grace period
-    return math.min(spent.inBillingCycle.excludeInstallments, paidAmount);
+    return math.min(spent.inBillingCycle.toPay, paidAmount);
   }
 
   @override
@@ -179,7 +179,7 @@ class StatementWithAverageDailyBalance extends Statement {
     } else {
       x = carry.toPay.excludeGracePayment +
           carry.interest +
-          installmentsAmountToPay +
+          installmentsToPay +
           spentInBillingCycleBeforeDateTimeExcludeInstallments +
           spentInGracePeriodBeforeDateTimeExcludeInstallments -
           _rawPaid.inGracePeriod -

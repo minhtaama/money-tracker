@@ -342,7 +342,7 @@ extension AccountGettersExtension on Account {
         final limit = (this as CreditAccount).creditLimit;
         try {
           final todayStatement = (this as CreditAccount).statementAt(DateTime.now(), upperGapAtDueDate: true);
-          return limit - todayStatement!.balanceToPayRemaining - todayStatement.spent.inGracePeriod;
+          return limit - todayStatement!.balance - todayStatement.spent.inGracePeriod;
         } catch (_) {
           return limit;
         }

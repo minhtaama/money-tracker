@@ -171,9 +171,9 @@ class _SummaryCard extends StatelessWidget {
 extension _StatementDetails on _SummaryCard {
   double get interest => statement.carry.interest;
   double get carry => statement.carry.toPay.includeGracePayment;
-  double get spent => statement.spent.inBillingCycle.excludeInstallments + statement.installmentsAmountToPay;
+  double get spent => statement.spent.inBillingCycle.toPay + statement.installmentsToPay;
   double get paid => statement.paid;
-  double get balance => statement.balanceToPayRemaining;
+  double get balance => statement.balance;
 
   String? interestString(BuildContext context, Statement statement) {
     return CalService.formatCurrency(context, interest);

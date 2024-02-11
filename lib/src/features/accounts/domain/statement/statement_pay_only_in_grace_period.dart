@@ -100,8 +100,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
       interest,
       previousStatement: previousStatement,
       rawSpent: (
-        inBillingCycle: (all: spentInBillingCycle, excludeInstallments: spentInBillingCycleExcludeInstallments),
-        inGracePeriod: (all: spentInGracePeriod, excludeInstallments: spentInGracePeriodExcludeInstallments)
+        inBillingCycle: (all: spentInBillingCycle, toPay: spentInBillingCycleExcludeInstallments),
+        inGracePeriod: (all: spentInGracePeriod, toPay: spentInGracePeriodExcludeInstallments)
       ),
       rawPaid: (
         inBillingCycle: (
@@ -144,8 +144,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
     } else {
       x = carry.toPay.includeGracePayment +
           carry.interest +
-          installmentsAmountToPay +
-          _rawSpent.inBillingCycle.excludeInstallments -
+          installmentsToPay +
+          _rawSpent.inBillingCycle.toPay -
           _rawPaid.inGracePeriod;
     }
 

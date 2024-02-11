@@ -51,8 +51,8 @@ typedef StmTxnsData = ({
 });
 
 typedef _StmRawSpentData = ({
-  ({double all, double excludeInstallments}) inBillingCycle,
-  ({double all, double excludeInstallments}) inGracePeriod,
+  ({double all, double toPay}) inBillingCycle,
+  ({double all, double toPay}) inGracePeriod,
 });
 
 typedef _StmRawPaidData = ({
@@ -61,7 +61,7 @@ typedef _StmRawPaidData = ({
 });
 
 typedef StmSpentData = ({
-  ({double all, double excludeInstallments}) inBillingCycle,
+  ({double all, double toPay}) inBillingCycle,
   double inGracePeriod,
 });
 
@@ -76,4 +76,4 @@ typedef StmCarryWithoutInterestData = ({
   ({double excludeGracePayment, double includeGracePayment}) toPay,
 });
 
-typedef StmAtSpentEndDateData = ({double total, double toPay});
+typedef StmTotalSpentData = ({double all, double toPay});
