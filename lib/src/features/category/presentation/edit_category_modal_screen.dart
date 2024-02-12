@@ -16,7 +16,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../data/category_repo.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
-  const EditCategoryModalScreen(this.currentCategory, {Key? key}) : super(key: key);
+  const EditCategoryModalScreen(this.currentCategory, {super.key});
   final Category currentCategory;
 
   @override
@@ -85,7 +85,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
               size: 55,
               iconPath: AppIcons.delete,
               iconPadding: 15,
-              backgroundColor: AppColors.grey(context),
+              backgroundColor: AppColors.greyBgr(context),
               iconColor: context.appTheme.onBackground,
               onTap: () {
                 showConfirmModalBottomSheet(
@@ -99,7 +99,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
                 );
               },
             ),
-            const Expanded(child: SizedBox()),
+            const Spacer(),
             IconWithTextButton(
               iconPath: AppIcons.edit,
               label: 'Done',

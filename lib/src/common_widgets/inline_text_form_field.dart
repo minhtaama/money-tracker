@@ -49,7 +49,7 @@ class InlineTextFormField extends StatelessWidget {
                 ? SizedBox(
                     width: width,
                     child: CustomTextFormField(
-                      hintText: '',
+                      hintText: hintText ?? '',
                       focusColor: context.appTheme.secondary1,
                       autofocus: false,
                       disableErrorText: true,

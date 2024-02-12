@@ -123,8 +123,8 @@ class StatementPayOnlyInGracePeriod extends Statement {
   @override
   final double _interest;
 
-  @override
-  double get paid => _rawPaid.inGracePeriod;
+  // @override
+  // double get paid => _rawPaid.inGracePeriod;
 
   @override
   double balanceToPayAt(DateTime dateTime) {

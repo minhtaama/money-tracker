@@ -216,7 +216,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                         style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                       DateSelector(
-                        initial: DateTime.now().copyWith(day: 15),
+                        initial: DateTime.now().copyWith(day: paymentDueDay),
                         onChanged: (dateTime) {
                           paymentDueDay = dateTime.day;
                         },

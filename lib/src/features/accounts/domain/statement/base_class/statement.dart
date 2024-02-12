@@ -16,8 +16,8 @@ part '../statement_pay_only_in_grace_period.dart';
 sealed class Statement {
   final double apr;
 
-  /// Only specify if user custom this statement data
-  /// This is the outstanding balance at [endDate] of statement
+  /// ## The adjusted amount at this [Statement.date.end]
+  /// Only specify (not null) if there is a [CreditCheckpoint] in [transactions.inBillingCycle]
   final Checkpoint? checkpoint;
 
   /// **Installments to pay**: Amount to pay of installments transactions happens before this statement,
@@ -45,25 +45,6 @@ sealed class Statement {
   /// Create in sub-class
   ///
   abstract final double _interest;
-
-  /// ## Total amount of payment counted for this statement.
-  /// ### The code of sub-class must include [checkpoint] null check
-  ///
-  /// Included:
-  /// - payment surplus in previous grace period (in case of payable in billing cycle)
-  /// ```dart
-  ///   = math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.toPay),
-  /// ```
-  /// - in-billing-cycle-after-previous-grace-period (in case of payable in billing cycle)
-  /// ```dart
-  ///   = _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod,
-  /// ```
-  /// - in-grace-period.
-  ///
-  /// For each statement type, will need to override because of the different
-  /// whether the statement is allow to pay directly in billing cycle or not.
-  ///
-  double get paid;
 
   /// ## Balance remaining to pay at selected dateTime
   ///
@@ -127,6 +108,11 @@ sealed class Statement {
 }
 
 extension StatementGetters on Statement {
+  CreditPayment get firstPayment {
+    final list = transactions.inBillingCycle.followedBy(transactions.inGracePeriod);
+    return list.whereType<CreditPayment>().first;
+  }
+
   StmDateData get date => (
         start: _date.start,
         end: _date.end,
@@ -137,8 +123,9 @@ extension StatementGetters on Statement {
 
   /// ## Contains only data of spendings in this statement billing cycle, no [carry] amount
   ///
-  /// **`excludeInstallments`**: Only count the spending transaction without installment payment
-  /// because these transaction is not required to pay in current grace period.
+  /// **`toPay`**: Only count the spending transaction without installment payment
+  /// because it is not required to pay in-full. The installment-amount-to-pay
+  /// of these is located in [installmentsToPay]
   ///
   /// -
   ///
@@ -155,11 +142,11 @@ extension StatementGetters on Statement {
         inGracePeriod: _rawSpent.inGracePeriod.all,
       );
 
-  /// ## Contains data carry from previous statement.
+  /// ## Balance carry from previous statement.
   ///
   /// **`totalBalance`**: Total balance left **from previous statement** (include **spendings-has-installment**)
   ///
-  /// **`balanceToPay`**: Spent amount left to pay **from previous statement'** of
+  /// **`balanceToPay`**: Spent amount left to pay **from previous statement**
   /// (exclude **spendings-has-installment**).
   ///
   /// -
@@ -168,13 +155,14 @@ extension StatementGetters on Statement {
   ///
   /// Payment happens between current **[date.start]** to **[date.previousDue]** is count for spendings
   /// of **previous [Statement]** first (which is paid-in-grace-period-for-previous-statement).
-  /// Then the surplus amount will be count for spendings happens in **this [Statement]**.
+  /// Then the surplus amount will be count for spendings happens in **this [Statement]**. The logic for
+  /// not counted surplus amount twice is in [paid]:
   ///
   /// ```dart
+  ///   ...
   ///   surplus = math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.toPay),
+  ///   ...
   /// ```
-  ///
-  /// -
   ///
   /// ## [carry.interest] is not include in [carry.total] and [carry.toPay]
   ///
@@ -211,7 +199,7 @@ extension StatementGetters on Statement {
         remainingToPay: _previousStatement.balanceToPayAtEndDate,
       );
 
-  /// ## Contains data at "start-point" of this [Statement].
+  /// ## Contains data at "end-point" of this [Statement].
   ///
   /// Use **[date.end]** as the "end-point" of each statement when calculate the "bring" amount from
   /// previous to next statement recursively. That is why no payment in grace period is counted twice.
@@ -237,6 +225,7 @@ extension StatementGetters on Statement {
   ///
   /// Included in [endPoint.spentToPay], [balance] and [balanceToPayAt]
   ///
+  ///TODO: modify the can pay in current statement
   double get installmentsToPay {
     if (checkpoint != null) {
       return 0;
@@ -250,9 +239,46 @@ extension StatementGetters on Statement {
     return amount;
   }
 
-  /// ## The balance remaining to pay of this statement
+  /// ## Total amount of payment counted for this statement.
+  /// ### The code of sub-class must include [checkpoint] null check
   ///
-  /// No need to add any calculation, else.
+  /// Included:
+  /// - payment surplus in previous grace period (in case of payable in billing cycle)
+  /// ```dart
+  ///   = math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.toPay),
+  /// ```
+  /// - in-billing-cycle-after-previous-grace-period (in case of payable in billing cycle)
+  /// ```dart
+  ///   = _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod,
+  /// ```
+  /// - in-grace-period.
+  ///
+  /// For each statement type, will need to override because of the different
+  /// whether the statement is allow to pay directly in billing cycle or not.
+  ///
+  double get paid {
+    if (checkpoint != null) {
+      return math.max(0, _rawPaid.inGracePeriod - _rawSpent.inGracePeriod.toPay);
+    }
+
+    // Only count surplus amount of payment in previous grace period
+    // for this statement
+    final paidInPreviousGracePeriodSurplusForThisStatement =
+        math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.remainingToPay);
+
+    final paidInBillingCycleAfterPreviousDueDate =
+        _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod;
+
+    // Can be higher than spent amount in billing cycle.
+    final paidAmount = paidInPreviousGracePeriodSurplusForThisStatement +
+        paidInBillingCycleAfterPreviousDueDate +
+        _rawPaid.inGracePeriod;
+
+    // Math.min to remove surplus amount of payment in grace period
+    return math.min(spent.inBillingCycle.toPay, paidAmount);
+  }
+
+  /// ## The balance remaining to pay of this statement
   ///
   double get balance {
     double value;

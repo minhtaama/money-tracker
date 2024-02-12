@@ -123,28 +123,28 @@ class StatementWithAverageDailyBalance extends Statement {
   @override
   final double _interest;
 
-  @override
-  double get paid {
-    if (checkpoint != null) {
-      return math.max(0, _rawPaid.inGracePeriod - _rawSpent.inGracePeriod.toPay);
-    }
-
-    // Only count surplus amount of payment in previous grace period
-    // for this statement
-    final paidInPreviousGracePeriodSurplusForThisStatement =
-        math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.remainingToPay);
-
-    final paidInBillingCycleAfterPreviousDueDate =
-        _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod;
-
-    // Can be higher than spent amount in billing cycle.
-    final paidAmount = paidInPreviousGracePeriodSurplusForThisStatement +
-        paidInBillingCycleAfterPreviousDueDate +
-        _rawPaid.inGracePeriod;
-
-    // Math.min to remove surplus amount of payment in grace period
-    return math.min(spent.inBillingCycle.toPay, paidAmount);
-  }
+  // @override
+  // double get paid {
+  //   if (checkpoint != null) {
+  //     return math.max(0, _rawPaid.inGracePeriod - _rawSpent.inGracePeriod.toPay);
+  //   }
+  //
+  //   // Only count surplus amount of payment in previous grace period
+  //   // for this statement
+  //   final paidInPreviousGracePeriodSurplusForThisStatement =
+  //       math.max(0, _rawPaid.inBillingCycle.inPreviousGracePeriod - startPoint.remainingToPay);
+  //
+  //   final paidInBillingCycleAfterPreviousDueDate =
+  //       _rawPaid.inBillingCycle.all - _rawPaid.inBillingCycle.inPreviousGracePeriod;
+  //
+  //   // Can be higher than spent amount in billing cycle.
+  //   final paidAmount = paidInPreviousGracePeriodSurplusForThisStatement +
+  //       paidInBillingCycleAfterPreviousDueDate +
+  //       _rawPaid.inGracePeriod;
+  //
+  //   // Math.min to remove surplus amount of payment in grace period
+  //   return math.min(spent.inBillingCycle.toPay, paidAmount);
+  // }
 
   @override
   double balanceToPayAt(DateTime dateTime) {

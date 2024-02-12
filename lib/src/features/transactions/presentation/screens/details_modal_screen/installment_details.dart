@@ -59,6 +59,8 @@ class _Transaction extends StatelessWidget {
     return CardItem(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      width: 400,
+      // height: 300,
       elevation: 1,
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
@@ -68,6 +70,7 @@ class _Transaction extends StatelessWidget {
         child: Column(
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '${formatter.format(transaction.dateTime.hour)}:${formatter.format(transaction.dateTime.minute)}',
