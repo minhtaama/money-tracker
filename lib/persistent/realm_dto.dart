@@ -52,7 +52,7 @@ class _AccountDb implements _IColorAndIcon, _IOrderable {
   @Backlink(#transferAccount)
   late Iterable<_TransactionDb> transferTransactions;
 
-  /// Only specify this property if type is [AccountType.credit]
+  /// Must specify this property if type is [AccountType.credit]
   late _CreditDetailsDb? creditDetails;
 }
 

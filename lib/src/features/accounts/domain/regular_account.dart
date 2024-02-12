@@ -7,6 +7,16 @@ class RegularAccount extends Account {
 
   final List<ITransferable> transferTransactionsList;
 
+  static RegularAccount forAdjustmentCreditPayment() => RegularAccount._(
+        AccountDb(ObjectId(), 0, '', 0, '', 0),
+        name: 'Adjustment',
+        iconColor: AppColors.black,
+        backgroundColor: AppColors.white,
+        iconPath: AppIcons.defaultIcon,
+        transactionsList: const [],
+        transferTransactionsList: const [],
+      );
+
   const RegularAccount._(
     super.databaseObject, {
     required super.name,

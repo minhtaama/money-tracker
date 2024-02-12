@@ -20,7 +20,8 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
-  late final bool _canDelete = _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
+  late final bool _canDelete =
+      _creditAccount.latestClosedStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
 
   @override
   void didUpdateWidget(covariant _PaymentDetails oldWidget) {
@@ -93,7 +94,9 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
                   _AccountCard(
                     isEditMode: _isEditMode,
                     isEdited: _isFromAccountEdited(stateWatch),
-                    account: stateWatch.fromRegularAccount ?? _transaction.transferAccount!,
+                    account: stateWatch.fromRegularAccount ??
+                        _transaction.transferAccount ??
+                        RegularAccount.forAdjustmentCreditPayment(),
                     onEditModeTap: _changeFromAccount,
                   ),
                   _AccountCard(isEditMode: false, account: widget.transaction.account!),

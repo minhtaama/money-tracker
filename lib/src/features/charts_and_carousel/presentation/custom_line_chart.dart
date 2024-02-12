@@ -466,10 +466,10 @@ class CustomLineChart extends StatelessWidget {
                   style: kHeader3TextStyle.copyWith(
                     fontSize: 11,
                     color: extraLineY != null
-                        ? color?.withOpacity(0.15) ??
+                        ? color?.withOpacity(0.2) ??
                             (context.appTheme.isDarkTheme
-                                ? context.appTheme.onBackground.withOpacity(0.15)
-                                : context.appTheme.onSecondary.withOpacity(0.15))
+                                ? context.appTheme.onBackground.withOpacity(0.2)
+                                : context.appTheme.onSecondary.withOpacity(0.2))
                         : color?.withOpacity(0) ??
                             (context.appTheme.isDarkTheme
                                 ? context.appTheme.onBackground.withOpacity(0)

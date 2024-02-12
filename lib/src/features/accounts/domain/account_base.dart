@@ -346,6 +346,8 @@ extension AccountGettersExtension on Account {
         } catch (_) {
           return limit;
         }
+      default:
+        throw StateError('Can only call this method in RegularAccount and CreditAccount');
     }
   }
 }

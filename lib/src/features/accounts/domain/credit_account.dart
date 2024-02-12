@@ -52,7 +52,19 @@ extension CreditAccountMethods on CreditAccount {
     return lastCheckpoint?.dateTime.onlyYearMonthDay ?? Calendar.minDate;
   }
 
-  DateTime get latestStatementDueDate {
+  /// Returns closed statements, which can not add transaction into.
+  List<Statement> get closedStatementsList {
+    final latest = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+    if (latest == null) {
+      return [];
+    }
+    final latestIndex = statementsList.indexOf(latest);
+
+    return statementsList.sublist(0, latestIndex + 1);
+  }
+
+  /// Latest closed statement due date (Can not add transaction before this date)
+  DateTime get latestClosedStatementDueDate {
     Statement? statement = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
     return statement?.date.previousDue.onlyYearMonthDay ?? Calendar.minDate;

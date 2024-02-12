@@ -208,7 +208,7 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
 
   bool _canEditAmount(CreditSpendingFormState state) =>
       (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
-          .isAfter(_creditAccount.latestStatementDueDate) &&
+          .isAfter(_creditAccount.latestClosedStatementDueDate) &&
       (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
           .isAfter(_creditAccount.latestCheckpointDateTime);
 

@@ -105,9 +105,21 @@ sealed class Statement {
   String toString() {
     return 'Statement{startDate: ${date.start}, dueDate: ${date.due}}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Statement &&
+          runtimeType == other.runtimeType &&
+          _date == other._date &&
+          _previousStatement == other._previousStatement;
+
+  @override
+  int get hashCode => _date.hashCode ^ _previousStatement.hashCode;
 }
 
 extension StatementGetters on Statement {
+  /// Throw StateError if no element is found
   CreditPayment get firstPayment {
     final list = transactions.inBillingCycle.followedBy(transactions.inGracePeriod);
     return list.whereType<CreditPayment>().first;
@@ -275,7 +287,7 @@ extension StatementGetters on Statement {
         _rawPaid.inGracePeriod;
 
     // Math.min to remove surplus amount of payment in grace period
-    return math.min(spent.inBillingCycle.toPay, paidAmount);
+    return math.min(endPoint.spentToPay, paidAmount);
   }
 
   /// ## The balance remaining to pay of this statement

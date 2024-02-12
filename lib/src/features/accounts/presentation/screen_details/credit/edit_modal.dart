@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
@@ -173,19 +174,21 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               iconPath: AppIcons.edit,
               label: 'Done',
               backgroundColor: context.appTheme.accent1,
-              onTap: () async {
+              onTap: () {
                 //TODO: Here
-                // final categoryRepository = ref.read(categoryRepositoryRealmProvider);
-                // categoryRepository.edit(
-                //   widget.currentCreditAccount,
-                //   iconCategory: newIconCategory,
-                //   iconIndex: newIconIndex,
-                //   name: newName,
-                //   colorIndex: newColorIndex,
-                // );
-                if (mounted) {
-                  context.pop();
-                }
+                final accountRepo = ref.read(accountRepositoryProvider);
+
+                accountRepo.editCreditAccount(
+                  widget.currentCreditAccount,
+                  iconCategory: newIconCategory,
+                  iconIndex: newIconIndex,
+                  name: newName,
+                  colorIndex: newColorIndex,
+                  apr: apr == '' ? null : double.tryParse(apr),
+                  statementType: statementType,
+                );
+
+                context.pop();
               },
             ),
           ],

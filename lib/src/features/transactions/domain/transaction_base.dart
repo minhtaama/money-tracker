@@ -104,7 +104,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseWithNoDetails(txn.account),
-          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount,
+          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccount?,
           isFullPayment: txn.creditPaymentDetails!.isFullPayment,
           adjustment: txn.creditPaymentDetails!.adjustment,
         );
