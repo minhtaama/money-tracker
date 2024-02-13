@@ -92,12 +92,6 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
         );
 
       case 4:
-        // CreditPaymentType paymentTypeFromDb(int type) => switch (type) {
-        //       0 => CreditPaymentType.underMinimum,
-        //       1 => CreditPaymentType.minimumOrHigher,
-        //       _ => CreditPaymentType.full,
-        //     };
-
         return CreditPayment._(
           txn,
           txn.dateTime.toLocal(),

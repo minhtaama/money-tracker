@@ -66,7 +66,8 @@ class _TransactionListState extends State<_TransactionList> {
     );
   }
 
-  List<Widget> buildList(BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(
+      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     DateTime tempDate = statement.date.start;
@@ -94,20 +95,25 @@ class _TransactionListState extends State<_TransactionList> {
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isBefore(statement.date.previousDue) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isBefore(statement.date.previousDue) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
       }
 
-      if (tempDate.isBefore(statement.date.previousDue) && !txnDateTime.isBefore(statement.date.previousDue)) {
+      if (tempDate.isBefore(statement.date.previousDue) &&
+          !txnDateTime.isBefore(statement.date.previousDue)) {
         triggerAddPreviousDueDateHeader = false;
         _addH1(list, statement);
       }
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.date.previousDue) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.date.previousDue) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
@@ -160,7 +166,9 @@ class _TransactionListState extends State<_TransactionList> {
 
       if (triggerAddTodayHeaderInGracePeriod) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.date.statement) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.date.statement) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInGracePeriod = false;
 
           _addHToday(list, statement);
@@ -172,10 +180,10 @@ class _TransactionListState extends State<_TransactionList> {
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(
-            key:
-                i == statement.transactions.inGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.date.due)
-                    ? bottomKey
-                    : null,
+            key: i == statement.transactions.inGracePeriod.length - 1 &&
+                    txnDateTime.isAtSameMomentAs(statement.date.due)
+                ? bottomKey
+                : null,
             statement: statement,
             transaction: txn,
             dateTime: null));
@@ -192,7 +200,8 @@ class _TransactionListState extends State<_TransactionList> {
         _addHToday(list, statement);
       }
 
-      if (i == statement.transactions.inGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
+      if (i == statement.transactions.inGracePeriod.length - 1 &&
+          triggerAddPaymentDueDateHeaderAtTheEnd) {
         _addH3(list, statement, bottomKey: bottomKey);
       }
     }
@@ -204,7 +213,7 @@ class _TransactionListState extends State<_TransactionList> {
     list.add(
       _Header(
         key: topKey,
-        dateTime: statement.date.due,
+        dateTime: statement.date.start,
         h1: 'Billing cycle start',
       ),
     );
@@ -225,7 +234,9 @@ class _TransactionListState extends State<_TransactionList> {
     list.add(
       _Header(
         dateTime: statement.date.statement,
-        h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
+        h1: statement.checkpoint != null
+            ? 'Statement date with checkpoint'.hardcoded
+            : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
         color: context.appTheme.primary,
         dateColor: context.appTheme.onPrimary,
