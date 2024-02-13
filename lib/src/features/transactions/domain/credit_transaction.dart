@@ -44,7 +44,9 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
+      other is CreditSpending &&
+          runtimeType == other.runtimeType &&
+          databaseObject.id == other.databaseObject.id;
 
   @override
   int get hashCode => databaseObject.id.hashCode;
@@ -73,6 +75,17 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     required this.adjustment,
   });
 }
+
+// @immutable
+// class CreditAdjustment extends BaseCreditTransaction {
+//   const CreditAdjustment._(
+//     super._databaseObject,
+//     super.dateTime,
+//     super.amount,
+//     super.note,
+//     super.account,
+//   );
+// }
 
 class CreditCheckpoint extends BaseCreditTransaction {
   final List<CreditSpending> finishedInstallments;
