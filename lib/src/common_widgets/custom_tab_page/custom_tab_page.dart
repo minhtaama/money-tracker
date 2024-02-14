@@ -124,10 +124,10 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   late final double _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
   late final double _triggerDividerOffset = 30;
 
-  late final double _sheetMinFraction;
-  late final double _sheetMaxFraction;
-  late final double _sheetMinHeight;
-  late final double _sheetMaxHeight;
+  late double _sheetMinFraction;
+  late double _sheetMaxFraction;
+  late double _sheetMinHeight;
+  late double _sheetMaxHeight;
 
   late final _scrollableController = DraggableScrollableController();
 

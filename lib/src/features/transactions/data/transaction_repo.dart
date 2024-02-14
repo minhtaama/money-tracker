@@ -405,8 +405,6 @@ extension EditTransaction on TransactionRepositoryRealmDb {
       } else if (!state.hasInstallment!) {
         txnDb.creditInstallmentDetails = null;
       }
-
-      //TODO: logic for installment details
     });
   }
 
