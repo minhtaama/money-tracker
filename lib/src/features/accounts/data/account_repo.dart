@@ -85,7 +85,7 @@ class AccountRepositoryRealmDb {
           firstPaymentDetailsDb.adjustment += adjustment;
         } catch (_) {
           // Create a new adjustPayment at end date of statement
-          ref.read(transactionRepositoryRealmProvider).writeNewCreditPaymentAdjustToAPRChanges(
+          ref.read(transactionRepositoryRealmProvider).addNewCreditPaymentAdjustToAPRChanges(
                 dateTime: newStm.date.start,
                 account: newAccountDb,
                 adjustment: adjustment,
@@ -127,7 +127,7 @@ class AccountRepositoryRealmDb {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref.read(transactionRepositoryRealmProvider).writeInitialBalance(balance: balance, newAccount: newAccount);
+        ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }

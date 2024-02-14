@@ -103,7 +103,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
   /// **Do not call this function in Widgets**
   ///
   /// Only to call in [AccountRepositoryRealmDb]
-  void writeInitialBalance({
+  void addInitialBalance({
     required double balance,
     required AccountDb newAccount,
   }) {
@@ -246,7 +246,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     });
   }
 
-  void writeNewCreditPaymentAdjustToAPRChanges({
+  void addNewCreditPaymentAdjustToAPRChanges({
     required DateTime dateTime,
     required AccountDb account,
     required double adjustment,
@@ -266,9 +266,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       creditPaymentDetails: creditPaymentDetails,
     );
 
-    realm.write(() {
-      realm.add(newTransaction);
-    });
+    realm.add(newTransaction);
   }
 
   void writeNewCreditCheckpoint({
