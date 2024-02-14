@@ -1,7 +1,51 @@
 part of 'account_base.dart';
 
+abstract interface class _ICreditDetails {
+  /// (APR) As in percent.
+  final double apr;
+
+  final int statementDay;
+
+  final int paymentDueDay;
+
+  final StatementType statementType;
+
+  _ICreditDetails(
+      {required this.apr, required this.statementDay, required this.paymentDueDay, required this.statementType});
+}
+
+class CreditAccountDetailsOnly extends BaseAccount implements _ICreditDetails {
+  final double creditLimit;
+
+  /// (APR) As in percent.
+  @override
+  final double apr;
+
+  @override
+  final int statementDay;
+
+  @override
+  final int paymentDueDay;
+
+  @override
+  final StatementType statementType;
+
+  const CreditAccountDetailsOnly._(
+    super.databaseObject, {
+    required super.name,
+    required super.iconColor,
+    required super.backgroundColor,
+    required super.iconPath,
+    required this.creditLimit,
+    required this.apr,
+    required this.statementDay,
+    required this.paymentDueDay,
+    required this.statementType,
+  });
+}
+
 @immutable
-class CreditAccount extends Account {
+class CreditAccount extends Account implements _ICreditDetails {
   /// Already sorted by transactions dateTime when created
   @override
   final List<BaseCreditTransaction> transactionsList;
@@ -11,16 +55,20 @@ class CreditAccount extends Account {
   final double creditLimit;
 
   /// (APR) As in percent.
+  @override
   final double apr;
 
+  @override
   final int statementDay;
 
+  @override
   final int paymentDueDay;
 
   final DateTime? earliestPayableDate;
 
   final DateTime? earliestStatementDate;
 
+  @override
   final StatementType statementType;
 
   const CreditAccount._(
@@ -44,20 +92,17 @@ class CreditAccount extends Account {
 extension CreditAccountMethods on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
-  List<CreditCheckpoint> get checkpointTransactions =>
-      transactionsList.whereType<CreditCheckpoint>().toList();
+  List<CreditCheckpoint> get checkpointTransactions => transactionsList.whereType<CreditCheckpoint>().toList();
 
   DateTime get latestCheckpointDateTime {
-    CreditCheckpoint? lastCheckpoint =
-        checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+    CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
 
     return lastCheckpoint?.dateTime.onlyYearMonthDay ?? Calendar.minDate;
   }
 
   /// Returns closed statements, which can not add transaction into.
   List<Statement> get closedStatementsList {
-    final latest =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+    final latest = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
     if (latest == null) {
       return [];
     }
@@ -68,8 +113,7 @@ extension CreditAccountMethods on CreditAccount {
 
   /// Latest closed statement due date (Can not add transaction before this date)
   DateTime get latestClosedStatementDueDate {
-    Statement? statement =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+    Statement? statement = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
     return statement?.date.previousDue.onlyYearMonthDay ?? Calendar.minDate;
   }
@@ -101,8 +145,7 @@ extension CreditAccountMethods on CreditAccount {
   ///
   /// Throw state error if no payment is found
   CreditPayment getNextPayment({required CreditSpending from}) {
-    return paymentTransactions
-        .firstWhere((payment) => payment.dateTime.isAfter(from.dateTime.onlyYearMonthDay));
+    return paymentTransactions.firstWhere((payment) => payment.dateTime.isAfter(from.dateTime.onlyYearMonthDay));
   }
 
   /// Return `null` if account has no transaction.
@@ -137,8 +180,7 @@ extension CreditAccountMethods on CreditAccount {
       while (upperGapAtDueDate != null && upperGapAtDueDate
           ? date.isAfter(list[list.length - 1].date.due)
           : startDate.compareTo(date) <= 0) {
-        final endDate =
-            startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
         final previousStatement = list.last.bringToNextStatement;
 

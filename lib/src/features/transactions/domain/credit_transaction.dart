@@ -53,9 +53,15 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
 @immutable
 class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
-  final RegularAccount? transferAccount;
+  RegularAccountDetailsOnly get transferAccount => _transferAccount != null && !isAdjustToAPRChange
+      ? _transferAccount!
+      : RegularAccountDetailsOnly.forAdjustmentCreditPayment();
+
+  final RegularAccountDetailsOnly? _transferAccount;
 
   final bool isFullPayment;
+
+  final bool isAdjustToAPRChange;
 
   /// This value can be negative. Only used to calculate account balance
   final double? adjustment;
@@ -68,10 +74,11 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.amount,
     super.note,
     super.account, {
-    required this.transferAccount,
+    required RegularAccountDetailsOnly? transferAccount,
     required this.isFullPayment,
+    required this.isAdjustToAPRChange,
     required this.adjustment,
-  });
+  }) : _transferAccount = transferAccount;
 }
 
 class CreditCheckpoint extends BaseCreditTransaction {

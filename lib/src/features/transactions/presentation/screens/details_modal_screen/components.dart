@@ -259,7 +259,7 @@ class _AccountCard extends StatelessWidget {
   const _AccountCard({required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
   final bool isEditMode;
   final bool isEdited;
-  final Account account;
+  final BaseAccount account;
   final VoidCallback? onEditModeTap;
 
   @override

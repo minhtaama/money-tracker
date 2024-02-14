@@ -252,6 +252,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required double adjustment,
   }) {
     final creditPaymentDetails = CreditPaymentDetailsDb(
+      isAdjustToAPRChanges: true,
       adjustment: adjustment,
     );
 

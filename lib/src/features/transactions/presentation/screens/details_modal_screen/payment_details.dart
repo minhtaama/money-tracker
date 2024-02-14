@@ -94,9 +94,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
                   _AccountCard(
                     isEditMode: _isEditMode,
                     isEdited: _isFromAccountEdited(stateWatch),
-                    account: stateWatch.fromRegularAccount ??
-                        _transaction.transferAccount ??
-                        RegularAccount.forAdjustmentCreditPayment(),
+                    account: stateWatch.fromRegularAccount ?? _transaction.transferAccount,
                     onEditModeTap: _changeFromAccount,
                   ),
                   _AccountCard(isEditMode: false, account: widget.transaction.account!),

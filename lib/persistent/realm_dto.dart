@@ -191,6 +191,8 @@ class _CreditInstallmentDetailsDb {
 class _CreditPaymentDetailsDb {
   bool isFullPayment = false;
 
+  bool isAdjustToAPRChanges = false;
+
   double adjustment = 0;
 }
 

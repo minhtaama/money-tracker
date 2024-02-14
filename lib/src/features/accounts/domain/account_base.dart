@@ -16,8 +16,18 @@ import 'statement/base_class/statement.dart';
 part 'regular_account.dart';
 part 'credit_account.dart';
 
+abstract class BaseAccount extends BaseModelWithIcon<AccountDb> {
+  const BaseAccount(
+    super._isarObject, {
+    required super.name,
+    required super.iconColor,
+    required super.backgroundColor,
+    required super.iconPath,
+  });
+}
+
 @immutable
-sealed class Account extends BaseModelWithIcon<AccountDb> {
+sealed class Account extends BaseAccount {
   /// Already sorted by transactions dateTime when created
   abstract final List transactionsList;
 
@@ -128,7 +138,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     return null;
   }
 
-  static Account? fromDatabaseWithNoDetails(AccountDb? accountDb) {
+  static BaseAccount? fromDatabaseWithNoDetails(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
@@ -140,16 +150,14 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     };
 
     return switch (accountDb.type) {
-      0 => RegularAccount._(
+      0 => RegularAccountDetailsOnly._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
-          transactionsList: const [],
-          transferTransactionsList: const [],
         ),
-      _ => CreditAccount._(
+      _ => CreditAccountDetailsOnly._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
@@ -159,11 +167,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           apr: accountDb.creditDetails!.apr,
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
-          transactionsList: const [],
-          statementsList: const [],
           statementType: statementType!,
-          earliestStatementDate: null,
-          earliestPayableDate: null,
         ),
     };
   }

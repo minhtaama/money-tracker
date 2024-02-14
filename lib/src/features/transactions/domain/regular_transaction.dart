@@ -60,7 +60,7 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
   final TransactionType type = TransactionType.transfer;
 
   @override
-  final RegularAccount? transferAccount;
+  final RegularAccountDetailsOnly transferAccount;
   final Fee? fee;
 
   const Transfer._(
