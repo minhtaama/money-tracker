@@ -53,11 +53,6 @@ sealed class Account extends BaseAccount {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    final statementType = switch (accountDb.creditDetails!.statementType) {
-      0 => StatementType.withAverageDailyBalance,
-      _ => StatementType.payOnlyInGracePeriod,
-    };
-
     DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
     DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
@@ -89,7 +84,7 @@ sealed class Account extends BaseAccount {
         latestStatementDate: latestStatementDate,
         accountTransactionsList: transactionsList,
         apr: accountDb.creditDetails!.apr,
-        statementType: statementType,
+        statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
       );
     }
 
@@ -105,7 +100,7 @@ sealed class Account extends BaseAccount {
       paymentDueDay: accountDb.creditDetails!.paymentDueDay,
       transactionsList: transactionsList,
       statementsList: statementsList,
-      statementType: statementType,
+      statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
       earliestStatementDate: earliestStatementDate,
       earliestPayableDate: earliestPayableDate,
     );
@@ -138,29 +133,18 @@ sealed class Account extends BaseAccount {
       return null;
     }
 
-    // AccountType.regular
-    if (accountDb.type == 0) {
-      return _regularAccountFromDatabase(accountDb);
-    }
+    final type = AccountType.fromDatabaseValue(accountDb.type);
 
-    // AccountType.credit
-    if (accountDb.type != 0) {
-      return _creditAccountFromDatabase(accountDb);
-    }
-
-    return null;
+    return switch (type) {
+      AccountType.regular => _regularAccountFromDatabase(accountDb),
+      AccountType.credit => _creditAccountFromDatabase(accountDb),
+    };
   }
 
   static AccountInfo? fromDatabaseWithNoDetails(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
-
-    final statementType = switch (accountDb.creditDetails?.statementType) {
-      null => null,
-      0 => StatementType.withAverageDailyBalance,
-      _ => StatementType.payOnlyInGracePeriod,
-    };
 
     return switch (accountDb.type) {
       0 => RegularAccountInfo._(
@@ -180,7 +164,7 @@ sealed class Account extends BaseAccount {
           apr: accountDb.creditDetails!.apr,
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
-          statementType: statementType!,
+          statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
         ),
     };
   }

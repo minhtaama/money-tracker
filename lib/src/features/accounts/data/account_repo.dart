@@ -15,22 +15,22 @@ class AccountRepositoryRealmDb {
   final Realm realm;
   final ProviderRef ref;
 
-  int _accountTypeInDb(AccountType type) => switch (type) {
-        AccountType.regular => 0,
-        AccountType.credit => 1,
-      };
-
-  int _statementTypeInDb(StatementType type) => switch (type) {
-        StatementType.withAverageDailyBalance => 0,
-        StatementType.payOnlyInGracePeriod => 1,
-      };
+  // int _accountTypeInDb(AccountType type) => switch (type) {
+  //       AccountType.regular => 0,
+  //       AccountType.credit => 1,
+  //     };
+  //
+  // int _statementTypeInDb(StatementType type) => switch (type) {
+  //       StatementType.withAverageDailyBalance => 0,
+  //       StatementType.payOnlyInGracePeriod => 1,
+  //     };
 
   RealmResults<AccountDb> _realmResults(AccountType? type) {
     if (type == null) {
       return realm.all<AccountDb>().query('TRUEPREDICATE SORT(order ASC)');
     }
 
-    return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [_accountTypeInDb(type)]);
+    return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [type.databaseValue]);
   }
 
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
@@ -120,7 +120,7 @@ class AccountRepositoryRealmDb {
       creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
@@ -192,7 +192,7 @@ class AccountRepositoryRealmDb {
         ..iconIndex = iconIndex
         ..name = name
         ..colorIndex = colorIndex
-        ..creditDetails!.statementType = _statementTypeInDb(statementType);
+        ..creditDetails!.statementType = statementType.databaseValue;
 
       if (apr != null) {
         accountDb.creditDetails!.apr = apr;

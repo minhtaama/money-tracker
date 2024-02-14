@@ -14,14 +14,9 @@ class Category extends BaseModelWithIcon<CategoryDb> {
       return null;
     }
 
-    final CategoryType type = switch (categoryRealm.type) {
-      0 => CategoryType.expense,
-      _ => CategoryType.income,
-    };
-
     return Category._(
       categoryRealm,
-      type: type,
+      type: CategoryType.fromDatabaseValue(categoryRealm.type),
       name: categoryRealm.name,
       iconColor: AppColors.allColorsUserCanPick[categoryRealm.colorIndex][1],
       backgroundColor: AppColors.allColorsUserCanPick[categoryRealm.colorIndex][0],

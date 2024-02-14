@@ -20,16 +20,6 @@ class TransactionRepositoryRealmDb {
 
   final Realm realm;
 
-  int _transactionTypeInDb(TransactionType type) => switch (type) {
-        TransactionType.expense => 0,
-        TransactionType.income => 1,
-        TransactionType.transfer => 2,
-        TransactionType.creditSpending => 3,
-        TransactionType.creditPayment => 4,
-        TransactionType.creditCheckpoint => 5,
-        TransactionType.installmentToPay => throw StateError('Can not put this type into database'),
-      };
-
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
     return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
@@ -111,7 +101,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
 
     final initialTransaction = TransactionDb(
       ObjectId(),
-      _transactionTypeInDb(TransactionType.income),
+      TransactionType.income.databaseValue,
       today,
       balance,
       account: newAccount,
@@ -130,11 +120,16 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.income), dateTime, amount,
-        note: note,
-        category: category.databaseObject,
-        categoryTag: tag?.databaseObject,
-        account: account.databaseObject);
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      TransactionType.income.databaseValue,
+      dateTime,
+      amount,
+      note: note,
+      category: category.databaseObject,
+      categoryTag: tag?.databaseObject,
+      account: account.databaseObject,
+    );
 
     realm.write(() {
       realm.add(newTransaction);
@@ -150,7 +145,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.expense), dateTime, amount,
+    final newTransaction = TransactionDb(ObjectId(), TransactionType.expense.databaseValue, dateTime, amount,
         note: note,
         category: category.databaseObject,
         categoryTag: tag?.databaseObject,
@@ -176,11 +171,16 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final newTransaction = TransactionDb(ObjectId(), _transactionTypeInDb(TransactionType.transfer), dateTime, amount,
-        note: note,
-        account: account.databaseObject,
-        transferAccount: toAccount.databaseObject,
-        transferFee: transferFee);
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      TransactionType.transfer.databaseValue,
+      dateTime,
+      amount,
+      note: note,
+      account: account.databaseObject,
+      transferAccount: toAccount.databaseObject,
+      transferFee: transferFee,
+    );
 
     realm.write(() {
       realm.add(newTransaction);
@@ -203,12 +203,16 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     );
 
     final newTransaction = TransactionDb(
-        ObjectId(), _transactionTypeInDb(TransactionType.creditSpending), dateTime, amount,
-        note: note,
-        category: category.databaseObject,
-        categoryTag: tag?.databaseObject,
-        account: account.databaseObject,
-        creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null);
+      ObjectId(),
+      TransactionType.creditSpending.databaseValue,
+      dateTime,
+      amount,
+      note: note,
+      category: category.databaseObject,
+      categoryTag: tag?.databaseObject,
+      account: account.databaseObject,
+      creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null,
+    );
 
     realm.write(() {
       realm.add(newTransaction);
@@ -231,7 +235,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
 
     final newTransaction = TransactionDb(
       ObjectId(),
-      _transactionTypeInDb(TransactionType.creditPayment),
+      TransactionType.creditPayment.databaseValue,
       dateTime,
       amount,
       note: note,
@@ -258,7 +262,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
 
     final newTransaction = TransactionDb(
       ObjectId(),
-      _transactionTypeInDb(TransactionType.creditPayment),
+      TransactionType.creditPayment.databaseValue,
       dateTime,
       0,
       account: account,
@@ -277,7 +281,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
   }) {
     final newTransaction = TransactionDb(
       ObjectId(),
-      _transactionTypeInDb(TransactionType.creditCheckpoint),
+      TransactionType.creditCheckpoint.databaseValue,
       dateTime.onlyYearMonthDay,
       amount,
       account: account.databaseObject,

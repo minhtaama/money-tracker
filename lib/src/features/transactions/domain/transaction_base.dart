@@ -42,8 +42,10 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
   );
 
   factory BaseTransaction.fromDatabase(TransactionDb txn) {
-    switch (txn.type) {
-      case 0:
+    TransactionType type = TransactionType.fromDatabaseValue(txn.type);
+
+    switch (type) {
+      case TransactionType.expense:
         return Expense._(
           txn,
           txn.dateTime.toLocal(),
@@ -54,7 +56,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           CategoryTag.fromDatabase(txn.categoryTag),
         );
 
-      case 1:
+      case TransactionType.income:
         return Income._(
           txn,
           txn.dateTime.toLocal(),
@@ -66,7 +68,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           isInitialTransaction: txn.isInitialTransaction,
         );
 
-      case 2:
+      case TransactionType.transfer:
         return Transfer._(
           txn,
           txn.dateTime.toLocal(),
@@ -77,7 +79,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           fee: Fee._fromDatabase(txn),
         );
 
-      case 3:
+      case TransactionType.creditSpending:
         return CreditSpending._(
           txn,
           txn.dateTime.toLocal(),
@@ -91,7 +93,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           paymentAmount: txn.creditInstallmentDetails?.paymentAmount,
         );
 
-      case 4:
+      case TransactionType.creditPayment:
         return CreditPayment._(
           txn,
           txn.dateTime.toLocal(),
@@ -104,7 +106,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           adjustment: txn.creditPaymentDetails!.adjustment,
         );
 
-      default:
+      case TransactionType.creditCheckpoint:
         return CreditCheckpoint._(
           txn,
           txn.dateTime.toLocal(),
@@ -116,6 +118,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
               BaseTransaction.fromDatabase(el) as CreditSpending
           ],
         );
+      case TransactionType.installmentToPay:
+        throw StateError('Can not return from this TransactionType');
     }
   }
 }
