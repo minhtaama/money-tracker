@@ -13,7 +13,7 @@ class RegularAccountInfo extends AccountInfo {
 
   factory RegularAccountInfo.forAdjustmentCreditPayment() => RegularAccountInfo._(
         AccountDb(ObjectId(), 0, '', 0, '', 0),
-        name: 'Adjustment',
+        name: 'Auto-adjustment'.hardcoded,
         iconColor: AppColors.black,
         backgroundColor: AppColors.white,
         iconPath: AppIcons.defaultIcon,

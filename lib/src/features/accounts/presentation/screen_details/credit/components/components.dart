@@ -1,9 +1,10 @@
 part of '../credit_details.dart';
 
 class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({required this.statement});
+  const _SummaryCard({required this.statement, required this.isClosedStatement});
 
   final Statement statement;
+  final bool isClosedStatement;
 
   Widget _buildText(BuildContext context, {String? text, String? richText, int color = 0, bool bold = false}) {
     return Padding(
@@ -98,6 +99,14 @@ class _SummaryCard extends StatelessWidget {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                isClosedStatement
+                    ? IconWithText(
+                        iconPath: AppIcons.done,
+                        iconSize: 30,
+                        header: 'This statement has been closed'.hardcoded,
+                      )
+                    : Gap.noGap,
+                isClosedStatement ? Gap.h16 : Gap.noGap,
                 _buildText(
                   context,
                   text: 'Carrying-over:',
@@ -141,7 +150,7 @@ class _SummaryCard extends StatelessWidget {
                   iconSize: 30,
                   header: 'This statement has checkpoint',
                 ),
-                Gap.divider(context, indent: 0),
+                Gap.h16,
                 _buildText(
                   context,
                   text: 'Spent at checkpoint:',

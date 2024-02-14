@@ -113,6 +113,44 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     _updateBalanceAtDateTime(today, balance);
   }
 
+  /// **Do not call this function in Widgets**
+  ///
+  /// Only to call in [AccountRepositoryRealmDb]
+  void addNewAdjustToAPRChanges({
+    required DateTime dateTime,
+    required AccountDb account,
+    required double adjustment,
+  }) {
+    final creditPaymentDetails = CreditPaymentDetailsDb(
+      isAdjustToAPRChanges: true,
+      adjustment: adjustment,
+    );
+
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      TransactionType.creditPayment.databaseValue,
+      dateTime,
+      0,
+      account: account,
+      transferAccount: null,
+      creditPaymentDetails: creditPaymentDetails,
+    );
+
+    realm.add(newTransaction);
+  }
+
+  /// **Do not call this function in Widgets**
+  ///
+  /// Only to call in [AccountRepositoryRealmDb]
+  void removeEmptyAdjustToAPRChanges() {
+    final list = getTransactions(Calendar.minDate, Calendar.maxDate)
+        .whereType<CreditPayment>()
+        .where((e) => e.isAdjustToAPRChange && e.adjustment == 0)
+        .map((e) => e.databaseObject);
+
+    realm.deleteMany<TransactionDb>(list);
+  }
+
   void writeNewIncome({
     required DateTime dateTime,
     required double amount,
@@ -249,32 +287,6 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       realm.add(newTransaction);
       _updateBalanceAtDateTime(dateTime, -amount);
     });
-  }
-
-  void addNewCreditPaymentAdjustToAPRChanges({
-    required DateTime dateTime,
-    required AccountDb account,
-    required double adjustment,
-  }) {
-    final creditPaymentDetails = CreditPaymentDetailsDb(
-      isAdjustToAPRChanges: true,
-      adjustment: adjustment,
-    );
-
-    final newTransaction = TransactionDb(
-      ObjectId(),
-      TransactionType.creditPayment.databaseValue,
-      dateTime,
-      0,
-      account: account,
-      transferAccount: null,
-      note:
-          'This transaction is auto-created to keep the balance of closed statements in account "${account.name}" stay the same, because the account\'s APR data is changed'
-              .hardcoded,
-      creditPaymentDetails: creditPaymentDetails,
-    );
-
-    realm.add(newTransaction);
   }
 
   void writeNewCreditCheckpoint({

@@ -68,6 +68,8 @@ class AccountRepositoryRealmDb {
     required CreditAccount oldCreditAccount,
     required AccountDb newAccountDb,
   }) {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
+
     final oldBalanceList = oldCreditAccount.closedStatementsList.map((e) => e.balance).toList();
 
     final newCreditAccount = Account.fromDatabase(newAccountDb)! as CreditAccount;
@@ -85,14 +87,16 @@ class AccountRepositoryRealmDb {
           firstPaymentDetailsDb.adjustment += adjustment;
         } catch (_) {
           // Create a new adjustPayment at end date of statement
-          ref.read(transactionRepositoryRealmProvider).addNewCreditPaymentAdjustToAPRChanges(
-                dateTime: newStm.date.start,
-                account: newAccountDb,
-                adjustment: adjustment,
-              );
+          txnRepo.addNewAdjustToAPRChanges(
+            dateTime: newStm.date.start,
+            account: newAccountDb,
+            adjustment: adjustment,
+          );
         }
       }
     }
+
+    txnRepo.removeEmptyAdjustToAPRChanges();
   }
 
   void writeNew(

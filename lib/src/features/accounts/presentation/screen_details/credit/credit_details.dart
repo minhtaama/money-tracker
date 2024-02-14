@@ -143,8 +143,10 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
-                  Gap.divider(context, indent: 24),
-                  _SummaryCard(statement: statement),
+                  _SummaryCard(
+                    statement: statement,
+                    isClosedStatement: widget.creditAccount.closedStatementsList.contains(statement),
+                  ),
                   Gap.h4,
                   Gap.divider(context, indent: 24),
                   _TransactionList(statement: statement),
