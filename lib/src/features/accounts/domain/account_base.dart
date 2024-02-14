@@ -27,12 +27,15 @@ abstract class BaseAccount extends BaseModelWithIcon<AccountDb> {
 }
 
 abstract class AccountInfo extends BaseAccount {
+  final bool isNotExistInDatabase;
+
   const AccountInfo(
     super._isarObject, {
     required super.name,
     required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
+    this.isNotExistInDatabase = false,
   });
 }
 

@@ -37,6 +37,7 @@ class CreditAccountInfo extends AccountInfo implements _ICreditInfo {
     required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
+    super.isNotExistInDatabase,
     required this.creditLimit,
     required this.apr,
     required this.statementDay,

@@ -8,6 +8,7 @@ class RegularAccountInfo extends AccountInfo {
     required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
+    super.isNotExistInDatabase,
   });
 
   factory RegularAccountInfo.forAdjustmentCreditPayment() => RegularAccountInfo._(
@@ -16,6 +17,7 @@ class RegularAccountInfo extends AccountInfo {
         iconColor: AppColors.black,
         backgroundColor: AppColors.white,
         iconPath: AppIcons.defaultIcon,
+        isNotExistInDatabase: true,
       );
 }
 
