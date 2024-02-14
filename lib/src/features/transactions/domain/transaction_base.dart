@@ -51,7 +51,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
+          Account.fromDatabaseInfoOnly(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
         );
@@ -62,7 +62,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
+          Account.fromDatabaseInfoOnly(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
@@ -74,8 +74,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
-          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccountInfo,
+          Account.fromDatabaseInfoOnly(txn.account),
+          transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as RegularAccountInfo,
           fee: Fee._fromDatabase(txn),
         );
 
@@ -85,7 +85,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
+          Account.fromDatabaseInfoOnly(txn.account),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           //payments: payments,
@@ -99,8 +99,8 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
-          transferAccount: Account.fromDatabaseWithNoDetails(txn.transferAccount) as RegularAccountInfo?,
+          Account.fromDatabaseInfoOnly(txn.account),
+          transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as RegularAccountInfo?,
           isFullPayment: txn.creditPaymentDetails!.isFullPayment,
           isAdjustToAPRChange: txn.creditPaymentDetails!.isAdjustToAPRChanges,
           adjustment: txn.creditPaymentDetails!.adjustment,
@@ -112,7 +112,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.dateTime.toLocal(),
           txn.amount,
           txn.note,
-          Account.fromDatabaseWithNoDetails(txn.account),
+          Account.fromDatabaseInfoOnly(txn.account),
           finishedInstallments: [
             for (TransactionDb el in txn.creditCheckpointFinishedInstallments)
               BaseTransaction.fromDatabase(el) as CreditSpending

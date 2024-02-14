@@ -141,20 +141,22 @@ sealed class Account extends BaseAccount {
     };
   }
 
-  static AccountInfo? fromDatabaseWithNoDetails(AccountDb? accountDb) {
+  static AccountInfo? fromDatabaseInfoOnly(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
 
-    return switch (accountDb.type) {
-      0 => RegularAccountInfo._(
+    final type = AccountType.fromDatabaseValue(accountDb.type);
+
+    return switch (type) {
+      AccountType.regular => RegularAccountInfo._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
         ),
-      _ => CreditAccountInfo._(
+      AccountType.credit => CreditAccountInfo._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
