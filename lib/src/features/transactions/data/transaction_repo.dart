@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
@@ -267,6 +268,9 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       0,
       account: account,
       transferAccount: null,
+      note:
+          'This transaction is auto-created to keep the balance of closed statements in account "${account.name}" stay the same, because the account\'s APR data is changed'
+              .hardcoded,
       creditPaymentDetails: creditPaymentDetails,
     );
 

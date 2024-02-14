@@ -45,22 +45,24 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
       ),
       subIcons: widget.screenType == TransactionScreenType.editable
           ? [
-              _EditButton(
-                isEditMode: _isEditMode,
-                onTap: () {
-                  if (_isEditMode) {
-                    if (_submit()) {
-                      setState(() {
-                        _isEditMode = !_isEditMode;
-                      });
-                    }
-                  } else {
-                    setState(() {
-                      _isEditMode = !_isEditMode;
-                    });
-                  }
-                },
-              ),
+              widget.transaction.isAdjustToAPRChange
+                  ? Gap.noGap
+                  : _EditButton(
+                      isEditMode: _isEditMode,
+                      onTap: () {
+                        if (_isEditMode) {
+                          if (_submit()) {
+                            setState(() {
+                              _isEditMode = !_isEditMode;
+                            });
+                          }
+                        } else {
+                          setState(() {
+                            _isEditMode = !_isEditMode;
+                          });
+                        }
+                      },
+                    ),
               _DeleteButton(
                 isEditMode: _isEditMode,
                 isDisable: !_canDelete,
