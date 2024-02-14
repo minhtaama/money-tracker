@@ -1,6 +1,6 @@
 part of 'account_base.dart';
 
-abstract interface class _ICreditDetails {
+abstract interface class _ICreditInfo {
   /// (APR) As in percent.
   final double apr;
 
@@ -10,11 +10,12 @@ abstract interface class _ICreditDetails {
 
   final StatementType statementType;
 
-  _ICreditDetails(
+  _ICreditInfo(
       {required this.apr, required this.statementDay, required this.paymentDueDay, required this.statementType});
 }
 
-class CreditAccountDetailsOnly extends BaseAccount implements _ICreditDetails {
+@immutable
+class CreditAccountInfo extends AccountInfo implements _ICreditInfo {
   final double creditLimit;
 
   /// (APR) As in percent.
@@ -30,7 +31,7 @@ class CreditAccountDetailsOnly extends BaseAccount implements _ICreditDetails {
   @override
   final StatementType statementType;
 
-  const CreditAccountDetailsOnly._(
+  const CreditAccountInfo._(
     super.databaseObject, {
     required super.name,
     required super.iconColor,
@@ -45,7 +46,7 @@ class CreditAccountDetailsOnly extends BaseAccount implements _ICreditDetails {
 }
 
 @immutable
-class CreditAccount extends Account implements _ICreditDetails {
+class CreditAccount extends Account implements _ICreditInfo {
   /// Already sorted by transactions dateTime when created
   @override
   final List<BaseCreditTransaction> transactionsList;

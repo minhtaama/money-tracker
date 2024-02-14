@@ -26,6 +26,16 @@ abstract class BaseAccount extends BaseModelWithIcon<AccountDb> {
   });
 }
 
+abstract class AccountInfo extends BaseAccount {
+  const AccountInfo(
+    super._isarObject, {
+    required super.name,
+    required super.iconColor,
+    required super.backgroundColor,
+    required super.iconPath,
+  });
+}
+
 @immutable
 sealed class Account extends BaseAccount {
   /// Already sorted by transactions dateTime when created
@@ -138,7 +148,7 @@ sealed class Account extends BaseAccount {
     return null;
   }
 
-  static BaseAccount? fromDatabaseWithNoDetails(AccountDb? accountDb) {
+  static AccountInfo? fromDatabaseWithNoDetails(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
@@ -150,14 +160,14 @@ sealed class Account extends BaseAccount {
     };
 
     return switch (accountDb.type) {
-      0 => RegularAccountDetailsOnly._(
+      0 => RegularAccountInfo._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
         ),
-      _ => CreditAccountDetailsOnly._(
+      _ => CreditAccountInfo._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],

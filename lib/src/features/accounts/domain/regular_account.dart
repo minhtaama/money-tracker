@@ -1,7 +1,8 @@
 part of 'account_base.dart';
 
-class RegularAccountDetailsOnly extends BaseAccount {
-  const RegularAccountDetailsOnly._(
+@immutable
+class RegularAccountInfo extends AccountInfo {
+  const RegularAccountInfo._(
     super.databaseObject, {
     required super.name,
     required super.iconColor,
@@ -9,7 +10,7 @@ class RegularAccountDetailsOnly extends BaseAccount {
     required super.iconPath,
   });
 
-  factory RegularAccountDetailsOnly.forAdjustmentCreditPayment() => RegularAccountDetailsOnly._(
+  factory RegularAccountInfo.forAdjustmentCreditPayment() => RegularAccountInfo._(
         AccountDb(ObjectId(), 0, '', 0, '', 0),
         name: 'Adjustment',
         iconColor: AppColors.black,
