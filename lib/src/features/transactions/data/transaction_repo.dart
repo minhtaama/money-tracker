@@ -246,6 +246,30 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     });
   }
 
+  void writeNewCreditPaymentAdjustToAPRChanges({
+    required DateTime dateTime,
+    required AccountDb account,
+    required double adjustment,
+  }) {
+    final creditPaymentDetails = CreditPaymentDetailsDb(
+      adjustment: adjustment,
+    );
+
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      _transactionTypeInDb(TransactionType.creditPayment),
+      dateTime,
+      0,
+      account: account,
+      transferAccount: null,
+      creditPaymentDetails: creditPaymentDetails,
+    );
+
+    realm.write(() {
+      realm.add(newTransaction);
+    });
+  }
+
   void writeNewCreditCheckpoint({
     required DateTime dateTime,
     required double amount,

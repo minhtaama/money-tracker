@@ -85,18 +85,11 @@ class AccountRepositoryRealmDb {
           firstPaymentDetailsDb.adjustment += adjustment;
         } catch (_) {
           // Create a new adjustPayment at end date of statement
-          final adjustPayment = TransactionDb(
-            ObjectId(),
-            4,
-            newStm.date.start,
-            0,
-            note: 'Adjust payment'.hardcoded,
-            account: newAccountDb,
-            transferAccount: null,
-            creditPaymentDetails: CreditPaymentDetailsDb(adjustment: adjustment),
-          );
-
-          realm.add(adjustPayment);
+          ref.read(transactionRepositoryRealmProvider).writeNewCreditPaymentAdjustToAPRChanges(
+                dateTime: newStm.date.start,
+                account: newAccountDb,
+                adjustment: adjustment,
+              );
         }
       }
     }
@@ -124,21 +117,17 @@ class AccountRepositoryRealmDb {
         StatementType.payOnlyInGracePeriod => 1,
       };
 
-      creditDetailsDb =
-          CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
+      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(
-        ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref
-            .read(transactionRepositoryRealmProvider)
-            .writeInitialBalance(balance: balance, newAccount: newAccount);
+        ref.read(transactionRepositoryRealmProvider).writeInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -155,8 +144,7 @@ class AccountRepositoryRealmDb {
     final accountDb = currentAccount.databaseObject;
 
     // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction =
-        accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
 
     if (initialTransaction != null) {
       realm.write(() {
