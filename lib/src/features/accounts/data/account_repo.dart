@@ -182,6 +182,7 @@ class AccountRepositoryRealmDb {
     required int colorIndex,
     required double? apr,
     required StatementType statementType,
+    required double? creditLimit,
   }) async {
     // Update current account value
     final accountDb = currentAccount.databaseObject;
@@ -193,6 +194,10 @@ class AccountRepositoryRealmDb {
         ..name = name
         ..colorIndex = colorIndex
         ..creditDetails!.statementType = statementType.databaseValue;
+
+      if (creditLimit != null) {
+        accountDb.creditDetails!.creditBalance = creditLimit;
+      }
 
       if (apr != null) {
         accountDb.creditDetails!.apr = apr;

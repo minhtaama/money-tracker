@@ -20,6 +20,7 @@ import '../../../../../common_widgets/help_button.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../../utils/enums.dart';
 import '../../../../calculator_input/application/calculator_service.dart';
+import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../domain/account_base.dart';
 
 class EditCreditAccountModalScreen extends ConsumerStatefulWidget {
@@ -36,7 +37,10 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
   late int newIconIndex;
   late int newColorIndex;
 
+  final _installmentPaymentController = TextEditingController();
+
   late StatementType statementType = widget.currentCreditAccount.statementType;
+  String calculatorOutput = '';
   String apr = '';
 
   @override
@@ -99,8 +103,24 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Gap.h8,
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: InlineTextFormField(
+                  prefixText: 'Credit Limit:',
+                  suffixText: context.appSettings.currency.code,
+                  widget: CalculatorInput(
+                      fontSize: 18,
+                      isDense: true,
+                      textAlign: TextAlign.end,
+                      formattedResultOutput: (value) => calculatorOutput = value,
+                      focusColor: context.appTheme.secondary1,
+                      hintText: CalService.formatNumberInGroup(widget.currentCreditAccount.creditLimit.toString())),
+                ),
+              ),
+              Gap.h12,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: InlineTextFormField(
                   prefixText: 'Account APR:',
                   width: 60,
@@ -118,6 +138,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                   onChanged: (value) => apr = value,
                 ),
               ),
+              Gap.h8,
               Gap.divider(context, indent: 8),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 8.0),
@@ -186,6 +207,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                   colorIndex: newColorIndex,
                   apr: apr == '' ? null : double.tryParse(apr),
                   statementType: statementType,
+                  creditLimit: CalService.formatToDouble(calculatorOutput),
                 );
 
                 context.pop();
