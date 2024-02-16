@@ -209,6 +209,98 @@ class LineChartServices {
     );
   }
 
+  CLCData getRegularCLCData(RegularAccount regularAccount, DateTime displayDate) {
+    final dayBeginOfMonth = DateTime(displayDate.year, displayDate.month);
+    final dayEndOfMonth = DateTime(displayDate.year, displayDate.month + 1, 0, 23, 59, 59);
+    final today = DateTime.now();
+
+    final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
+
+    Map<int, double> result = {for (int day in days) day: 0};
+
+    void updateAmount(int day, BaseTransaction txn) {
+      result.updateAll((key, value) {
+        if (key >= day) {
+          if (txn is CreditPayment || txn is Expense) {
+            return value -= txn.amount;
+          }
+
+          return value += txn.amount;
+        }
+
+        return value;
+      });
+    }
+
+    final txns = transactionRepo
+        .getTransactions(dayBeginOfMonth, dayEndOfMonth)
+        .where((txn) => txn.account?.databaseObject == regularAccount.databaseObject)
+        .toList();
+
+    if (txns.isNotEmpty) {
+      for (int i = 0; i <= txns.length - 1; i++) {
+        final txn = txns[i];
+        final tDay = txn.dateTime.day;
+
+        if (tDay == days[0]) {
+          updateAmount(days[0], txn);
+        }
+
+        for (int j = 1; j <= days.length - 1; j++) {
+          if (tDay > days[j - 1] && tDay <= days[j]) {
+            updateAmount(days[j], txn);
+            break;
+          }
+        }
+      }
+    }
+
+    double max = double.negativeInfinity;
+    double min = 0;
+
+    for (var entry in result.entries) {
+      if (entry.value > max) {
+        max = entry.value;
+      }
+      if (entry.value < min) {
+        min = entry.value;
+      }
+    }
+
+    final minAbs = min.abs();
+
+    final maxFromMin = max == min
+        ? 0
+        : max < 0 && min < 0
+            ? min.abs() - max.abs()
+            : max + minAbs;
+
+    double getY(double amount) {
+      if (maxFromMin == 0) {
+        return 0.0;
+      }
+      if (amount == 0) {
+        return minAbs / maxFromMin;
+      }
+      if (amount > 0) {
+        return (amount + minAbs) / maxFromMin;
+      } else {
+        return (minAbs - amount.abs()) / maxFromMin;
+      }
+    }
+
+    return CLCData(
+      maxAmount: max,
+      minAmount: min,
+      spots: List<CLCSpot>.from(
+        result.entries.map(
+          (e) => CLCSpot(e.key.toDouble(), getY(e.value),
+              amount: e.value, isToday: e.key == today.day && today.isSameMonthAs(displayDate)),
+        ),
+      ),
+    );
+  }
+
   CLCData getCreditCLCData(CreditAccount account, DateTime displayStatementDate) {
     final today = DateTime.now().onlyYearMonthDay;
     final creditLimit = account.creditLimit;
@@ -232,7 +324,9 @@ class LineChartServices {
       amountToPayAtEndDate = statement.endPoint.spentToPay + statement.carry.interest;
       spentInGracePeriod = statement.spent.inGracePeriod;
       balanceRemaining = statement.balance;
-      txns = statement.transactions.inBillingCycle.followedBy(statement.transactions.inGracePeriod).toList();
+      txns = statement.transactions.inBillingCycle
+          .followedBy(statement.transactions.inGracePeriod)
+          .toList();
       startDate = statement.date.start;
       previousDueDate = statement.date.previousDue;
       statementDate = statement.date.statement;
@@ -244,7 +338,8 @@ class LineChartServices {
       spentInGracePeriod = 0;
       balanceRemaining = 0;
       txns = [];
-      startDate = DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
+      startDate =
+          DateTime(displayStatementDate.year, displayStatementDate.month - 1, account.statementDay);
       previousDueDate = Calendar.minDate;
       statementDate = startDate.copyWith(month: startDate.month + 1);
       dueDate = account.statementDay >= account.paymentDueDay
@@ -255,9 +350,12 @@ class LineChartServices {
     // Credit amount after full payment
     // (creditLimit - amountAtEndDate) is the amount of total spent (include installment)
     // then add the amount must pay: (amountToPayAtEndDate)
-    final creditAfterFullPayment = creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
+    final creditAfterFullPayment =
+        creditLimit - amountAtEndDate - spentInGracePeriod + amountToPayAtEndDate;
 
-    days = [for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day];
+    days = [
+      for (DateTime day = startDate; !day.isAfter(dueDate); day = day.copyWith(day: day.day + 1)) day
+    ];
 
     Map<DateTime, double> result = {for (DateTime day in days) day: creditLimit - amountAtStartDate};
 

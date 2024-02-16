@@ -87,12 +87,7 @@ class _AccountTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomInkWell(
-      onTap: () {
-        if (model is CreditAccount) {
-          context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString);
-        }
-        // TODO: Add regular account screen
-      },
+      onTap: () => context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
       child: CardItem(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -136,7 +131,8 @@ class _AccountTile extends StatelessWidget {
                             ),
                             child: Text(
                               'Credit',
-                              style: kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
+                              style:
+                                  kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
                             ),
                           )
                         : Gap.noGap,
@@ -153,7 +149,8 @@ class _AccountTile extends StatelessWidget {
                   children: [
                     Text(
                       context.appSettings.currency.code,
-                      style: kHeader4TextStyle.copyWith(color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
+                      style: kHeader4TextStyle.copyWith(
+                          color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
                     ),
                     Gap.w8,
                     Expanded(
@@ -216,7 +213,8 @@ class _CreditDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Transform.translate(
-                offset: const Offset(-2, 0), child: SvgIcon(AppIcons.budgets, color: model.iconColor, size: 20)),
+                offset: const Offset(-2, 0),
+                child: SvgIcon(AppIcons.budgets, color: model.iconColor, size: 20)),
             Text(
               ': Day ${_dateBuilder(model.statementDay)}',
               style: kHeader3TextStyle.copyWith(color: model.iconColor, fontSize: 13),

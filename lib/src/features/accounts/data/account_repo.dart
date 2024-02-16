@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../persistent/realm_dto.dart';
@@ -14,16 +13,6 @@ class AccountRepositoryRealmDb {
 
   final Realm realm;
   final ProviderRef ref;
-
-  // int _accountTypeInDb(AccountType type) => switch (type) {
-  //       AccountType.regular => 0,
-  //       AccountType.credit => 1,
-  //     };
-  //
-  // int _statementTypeInDb(StatementType type) => switch (type) {
-  //       StatementType.withAverageDailyBalance => 0,
-  //       StatementType.payOnlyInGracePeriod => 1,
-  //     };
 
   RealmResults<AccountDb> _realmResults(AccountType? type) {
     if (type == null) {
@@ -121,17 +110,21 @@ class AccountRepositoryRealmDb {
         StatementType.payOnlyInGracePeriod => 1,
       };
 
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
+      creditDetailsDb =
+          CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(
+        ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: balance, newAccount: newAccount);
+        ref
+            .read(transactionRepositoryRealmProvider)
+            .addInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -142,40 +135,17 @@ class AccountRepositoryRealmDb {
     required String iconCategory,
     required int iconIndex,
     required int colorIndex,
-    required double initialBalance,
   }) async {
     // Update current account value
     final accountDb = currentAccount.databaseObject;
 
-    // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
-
-    if (initialTransaction != null) {
-      realm.write(() {
-        accountDb
-          ..iconCategory = iconCategory
-          ..iconIndex = iconIndex
-          ..name = name
-          ..colorIndex = colorIndex;
-
-        // If the initial transaction is found
-        initialTransaction!.amount = initialBalance;
-      });
-    } else {
-      // In case user delete the initial transaction of the current editing account
-      initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), initialBalance,
-          account: currentAccount.databaseObject, isInitialTransaction: true);
-
-      realm.write(() {
-        accountDb
-          ..iconCategory = iconCategory
-          ..iconIndex = iconIndex
-          ..name = name
-          ..colorIndex = colorIndex;
-
-        realm.add(initialTransaction!);
-      });
-    }
+    realm.write(() {
+      accountDb
+        ..iconCategory = iconCategory
+        ..iconIndex = iconIndex
+        ..name = name
+        ..colorIndex = colorIndex;
+    });
   }
 
   void editCreditAccount(

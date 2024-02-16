@@ -2,13 +2,11 @@ import 'dart:math' as math;
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
-import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/credit/components/extended_tab.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -61,14 +59,16 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
     }
   }
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate =
+      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
   late int _currentPageIndex = _initialPageIndex;
 
   void _onPageChange(int value) {
     _currentPageIndex = value;
-    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate =
+        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -118,17 +118,22 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
       body: CustomTabPageWithPageView(
         controller: _controller,
         smallTabBar: SmallTabBar(
-            child: PageHeading(
-                title: widget.creditAccount.name, secondaryTitle: 'Credit account'.hardcoded, hasBackButton: true)),
+          child: PageHeading(
+              title: widget.creditAccount.name,
+              secondaryTitle: 'Credit account'.hardcoded,
+              hasBackButton: true),
+        ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedCreditAccountTab(account: widget.creditAccount, displayDate: _displayStatementDate),
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedCreditAccountTab(
+              account: widget.creditAccount, displayDate: _displayStatementDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
         toolBarHeight: 50,
-        toolBar: StatementSelector(
+        toolBar: _StatementSelector(
           isToday: _currentPageIndex == _initialPageIndex,
           dateDisplay: _displayStatementDate.getFormattedDate(format: DateTimeFormat.ddmmyyyy),
           onTapLeft: _previousPage,
@@ -138,9 +143,10 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           },
         ),
         itemBuilder: (context, ref, pageIndex) {
-          final currentDateTime =
-              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          final currentDateTime = DateTime(
+              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement =
+              widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
                   _SummaryCard(
@@ -165,9 +171,8 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
   }
 }
 
-class StatementSelector extends StatelessWidget {
-  const StatementSelector({
-    super.key,
+class _StatementSelector extends StatelessWidget {
+  const _StatementSelector({
     required this.isToday,
     required this.dateDisplay,
     this.onTapLeft,

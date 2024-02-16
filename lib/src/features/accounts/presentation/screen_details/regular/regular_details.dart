@@ -1,52 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
-import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/components/extended_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
-import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../../../common_widgets/icon_with_text.dart';
-import '../../../common_widgets/rounded_icon_button.dart';
-import '../../../theme_and_ui/icons.dart';
-import '../../../utils/constants.dart';
-import '../../../utils/enums.dart';
-import '../../transactions/domain/transaction_base.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
+import '../../../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
+import '../../../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../../../common_widgets/icon_with_text.dart';
+import '../../../../../common_widgets/page_heading.dart';
+import '../../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../../theme_and_ui/colors.dart';
+import '../../../../../theme_and_ui/icons.dart';
+import '../../../../../utils/constants.dart';
+import '../../../../../utils/enums.dart';
+import '../../../../transactions/domain/transaction_base.dart';
+
+class RegularScreenDetails extends ConsumerStatefulWidget {
+  const RegularScreenDetails({super.key, required this.regularAccount});
+
+  final RegularAccount regularAccount;
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<RegularScreenDetails> createState() => _RegularScreenDetailsState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
   late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
-  late final persistentController = ref.read(persistentControllerProvider.notifier);
 
   late final PageController _pageController = PageController(initialPage: _initialPageIndex);
-  late final PageController _carouselController =
-      PageController(initialPage: _initialPageIndex, viewportFraction: kMoneyCarouselViewFraction);
 
   late final DateTime _today = DateTime.now().onlyYearMonth;
   late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
 
-  //late int _currentPageIndex = _initialPageIndex;
   late DateTime _currentDisplayDate = _today;
 
-  // TODO: filter
-  // DateTime? _minDate;
-  //
-  // DateTime? _maxDate;
-
   void _onPageChange(int value) {
-    _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
     setState(() {
       _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
     });
@@ -54,17 +50,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _previousPage() {
     _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
-    _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
   }
 
   void _nextPage() {
     _pageController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
-    _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
   }
 
   void _animatedToPage(int page) {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-    _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
   }
 
   List<Widget> _buildTransactionWidgetList(
@@ -93,13 +86,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (dayCards.isEmpty) {
       return [
         Gap.h16,
-        IconWithText(
-          header:
-              'You don\'t have any transactions in ${dayBeginOfMonth.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false, hasYear: false)}.\nCreate a new one by tapping \'+\' button'
-                  .hardcoded,
-          headerSize: 14,
-          iconPath: AppIcons.budgets,
-          forceIconOnTop: true,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: IconWithText(
+            header:
+                'This account does not have any transactions in ${dayBeginOfMonth.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false, hasYear: false)}. Create a new one by tapping \'+\''
+                    .hardcoded,
+            headerSize: 14,
+            iconPath: AppIcons.budgets,
+            forceIconOnTop: true,
+          ),
         ),
         Gap.h48,
       ];
@@ -110,63 +106,83 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool showTotalBalance = context.appPersistentValues.showAmount;
-
-    return CustomTabPageWithPageView(
-      controller: _pageController,
-      smallTabBar: SmallTabBar(
-        child: SmallHomeTab(
-          secondaryTitle:
-              _currentDisplayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
-          showNumber: showTotalBalance,
-          onEyeTap: () {
-            setState(() => showTotalBalance = !showTotalBalance);
-            persistentController.set(showAmount: showTotalBalance);
-          },
-        ),
+    return Scaffold(
+      backgroundColor: context.appTheme.background1,
+      floatingActionButton: CustomFloatingActionButton(
+        roundedButtonItems: [
+          FABItem(
+            icon: AppIcons.receiptDollar,
+            label: 'Income'.hardcoded,
+            color: context.appTheme.onNegative,
+            backgroundColor: context.appTheme.negative,
+            onTap: () => context.push(RoutePath.addIncome),
+          ),
+          FABItem(
+            icon: AppIcons.statementCheckpoint,
+            label: 'Transfer'.hardcoded,
+            color: context.appTheme.onBackground,
+            backgroundColor: AppColors.grey(context),
+            onTap: () => context.push(RoutePath.addTransfer),
+          ),
+          FABItem(
+            icon: AppIcons.handCoin,
+            label: 'Expense'.hardcoded,
+            color: context.appTheme.onPositive,
+            backgroundColor: context.appTheme.positive,
+            onTap: () => context.push(RoutePath.addExpense),
+          ),
+        ],
       ),
-      extendedTabBar: ExtendedTabBar(
-        child: ExtendedHomeTab(
-          carouselController: _carouselController,
-          initialPageIndex: _initialPageIndex,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: CustomTabPageWithPageView(
+        controller: _pageController,
+        smallTabBar: SmallTabBar(
+          child: PageHeading(
+              title: widget.regularAccount.name,
+              secondaryTitle: 'Regular account'.hardcoded,
+              hasBackButton: true),
+        ),
+        extendedTabBar: ExtendedTabBar(
+          backgroundColor:
+              widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedRegularAccountTab(
+              account: widget.regularAccount, displayDate: _currentDisplayDate),
+        ),
+        onDragLeft: _previousPage,
+        onDragRight: _nextPage,
+        onPageChanged: _onPageChange,
+        toolBar: _DateSelector(
           displayDate: _currentDisplayDate,
-          showNumber: showTotalBalance,
-          onEyeTap: () {
-            setState(() => showTotalBalance = !showTotalBalance);
-            persistentController.set(showAmount: showTotalBalance);
-          },
+          onTapLeft: _previousPage,
+          onTapRight: _nextPage,
+          onDateTap: () => _animatedToPage(_initialPageIndex),
         ),
+        itemBuilder: (context, ref, pageIndex) {
+          DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
+          DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
+
+          List<BaseTransaction> transactionList = transactionRepository
+              .getTransactions(dayBeginOfMonth, dayEndOfMonth)
+              .where((txn) => txn.account?.databaseObject == widget.regularAccount.databaseObject)
+              .toList();
+
+          ref.listen(transactionsChangesStreamProvider, (_, __) {
+            transactionList = transactionRepository
+                .getTransactions(dayBeginOfMonth, dayEndOfMonth)
+                .where((txn) => txn.account?.databaseObject == widget.regularAccount.databaseObject)
+                .toList();
+            setState(() {});
+          });
+
+          return _buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth);
+        },
       ),
-      onDragLeft: _previousPage,
-      onDragRight: _nextPage,
-      onPageChanged: _onPageChange,
-      toolBar: _DateSelector(
-        displayDate: _currentDisplayDate,
-        onTapLeft: _previousPage,
-        onTapRight: _nextPage,
-        onDateTap: () => _animatedToPage(_initialPageIndex),
-      ),
-      itemBuilder: (context, ref, pageIndex) {
-        DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
-        DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
-
-        List<BaseTransaction> transactionList =
-            transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
-
-        ref.listen(transactionsChangesStreamProvider, (_, __) {
-          transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
-          setState(() {});
-        });
-
-        return _buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth);
-      },
     );
   }
 }
 
 class _DateSelector extends StatelessWidget {
   const _DateSelector({
-    super.key,
     required this.displayDate,
     this.onTapLeft,
     this.onTapRight,

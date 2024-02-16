@@ -44,7 +44,9 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
+      other is CreditSpending &&
+          runtimeType == other.runtimeType &&
+          databaseObject.id == other.databaseObject.id;
 
   @override
   int get hashCode => databaseObject.id.hashCode;
@@ -72,7 +74,7 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
   /// This value can be negative. Only used to calculate account balance
   final double adjustment;
 
-  double get afterAdjustedAmount => amount + (adjustment ?? 0);
+  double get afterAdjustedAmount => amount + adjustment;
 
   const CreditPayment._(
     super._databaseObject,

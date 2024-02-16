@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import '../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../charts_and_carousel/presentation/money_carousel.dart';
-import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
 class ExtendedHomeTab extends ConsumerStatefulWidget {
@@ -35,9 +34,6 @@ class ExtendedHomeTab extends ConsumerStatefulWidget {
 }
 
 class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
-  late final _chartServicesRead = ref.read(customLineChartServicesProvider);
-  final ScrollController _controller = ScrollController();
-
   LineChartDataType _type = LineChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {
@@ -116,17 +112,10 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    final extraLineText =
+        'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
-
-    Color lerpWithBg(Color color) {
-      if (context.appTheme.isDarkTheme) {
-        return Color.lerp(color, context.appTheme.background2, 0.5)!;
-      } else {
-        return Color.lerp(color, context.appTheme.secondary1, 0.75)!;
-      }
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,7 +157,8 @@ class _WelcomeText extends StatelessWidget {
     return Text(
       'Money Tracker'.hardcoded,
       style: kHeader2TextStyle.copyWith(
-        color: context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
+        color:
+            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
         fontSize: 15,
       ),
     );

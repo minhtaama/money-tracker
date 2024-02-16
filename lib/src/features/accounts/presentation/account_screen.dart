@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/regular_details.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../theme_and_ui/icons.dart';
@@ -33,7 +34,7 @@ class AccountScreen extends ConsumerWidget {
 
       return switch (account) {
         CreditAccount() => CreditScreenDetails(creditAccount: account as CreditAccount),
-        RegularAccount() => const Placeholder(),
+        RegularAccount() => RegularScreenDetails(regularAccount: account as RegularAccount),
       };
     } catch (e) {
       return IconWithText(
