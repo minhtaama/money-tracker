@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
-import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/credit/credit_details.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
@@ -186,12 +184,13 @@ final goRouter = GoRouter(
       pageBuilder: (context, state) {
         final String objectIdHexString;
         final TransactionScreenType screenType;
-        if (state.extra is List) {
-          objectIdHexString = (state.extra as List<dynamic>)[0] as String;
-          screenType = (state.extra as List<dynamic>)[1] as TransactionScreenType;
-        } else {
+
+        if (state.extra is String) {
           objectIdHexString = state.extra as String;
           screenType = TransactionScreenType.editable;
+        } else {
+          objectIdHexString = (state.extra as ({String string, TransactionScreenType type})).string;
+          screenType = (state.extra as ({String string, TransactionScreenType type})).type;
         }
 
         return showModalBottomSheetPage(

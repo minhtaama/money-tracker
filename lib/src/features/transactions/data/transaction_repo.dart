@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
@@ -113,7 +114,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       ObjectId(),
       TransactionType.income.databaseValue,
       today,
-      balance,
+      balance.roundTo2DP(),
       account: newAccount,
       isInitialTransaction: true,
     ); // transaction type 1 == TransactionType.income
@@ -172,7 +173,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       ObjectId(),
       TransactionType.income.databaseValue,
       dateTime,
-      amount,
+      amount.roundTo2DP(),
       note: note,
       category: category.databaseObject,
       categoryTag: tag?.databaseObject,
@@ -181,7 +182,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
 
     realm.write(() {
       realm.add(newTransaction);
-      _updateBalanceAtDateTime(dateTime, amount);
+      _updateBalanceAtDateTime(dateTime, amount.roundTo2DP());
     });
   }
 
@@ -193,15 +194,20 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required RegularAccount account,
     required String? note,
   }) {
-    final newTransaction = TransactionDb(ObjectId(), TransactionType.expense.databaseValue, dateTime, amount,
-        note: note,
-        category: category.databaseObject,
-        categoryTag: tag?.databaseObject,
-        account: account.databaseObject);
+    final newTransaction = TransactionDb(
+      ObjectId(),
+      TransactionType.expense.databaseValue,
+      dateTime,
+      amount.roundTo2DP(),
+      note: note,
+      category: category.databaseObject,
+      categoryTag: tag?.databaseObject,
+      account: account.databaseObject,
+    );
 
     realm.write(() {
       realm.add(newTransaction);
-      _updateBalanceAtDateTime(dateTime, -amount);
+      _updateBalanceAtDateTime(dateTime, -amount.roundTo2DP());
     });
   }
 
@@ -223,7 +229,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       ObjectId(),
       TransactionType.transfer.databaseValue,
       dateTime,
-      amount,
+      amount.roundTo2DP(),
       note: note,
       account: account.databaseObject,
       transferAccount: toAccount.databaseObject,
@@ -247,14 +253,14 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
   }) {
     final creditInstallmentDb = CreditInstallmentDetailsDb(
       monthsToPay: monthsToPay,
-      paymentAmount: paymentAmount,
+      paymentAmount: paymentAmount?.roundTo2DP(),
     );
 
     final newTransaction = TransactionDb(
       ObjectId(),
       TransactionType.creditSpending.databaseValue,
       dateTime,
-      amount,
+      amount.roundTo2DP(),
       note: note,
       category: category.databaseObject,
       categoryTag: tag?.databaseObject,
@@ -285,7 +291,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       ObjectId(),
       TransactionType.creditPayment.databaseValue,
       dateTime,
-      amount,
+      amount.roundTo2DP(),
       note: note,
       account: account.databaseObject,
       transferAccount: fromAccount.databaseObject,
@@ -294,7 +300,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
 
     realm.write(() {
       realm.add(newTransaction);
-      _updateBalanceAtDateTime(dateTime, -amount);
+      _updateBalanceAtDateTime(dateTime, -amount.roundTo2DP());
     });
   }
 
@@ -308,7 +314,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       ObjectId(),
       TransactionType.creditCheckpoint.databaseValue,
       dateTime.onlyYearMonthDay,
-      amount,
+      amount.roundTo2DP(),
       account: account.databaseObject,
       creditCheckpointFinishedInstallments: finishedInstallments.map((txn) => txn.databaseObject),
     );
@@ -343,14 +349,16 @@ extension EditTransaction on TransactionRepositoryRealmDb {
 
       if (state.amount != null) {
         if (transaction.type == TransactionType.income) {
-          _updateBalanceAtDateTime(state.dateTime ?? transaction.dateTime, state.amount! - transaction.amount);
+          _updateBalanceAtDateTime(
+              state.dateTime ?? transaction.dateTime, state.amount!.roundTo2DP() - transaction.amount);
         }
 
         if (transaction.type == TransactionType.expense) {
-          _updateBalanceAtDateTime(state.dateTime ?? transaction.dateTime, -(state.amount! - transaction.amount));
+          _updateBalanceAtDateTime(
+              state.dateTime ?? transaction.dateTime, -(state.amount!.roundTo2DP() - transaction.amount));
         }
 
-        txnDb.amount = state.amount!;
+        txnDb.amount = state.amount!.roundTo2DP();
       }
 
       if (state.category != null) {
@@ -393,11 +401,11 @@ extension EditTransaction on TransactionRepositoryRealmDb {
       if (state.amount != null) {
         // Modify the adjustment amount of next payment base on amount changes of this spending
         try {
-          final nextPaymentDb = (Account.fromDatabase(transaction.account!.databaseObject) as CreditAccount)
+          final nextPaymentDb = (Account.fromDatabase(transaction.account.databaseObject) as CreditAccount)
               .getNextPayment(from: transaction)
               .databaseObject;
 
-          final different = state.amount! - transaction.amount;
+          final different = state.amount!.roundTo2DP() - transaction.amount;
 
           if (nextPaymentDb.creditPaymentDetails != null) {
             nextPaymentDb.creditPaymentDetails!.adjustment += different;
@@ -406,7 +414,7 @@ extension EditTransaction on TransactionRepositoryRealmDb {
           }
         } catch (_) {} // Error means no payment after this spending
 
-        txnDb.amount = state.amount!;
+        txnDb.amount = state.amount!.roundTo2DP();
       }
 
       if (state.category != null) {
@@ -428,7 +436,7 @@ extension EditTransaction on TransactionRepositoryRealmDb {
       if (state.hasInstallment == null || state.hasInstallment!) {
         txnDb.creditInstallmentDetails = CreditInstallmentDetailsDb(
           monthsToPay: state.installmentPeriod ?? transaction.monthsToPay,
-          paymentAmount: state.installmentAmount ?? transaction.paymentAmount,
+          paymentAmount: state.installmentAmount?.roundTo2DP() ?? transaction.paymentAmount,
         );
       } else if (!state.hasInstallment!) {
         txnDb.creditInstallmentDetails = null;

@@ -330,8 +330,13 @@ class _Transaction extends StatelessWidget {
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
         onTap: transaction != null
-            ? () => context.push(RoutePath.transaction,
-                extra: [transaction!.databaseObject.id.hexString, TransactionScreenType.uneditable])
+            ? () => context.push(
+                  RoutePath.transaction,
+                  extra: (
+                    string: transaction!.databaseObject.id.hexString,
+                    type: TransactionScreenType.uneditable,
+                  ),
+                )
             : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
@@ -385,8 +390,13 @@ class _InstallmentToPayTransaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction,
-            extra: [transaction.databaseObject.id.hexString, TransactionScreenType.installmentToPay]),
+        onTap: () => context.push(
+          RoutePath.transaction,
+          extra: (
+            string: transaction.databaseObject.id.hexString,
+            type: TransactionScreenType.installmentToPay,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           child: Row(

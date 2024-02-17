@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -45,8 +43,8 @@ class DeletedAccount extends AccountInfo {
       : super(
           AccountDb(ObjectId(), 0, '', 0, '', 0),
           name: 'Deleted account'.hardcoded,
-          iconColor: AppColors.black,
-          backgroundColor: AppColors.white,
+          iconColor: AppColors.white,
+          backgroundColor: AppColors.greyConst,
           iconPath: AppIcons.defaultIcon,
           isNotExistInDatabase: true,
         );

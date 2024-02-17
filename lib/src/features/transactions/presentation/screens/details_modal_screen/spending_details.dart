@@ -19,7 +19,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
   late CreditSpending _transaction = widget.transaction;
 
   late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
 

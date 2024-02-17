@@ -18,6 +18,7 @@ import 'package:money_tracker_app/src/utils/extensions/string_double_extension.d
 import '../../../../../common_widgets/custom_radio.dart';
 import '../../../../../common_widgets/help_button.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
+import '../../../../../routing/app_router.dart';
 import '../../../../../utils/enums.dart';
 import '../../../../calculator_input/application/calculator_service.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
@@ -180,12 +181,22 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               onTap: () {
                 showConfirmModalBottomSheet(
                   context: context,
-                  label: 'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?',
+                  label: 'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?'
+                      .hardcoded,
+                  subLabel: '1 more confirmation to delete this account'.hardcoded,
                   onConfirm: () {
-                    //TODO: HERE
-                    // final categoryRepository = ref.read(categoryRepositoryRealmProvider);
-                    // categoryRepository.delete(widget.currentCreditAccount);
-                    context.pop();
+                    showConfirmModalBottomSheet(
+                      context: context,
+                      onlyIcon: true,
+                      label: 'Are you sure? All transactions (except payments to this account) will be deleted, too.'
+                          .hardcoded,
+                      subLabel: 'Last warning. The account will be deleted after this confirmation.'.hardcoded,
+                      onConfirm: () async {
+                        context.go(RoutePath.accounts);
+                        final accountRepo = ref.read(accountRepositoryProvider);
+                        await Future.delayed(k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
+                      },
+                    );
                   },
                 );
               },
@@ -196,7 +207,6 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               label: 'Done',
               backgroundColor: context.appTheme.accent1,
               onTap: () {
-                //TODO: Here
                 final accountRepo = ref.read(accountRepositoryProvider);
 
                 accountRepo.editCreditAccount(

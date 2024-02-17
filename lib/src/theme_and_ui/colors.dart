@@ -190,6 +190,7 @@ class AppColors {
 
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF111111);
+  static const greyConst = Color(0x80666666);
 
   static Color grey(BuildContext context) =>
       context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.5) : AppColors.white.addDark(0.5);

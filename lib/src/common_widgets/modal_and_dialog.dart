@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -33,8 +35,7 @@ Future<T?> showCustomDialog<T>({
         padding: const EdgeInsets.all(12.0),
         child: AlertDialog(
           surfaceTintColor: Colors.transparent,
-          backgroundColor:
-              context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+          backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
           elevation: 5,
           content: child,
         ),
@@ -62,7 +63,9 @@ Future<void> showErrorDialog(BuildContext context, String text, {bool enable = t
 Future<T?> showConfirmModalBottomSheet<T>({
   required BuildContext context,
   required String label,
-  String confirmLabel = 'Delete',
+  bool onlyIcon = false,
+  String? subLabel,
+  String confirmLabel = 'Confirm',
   String? confirmIcon,
   required VoidCallback onConfirm,
 }) {
@@ -70,11 +73,9 @@ Future<T?> showConfirmModalBottomSheet<T>({
     context: context,
     elevation: 0,
     enableDrag: false,
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -82,6 +83,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
@@ -89,28 +91,62 @@ Future<T?> showConfirmModalBottomSheet<T>({
                   color: context.appTheme.onBackground,
                 ),
               ),
+              subLabel != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        subLabel,
+                        style: kHeader4TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  : Gap.noGap,
               Gap.h24,
               Row(
-                children: [
-                  IconWithTextButton(
-                    iconPath: AppIcons.back,
-                    label: 'No, go back!'.hardcoded,
-                    color: context.appTheme.onBackground,
-                    backgroundColor: AppColors.greyBgr(context),
-                    onTap: () => context.pop(),
-                  ),
-                  const Spacer(),
-                  IconWithTextButton(
-                    iconPath: confirmIcon ?? AppIcons.delete,
-                    label: confirmLabel,
-                    color: context.appTheme.onNegative,
-                    backgroundColor: context.appTheme.negative,
-                    onTap: () {
-                      onConfirm();
-                      context.pop();
-                    },
-                  ),
-                ],
+                children: onlyIcon
+                    ? [
+                        Expanded(
+                          child: IconWithTextButton(
+                            iconPath: AppIcons.back,
+                            label: 'No, go back!'.hardcoded,
+                            color: context.appTheme.onBackground,
+                            backgroundColor: AppColors.greyBgr(context),
+                            onTap: () => context.pop(),
+                          ),
+                        ),
+                        Gap.w24,
+                        RoundedIconButton(
+                          iconPath: confirmIcon ?? AppIcons.delete,
+                          iconColor: context.appTheme.onNegative,
+                          backgroundColor: context.appTheme.negative,
+                          onLongPress: () {
+                            context.pop();
+                            onConfirm();
+                          },
+                        )
+                      ]
+                    : [
+                        IconWithTextButton(
+                          iconPath: AppIcons.back,
+                          label: 'Go back'.hardcoded,
+                          color: context.appTheme.onBackground,
+                          backgroundColor: AppColors.greyBgr(context),
+                          onTap: () => context.pop(),
+                        ),
+                        const Spacer(),
+                        IconWithTextButton(
+                          iconPath: confirmIcon ?? AppIcons.delete,
+                          label: confirmLabel,
+                          color: context.appTheme.onNegative,
+                          backgroundColor: context.appTheme.negative,
+                          onTap: () {
+                            context.pop();
+                            onConfirm();
+                          },
+                        ),
+                      ],
               )
             ],
           ),
@@ -136,11 +172,9 @@ Future<T?> showCustomModalBottomSheet<T>(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -170,11 +204,9 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
     {required Widget child, bool hasHandle = true}) {
   return ModalBottomSheetPage(
     hasHandle: hasHandle,
-    backgroundColor:
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    modalBarrierColor: context.appTheme.isDarkTheme
-        ? AppColors.black.withOpacity(0.6)
-        : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    modalBarrierColor:
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
     child: child,
   );
 }
@@ -231,8 +263,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
               ? Stack(
                   children: [
                     AnimatedPadding(
-                      padding:
-                          EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
                       duration: const Duration(milliseconds: 0),
                       child: SingleChildScrollView(child: child),
                     ),

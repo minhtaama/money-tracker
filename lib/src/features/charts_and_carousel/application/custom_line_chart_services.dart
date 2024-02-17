@@ -268,10 +268,10 @@ class LineChartServices {
           }
 
           if (txn is Transfer) {
-            if (txn.account?.id == regularAccount.id) {
+            if (txn.account.id == regularAccount.id) {
               return value -= txn.amount;
             }
-            if (txn.transferAccount?.id == regularAccount.id) {
+            if (txn.transferAccount.id == regularAccount.id) {
               return value += txn.amount;
             }
           }

@@ -7,7 +7,7 @@ import '../../../accounts/domain/account_base.dart';
 import '../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 
-//TODO: https://pub.dev/documentation/riverpod/latest/riverpod/Notifier-class.html
+//https://pub.dev/documentation/riverpod/latest/riverpod/Notifier-class.html
 
 class CreditPaymentFormState {
   final DateTime? dateTime;

@@ -65,8 +65,13 @@ class _Transaction extends StatelessWidget {
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction,
-            extra: [transaction.databaseObject.id.hexString, TransactionScreenType.uneditable]),
+        onTap: () => context.push(
+          RoutePath.transaction,
+          extra: (
+            string: transaction.databaseObject.id.hexString,
+            type: TransactionScreenType.uneditable,
+          ),
+        ),
         child: Column(
           children: [
             Row(

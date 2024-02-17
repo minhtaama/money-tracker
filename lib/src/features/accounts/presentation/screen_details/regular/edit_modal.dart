@@ -90,13 +90,22 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
               backgroundColor: AppColors.greyBgr(context),
               iconColor: context.appTheme.onBackground,
               onTap: () async {
-                await showConfirmModalBottomSheet(
+                showConfirmModalBottomSheet(
                   context: context,
-                  label: 'Are you sure that you want to delete credit account "${widget.regularAccount.name}"?',
-                  onConfirm: () async {
-                    context.go(RoutePath.accounts);
-                    final accountRepo = ref.read(accountRepositoryProvider);
-                    await Future.delayed(k550msDuration, () => accountRepo.delete(widget.regularAccount));
+                  label: 'Are you sure that you want to delete account "${widget.regularAccount.name}"?'.hardcoded,
+                  subLabel: '1 more confirmation to delete this account'.hardcoded,
+                  onConfirm: () {
+                    showConfirmModalBottomSheet(
+                      context: context,
+                      onlyIcon: true,
+                      label: 'Transactions relate to this account will appear as of "deleted account".'.hardcoded,
+                      subLabel: 'Last warning. Hold the delete button to confirm'.hardcoded,
+                      onConfirm: () async {
+                        context.go(RoutePath.accounts);
+                        final accountRepo = ref.read(accountRepositoryProvider);
+                        await Future.delayed(k550msDuration, () => accountRepo.delete(widget.regularAccount));
+                      },
+                    );
                   },
                 );
               },
