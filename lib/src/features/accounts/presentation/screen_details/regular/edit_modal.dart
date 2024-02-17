@@ -9,18 +9,12 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
+import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../../../common_widgets/custom_radio.dart';
-import '../../../../../common_widgets/help_button.dart';
-import '../../../../../common_widgets/inline_text_form_field.dart';
-import '../../../../../utils/enums.dart';
-import '../../../../calculator_input/application/calculator_service.dart';
-import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../domain/account_base.dart';
 
 class EditRegularAccountModalScreen extends ConsumerStatefulWidget {
@@ -95,16 +89,14 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
               iconPadding: 15,
               backgroundColor: AppColors.greyBgr(context),
               iconColor: context.appTheme.onBackground,
-              onTap: () {
-                showConfirmModalBottomSheet(
+              onTap: () async {
+                await showConfirmModalBottomSheet(
                   context: context,
-                  label:
-                      'Are you sure that you want to delete credit account "${widget.regularAccount.name}"?',
-                  onConfirm: () {
-                    //TODO: HERE
-                    // final categoryRepository = ref.read(categoryRepositoryRealmProvider);
-                    // categoryRepository.delete(widget.currentCreditAccount);
-                    context.pop();
+                  label: 'Are you sure that you want to delete credit account "${widget.regularAccount.name}"?',
+                  onConfirm: () async {
+                    context.go(RoutePath.accounts);
+                    final accountRepo = ref.read(accountRepositoryProvider);
+                    await Future.delayed(k550msDuration, () => accountRepo.delete(widget.regularAccount));
                   },
                 );
               },
@@ -115,7 +107,6 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
               label: 'Done',
               backgroundColor: context.appTheme.accent1,
               onTap: () {
-                //TODO: Here
                 final accountRepo = ref.read(accountRepositoryProvider);
 
                 accountRepo.editRegularAccount(

@@ -216,7 +216,49 @@ class LineChartServices {
 
     final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
 
-    Map<int, double> result = {for (int day in days) day: 0};
+    ////////////////////// find initial amount ////////////////////////////////////////
+    final txnMaxIndex = regularAccount.transactionsList.length - 1;
+    final txnTransferMaxIndex = regularAccount.transferTransactionsList.length - 1;
+
+    double initialAmount = 0;
+
+    for (int i = 0; i <= txnMaxIndex; i++) {
+      final preTxn = regularAccount.transactionsList[i];
+      if (preTxn.dateTime.isBefore(dayBeginOfMonth)) {
+        if (preTxn is Expense || preTxn is Transfer) {
+          initialAmount -= preTxn.amount;
+          continue;
+        }
+
+        initialAmount += preTxn.amount;
+        continue;
+      }
+
+      break;
+    }
+
+    final transferTxnList = regularAccount.transferTransactionsList;
+
+    for (int i = 0; i <= txnTransferMaxIndex; i++) {
+      final preTxn = transferTxnList[i];
+      if ((preTxn as BaseTransaction).dateTime.isBefore(dayBeginOfMonth)) {
+        if (preTxn is CreditPayment) {
+          initialAmount -= preTxn.amount;
+          continue;
+        }
+
+        if (preTxn is Transfer) {
+          initialAmount += preTxn.amount;
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    Map<int, double> result = {for (int day in days) day: initialAmount};
 
     void updateAmount(int day, BaseTransaction txn) {
       result.updateAll((key, value) {
@@ -229,7 +271,7 @@ class LineChartServices {
             if (txn.account?.id == regularAccount.id) {
               return value -= txn.amount;
             }
-            if (txn.transferAccount.id == regularAccount.id) {
+            if (txn.transferAccount?.id == regularAccount.id) {
               return value += txn.amount;
             }
           }
@@ -241,10 +283,7 @@ class LineChartServices {
       });
     }
 
-    final txns = transactionRepo
-        .getTransactions(dayBeginOfMonth, dayEndOfMonth)
-        .where((txn) => txn.account?.databaseObject == regularAccount.databaseObject)
-        .toList();
+    final txns = transactionRepo.getTransactionsOfAccount(regularAccount, dayBeginOfMonth, dayEndOfMonth);
 
     if (txns.isNotEmpty) {
       for (int i = 0; i <= txns.length - 1; i++) {

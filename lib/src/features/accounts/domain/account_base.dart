@@ -27,7 +27,7 @@ abstract class BaseAccount extends BaseModelWithIcon<AccountDb> {
   });
 }
 
-abstract class AccountInfo extends BaseAccount {
+sealed class AccountInfo extends BaseAccount {
   final bool isNotExistInDatabase;
 
   const AccountInfo(
@@ -38,6 +38,18 @@ abstract class AccountInfo extends BaseAccount {
     required super.iconPath,
     this.isNotExistInDatabase = false,
   });
+}
+
+class DeletedAccount extends AccountInfo {
+  DeletedAccount()
+      : super(
+          AccountDb(ObjectId(), 0, '', 0, '', 0),
+          name: 'Deleted account'.hardcoded,
+          iconColor: AppColors.black,
+          backgroundColor: AppColors.white,
+          iconPath: AppIcons.defaultIcon,
+          isNotExistInDatabase: true,
+        );
 }
 
 @immutable
@@ -54,24 +66,20 @@ sealed class Account extends BaseAccount {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    DateTime? earliestPayableDate =
-        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate =
-        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
-      earliestStatementDate =
-          DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+      earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
     }
 
     // only year, month and day
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate =
-            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -114,8 +122,7 @@ sealed class Account extends BaseAccount {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>(
-            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -204,8 +211,7 @@ extension CreditAccountExtension on Account {
 
     // Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
-      final endDate =
-          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
@@ -305,8 +311,7 @@ extension CreditAccountExtension on Account {
 
     for (CreditSpending spending in txn.finishedInstallments) {
       if (installmentsToAddToStatement.map((e) => e.txn).contains(spending)) {
-        installmentsToAddToStatement
-            .removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
+        installmentsToAddToStatement.removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
         installmentCountsMapToMutate.remove(spending);
       }
     }
@@ -325,42 +330,51 @@ extension CreditAccountExtension on Account {
 }
 
 extension AccountGettersExtension on Account {
-  //TODO: Convert for..in loop to for..loop for better performance
   double get availableAmount {
-    switch (this) {
-      case RegularAccount():
-        double balance = 0;
-        for (BaseRegularTransaction txn in transactionsList) {
-          switch (txn) {
-            case Expense() || Transfer():
-              balance -= txn.amount;
-              break;
-            case Income():
-              balance += txn.amount;
-              break;
-          }
-        }
-        for (ITransferable txn in (this as RegularAccount).transferTransactionsList) {
-          if (txn is Transfer) {
-            balance += txn.amount;
-          }
-          if (txn is CreditPayment) {
-            balance -= txn.amount;
-          }
-        }
-        return balance;
+    if (this is RegularAccount) {
+      double balance = 0;
 
-      case CreditAccount():
-        final limit = (this as CreditAccount).creditLimit;
-        try {
-          final todayStatement =
-              (this as CreditAccount).statementAt(DateTime.now(), upperGapAtDueDate: true);
-          return limit - todayStatement!.balance - todayStatement.spent.inGracePeriod;
-        } catch (_) {
-          return limit;
+      for (int i = 0; i <= transactionsList.length - 1; i++) {
+        final txn = transactionsList[i];
+
+        switch (txn) {
+          case Expense() || Transfer():
+            balance -= txn.amount;
+            break;
+          case Income():
+            balance += txn.amount;
+            break;
         }
-      default:
-        throw StateError('Can only call this method in RegularAccount and CreditAccount');
+      }
+
+      final transferTxnsList = (this as RegularAccount).transferTransactionsList;
+
+      for (int i = 0; i <= transferTxnsList.length - 1; i++) {
+        final txn = transferTxnsList[i];
+
+        if (txn is Transfer) {
+          balance += txn.amount;
+          continue;
+        }
+        if (txn is CreditPayment) {
+          balance -= txn.amount;
+          continue;
+        }
+      }
+
+      return balance;
     }
+
+    if (this is CreditAccount) {
+      final limit = (this as CreditAccount).creditLimit;
+      try {
+        final todayStatement = (this as CreditAccount).statementAt(DateTime.now(), upperGapAtDueDate: true);
+        return limit - todayStatement!.balance - todayStatement.spent.inGracePeriod;
+      } catch (_) {
+        return limit;
+      }
+    }
+
+    throw StateError('Can only call this method in RegularAccount and CreditAccount');
   }
 }

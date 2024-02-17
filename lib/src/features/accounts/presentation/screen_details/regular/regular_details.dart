@@ -68,8 +68,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -111,24 +110,24 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
       floatingActionButton: CustomFloatingActionButton(
         roundedButtonItems: [
           FABItem(
-            icon: AppIcons.receiptDollar,
+            icon: AppIcons.income,
             label: 'Income'.hardcoded,
-            color: context.appTheme.onNegative,
-            backgroundColor: context.appTheme.negative,
+            color: context.appTheme.onPositive,
+            backgroundColor: context.appTheme.positive,
             onTap: () => context.push(RoutePath.addIncome),
           ),
           FABItem(
-            icon: AppIcons.statementCheckpoint,
+            icon: AppIcons.transfer,
             label: 'Transfer'.hardcoded,
             color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
             onTap: () => context.push(RoutePath.addTransfer),
           ),
           FABItem(
-            icon: AppIcons.handCoin,
+            icon: AppIcons.expense,
             label: 'Expense'.hardcoded,
-            color: context.appTheme.onPositive,
-            backgroundColor: context.appTheme.positive,
+            color: context.appTheme.onNegative,
+            backgroundColor: context.appTheme.negative,
             onTap: () => context.push(RoutePath.addExpense),
           ),
         ],
@@ -138,15 +137,11 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         controller: _pageController,
         smallTabBar: SmallTabBar(
           child: PageHeading(
-              title: widget.regularAccount.name,
-              secondaryTitle: 'Regular account'.hardcoded,
-              hasBackButton: true),
+              title: widget.regularAccount.name, secondaryTitle: 'Regular account'.hardcoded, hasBackButton: true),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor:
-              widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedRegularAccountTab(
-              account: widget.regularAccount, displayDate: _currentDisplayDate),
+          backgroundColor: widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedRegularAccountTab(account: widget.regularAccount, displayDate: _currentDisplayDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -161,16 +156,12 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-          List<BaseTransaction> transactionList = transactionRepository
-              .getTransactions(dayBeginOfMonth, dayEndOfMonth)
-              .where((txn) => txn.account?.databaseObject == widget.regularAccount.databaseObject)
-              .toList();
+          List<BaseTransaction> transactionList =
+              transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
 
           ref.listen(transactionsChangesStreamProvider, (_, __) {
-            transactionList = transactionRepository
-                .getTransactions(dayBeginOfMonth, dayEndOfMonth)
-                .where((txn) => txn.account?.databaseObject == widget.regularAccount.databaseObject)
-                .toList();
+            transactionList =
+                transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
             setState(() {});
           });
 
@@ -221,8 +212,7 @@ class _DateSelector extends StatelessWidget {
                   );
                 },
                 child: Row(
-                  key: ValueKey(
-                      displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                  key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

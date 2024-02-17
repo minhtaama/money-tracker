@@ -11,7 +11,7 @@ part 'regular_transaction.dart';
 part 'credit_transaction.dart';
 
 abstract interface class ITransferable {
-  final RegularAccountInfo? transferAccount;
+  final AccountInfo transferAccount;
 
   ITransferable(this.transferAccount);
 }
@@ -32,14 +32,17 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
   final DateTime dateTime;
   final double amount;
   final String? note;
-  final AccountInfo? account;
+
+  final AccountInfo? _account;
+
+  AccountInfo get account => _account != null ? _account! : DeletedAccount();
 
   const BaseTransaction(
     super._databaseObject,
     this.dateTime,
     this.amount,
     this.note,
-    this.account,
+    this._account,
   );
 
   factory BaseTransaction.fromDatabase(TransactionDb txn) {
@@ -76,7 +79,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseInfoOnly(txn.account),
-          transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as RegularAccountInfo,
+          transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as RegularAccountInfo?,
           fee: Fee._fromDatabase(txn),
         );
 

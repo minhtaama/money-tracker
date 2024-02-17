@@ -44,9 +44,7 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending &&
-          runtimeType == other.runtimeType &&
-          databaseObject.id == other.databaseObject.id;
+      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
 
   @override
   int get hashCode => databaseObject.id.hashCode;
@@ -55,13 +53,21 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
 @immutable
 class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
-  RegularAccountInfo get transferAccount => _transferAccount != null && !isAdjustToAPRChange
-      ? _transferAccount!
-      : RegularAccountInfo.forAdjustmentCreditPayment();
+  AccountInfo get transferAccount {
+    if (_transferAccount != null) {
+      return _transferAccount!;
+    }
+
+    if (isAdjustToAPRChange) {
+      return RegularAccountInfo.forAdjustmentCreditPayment();
+    }
+
+    return DeletedAccount();
+  }
 
   @override
   String? get note => isAdjustToAPRChange
-      ? 'Because the APR data of account "${account!.name}" has been changed since it is first created, this transaction is created automatic to keep the balance of closed statements stay the same.'
+      ? 'Because the APR data of account "${account.name}" has been changed since it is first created, this transaction is created automatic to keep the balance of closed statements stay the same.'
           .hardcoded
       : super.note;
 

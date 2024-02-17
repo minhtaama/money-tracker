@@ -60,7 +60,9 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
   final TransactionType type = TransactionType.transfer;
 
   @override
-  final RegularAccountInfo transferAccount;
+  AccountInfo get transferAccount => _transferAccount != null ? _transferAccount! : DeletedAccount();
+
+  final RegularAccountInfo? _transferAccount;
   final Fee? fee;
 
   const Transfer._(
@@ -69,9 +71,9 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
     super.amount,
     super.note,
     super.account, {
-    required this.transferAccount,
+    required RegularAccountInfo? transferAccount,
     required this.fee,
-  });
+  }) : _transferAccount = transferAccount;
 }
 
 @immutable

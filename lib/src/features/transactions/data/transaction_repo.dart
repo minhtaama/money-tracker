@@ -4,7 +4,6 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
@@ -62,6 +61,16 @@ class TransactionRepositoryRealmDb {
         .all<TransactionDb>()
         .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
+  }
+
+  List<BaseTransaction> getTransactionsOfAccount(BaseAccount account, DateTime lower, DateTime upper) {
+    List<BaseTransaction> list = getTransactions(lower, upper);
+    return list
+        .where((txn) =>
+            txn.account.id == account.id ||
+            txn is Transfer && txn.transferAccount.id == account.id ||
+            txn is CreditPayment && txn.transferAccount.id == account.id)
+        .toList();
   }
 
   BaseTransaction getTransactionFromHex(String objectIdHexString) {
