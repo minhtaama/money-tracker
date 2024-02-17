@@ -58,11 +58,7 @@ class CustomLineChart extends StatelessWidget {
       return _CustomLineType.dashed;
     }
 
-    if (currentMonth.isInMonthBefore(today)) {
-      return _CustomLineType.solid;
-    }
-
-    throw ErrorDescription('Whoop whoop');
+    return _CustomLineType.solid;
   }
 
   @override
