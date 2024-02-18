@@ -8,13 +8,16 @@ const kHeaderTransparent = TextStyle(color: Colors.transparent);
 const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28);
 
 /// Value related to Text. To change more details, use .copyWith()
-const kHeader2TextStyle = TextStyle(fontWeight: FontWeight.w800, fontSize: 21);
+const kHeader2TextStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 21);
 
 /// Value related to Text. To change more details, use .copyWith()
 const kHeader3TextStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 18);
 
 /// Value related to Text. To change more details, use .copyWith()
 const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
+
+/// Value related to Text. To change more details, use .copyWith()
+const kNormalTextStyle = TextStyle(fontSize: 15);
 
 /// Value related to CustomTabBar and CustomTabPage
 const double kCustomTabBarHeight = 80;

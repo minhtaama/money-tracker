@@ -97,7 +97,7 @@ class CustomLineChart extends StatelessWidget {
           color?.withOpacity(opaTop) ?? context.appTheme.accent1.withOpacity(opaTop),
           color?.withOpacity(opaBottom) ?? context.appTheme.accent1.withOpacity(opaBottom),
         ],
-        stops: [0, context.appTheme.isDarkTheme ? 1 : 0.85],
+        stops: const [0, 0.7],
       );
     }
 
@@ -223,7 +223,7 @@ class CustomLineChart extends StatelessWidget {
 
       final textStyle = isToday
           ? kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground)
-          : kHeader4TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+          : kNormalTextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(

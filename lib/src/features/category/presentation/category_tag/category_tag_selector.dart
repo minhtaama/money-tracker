@@ -258,7 +258,7 @@ class _ChosenTag extends StatelessWidget {
         EasyRichTextPattern(
           targetString: '#',
           hasSpecialCharacters: true,
-          style: kHeader4TextStyle.copyWith(
+          style: kNormalTextStyle.copyWith(
             color: category?.iconColor,
             fontSize: 18,
           ),
@@ -304,7 +304,7 @@ class CategoryTagWidget extends StatelessWidget {
                   EasyRichTextPattern(
                     targetString: '#',
                     hasSpecialCharacters: true,
-                    style: kHeader4TextStyle.copyWith(
+                    style: kNormalTextStyle.copyWith(
                       color: context.appTheme.onBackground.withOpacity(0.5),
                       fontSize: 13,
                     ),

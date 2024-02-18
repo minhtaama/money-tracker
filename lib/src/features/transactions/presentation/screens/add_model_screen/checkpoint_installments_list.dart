@@ -33,7 +33,7 @@ class CheckpointInstallmentsList extends StatelessWidget {
       children: [
         Text(
           'Ongoing installments:',
-          style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
+          style: kNormalTextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
           softWrap: false,
           overflow: TextOverflow.ellipsis,
         ),
@@ -118,9 +118,7 @@ class _ListState extends State<_List> {
                         ins.monthsLeft,
                         isDone: _installmentsMarkAsDone.contains(ins),
                         onMarkAsDone: (isDone) {
-                          isDone
-                              ? _installmentsMarkAsDone.add(ins)
-                              : _installmentsMarkAsDone.remove(ins);
+                          isDone ? _installmentsMarkAsDone.add(ins) : _installmentsMarkAsDone.remove(ins);
                           setState(() {
                             widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
                           });
@@ -134,7 +132,7 @@ class _ListState extends State<_List> {
           padding: const EdgeInsets.only(left: 4.0),
           child: Text(
             'Total unpaid installment balance:',
-            style: kHeader4TextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
+            style: kNormalTextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
             softWrap: false,
             overflow: TextOverflow.ellipsis,
           ),
@@ -164,8 +162,7 @@ class _ListState extends State<_List> {
 }
 
 class _InstallmentDetails extends StatefulWidget {
-  const _InstallmentDetails(this.transaction, this.monthsLeft,
-      {required this.isDone, required this.onMarkAsDone});
+  const _InstallmentDetails(this.transaction, this.monthsLeft, {required this.isDone, required this.onMarkAsDone});
 
   final CreditSpending transaction;
   final int monthsLeft;
@@ -213,8 +210,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
         borderRadius: BorderRadius.circular(12),
         onTap: _isDone
             ? null
-            : () => context.push(RoutePath.transaction,
-                extra: widget.transaction.databaseObject.id.hexString),
+            : () => context.push(RoutePath.transaction, extra: widget.transaction.databaseObject.id.hexString),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 6),
           child: Row(
@@ -246,8 +242,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                                 ? Text(
                                     categoryTag,
                                     style: kHeader3TextStyle.copyWith(
-                                        fontSize: 11,
-                                        color: context.appTheme.onBackground.withOpacity(0.7)),
+                                        fontSize: 11, color: context.appTheme.onBackground.withOpacity(0.7)),
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                   )

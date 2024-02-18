@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -86,86 +88,101 @@ class _AccountTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomInkWell(
-      onTap: () => context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
-      child: CardItem(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: model.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
-        height: 190,
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Transform(
-                transform: Matrix4.identity()
-                  ..translate(-28.0, 35.0)
-                  ..scale(7.0),
-                origin: const Offset(15, 15),
-                child: Opacity(
-                  opacity: 0.45,
-                  child: SvgIcon(model.iconPath, size: 30),
+    final bgColor = model.backgroundColor.withOpacity(0.25);
+    final fgColor = context.appTheme.onBackground;
+    final iconColor = context.appTheme.onBackground;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Material(
+          color: Colors.transparent,
+          child: CustomInkWell(
+            onTap: () => context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
+            inkColor: bgColor,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: CardItem(
+                margin: EdgeInsets.zero,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
+                height: 190,
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Transform(
+                        transform: Matrix4.identity()
+                          ..translate(-28.0, 35.0)
+                          ..scale(7.0),
+                        origin: const Offset(15, 15),
+                        child: Opacity(
+                          opacity: 0.4,
+                          child: SvgIcon(model.iconPath, size: 30, color: iconColor),
+                        ),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              model.name,
+                              style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 32),
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                            ),
+                            Gap.w16,
+                            // Account Type
+                            model is CreditAccount
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: model.backgroundColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Text(
+                                      'Credit',
+                                      style: kNormalTextStyle.copyWith(color: model.iconColor, fontSize: 12),
+                                    ),
+                                  )
+                                : Gap.noGap,
+                          ],
+                        ),
+                        model is CreditAccount ? _CreditDetails(model: model as CreditAccount) : Gap.noGap,
+                        const Spacer(),
+                        Text(
+                          model is RegularAccount ? 'Current Balance:' : 'Outstanding credit:',
+                          style: kNormalTextStyle.copyWith(color: fgColor),
+                        ),
+                        Row(
+                          // Account Current Balance
+                          children: [
+                            Text(
+                              context.appSettings.currency.code,
+                              style: kNormalTextStyle.copyWith(color: fgColor, fontSize: kHeader1TextStyle.fontSize),
+                            ),
+                            Gap.w8,
+                            Expanded(
+                              child: Text(
+                                CalService.formatCurrency(context, model.availableAmount),
+                                style: kHeader1TextStyle.copyWith(color: fgColor),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      model.name,
-                      style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 24),
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                    ),
-                    Gap.w16,
-                    // Account Type
-                    model is CreditAccount
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: model.iconColor,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              'Credit',
-                              style:
-                                  kHeader4TextStyle.copyWith(color: model.backgroundColor, fontSize: 12),
-                            ),
-                          )
-                        : Gap.noGap,
-                  ],
-                ),
-                model is CreditAccount ? _CreditDetails(model: model as CreditAccount) : Gap.noGap,
-                const Spacer(),
-                Text(
-                  model is RegularAccount ? 'Current Balance:' : 'Outstanding credit:',
-                  style: kHeader4TextStyle.copyWith(color: model.iconColor),
-                ),
-                Row(
-                  // Account Current Balance
-                  children: [
-                    Text(
-                      context.appSettings.currency.code,
-                      style: kHeader4TextStyle.copyWith(
-                          color: model.iconColor, fontSize: kHeader1TextStyle.fontSize),
-                    ),
-                    Gap.w8,
-                    Expanded(
-                      child: Text(
-                        CalService.formatCurrency(context, model.availableAmount),
-                        style: kHeader1TextStyle.copyWith(color: model.iconColor),
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -193,6 +210,8 @@ class _CreditDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fgColor = context.appTheme.onBackground;
+
     return Column(
       children: [
         Gap.h4,
@@ -200,11 +219,11 @@ class _CreditDetails extends StatelessWidget {
           children: [
             Text(
               'APR:'.hardcoded,
-              style: kHeader3TextStyle.copyWith(color: model.iconColor, fontSize: 13),
+              style: kHeader3TextStyle.copyWith(color: fgColor, fontSize: 13),
             ),
             Text(
               ' ${model.apr.toString()} %',
-              style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 13),
+              style: kHeader2TextStyle.copyWith(color: fgColor, fontSize: 13),
             ),
           ],
         ),
@@ -213,17 +232,16 @@ class _CreditDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Transform.translate(
-                offset: const Offset(-2, 0),
-                child: SvgIcon(AppIcons.budgets, color: model.iconColor, size: 20)),
+                offset: const Offset(-2, 0), child: SvgIcon(AppIcons.budgets, color: fgColor, size: 20)),
             Text(
               ': Day ${_dateBuilder(model.statementDay)}',
-              style: kHeader3TextStyle.copyWith(color: model.iconColor, fontSize: 13),
+              style: kHeader3TextStyle.copyWith(color: fgColor, fontSize: 13),
             ),
             Gap.w16,
-            SvgIcon(AppIcons.handCoin, color: model.iconColor, size: 20),
+            SvgIcon(AppIcons.handCoin, color: fgColor, size: 20),
             Text(
               ': Day ${_dateBuilder(model.paymentDueDay)}',
-              style: kHeader3TextStyle.copyWith(color: model.iconColor, fontSize: 13),
+              style: kHeader3TextStyle.copyWith(color: fgColor, fontSize: 13),
             ),
           ],
         ),

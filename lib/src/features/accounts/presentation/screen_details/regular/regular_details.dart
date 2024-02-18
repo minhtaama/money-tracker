@@ -108,6 +108,8 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     return Scaffold(
       backgroundColor: context.appTheme.background1,
       floatingActionButton: CustomFloatingActionButton(
+        color: widget.regularAccount.backgroundColor,
+        iconColor: widget.regularAccount.iconColor,
         roundedButtonItems: [
           FABItem(
             icon: AppIcons.income,
@@ -235,7 +237,7 @@ class _DateSelector extends StatelessWidget {
                             Text(
                               displayDate.getFormattedDate(
                                   hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy),
-                              style: kHeader2TextStyle.copyWith(
+                              style: kHeader1TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.9),
                                 fontSize: 22,
                                 letterSpacing: 0.6,

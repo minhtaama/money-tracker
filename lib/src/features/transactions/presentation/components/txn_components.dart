@@ -49,7 +49,7 @@ class TxnInfo extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: kHeader4TextStyle.copyWith(
+        style: kNormalTextStyle.copyWith(
             color: lum == null
                 ? context.appTheme.onBackground
                 : lum > 0.5
@@ -307,7 +307,7 @@ class TxnAmount extends StatelessWidget {
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kNormalTextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );
@@ -363,7 +363,7 @@ class TxnNote extends StatelessWidget {
             transaction.note != null && transaction.note!.isNotEmpty
                 ? Text(
                     transaction.note!,
-                    style: kHeader4TextStyle.copyWith(
+                    style: kNormalTextStyle.copyWith(
                       color: context.appTheme.onBackground.withOpacity(0.7),
                       fontSize: 12,
                     ),

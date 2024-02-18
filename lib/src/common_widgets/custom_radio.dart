@@ -27,7 +27,7 @@ class CustomRadio<T> extends StatelessWidget {
       subtitle: subLabel != null
           ? Text(
               subLabel!,
-              style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 12),
+              style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 12),
             )
           : null,
       value: value,

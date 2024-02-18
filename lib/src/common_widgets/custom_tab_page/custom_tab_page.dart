@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/expanded_page_view.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../theme_and_ui/colors.dart';
 import 'custom_tab_bar.dart';
@@ -384,8 +385,9 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(context.appTheme.isDarkTheme ? 0.0 : 0.1),
-            blurRadius: 30,
+            color: context.appTheme.accent2.addDark(0.3).withOpacity(context.appTheme.isDarkTheme ? 0.0 : 0.25),
+            blurRadius: 12,
+            spreadRadius: 6,
           )
         ],
       ),

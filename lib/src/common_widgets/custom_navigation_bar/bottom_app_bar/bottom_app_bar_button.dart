@@ -27,8 +27,7 @@ class BottomAppBarButton extends StatelessWidget {
     EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 35 : 30, right: isLeft ? 30 : 35);
     BorderRadius borderRadius = BorderRadius.circular(38);
 
-    Color backgroundColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
+    Color backgroundColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
 
     return Expanded(
       child: Padding(
@@ -54,12 +53,8 @@ class BottomAppBarButton extends StatelessWidget {
                   child: SvgIcon(
                     item.iconData,
                     color: isSelected
-                        ? (context.appTheme.isDarkTheme
-                            ? context.appTheme.secondary1
-                            : context.appTheme.onBackground)
-                        : (context.appTheme.isDarkTheme
-                            ? context.appTheme.secondary1
-                            : context.appTheme.onBackground),
+                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground)
+                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground),
                   ),
                 ),
                 Gap.w4,
@@ -69,7 +64,7 @@ class BottomAppBarButton extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       item.text,
-                      style: kHeader4TextStyle.copyWith(
+                      style: kNormalTextStyle.copyWith(
                         color: isSelected
                             ? (context.appTheme.isDarkTheme
                                 ? context.appTheme.secondary1

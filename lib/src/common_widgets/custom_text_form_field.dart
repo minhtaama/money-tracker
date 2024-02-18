@@ -148,7 +148,7 @@ class CustomTextFormField extends StatelessWidget {
                 ),
           errorStyle: disableErrorText
               ? const TextStyle(height: 0.1, color: Colors.transparent, fontSize: 0)
-              : kHeader4TextStyle.copyWith(fontSize: 12, color: context.appTheme.negative),
+              : kNormalTextStyle.copyWith(fontSize: 12, color: context.appTheme.negative),
           helperText: helperText,
         ),
         onChanged: onChanged,

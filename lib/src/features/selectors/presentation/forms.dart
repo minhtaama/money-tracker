@@ -182,7 +182,7 @@ class _AlertBoxState extends State<_AlertBox> {
               widget.errorText,
               style: widget.errorText.length == 1
                   ? kHeader2TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 17)
-                  : kHeader4TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 10),
+                  : kNormalTextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 10),
               textAlign: TextAlign.center,
             ),
           ],

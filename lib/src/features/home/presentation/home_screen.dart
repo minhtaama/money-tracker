@@ -75,8 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -116,8 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
-          secondaryTitle:
-              _currentDisplayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
+          secondaryTitle: _currentDisplayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
@@ -150,8 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList =
-            transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
           transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
@@ -205,8 +202,7 @@ class _DateSelector extends StatelessWidget {
                   );
                 },
                 child: Row(
-                  key: ValueKey(
-                      displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                  key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +225,7 @@ class _DateSelector extends StatelessWidget {
                             Text(
                               displayDate.getFormattedDate(
                                   hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy),
-                              style: kHeader2TextStyle.copyWith(
+                              style: kHeader1TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.9),
                                 fontSize: 22,
                                 letterSpacing: 0.6,

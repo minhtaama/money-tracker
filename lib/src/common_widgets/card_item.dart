@@ -18,7 +18,7 @@ class CardItem extends StatelessWidget {
       this.border,
       this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-      this.elevation = 0.5,
+      this.elevation = 0,
       this.clip = true,
       this.alignment});
   final Duration? duration;

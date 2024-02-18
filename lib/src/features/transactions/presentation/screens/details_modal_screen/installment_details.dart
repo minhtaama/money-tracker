@@ -80,12 +80,12 @@ class _Transaction extends StatelessWidget {
                 Text(
                   '${formatter.format(transaction.dateTime.hour)}:${formatter.format(transaction.dateTime.minute)}',
                   style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.onBackground, fontSize: kHeader4TextStyle.fontSize),
+                      color: context.appTheme.onBackground, fontSize: kNormalTextStyle.fontSize),
                 ),
                 Gap.w8,
                 Text(
                   transaction.dateTime.getFormattedDate(format: DateTimeFormat.mmmmddyyyy),
-                  style: kHeader4TextStyle.copyWith(
+                  style: kNormalTextStyle.copyWith(
                     color: context.appTheme.onBackground,
                   ),
                 ),

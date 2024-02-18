@@ -309,11 +309,11 @@ class _CarouselContentState extends State<_CarouselContent> {
                       patternList: [
                         EasyRichTextPattern(
                           targetString: r'[0-9]+',
-                          style: kHeader2TextStyle.copyWith(
+                          style: kHeader1TextStyle.copyWith(
                             color: context.appTheme.isDarkTheme
                                 ? context.appTheme.onBackground
                                 : context.appTheme.onSecondary,
-                            fontSize: 28,
+                            fontSize: 26,
                           ),
                         ),
                       ],
@@ -331,7 +331,7 @@ class _CarouselContentState extends State<_CarouselContent> {
               child: FittedBox(
                 child: Text(
                   widget.text,
-                  style: kHeader4TextStyle.copyWith(
+                  style: kNormalTextStyle.copyWith(
                     color: context.appTheme.isDarkTheme
                         ? context.appTheme.onBackground.withOpacity(0.6)
                         : context.appTheme.onSecondary.withOpacity(0.6),

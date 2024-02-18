@@ -64,7 +64,7 @@ class _DayBuilder {
   ) {
     return Text(
       date.day.toString(),
-      style: kHeader3TextStyle.copyWith(color: foregroundColor, height: 0.99, fontSize: kHeader4TextStyle.fontSize),
+      style: kHeader3TextStyle.copyWith(color: foregroundColor, height: 0.99, fontSize: kNormalTextStyle.fontSize),
     );
   }
 
@@ -182,8 +182,8 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       selectedRangeHighlightColor: context.appTheme.isDarkTheme
           ? context.appTheme.secondary1.withOpacity(0.5)
           : context.appTheme.primary.withOpacity(0.5),
-      controlsTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-      dayTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+      controlsTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+      dayTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
       lastMonthIcon: SvgIcon(
         AppIcons.arrowLeft,
         color: context.appTheme.onBackground,
@@ -192,12 +192,12 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
         AppIcons.arrowRight,
         color: context.appTheme.onBackground,
       ),
-      weekdayLabelTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-      selectedDayTextStyle: kHeader4TextStyle.copyWith(
+      weekdayLabelTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+      selectedDayTextStyle: kNormalTextStyle.copyWith(
           color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
-      selectedYearTextStyle: kHeader4TextStyle.copyWith(
+      selectedYearTextStyle: kNormalTextStyle.copyWith(
           color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
-      yearTextStyle: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+      yearTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
       cancelButtonTextStyle: kHeader2TextStyle.copyWith(
           fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
       okButtonTextStyle: kHeader2TextStyle.copyWith(

@@ -85,7 +85,7 @@ class DayCard extends StatelessWidget {
                     Gap.h2,
                     Text(
                       dateTime.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
-                      style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
+                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -96,7 +96,7 @@ class DayCard extends StatelessWidget {
                   children: [
                     Text(
                       'Cash flow',
-                      style: kHeader4TextStyle.copyWith(
+                      style: kNormalTextStyle.copyWith(
                           color: context.appTheme.onBackground.withOpacity(0.5), fontSize: 12),
                     ),
                     Row(
@@ -114,7 +114,7 @@ class DayCard extends StatelessWidget {
                         Gap.w4,
                         Text(
                           context.appSettings.currency.code,
-                          style: kHeader4TextStyle.copyWith(
+                          style: kNormalTextStyle.copyWith(
                               color: _calculateCashFlow > 0
                                   ? context.appTheme.positive
                                   : _calculateCashFlow < 0

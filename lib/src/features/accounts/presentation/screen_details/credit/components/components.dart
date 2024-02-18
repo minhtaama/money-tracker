@@ -542,7 +542,7 @@ class _Checkpoint extends StatelessWidget {
               Gap.w4,
               Text(
                 context.appSettings.currency.code.hardcoded,
-                style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
+                style: kNormalTextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
               ),
             ],
           ),

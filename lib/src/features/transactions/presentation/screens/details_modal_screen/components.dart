@@ -80,7 +80,7 @@ class _Amount extends ConsumerWidget {
                   Gap.w8,
                   Text(
                     context.appSettings.currency.code,
-                    style: kHeader4TextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
+                    style: kNormalTextStyle.copyWith(color: _color(context), fontSize: kHeader1TextStyle.fontSize),
                   ),
                 ],
               ),
@@ -238,13 +238,13 @@ class _DateTime extends StatelessWidget {
           children: [
             Text(
               '${formatter.format(dateTime.hour)}:${formatter.format(dateTime.minute)}',
-              style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground, fontSize: kHeader4TextStyle.fontSize),
+              style:
+                  kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: kNormalTextStyle.fontSize),
             ),
             Gap.w8,
             Text(
               dateTime.getFormattedDate(format: DateTimeFormat.mmmmddyyyy),
-              style: kHeader4TextStyle.copyWith(
+              style: kNormalTextStyle.copyWith(
                 color: context.appTheme.onBackground,
               ),
             ),

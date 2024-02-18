@@ -597,7 +597,7 @@ class _Checkpoint extends StatelessWidget {
               ),
               Text(
                 ' ${context.appSettings.currency.code}'.hardcoded,
-                style: kHeader4TextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
+                style: kNormalTextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
               ),
             ],
           ),

@@ -76,14 +76,14 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   account.name,
-                  style: kHeader2TextStyle.copyWith(
+                  style: kHeader1TextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 28,
                   ),
                 ),
                 Text(
                   'Regular account'.hardcoded,
-                  style: kHeader3TextStyle.copyWith(
+                  style: kNormalTextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 13,
                     letterSpacing: 0.5,

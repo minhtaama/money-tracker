@@ -96,7 +96,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
                         subLabel,
-                        style: kHeader4TextStyle.copyWith(
+                        style: kNormalTextStyle.copyWith(
                           color: context.appTheme.onBackground,
                           fontSize: 14,
                         ),
