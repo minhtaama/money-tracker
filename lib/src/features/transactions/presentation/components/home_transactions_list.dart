@@ -37,7 +37,7 @@ class HomeTransactionsList extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TxnDot(transaction: transaction),
+                    TxnHomeCategoryIcon(transaction: transaction),
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
@@ -81,22 +81,15 @@ class _WithCategoryDetails extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            TxnAccountIcon(transaction: transaction),
-            Gap.w4,
+            // TxnAccountIcon(transaction: transaction),
+            // Gap.w4,
             Flexible(child: TxnAccountName(transaction: transaction)),
             Gap.w4,
             transaction is CreditSpending ? TxnInfo('Credit'.hardcoded) : Gap.noGap,
           ],
         ),
         Gap.h4,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TxnCategoryIcon(transaction: transaction as IBaseTransactionWithCategory),
-            Gap.w4,
-            Expanded(child: TxnCategoryName(transaction: transaction as IBaseTransactionWithCategory)),
-          ],
-        ),
+        TxnCategoryName(transaction: transaction as IBaseTransactionWithCategory)
       ],
     );
   }
@@ -118,13 +111,7 @@ class _TransferDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  TxnAccountName(transaction: transaction),
-                  Gap.w4,
-                  TxnInfo('Transfer'.hardcoded),
-                ],
-              ),
+              TxnAccountName(transaction: transaction),
               Gap.h4,
               TxnTransferAccountName(transaction: transaction),
             ],
@@ -151,14 +138,8 @@ class _PaymentDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  TxnTransferAccountName(transaction: transaction),
-                  Gap.w4,
-                  TxnInfo('Payment'.hardcoded),
-                ],
-              ),
-              Gap.h8,
+              TxnTransferAccountName(transaction: transaction),
+              Gap.h4,
               Row(
                 children: [
                   TxnAccountName(transaction: transaction),

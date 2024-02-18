@@ -41,7 +41,7 @@ class DayCard extends StatelessWidget {
 
     return CardItem(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -129,7 +129,7 @@ class DayCard extends StatelessWidget {
               ],
             ),
           ),
-          Gap.divider(context),
+          Gap.divider(context, indent: 10),
           HomeTransactionsList(
             transactions: transactions,
             currencyCode: context.appSettings.currency.code,

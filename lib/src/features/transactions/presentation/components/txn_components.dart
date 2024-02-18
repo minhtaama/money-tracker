@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import 'package:realm/realm.dart';
 import 'dart:math' as math;
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
@@ -12,21 +13,65 @@ import '../../../../utils/constants.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../domain/transaction_base.dart';
 
-class TxnDot extends StatelessWidget {
-  const TxnDot({super.key, required this.transaction, this.size});
+class TxnHomeCategoryIcon extends StatelessWidget {
+  const TxnHomeCategoryIcon({super.key, required this.transaction, this.size});
 
   final BaseTransaction transaction;
   final double? size;
 
   @override
   Widget build(BuildContext context) {
+    Color color() {
+      if (transaction is IBaseTransactionWithCategory) {
+        if (transaction is Income && (transaction as Income).isInitialTransaction) {
+          return AppColors.greyBgr(context);
+        }
+        return (transaction as IBaseTransactionWithCategory).category!.backgroundColor;
+      }
+
+      return AppColors.greyBgr(context);
+    }
+
+    Widget? child() {
+      if (transaction is IBaseTransactionWithCategory) {
+        if (transaction is Income && (transaction as Income).isInitialTransaction) {
+          return SvgIcon(
+            AppIcons.add,
+            color: context.appTheme.onBackground,
+          );
+        }
+        return SvgIcon(
+          (transaction as IBaseTransactionWithCategory).category!.iconPath,
+          color: (transaction as IBaseTransactionWithCategory).category!.iconColor,
+        );
+      }
+
+      if (transaction is Transfer) {
+        return SvgIcon(
+          AppIcons.transfer,
+          color: context.appTheme.onBackground,
+        );
+      }
+
+      if (transaction is CreditPayment) {
+        return SvgIcon(
+          AppIcons.handCoin,
+          color: context.appTheme.onBackground,
+        );
+      }
+
+      return null;
+    }
+
     return Container(
-      height: size ?? 7,
-      width: size ?? 7,
+      height: size ?? 32,
+      width: size ?? 32,
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: _color(context, transaction),
+        color: color().withOpacity(0.8),
         borderRadius: BorderRadius.circular(100),
       ),
+      child: child(),
     );
   }
 }
@@ -169,7 +214,7 @@ class TxnCategoryName extends StatelessWidget {
       _name,
       style: kHeader3TextStyle.copyWith(
         fontSize: fontSize ?? 12,
-        color: context.appTheme.onBackground.withOpacity(_isInitial(transaction) ? 0.5 : 1),
+        color: context.appTheme.onBackground,
       ),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -206,7 +251,7 @@ class TxnAccountIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SvgIcon(
       _iconPath(ref),
-      size: 20,
+      size: 16,
       color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.5 : 1),
     );
   }
@@ -225,7 +270,12 @@ class TxnAccountName extends ConsumerWidget {
     return Text(
       deletedAccount ? 'Deleted account'.hardcoded : transaction.account.name,
       style: kHeader3TextStyle.copyWith(
-          color: context.appTheme.onBackground.withOpacity(deletedAccount ? 0.5 : 1), fontSize: fontSize ?? 12),
+          color: context.appTheme.onBackground.withOpacity(deletedAccount
+              ? 0.25
+              : transaction is Transfer || transaction is CreditPayment
+                  ? 1
+                  : 0.65),
+          fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -381,7 +431,7 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1});
+      {super.key, this.height = 27, this.width = 14, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 0.65});
 
   final double height;
   final double adjustY;
@@ -497,9 +547,9 @@ class _TransferLinePainter extends CustomPainter {
 
     ///// DO NOT CHANGE ANYTHING UNDER THIS LINE /////
 
-    double startX = 3;
+    double startX = 1;
     double startY = arrowYOffset + adjustY;
-    double endX = width - 3;
+    double endX = width - 1;
     double endY = height - arrowYOffset - adjustY;
 
     Offset arrowHead = Offset(endX, endY);
