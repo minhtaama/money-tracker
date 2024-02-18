@@ -33,7 +33,7 @@ class CheckpointInstallmentsList extends StatelessWidget {
       children: [
         Text(
           'Ongoing installments:',
-          style: kHeader4TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
+          style: kNormalTextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
           softWrap: false,
           overflow: TextOverflow.ellipsis,
         ),
@@ -64,7 +64,7 @@ class _List extends StatefulWidget {
 class _ListState extends State<_List> {
   final List<Installment> _installmentsMarkAsDone = [];
 
-  late List<Installment> _installmentsList = widget.statement.installments;
+  late List<Installment> _installmentsList = widget.statement.transactions.installmentsToPay;
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _ListState extends State<_List> {
   @override
   void didUpdateWidget(covariant _List oldWidget) {
     setState(() {
-      _installmentsList = widget.statement.installments;
+      _installmentsList = widget.statement.transactions.installmentsToPay;
       _installmentsMarkAsDone.clear();
       widget.onMarkAsDone(_installmentsMarkAsDone, _totalUnpaid);
     });
@@ -84,7 +84,7 @@ class _ListState extends State<_List> {
 
   double get _totalUnpaid {
     double result = 0;
-    for (Installment ins in widget.statement.installments) {
+    for (Installment ins in widget.statement.transactions.installmentsToPay) {
       result += ins.txn.paymentAmount!.roundBySetting(context) * ins.monthsLeft;
     }
     for (Installment ins in _installmentsMarkAsDone) {
@@ -132,7 +132,7 @@ class _ListState extends State<_List> {
           padding: const EdgeInsets.only(left: 4.0),
           child: Text(
             'Total unpaid installment balance:',
-            style: kHeader4TextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
+            style: kNormalTextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
             softWrap: false,
             overflow: TextOverflow.ellipsis,
           ),

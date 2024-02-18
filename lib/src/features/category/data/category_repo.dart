@@ -11,13 +11,13 @@ class CategoryRepositoryRealmDb {
 
   final Realm realm;
 
-  int _categoryTypeInDb(CategoryType type) => switch (type) {
-        CategoryType.expense => 0,
-        CategoryType.income => 1,
-      };
+  // int _categoryTypeInDb(CategoryType type) => switch (type) {
+  //       CategoryType.expense => 0,
+  //       CategoryType.income => 1,
+  //     };
 
   RealmResults<CategoryDb> _realmResults(CategoryType type) {
-    return realm.all<CategoryDb>().query('type == \$0 SORT(order ASC)', [_categoryTypeInDb(type)]);
+    return realm.all<CategoryDb>().query('type == \$0 SORT(order ASC)', [type.databaseValue]);
   }
 
   RealmResults<CategoryTagDb> _tagRealmResults(Category category) {
@@ -45,7 +45,7 @@ class CategoryRepositoryRealmDb {
 
     final newCategory = CategoryDb(
       ObjectId(),
-      _categoryTypeInDb(type),
+      type.databaseValue,
       name,
       colorIndex,
       iconCategory,

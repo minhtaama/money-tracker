@@ -35,3 +35,47 @@ class Installment {
     return 'Installment{txn: $txn, monthsLeft: $monthsLeft}';
   }
 }
+
+typedef StmDateData = ({
+  DateTime start,
+  DateTime end,
+  DateTime due,
+  DateTime previousDue,
+  DateTime statement,
+});
+
+typedef StmTxnsData = ({
+  List<Installment> installmentsToPay,
+  List<BaseCreditTransaction> inBillingCycle,
+  List<BaseCreditTransaction> inGracePeriod,
+});
+
+typedef _StmRawSpentData = ({
+  ({double all, double toPay}) inBillingCycle,
+  ({double all, double toPay}) inGracePeriod,
+});
+
+typedef _StmRawPaidData = ({
+  ({double all, double inPreviousGracePeriod}) inBillingCycle,
+  double inGracePeriod,
+});
+
+typedef StmSpentData = ({
+  ({double all, double toPay}) inBillingCycle,
+  double inGracePeriod,
+});
+
+typedef StmCarryWithInterestData = ({
+  double totalBalance,
+  double balanceToPay,
+  double interest,
+});
+
+typedef StmCarryWithoutInterestData = ({
+  double totalBalance,
+  double balanceToPay,
+});
+
+typedef StmEndPoint = ({double totalSpent, double spentToPay});
+
+typedef StmStartPoint = ({double totalRemaining, double remainingToPay});

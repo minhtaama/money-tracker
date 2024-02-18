@@ -58,11 +58,7 @@ class CustomLineChart extends StatelessWidget {
       return _CustomLineType.dashed;
     }
 
-    if (currentMonth.isInMonthBefore(today)) {
-      return _CustomLineType.solid;
-    }
-
-    throw ErrorDescription('Whoop whoop');
+    return _CustomLineType.solid;
   }
 
   @override
@@ -75,10 +71,8 @@ class CustomLineChart extends StatelessWidget {
     final todayIndex = spots.indexWhere((e) => e.isToday);
     final hasToday = todayIndex != -1;
 
-    final statementDayIndex =
-        isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
-    final previousDueDayIndex =
-        isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
+    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
 
     // 0.2 is added for step chart to display correctly
     final todayPercent = hasToday && _customLineType == _CustomLineType.solidToDashed
@@ -86,25 +80,24 @@ class CustomLineChart extends StatelessWidget {
         : 0.0;
 
     final optionalLineGradient = LinearGradient(
-      colors: [
-        color ?? context.appTheme.accent1,
-        color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)
-      ],
+      colors: [color ?? context.appTheme.accent1, color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)],
       stops: [todayPercent, todayPercent + 0.00000001],
     );
 
     Gradient mainBelowLineGradient() {
       bool isDashed = _customLineType == _CustomLineType.dashed;
+      bool isDarkTheme = context.appTheme.isDarkTheme;
+      double opaTop = isDarkTheme ? (isDashed ? 0.25 : 0.35) : (isDashed ? 0.2 : 0.35);
+      double opaBottom = isDarkTheme ? 0.15 : 0;
 
       return LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          color?.withOpacity(isDashed ? 0.1 : 0.35) ??
-              context.appTheme.accent1.withOpacity(isDashed ? 0.1 : 0.35),
-          color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0),
+          color?.withOpacity(opaTop) ?? context.appTheme.accent1.withOpacity(opaTop),
+          color?.withOpacity(opaBottom) ?? context.appTheme.accent1.withOpacity(opaBottom),
         ],
-        stops: [0, context.appTheme.isDarkTheme ? 1 : 0.85],
+        stops: const [0, 0.7],
       );
     }
 
@@ -200,7 +193,8 @@ class CustomLineChart extends StatelessWidget {
               return FlDotTodayPainter(
                 context,
                 color: color ?? context.appTheme.accent1,
-                dotColor: todayDotColor ?? context.appTheme.secondary1,
+                dotColor: todayDotColor ??
+                    (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary1),
                 boxUnderDot: boxUnderDot,
               );
             }
@@ -229,7 +223,7 @@ class CustomLineChart extends StatelessWidget {
 
       final textStyle = isToday
           ? kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground)
-          : kHeader4TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+          : kNormalTextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(
@@ -249,8 +243,7 @@ class CustomLineChart extends StatelessWidget {
 
     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
       final spot = spots.firstWhere((spot) => spot.x == value,
-          orElse: () =>
-              CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
+          orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
 
       final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
 
@@ -265,8 +258,7 @@ class CustomLineChart extends StatelessWidget {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.center;
 
-      final textStyle =
-          kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(
@@ -274,8 +266,7 @@ class CustomLineChart extends StatelessWidget {
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
-                fitInside:
-                    SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
                 child: FittedBox(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -313,14 +304,12 @@ class CustomLineChart extends StatelessWidget {
 
         final spot = spots[touchedSpot.spotIndex];
         final symbol = context.appSettings.currency.symbol;
-        final dateTime =
-            spot.dateTime?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
-                currentMonth
-                    .copyWith(day: touchedSpot.x.toInt())
-                    .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
+        final dateTime = spot.dateTime?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
+            currentMonth
+                .copyWith(day: touchedSpot.x.toInt())
+                .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
 
-        final line1 =
-            isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
+        final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
 
         String line2() {
           if (isForCredit) {
@@ -354,16 +343,13 @@ class CustomLineChart extends StatelessWidget {
             ? 'Oustd. Bal: $symbol${CalService.formatCurrency(context, (data as CLCDataForCredit).maxAmount - spot.amount)}\n'
             : dateTime;
 
-        final line4 =
-            isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
+        final line4 = isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
 
         items.add(LineTooltipItem(
           line1,
           kHeader2TextStyle.copyWith(
             color: lum == null
-                ? (context.appTheme.isDarkTheme
-                    ? context.appTheme.onBackground
-                    : context.appTheme.onSecondary)
+                ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
                 : lum > 0.5
                     ? AppColors.black
                     : AppColors.white,
@@ -375,9 +361,7 @@ class CustomLineChart extends StatelessWidget {
               text: line2(),
               style: kHeader2TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme
-                        ? context.appTheme.onBackground
-                        : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -388,9 +372,7 @@ class CustomLineChart extends StatelessWidget {
               text: line3,
               style: kHeader3TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme
-                        ? context.appTheme.onBackground
-                        : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -401,9 +383,7 @@ class CustomLineChart extends StatelessWidget {
               text: line4,
               style: kHeader3TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme
-                        ? context.appTheme.onBackground
-                        : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -482,10 +462,10 @@ class CustomLineChart extends StatelessWidget {
                   style: kHeader3TextStyle.copyWith(
                     fontSize: 11,
                     color: extraLineY != null
-                        ? color?.withOpacity(0.3) ??
+                        ? color?.withOpacity(0.2) ??
                             (context.appTheme.isDarkTheme
-                                ? context.appTheme.onBackground.withOpacity(0.3)
-                                : context.appTheme.onSecondary.withOpacity(0.3))
+                                ? context.appTheme.onBackground.withOpacity(0.2)
+                                : context.appTheme.onSecondary.withOpacity(0.2))
                         : color?.withOpacity(0) ??
                             (context.appTheme.isDarkTheme
                                 ? context.appTheme.onBackground.withOpacity(0)
@@ -495,10 +475,10 @@ class CustomLineChart extends StatelessWidget {
                   labelResolver: (_) => extraLineText ?? '',
                 ),
                 color: extraLineY != null
-                    ? color?.withOpacity(0.3) ??
+                    ? color?.withOpacity(0.1) ??
                         (context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground.withOpacity(0.3)
-                            : context.appTheme.onSecondary.withOpacity(0.3))
+                            ? context.appTheme.onBackground.withOpacity(0.1)
+                            : context.appTheme.onSecondary.withOpacity(0.1))
                     : color?.withOpacity(0) ??
                         (context.appTheme.isDarkTheme
                             ? context.appTheme.onBackground.withOpacity(0)
@@ -508,19 +488,22 @@ class CustomLineChart extends StatelessWidget {
           : [],
     );
 
-    return LineChart(
-      LineChartData(
-        maxY: maxY,
-        minY: minY,
-        gridData: const FlGridData(show: false),
-        borderData: FlBorderData(show: false),
-        titlesData: titlesData,
-        lineTouchData: lineTouchData,
-        lineBarsData: lineBarsData,
-        extraLinesData: extraLinesData,
+    return Transform.translate(
+      offset: Offset(0, isForCredit ? 30 : 14),
+      child: LineChart(
+        LineChartData(
+          maxY: maxY,
+          minY: minY,
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          titlesData: titlesData,
+          lineTouchData: lineTouchData,
+          lineBarsData: lineBarsData,
+          extraLinesData: extraLinesData,
+        ),
+        duration: k550msDuration,
+        curve: Curves.easeInOut,
       ),
-      duration: k550msDuration,
-      curve: Curves.easeInOut,
     );
   }
 }
@@ -537,6 +520,7 @@ class FlDotTodayPainter extends FlDotPainter {
     this.dotStrokeWidth = 2.5,
     this.textPadding = const EdgeInsets.all(4),
     this.boxUnderDot = false,
+    this.boxAtLeft = false,
   });
 
   BuildContext context;
@@ -556,6 +540,8 @@ class FlDotTodayPainter extends FlDotPainter {
   double cornerRadius;
 
   bool boxUnderDot;
+
+  bool boxAtLeft;
 
   double get _colorLum => color.computeLuminance();
 
@@ -598,9 +584,9 @@ class FlDotTodayPainter extends FlDotPainter {
         maxWidth: 150,
       );
 
-    bool isTextOutOfScreen = false;
+    bool isBoxAtLeft = false;
 
-    final offsetFromDot = Offset(20, boxUnderDot ? 12 : -30);
+    final offsetFromDot = Offset((textPainter.width + textPadding.horizontal) / 2, boxUnderDot ? 12 : -32);
 
     // Offset to center with the dot
     Offset textOffset = Offset(
@@ -609,17 +595,13 @@ class FlDotTodayPainter extends FlDotPainter {
     );
 
     // Re-calculate the offset with screen width
-    if (textOffset.dx + textPainter.width > Gap.screenWidth(context)) {
+    if (textOffset.dx + textPainter.width + textPadding.horizontal > Gap.screenWidth(context) || boxAtLeft) {
       textOffset = Offset(
-        Gap.screenWidth(context) -
-            textPainter.width -
-            (textPadding.horizontal / 2) -
-            (dotRadius * 2) -
-            5,
+        offsetInCanvas.dx - textPainter.width - (textPadding.horizontal / 2) - dotRadius,
         textOffset.dy,
       );
 
-      isTextOutOfScreen = true;
+      isBoxAtLeft = true;
     }
 
     canvas.drawRRect(
@@ -628,10 +610,10 @@ class FlDotTodayPainter extends FlDotPainter {
         textOffset.dy - textPadding.top,
         textOffset.dx + textPainter.width + textPadding.right,
         textOffset.dy + textPainter.height + textPadding.bottom,
-        topLeft: Radius.circular(!isTextOutOfScreen && boxUnderDot ? 0 : cornerRadius),
-        topRight: Radius.circular(isTextOutOfScreen && boxUnderDot ? 0 : cornerRadius),
-        bottomRight: Radius.circular(isTextOutOfScreen && !boxUnderDot ? 0 : cornerRadius),
-        bottomLeft: Radius.circular(!isTextOutOfScreen && !boxUnderDot ? 0 : cornerRadius),
+        topLeft: Radius.circular(!isBoxAtLeft && boxUnderDot ? 0 : cornerRadius),
+        topRight: Radius.circular(isBoxAtLeft && boxUnderDot ? 0 : cornerRadius),
+        bottomRight: Radius.circular(isBoxAtLeft && !boxUnderDot ? 0 : cornerRadius),
+        bottomLeft: Radius.circular(!isBoxAtLeft && !boxUnderDot ? 0 : cornerRadius),
       ),
       Paint()
         ..color = color.withOpacity(0.7)

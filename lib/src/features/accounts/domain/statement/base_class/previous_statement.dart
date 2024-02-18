@@ -14,7 +14,7 @@ class PreviousStatement {
   ///
   /// Why balance but not spent amount? Because the "previous statement" will
   /// carry the interest of the "pre-previous statement" to the "previous statement".
-  final double balanceToPayAtEndDateWithPrvGracePayment;
+  final double balanceToPay;
 
   /// Can't be **negative**, no interest included. Use as the balance to pay at the start date
   /// of current statement.
@@ -33,7 +33,7 @@ class PreviousStatement {
   ///
   /// Why balance but not spent amount? Because the "previous statement" will
   /// carry the interest of the "pre-previous statement" to the "previous statement".
-  final double balanceAtEndDateWithPrvGracePayment;
+  final double balance;
 
   /// Can't be **negative**, no interest included. Use as the credit balance at the start date
   /// of current statement.
@@ -46,17 +46,13 @@ class PreviousStatement {
 
   /// Only charge/carry interest if `balanceToPay` is more than 0.
   /// This is the interest that THIS PREVIOUS STATEMENT carry to "CURRENT STATEMENT"
-  final double interestToThisStatement;
+  final double interest;
 
   /// Use for checking if can add payments
   final DateTime dueDate;
 
   factory PreviousStatement.noData({required DateTime dueDate}) {
-    return PreviousStatement._(0, 0,
-        balanceToPayAtEndDateWithPrvGracePayment: 0,
-        balanceAtEndDateWithPrvGracePayment: 0,
-        interestToThisStatement: 0,
-        dueDate: dueDate);
+    return PreviousStatement._(0, 0, balanceToPay: 0, balance: 0, interest: 0, dueDate: dueDate);
   }
 
   /// Assign to `previousStatement` of the next Statement object.
@@ -64,33 +60,52 @@ class PreviousStatement {
   const PreviousStatement._(
     this.balanceToPayAtEndDate,
     this.balanceAtEndDate, {
-    required this.balanceToPayAtEndDateWithPrvGracePayment,
-    required this.balanceAtEndDateWithPrvGracePayment,
-    required this.interestToThisStatement,
+    required this.balanceToPay,
+    required this.balance,
+    required this.interest,
     required this.dueDate,
   });
 
-  PreviousStatement copyWith({
-    double? balanceToPayAtEndDateWithPrvGracePayment,
-    double? balanceToPayAtEndDate,
-    double? balanceAtEndDateWithPrvGracePayment,
-    double? balanceAtEndDate,
-    double? interestToThisStatement,
-  }) {
-    return PreviousStatement._(
-      balanceToPayAtEndDate ?? this.balanceToPayAtEndDate,
-      balanceAtEndDate ?? this.balanceAtEndDate,
-      balanceToPayAtEndDateWithPrvGracePayment:
-          balanceToPayAtEndDateWithPrvGracePayment ?? this.balanceToPayAtEndDateWithPrvGracePayment,
-      balanceAtEndDateWithPrvGracePayment:
-          balanceAtEndDateWithPrvGracePayment ?? this.balanceAtEndDateWithPrvGracePayment,
-      interestToThisStatement: interestToThisStatement ?? this.interestToThisStatement,
-      dueDate: dueDate,
-    );
-  }
+  // PreviousStatement copyWith({
+  //   double? balanceToPay,
+  //   double? balanceToPayAtEndDate,
+  //   double? balance,
+  //   double? balanceAtEndDate,
+  //   double? interest,
+  // }) {
+  //   return PreviousStatement._(
+  //     balanceToPayAtEndDate ?? this.balanceToPayAtEndDate,
+  //     balanceAtEndDate ?? this.balanceAtEndDate,
+  //     balanceToPay: balanceToPay ?? this.balanceToPay,
+  //     balance: balance ?? this.balance,
+  //     interest: interest ?? this.interest,
+  //     dueDate: dueDate,
+  //   );
+  // }
 
   @override
   String toString() {
-    return 'PreviousStatement{balanceToPay: $balanceToPayAtEndDateWithPrvGracePayment, _balanceToPayAtEndDate: $balanceToPayAtEndDate, balance: $balanceAtEndDateWithPrvGracePayment, _balanceAtEndDate: $balanceAtEndDate, interest: $interestToThisStatement, dueDate: $dueDate}';
+    return 'PreviousStatement{balanceToPay: $balanceToPay, _balanceToPayAtEndDate: $balanceToPayAtEndDate, balance: $balance, _balanceAtEndDate: $balanceAtEndDate, interest: $interest, dueDate: $dueDate}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PreviousStatement &&
+          runtimeType == other.runtimeType &&
+          balanceToPay == other.balanceToPay &&
+          balanceToPayAtEndDate == other.balanceToPayAtEndDate &&
+          balance == other.balance &&
+          balanceAtEndDate == other.balanceAtEndDate &&
+          interest == other.interest &&
+          dueDate == other.dueDate;
+
+  @override
+  int get hashCode =>
+      balanceToPay.hashCode ^
+      balanceToPayAtEndDate.hashCode ^
+      balance.hashCode ^
+      balanceAtEndDate.hashCode ^
+      interest.hashCode ^
+      dueDate.hashCode;
 }

@@ -35,7 +35,7 @@ class SelectCurrencyScreen extends ConsumerWidget {
                       title: Currency.values[index].name,
                       trailing: Text(
                         Currency.values[index].code,
-                        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+                        style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
                       ),
                       onTap: () {
                         final settingController = ref.read(settingsControllerProvider.notifier);

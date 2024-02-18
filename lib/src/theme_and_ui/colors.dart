@@ -65,9 +65,9 @@ class AppColors {
       background1: const Color(0xFFe9ecef),
       background2: const Color(0xFFced4da),
       onPrimary: const Color(0xFFf8f9fa),
-      onSecondary: const Color(0xFF212529),
+      onSecondary: AppColors.black,
       onAccent: const Color(0xFFf8f9fa),
-      onBackground: const Color(0xFF212529),
+      onBackground: AppColors.black,
       positive: const Color(0xFF03979d),
       negative: const Color(0xFFc9184a),
       onPositive: AppColors.black,
@@ -88,7 +88,7 @@ class AppColors {
       background0: const Color(0xff262a2e),
       background1: const Color(0xFF1D2025),
       background2: const Color(0xFF14161A),
-      onBackground: const Color(0xFFced4da),
+      onBackground: AppColors.white,
       positive: const Color(0xff04cad1),
       negative: const Color(0xffd93664),
       onPositive: AppColors.black,
@@ -110,9 +110,9 @@ class AppColors {
       background1: const Color(0xFFe9ecef),
       background2: const Color(0xffbcd0d1),
       onPrimary: const Color(0xFFf8f9fa),
-      onSecondary: const Color(0xFF212529),
+      onSecondary: AppColors.black,
       onAccent: const Color(0xFFf8f9fa),
-      onBackground: const Color(0xFF212529),
+      onBackground: AppColors.black,
       positive: const Color(0xFF03979d),
       negative: const Color(0xFFc9184a),
       onPositive: AppColors.black,
@@ -133,7 +133,7 @@ class AppColors {
       onPrimary: const Color(0xFF212529),
       onSecondary: const Color(0xFF212529),
       onAccent: const Color(0xFF212529),
-      onBackground: const Color(0xFFced4da),
+      onBackground: AppColors.white,
       positive: const Color(0xff04cad1),
       negative: const Color(0xffd93664),
       onPositive: AppColors.black,
@@ -147,12 +147,12 @@ class AppColors {
     ThemeType.light: AppThemeData(
       isDarkTheme: false,
       primary: const Color(0xff444d36),
-      secondary1: const Color(0xfff7ffed),
+      secondary1: const Color(0xfff8faf5),
       secondary2: const Color(0xffd4e0c5),
       accent1: const Color(0xffb5c99a),
       accent2: const Color(0xFF97a97c),
-      background0: const Color(0xfff8faf5),
-      background1: const Color(0xffebede8),
+      background0: const Color(0xfffefffa),
+      background1: const Color(0xffebede6),
       background2: const Color(0xffcfe1b9),
       onPrimary: const Color(0xFFf8f9fa),
       onSecondary: const Color(0xFF212529),
@@ -178,7 +178,7 @@ class AppColors {
       onPrimary: const Color(0xFF212529),
       onSecondary: const Color(0xFF212529),
       onAccent: const Color(0xFF212529),
-      onBackground: const Color(0xFFced4da),
+      onBackground: AppColors.white,
       positive: const Color(0xFFcfe1b9),
       negative: const Color(0xfff26d93),
       onPositive: AppColors.black,
@@ -190,11 +190,12 @@ class AppColors {
 
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF111111);
+  static const greyConst = Color(0x80666666);
 
   static Color grey(BuildContext context) =>
       context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.5) : AppColors.white.addDark(0.5);
   static Color greyBorder(BuildContext context) =>
       context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.21) : AppColors.white.addDark(0.21);
   static Color greyBgr(BuildContext context) =>
-      context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.15) : AppColors.white.addDark(0.1);
+      context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.15) : AppColors.white.addDark(0.17);
 }

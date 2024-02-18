@@ -7,7 +7,7 @@ import '../../../accounts/domain/account_base.dart';
 import '../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 
-//TODO: https://pub.dev/documentation/riverpod/latest/riverpod/Notifier-class.html
+//https://pub.dev/documentation/riverpod/latest/riverpod/Notifier-class.html
 
 class CreditPaymentFormState {
   final DateTime? dateTime;
@@ -22,8 +22,7 @@ class CreditPaymentFormState {
 
   final Statement? statement;
 
-  double get totalBalanceAmount =>
-      statement == null || dateTime == null ? 0 : statement!.balanceToPayAt(dateTime!);
+  double get totalBalanceAmount => statement == null || dateTime == null ? 0 : statement!.balanceToPayAt(dateTime!);
 
   CreditPaymentFormState._({
     this.statement,
@@ -59,8 +58,7 @@ class CreditPaymentFormState {
       isFullPayment: isFullPayment != null ? isFullPayment() : this.isFullPayment,
       adjustment: adjustment != null ? adjustment() : this.adjustment,
       userPaymentAmount: userPaymentAmount != null ? userPaymentAmount() : this.userPaymentAmount,
-      userRemainingAmount:
-          userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
+      userRemainingAmount: userRemainingAmount != null ? userRemainingAmount() : this.userRemainingAmount,
     );
   }
 
@@ -113,8 +111,7 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
         // Because: afterAdjustedAmount = userPaymentAmount + adjustment
         // And: userRemaining = totalBalance - afterAdjustedAmount
         // Then: userRemaining = totalBalance - userPaymentAmount - adjustment
-        adjustment: () =>
-            state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
+        adjustment: () => state.totalBalanceAmount - state.userPaymentAmount! - state.userRemainingAmount!);
   }
 
   void changePaymentInput(BuildContext context, String value) {
@@ -126,8 +123,7 @@ class CreditPaymentFormController extends AutoDisposeNotifier<CreditPaymentFormS
     if (state.userPaymentAmount != null &&
         //(state.userPaymentAmount! > state.totalBalanceAmount ||
         (state.isFullPayment ||
-            state.userPaymentAmount!.roundBySetting(context) ==
-                state.totalBalanceAmount.roundBySetting(context))) {
+            state.userPaymentAmount!.roundBySetting(context) == state.totalBalanceAmount.roundBySetting(context))) {
       //Because: afterAdjustedAmount = totalBalance = userPayment + adjustment
       state = state.copyWith(adjustment: () => state.totalBalanceAmount - state.userPaymentAmount!);
     } else {

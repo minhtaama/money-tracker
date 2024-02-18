@@ -3,6 +3,10 @@ import '../src/utils/enums.dart';
 
 part 'realm_dto.g.dart';
 
+abstract interface class IRealmObjectWithID {
+  late ObjectId id;
+}
+
 abstract interface class _IOrderable {
   int? order;
 }
@@ -17,7 +21,8 @@ abstract interface class _IColorAndIcon {
 /////////////////////////////////////// ACCOUNT ////////////////////////////////////
 
 @RealmModel()
-class _AccountDb implements _IColorAndIcon, _IOrderable {
+class _AccountDb implements IRealmObjectWithID, _IColorAndIcon, _IOrderable {
+  @override
   @PrimaryKey()
   late ObjectId id;
 
@@ -52,7 +57,7 @@ class _AccountDb implements _IColorAndIcon, _IOrderable {
   @Backlink(#transferAccount)
   late Iterable<_TransactionDb> transferTransactions;
 
-  /// Only specify this property if type is [AccountType.credit]
+  /// Must specify this property if type is [AccountType.credit]
   late _CreditDetailsDb? creditDetails;
 }
 
@@ -74,7 +79,8 @@ class _CreditDetailsDb {
 /////////////////////////////////////// CATEGORY ////////////////////////////////////
 
 @RealmModel()
-class _CategoryDb implements _IOrderable, _IColorAndIcon {
+class _CategoryDb implements IRealmObjectWithID, _IOrderable, _IColorAndIcon {
+  @override
   @PrimaryKey()
   late ObjectId id;
 
@@ -102,7 +108,8 @@ class _CategoryDb implements _IOrderable, _IColorAndIcon {
 }
 
 @RealmModel()
-class _CategoryTagDb implements _IOrderable {
+class _CategoryTagDb implements IRealmObjectWithID, _IOrderable {
+  @override
   @PrimaryKey()
   late ObjectId id;
 
@@ -117,7 +124,8 @@ class _CategoryTagDb implements _IOrderable {
 /////////////////////////////////////// TRANSACTION ////////////////////////////////////
 
 @RealmModel()
-class _TransactionDb {
+class _TransactionDb implements IRealmObjectWithID {
+  @override
   @PrimaryKey()
   late ObjectId id;
 
@@ -191,6 +199,8 @@ class _CreditInstallmentDetailsDb {
 class _CreditPaymentDetailsDb {
   bool isFullPayment = false;
 
+  bool isAdjustToAPRChanges = false;
+
   double adjustment = 0;
 }
 
@@ -232,7 +242,8 @@ class _PersistentValuesDb {
 }
 
 @RealmModel()
-class _BalanceAtDateTimeDb {
+class _BalanceAtDateTimeDb implements IRealmObjectWithID {
+  @override
   @PrimaryKey()
   late ObjectId id;
 

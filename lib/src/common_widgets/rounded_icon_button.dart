@@ -16,6 +16,7 @@ class RoundedIconButton extends StatelessWidget {
     this.size,
     this.iconPadding = 12,
     this.onTap,
+    this.onLongPress,
     this.iconColor,
     this.inkColor,
   });
@@ -29,6 +30,7 @@ class RoundedIconButton extends StatelessWidget {
   final double? labelSize;
   final double iconPadding;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,7 @@ class RoundedIconButton extends StatelessWidget {
                     color: Colors.transparent,
                     child: CustomInkWell(
                       onTap: onTap,
+                      onLongPress: onLongPress,
                       borderRadius: BorderRadius.circular(10000),
                       inkColor: inkColor ?? iconColor ?? context.appTheme.onPrimary,
                       child: Padding(
@@ -93,6 +96,7 @@ class RoundedIconButton extends StatelessWidget {
               isGradient: true,
               child: CustomInkWell(
                 onTap: onTap,
+                onLongPress: onLongPress,
                 borderRadius: BorderRadius.circular(10000),
                 inkColor: iconColor ?? AppColors.grey(context),
                 child: Padding(

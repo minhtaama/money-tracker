@@ -15,12 +15,15 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late CreditPayment _transaction = widget.transaction;
 
-  late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
+  late final _creditAccount = _transaction.account is DeletedAccount
+      ? null
+      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
-  late final bool _canDelete = _creditAccount.latestStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
+  late final bool _canDelete = _transaction.account is DeletedAccount
+      ? true
+      : _creditAccount!.latestClosedStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
 
   @override
   void didUpdateWidget(covariant _PaymentDetails oldWidget) {
@@ -37,29 +40,31 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
     return CustomSection(
       title: 'Credit Payment'.hardcoded,
       subTitle: _DateTime(
-        isEditMode: _isEditMode,
+        isEditMode: _transaction.account is DeletedAccount ? false : _isEditMode,
         isEdited: _isDateTimeEdited(stateWatch),
         dateTime: stateWatch.dateTime ?? _transaction.dateTime,
         onEditModeTap: _changeDateTime,
       ),
       subIcons: widget.screenType == TransactionScreenType.editable
           ? [
-              _EditButton(
-                isEditMode: _isEditMode,
-                onTap: () {
-                  if (_isEditMode) {
-                    if (_submit()) {
-                      setState(() {
-                        _isEditMode = !_isEditMode;
-                      });
-                    }
-                  } else {
-                    setState(() {
-                      _isEditMode = !_isEditMode;
-                    });
-                  }
-                },
-              ),
+              widget.transaction.isAdjustToAPRChange
+                  ? Gap.noGap
+                  : _EditButton(
+                      isEditMode: _isEditMode,
+                      onTap: () {
+                        if (_isEditMode) {
+                          if (_submit()) {
+                            setState(() {
+                              _isEditMode = !_isEditMode;
+                            });
+                          }
+                        } else {
+                          setState(() {
+                            _isEditMode = !_isEditMode;
+                          });
+                        }
+                      },
+                    ),
               _DeleteButton(
                 isEditMode: _isEditMode,
                 isDisable: !_canDelete,
@@ -93,10 +98,10 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
                   _AccountCard(
                     isEditMode: _isEditMode,
                     isEdited: _isFromAccountEdited(stateWatch),
-                    account: stateWatch.fromRegularAccount ?? _transaction.transferAccount!,
+                    account: stateWatch.fromRegularAccount ?? _transaction.transferAccount,
                     onEditModeTap: _changeFromAccount,
                   ),
-                  _AccountCard(isEditMode: false, account: widget.transaction.account!),
+                  _AccountCard(isEditMode: false, account: widget.transaction.account),
                 ],
               ),
             ),
@@ -119,11 +124,11 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   CreditPaymentFormState get _stateRead => ref.read(creditPaymentFormNotifierProvider);
 
   void _changeDateTime() async {
-    final statement = _creditAccount.statementAt(_transaction.dateTime, upperGapAtDueDate: true);
+    final statement = _creditAccount!.statementAt(_transaction.dateTime, upperGapAtDueDate: true);
 
     final returnedValue = await showCreditPaymentDateTimeEditDialog(
       context,
-      creditAccount: _creditAccount,
+      creditAccount: _creditAccount!,
       statement: statement!,
       dbDateTime: _transaction.dateTime,
       selectedDateTime: _stateRead.dateTime,

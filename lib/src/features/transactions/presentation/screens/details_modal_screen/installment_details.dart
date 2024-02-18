@@ -59,25 +59,33 @@ class _Transaction extends StatelessWidget {
     return CardItem(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      width: 400,
+      // height: 300,
       elevation: 1,
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction,
-            extra: [transaction.databaseObject.id.hexString, TransactionScreenType.uneditable]),
+        onTap: () => context.push(
+          RoutePath.transaction,
+          extra: (
+            string: transaction.databaseObject.id.hexString,
+            type: TransactionScreenType.uneditable,
+          ),
+        ),
         child: Column(
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '${formatter.format(transaction.dateTime.hour)}:${formatter.format(transaction.dateTime.minute)}',
                   style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.onBackground, fontSize: kHeader4TextStyle.fontSize),
+                      color: context.appTheme.onBackground, fontSize: kNormalTextStyle.fontSize),
                 ),
                 Gap.w8,
                 Text(
                   transaction.dateTime.getFormattedDate(format: DateTimeFormat.mmmmddyyyy),
-                  style: kHeader4TextStyle.copyWith(
+                  style: kNormalTextStyle.copyWith(
                     color: context.appTheme.onBackground,
                   ),
                 ),

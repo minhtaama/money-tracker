@@ -68,9 +68,9 @@ flutter:
         - asset: assets/fonts/WixMadeforDisplay-Regular.ttf
         - asset: assets/fonts/WixMadeforDisplay-Medium.ttf
           weight: 500
-        - asset: assets/fonts/WixMadeforDisplay-Bold.ttf
-          weight: 600
         - asset: assets/fonts/WixMadeforDisplay-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/WixMadeforDisplay-Bold.ttf
           weight: 700
         - asset: assets/fonts/WixMadeforDisplay-ExtraBold.ttf
           weight: 900

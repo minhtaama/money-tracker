@@ -5,21 +5,12 @@ class StatementPayOnlyInGracePeriod extends Statement {
   const StatementPayOnlyInGracePeriod._(
     this._interest, {
     required super.previousStatement,
-    required super.spentInBillingCycle,
-    required super.spentInBillingCycleExcludeInstallments,
-    required super.spentInGracePeriod,
-    required super.spentInGracePeriodExcludeInstallments,
-    required super.paidInBillingCycle,
-    required super.paidInBillingCycleInPreviousGracePeriod,
-    required super.paidInGracePeriod,
+    required super.rawSpent,
+    required super.rawPaid,
     required super.apr,
     required super.checkpoint,
-    required super.startDate,
-    required super.endDate,
-    required super.dueDate,
-    required super.installments,
-    required super.transactionsInBillingCycle,
-    required super.transactionsInGracePeriod,
+    required super.date,
+    required super.transactions,
   });
 
   factory StatementPayOnlyInGracePeriod._create({
@@ -48,12 +39,10 @@ class StatementPayOnlyInGracePeriod extends Statement {
 
     //////////// TEMPORARY VARIABLES FOR THE LOOP TO CALCULATE INTEREST /////////////////
     // Calculate sum of daily balance from `tCheckpointDateTime` to current Txn DateTime
-    // If this is the first Txn in the list, `tCheckpointDateTime` is `Statement.startDate`
+    // If this is the first Txn in the list, `tCheckpointDateTime` is `statement.date.start`
     double tDailyBalanceSum = 0;
     // The current balance right before the point of this txn happens
-    double tCurrentBalance = previousStatement.balanceAtEndDate +
-        previousStatement.interestToThisStatement +
-        installmentsAmount;
+    double tCurrentBalance = previousStatement.balanceAtEndDate + previousStatement.interest + installmentsAmount;
     DateTime tCheckpointDateTime = startDate;
     //////////////////////////////////////////////////////////////
 
@@ -109,20 +98,24 @@ class StatementPayOnlyInGracePeriod extends Statement {
     return StatementPayOnlyInGracePeriod._(
       interest,
       previousStatement: previousStatement,
-      spentInBillingCycle: spentInBillingCycle,
-      spentInBillingCycleExcludeInstallments: spentInBillingCycleExcludeInstallments,
-      spentInGracePeriod: spentInGracePeriod,
-      spentInGracePeriodExcludeInstallments: spentInGracePeriodExcludeInstallments,
-      paidInBillingCycle: paidInBillingCycleInPreviousGracePeriod,
-      paidInBillingCycleInPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod,
-      paidInGracePeriod: paidInGracePeriod,
+      rawSpent: (
+        inBillingCycle: (all: spentInBillingCycle, toPay: spentInBillingCycleExcludeInstallments),
+        inGracePeriod: (all: spentInGracePeriod, toPay: spentInGracePeriodExcludeInstallments)
+      ),
+      rawPaid: (
+        inBillingCycle: (
+          all: paidInBillingCycleInPreviousGracePeriod,
+          inPreviousGracePeriod: paidInBillingCycleInPreviousGracePeriod
+        ),
+        inGracePeriod: paidInGracePeriod,
+      ),
       checkpoint: checkpoint,
-      startDate: startDate,
-      endDate: endDate,
-      dueDate: dueDate,
-      installments: installments,
-      transactionsInBillingCycle: txnsInBillingCycle,
-      transactionsInGracePeriod: txnsInGracePeriod,
+      date: (start: startDate, end: endDate, due: dueDate),
+      transactions: (
+        installmentsToPay: installments,
+        inBillingCycle: txnsInBillingCycle,
+        inGracePeriod: txnsInGracePeriod
+      ),
       apr: apr,
     );
   }
@@ -130,32 +123,29 @@ class StatementPayOnlyInGracePeriod extends Statement {
   @override
   final double _interest;
 
-  /// The total amount of payment that is for this statement
-  /// Will not be counted twice with payment-in-previous-grace-period amount
-  /// for previous statement. Read the code for more understanding.
-  @override
-  double get paidForThisStatement => _paidInGracePeriod;
+  // @override
+  // double get paid => _rawPaid.inGracePeriod;
 
   @override
   double balanceToPayAt(DateTime dateTime) {
-    if (dateTime.isBefore(statementDate)) {
+    if (dateTime.isBefore(date.statement)) {
       return 0;
     }
 
     final double x;
 
     if (checkpoint != null) {
-      if (!dateTime.onlyYearMonthDay.isAfter(endDate)) {
+      if (!dateTime.onlyYearMonthDay.isAfter(date.end)) {
         x = 0;
       } else {
-        x = checkpoint!.unpaidToPay - _paidInGracePeriod;
+        x = checkpoint!.unpaidToPay - _rawPaid.inGracePeriod;
       }
     } else {
-      x = (spentToPayAtStartDate - _paidInBillingCycle) +
-          interestFromPrevious +
-          installmentsAmountToPay +
-          spentInBillingCycleExcludeInstallments -
-          _paidInGracePeriod;
+      x = carry.balanceToPay +
+          carry.interest +
+          installmentsToPay +
+          _rawSpent.inBillingCycle.toPay -
+          _rawPaid.inGracePeriod;
     }
 
     if (x < 0) {

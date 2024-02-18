@@ -9,9 +9,11 @@ extension StringHardCoded on String {
 extension DoubleExtension on double {
   double roundBySetting(BuildContext context) {
     if (context.appSettings.showDecimalDigits) {
-      return double.parse(toStringAsFixed(2));
+      return roundTo2DP();
     } else {
       return roundToDouble();
     }
   }
+
+  double roundTo2DP() => double.parse((this).toStringAsFixed(2));
 }

@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import '../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../charts_and_carousel/presentation/money_carousel.dart';
-import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
 class ExtendedHomeTab extends ConsumerStatefulWidget {
@@ -35,9 +34,6 @@ class ExtendedHomeTab extends ConsumerStatefulWidget {
 }
 
 class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
-  late final _chartServicesRead = ref.read(customLineChartServicesProvider);
-  final ScrollController _controller = ScrollController();
-
   LineChartDataType _type = LineChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {
@@ -121,14 +117,6 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
-    Color lerpWithBg(Color color) {
-      if (context.appTheme.isDarkTheme) {
-        return Color.lerp(color, context.appTheme.background2, 0.5)!;
-      } else {
-        return Color.lerp(color, context.appTheme.secondary1, 0.75)!;
-      }
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -151,14 +139,9 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
           child: CustomLineChart(
             currentMonth: widget.displayDate,
             data: data,
-            offsetLabelUp: 22,
+            offsetLabelUp: 34,
             extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
             extraLineText: extraLineText,
-            todayDotColor: _type == LineChartDataType.expense
-                ? lerpWithBg(context.appTheme.negative)
-                : _type == LineChartDataType.income
-                    ? lerpWithBg(context.appTheme.positive)
-                    : null,
           ),
         ),
       ],

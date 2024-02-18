@@ -48,7 +48,7 @@ class CustomTile extends StatelessWidget {
                         ),
                         Text(
                           secondaryTitle!,
-                          style: kHeader4TextStyle.copyWith(
+                          style: kNormalTextStyle.copyWith(
                             color: context.appTheme.onBackground,
                           ),
                           overflow: secondaryTitleOverflow ? TextOverflow.fade : null,

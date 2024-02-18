@@ -18,7 +18,7 @@ class CardItem extends StatelessWidget {
       this.border,
       this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-      this.elevation = 1,
+      this.elevation = 0,
       this.clip = true,
       this.alignment});
   final Duration? duration;
@@ -58,10 +58,10 @@ class CardItem extends StatelessWidget {
                 ? []
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(elevation * 0.1),
-                      blurRadius: 0.5 + elevation,
-                      spreadRadius: 0.5 * elevation,
-                      offset: Offset(0, 1 + elevation),
+                      color: Colors.black.withOpacity(elevation * 0.05),
+                      // blurRadius: elevation + 0.5,
+                      // spreadRadius: elevation + 0.5,
+                      offset: Offset(0, elevation + 0.5),
                     ),
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2),

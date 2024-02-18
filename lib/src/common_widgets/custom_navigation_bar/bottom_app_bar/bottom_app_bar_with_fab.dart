@@ -23,8 +23,7 @@ class BottomAppBarItem {
 // value (user scroll direction), the BottomAppBar will be visible or not.
 
 class BottomAppBarWithFAB extends ConsumerStatefulWidget {
-  const BottomAppBarWithFAB({Key? key, required this.items, required this.onTabSelected})
-      : super(key: key);
+  const BottomAppBarWithFAB({Key? key, required this.items, required this.onTabSelected}) : super(key: key);
   final List<BottomAppBarItem> items;
   final ValueChanged<int> onTabSelected;
 
@@ -74,9 +73,8 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
       child: Container(
         decoration: BoxDecoration(
           border: Border(
-              top: context.appTheme.isDarkTheme
-                  ? BorderSide.none
-                  : BorderSide(color: Colors.grey.shade200, width: 1.5)),
+              top:
+                  context.appTheme.isDarkTheme ? BorderSide.none : BorderSide(color: Colors.grey.shade200, width: 1.5)),
         ),
         child: BottomAppBar(
           height: kBottomAppBarHeight,

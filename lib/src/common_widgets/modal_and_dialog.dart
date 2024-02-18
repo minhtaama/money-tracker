@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -61,7 +63,9 @@ Future<void> showErrorDialog(BuildContext context, String text, {bool enable = t
 Future<T?> showConfirmModalBottomSheet<T>({
   required BuildContext context,
   required String label,
-  String confirmLabel = 'Delete',
+  bool onlyIcon = false,
+  String? subLabel,
+  String confirmLabel = 'Confirm',
   String? confirmIcon,
   required VoidCallback onConfirm,
 }) {
@@ -79,6 +83,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
@@ -86,28 +91,62 @@ Future<T?> showConfirmModalBottomSheet<T>({
                   color: context.appTheme.onBackground,
                 ),
               ),
+              subLabel != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        subLabel,
+                        style: kNormalTextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  : Gap.noGap,
               Gap.h24,
               Row(
-                children: [
-                  IconWithTextButton(
-                    iconPath: AppIcons.back,
-                    label: 'No, go back!'.hardcoded,
-                    color: context.appTheme.onBackground,
-                    backgroundColor: AppColors.greyBgr(context),
-                    onTap: () => context.pop(),
-                  ),
-                  const Spacer(),
-                  IconWithTextButton(
-                    iconPath: confirmIcon ?? AppIcons.delete,
-                    label: confirmLabel,
-                    color: context.appTheme.onNegative,
-                    backgroundColor: context.appTheme.negative,
-                    onTap: () {
-                      onConfirm();
-                      context.pop();
-                    },
-                  ),
-                ],
+                children: onlyIcon
+                    ? [
+                        Expanded(
+                          child: IconWithTextButton(
+                            iconPath: AppIcons.back,
+                            label: 'No, go back!'.hardcoded,
+                            color: context.appTheme.onBackground,
+                            backgroundColor: AppColors.greyBgr(context),
+                            onTap: () => context.pop(),
+                          ),
+                        ),
+                        Gap.w24,
+                        RoundedIconButton(
+                          iconPath: confirmIcon ?? AppIcons.delete,
+                          iconColor: context.appTheme.onNegative,
+                          backgroundColor: context.appTheme.negative,
+                          onLongPress: () {
+                            context.pop();
+                            onConfirm();
+                          },
+                        )
+                      ]
+                    : [
+                        IconWithTextButton(
+                          iconPath: AppIcons.back,
+                          label: 'Go back'.hardcoded,
+                          color: context.appTheme.onBackground,
+                          backgroundColor: AppColors.greyBgr(context),
+                          onTap: () => context.pop(),
+                        ),
+                        const Spacer(),
+                        IconWithTextButton(
+                          iconPath: confirmIcon ?? AppIcons.delete,
+                          label: confirmLabel,
+                          color: context.appTheme.onNegative,
+                          backgroundColor: context.appTheme.negative,
+                          onTap: () {
+                            context.pop();
+                            onConfirm();
+                          },
+                        ),
+                      ],
               )
             ],
           ),
@@ -241,7 +280,7 @@ class ModalBottomSheetPage<T> extends Page<T> {
 }
 
 class Handle extends StatelessWidget {
-  const Handle({Key? key}) : super(key: key);
+  const Handle({super.key});
 
   @override
   Widget build(BuildContext context) {

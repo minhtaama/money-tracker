@@ -159,7 +159,7 @@ Widget _dayBuilderRegular(BuildContext context,
       child: Center(
         child: Text(
           date.day.toString(),
-          style: kHeader4TextStyle.copyWith(
+          style: kNormalTextStyle.copyWith(
             color: isDisabled != null && isDisabled
                 ? AppColors.greyBgr(context)
                 : isSelected != null && isSelected

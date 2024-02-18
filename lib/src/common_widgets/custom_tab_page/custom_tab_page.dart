@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/expanded_page_view.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../theme_and_ui/colors.dart';
 import 'custom_tab_bar.dart';
@@ -34,8 +35,7 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state =
-          context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -77,8 +77,7 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: !context.appTheme.isDarkTheme
-                        ? BorderSide(
-                            color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                        ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
                         : BorderSide.none,
                   ),
                 ),
@@ -122,15 +121,14 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   ConsumerState<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
 }
 
-class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView>
-    with TickerProviderStateMixin {
+class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView> with TickerProviderStateMixin {
   late final double _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
   late final double _triggerDividerOffset = 30;
 
-  late final double _sheetMinFraction;
-  late final double _sheetMaxFraction;
-  late final double _sheetMinHeight;
-  late final double _sheetMaxHeight;
+  late double _sheetMinFraction;
+  late double _sheetMaxFraction;
+  late double _sheetMinHeight;
+  late double _sheetMaxHeight;
 
   late final _scrollableController = DraggableScrollableController();
 
@@ -244,17 +242,20 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
     if (_isShowSmallTabBar) {
       statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
-    } else if (widget.extendedTabBar?.backgroundColor != null) {
-      final lum = widget.extendedTabBar!.backgroundColor!.computeLuminance();
+      return;
+    }
 
+    if (widget.extendedTabBar?.backgroundColor != null) {
+      final lum = widget.extendedTabBar!.backgroundColor!.computeLuminance();
       if (lum < 0.5) {
         statusBrnNotifier.state = Brightness.light;
       } else {
         statusBrnNotifier.state = Brightness.dark;
       }
-    } else {
-      statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
+      return;
     }
+
+    statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
   }
 
   @override
@@ -293,7 +294,12 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                   itemCount: widget.pageItemCount,
                   itemBuilder: (_, pageIndex) => Consumer(
                     builder: (context, ref, _) => Column(
-                      children: widget.itemBuilder(context, ref, pageIndex),
+                      children: [
+                        ...widget.itemBuilder(context, ref, pageIndex),
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.bottom + 32,
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -322,8 +328,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
-                                  width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -339,8 +344,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(
-                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),
@@ -362,7 +366,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
       },
       child: Container(
         width: double.infinity,
-        height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 25,
+        height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
         color: bgColor,
         padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
         child: widget.extendedTabBar,
@@ -381,9 +385,9 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 0.2),
-            blurRadius: 20,
-            offset: const Offset(10, 0),
+            color: context.appTheme.accent2.addDark(0.3).withOpacity(context.appTheme.isDarkTheme ? 0.0 : 0.25),
+            blurRadius: 12,
+            spreadRadius: 6,
           )
         ],
       ),
@@ -448,7 +452,8 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      itemCount: widget.forPageView ? widget.children.length + 1 : widget.children.length + 2,
+      itemCount: widget.forPageView ? widget.children.length : widget.children.length + 2,
+      padding: const EdgeInsets.only(top: 25),
       itemBuilder: (context, index) {
         if (!widget.forPageView) {
           if (index == 0) {
@@ -461,7 +466,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
           }
         }
 
-        return index == widget.children.length ? const SizedBox(height: 30) : widget.children[index];
+        return widget.children[index];
       },
     );
   }

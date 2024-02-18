@@ -39,7 +39,7 @@ class InlineTextFormField extends StatelessWidget {
         prefixText != null
             ? Text(
                 prefixText!,
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
+                style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
               )
             : Gap.noGap,
         prefixText != null ? Gap.w8 : Gap.noGap,
@@ -49,7 +49,7 @@ class InlineTextFormField extends StatelessWidget {
                 ? SizedBox(
                     width: width,
                     child: CustomTextFormField(
-                      hintText: '',
+                      hintText: hintText ?? '',
                       focusColor: context.appTheme.secondary1,
                       autofocus: false,
                       disableErrorText: true,
@@ -82,7 +82,7 @@ class InlineTextFormField extends StatelessWidget {
         suffixText != null
             ? Text(
                 suffixText!,
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
+                style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
               )
             : Gap.noGap,
         suffixWidget != null ? Gap.w16 : Gap.noGap,

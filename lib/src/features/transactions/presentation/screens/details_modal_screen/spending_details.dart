@@ -19,7 +19,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
   late CreditSpending _transaction = widget.transaction;
 
   late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
 
@@ -208,7 +208,7 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
 
   bool _canEditAmount(CreditSpendingFormState state) =>
       (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
-          .isAfter(_creditAccount.latestStatementDueDate) &&
+          .isAfter(_creditAccount.latestClosedStatementDueDate) &&
       (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
           .isAfter(_creditAccount.latestCheckpointDateTime);
 

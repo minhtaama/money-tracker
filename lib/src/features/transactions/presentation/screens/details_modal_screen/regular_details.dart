@@ -55,12 +55,10 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                   }
                 },
               ),
-              _transaction is Income && (_transaction as Income).isInitialTransaction
-                  ? Gap.noGap
-                  : _DeleteButton(
-                      isEditMode: _isEditMode,
-                      onConfirm: _delete,
-                    ),
+              _DeleteButton(
+                isEditMode: _isEditMode,
+                onConfirm: _delete,
+              ),
             ]
           : null,
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -101,7 +101,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                             ),
                           )
                         : Gap.noGap,
-                    widget.subTitle ?? Gap.noGap,
+                    widget.subTitle != null ? IntrinsicWidth(child: widget.subTitle) : Gap.noGap,
                   ],
                 ),
               ),
@@ -111,7 +111,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
           CardItem(
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
             margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
-            elevation: widget.isWrapByCard ? 1 : 0,
+            //elevation: widget.isWrapByCard ? 1 : 0,
             color: widget.isWrapByCard ? null : Colors.transparent,
             clip: widget.sectionsClipping,
             child: widget.onReorder == null

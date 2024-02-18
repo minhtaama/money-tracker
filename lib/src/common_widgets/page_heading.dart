@@ -49,7 +49,7 @@ class PageHeading extends StatelessWidget {
                                 children: [
                                   Text(
                                     leadingTitle!,
-                                    style: kHeader4TextStyle.copyWith(
+                                    style: kNormalTextStyle.copyWith(
                                         color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
                                   ),
                                   Gap.w8,
@@ -71,7 +71,7 @@ class PageHeading extends StatelessWidget {
                               ),
                         Text(
                           secondaryTitle!,
-                          style: kHeader4TextStyle.copyWith(
+                          style: kNormalTextStyle.copyWith(
                             color: context.appTheme.onBackground.withOpacity(0.8),
                           ),
                         ),

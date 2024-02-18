@@ -53,14 +53,34 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
 @immutable
 class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
-  final RegularAccount? transferAccount;
+  AccountInfo get transferAccount {
+    if (_transferAccount != null) {
+      return _transferAccount!;
+    }
+
+    if (isAdjustToAPRChange) {
+      return RegularAccountInfo.forAdjustmentCreditPayment();
+    }
+
+    return DeletedAccount();
+  }
+
+  @override
+  String? get note => isAdjustToAPRChange
+      ? 'Because the APR data of account "${account.name}" has been changed since it is first created, this transaction is created automatic to keep the balance of closed statements stay the same.'
+          .hardcoded
+      : super.note;
+
+  final RegularAccountInfo? _transferAccount;
 
   final bool isFullPayment;
 
-  /// This value can be negative. Only used to calculate account balance
-  final double? adjustment;
+  final bool isAdjustToAPRChange;
 
-  double get afterAdjustedAmount => amount + (adjustment ?? 0);
+  /// This value can be negative. Only used to calculate account balance
+  final double adjustment;
+
+  double get afterAdjustedAmount => amount + adjustment;
 
   const CreditPayment._(
     super._databaseObject,
@@ -68,10 +88,11 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
     super.amount,
     super.note,
     super.account, {
-    required this.transferAccount,
+    required RegularAccountInfo? transferAccount,
     required this.isFullPayment,
+    required this.isAdjustToAPRChange,
     required this.adjustment,
-  });
+  }) : _transferAccount = transferAccount;
 }
 
 class CreditCheckpoint extends BaseCreditTransaction {

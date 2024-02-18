@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../persistent/realm_dto.dart';
 import '../domain/account_base.dart';
+import '../domain/statement/base_class/statement.dart';
 
 class AccountRepositoryRealmDb {
   AccountRepositoryRealmDb(this.realm, this.ref);
@@ -13,17 +15,25 @@ class AccountRepositoryRealmDb {
   final Realm realm;
   final ProviderRef ref;
 
-  int _accountTypeInDb(AccountType type) => switch (type) {
-        AccountType.regular => 0,
-        AccountType.credit => 1,
-      };
-
   RealmResults<AccountDb> _realmResults(AccountType? type) {
     if (type == null) {
       return realm.all<AccountDb>().query('TRUEPREDICATE SORT(order ASC)');
     }
 
-    return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [_accountTypeInDb(type)]);
+    return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [type.databaseValue]);
+  }
+
+  Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
+    return realm.all<AccountDb>().changes;
+  }
+
+  Stream<Account> _watchAccount(String objectIdHexString) {
+    ObjectId objId = ObjectId.fromHexString(objectIdHexString);
+    final txnDb = realm.find<AccountDb>(objId)?.changes;
+    if (txnDb != null) {
+      return txnDb.map((event) => Account.fromDatabase(event.object)!);
+    }
+    throw StateError('transaction id is not found');
   }
 
   List<Account> getList(AccountType? type) {
@@ -43,31 +53,40 @@ class AccountRepositoryRealmDb {
     throw StateError('Account id is not found');
   }
 
-  Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
-    return realm.all<AccountDb>().changes;
-  }
+  /// Must be in [realm.write()]
+  void _adjustPaymentToFitAPRChanges({
+    required CreditAccount oldCreditAccount,
+    required AccountDb newAccountDb,
+  }) {
+    final txnRepo = ref.read(transactionRepositoryRealmProvider);
 
-  Stream<Account> _watchAccount(String objectIdHexString) {
-    ObjectId objId = ObjectId.fromHexString(objectIdHexString);
-    final txnDb = realm.find<AccountDb>(objId)?.changes;
-    if (txnDb != null) {
-      return txnDb.map((event) => Account.fromDatabase(event.object)!);
-    }
-    throw StateError('transaction id is not found');
-  }
+    final oldBalanceList = oldCreditAccount.closedStatementsList.map((e) => e.balance).toList();
 
-  double getTotalBalance({bool includeCreditAccount = false}) {
-    double totalBalance = 0;
-    final List<Account> accountList;
-    if (includeCreditAccount) {
-      accountList = getList(null);
-    } else {
-      accountList = getList(AccountType.regular);
+    final newCreditAccount = Account.fromDatabase(newAccountDb)! as CreditAccount;
+
+    for (int i = 0; i < newCreditAccount.closedStatementsList.length; i++) {
+      final newStm = newCreditAccount.closedStatementsList[i];
+
+      final adjustment = newStm.balance - oldBalanceList[i];
+
+      if (adjustment != 0) {
+        try {
+          // CreditPaymentDetails is not null if type is CreditPayment
+          final firstPaymentDetailsDb = newStm.firstPayment.databaseObject.creditPaymentDetails!;
+
+          firstPaymentDetailsDb.adjustment += adjustment;
+        } catch (_) {
+          // Create a new adjustPayment at end date of statement
+          txnRepo.addNewAdjustToAPRChanges(
+            dateTime: newStm.date.start,
+            account: newAccountDb,
+            adjustment: adjustment,
+          );
+        }
+      }
     }
-    for (Account account in accountList) {
-      totalBalance += account.availableAmount;
-    }
-    return totalBalance;
+
+    txnRepo.removeEmptyAdjustToAPRChanges();
   }
 
   void writeNew(
@@ -95,60 +114,78 @@ class AccountRepositoryRealmDb {
       creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(ObjectId(), _accountTypeInDb(type), name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref.read(transactionRepositoryRealmProvider).writeInitialBalance(balance: balance, newAccount: newAccount);
+        ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
 
-  void edit(Account currentAccount,
-      {required String name,
-      required String iconCategory,
-      required int iconIndex,
-      required int colorIndex,
-      required double initialBalance}) async {
+  void editRegularAccount(
+    RegularAccount currentAccount, {
+    required String name,
+    required String iconCategory,
+    required int iconIndex,
+    required int colorIndex,
+  }) async {
     // Update current account value
     final accountDb = currentAccount.databaseObject;
 
-    // Query to find the initial transaction of the current editing account
-    TransactionDb? initialTransaction = accountDb.transactions.query('isInitialTransaction == \$0', [true]).firstOrNull;
+    realm.write(() {
+      accountDb
+        ..iconCategory = iconCategory
+        ..iconIndex = iconIndex
+        ..name = name
+        ..colorIndex = colorIndex;
+    });
+  }
 
-    if (initialTransaction != null) {
-      realm.write(() {
-        accountDb
-          ..iconCategory = iconCategory
-          ..iconIndex = iconIndex
-          ..name = name
-          ..colorIndex = colorIndex;
+  void editCreditAccount(
+    CreditAccount currentAccount, {
+    required String name,
+    required String iconCategory,
+    required int iconIndex,
+    required int colorIndex,
+    required double? apr,
+    required StatementType statementType,
+    required double? creditLimit,
+  }) async {
+    // Update current account value
+    final accountDb = currentAccount.databaseObject;
 
-        // If the initial transaction is found
-        initialTransaction!.amount = initialBalance;
-      });
-    } else {
-      // In case user delete the initial transaction of the current editing account
-      initialTransaction = TransactionDb(ObjectId(), 1, DateTime.now(), initialBalance,
-          account: currentAccount.databaseObject, isInitialTransaction: true);
+    realm.write(() {
+      accountDb
+        ..iconCategory = iconCategory
+        ..iconIndex = iconIndex
+        ..name = name
+        ..colorIndex = colorIndex
+        ..creditDetails!.statementType = statementType.databaseValue;
 
-      realm.write(() {
-        accountDb
-          ..iconCategory = iconCategory
-          ..iconIndex = iconIndex
-          ..name = name
-          ..colorIndex = colorIndex;
+      if (creditLimit != null) {
+        accountDb.creditDetails!.creditBalance = creditLimit;
+      }
 
-        realm.add(initialTransaction!);
-      });
-    }
+      if (apr != null) {
+        accountDb.creditDetails!.apr = apr;
+        _adjustPaymentToFitAPRChanges(oldCreditAccount: currentAccount, newAccountDb: accountDb);
+      }
+    });
   }
 
   void delete(Account account) {
-    realm.write(() => realm.delete(account.databaseObject));
+    realm.write(() {
+      if (account is CreditAccount) {
+        final txnsDbToDelete =
+            account.transactionsList.where((txn) => txn is! CreditPayment).map((txn) => txn.databaseObject);
+        realm.deleteMany<TransactionDb>(txnsDbToDelete);
+      }
+      realm.delete<AccountDb>(account.databaseObject);
+    });
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)

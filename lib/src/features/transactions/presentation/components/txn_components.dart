@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'dart:math' as math;
@@ -48,7 +49,7 @@ class TxnInfo extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: kHeader4TextStyle.copyWith(
+        style: kNormalTextStyle.copyWith(
             color: lum == null
                 ? context.appTheme.onBackground
                 : lum > 0.5
@@ -92,16 +93,12 @@ class TxnAdjustmentIcon extends StatelessWidget {
   final CreditPayment transaction;
 
   bool _showIcon(BuildContext context) {
-    if (transaction.adjustment == null) {
-      return false;
-    }
-
     if (context.appSettings.showDecimalDigits) {
-      if (transaction.adjustment!.roundBySetting(context) == 0.00) {
+      if (transaction.adjustment.roundBySetting(context) == 0.00) {
         return false;
       }
     } else {
-      if (transaction.adjustment!.roundBySetting(context) == 0) {
+      if (transaction.adjustment.roundBySetting(context) == 0) {
         return false;
       }
     }
@@ -114,7 +111,7 @@ class TxnAdjustmentIcon extends StatelessWidget {
     return _showIcon(context)
         ? HelpButton(
             title:
-                'Adjust amount: ${transaction.adjustment! > 0 ? '+' : '-'} ${CalService.formatCurrency(context, transaction.adjustment!, isAbs: true)} ${context.appSettings.currency.code}'
+                'Adjust amount: ${transaction.adjustment > 0 ? '+' : '-'} ${CalService.formatCurrency(context, transaction.adjustment, isAbs: true)} ${context.appSettings.currency.code}'
                     .hardcoded,
             text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
             iconPath: AppIcons.edit,
@@ -187,20 +184,22 @@ class TxnAccountIcon extends ConsumerWidget {
   final bool useAccountIcon;
 
   String _iconPath(WidgetRef ref) {
-    if (transaction.account != null) {
-      if (useAccountIcon) {
-        return transaction.account!.iconPath;
-      }
-      return switch (transaction) {
-        Transfer() => '',
-        Income() => AppIcons.download,
-        Expense() => AppIcons.upload,
-        CreditPayment() => AppIcons.upload,
-        CreditSpending() => AppIcons.upload,
-        CreditCheckpoint() => AppIcons.transfer,
-      };
+    if (useAccountIcon) {
+      return transaction.account.iconPath;
     }
-    return AppIcons.defaultIcon;
+
+    if (transaction.account is DeletedAccount) {
+      return AppIcons.defaultIcon;
+    }
+
+    return switch (transaction) {
+      Transfer() => '',
+      Income() => AppIcons.download,
+      Expense() => AppIcons.upload,
+      CreditPayment() => AppIcons.upload,
+      CreditSpending() => AppIcons.upload,
+      CreditCheckpoint() => AppIcons.transfer,
+    };
   }
 
   @override
@@ -208,7 +207,7 @@ class TxnAccountIcon extends ConsumerWidget {
     return SvgIcon(
       _iconPath(ref),
       size: 20,
-      color: context.appTheme.onBackground,
+      color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.5 : 1),
     );
   }
 }
@@ -219,18 +218,14 @@ class TxnAccountName extends ConsumerWidget {
   final BaseTransaction transaction;
   final double? fontSize;
 
-  // String _name(WidgetRef ref) {
-  //   if (transaction.account != null) {
-  //     return ref.read(accountRepositoryProvider).getAccount(transaction.account!)!.name;
-  //   }
-  //   return 'No account assigned';
-  // }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool deletedAccount = transaction.account is DeletedAccount;
+
     return Text(
-      transaction.account!.name,
-      style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: fontSize ?? 12),
+      deletedAccount ? 'Deleted account'.hardcoded : transaction.account.name,
+      style: kHeader3TextStyle.copyWith(
+          color: context.appTheme.onBackground.withOpacity(deletedAccount ? 0.5 : 1), fontSize: fontSize ?? 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -238,13 +233,13 @@ class TxnAccountName extends ConsumerWidget {
 }
 
 class TxnToAccountIcon extends ConsumerWidget {
-  const TxnToAccountIcon({Key? key, required this.transaction}) : super(key: key);
+  const TxnToAccountIcon({super.key, required this.transaction});
 
   final Transfer transaction;
 
   String _iconPath(WidgetRef ref) {
-    if (transaction.transferAccount != null) {
-      return transaction.transferAccount!.iconPath;
+    if (transaction.transferAccount is! DeletedAccount) {
+      return transaction.transferAccount.iconPath;
     }
     return AppIcons.defaultIcon;
   }
@@ -254,7 +249,7 @@ class TxnToAccountIcon extends ConsumerWidget {
     return SvgIcon(
       _iconPath(ref),
       size: 20,
-      color: context.appTheme.onBackground,
+      color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.5 : 1),
     );
   }
 }
@@ -265,17 +260,16 @@ class TxnTransferAccountName extends ConsumerWidget {
   final ITransferable transaction;
 
   String _name(WidgetRef ref) {
-    if (transaction.transferAccount != null) {
-      return transaction.transferAccount!.name;
-    }
-    return 'Empty';
+    return transaction.transferAccount.name;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       _name(ref),
-      style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 12),
+      style: kHeader3TextStyle.copyWith(
+          color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.5 : 1),
+          fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -304,18 +298,16 @@ class TxnAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          CalService.formatCurrency(context,
-              showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+          CalService.formatCurrency(
+              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader2TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kHeader4TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kNormalTextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
         ),
       ],
     );
@@ -344,16 +336,14 @@ class TxnNote extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 6),
       decoration: BoxDecoration(
-        border:
-            Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1.5)),
+        border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1.5)),
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         constraints: const BoxConstraints(minHeight: 32),
         decoration: BoxDecoration(
           color: context.appTheme.onBackground.withOpacity(0.05),
-          borderRadius:
-              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,7 +363,7 @@ class TxnNote extends StatelessWidget {
             transaction.note != null && transaction.note!.isNotEmpty
                 ? Text(
                     transaction.note!,
-                    style: kHeader4TextStyle.copyWith(
+                    style: kNormalTextStyle.copyWith(
                       color: context.appTheme.onBackground.withOpacity(0.7),
                       fontSize: 12,
                     ),
@@ -391,12 +381,7 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key,
-      this.height = 27,
-      this.width = 20,
-      this.adjustY = 1,
-      this.strokeWidth = 1,
-      this.opacity = 1});
+      {super.key, this.height = 27, this.width = 20, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 1});
 
   final double height;
   final double adjustY;
@@ -411,8 +396,7 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity,
-              height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
         ),
       ),
     );

@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/base_model.dart';
 import '../../../../persistent/realm_dto.dart';
@@ -16,8 +15,43 @@ import 'statement/base_class/statement.dart';
 part 'regular_account.dart';
 part 'credit_account.dart';
 
+abstract class BaseAccount extends BaseModelWithIcon<AccountDb> {
+  const BaseAccount(
+    super._isarObject, {
+    required super.name,
+    required super.iconColor,
+    required super.backgroundColor,
+    required super.iconPath,
+  });
+}
+
+sealed class AccountInfo extends BaseAccount {
+  final bool isNotExistInDatabase;
+
+  const AccountInfo(
+    super._isarObject, {
+    required super.name,
+    required super.iconColor,
+    required super.backgroundColor,
+    required super.iconPath,
+    this.isNotExistInDatabase = false,
+  });
+}
+
+class DeletedAccount extends AccountInfo {
+  DeletedAccount()
+      : super(
+          AccountDb(ObjectId(), 0, '', 0, '', 0),
+          name: 'Deleted account'.hardcoded,
+          iconColor: AppColors.white,
+          backgroundColor: AppColors.greyConst,
+          iconPath: AppIcons.defaultIcon,
+          isNotExistInDatabase: true,
+        );
+}
+
 @immutable
-sealed class Account extends BaseModelWithIcon<AccountDb> {
+sealed class Account extends BaseAccount {
   /// Already sorted by transactions dateTime when created
   abstract final List transactionsList;
 
@@ -30,29 +64,20 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
     final int statementDay = accountDb.creditDetails!.statementDay;
     final int paymentDueDay = accountDb.creditDetails!.paymentDueDay;
 
-    final statementType = switch (accountDb.creditDetails!.statementType) {
-      0 => StatementType.withAverageDailyBalance,
-      _ => StatementType.payOnlyInGracePeriod,
-    };
-
-    DateTime? earliestPayableDate =
-        transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
-    DateTime? latestTransactionDate =
-        transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
+    DateTime? earliestPayableDate = transactionsList.isEmpty ? null : transactionsList.first.dateTime.onlyYearMonthDay;
+    DateTime? latestTransactionDate = transactionsList.isEmpty ? null : transactionsList.last.dateTime.onlyYearMonthDay;
 
     // only year, month and day
     DateTime? earliestStatementDate;
     if (transactionsList.isNotEmpty && earliestPayableDate != null) {
-      earliestStatementDate =
-          DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
+      earliestStatementDate = DateTime(earliestPayableDate.year, earliestPayableDate.month - 1, statementDay);
     }
 
     // only year, month and day
     DateTime? latestStatementDate;
     if (transactionsList.isNotEmpty && latestTransactionDate != null) {
       if (statementDay > latestTransactionDate.day) {
-        latestStatementDate =
-            DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
+        latestStatementDate = DateTime(latestTransactionDate.year, latestTransactionDate.month - 1, statementDay);
       }
 
       if (statementDay <= latestTransactionDate.day) {
@@ -70,7 +95,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
         latestStatementDate: latestStatementDate,
         accountTransactionsList: transactionsList,
         apr: accountDb.creditDetails!.apr,
-        statementType: statementType,
+        statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
       );
     }
 
@@ -86,7 +111,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       paymentDueDay: accountDb.creditDetails!.paymentDueDay,
       transactionsList: transactionsList,
       statementsList: statementsList,
-      statementType: statementType,
+      statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
       earliestStatementDate: earliestStatementDate,
       earliestPayableDate: earliestPayableDate,
     );
@@ -95,8 +120,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
   static RegularAccount _regularAccountFromDatabase(AccountDb accountDb) {
     final List<BaseRegularTransaction> transactionsList = accountDb.transactions
         .query('TRUEPREDICATE SORT(dateTime ASC)')
-        .map<BaseRegularTransaction>(
-            (txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
+        .map<BaseRegularTransaction>((txn) => BaseTransaction.fromDatabase(txn) as BaseRegularTransaction)
         .toList(growable: false);
 
     final List<ITransferable> transferTransactionsList = accountDb.transferTransactions
@@ -120,41 +144,30 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
       return null;
     }
 
-    // AccountType.regular
-    if (accountDb.type == 0) {
-      return _regularAccountFromDatabase(accountDb);
-    }
+    final type = AccountType.fromDatabaseValue(accountDb.type);
 
-    // AccountType.credit
-    if (accountDb.type != 0) {
-      return _creditAccountFromDatabase(accountDb);
-    }
-
-    return null;
+    return switch (type) {
+      AccountType.regular => _regularAccountFromDatabase(accountDb),
+      AccountType.credit => _creditAccountFromDatabase(accountDb),
+    };
   }
 
-  static Account? fromDatabaseWithNoDetails(AccountDb? accountDb) {
+  static AccountInfo? fromDatabaseInfoOnly(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
     }
 
-    final statementType = switch (accountDb.creditDetails?.statementType) {
-      null => null,
-      0 => StatementType.withAverageDailyBalance,
-      _ => StatementType.payOnlyInGracePeriod,
-    };
+    final type = AccountType.fromDatabaseValue(accountDb.type);
 
-    return switch (accountDb.type) {
-      0 => RegularAccount._(
+    return switch (type) {
+      AccountType.regular => RegularAccountInfo._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
           backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
           iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
-          transactionsList: const [],
-          transferTransactionsList: const [],
         ),
-      _ => CreditAccount._(
+      AccountType.credit => CreditAccountInfo._(
           accountDb,
           name: accountDb.name,
           iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
@@ -164,11 +177,7 @@ sealed class Account extends BaseModelWithIcon<AccountDb> {
           apr: accountDb.creditDetails!.apr,
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
-          transactionsList: const [],
-          statementsList: const [],
-          statementType: statementType!,
-          earliestStatementDate: null,
-          earliestPayableDate: null,
+          statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
         ),
     };
   }
@@ -200,15 +209,14 @@ extension CreditAccountExtension on Account {
 
     // Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
-      final endDate =
-          startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+      final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
           ? startDate.copyWith(month: startDate.month + 2, day: paymentDueDay).onlyYearMonthDay
           : startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay;
 
       final previousStatement = startDate != earliestStatementDate
-          ? statementsList.last.carryToNextStatement
+          ? statementsList.last.bringToNextStatement
           : PreviousStatement.noData(
               dueDate: statementDay >= paymentDueDay
                   ? startDate.copyWith(month: startDate.month + 1, day: paymentDueDay).onlyYearMonthDay
@@ -301,8 +309,7 @@ extension CreditAccountExtension on Account {
 
     for (CreditSpending spending in txn.finishedInstallments) {
       if (installmentsToAddToStatement.map((e) => e.txn).contains(spending)) {
-        installmentsToAddToStatement
-            .removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
+        installmentsToAddToStatement.removeWhere((el) => el.txn.databaseObject.id == spending.databaseObject.id);
         installmentCountsMapToMutate.remove(spending);
       }
     }
@@ -322,38 +329,50 @@ extension CreditAccountExtension on Account {
 
 extension AccountGettersExtension on Account {
   double get availableAmount {
-    switch (this) {
-      case RegularAccount():
-        double balance = 0;
-        for (BaseRegularTransaction txn in transactionsList) {
-          switch (txn) {
-            case Expense() || Transfer():
-              balance -= txn.amount;
-              break;
-            case Income():
-              balance += txn.amount;
-              break;
-          }
-        }
-        for (ITransferable txn in (this as RegularAccount).transferTransactionsList) {
-          if (txn is Transfer) {
-            balance += txn.amount;
-          }
-          if (txn is CreditPayment) {
-            balance -= txn.amount;
-          }
-        }
-        return balance;
+    if (this is RegularAccount) {
+      double balance = 0;
 
-      case CreditAccount():
-        final limit = (this as CreditAccount).creditLimit;
-        try {
-          final todayStatement =
-              (this as CreditAccount).statementAt(DateTime.now(), upperGapAtDueDate: true);
-          return limit - todayStatement!.balanceToPayRemaining - todayStatement.spentInGracePeriod;
-        } catch (_) {
-          return limit;
+      for (int i = 0; i <= transactionsList.length - 1; i++) {
+        final txn = transactionsList[i];
+
+        switch (txn) {
+          case Expense() || Transfer():
+            balance -= txn.amount;
+            break;
+          case Income():
+            balance += txn.amount;
+            break;
         }
+      }
+
+      final transferTxnsList = (this as RegularAccount).transferTransactionsList;
+
+      for (int i = 0; i <= transferTxnsList.length - 1; i++) {
+        final txn = transferTxnsList[i];
+
+        if (txn is Transfer) {
+          balance += txn.amount;
+          continue;
+        }
+        if (txn is CreditPayment) {
+          balance -= txn.amount;
+          continue;
+        }
+      }
+
+      return balance;
     }
+
+    if (this is CreditAccount) {
+      final limit = (this as CreditAccount).creditLimit;
+      try {
+        final todayStatement = (this as CreditAccount).statementAt(DateTime.now(), upperGapAtDueDate: true);
+        return limit - todayStatement!.balance - todayStatement.spent.inGracePeriod;
+      } catch (_) {
+        return limit;
+      }
+    }
+
+    throw StateError('Can only call this method in RegularAccount and CreditAccount');
   }
 }

@@ -66,26 +66,27 @@ class _TransactionListState extends State<_TransactionList> {
     );
   }
 
-  List<Widget> buildList(BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(
+      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
-    DateTime tempDate = statement.startDate;
+    DateTime tempDate = statement.date.start;
 
     bool triggerAddPreviousDueDateHeader = true;
     bool triggerAddPaymentDueDateHeaderAtTheEnd = true;
     bool triggerAddTodayHeaderInBillingCycle = true;
     bool triggerAddTodayHeaderInGracePeriod = true;
 
-    if (statement.transactionsInBillingCycle.isEmpty) {
+    if (statement.transactions.inBillingCycle.isEmpty) {
       _addH0(list, statement, topKey);
       _addH1(list, statement);
-      if (_today.isAfter(statement.previousDueDate) && _today.isBefore(statement.statementDate)) {
+      if (_today.isAfter(statement.date.previousDue) && _today.isBefore(statement.date.statement)) {
         _addHToday(list, statement);
       }
     }
 
-    for (int i = 0; i < statement.transactionsInBillingCycle.length; i++) {
-      BaseCreditTransaction txn = statement.transactionsInBillingCycle[i];
+    for (int i = 0; i < statement.transactions.inBillingCycle.length; i++) {
+      BaseCreditTransaction txn = statement.transactions.inBillingCycle[i];
       DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
 
       if (i == 0) {
@@ -94,27 +95,32 @@ class _TransactionListState extends State<_TransactionList> {
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isBefore(statement.previousDueDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isBefore(statement.date.previousDue) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
       }
 
-      if (tempDate.isBefore(statement.previousDueDate) && !txnDateTime.isBefore(statement.previousDueDate)) {
+      if (tempDate.isBefore(statement.date.previousDue) &&
+          !txnDateTime.isBefore(statement.date.previousDue)) {
         triggerAddPreviousDueDateHeader = false;
         _addH1(list, statement);
       }
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.previousDueDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.date.previousDue) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
       }
 
-      if (txnDateTime.isAtSameMomentAs(statement.startDate) ||
-          txnDateTime.isAtSameMomentAs(statement.previousDueDate) ||
+      if (txnDateTime.isAtSameMomentAs(statement.date.start) ||
+          txnDateTime.isAtSameMomentAs(statement.date.previousDue) ||
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
@@ -123,36 +129,36 @@ class _TransactionListState extends State<_TransactionList> {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
       }
 
-      if (i == statement.transactionsInBillingCycle.length - 1 && triggerAddPreviousDueDateHeader) {
+      if (i == statement.transactions.inBillingCycle.length - 1 && triggerAddPreviousDueDateHeader) {
         triggerAddPreviousDueDateHeader = false;
         _addH1(list, statement);
       }
 
-      if (i == statement.transactionsInBillingCycle.length - 1 &&
+      if (i == statement.transactions.inBillingCycle.length - 1 &&
           triggerAddTodayHeaderInBillingCycle &&
-          _today.isBefore(statement.statementDate) &&
-          _today.isAfter(statement.previousDueDate)) {
+          _today.isBefore(statement.date.statement) &&
+          _today.isAfter(statement.date.previousDue)) {
         _addHToday(list, statement);
       }
     }
 
-    if (statement.transactionsInGracePeriod.isEmpty) {
+    if (statement.transactions.inGracePeriod.isEmpty) {
       _addH2(list, statement);
-      if (_today.isAfter(statement.statementDate) && _today.isBefore(statement.dueDate)) {
+      if (_today.isAfter(statement.date.statement) && _today.isBefore(statement.date.due)) {
         _addHToday(list, statement);
       }
       _addH3(list, statement, bottomKey: bottomKey);
     }
 
-    for (int i = 0; i < statement.transactionsInGracePeriod.length; i++) {
-      BaseCreditTransaction txn = statement.transactionsInGracePeriod[i];
+    for (int i = 0; i < statement.transactions.inGracePeriod.length; i++) {
+      BaseCreditTransaction txn = statement.transactions.inGracePeriod[i];
       DateTime txnDateTime = txn.dateTime.onlyYearMonthDay;
 
       if (i == 0) {
         _addH2(list, statement);
       }
 
-      if (txnDateTime.isAtSameMomentAs(statement.dueDate)) {
+      if (txnDateTime.isAtSameMomentAs(statement.date.due)) {
         triggerAddPaymentDueDateHeaderAtTheEnd = false;
 
         _addH3(list, statement);
@@ -160,19 +166,22 @@ class _TransactionListState extends State<_TransactionList> {
 
       if (triggerAddTodayHeaderInGracePeriod) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.statementDate) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.date.statement) &&
+                tempDate.isBefore(_today) &&
+                !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInGracePeriod = false;
 
           _addHToday(list, statement);
         }
       }
 
-      if (txnDateTime.isAtSameMomentAs(statement.statementDate) ||
-          txnDateTime.isAtSameMomentAs(statement.dueDate) ||
+      if (txnDateTime.isAtSameMomentAs(statement.date.statement) ||
+          txnDateTime.isAtSameMomentAs(statement.date.due) ||
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(
-            key: i == statement.transactionsInGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.dueDate)
+            key: i == statement.transactions.inGracePeriod.length - 1 &&
+                    txnDateTime.isAtSameMomentAs(statement.date.due)
                 ? bottomKey
                 : null,
             statement: statement,
@@ -183,15 +192,16 @@ class _TransactionListState extends State<_TransactionList> {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
       }
 
-      if (i == statement.transactionsInGracePeriod.length - 1 &&
+      if (i == statement.transactions.inGracePeriod.length - 1 &&
           triggerAddTodayHeaderInGracePeriod &&
-          !_today.isAtSameMomentAs(statement.dueDate) &&
-          _today.isAfter(statement.statementDate) &&
-          _today.isBefore(statement.dueDate)) {
+          !_today.isAtSameMomentAs(statement.date.due) &&
+          _today.isAfter(statement.date.statement) &&
+          _today.isBefore(statement.date.due)) {
         _addHToday(list, statement);
       }
 
-      if (i == statement.transactionsInGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
+      if (i == statement.transactions.inGracePeriod.length - 1 &&
+          triggerAddPaymentDueDateHeaderAtTheEnd) {
         _addH3(list, statement, bottomKey: bottomKey);
       }
     }
@@ -203,7 +213,7 @@ class _TransactionListState extends State<_TransactionList> {
     list.add(
       _Header(
         key: topKey,
-        dateTime: statement.startDate,
+        dateTime: statement.date.start,
         h1: 'Billing cycle start',
       ),
     );
@@ -212,7 +222,7 @@ class _TransactionListState extends State<_TransactionList> {
   void _addH1(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        dateTime: statement.previousDueDate,
+        dateTime: statement.date.previousDue,
         h1: 'Previous due date'.hardcoded,
         h2: 'End of last grace period'.hardcoded,
       ),
@@ -223,8 +233,10 @@ class _TransactionListState extends State<_TransactionList> {
   void _addH2(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        dateTime: statement.statementDate,
-        h1: statement.checkpoint != null ? 'Statement date with checkpoint'.hardcoded : 'Statement date'.hardcoded,
+        dateTime: statement.date.statement,
+        h1: statement.checkpoint != null
+            ? 'Statement date with checkpoint'.hardcoded
+            : 'Statement date'.hardcoded,
         h2: 'Begin of grace period'.hardcoded,
         color: context.appTheme.primary,
         dateColor: context.appTheme.onPrimary,
@@ -236,9 +248,9 @@ class _TransactionListState extends State<_TransactionList> {
     list.add(
       _Header(
         key: bottomKey,
-        dateTime: statement.dueDate,
+        dateTime: statement.date.due,
         h1: 'Payment due date'.hardcoded,
-        h2: statement.spentToPayAtStartDateWithPrvGracePayment > 0
+        h2: statement.carry.balanceToPay > 0
             ? 'Because of carry-over balance, interest might be added in next statement even if pay-in-full'
             : 'Pay-in-full before this day for interest-free',
       ),
@@ -259,7 +271,7 @@ class _TransactionListState extends State<_TransactionList> {
 
   void _addInstallments(List<Widget> list, Statement statement) {
     list.addAll(
-      statement.installments.map((instm) => instm.txn).map(
+      statement.transactions.installmentsToPay.map((instm) => instm.txn).map(
             (txn) => _InstallmentToPayTransaction(
               transaction: txn,
             ),

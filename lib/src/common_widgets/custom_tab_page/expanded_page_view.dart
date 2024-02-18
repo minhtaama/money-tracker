@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
 import '../../utils/constants.dart';
 
@@ -26,14 +25,15 @@ class ExpandablePageView extends StatefulWidget {
 
 class _ExpandablePageViewState extends State<ExpandablePageView> {
   PageController? _pageController;
-  //List<double> _heights = [];
+
   late int _currentPage;
+
   final Map<int, double> _heights = {};
 
-  double get _currentHeight => _heights[_currentPage] != null
-      ? math.max(Gap.screenHeight(context) - kCustomTabBarHeight - kBottomAppBarHeight - 50,
-          _heights[_currentPage]!)
-      : Gap.screenHeight(context);
+  late final _sheetViewPort = Gap.screenHeight(context) - kCustomTabBarHeight - kCustomToolBarHeight;
+
+  double get _currentHeight =>
+      _heights[_currentPage] != null ? math.max(_sheetViewPort, _heights[_currentPage]!) : _sheetViewPort;
 
   @override
   void initState() {
@@ -41,6 +41,12 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
     _pageController = widget.controller ?? PageController();
     _currentPage = _pageController?.initialPage ?? 0;
     _pageController?.addListener(_updatePage);
+  }
+
+  @override
+  void didUpdateWidget(covariant ExpandablePageView oldWidget) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -54,8 +60,8 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       curve: Curves.easeInOutCubic,
-      tween: Tween<double>(begin: 0, end: _currentHeight),
-      duration: k1msDuration,
+      tween: Tween<double>(begin: _sheetViewPort, end: _currentHeight),
+      duration: k350msDuration,
       builder: (context, value, child) => SizedBox(height: value, child: child),
       child: PageView.builder(
         controller: _pageController,
@@ -75,7 +81,7 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
       alignment: Alignment.topCenter,
       child: SizeReportingWidget(
         onSizeChange: (size) {
-          setState(() => _heights[index] = size.height);
+          _heights[index] = size.height;
         },
         child: item,
       ),
@@ -108,6 +114,12 @@ class SizeReportingWidget extends StatefulWidget {
 
 class _SizeReportingWidgetState extends State<SizeReportingWidget> {
   Size? _oldSize;
+
+  @override
+  void didUpdateWidget(covariant SizeReportingWidget oldWidget) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _notifySize());
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {

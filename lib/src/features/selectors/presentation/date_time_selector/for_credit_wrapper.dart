@@ -21,7 +21,7 @@ class DateTimeSelectorCredit extends ConsumerStatefulWidget {
 
 class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit> {
   late DateTime _latestCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
-  late DateTime _latestStatementDueDate = widget.creditAccount!.latestStatementDueDate;
+  late DateTime _latestStatementDueDate = widget.creditAccount!.latestClosedStatementDueDate;
   late DateTime _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
   late Iterable<DateTime> _paymentDateTimes =
       widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
@@ -56,7 +56,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     if (widget.creditAccount != null) {
       _outputDateTime = widget.initialDate;
       _latestCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
-      _latestStatementDueDate = widget.creditAccount!.latestStatementDueDate;
+      _latestStatementDueDate = widget.creditAccount!.latestClosedStatementDueDate;
       _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
       _paymentDateTimes = widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
       _spendingDateTimes = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);

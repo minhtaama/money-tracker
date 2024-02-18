@@ -45,8 +45,8 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
   required Statement statement,
 }) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
-  final DateTime previousDueDate = statement.previousDueDate;
-  final DateTime dueDate = statement.dueDate;
+  final DateTime previousDueDate = statement.date.previousDue;
+  final DateTime dueDate = statement.date.due;
 
   final paymentDateTimes = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final spendingDateTimes = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
@@ -174,9 +174,9 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
   required Statement statement,
 }) async {
   final DateTime lastCheckpointDateTime = creditAccount.latestCheckpointDateTime;
-  final DateTime previousDueDate = statement.previousDueDate;
-  final DateTime statementDate = statement.statementDate;
-  final DateTime dueDate = statement.dueDate;
+  final DateTime previousDueDate = statement.date.previousDue;
+  final DateTime statementDate = statement.date.statement;
+  final DateTime dueDate = statement.date.due;
 
   final paymentDateTimes = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final spendingDateTimes = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);

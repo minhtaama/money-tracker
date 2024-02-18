@@ -667,15 +667,18 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
 
   CreditPaymentDetailsDb({
     bool isFullPayment = false,
+    bool isAdjustToAPRChanges = false,
     double adjustment = 0,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<CreditPaymentDetailsDb>({
         'isFullPayment': false,
+        'isAdjustToAPRChanges': false,
         'adjustment': 0,
       });
     }
     RealmObjectBase.set(this, 'isFullPayment', isFullPayment);
+    RealmObjectBase.set(this, 'isAdjustToAPRChanges', isAdjustToAPRChanges);
     RealmObjectBase.set(this, 'adjustment', adjustment);
   }
 
@@ -687,6 +690,13 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
   @override
   set isFullPayment(bool value) =>
       RealmObjectBase.set(this, 'isFullPayment', value);
+
+  @override
+  bool get isAdjustToAPRChanges =>
+      RealmObjectBase.get<bool>(this, 'isAdjustToAPRChanges') as bool;
+  @override
+  set isAdjustToAPRChanges(bool value) =>
+      RealmObjectBase.set(this, 'isAdjustToAPRChanges', value);
 
   @override
   double get adjustment =>
@@ -710,6 +720,7 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
     return const SchemaObject(ObjectType.embeddedObject, CreditPaymentDetailsDb,
         'CreditPaymentDetailsDb', [
       SchemaProperty('isFullPayment', RealmPropertyType.bool),
+      SchemaProperty('isAdjustToAPRChanges', RealmPropertyType.bool),
       SchemaProperty('adjustment', RealmPropertyType.double),
     ]);
   }

@@ -1,20 +1,96 @@
 enum TransactionType {
-  income,
   expense,
+  income,
   transfer,
   creditSpending,
   creditPayment,
   creditCheckpoint,
-  installmentToPay,
+  installmentToPay;
+
+  int get databaseValue {
+    return switch (this) {
+      TransactionType.expense => 0,
+      TransactionType.income => 1,
+      TransactionType.transfer => 2,
+      TransactionType.creditSpending => 3,
+      TransactionType.creditPayment => 4,
+      TransactionType.creditCheckpoint => 5,
+      TransactionType.installmentToPay => throw StateError('Can not put this type into database'),
+    };
+  }
+
+  static TransactionType fromDatabaseValue(int value) {
+    return switch (value) {
+      0 => TransactionType.expense,
+      1 => TransactionType.income,
+      2 => TransactionType.transfer,
+      3 => TransactionType.creditSpending,
+      4 => TransactionType.creditPayment,
+      5 => TransactionType.creditCheckpoint,
+      _ => throw StateError('Type $value is not available for TransactionType'),
+    };
+  }
 }
 
-enum CreditPaymentType { underMinimum, minimumOrHigher, full }
+enum CategoryType {
+  expense,
+  income;
 
-enum CategoryType { income, expense }
+  int get databaseValue {
+    return switch (this) {
+      CategoryType.expense => 0,
+      CategoryType.income => 1,
+    };
+  }
 
-enum AccountType { regular, credit }
+  static CategoryType fromDatabaseValue(int value) {
+    return switch (value) {
+      0 => CategoryType.expense,
+      1 => CategoryType.income,
+      _ => throw StateError('Type $value is not available for CategoryType'),
+    };
+  }
+}
 
-enum StatementType { withAverageDailyBalance, payOnlyInGracePeriod }
+enum AccountType {
+  regular,
+  credit;
+
+  int get databaseValue {
+    return switch (this) {
+      AccountType.regular => 0,
+      AccountType.credit => 1,
+    };
+  }
+
+  static AccountType fromDatabaseValue(int value) {
+    return switch (value) {
+      0 => AccountType.regular,
+      1 => AccountType.credit,
+      _ => throw StateError('Type $value is not available for CategoryType'),
+    };
+  }
+}
+
+enum StatementType {
+  withAverageDailyBalance,
+  payOnlyInGracePeriod;
+
+  int get databaseValue {
+    return switch (this) {
+      StatementType.withAverageDailyBalance => 0,
+      StatementType.payOnlyInGracePeriod => 1,
+    };
+  }
+
+  static StatementType fromDatabaseValue(int value) {
+    return switch (value) {
+      0 => StatementType.withAverageDailyBalance,
+      1 => StatementType.payOnlyInGracePeriod,
+      _ => throw StateError('Type $value is not available for CategoryType'),
+    };
+  }
+}
 
 enum ThemeType { light, dark, system }
 

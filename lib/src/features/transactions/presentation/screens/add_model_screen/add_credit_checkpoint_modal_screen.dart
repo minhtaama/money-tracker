@@ -94,7 +94,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             children: [
               Text(
                 'Checkpoint at:',
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+                style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
               ),
               DateSelector(
                 initial: _dateTime,

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/credit/edit_modal.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/edit_modal.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../../common_widgets/modal_and_dialog.dart';
@@ -14,29 +12,24 @@ import '../../../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../../../transactions/data/transaction_repo.dart';
 import '../../../../domain/account_base.dart';
 
-class ExtendedCreditAccountTab extends ConsumerWidget {
-  const ExtendedCreditAccountTab({
+class ExtendedRegularAccountTab extends ConsumerWidget {
+  const ExtendedRegularAccountTab({
     super.key,
     required this.account,
     required this.displayDate,
   });
-  final CreditAccount account;
+  final RegularAccount account;
   final DateTime displayDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getCreditCLCData(account, displayDate);
+    CLCData data = chartServices.getRegularCLCData(account, displayDate);
 
     ref.listen(transactionsChangesStreamProvider, (_, __) {
-      data = chartServices.getCreditCLCData(account, displayDate);
+      data = chartServices.getRegularCLCData(account, displayDate);
     });
-
-    final extraLineY = (data as CLCDataForCredit).extraLineY;
-    final extraLineText =
-        'Payment required: ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}'
-            .hardcoded;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,10 +42,7 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
             color: account.iconColor,
             todayDotColor: account.backgroundColor,
             data: data,
-            offsetLabelUp: 47,
-            isForCredit: true,
-            extraLineY: extraLineY,
-            extraLineText: extraLineText,
+            offsetLabelUp: 34,
           ),
         ),
       ],
@@ -61,9 +51,9 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({super.key, required this.account});
+  const _Header({required this.account});
 
-  final CreditAccount account;
+  final RegularAccount account;
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +76,14 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   account.name,
-                  style: kHeader2TextStyle.copyWith(
+                  style: kHeader1TextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 28,
                   ),
                 ),
                 Text(
-                  'Credit account'.hardcoded,
-                  style: kHeader3TextStyle.copyWith(
+                  'Regular account'.hardcoded,
+                  style: kNormalTextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 13,
                     letterSpacing: 0.5,
@@ -105,7 +95,7 @@ class _Header extends StatelessWidget {
           RoundedIconButton(
             onTap: () => showCustomModalBottomSheet(
               context: context,
-              child: EditCreditAccountModalScreen(account),
+              child: EditRegularAccountModalScreen(account),
             ),
             backgroundColor: Colors.transparent,
             iconColor: account.iconColor,
