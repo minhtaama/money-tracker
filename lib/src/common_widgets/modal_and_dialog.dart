@@ -174,7 +174,7 @@ Future<T?> showCustomModalBottomSheet<T>(
     ),
     backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
     barrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7),
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -206,7 +206,7 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
     hasHandle: hasHandle,
     backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
     modalBarrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
+        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7),
     child: child,
   );
 }
