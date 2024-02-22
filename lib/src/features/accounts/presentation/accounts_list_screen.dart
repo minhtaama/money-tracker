@@ -88,9 +88,9 @@ class _AccountTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = model.backgroundColor.withOpacity(0.25);
+    final bgColor = model.backgroundColor.withOpacity(0.55);
     final fgColor = context.appTheme.onBackground;
-    final iconColor = context.appTheme.onBackground;
+    final iconColor = model.backgroundColor.addDark(0.2);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -103,11 +103,24 @@ class _AccountTile extends StatelessWidget {
             inkColor: bgColor,
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: CardItem(
+              child: Container(
                 margin: EdgeInsets.zero,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
                 height: 190,
+                decoration: BoxDecoration(
+                    //color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
+                    border: Border.all(
+                        width: 1.5, color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.3)),
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
+                        bgColor.withOpacity(0)
+                      ],
+                      stops: const [0, 1],
+                    )),
                 child: Stack(
                   children: [
                     Align(
@@ -131,7 +144,7 @@ class _AccountTile extends StatelessWidget {
                           children: [
                             Text(
                               model.name,
-                              style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 32),
+                              style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 28),
                               overflow: TextOverflow.fade,
                               softWrap: false,
                             ),
@@ -146,13 +159,16 @@ class _AccountTile extends StatelessWidget {
                                     ),
                                     child: Text(
                                       'Credit',
-                                      style: kNormalTextStyle.copyWith(color: model.iconColor, fontSize: 12),
+                                      style: kNormalTextStyle.copyWith(
+                                          color: model.iconColor, fontSize: 12),
                                     ),
                                   )
                                 : Gap.noGap,
                           ],
                         ),
-                        model is CreditAccount ? _CreditDetails(model: model as CreditAccount) : Gap.noGap,
+                        model is CreditAccount
+                            ? _CreditDetails(model: model as CreditAccount)
+                            : Gap.noGap,
                         const Spacer(),
                         Text(
                           model is RegularAccount ? 'Current Balance:' : 'Outstanding credit:',
@@ -163,7 +179,8 @@ class _AccountTile extends StatelessWidget {
                           children: [
                             Text(
                               context.appSettings.currency.code,
-                              style: kNormalTextStyle.copyWith(color: fgColor, fontSize: kHeader1TextStyle.fontSize),
+                              style: kNormalTextStyle.copyWith(
+                                  color: fgColor, fontSize: kHeader1TextStyle.fontSize),
                             ),
                             Gap.w8,
                             Expanded(

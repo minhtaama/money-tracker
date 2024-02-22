@@ -18,8 +18,9 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
 
   late CreditSpending _transaction = widget.transaction;
 
-  late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
+  late final _creditAccount = ref
+      .read(accountRepositoryProvider)
+      .getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
 
@@ -76,7 +77,8 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
               _DeleteButton(
                 isEditMode: _isEditMode,
                 isDisable: !_canDelete,
-                disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
+                disableText:
+                    'Can not delete because there are payment(s) after this transaction'.hardcoded,
                 onConfirm: _delete,
               )
             ]
@@ -107,7 +109,9 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
             onMonthOutput: _changeInstallmentPeriod),
         Gap.h8,
         Gap.divider(context, indent: 6),
-        _AccountCard(isEditMode: false, account: widget.transaction.account!),
+        Gap.h8,
+        _AccountCard(isEditMode: false, account: widget.transaction.account),
+        Gap.h12,
         _CategoryCard(
           isEditMode: _isEditMode,
           isEdited: _isCategoryEdited(stateWatch),
@@ -115,6 +119,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
           categoryTag: stateWatch.tag ?? _transaction.categoryTag,
           onEditModeTap: _changeCategory,
         ),
+        Gap.h12,
         _Note(
           isEditMode: _isEditMode,
           isEdited: _isNoteEdited(stateWatch),
@@ -167,7 +172,8 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
   }
 
   void _changeInstallmentPeriod(String value) {
-    _stateController.changeInstallmentPeriod(context, int.tryParse(value), initialTransaction: _transaction);
+    _stateController.changeInstallmentPeriod(context, int.tryParse(value),
+        initialTransaction: _transaction);
     _changeInstallmentControllerText();
   }
 
@@ -196,12 +202,14 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
       (state.category != null || state.tag != null) &&
       (state.category != _transaction.category || state.tag != _transaction.categoryTag);
 
-  bool _isAmountEdited(CreditSpendingFormState state) => state.amount != null && state.amount != _transaction.amount;
+  bool _isAmountEdited(CreditSpendingFormState state) =>
+      state.amount != null && state.amount != _transaction.amount;
 
   bool _isDateTimeEdited(CreditSpendingFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditSpendingFormState state) => state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditSpendingFormState state) =>
+      state.note != null && state.note != _transaction.note;
 
   bool _isInstallmentEdited(CreditSpendingFormState state) =>
       state.installmentPeriod != null || state.installmentAmount != null;

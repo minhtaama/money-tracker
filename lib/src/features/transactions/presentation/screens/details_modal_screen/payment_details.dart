@@ -17,7 +17,8 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late final _creditAccount = _transaction.account is DeletedAccount
       ? null
-      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
+      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject)
+          as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
@@ -68,7 +69,8 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
               _DeleteButton(
                 isEditMode: _isEditMode,
                 isDisable: !_canDelete,
-                disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+                disableText:
+                    'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
                 onConfirm: _delete,
               )
             ]
@@ -83,6 +85,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
         ),
         Gap.h8,
         Gap.divider(context, indent: 6),
+        Gap.h8,
         Row(
           children: [
             const TxnTransferLine(
@@ -101,13 +104,14 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
                     account: stateWatch.fromRegularAccount ?? _transaction.transferAccount,
                     onEditModeTap: _changeFromAccount,
                   ),
+                  Gap.h16,
                   _AccountCard(isEditMode: false, account: widget.transaction.account),
                 ],
               ),
             ),
           ],
         ),
-        Gap.noGap,
+        Gap.h12,
         _Note(
           isEditMode: _isEditMode,
           isEdited: _isNoteEdited(stateWatch),
@@ -162,7 +166,8 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   bool _isDateTimeEdited(CreditPaymentFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditPaymentFormState state) =>
+      state.note != null && state.note != _transaction.note;
 
   bool _submit() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);
