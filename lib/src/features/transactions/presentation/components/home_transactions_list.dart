@@ -52,7 +52,13 @@ class HomeTransactionsList extends StatelessWidget {
                       },
                     ),
                     Gap.w16,
-                    TxnAmount(currencyCode: currencyCode, transaction: transaction),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        TxnAmount(currencyCode: currencyCode, transaction: transaction),
+                        TxnCategoryTag(transaction: transaction),
+                      ],
+                    ),
                   ],
                 ),
                 // transaction.note != null ||
