@@ -110,7 +110,7 @@ class _AccountTile extends StatelessWidget {
                 decoration: BoxDecoration(
                     //color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0),
                     border: Border.all(
-                        width: 1.5, color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.3)),
+                        width: 1, color: bgColor.addDark(context.appTheme.isDarkTheme ? 0.2 : 0.3)),
                     borderRadius: BorderRadius.circular(24),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
