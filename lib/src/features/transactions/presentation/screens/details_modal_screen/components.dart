@@ -270,7 +270,7 @@ class _AccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bgColor =
-        account.backgroundColor.withOpacity(0.6).addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0);
+        account.backgroundColor.withOpacity(0.2).addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0);
 
     return _NeumorphicEditWrap(
       isEditMode: isEditMode,
@@ -287,7 +287,7 @@ class _AccountCard extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [bgColor, bgColor.withOpacity(0)],
-              stops: const [0, 1],
+              stops: const [0, 0.8],
             ),
           ),
           child: Stack(

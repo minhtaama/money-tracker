@@ -41,10 +41,12 @@ class HomeTransactionsList extends StatelessWidget {
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
-                        Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
+                        Transfer() =>
+                          _TransferDetails(transaction: transaction, currencyCode: currencyCode),
                         IBaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
-                        CreditPayment() => _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
+                        CreditPayment() =>
+                          _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditCheckpoint() => Gap.noGap,
                         //TODO: styling checkpoint
                       },
@@ -53,11 +55,11 @@ class HomeTransactionsList extends StatelessWidget {
                     TxnAmount(currencyCode: currencyCode, transaction: transaction),
                   ],
                 ),
-                transaction.note != null ||
-                        transaction is IBaseTransactionWithCategory &&
-                            (transaction as IBaseTransactionWithCategory).categoryTag != null
-                    ? TxnNote(transaction: transaction)
-                    : Gap.noGap,
+                // transaction.note != null ||
+                //         transaction is IBaseTransactionWithCategory &&
+                //             (transaction as IBaseTransactionWithCategory).categoryTag != null
+                //     ? TxnNote(transaction: transaction)
+                //     : Gap.noGap,
               ],
             ),
           ),
