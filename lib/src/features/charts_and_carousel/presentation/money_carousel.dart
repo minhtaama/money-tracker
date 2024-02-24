@@ -127,11 +127,10 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                   widget.leftIconPath != null
                       ? RoundedIconButton(
                           iconPath: widget.leftIconPath!,
-                          iconPadding: 12,
-                          iconColor: (context.appTheme.isDarkTheme
-                                  ? context.appTheme.onBackground
-                                  : context.appTheme.onSecondary)
-                              .withOpacity(0.65),
+                          size: 36,
+                          iconPadding: 8,
+                          iconColor: context.appTheme.onBackground.withOpacity(0.65),
+                          inkColor: context.appTheme.onBackground.withOpacity(0.25),
                           onTap: widget.onTapLeftIcon,
                         )
                       : Gap.noGap,
@@ -143,11 +142,10 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                   widget.rightIconPath != null
                       ? RoundedIconButton(
                           iconPath: widget.rightIconPath!,
-                          iconPadding: 12,
-                          iconColor: (context.appTheme.isDarkTheme
-                                  ? context.appTheme.onBackground
-                                  : context.appTheme.onSecondary)
-                              .withOpacity(0.65),
+                          iconPadding: 8,
+                          size: 36,
+                          iconColor: context.appTheme.onBackground.withOpacity(0.65),
+                          inkColor: context.appTheme.onBackground.withOpacity(0.25),
                           onTap: widget.onTapRightIcon,
                         )
                       : Gap.noGap,
@@ -284,37 +282,27 @@ class _CarouselContentState extends State<_CarouselContent> {
                     Text(
                       _prefixSign(context),
                       style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground.withOpacity(1)
-                            : context.appTheme.onSecondary.withOpacity(1),
+                        color: context.appTheme.onBackground,
                         fontSize: 20,
                       ),
                     ),
                     Text(
                       _currency(context),
                       style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground.withOpacity(0.65)
-                            : context.appTheme.onSecondary.withOpacity(0.65),
+                        color: context.appTheme.onBackground.withOpacity(0.65),
                         fontSize: 20,
                       ),
                     ),
                     EasyRichText(
                       CalService.formatCurrency(context, widget.amount, isAbs: true),
                       defaultStyle: kHeader3TextStyle.copyWith(
-                          color: context.appTheme.isDarkTheme
-                              ? context.appTheme.onBackground
-                              : context.appTheme.onSecondary,
-                          fontSize: 23,
-                          letterSpacing: 1),
+                          color: context.appTheme.onBackground, fontSize: 23, letterSpacing: 1),
                       textAlign: TextAlign.right,
                       patternList: [
                         EasyRichTextPattern(
                           targetString: r'[0-9]+',
                           style: kHeader1TextStyle.copyWith(
-                            color: context.appTheme.isDarkTheme
-                                ? context.appTheme.onBackground
-                                : context.appTheme.onSecondary,
+                            color: context.appTheme.onBackground,
                             fontSize: 26,
                           ),
                         ),
