@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
@@ -68,40 +69,10 @@ class TxnHomeCategoryIcon extends StatelessWidget {
       width: size ?? 32,
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: color().withOpacity(0.8),
+        color: color(),
         borderRadius: BorderRadius.circular(100),
       ),
       child: child(),
-    );
-  }
-}
-
-class TxnInfo extends StatelessWidget {
-  const TxnInfo(this.text, {super.key, this.color});
-
-  final String text;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final lum = color?.computeLuminance();
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: color ?? AppColors.greyBgr(context),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        text,
-        style: kNormalTextStyle.copyWith(
-            color: lum == null
-                ? context.appTheme.onBackground
-                : lum > 0.5
-                    ? AppColors.black
-                    : AppColors.white,
-            fontSize: 9),
-      ),
     );
   }
 }
@@ -245,9 +216,9 @@ class TxnCategoryTag extends StatelessWidget {
     return _categoryTag != null
         ? Text(
             _categoryTag!,
-            style: kNormalTextStyle.copyWith(
-              fontSize: fontSize ?? 13,
-              color: context.appTheme.onBackground,
+            style: kHeader3TextStyle.copyWith(
+              fontSize: fontSize ?? 12,
+              color: context.appTheme.onBackground.withOpacity(0.65),
             ),
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -272,22 +243,26 @@ class TxnAccountIcon extends ConsumerWidget {
     }
 
     return switch (transaction) {
-      Transfer() => '',
       Income() => AppIcons.download,
       Expense() => AppIcons.upload,
       CreditPayment() => AppIcons.upload,
-      CreditSpending() => AppIcons.upload,
-      CreditCheckpoint() => AppIcons.transfer,
+      CreditSpending() => AppIcons.credit,
+      Transfer() || CreditCheckpoint() => throw StateError('No Icon'),
     };
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SvgIcon(
-      _iconPath(ref),
-      size: 16,
-      color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.5 : 1),
-    );
+    return transaction is Transfer || transaction is CreditCheckpoint
+        ? Gap.noGap
+        : Transform.translate(
+            offset: const Offset(0, -1.5),
+            child: SvgIcon(
+              _iconPath(ref),
+              size: 14,
+              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
+            ),
+          );
   }
 }
 
@@ -301,60 +276,53 @@ class TxnAccountName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     bool deletedAccount = transaction.account is DeletedAccount;
 
+    String name() {
+      if (deletedAccount) {
+        return 'Deleted account'.hardcoded;
+      }
+      if (transaction is CreditPayment) {
+        return (transaction as CreditPayment).transferAccount.name;
+      }
+
+      return transaction.account.name;
+    }
+
     return Text(
-      deletedAccount ? 'Deleted account'.hardcoded : transaction.account.name,
-      style: kHeader3TextStyle.copyWith(
-          color: context.appTheme.onBackground.withOpacity(deletedAccount
-              ? 0.25
-              : transaction is Transfer || transaction is CreditPayment
-                  ? 1
-                  : 0.65),
-          fontSize: fontSize ?? 12),
+      name(),
+      style: kHeader4TextStyle.copyWith(
+        color: context.appTheme.onBackground.withOpacity(deletedAccount ? 0.25 : 0.65),
+        fontSize: fontSize ?? 11,
+      ),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
   }
 }
 
-class TxnToAccountIcon extends ConsumerWidget {
-  const TxnToAccountIcon({super.key, required this.transaction});
-
-  final Transfer transaction;
-
-  String _iconPath(WidgetRef ref) {
-    if (transaction.transferAccount is! DeletedAccount) {
-      return transaction.transferAccount.iconPath;
-    }
-    return AppIcons.defaultIcon;
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SvgIcon(
-      _iconPath(ref),
-      size: 20,
-      color: context.appTheme.onBackground
-          .withOpacity(transaction.transferAccount is DeletedAccount ? 0.5 : 1),
-    );
-  }
-}
-
-class TxnTransferAccountName extends ConsumerWidget {
-  const TxnTransferAccountName({super.key, required this.transaction});
+class TxnToAccountName extends ConsumerWidget {
+  const TxnToAccountName({super.key, required this.transaction});
 
   final ITransferable transaction;
 
-  String _name(WidgetRef ref) {
-    return transaction.transferAccount.name;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool deletedAccount = transaction.transferAccount is DeletedAccount;
+
+    String name() {
+      if (deletedAccount) {
+        return 'Deleted account'.hardcoded;
+      }
+      if (transaction is CreditPayment) {
+        return (transaction as CreditPayment).account.name;
+      }
+
+      return (transaction as Transfer).transferAccount.name;
+    }
+
     return Text(
-      _name(ref),
+      name(),
       style: kHeader3TextStyle.copyWith(
-          color: context.appTheme.onBackground
-              .withOpacity(transaction.transferAccount is DeletedAccount ? 0.5 : 1),
+          color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
           fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -384,18 +352,16 @@ class TxnAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          CalService.formatCurrency(context,
-              showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+          CalService.formatCurrency(
+              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
           softWrap: false,
           overflow: TextOverflow.fade,
-          style: kHeader2TextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader3TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 13),
         ),
         Gap.w4,
         Text(
           currencyCode,
-          style: kNormalTextStyle.copyWith(
-              color: color ?? _color(context, transaction), fontSize: fontSize ?? 15),
+          style: kHeader3TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 10),
         ),
       ],
     );
@@ -407,76 +373,36 @@ class TxnNote extends StatelessWidget {
 
   final BaseTransaction transaction;
 
-  String? get _categoryTag {
-    final txn = transaction;
-    switch (txn) {
-      case IBaseTransactionWithCategory():
-        return (txn as IBaseTransactionWithCategory).categoryTag != null
-            ? '# ${(txn as IBaseTransactionWithCategory).categoryTag!.name}'
-            : null;
-      case Transfer() || CreditPayment() || CreditCheckpoint():
-        return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 2, top: 6),
-      decoration: BoxDecoration(
-        border:
-            Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1.5)),
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        constraints: const BoxConstraints(minHeight: 32),
-        decoration: BoxDecoration(
-          color: context.appTheme.onBackground.withOpacity(0.05),
-          borderRadius:
-              const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _categoryTag != null
-                ? Text(
-                    _categoryTag!,
-                    style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.onBackground.withOpacity(0.7),
-                      fontSize: 12,
-                    ),
-                  )
-                : Gap.noGap,
-            _categoryTag != null && transaction.note != null ? Gap.h4 : Gap.noGap,
-            transaction.note != null && transaction.note!.isNotEmpty
-                ? Text(
-                    transaction.note!,
-                    style: kNormalTextStyle.copyWith(
-                      color: context.appTheme.onBackground.withOpacity(0.7),
-                      fontSize: 12,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                    maxLines: 3,
-                  )
-                : Gap.noGap,
-          ],
-        ),
-      ),
-    );
+    return transaction.note != null && transaction.note!.isNotEmpty
+        ? Container(
+            margin: const EdgeInsets.only(left: 15.5, top: 8),
+            padding: const EdgeInsets.only(left: 8),
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+            ),
+            child: Transform.translate(
+              offset: const Offset(0, -1),
+              child: Text(
+                transaction.note!,
+                style: kHeader4TextStyle.copyWith(
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                  fontSize: 12,
+                ),
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                maxLines: 2,
+              ),
+            ),
+          )
+        : Gap.noGap;
   }
 }
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key,
-      this.height = 27,
-      this.width = 14,
-      this.adjustY = 1,
-      this.strokeWidth = 1,
-      this.opacity = 0.65});
+      {super.key, this.height = 27, this.width = 14, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 0.65});
 
   final double height;
   final double adjustY;
@@ -491,62 +417,7 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity,
-              height: height, width: width, adjustY: adjustY),
-        ),
-      ),
-    );
-  }
-}
-
-class TxnSpendingPaidBar extends StatefulWidget {
-  const TxnSpendingPaidBar({super.key, this.height = 20, required this.percentage})
-      : assert(percentage >= 0 && percentage <= 1);
-
-  final double height;
-  final double percentage;
-
-  @override
-  State<TxnSpendingPaidBar> createState() => _TxnSpendingPaidBarState();
-}
-
-class _TxnSpendingPaidBarState extends State<TxnSpendingPaidBar> {
-  final _key = GlobalKey();
-  double _width = 0;
-
-  @override
-  void didUpdateWidget(covariant TxnSpendingPaidBar oldWidget) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        _width = _key.currentContext!.size!.width * widget.percentage;
-      });
-    });
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: _key,
-      width: double.infinity,
-      height: widget.height,
-      alignment: Alignment.centerLeft,
-      padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: AppColors.greyBgr(context),
-        // gradient: LinearGradient(
-        //   colors: [context.appTheme.primary, AppColors.greyBgr(context)],
-        //   stops: [percentage, percentage],
-        // ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: AnimatedContainer(
-          duration: k250msDuration,
-          color: context.appTheme.primary,
-          height: widget.height,
-          width: _width,
+          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
@@ -559,9 +430,9 @@ Color _color(BuildContext context, BaseTransaction transaction) {
   return switch (transaction) {
     Income() => context.appTheme.positive,
     Expense() => context.appTheme.negative,
-    CreditSpending() => AppColors.grey(context),
+    CreditSpending() => context.appTheme.onBackground,
     CreditPayment() => context.appTheme.negative,
-    Transfer() => AppColors.grey(context),
+    Transfer() => context.appTheme.onBackground,
     CreditCheckpoint() => AppColors.grey(context),
   };
 }

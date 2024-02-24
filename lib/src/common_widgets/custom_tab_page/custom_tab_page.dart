@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,6 +131,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
   late double _sheetMaxFraction;
   late double _sheetMinHeight;
   late double _sheetMaxHeight;
+  late double _sheetMaxOffset;
 
   late final _scrollableController = DraggableScrollableController();
 
@@ -166,7 +169,7 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
     _sheetMinHeight = _sheetMinFraction * Gap.screenHeight(context);
     _sheetMaxHeight = _sheetMaxFraction * Gap.screenHeight(context);
-
+    _sheetMaxOffset = safeZoneHeight - _sheetMinHeight;
     super.didChangeDependencies();
   }
 
@@ -354,23 +357,26 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
 
   Widget _extendedTabBar() {
     final bgColor = widget.extendedTabBar?.backgroundColor ??
-        (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary1);
+        (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0);
 
     return AnimatedBuilder(
       animation: _tabOffsetController,
       builder: (_, child) {
         return Transform.translate(
           offset: Offset(0, -_tabOffsetController.value),
-          child: child,
+          child: Container(
+            width: double.infinity,
+            height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
+            color: bgColor,
+            padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
+            child: Opacity(
+              opacity: 1 - (3 * _tabOffsetController.value / _sheetMaxOffset).clamp(0, 1),
+              child: child,
+            ),
+          ),
         );
       },
-      child: Container(
-        width: double.infinity,
-        height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
-        color: bgColor,
-        padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
-        child: widget.extendedTabBar,
-      ),
+      child: widget.extendedTabBar,
     );
   }
 
@@ -385,9 +391,10 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
         ),
         boxShadow: [
           BoxShadow(
-            color: context.appTheme.accent2.addDark(0.3).withOpacity(context.appTheme.isDarkTheme ? 0.0 : 0.25),
-            blurRadius: 12,
-            spreadRadius: 6,
+            color: (widget.extendedTabBar?.backgroundColor ?? context.appTheme.background0)
+                .withOpacity(context.appTheme.isDarkTheme ? 0.0 : 1),
+            blurRadius: 7,
+            spreadRadius: 5,
           )
         ],
       ),

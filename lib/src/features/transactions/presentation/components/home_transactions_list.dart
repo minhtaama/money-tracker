@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/custom_inkwell.dart';
+import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
+import '../../../accounts/domain/account_base.dart';
 import '../../domain/transaction_base.dart';
 import 'txn_components.dart';
 
@@ -30,7 +34,7 @@ class HomeTransactionsList extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: () => onTransactionTap?.call(transaction),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -41,12 +45,10 @@ class HomeTransactionsList extends StatelessWidget {
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
-                        Transfer() =>
-                          _TransferDetails(transaction: transaction, currencyCode: currencyCode),
+                        Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
                         IBaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
-                        CreditPayment() =>
-                          _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
+                        CreditPayment() => _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditCheckpoint() => Gap.noGap,
                         //TODO: styling checkpoint
                       },
@@ -56,16 +58,19 @@ class HomeTransactionsList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         TxnAmount(currencyCode: currencyCode, transaction: transaction),
-                        TxnCategoryTag(transaction: transaction),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            TxnAccountName(transaction: transaction),
+                            Gap.w4,
+                            TxnAccountIcon(transaction: transaction),
+                          ],
+                        ),
                       ],
                     ),
                   ],
                 ),
-                // transaction.note != null ||
-                //         transaction is IBaseTransactionWithCategory &&
-                //             (transaction as IBaseTransactionWithCategory).categoryTag != null
-                //     ? TxnNote(transaction: transaction)
-                //     : Gap.noGap,
+                TxnNote(transaction: transaction),
               ],
             ),
           ),
@@ -86,18 +91,8 @@ class _WithCategoryDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // TxnAccountIcon(transaction: transaction),
-            // Gap.w4,
-            Flexible(child: TxnAccountName(transaction: transaction)),
-            Gap.w4,
-            transaction is CreditSpending ? TxnInfo('Credit'.hardcoded) : Gap.noGap,
-          ],
-        ),
-        Gap.h4,
-        TxnCategoryName(transaction: transaction as IBaseTransactionWithCategory)
+        TxnCategoryName(transaction: transaction as IBaseTransactionWithCategory),
+        TxnCategoryTag(transaction: transaction),
       ],
     );
   }
@@ -111,20 +106,16 @@ class _TransferDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const TxnTransferLine(),
-        Gap.w4,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TxnAccountName(transaction: transaction),
-              Gap.h4,
-              TxnTransferAccountName(transaction: transaction),
-            ],
-          ),
+        Text(
+          'Transfer to:'.hardcoded,
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          softWrap: false,
+          overflow: TextOverflow.fade,
         ),
+        TxnToAccountName(transaction: transaction),
       ],
     );
   }
@@ -138,25 +129,25 @@ class _PaymentDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const TxnTransferLine(),
-        Gap.w4,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TxnTransferAccountName(transaction: transaction),
-              Gap.h4,
-              Row(
-                children: [
-                  TxnAccountName(transaction: transaction),
-                  Gap.w4,
-                  TxnInfo('Credit'.hardcoded),
-                ],
-              ),
-            ],
-          ),
+        Text(
+          'Payment to:'.hardcoded,
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          softWrap: false,
+          overflow: TextOverflow.fade,
+        ),
+        Row(
+          children: [
+            TxnToAccountName(transaction: transaction),
+            Gap.w4,
+            SvgIcon(
+              AppIcons.credit,
+              size: 14,
+              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
+            ),
+          ],
         ),
       ],
     );

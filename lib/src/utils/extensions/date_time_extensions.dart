@@ -140,22 +140,22 @@ extension DateTimeExtensions on DateTime {
     }
   }
 
-  String weekdayString() {
+  String weekdayString([bool short = false]) {
     switch (weekday) {
       case 1:
-        return 'Monday'.hardcoded;
+        return short ? 'MON' : 'Monday'.hardcoded;
       case 2:
-        return 'Tuesday'.hardcoded;
+        return short ? 'TUE' : 'Tuesday'.hardcoded;
       case 3:
-        return 'Wednesday'.hardcoded;
+        return short ? 'WED' : 'Wednesday'.hardcoded;
       case 4:
-        return 'Thursday'.hardcoded;
+        return short ? 'THU' : 'Thursday'.hardcoded;
       case 5:
-        return 'Friday'.hardcoded;
+        return short ? 'FRI' : 'Friday'.hardcoded;
       case 6:
-        return 'Saturday'.hardcoded;
+        return short ? 'SAT' : 'Saturday'.hardcoded;
       case 7:
-        return 'Sunday'.hardcoded;
+        return short ? 'SUN' : 'Sunday'.hardcoded;
       default:
         return '';
     }

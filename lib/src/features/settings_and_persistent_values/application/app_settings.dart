@@ -88,7 +88,7 @@ class AppThemeData {
   final Color primary;
 
   /// __Light Mode:__
-  /// * [ExtendedHomeTab]'s background
+  ///
   ///
   /// __Dark Mode:__
   ///
@@ -143,6 +143,7 @@ class AppThemeData {
   /// __Light Mode:__
   /// * [RoundedIconButton]'s default background
   /// * [CardItem]'s default background
+  /// * [ExtendedHomeTab]'s background
   ///
   /// __DarkMode:__
   /// * [RoundedIconButton]'s default background

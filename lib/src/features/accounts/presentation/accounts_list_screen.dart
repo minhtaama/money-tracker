@@ -4,18 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/colors.dart';
@@ -88,9 +84,7 @@ class _AccountTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = model.backgroundColor.withOpacity(0.55);
     final fgColor = context.appTheme.onBackground;
-    final iconColor = model.backgroundColor.addDark(0.2);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -119,14 +113,13 @@ class _AccountTile extends StatelessWidget {
                     children: [
                       Text(
                         model.name,
-                        style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 24),
+                        style: kHeader2TextStyle.copyWith(color: fgColor, fontSize: 20),
                         overflow: TextOverflow.fade,
                         softWrap: false,
                       ),
                       Text(
                         model is CreditAccount ? 'Credit account' : 'Regular Account',
-                        style: kNormalTextStyle.copyWith(
-                            color: context.appTheme.onBackground, fontSize: 13),
+                        style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
                       ),
                     ],
                   ),
@@ -148,7 +141,7 @@ class _AccountTile extends StatelessWidget {
                   Expanded(
                     child: Text(
                       CalService.formatCurrency(context, model.availableAmount),
-                      style: kHeader2TextStyle.copyWith(color: fgColor, fontSize: 23),
+                      style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 23),
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
@@ -191,10 +184,6 @@ class _CreditDetails extends StatelessWidget {
       children: [
         Gap.h8,
         Text(
-          'APR: ${model.apr.toString()} %',
-          style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
-        ),
-        Text(
           'Statement: Day ${_dateBuilder(model.statementDay)}',
           style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
         ),
@@ -203,7 +192,35 @@ class _CreditDetails extends StatelessWidget {
           style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
         ),
         Gap.h8,
+        _TxnCreditBar(color: model.backgroundColor, percentage: model.availableAmount / model.creditLimit),
+        Gap.h8,
       ],
+    );
+  }
+}
+
+class _TxnCreditBar extends StatelessWidget {
+  const _TxnCreditBar({required this.color, required this.percentage}) : assert(percentage >= 0 && percentage <= 1);
+
+  final double percentage;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      width: double.infinity,
+      duration: k250msDuration,
+      height: 18,
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: AppColors.greyBgr(context),
+        gradient: LinearGradient(
+          colors: [color, AppColors.greyBgr(context)],
+          stops: [percentage, percentage],
+        ),
+      ),
     );
   }
 }

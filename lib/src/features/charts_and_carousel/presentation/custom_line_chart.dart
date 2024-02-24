@@ -87,8 +87,12 @@ class CustomLineChart extends StatelessWidget {
     Gradient mainBelowLineGradient() {
       bool isDashed = _customLineType == _CustomLineType.dashed;
       bool isDarkTheme = context.appTheme.isDarkTheme;
-      double opaTop = isDarkTheme ? (isDashed ? 0.25 : 0.35) : (isDashed ? 0.2 : 0.35);
-      double opaBottom = isDarkTheme ? 0.15 : 0;
+      double opaTop = todayDotColor != null
+          ? 0.2
+          : isDarkTheme
+              ? (isDashed ? 0.2 : 0.2)
+              : (isDashed ? 0.05 : 0.15);
+      double opaBottom = isDarkTheme ? 0 : 0;
 
       return LinearGradient(
         begin: Alignment.topCenter,
@@ -97,7 +101,7 @@ class CustomLineChart extends StatelessWidget {
           color?.withOpacity(opaTop) ?? context.appTheme.accent1.withOpacity(opaTop),
           color?.withOpacity(opaBottom) ?? context.appTheme.accent1.withOpacity(opaBottom),
         ],
-        stops: const [0, 0.7],
+        stops: const [0, 0.6],
       );
     }
 
@@ -194,7 +198,7 @@ class CustomLineChart extends StatelessWidget {
                 context,
                 color: color ?? context.appTheme.accent1,
                 dotColor: todayDotColor ??
-                    (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.secondary1),
+                    (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0),
                 boxUnderDot: boxUnderDot,
               );
             }

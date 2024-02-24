@@ -28,11 +28,21 @@ class DayCard extends StatelessWidget {
       if (transaction is Income) {
         cashFlow += transaction.amount;
       }
-      if (transaction is Expense) {
+      if (transaction is Expense || transaction is CreditPayment) {
         cashFlow -= transaction.amount;
       }
     }
     return cashFlow;
+  }
+
+  String get _symbol {
+    if (_calculateCashFlow > 0) {
+      return '+';
+    }
+    if (_calculateCashFlow < 0) {
+      return '-';
+    }
+    return '';
   }
 
   @override
@@ -47,26 +57,17 @@ class DayCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4.0),
             child: Row(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.greyBgr(context),
-                    borderRadius: BorderRadius.circular(8),
-                    border: dateTime.onlyYearMonthDay.isAtSameMomentAs(today)
-                        ? Border.all(color: context.appTheme.onBackground.withOpacity(0.7), width: 2)
-                        : null,
+                Gap.w4,
+                Text(
+                  NumberFormat('00').format(dateTime.day),
+                  style: kHeader1TextStyle.copyWith(
+                    fontSize: 23,
+                    color: context.appTheme.onBackground,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  child: Text(
-                    NumberFormat('00').format(dateTime.day),
-                    style: kHeader1TextStyle.copyWith(
-                      fontSize: 20,
-                      color: context.appTheme.onBackground,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
+                  textAlign: TextAlign.left,
                 ),
                 Gap.w8,
                 Column(
@@ -78,53 +79,27 @@ class DayCard extends StatelessWidget {
                         color: dateTime.weekday == 6 || dateTime.weekday == 7
                             ? context.appTheme.negative
                             : context.appTheme.onBackground,
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    Gap.h2,
                     Text(
-                      dateTime.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
-                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 11),
+                      dateTime.getFormattedDate(format: DateTimeFormat.ddmmyyyy, hasDay: false),
+                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
                       textAlign: TextAlign.left,
                     ),
                   ],
                 ),
                 Gap.expanded,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Cash flow',
-                      style: kNormalTextStyle.copyWith(
-                          color: context.appTheme.onBackground.withOpacity(0.5), fontSize: 12),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          CalService.formatCurrency(context, _calculateCashFlow.abs()),
-                          style: kHeader1TextStyle.copyWith(
-                              color: _calculateCashFlow > 0
-                                  ? context.appTheme.positive
-                                  : _calculateCashFlow < 0
-                                      ? context.appTheme.negative
-                                      : context.appTheme.onBackground,
-                              fontSize: 15),
-                        ),
-                        Gap.w4,
-                        Text(
-                          context.appSettings.currency.code,
-                          style: kNormalTextStyle.copyWith(
-                              color: _calculateCashFlow > 0
-                                  ? context.appTheme.positive
-                                  : _calculateCashFlow < 0
-                                      ? context.appTheme.negative
-                                      : context.appTheme.onBackground,
-                              fontSize: 15),
-                        ),
-                      ],
-                    ),
-                  ],
+                Text(
+                  '$_symbol${CalService.formatCurrency(context, _calculateCashFlow.abs())}',
+                  style: kHeader3TextStyle.copyWith(
+                      color: _calculateCashFlow > 0
+                          ? context.appTheme.positive
+                          : _calculateCashFlow < 0
+                              ? context.appTheme.negative
+                              : context.appTheme.onBackground,
+                      fontSize: 13),
                 )
               ],
             ),
