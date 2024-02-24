@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/help_box.dart';
-import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/checkpoint_installments_list.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -19,7 +17,6 @@ import '../../../../accounts/domain/account_base.dart';
 import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/date_time_selector/date_time_selector.dart';
-import '../../../../selectors/presentation/forms.dart';
 
 class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {
   const AddCreditCheckpointModalScreen({super.key, required this.account});

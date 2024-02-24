@@ -112,8 +112,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText =
-        'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
 
     final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
@@ -121,7 +120,7 @@ class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const _WelcomeText(),
-        Gap.h16,
+        Gap.h8,
         MoneyCarousel(
           controller: widget.carouselController,
           initialPageIndex: widget.initialPageIndex,
@@ -155,11 +154,13 @@ class _WelcomeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Money Tracker'.hardcoded,
-      style: kHeader2TextStyle.copyWith(
-        color:
-            context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary,
-        fontSize: 15,
+      'moneyMate',
+      style: TextStyle(
+        color: context.appTheme.accent1,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Lobster',
+        //letterSpacing: 2,
       ),
     );
   }

@@ -77,8 +77,6 @@ class AppThemeData {
   final bool isDarkTheme;
 
   /// __Light Mode:__
-  /// * [CustomFloatingActionButton]'s background
-  /// * [IncomeCard]'s background
   /// * Colors of highlight in [DateTimeSelector] and [DateTimeSelectorCredit]
   ///
   /// __Dark Mode:__

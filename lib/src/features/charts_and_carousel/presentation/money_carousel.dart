@@ -128,9 +128,10 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                       ? RoundedIconButton(
                           iconPath: widget.leftIconPath!,
                           iconPadding: 12,
-                          iconColor: context.appTheme.isDarkTheme
-                              ? context.appTheme.onBackground
-                              : context.appTheme.onSecondary,
+                          iconColor: (context.appTheme.isDarkTheme
+                                  ? context.appTheme.onBackground
+                                  : context.appTheme.onSecondary)
+                              .withOpacity(0.65),
                           onTap: widget.onTapLeftIcon,
                         )
                       : Gap.noGap,
@@ -143,9 +144,10 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                       ? RoundedIconButton(
                           iconPath: widget.rightIconPath!,
                           iconPadding: 12,
-                          iconColor: context.appTheme.isDarkTheme
-                              ? context.appTheme.onBackground
-                              : context.appTheme.onSecondary,
+                          iconColor: (context.appTheme.isDarkTheme
+                                  ? context.appTheme.onBackground
+                                  : context.appTheme.onSecondary)
+                              .withOpacity(0.65),
                           onTap: widget.onTapRightIcon,
                         )
                       : Gap.noGap,
@@ -292,8 +294,8 @@ class _CarouselContentState extends State<_CarouselContent> {
                       _currency(context),
                       style: kHeader3TextStyle.copyWith(
                         color: context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground.withOpacity(0.6)
-                            : context.appTheme.onSecondary.withOpacity(0.6),
+                            ? context.appTheme.onBackground.withOpacity(0.65)
+                            : context.appTheme.onSecondary.withOpacity(0.65),
                         fontSize: 20,
                       ),
                     ),

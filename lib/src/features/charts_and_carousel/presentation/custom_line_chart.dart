@@ -88,11 +88,15 @@ class CustomLineChart extends StatelessWidget {
       bool isDashed = _customLineType == _CustomLineType.dashed;
       bool isDarkTheme = context.appTheme.isDarkTheme;
       double opaTop = todayDotColor != null
-          ? 0.2
+          ? 0.25
           : isDarkTheme
-              ? (isDashed ? 0.2 : 0.2)
+              ? (isDashed ? 0.25 : 0.35)
               : (isDashed ? 0.05 : 0.15);
-      double opaBottom = isDarkTheme ? 0 : 0;
+      double opaBottom = todayDotColor != null
+          ? 0.1
+          : isDarkTheme
+              ? 0.15
+              : 0;
 
       return LinearGradient(
         begin: Alignment.topCenter,
