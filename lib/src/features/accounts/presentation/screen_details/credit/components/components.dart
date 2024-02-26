@@ -6,7 +6,8 @@ class _SummaryCard extends StatelessWidget {
   final Statement statement;
   final bool isClosedStatement;
 
-  Widget _buildText(BuildContext context, {String? text, String? richText, int color = 0, bool bold = false}) {
+  Widget _buildText(BuildContext context,
+      {String? text, String? richText, int color = 0, bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -104,6 +105,7 @@ class _SummaryCard extends StatelessWidget {
                         iconPath: AppIcons.done,
                         iconSize: 30,
                         header: 'This statement has been closed'.hardcoded,
+                        text: 'Closed statement is unable to modify',
                       )
                     : Gap.noGap,
                 isClosedStatement ? Gap.h16 : Gap.noGap,
@@ -117,7 +119,8 @@ class _SummaryCard extends StatelessWidget {
                     ? _buildText(
                         context,
                         text: 'Interest:',
-                        richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
+                        richText:
+                            '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
                         color: interest.roundBySetting(context) <= 0 ? 0 : -1,
                       )
                     : Gap.noGap,
@@ -148,12 +151,15 @@ class _SummaryCard extends StatelessWidget {
                 IconWithText(
                   iconPath: AppIcons.statementCheckpoint,
                   iconSize: 30,
-                  header: 'This statement has checkpoint',
+                  header: 'This statement has adjustment checkpoint'.hardcoded,
+                  text:
+                      'Checkpoint is used to modify the total balance or to remove any on-going installments at statement date'
+                          .hardcoded,
                 ),
                 Gap.h16,
                 _buildText(
                   context,
-                  text: 'Spent at checkpoint:',
+                  text: 'Modified balance:',
                   richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
                   color: spent <= 0 ? 0 : -1,
                 ),
@@ -206,7 +212,15 @@ extension _StatementDetails on _SummaryCard {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color});
+  const _Header(
+      {super.key,
+      this.dateTime,
+      required this.h1,
+      this.h2,
+      this.dateColor,
+      this.dateBgColor,
+      this.color,
+      this.onTap});
 
   final DateTime? dateTime;
   final Color? dateColor;
@@ -214,39 +228,61 @@ class _Header extends StatelessWidget {
   final Color? dateBgColor;
   final String h1;
   final String? h2;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 14, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _DateTime(
-            dateTime: dateTime,
-            color: dateColor,
-            backgroundColor: dateBgColor ?? color,
-            noMonth: false,
-          ),
-          Gap.w8,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  h1,
-                  style: kHeader2TextStyle.copyWith(fontSize: 16, color: color ?? context.appTheme.onBackground),
-                ),
-                h2 != null
-                    ? Text(
-                        h2!,
-                        style: kHeader3TextStyle.copyWith(fontSize: 14, color: color ?? context.appTheme.onBackground),
-                      )
-                    : Gap.noGap,
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 14, bottom: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            _DateTime(
+              dateTime: dateTime,
+              color: dateColor,
+              backgroundColor: dateBgColor ?? color,
+              noMonth: false,
             ),
-          ),
-        ],
+            Gap.w8,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    h1,
+                    style: kHeader2TextStyle.copyWith(
+                        fontSize: 14, color: color ?? AppColors.grey(context)),
+                  ),
+                  h2 != null
+                      ? Row(
+                          children: [
+                            onTap != null
+                                ? Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: SvgIcon(
+                                      AppIcons.add,
+                                      color: color ?? AppColors.grey(context),
+                                      size: 15,
+                                    ),
+                                  )
+                                : Gap.noGap,
+                            Expanded(
+                              child: Text(
+                                h2!,
+                                style: kHeader3TextStyle.copyWith(
+                                    fontSize: 11, color: color ?? AppColors.grey(context)),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Gap.noGap,
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -353,7 +389,8 @@ class _InstallmentToPayTransaction extends StatelessWidget {
                           children: [
                             Text(
                               'Instm. payment of:',
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: AppColors.grey(context)),
                             ),
                             TxnCategoryName(
                               transaction: transaction,
@@ -516,7 +553,7 @@ class _Checkpoint extends StatelessWidget {
                         'Oustd. balance: ${statement.checkpoint!.unpaidOfInstallments != 0 ? CalService.formatCurrency(context, transaction.amount) : ''} ${statement.checkpoint!.unpaidOfInstallments != 0 ? context.appSettings.currency.code : ''}'
                             .hardcoded,
                         style: kHeader3TextStyle.copyWith(
-                            fontSize: statement.checkpoint!.unpaidOfInstallments != 0 ? 12 : 15,
+                            fontSize: statement.checkpoint!.unpaidOfInstallments != 0 ? 12 : 14,
                             color: context.appTheme.onBackground),
                         maxLines: 1,
                         overflow: TextOverflow.fade,
@@ -525,7 +562,8 @@ class _Checkpoint extends StatelessWidget {
                           ? Text(
                               'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.appSettings.currency.code}'
                                   .hardcoded,
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: context.appTheme.onBackground),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -567,6 +605,9 @@ class _DateTime extends StatelessWidget {
             decoration: BoxDecoration(
               color: backgroundColor ?? AppColors.greyBorder(context),
               borderRadius: BorderRadius.circular(8),
+              // border: dateTime!.onlyYearMonthDay.isAtSameMomentAs(DateTime.now().onlyYearMonthDay)
+              //     ? Border.all()
+              //     : null
             ),
             width: 26,
             constraints: const BoxConstraints(minHeight: 18),
@@ -582,9 +623,10 @@ class _DateTime extends StatelessWidget {
                   noMonth
                       ? Gap.noGap
                       : Text(
-                          dateTime!.getFormattedDate(hasDay: false, hasYear: false),
+                          dateTime!.getFormattedDate(
+                              hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmyyyy),
                           style: kHeader3TextStyle.copyWith(
-                              color: color ?? context.appTheme.onBackground, fontSize: 14, height: 1),
+                              color: color ?? context.appTheme.onBackground, fontSize: 7, height: 1),
                         ),
                 ],
               ),

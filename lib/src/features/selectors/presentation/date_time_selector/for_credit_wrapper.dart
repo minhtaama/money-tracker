@@ -58,9 +58,12 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
       _latestCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
       _latestStatementDueDate = widget.creditAccount!.latestClosedStatementDueDate;
       _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
-      _paymentDateTimes = widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-      _spendingDateTimes = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-      _checkpointDateTimes = widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _paymentDateTimes =
+          widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _spendingDateTimes =
+          widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _checkpointDateTimes =
+          widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -106,7 +109,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     if (selectedDay != null) {
       return CreditInfo(
         chosenDateTime: selectedDay,
-        showPaymentAmount: widget.isForPayment && !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
+        showPaymentAmount:
+            widget.isForPayment && !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
         statement: widget.creditAccount!.statementAt(selectedDay, upperGapAtDueDate: true),
         onDateTap: (dateTime) => setState(() {
           _currentMonthView = dateTime;
@@ -116,7 +120,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
     return IconWithText(
       iconPath: AppIcons.today,
-      header: 'Select a payment day.\n Spending transaction can be paid will be displayed here'.hardcoded,
+      header:
+          'Select a payment day.\n Spending transaction can be paid will be displayed here'.hardcoded,
     );
   }
 
@@ -129,8 +134,9 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           elevation: 0,
-          border:
-              Border.all(color: context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+          border: Border.all(
+              color:
+                  context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -187,6 +193,75 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
   }
 }
 
+class DateSelectorForCheckpoint extends StatefulWidget {
+  const DateSelectorForCheckpoint(
+      {super.key,
+      required this.onChanged,
+      required this.labelBuilder,
+      this.initial,
+      this.selectableDayPredicate});
+
+  final DateTime? initial;
+  final bool Function(DateTime)? selectableDayPredicate;
+  final ValueSetter<DateTime> onChanged;
+  final String Function(DateTime?) labelBuilder;
+
+  @override
+  State<DateSelectorForCheckpoint> createState() => _DateSelectorForCheckpointState();
+}
+
+class _DateSelectorForCheckpointState extends State<DateSelectorForCheckpoint> {
+  late DateTime _outputDateTime = widget.initial ?? DateTime.now();
+  //late DateTime _selectedDay = DateTime.now();
+
+  @override
+  void didUpdateWidget(covariant DateSelectorForCheckpoint oldWidget) {
+    if (widget.initial != null) {
+      _outputDateTime = widget.initial!;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      child: CustomInkWell(
+        borderRadius: BorderRadius.circular(1000),
+        inkColor: AppColors.grey(context),
+        onTap: () async {
+          await showStatefulDialog(
+            context: context,
+            builder: (_, __) {
+              return _CustomCalendarDialog(
+                config: _customConfig(
+                  context,
+                  dayBuilder: _dayBuilderRegular,
+                  selectableDayPredicate: widget.selectableDayPredicate,
+                ),
+                currentDay: _outputDateTime,
+                onActionButtonTap: (dateTime) {
+                  if (dateTime != null) {
+                    setState(() {
+                      _outputDateTime =
+                          dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                    });
+                    context.pop();
+                  }
+                },
+              );
+            },
+          );
+          widget.onChanged(_outputDateTime);
+        },
+        child: _DateWidget(
+          dateTime: _outputDateTime,
+          labelBuilder: widget.labelBuilder,
+        ),
+      ),
+    );
+  }
+}
+
 extension _Details on _DateTimeSelectorCreditState {
   Widget _dayBuilder(
     BuildContext context, {
@@ -218,7 +293,8 @@ extension _Details on _DateTimeSelectorCreditState {
     final beforeLatestCheckpoint = dateTime.isBefore(_latestCheckpointDateTime);
     final notInLatestStatement = !dateTime.isAfter(_latestStatementDueDate);
     final inFuture = dateTime.isAfter(_todayStatementDueDate);
-    final canPayOnlyInGracePeriod = widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod;
+    final canPayOnlyInGracePeriod =
+        widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod;
     final isPayment = widget.isForPayment;
     final notInGracePeriod = !widget.creditAccount!.isInGracePeriod(dateTime);
 
@@ -234,7 +310,8 @@ extension _Details on _DateTimeSelectorCreditState {
     if (notInLatestStatement) {
       showErrorDialog(
         context,
-        'Oops! You can only add transactions since [the statement contains the latest payment]'.hardcoded,
+        'Oops! You can only add transactions since [the statement contains the latest payment]'
+            .hardcoded,
         enable: showDialog,
       );
       return false;

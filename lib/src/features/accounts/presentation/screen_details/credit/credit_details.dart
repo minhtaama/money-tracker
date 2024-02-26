@@ -59,14 +59,16 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
     }
   }
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate =
+      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
   late int _currentPageIndex = _initialPageIndex;
 
   void _onPageChange(int value) {
     _currentPageIndex = value;
-    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate =
+        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -80,6 +82,24 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
 
   void _animatedToPage(int page) {
     _controller.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+  }
+
+  bool _canAddCheckpoint(Statement statement) {
+    if (statement.checkpoint != null) {
+      return false;
+    }
+
+    DateTime before = widget.creditAccount.latestClosedStatementDueDate;
+    DateTime checkpoint = widget.creditAccount.latestCheckpointDateTime;
+    DateTime after = widget.creditAccount.todayStatementDueDate;
+
+    if (statement.date.statement.isAfter(before) &&
+        statement.date.statement.isAfter(checkpoint) &&
+        statement.date.statement.isBefore(after)) {
+      return true;
+    }
+
+    return false;
   }
 
   @override
@@ -98,12 +118,11 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
             onTap: () => context.push(RoutePath.addCreditSpending),
           ),
           FABItem(
-            icon: AppIcons.statementCheckpoint,
-            label: 'Checkpoint'.hardcoded,
+            icon: AppIcons.fykFace,
+            label: 'Placeholder'.hardcoded,
             color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
-            onTap: () => showCustomModalBottomSheet(
-                context: context, child: AddCreditCheckpointModalScreen(account: widget.creditAccount)),
+            onTap: () {},
           ),
           FABItem(
             icon: AppIcons.handCoin,
@@ -119,11 +138,15 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         controller: _controller,
         smallTabBar: SmallTabBar(
           child: PageHeading(
-              title: widget.creditAccount.name, secondaryTitle: 'Credit account'.hardcoded, hasBackButton: true),
+              title: widget.creditAccount.name,
+              secondaryTitle: 'Credit account'.hardcoded,
+              hasBackButton: true),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedCreditAccountTab(account: widget.creditAccount, displayDate: _displayStatementDate),
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedCreditAccountTab(
+              account: widget.creditAccount, displayDate: _displayStatementDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -139,9 +162,10 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           },
         ),
         itemBuilder: (context, ref, pageIndex) {
-          final currentDateTime =
-              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          final currentDateTime = DateTime(
+              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement =
+              widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
                   _SummaryCard(
@@ -150,7 +174,19 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
                   ),
                   Gap.h4,
                   Gap.divider(context, indent: 24),
-                  _TransactionList(statement: statement),
+                  _TransactionList(
+                    account: widget.creditAccount,
+                    statement: statement,
+                    onStatementDateTap: _canAddCheckpoint(statement)
+                        ? () => showCustomModalBottomSheet(
+                              context: context,
+                              child: AddCreditCheckpointModalScreen(
+                                statement: statement,
+                                creditAccount: widget.creditAccount,
+                              ),
+                            )
+                        : null,
+                  ),
                   Gap.h48,
                 ]
               : [

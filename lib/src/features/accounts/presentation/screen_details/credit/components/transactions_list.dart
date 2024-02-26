@@ -1,9 +1,11 @@
 part of '../credit_details.dart';
 
 class _TransactionList extends StatefulWidget {
-  const _TransactionList({required this.statement});
+  const _TransactionList({required this.account, required this.statement, this.onStatementDateTap});
 
+  final CreditAccount account;
   final Statement statement;
+  final VoidCallback? onStatementDateTap;
 
   @override
   State<_TransactionList> createState() => _TransactionListState();
@@ -234,12 +236,16 @@ class _TransactionListState extends State<_TransactionList> {
     list.add(
       _Header(
         dateTime: statement.date.statement,
-        h1: statement.checkpoint != null
-            ? 'Statement date with checkpoint'.hardcoded
-            : 'Statement date'.hardcoded,
-        h2: 'Begin of grace period'.hardcoded,
-        color: context.appTheme.primary,
-        dateColor: context.appTheme.onPrimary,
+        h1: statement.checkpoint != null ? 'Statement date'.hardcoded : 'Statement date'.hardcoded,
+        h2: statement.checkpoint != null
+            ? 'With adjustment checkpoint'
+            : widget.onStatementDateTap == null
+                ? null
+                : 'Tap to add adjustment checkpoint'.hardcoded,
+        color: context.appTheme.onBackground,
+        dateColor: widget.account.iconColor,
+        dateBgColor: widget.account.backgroundColor,
+        onTap: statement.checkpoint != null ? null : widget.onStatementDateTap,
       ),
     );
   }
@@ -260,11 +266,15 @@ class _TransactionListState extends State<_TransactionList> {
   void _addHToday(List<Widget> list, Statement statement) {
     list.add(
       _Header(
-        color: context.appTheme.accent1.addDark(0.1),
-        dateBgColor: context.appTheme.accent1,
-        dateColor: context.appTheme.onAccent,
+        color: context.appTheme.onBackground,
+        dateBgColor: AppColors.greyBgr(context),
         dateTime: _today,
-        h1: 'Today',
+        h1: 'Today'.hardcoded,
+        h2: _today.isBefore(statement.date.statement)
+            ? '${_today.getDaysDifferent(statement.date.statement)} days left until statement date'
+                .hardcoded
+            : '${_today.getDaysDifferent(statement.date.due)} days left until payment due date'
+                .hardcoded,
       ),
     );
   }

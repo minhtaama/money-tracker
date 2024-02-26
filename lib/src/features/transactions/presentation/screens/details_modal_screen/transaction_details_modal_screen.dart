@@ -22,7 +22,6 @@ import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import 'package:realm/realm.dart';
 import '../../../../../common_widgets/card_item.dart';
 import '../../../../../common_widgets/custom_checkbox.dart';
 import '../../../../../common_widgets/custom_section.dart';

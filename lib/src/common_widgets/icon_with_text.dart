@@ -83,7 +83,8 @@ class IconWithText extends StatelessWidget {
           text != null
               ? Text(
                   text!,
-                  style: kNormalTextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
+                  style: kNormalTextStyle.copyWith(
+                      color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,
