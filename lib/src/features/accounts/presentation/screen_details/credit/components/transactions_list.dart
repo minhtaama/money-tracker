@@ -68,8 +68,7 @@ class _TransactionListState extends State<_TransactionList> {
     );
   }
 
-  List<Widget> buildList(
-      BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(BuildContext context, Statement statement, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     DateTime tempDate = statement.date.start;
@@ -97,25 +96,20 @@ class _TransactionListState extends State<_TransactionList> {
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isBefore(statement.date.previousDue) &&
-                tempDate.isBefore(_today) &&
-                !txnDateTime.isBefore(_today)) {
+            _today.isBefore(statement.date.previousDue) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
       }
 
-      if (tempDate.isBefore(statement.date.previousDue) &&
-          !txnDateTime.isBefore(statement.date.previousDue)) {
+      if (tempDate.isBefore(statement.date.previousDue) && !txnDateTime.isBefore(statement.date.previousDue)) {
         triggerAddPreviousDueDateHeader = false;
         _addH1(list, statement);
       }
 
       if (triggerAddTodayHeaderInBillingCycle) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.date.previousDue) &&
-                tempDate.isBefore(_today) &&
-                !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.date.previousDue) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInBillingCycle = false;
           _addHToday(list, statement);
         }
@@ -168,9 +162,7 @@ class _TransactionListState extends State<_TransactionList> {
 
       if (triggerAddTodayHeaderInGracePeriod) {
         if (tempDate.isAtSameMomentAs(_today) ||
-            _today.isAfter(statement.date.statement) &&
-                tempDate.isBefore(_today) &&
-                !txnDateTime.isBefore(_today)) {
+            _today.isAfter(statement.date.statement) && tempDate.isBefore(_today) && !txnDateTime.isBefore(_today)) {
           triggerAddTodayHeaderInGracePeriod = false;
 
           _addHToday(list, statement);
@@ -182,10 +174,10 @@ class _TransactionListState extends State<_TransactionList> {
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(
-            key: i == statement.transactions.inGracePeriod.length - 1 &&
-                    txnDateTime.isAtSameMomentAs(statement.date.due)
-                ? bottomKey
-                : null,
+            key:
+                i == statement.transactions.inGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.date.due)
+                    ? bottomKey
+                    : null,
             statement: statement,
             transaction: txn,
             dateTime: null));
@@ -202,8 +194,7 @@ class _TransactionListState extends State<_TransactionList> {
         _addHToday(list, statement);
       }
 
-      if (i == statement.transactions.inGracePeriod.length - 1 &&
-          triggerAddPaymentDueDateHeaderAtTheEnd) {
+      if (i == statement.transactions.inGracePeriod.length - 1 && triggerAddPaymentDueDateHeaderAtTheEnd) {
         _addH3(list, statement, bottomKey: bottomKey);
       }
     }
@@ -241,7 +232,7 @@ class _TransactionListState extends State<_TransactionList> {
             ? 'With adjustment checkpoint'
             : widget.onStatementDateTap == null
                 ? null
-                : 'Tap to add adjustment checkpoint'.hardcoded,
+                : 'Tap to add balance checkpoint'.hardcoded,
         color: context.appTheme.onBackground,
         dateColor: widget.account.iconColor,
         dateBgColor: widget.account.backgroundColor,
@@ -271,10 +262,8 @@ class _TransactionListState extends State<_TransactionList> {
         dateTime: _today,
         h1: 'Today'.hardcoded,
         h2: _today.isBefore(statement.date.statement)
-            ? '${_today.getDaysDifferent(statement.date.statement)} days left until statement date'
-                .hardcoded
-            : '${_today.getDaysDifferent(statement.date.due)} days left until payment due date'
-                .hardcoded,
+            ? '${_today.getDaysDifferent(statement.date.statement)} days left until statement date'.hardcoded
+            : '${_today.getDaysDifferent(statement.date.due)} days left until payment due date'.hardcoded,
       ),
     );
   }

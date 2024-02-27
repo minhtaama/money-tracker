@@ -200,7 +200,7 @@ class _CreditDetails extends StatelessWidget {
 }
 
 class _TxnCreditBar extends StatelessWidget {
-  const _TxnCreditBar({required this.color, required this.percentage}) : assert(percentage >= 0 && percentage <= 1);
+  const _TxnCreditBar({required this.color, required this.percentage});
 
   final double percentage;
   final Color color;

@@ -11,10 +11,7 @@ abstract interface class _ICreditInfo {
   final StatementType statementType;
 
   _ICreditInfo(
-      {required this.apr,
-      required this.statementDay,
-      required this.paymentDueDay,
-      required this.statementType});
+      {required this.apr, required this.statementDay, required this.paymentDueDay, required this.statementType});
 }
 
 @immutable
@@ -97,25 +94,22 @@ class CreditAccount extends Account implements _ICreditInfo {
 extension CreditAccountMethods on CreditAccount {
   List<CreditSpending> get spendingTransactions => transactionsList.whereType<CreditSpending>().toList();
   List<CreditPayment> get paymentTransactions => transactionsList.whereType<CreditPayment>().toList();
-  List<CreditCheckpoint> get checkpointTransactions =>
-      transactionsList.whereType<CreditCheckpoint>().toList();
+  List<CreditCheckpoint> get checkpointTransactions => transactionsList.whereType<CreditCheckpoint>().toList();
 
   DateTime get latestCheckpointDateTime {
-    CreditCheckpoint? lastCheckpoint =
-        checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
+    CreditCheckpoint? lastCheckpoint = checkpointTransactions.isNotEmpty ? checkpointTransactions.last : null;
 
     return lastCheckpoint?.dateTime.onlyYearMonthDay ?? Calendar.minDate;
   }
 
   /// Returns closed statements, which can not add transaction into.
   List<Statement> get closedStatementsList {
-    final latestPayment =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+    final latestPayment = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
     final latestCheckpoint =
         checkpointTransactions.isNotEmpty ? statementAt(checkpointTransactions.last.dateTime)! : null;
 
-    int latestPaymentIndex = statementsList.length;
-    int latestCheckpointIndex = statementsList.length;
+    int latestPaymentIndex = 0;
+    int latestCheckpointIndex = 0;
     if (latestPayment != null) {
       latestPaymentIndex = statementsList.indexOf(latestPayment);
     }
@@ -128,8 +122,7 @@ extension CreditAccountMethods on CreditAccount {
 
   /// Latest closed statement due date (Can not add transaction before this date)
   DateTime get latestClosedStatementDueDate {
-    Statement? statement =
-        paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
+    Statement? statement = paymentTransactions.isNotEmpty ? statementAt(paymentTransactions.last.dateTime)! : null;
 
     return statement?.date.previousDue.onlyYearMonthDay ?? Calendar.minDate;
   }
@@ -161,8 +154,7 @@ extension CreditAccountMethods on CreditAccount {
   ///
   /// Throw state error if no payment is found
   CreditPayment getNextPayment({required CreditSpending from}) {
-    return paymentTransactions
-        .firstWhere((payment) => payment.dateTime.isAfter(from.dateTime.onlyYearMonthDay));
+    return paymentTransactions.firstWhere((payment) => payment.dateTime.isAfter(from.dateTime.onlyYearMonthDay));
   }
 
   /// Return `null` if account has no transaction.
@@ -197,8 +189,7 @@ extension CreditAccountMethods on CreditAccount {
       while (upperGapAtDueDate != null && upperGapAtDueDate
           ? date.isAfter(list[list.length - 1].date.due)
           : startDate.compareTo(date) <= 0) {
-        final endDate =
-            startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
+        final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
         final previousStatement = list.last.bringToNextStatement;
 

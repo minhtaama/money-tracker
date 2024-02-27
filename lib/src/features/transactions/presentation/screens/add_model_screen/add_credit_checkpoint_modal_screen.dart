@@ -19,10 +19,10 @@ import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 
 class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {
-  const AddCreditCheckpointModalScreen(
-      {super.key, required this.creditAccount, required this.statement});
+  const AddCreditCheckpointModalScreen({super.key, required this.creditAccount, this.statementDate, this.statement});
 
-  final Statement statement;
+  final Statement? statement;
+  final DateTime? statementDate;
   final CreditAccount creditAccount;
 
   @override
@@ -35,7 +35,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
   double _unpaidInstallmentsAmount = 0;
 
   ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
-  late final DateTime _dateTime = widget.statement.date.statement;
+  late final DateTime _dateTime = widget.statement?.date.statement ?? widget.statementDate!.onlyYearMonthDay;
 
   List<Installment> _finishedInstallments = [];
 
@@ -77,9 +77,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             isShow: true,
             iconPath: AppIcons.fykFace,
             header: 'For your knowledge'.hardcoded,
-            text:
-                'Add [transactions has installment payment going through this checkpoint] first, if any.'
-                    .hardcoded,
+            text: 'Add [transactions has installment payment going through this checkpoint] first, if any.'.hardcoded,
           ),
           Gap.h8,
           Text(
@@ -127,8 +125,7 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
 
   String? _oustdBalanceValidator() {
-    if (CalService.formatToDouble(_calOutputFormattedAmount)! <
-        _unpaidInstallmentsAmount.roundBySetting(context)) {
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount.roundBySetting(context)) {
       return 'Must higher than unpaid installments amount'.hardcoded;
     }
 
