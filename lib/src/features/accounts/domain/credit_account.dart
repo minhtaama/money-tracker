@@ -117,7 +117,7 @@ extension CreditAccountMethods on CreditAccount {
       latestCheckpointIndex = statementsList.indexOf(latestCheckpoint);
     }
 
-    return statementsList.sublist(0, math.min(latestPaymentIndex, latestCheckpointIndex));
+    return statementsList.sublist(0, math.max(latestPaymentIndex, latestCheckpointIndex));
   }
 
   /// Latest closed statement due date (Can not add transaction before this date)

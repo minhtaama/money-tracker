@@ -61,7 +61,7 @@ typedef _StmRawPaidData = ({
 });
 
 typedef StmSpentData = ({
-  ({double all, double toPay}) inBillingCycle,
+  ({double all, double toPay, double hasInstallment}) inBillingCycle,
   double inGracePeriod,
 });
 

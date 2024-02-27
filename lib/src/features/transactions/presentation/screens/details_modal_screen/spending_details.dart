@@ -18,9 +18,8 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
 
   late CreditSpending _transaction = widget.transaction;
 
-  late final _creditAccount = ref
-      .read(accountRepositoryProvider)
-      .getAccount(_transaction.account.databaseObject) as CreditAccount;
+  late final _creditAccount =
+      ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
 
@@ -77,8 +76,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
               _DeleteButton(
                 isEditMode: _isEditMode,
                 isDisable: !_canDelete,
-                disableText:
-                    'Can not delete because there are payment(s) after this transaction'.hardcoded,
+                disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
                 onConfirm: _delete,
               )
             ]
@@ -157,7 +155,7 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
     );
 
     if (newAmount != null && mounted) {
-      _stateController.changeAmount(context, newAmount, initialTransaction: _transaction);
+      _stateController.changeAmount(newAmount, initialTransaction: _transaction);
       _changeInstallmentControllerText();
     }
   }
@@ -172,8 +170,7 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
   }
 
   void _changeInstallmentPeriod(String value) {
-    _stateController.changeInstallmentPeriod(context, int.tryParse(value),
-        initialTransaction: _transaction);
+    _stateController.changeInstallmentPeriod(int.tryParse(value), initialTransaction: _transaction);
     _changeInstallmentControllerText();
   }
 
@@ -202,14 +199,12 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
       (state.category != null || state.tag != null) &&
       (state.category != _transaction.category || state.tag != _transaction.categoryTag);
 
-  bool _isAmountEdited(CreditSpendingFormState state) =>
-      state.amount != null && state.amount != _transaction.amount;
+  bool _isAmountEdited(CreditSpendingFormState state) => state.amount != null && state.amount != _transaction.amount;
 
   bool _isDateTimeEdited(CreditSpendingFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditSpendingFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditSpendingFormState state) => state.note != null && state.note != _transaction.note;
 
   bool _isInstallmentEdited(CreditSpendingFormState state) =>
       state.installmentPeriod != null || state.installmentAmount != null;

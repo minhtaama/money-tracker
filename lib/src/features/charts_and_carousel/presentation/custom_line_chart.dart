@@ -433,10 +433,10 @@ class CustomLineChart extends StatelessWidget {
         maxContentWidth: 500,
         tooltipHorizontalAlignment: FLHorizontalAlignment.center,
         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        tooltipBgColor: color?.withOpacity(0.9) ??
+        tooltipBgColor: color?.withOpacity(0.5) ??
             (context.appTheme.isDarkTheme
-                ? context.appTheme.background0.withOpacity(0.9)
-                : context.appTheme.secondary2.withOpacity(0.8)),
+                ? context.appTheme.background0.withOpacity(0.5)
+                : context.appTheme.secondary2.withOpacity(0.5)),
         getTooltipItems: lineTooltipItem,
       ),
       getTouchedSpotIndicator: touchedIndicators,
@@ -574,69 +574,69 @@ class FlDotTodayPainter extends FlDotPainter {
     );
   }
 
-  void _drawText(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
-    final textSpan = TextSpan(
-      text: 'Today'.hardcoded,
-      style: kHeader3TextStyle.copyWith(
-        color: _colorLum < 0.5 ? AppColors.white : AppColors.black,
-        fontSize: 10,
-      ),
-    );
-
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.center,
-    )..layout(
-        minWidth: 0,
-        maxWidth: 150,
-      );
-
-    bool isBoxAtLeft = false;
-
-    final offsetFromDot = Offset((textPainter.width + textPadding.horizontal) / 2, boxUnderDot ? 12 : -32);
-
-    // Offset to center with the dot
-    Offset textOffset = Offset(
-      offsetInCanvas.dx + offsetFromDot.dx - (textPainter.width / 2),
-      offsetInCanvas.dy + offsetFromDot.dy + textPadding.top,
-    );
-
-    // Re-calculate the offset with screen width
-    if (textOffset.dx + textPainter.width + textPadding.horizontal > Gap.screenWidth(context) || boxAtLeft) {
-      textOffset = Offset(
-        offsetInCanvas.dx - textPainter.width - (textPadding.horizontal / 2) - dotRadius,
-        textOffset.dy,
-      );
-
-      isBoxAtLeft = true;
-    }
-
-    canvas.drawRRect(
-      RRect.fromLTRBAndCorners(
-        textOffset.dx - textPadding.left,
-        textOffset.dy - textPadding.top,
-        textOffset.dx + textPainter.width + textPadding.right,
-        textOffset.dy + textPainter.height + textPadding.bottom,
-        topLeft: Radius.circular(!isBoxAtLeft && boxUnderDot ? 0 : cornerRadius),
-        topRight: Radius.circular(isBoxAtLeft && boxUnderDot ? 0 : cornerRadius),
-        bottomRight: Radius.circular(isBoxAtLeft && !boxUnderDot ? 0 : cornerRadius),
-        bottomLeft: Radius.circular(!isBoxAtLeft && !boxUnderDot ? 0 : cornerRadius),
-      ),
-      Paint()
-        ..color = color.withOpacity(0.7)
-        ..style = PaintingStyle.fill,
-    );
-
-    textPainter.paint(canvas, textOffset);
-  }
+  // void _drawText(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
+  //   final textSpan = TextSpan(
+  //     text: 'Today'.hardcoded,
+  //     style: kHeader3TextStyle.copyWith(
+  //       color: _colorLum < 0.5 ? AppColors.white : AppColors.black,
+  //       fontSize: 10,
+  //     ),
+  //   );
+  //
+  //   final textPainter = TextPainter(
+  //     text: textSpan,
+  //     textDirection: TextDirection.ltr,
+  //     textAlign: TextAlign.center,
+  //   )..layout(
+  //       minWidth: 0,
+  //       maxWidth: 150,
+  //     );
+  //
+  //   bool isBoxAtLeft = false;
+  //
+  //   final offsetFromDot = Offset((textPainter.width + textPadding.horizontal) / 2, boxUnderDot ? 12 : -32);
+  //
+  //   // Offset to center with the dot
+  //   Offset textOffset = Offset(
+  //     offsetInCanvas.dx + offsetFromDot.dx - (textPainter.width / 2),
+  //     offsetInCanvas.dy + offsetFromDot.dy + textPadding.top,
+  //   );
+  //
+  //   // Re-calculate the offset with screen width
+  //   if (textOffset.dx + textPainter.width + textPadding.horizontal > Gap.screenWidth(context) || boxAtLeft) {
+  //     textOffset = Offset(
+  //       offsetInCanvas.dx - textPainter.width - (textPadding.horizontal / 2) - dotRadius,
+  //       textOffset.dy,
+  //     );
+  //
+  //     isBoxAtLeft = true;
+  //   }
+  //
+  //   canvas.drawRRect(
+  //     RRect.fromLTRBAndCorners(
+  //       textOffset.dx - textPadding.left,
+  //       textOffset.dy - textPadding.top,
+  //       textOffset.dx + textPainter.width + textPadding.right,
+  //       textOffset.dy + textPainter.height + textPadding.bottom,
+  //       topLeft: Radius.circular(!isBoxAtLeft && boxUnderDot ? 0 : cornerRadius),
+  //       topRight: Radius.circular(isBoxAtLeft && boxUnderDot ? 0 : cornerRadius),
+  //       bottomRight: Radius.circular(isBoxAtLeft && !boxUnderDot ? 0 : cornerRadius),
+  //       bottomLeft: Radius.circular(!isBoxAtLeft && !boxUnderDot ? 0 : cornerRadius),
+  //     ),
+  //     Paint()
+  //       ..color = color.withOpacity(0.7)
+  //       ..style = PaintingStyle.fill,
+  //   );
+  //
+  //   textPainter.paint(canvas, textOffset);
+  // }
 
   /// Implementation of the parent class to draw the circle
   @override
   void draw(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
     _drawDot(canvas, spot, offsetInCanvas);
 
-    _drawText(canvas, spot, offsetInCanvas);
+    // _drawText(canvas, spot, offsetInCanvas);
   }
 
   /// Implementation of the parent class to get the size of the circle

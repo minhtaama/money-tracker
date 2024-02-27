@@ -89,7 +89,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   focusColor: context.appTheme.primary,
                   validator: (_) => _calSpendingAmountValidator(),
                   formattedResultOutput: (value) {
-                    _stateController.changeAmount(context, value);
+                    _stateController.changeAmount(value);
                     _changeInstallmentControllerText();
                   },
                 ),
@@ -111,7 +111,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                         .hardcoded),
             onChanged: (value) {
               if (!value) {
-                _stateController.changeInstallmentPeriod(context, null);
+                _stateController.changeInstallmentPeriod(null);
               }
               _changeInstallmentControllerText();
             },
@@ -123,7 +123,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   suffixText: 'month(s)',
                   validator: (_) => stateWatch.installmentPeriod == null ? 'error' : null,
                   onChanged: (value) {
-                    _stateController.changeInstallmentPeriod(context, int.tryParse(value));
+                    _stateController.changeInstallmentPeriod(int.tryParse(value));
                     _changeInstallmentControllerText();
                   },
                 ),

@@ -99,16 +99,16 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     );
   }
 
-  void changeAmount(BuildContext context, String value, {CreditSpending? initialTransaction}) {
+  void changeAmount(String value, {CreditSpending? initialTransaction}) {
     state = state.copyWith(amount: () => CalService.formatToDouble(value));
 
     if (state.installmentPeriod != null) {
       state = state.copyWith(
-        installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
+        installmentAmount: () => state.amount! / state.installmentPeriod!,
       );
     } else if (initialTransaction != null) {
       state = state.copyWith(
-        installmentAmount: () => (state.amount! / initialTransaction.monthsToPay!).roundBySetting(context),
+        installmentAmount: () => state.amount! / initialTransaction.monthsToPay!,
       );
     } else {
       _resetInstallment();
@@ -132,17 +132,17 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     state = state.copyWith(creditAccount: () => account);
   }
 
-  void changeInstallmentPeriod(BuildContext context, int? period, {CreditSpending? initialTransaction}) {
+  void changeInstallmentPeriod(int? period, {CreditSpending? initialTransaction}) {
     state = state.copyWith(installmentPeriod: () => period);
 
     if (state.installmentPeriod != null) {
       if (state.amount != null) {
         state = state.copyWith(
-          installmentAmount: () => (state.amount! / state.installmentPeriod!).roundBySetting(context),
+          installmentAmount: () => state.amount! / state.installmentPeriod!,
         );
       } else if (initialTransaction != null) {
         state = state.copyWith(
-          installmentAmount: () => (initialTransaction.amount / state.installmentPeriod!).roundBySetting(context),
+          installmentAmount: () => initialTransaction.amount / state.installmentPeriod!,
         );
       }
     } else {

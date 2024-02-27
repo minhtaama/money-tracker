@@ -139,6 +139,9 @@ extension StatementGetters on Statement {
   /// because it is not required to pay in-full. The installment-amount-to-pay
   /// of these is located in [installmentsToPay]
   ///
+  /// **`hasInstallment`**: The spending amount that is not required to pay in-full.
+  /// The installment-amount-to-pay of this is located in [installmentsToPay]
+  ///
   /// -
   ///
   /// **`inBillingCycle`**: If [Checkpoint] is not null, the return value
@@ -150,6 +153,7 @@ extension StatementGetters on Statement {
         inBillingCycle: (
           all: checkpoint?.oustdBalance ?? _rawSpent.inBillingCycle.all,
           toPay: checkpoint?.unpaidToPay ?? _rawSpent.inBillingCycle.toPay,
+          hasInstallment: _rawSpent.inBillingCycle.all - _rawSpent.inBillingCycle.toPay
         ),
         inGracePeriod: _rawSpent.inGracePeriod.all,
       );
@@ -186,10 +190,10 @@ extension StatementGetters on Statement {
 
   /// ## Contains data at "start-point" of this [Statement].
   ///
-  /// **`totalBalance`**: Balance left from total spending (include **spendings-has-installment**) of credit account
+  /// **`totalRemaining`**: Balance left from total spending (include **spendings-has-installment**) of credit account
   /// **at start date** of this statement.
   ///
-  /// **`balanceToPay`**: Balance left to pay **from previous statement's end date** of credit account
+  /// **`remainingToPay`**: Balance left to pay **from previous statement's end date** of credit account
   /// at start date of this statement (exclude **spendings-has-installment**).
   ///
   /// -
@@ -336,6 +340,15 @@ extension StatementGetters on Statement {
       interest: bring.interest,
       dueDate: date.due,
     );
+  }
+
+  List<Installment> get onGoingInstallment {
+    final first = transactions.inBillingCycle
+        .whereType<CreditSpending>()
+        .where((e) => e.hasInstallment)
+        .map<Installment>((e) => Installment(e, e.monthsToPay!));
+
+    return first.followedBy(transactions.installmentsToPay).toList();
   }
 }
 
