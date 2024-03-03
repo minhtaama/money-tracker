@@ -4,7 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_card.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
-import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -31,7 +31,7 @@ class DashboardScreen extends StatelessWidget {
       ),
       children: [
         Gap.h16,
-        DashboardWidget(title: 'Expense', child: ExpensePieChart()),
+        DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
         DashboardCard(
           onTap: () => context.push(RoutePath.accounts),
           title: 'Accounts',

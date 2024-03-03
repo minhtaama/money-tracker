@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
@@ -10,8 +9,11 @@ class PieChartServices {
 
   final TransactionRepositoryRealmDb transactionRepo;
 
-  List<PieChartSectionData> getExpenseData(DateTime lower, DateTime upper) {
-    final txnsList = transactionRepo.getTransactions(lower, upper).whereType<Expense>().toList();
+  Map<Category, double> getMonthlyExpenseData(DateTime dateTime, BuildContext context) {
+    final txnsList = transactionRepo
+        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
+        .whereType<Expense>()
+        .toList();
     final map = <Category, double>{};
 
     for (int i = 0; i < txnsList.length; i++) {
@@ -23,11 +25,7 @@ class PieChartServices {
       }
     }
 
-    return map.entries
-        .map((e) => PieChartSectionData(
-              value: e.value,
-            ))
-        .toList();
+    return map;
   }
 }
 /////////////////// PROVIDERS //////////////////////////

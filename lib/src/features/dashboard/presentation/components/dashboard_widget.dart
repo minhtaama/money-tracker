@@ -38,13 +38,16 @@ class DashboardWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
               style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground,
+                color: context.appTheme.onBackground.withOpacity(0.65),
+                fontSize: 14,
               ),
             ),
+            Gap.h12,
             child,
           ],
         ),
