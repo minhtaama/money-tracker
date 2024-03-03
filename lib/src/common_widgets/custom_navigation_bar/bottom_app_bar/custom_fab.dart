@@ -50,7 +50,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       vsync: this,
       duration: k150msDuration,
     );
-    _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
+    _animation = CurveTween(curve: Curves.fastOutSlowIn).animate(_animationController);
 
     super.initState();
   }

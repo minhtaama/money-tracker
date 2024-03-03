@@ -24,7 +24,7 @@ class _HideableContainerState extends State<HideableContainer> with SingleTicker
 
   ///Setting up the animation
   void prepareAnimations() {
-    expandController = AnimationController(vsync: this, duration: k550msDuration);
+    expandController = AnimationController(vsync: this, duration: k350msDuration);
     animation = CurvedAnimation(
       parent: expandController,
       curve: Curves.fastOutSlowIn,
