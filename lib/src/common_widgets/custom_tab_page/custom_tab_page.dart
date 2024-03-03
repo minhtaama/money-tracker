@@ -69,7 +69,12 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
         _CustomListView(
           smallTabBar: widget.smallTabBar,
           onOffsetChange: (value) => _onOffsetChange(value),
-          children: widget.children,
+          children: [
+            ...widget.children,
+            SizedBox(
+              height: MediaQuery.of(context).padding.bottom + 32,
+            )
+          ],
         ),
         AnimatedBuilder(
             animation: _fadeAnimation,
