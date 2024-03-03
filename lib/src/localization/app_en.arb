@@ -4,5 +4,5 @@
     "description": "The title of the application"
   },
   "home": "Home",
-  "summary": "Summary"
+  "dashboard": "Dashboard"
 }

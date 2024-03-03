@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-class SummaryCard extends StatelessWidget {
-  const SummaryCard({
+class DashboardCard extends StatelessWidget {
+  const DashboardCard({
     super.key,
     required this.title,
     required this.icon,

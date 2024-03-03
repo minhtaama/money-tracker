@@ -33,9 +33,9 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         text: context.localize.home,
       ),
       BottomAppBarItem(
-        path: RoutePath.summary,
+        path: RoutePath.dashboard,
         iconData: AppIcons.summary,
-        text: context.localize.summary,
+        text: context.localize.dashboard,
       ),
     ];
 

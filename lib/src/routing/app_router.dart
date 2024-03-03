@@ -13,7 +13,7 @@ import 'package:money_tracker_app/src/features/transactions/presentation/screens
 import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_screen.dart';
 import '../common_widgets/modal_and_dialog.dart';
 import '../features/settings_and_persistent_values/presentation/settings_screen.dart';
-import '../features/summary/presentation/summary_screen.dart';
+import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/transactions/presentation/screens/add_model_screen/add_credit_spending_modal_screen.dart';
 import '../utils/enums.dart';
@@ -25,15 +25,15 @@ class RoutePath {
   static String get addTransfer => '/home/addTransfer';
   static String get addCreditSpending => '/home/addCreditSpending';
   static String get addCreditPayment => '/home/addCreditPayment';
-  static String get summary => '/summary';
-  static String get settings => '/summary/settings';
-  static String get setCurrency => '/summary/settings/setCurrency';
-  static String get selectIcon => '/summary/selectIcon';
-  static String get categories => '/summary/categories';
-  static String get addCategory => '/summary/categories/addCategory';
-  static String get accounts => '/summary/accounts';
-  static String get accountScreen => '/summary/accounts/accountScreen';
-  static String get addAccount => '/summary/accounts/addAccount';
+  static String get dashboard => '/dashboard';
+  static String get settings => '/dashboard/settings';
+  static String get setCurrency => '/dashboard/settings/setCurrency';
+  static String get selectIcon => '/dashboard/selectIcon';
+  static String get categories => '/dashboard/categories';
+  static String get addCategory => '/dashboard/categories/addCategory';
+  static String get accounts => '/dashboard/accounts';
+  static String get accountScreen => '/dashboard/accounts/accountScreen';
+  static String get addAccount => '/dashboard/accounts/addAccount';
   static String get transaction => '/transaction';
 }
 
@@ -114,11 +114,11 @@ final goRouter = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/summary',
+          path: '/dashboard',
           parentNavigatorKey: _shellNavKey,
           pageBuilder: (context, state) => NoTransitionPage(
             key: state.pageKey,
-            child: const SummaryScreen(),
+            child: const DashboardScreen(),
           ),
           routes: [
             GoRoute(
