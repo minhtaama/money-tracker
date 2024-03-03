@@ -170,7 +170,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           ),
           Gap.h8,
           HideableContainer(
-            hidden: accountType != AccountType.credit,
+            hide: accountType != AccountType.credit,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -246,7 +246,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           ),
           Gap.h8,
           HideableContainer(
-            hidden: accountType != AccountType.credit,
+            hide: accountType != AccountType.credit,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),

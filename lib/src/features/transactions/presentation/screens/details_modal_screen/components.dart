@@ -413,7 +413,7 @@ class _Note extends StatelessWidget {
         duration: k250msDuration,
         opacity: (note == null || note!.isEmpty) && !isEditMode ? 0 : 1,
         child: HideableContainer(
-          hidden: (note == null || note!.isEmpty) && !isEditMode,
+          hide: (note == null || note!.isEmpty) && !isEditMode,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

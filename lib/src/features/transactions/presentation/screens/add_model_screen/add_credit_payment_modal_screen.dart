@@ -144,7 +144,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
           ),
           !_hidePayment ? Gap.h16 : Gap.noGap,
           HideableContainer(
-            hidden: _hidePayment,
+            hide: _hidePayment,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

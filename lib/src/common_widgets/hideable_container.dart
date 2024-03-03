@@ -1,19 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import '../utils/constants.dart';
 
-class HideableContainer extends StatelessWidget {
-  const HideableContainer({super.key, required this.hidden, required this.child});
-  final bool hidden;
+class HideableContainer extends StatefulWidget {
+  const HideableContainer({super.key, required this.hide, required this.child});
+  final bool hide;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: AnimatedSize(
-        duration: k250msDuration,
-        child: hidden ? Gap.noGap : child,
-      ),
+  State<HideableContainer> createState() => _HideableContainerState();
+}
+
+class _HideableContainerState extends State<HideableContainer> with SingleTickerProviderStateMixin {
+  late AnimationController expandController;
+  late Animation<double> animation;
+
+  @override
+  void initState() {
+    super.initState();
+    prepareAnimations();
+    _runHideCheck();
+  }
+
+  ///Setting up the animation
+  void prepareAnimations() {
+    expandController = AnimationController(vsync: this, duration: k550msDuration);
+    animation = CurvedAnimation(
+      parent: expandController,
+      curve: Curves.fastOutSlowIn,
     );
+  }
+
+  void _runHideCheck() {
+    if (!widget.hide) {
+      expandController.forward();
+    } else {
+      expandController.reverse();
+    }
+  }
+
+  @override
+  void didUpdateWidget(HideableContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _runHideCheck();
+  }
+
+  @override
+  void dispose() {
+    expandController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizeTransition(axisAlignment: 1.0, sizeFactor: animation, child: widget.child);
   }
 }
