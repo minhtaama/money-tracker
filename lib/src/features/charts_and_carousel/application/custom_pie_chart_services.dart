@@ -9,10 +9,47 @@ class PieChartServices {
 
   final TransactionRepositoryRealmDb transactionRepo;
 
-  Map<Category, double> getMonthlyExpenseData(DateTime dateTime, BuildContext context) {
+  double getMonthlyExpenseAmount(DateTime dateTime) {
     final txnsList = transactionRepo
         .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
         .whereType<Expense>()
+        .toList();
+
+    return txnsList.map((e) => e.amount).reduce((value, element) => value + element);
+  }
+
+  Map<Category, double> getMonthlyExpenseData(DateTime dateTime) {
+    final txnsList = transactionRepo
+        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
+        .whereType<Expense>()
+        .toList();
+    final map = <Category, double>{};
+
+    for (int i = 0; i < txnsList.length; i++) {
+      final txn = txnsList[i];
+      if (map.containsKey(txn.category)) {
+        map[txn.category!] = map[txn.category!]! + txn.amount;
+      } else {
+        map[txn.category!] = txn.amount;
+      }
+    }
+
+    return map;
+  }
+
+  double getMonthlyIncomeAmount(DateTime dateTime) {
+    final txnsList = transactionRepo
+        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
+        .whereType<Income>()
+        .toList();
+
+    return txnsList.map((e) => e.amount).reduce((value, element) => value + element);
+  }
+
+  Map<Category, double> getMonthlyIncomeData(DateTime dateTime) {
+    final txnsList = transactionRepo
+        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
+        .whereType<Income>()
         .toList();
     final map = <Category, double>{};
 

@@ -9,22 +9,22 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/money_amount.dart';
 import '../../../../utils/constants.dart';
 
-class ExpensePieChartWidget extends ConsumerStatefulWidget {
-  const ExpensePieChartWidget({super.key});
+class IncomePieChartWidget extends ConsumerStatefulWidget {
+  const IncomePieChartWidget({super.key});
 
   @override
-  ConsumerState<ExpensePieChartWidget> createState() => _ExpensePieChartWidgetState();
+  ConsumerState<IncomePieChartWidget> createState() => _ExpensePieChartWidgetState();
 }
 
-class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
+class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
   int _touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
     final pieServices = ref.watch(customPieChartServicesProvider);
-    final map = pieServices.getMonthlyExpenseData(DateTime.now());
+    final map = pieServices.getMonthlyIncomeData(DateTime.now());
     final list = map.entries.toList();
-    final totalAmount = pieServices.getMonthlyExpenseAmount(DateTime.now());
+    final totalAmount = pieServices.getMonthlyIncomeAmount(DateTime.now());
 
     List<Widget> labels(int index) {
       return list
@@ -73,8 +73,8 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
             child: CustomPieChart(
               values: map,
               center: SvgIcon(
-                AppIcons.upload,
-                color: context.appTheme.negative.withOpacity(0.65),
+                AppIcons.download,
+                color: context.appTheme.positive.withOpacity(0.65),
                 size: 25,
               ),
               onChartTap: (index) {
@@ -105,7 +105,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
                   MoneyAmount(
                     amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
                     prefix: context.appSettings.currency.symbol ?? '',
-                    style: kHeader1TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 23),
+                    style: kHeader1TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
                     overflow: TextOverflow.fade,
                     maxLines: 1,
                   ),
