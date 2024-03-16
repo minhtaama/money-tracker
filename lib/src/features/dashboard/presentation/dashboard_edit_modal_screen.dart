@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -34,7 +35,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
     return CustomSection(
       title: 'Edit Dashboard'.hardcoded,
       subTitle: Text(
-        'Select widgets to display. Hold to re order'.hardcoded,
+        'Config display widgets. Hold to re-order'.hardcoded,
         style: kHeader4TextStyle.copyWith(
           color: context.appTheme.onBackground,
           fontSize: 13,
@@ -51,6 +52,9 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
           .map((e) => CardItem(
                 margin: const EdgeInsets.symmetric(vertical: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                border: context.appTheme.isDarkTheme
+                    ? Border.all(color: context.appTheme.onBackground.withOpacity(0.15))
+                    : null,
                 child: Row(
                   children: [
                     SvgIcon(
@@ -103,7 +107,7 @@ class _AnimatedToggleState extends State<_AnimatedToggle> {
 
   @override
   Widget build(BuildContext context) {
-    final bgrColor = isOn ? context.appTheme.accent1 : Colors.grey;
+    final bgrColor = isOn ? context.appTheme.accent1 : context.appTheme.onBackground.withOpacity(0.35);
     final togglePosition = isOn ? 1 : 0;
 
     const double widthRatio = 1.7;

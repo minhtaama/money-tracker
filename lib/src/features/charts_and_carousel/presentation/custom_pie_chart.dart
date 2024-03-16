@@ -50,7 +50,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
       return [
         PieChartSectionData(
           value: 1,
-          color: context.appTheme.onBackground.withOpacity(0.1),
+          color: context.appTheme.onBackground.withOpacity(0.08),
           showTitle: false,
           radius: 33,
         ),
@@ -61,7 +61,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
         .map(
           (e) => PieChartSectionData(
             value: e.value,
-            color: e.key.backgroundColor.withOpacity(0.95),
+            color: e.key.backgroundColor.withOpacity(0.8),
             showTitle: false,
             badgePositionPercentageOffset: 1,
             radius: dataList.indexOf(e) == touchedIndex ? 41 : 33,
@@ -76,8 +76,8 @@ class _CustomPieChartState extends State<CustomPieChart> {
                 borderRadius: BorderRadius.circular(1000),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.black.withOpacity(0.45),
-                    blurRadius: 6,
+                    color: context.appTheme.background0.withOpacity(0.55),
+                    blurRadius: 3,
                   )
                 ],
               ),
@@ -111,7 +111,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
             PieChart(
               PieChartData(
                 sections: getData(_touchedIndex),
-                sectionsSpace: 0,
+                sectionsSpace: 3,
                 startDegreeOffset: _startDegreeOffset,
                 centerSpaceRadius: 35,
                 pieTouchData: PieTouchData(

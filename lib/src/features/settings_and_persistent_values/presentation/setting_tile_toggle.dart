@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
 
 class SettingTileToggle extends StatefulWidget {
@@ -68,8 +69,7 @@ class _SettingTileToggleState extends State<SettingTileToggle> {
 }
 
 class _AnimatedToggle extends StatelessWidget {
-  const _AnimatedToggle({Key? key, required this.currentValueIndex, this.valuesCount = 2})
-      : super(key: key);
+  const _AnimatedToggle({super.key, required this.currentValueIndex, this.valuesCount = 2});
 
   final int currentValueIndex;
 
@@ -79,7 +79,7 @@ class _AnimatedToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOn = currentValueIndex != 0;
-    final bgrColor = isOn ? context.appTheme.accent1 : Colors.grey;
+    final bgrColor = isOn ? context.appTheme.accent1 : context.appTheme.onBackground.withOpacity(0.35);
     final togglePosition = currentValueIndex / (valuesCount - 1);
     const double widthRatio = 1.7;
     const double size = 30;
