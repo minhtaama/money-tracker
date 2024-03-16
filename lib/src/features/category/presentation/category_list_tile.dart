@@ -37,6 +37,7 @@ class CategoryListTile extends ConsumerWidget {
               Container(
                 height: 45,
                 width: 45,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: model.backgroundColor,
                   borderRadius: BorderRadius.circular(1000),
@@ -44,7 +45,6 @@ class CategoryListTile extends ConsumerWidget {
                 child: SvgIcon(
                   model.iconPath,
                   color: model.iconColor,
-                  size: 32,
                 ),
               ),
               Gap.w16,

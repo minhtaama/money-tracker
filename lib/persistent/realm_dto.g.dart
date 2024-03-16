@@ -814,6 +814,8 @@ class PersistentValuesDb extends _PersistentValuesDb
     int id, {
     int chartDataTypeInHomescreen = 0,
     bool showAmount = true,
+    Iterable<int> dashboardOrder = const [],
+    Iterable<int> hiddenDashboardWidgets = const [],
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<PersistentValuesDb>({
@@ -826,6 +828,10 @@ class PersistentValuesDb extends _PersistentValuesDb
     RealmObjectBase.set(
         this, 'chartDataTypeInHomescreen', chartDataTypeInHomescreen);
     RealmObjectBase.set(this, 'showAmount', showAmount);
+    RealmObjectBase.set<RealmList<int>>(
+        this, 'dashboardOrder', RealmList<int>(dashboardOrder));
+    RealmObjectBase.set<RealmList<int>>(
+        this, 'hiddenDashboardWidgets', RealmList<int>(hiddenDashboardWidgets));
   }
 
   PersistentValuesDb._();
@@ -846,6 +852,21 @@ class PersistentValuesDb extends _PersistentValuesDb
   set showAmount(bool value) => RealmObjectBase.set(this, 'showAmount', value);
 
   @override
+  RealmList<int> get dashboardOrder =>
+      RealmObjectBase.get<int>(this, 'dashboardOrder') as RealmList<int>;
+  @override
+  set dashboardOrder(covariant RealmList<int> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  RealmList<int> get hiddenDashboardWidgets =>
+      RealmObjectBase.get<int>(this, 'hiddenDashboardWidgets')
+          as RealmList<int>;
+  @override
+  set hiddenDashboardWidgets(covariant RealmList<int> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
   Stream<RealmObjectChanges<PersistentValuesDb>> get changes =>
       RealmObjectBase.getChanges<PersistentValuesDb>(this);
 
@@ -862,6 +883,10 @@ class PersistentValuesDb extends _PersistentValuesDb
       SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
       SchemaProperty('chartDataTypeInHomescreen', RealmPropertyType.int),
       SchemaProperty('showAmount', RealmPropertyType.bool),
+      SchemaProperty('dashboardOrder', RealmPropertyType.int,
+          collectionType: RealmCollectionType.list),
+      SchemaProperty('hiddenDashboardWidgets', RealmPropertyType.int,
+          collectionType: RealmCollectionType.list),
     ]);
   }
 }

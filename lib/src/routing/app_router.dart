@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/accounts/presentation/accounts_li
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/select_currency_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_payment_modal_screen.dart';
@@ -35,6 +36,7 @@ class RoutePath {
   static String get accountScreen => '/dashboard/accounts/accountScreen';
   static String get addAccount => '/dashboard/accounts/addAccount';
   static String get transaction => '/transaction';
+  static String get editDashboard => '/editDashboard';
 }
 
 final _rootNavKey = GlobalKey<NavigatorState>();
@@ -201,6 +203,18 @@ final goRouter = GoRouter(
             objectIdHexString: objectIdHexString,
             screenType: screenType,
           ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/editDashboard',
+      parentNavigatorKey: _rootNavKey,
+      pageBuilder: (context, state) {
+        return showModalBottomSheetPage(
+          context,
+          state,
+          hasHandle: true,
+          child: DashboardEditModalScreen(),
         );
       },
     ),

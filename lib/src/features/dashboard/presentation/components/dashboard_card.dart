@@ -9,46 +9,45 @@ class DashboardCard extends StatelessWidget {
     required this.title,
     required this.icon,
     this.onTap,
+    this.widthConstraint = true,
   });
   final String title;
   final String icon;
   final VoidCallback? onTap;
+  final bool widthConstraint;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: context.appTheme.background0,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Row(
-          children: [
-            SvgIcon(
-              icon,
-              color: context.appTheme.onBackground,
-            ),
-            Gap.w16,
-            Expanded(
-              child: Text(
-                title,
-                style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground,
+    return SizedBox(
+      width: widthConstraint ? Gap.screenWidth(context) / 2 - 12 : null,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.appTheme.background0,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+          child: Row(
+            children: [
+              SvgIcon(
+                icon,
+                color: context.appTheme.onBackground,
+                size: 25,
+              ),
+              Gap.w16,
+              Expanded(
+                child: Text(
+                  title,
+                  style: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                  ),
+                  textAlign: !widthConstraint ? TextAlign.center : null,
                 ),
               ),
-            ),
-            Text(
-              'See all',
-              style: kHeader3TextStyle.copyWith(
-                fontSize: 13,
-                color: context.appTheme.onBackground.withOpacity(0.6),
-              ),
-            ),
-            Gap.w4,
-          ],
+              !widthConstraint ? const SizedBox(width: 31) : Gap.noGap,
+            ],
+          ),
         ),
       ),
     );

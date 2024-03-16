@@ -1,10 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/colors.dart';
 
 class CustomBarChart extends StatefulWidget {

@@ -185,7 +185,8 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Text(
                       'Credit preferences:',
-                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                      style:
+                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                     ),
                   ),
                   Row(
@@ -237,7 +238,10 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                       yOffset: 4,
                     ),
                     maxLength: 5,
-                    validator: (_) => CalService.formatToDouble(apr) == null ? '' : null,
+                    validator: (_) =>
+                        CalService.formatToDouble(apr) == null && accountType == AccountType.credit
+                            ? ''
+                            : null,
                     onChanged: (value) => apr = value,
                   ),
                 ],
@@ -261,12 +265,14 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                     child: Text(
                       'Payment & Interest preferences:',
-                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                      style:
+                          kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                     ),
                   ),
                   CustomRadio<StatementType>(
                     label: 'Using Average Daily Balance'.hardcoded,
-                    subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'.hardcoded,
+                    subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'
+                        .hardcoded,
                     value: StatementType.withAverageDailyBalance,
                     groupValue: statementType,
                     onChanged: (value) => setState(() {
@@ -276,7 +282,8 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   CustomRadio<StatementType>(
                     label: 'Payment only in grace period',
                     subLabel:
-                        'Can not make payment in billing cycle, interest is calculated by other method.'.hardcoded,
+                        'Can not make payment in billing cycle, interest is calculated by other method.'
+                            .hardcoded,
                     value: StatementType.payOnlyInGracePeriod,
                     groupValue: statementType,
                     onChanged: (value) => setState(() {

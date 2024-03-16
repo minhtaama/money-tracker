@@ -14,12 +14,16 @@ class PersistentController extends Notifier<AppPersistentValues> {
   Future<void> set({
     LineChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
+    List<DashboardType>? dashboardOrder,
+    List<DashboardType>? hiddenDashboardWidgets,
   }) async {
     final realm = ref.read(realmProvider);
 
     state = state.copyWith(
       chartDataTypeInHomescreen: chartDataTypeInHomescreen,
       showAmount: showAmount,
+      dashboardOrder: dashboardOrder,
+      hiddenDashboardWidgets: hiddenDashboardWidgets,
     );
 
     realm.write(() => realm.add<PersistentValuesDb>(state.toDatabase(), update: true));

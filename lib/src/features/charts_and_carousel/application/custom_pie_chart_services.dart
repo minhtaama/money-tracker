@@ -15,6 +15,10 @@ class PieChartServices {
         .whereType<Expense>()
         .toList();
 
+    if (txnsList.isEmpty) {
+      return 0;
+    }
+
     return txnsList.map((e) => e.amount).reduce((value, element) => value + element);
   }
 
@@ -43,20 +47,27 @@ class PieChartServices {
         .whereType<Income>()
         .toList();
 
+    if (txnsList.isEmpty) {
+      return 0;
+    }
+
     return txnsList.map((e) => e.amount).reduce((value, element) => value + element);
   }
 
-  Map<Category, double> getMonthlyIncomeData(DateTime dateTime) {
+  Map<Category, double> getMonthlyIncomeData(DateTime dateTime, BuildContext context) {
     final txnsList = transactionRepo
         .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
         .whereType<Income>()
         .toList();
+
     final map = <Category, double>{};
 
     for (int i = 0; i < txnsList.length; i++) {
       final txn = txnsList[i];
       if (map.containsKey(txn.category)) {
         map[txn.category!] = map[txn.category!]! + txn.amount;
+      } else if (txn.isInitialTransaction) {
+        map[Category.initialIncome(context)] = txn.amount;
       } else {
         map[txn.category!] = txn.amount;
       }

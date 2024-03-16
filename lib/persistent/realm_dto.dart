@@ -233,12 +233,13 @@ class _PersistentValuesDb {
   @PrimaryKey()
   final int id = 0;
 
-  // ChartDataType.cashflow => 0
-  // ChartDataType.expense => 1
-  // ChartDataType.income => 2, else
   int chartDataTypeInHomescreen = 0;
 
   bool showAmount = true;
+
+  List<int> dashboardOrder = [];
+
+  List<int> hiddenDashboardWidgets = [];
 }
 
 @RealmModel()

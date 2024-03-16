@@ -16,6 +16,7 @@ class CustomSection extends StatefulWidget {
     this.isWrapByCard = true,
     this.sectionsClipping = true,
     this.onReorder,
+    this.margin,
     required this.sections,
     this.crossAxisAlignment = CrossAxisAlignment.center,
   });
@@ -28,6 +29,7 @@ class CustomSection extends StatefulWidget {
   final void Function(int oldIndex, int newIndex)? onReorder;
   final List<Widget> sections;
   final CrossAxisAlignment crossAxisAlignment;
+  final EdgeInsets? margin;
 
   @override
   State<CustomSection> createState() => _CustomSectionState();
@@ -77,7 +79,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       padding: EdgeInsets.zero,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -152,11 +154,10 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                                         spreadRadius: -13,
                                       )
                                     ]),
-                                    child: child!,
+                                    child: (feedback as SectionTile).child,
                                   ),
                                 );
                               },
-                              child: (feedback as SectionTile).child,
                             )),
                       );
                     },

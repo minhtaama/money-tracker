@@ -5,14 +5,14 @@ import '../../../utils/constants.dart';
 
 class SettingTileToggle extends StatefulWidget {
   const SettingTileToggle({
-    Key? key,
+    super.key,
     this.leading,
     required this.title,
     required this.onTap,
     required this.valuesCount,
     required this.initialValueIndex,
     this.valueLabels,
-  }) : super(key: key);
+  });
 
   final Widget? leading;
   final String title;

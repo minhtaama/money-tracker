@@ -10,13 +10,13 @@ class SvgIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      child: Center(
+      width: size,
+      height: size,
+      child: FittedBox(
         child: SvgPicture.asset(
           name,
           colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
           fit: BoxFit.contain,
-          width: size,
-          height: size,
         ),
       ),
     );

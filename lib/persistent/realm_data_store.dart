@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
+import '../src/utils/enums.dart';
 import 'realm_dto.dart';
 
 class RealmDataStore {
@@ -40,7 +41,13 @@ class RealmDataStore {
   void _initialDataCallback(Realm realm) {
     //add default settings object
     realm.add(SettingsDb(0));
-    realm.add(PersistentValuesDb(0));
+
+    realm.add(
+      PersistentValuesDb(
+        0,
+        dashboardOrder: DashboardType.values.map((e) => e.databaseValue).toList(),
+      ),
+    );
 
     realm.add(CategoryDb(ObjectId(), 0, 'Food and Beverage', 8, 'Food', 4, order: 0));
     realm.add(CategoryDb(ObjectId(), 1, 'Salary', 8, 'Business', 13, order: 1));

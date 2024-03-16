@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/charts_and_carousel/application/c
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_pie_chart.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/money_amount.dart';
 import '../../../../utils/constants.dart';
@@ -22,11 +23,20 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
   @override
   Widget build(BuildContext context) {
     final pieServices = ref.watch(customPieChartServicesProvider);
-    final map = pieServices.getMonthlyIncomeData(DateTime.now());
+    final map = pieServices.getMonthlyIncomeData(DateTime.now(), context);
     final list = map.entries.toList();
     final totalAmount = pieServices.getMonthlyIncomeAmount(DateTime.now());
 
     List<Widget> labels(int index) {
+      if (list.isEmpty) {
+        return [
+          Text(
+            'No income this month'.hardcoded,
+            style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65)),
+          ),
+        ];
+      }
+
       return list
           .map((e) => Padding(
                 padding: const EdgeInsets.only(bottom: 5.0),
@@ -105,7 +115,8 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
                   MoneyAmount(
                     amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
                     prefix: context.appSettings.currency.symbol ?? '',
-                    style: kHeader1TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
+                    style: kHeader1TextStyle.copyWith(
+                        color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
                     overflow: TextOverflow.fade,
                     maxLines: 1,
                   ),

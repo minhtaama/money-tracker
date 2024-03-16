@@ -5,50 +5,51 @@ import '../../../utils/enums.dart';
 // Access this class through `context.appPersistentValues`
 class AppPersistentValues {
   final LineChartDataType chartDataTypeInHomescreen;
-
   final bool showAmount;
+  final List<DashboardType> dashboardOrder;
+  final List<DashboardType> hiddenDashboardWidgets;
 
   factory AppPersistentValues.fromDatabase(PersistentValuesDb persistentValuesDb) {
-    LineChartDataType chartDataTypeInHomescreen = switch (persistentValuesDb.chartDataTypeInHomescreen) {
-      0 => LineChartDataType.cashflow,
-      1 => LineChartDataType.expense,
-      2 => LineChartDataType.income,
-      _ => LineChartDataType.totalAssets,
-    };
-
     return AppPersistentValues._(
-      chartDataTypeInHomescreen: chartDataTypeInHomescreen,
+      chartDataTypeInHomescreen:
+          LineChartDataType.fromDatabaseValue(persistentValuesDb.chartDataTypeInHomescreen),
       showAmount: persistentValuesDb.showAmount,
+      dashboardOrder:
+          persistentValuesDb.dashboardOrder.map((e) => DashboardType.fromDatabaseValue(e)).toList(),
+      hiddenDashboardWidgets: persistentValuesDb.hiddenDashboardWidgets
+          .map((e) => DashboardType.fromDatabaseValue(e))
+          .toList(),
     );
   }
 
   PersistentValuesDb toDatabase() {
-    int typeRealmData = switch (chartDataTypeInHomescreen) {
-      LineChartDataType.cashflow => 0,
-      LineChartDataType.expense => 1,
-      LineChartDataType.income => 2,
-      LineChartDataType.totalAssets => 3,
-    };
-
     return PersistentValuesDb(
       0,
-      chartDataTypeInHomescreen: typeRealmData,
+      chartDataTypeInHomescreen: chartDataTypeInHomescreen.databaseValue,
       showAmount: showAmount,
+      dashboardOrder: dashboardOrder.map((e) => e.databaseValue),
+      hiddenDashboardWidgets: hiddenDashboardWidgets.map((e) => e.databaseValue),
     );
   }
 
   AppPersistentValues._({
     required this.chartDataTypeInHomescreen,
     required this.showAmount,
+    required this.dashboardOrder,
+    required this.hiddenDashboardWidgets,
   });
 
   AppPersistentValues copyWith({
     LineChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
+    List<DashboardType>? dashboardOrder,
+    List<DashboardType>? hiddenDashboardWidgets,
   }) {
     return AppPersistentValues._(
       chartDataTypeInHomescreen: chartDataTypeInHomescreen ?? this.chartDataTypeInHomescreen,
       showAmount: showAmount ?? this.showAmount,
+      dashboardOrder: dashboardOrder ?? this.dashboardOrder,
+      hiddenDashboardWidgets: hiddenDashboardWidgets ?? this.hiddenDashboardWidgets,
     );
   }
 }

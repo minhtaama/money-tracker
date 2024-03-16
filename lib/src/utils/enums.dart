@@ -1,3 +1,6 @@
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+
 enum TransactionType {
   expense,
   income,
@@ -92,7 +95,67 @@ enum StatementType {
   }
 }
 
+enum LineChartDataType {
+  totalAssets,
+  cashflow,
+  expense,
+  income;
+
+  int get databaseValue {
+    return switch (this) {
+      LineChartDataType.cashflow => 0,
+      LineChartDataType.expense => 1,
+      LineChartDataType.income => 2,
+      LineChartDataType.totalAssets => 3,
+    };
+  }
+
+  static LineChartDataType fromDatabaseValue(int value) {
+    return switch (value) {
+      0 => LineChartDataType.cashflow,
+      1 => LineChartDataType.expense,
+      2 => LineChartDataType.income,
+      _ => LineChartDataType.totalAssets,
+    };
+  }
+}
+
+enum DashboardType {
+  menu(0),
+  weeklyReport(1),
+  monthlyExpense(2),
+  monthlyIncome(3);
+
+  final int databaseValue;
+
+  const DashboardType(this.databaseValue);
+
+  static DashboardType fromDatabaseValue(int value) {
+    return DashboardType.values.firstWhere((e) => e.databaseValue == value);
+  }
+
+  String get iconPath {
+    return switch (this) {
+      DashboardType.menu => AppIcons.categories,
+      DashboardType.weeklyReport => AppIcons.receiptDollar,
+      DashboardType.monthlyExpense => AppIcons.reports,
+      DashboardType.monthlyIncome => AppIcons.reports,
+    };
+  }
+
+  String get name {
+    return switch (this) {
+      DashboardType.menu => 'Menu'.hardcoded,
+      DashboardType.weeklyReport => 'Weekly Report'.hardcoded,
+      DashboardType.monthlyExpense => 'Monthly Expense'.hardcoded,
+      DashboardType.monthlyIncome => 'Monthly Income'.hardcoded,
+    };
+  }
+}
+
 enum ThemeType { light, dark, system }
+
+////////////////////////////////////////////////////
 
 enum TransactionScreenType { editable, uneditable, installmentToPay }
 
@@ -105,8 +168,6 @@ enum DateTimeFormat {
   mmmddyyyy,
   mmmmddyyyy,
 }
-
-enum LineChartDataType { totalAssets, cashflow, expense, income }
 
 /// https://www.xe.com/symbols/
 enum Currency {

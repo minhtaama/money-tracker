@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/colors.dart';
@@ -43,6 +45,17 @@ class _CustomPieChartState extends State<CustomPieChart> {
 
   List<PieChartSectionData> getData(int touchedIndex) {
     final dataList = widget.values.entries.toList();
+
+    if (dataList.isEmpty) {
+      return [
+        PieChartSectionData(
+          value: 1,
+          color: context.appTheme.onBackground.withOpacity(0.1),
+          showTitle: false,
+          radius: 33,
+        ),
+      ];
+    }
 
     return dataList
         .map(
@@ -103,22 +116,26 @@ class _CustomPieChartState extends State<CustomPieChart> {
                 centerSpaceRadius: 35,
                 pieTouchData: PieTouchData(
                   touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                    setState(() {
-                      // if (!event.isInterestedForInteractions ||
-                      //     pieTouchResponse == null ||
-                      //     pieTouchResponse.touchedSection == null) {
-                      //   _touchedIndex = -1;
-                      //   return;
-                      // }
-                      if (event.isInterestedForInteractions && pieTouchResponse != null && event is FlTapDownEvent) {
-                        if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
-                          _touchedIndex = -1;
-                        } else {
-                          _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    if (widget.values.entries.isNotEmpty) {
+                      setState(() {
+                        // if (!event.isInterestedForInteractions ||
+                        //     pieTouchResponse == null ||
+                        //     pieTouchResponse.touchedSection == null) {
+                        //   _touchedIndex = -1;
+                        //   return;
+                        // }
+                        if (event.isInterestedForInteractions &&
+                            pieTouchResponse != null &&
+                            event is FlTapDownEvent) {
+                          if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
+                            _touchedIndex = -1;
+                          } else {
+                            _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                          }
+                          widget.onChartTap?.call(_touchedIndex);
                         }
-                        widget.onChartTap?.call(_touchedIndex);
-                      }
-                    });
+                      });
+                    }
                   },
                 ),
               ),
