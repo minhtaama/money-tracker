@@ -20,8 +20,8 @@ class DashboardEditModalScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScreen> {
-  late final List<DashboardType> _order = List.from(context.appPersistentValues.dashboardOrder);
-  late final List<DashboardType> _hiddenList =
+  late final List<DashboardWidgetType> _order = List.from(context.appPersistentValues.dashboardOrder);
+  late final List<DashboardWidgetType> _hiddenList =
       List.from(context.appPersistentValues.hiddenDashboardWidgets);
 
   void _updateDb() {
@@ -35,7 +35,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
     return CustomSection(
       title: 'Edit Dashboard'.hardcoded,
       subTitle: Text(
-        'Config display widgets. Hold to re-order'.hardcoded,
+        'Choose which widget to display. Hold to re-order'.hardcoded,
         style: kHeader4TextStyle.copyWith(
           color: context.appTheme.onBackground,
           fontSize: 13,
@@ -70,7 +70,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
                       ),
                     ),
                     const Spacer(),
-                    e != DashboardType.menu
+                    e != DashboardWidgetType.menu
                         ? _AnimatedToggle(
                             initialValue: !_hiddenList.contains(e),
                             onTap: (value) {
@@ -92,7 +92,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
 }
 
 class _AnimatedToggle extends StatefulWidget {
-  const _AnimatedToggle({super.key, required this.initialValue, required this.onTap});
+  const _AnimatedToggle({required this.initialValue, required this.onTap});
 
   final bool initialValue;
 

@@ -14,8 +14,8 @@ class PersistentController extends Notifier<AppPersistentValues> {
   Future<void> set({
     LineChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
-    List<DashboardType>? dashboardOrder,
-    List<DashboardType>? hiddenDashboardWidgets,
+    List<DashboardWidgetType>? dashboardOrder,
+    List<DashboardWidgetType>? hiddenDashboardWidgets,
   }) async {
     final realm = ref.read(realmProvider);
 

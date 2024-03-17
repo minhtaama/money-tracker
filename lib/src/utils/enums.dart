@@ -36,91 +36,60 @@ enum TransactionType {
 }
 
 enum CategoryType {
-  expense,
-  income;
+  expense(0),
+  income(1);
 
-  int get databaseValue {
-    return switch (this) {
-      CategoryType.expense => 0,
-      CategoryType.income => 1,
-    };
-  }
+  final int databaseValue;
+
+  const CategoryType(this.databaseValue);
 
   static CategoryType fromDatabaseValue(int value) {
-    return switch (value) {
-      0 => CategoryType.expense,
-      1 => CategoryType.income,
-      _ => throw StateError('Type $value is not available for CategoryType'),
-    };
+    return CategoryType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
 enum AccountType {
-  regular,
-  credit;
+  regular(0),
+  credit(1);
 
-  int get databaseValue {
-    return switch (this) {
-      AccountType.regular => 0,
-      AccountType.credit => 1,
-    };
-  }
+  final int databaseValue;
+
+  const AccountType(this.databaseValue);
 
   static AccountType fromDatabaseValue(int value) {
-    return switch (value) {
-      0 => AccountType.regular,
-      1 => AccountType.credit,
-      _ => throw StateError('Type $value is not available for CategoryType'),
-    };
+    return AccountType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
 enum StatementType {
-  withAverageDailyBalance,
-  payOnlyInGracePeriod;
+  withAverageDailyBalance(0),
+  payOnlyInGracePeriod(1);
 
-  int get databaseValue {
-    return switch (this) {
-      StatementType.withAverageDailyBalance => 0,
-      StatementType.payOnlyInGracePeriod => 1,
-    };
-  }
+  final int databaseValue;
+
+  const StatementType(this.databaseValue);
 
   static StatementType fromDatabaseValue(int value) {
-    return switch (value) {
-      0 => StatementType.withAverageDailyBalance,
-      1 => StatementType.payOnlyInGracePeriod,
-      _ => throw StateError('Type $value is not available for CategoryType'),
-    };
+    return StatementType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
 enum LineChartDataType {
-  totalAssets,
-  cashflow,
-  expense,
-  income;
+  cashflow(0),
+  expense(1),
+  income(2),
+  totalAssets(3);
 
-  int get databaseValue {
-    return switch (this) {
-      LineChartDataType.cashflow => 0,
-      LineChartDataType.expense => 1,
-      LineChartDataType.income => 2,
-      LineChartDataType.totalAssets => 3,
-    };
-  }
+  final int databaseValue;
+
+  const LineChartDataType(this.databaseValue);
 
   static LineChartDataType fromDatabaseValue(int value) {
-    return switch (value) {
-      0 => LineChartDataType.cashflow,
-      1 => LineChartDataType.expense,
-      2 => LineChartDataType.income,
-      _ => LineChartDataType.totalAssets,
-    };
+    return LineChartDataType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
-enum DashboardType {
+enum DashboardWidgetType {
   menu(0),
   weeklyReport(1),
   monthlyExpense(2),
@@ -128,48 +97,47 @@ enum DashboardType {
 
   final int databaseValue;
 
-  const DashboardType(this.databaseValue);
+  const DashboardWidgetType(this.databaseValue);
 
-  static DashboardType fromDatabaseValue(int value) {
-    return DashboardType.values.firstWhere((e) => e.databaseValue == value);
+  static DashboardWidgetType fromDatabaseValue(int value) {
+    return DashboardWidgetType.values.firstWhere((e) => e.databaseValue == value);
   }
 
   String get iconPath {
     return switch (this) {
-      DashboardType.menu => AppIcons.categories,
-      DashboardType.weeklyReport => AppIcons.receiptDollar,
-      DashboardType.monthlyExpense => AppIcons.reports,
-      DashboardType.monthlyIncome => AppIcons.reports,
+      DashboardWidgetType.menu => AppIcons.categories,
+      DashboardWidgetType.weeklyReport => AppIcons.receiptDollar,
+      DashboardWidgetType.monthlyExpense => AppIcons.reports,
+      DashboardWidgetType.monthlyIncome => AppIcons.reports,
     };
   }
 
   String get name {
     return switch (this) {
-      DashboardType.menu => 'Menu'.hardcoded,
-      DashboardType.weeklyReport => 'Weekly Report'.hardcoded,
-      DashboardType.monthlyExpense => 'Monthly Expense'.hardcoded,
-      DashboardType.monthlyIncome => 'Monthly Income'.hardcoded,
+      DashboardWidgetType.menu => 'Menu'.hardcoded,
+      DashboardWidgetType.weeklyReport => 'Weekly Report'.hardcoded,
+      DashboardWidgetType.monthlyExpense => 'Monthly Expense'.hardcoded,
+      DashboardWidgetType.monthlyIncome => 'Monthly Income'.hardcoded,
     };
   }
 }
 
-enum ThemeType { light, dark, system }
+enum ThemeType {
+  light(0),
+  dark(1),
+  system(2);
 
-////////////////////////////////////////////////////
+  final int databaseValue;
 
-enum TransactionScreenType { editable, uneditable, installmentToPay }
+  const ThemeType(this.databaseValue);
 
-// TODO: Change 2 format: short and long date time
-enum DateTimeFormat {
-  ddmmyyyy,
-  ddmmmyyyy,
-  ddmmmmyyyy,
-  mmddyyyy,
-  mmmddyyyy,
-  mmmmddyyyy,
+  static ThemeType fromDatabaseValue(int value) {
+    return ThemeType.values.firstWhere((e) => e.databaseValue == value);
+  }
 }
 
-/// https://www.xe.com/symbols/
+////////////// CURRENCY ///////////////////////////
+
 enum Currency {
   all('ALL', 'Albania Lek', symbol: 'Lek'),
   afn('AFN', 'Afghanistan Afghani'),
@@ -281,9 +249,16 @@ enum Currency {
   zwd('ZWD', 'Zimbabwe Dollar', symbol: 'Z\$'),
   ;
 
+  /// https://www.xe.com/symbols/
   const Currency(this.code, this.name, {this.symbol});
 
   final String code;
   final String name;
   final String? symbol;
 }
+
+///////// NO DATABASE VALUE //////////////////////
+
+enum DateTimeFormat { ddmmyyyy, ddmmmyyyy, ddmmmmyyyy, mmddyyyy, mmmddyyyy, mmmmddyyyy }
+
+enum TransactionScreenType { editable, uneditable, installmentToPay }

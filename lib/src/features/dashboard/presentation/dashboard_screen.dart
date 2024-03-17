@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_card.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
-import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/income_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/weekly_bar_chart_widget.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -16,20 +18,19 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
-import '../../../common_widgets/modal_and_dialog.dart';
 import '../../../theme_and_ui/icons.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
-  Widget _getChild(DashboardType type) {
+  Widget _getChild(DashboardWidgetType type) {
     return switch (type) {
-      DashboardType.menu => const _DashboardMenu(),
-      DashboardType.weeklyReport =>
+      DashboardWidgetType.menu => const _DashboardMenu(),
+      DashboardWidgetType.weeklyReport =>
         const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
-      DashboardType.monthlyExpense =>
+      DashboardWidgetType.monthlyExpense =>
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
-      DashboardType.monthlyIncome =>
+      DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
     };
   }
@@ -45,9 +46,9 @@ class DashboardScreen extends StatelessWidget {
           title: context.localize.dashboard,
           secondaryTitle: DateTime.now().getFormattedDate(hasDay: false),
           trailing: RoundedIconButton(
-            iconPath: AppIcons.edit,
+            iconPath: AppIcons.settings,
             iconColor: context.appTheme.onBackground,
-            onTap: () => context.push(RoutePath.editDashboard),
+            onTap: () => context.push(RoutePath.settings),
           ),
         ),
       ),
@@ -56,13 +57,14 @@ class DashboardScreen extends StatelessWidget {
           return Gap.noGap;
         }
         return _getChild(type);
-      }).toList(),
+      }).toList()
+        ..add(const _EditButton()),
     );
   }
 }
 
 class _DashboardMenu extends StatelessWidget {
-  const _DashboardMenu({super.key});
+  const _DashboardMenu();
 
   @override
   Widget build(BuildContext context) {
@@ -90,12 +92,82 @@ class _DashboardMenu extends StatelessWidget {
             title: 'Saving'.hardcoded,
             icon: AppIcons.savings,
           ),
-          DashboardCard(
-            onTap: () => context.push(RoutePath.settings),
-            title: 'Settings'.hardcoded,
-            icon: AppIcons.settings,
+        ],
+      ),
+    );
+  }
+}
+
+class _DashboardMenu2 extends StatelessWidget {
+  const _DashboardMenu2();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Row(
+        children: [
+          RoundedIconButton(
+            onTap: () => context.push(RoutePath.accounts),
+            label: 'Accounts'.hardcoded,
+            iconPath: AppIcons.accounts,
+          ),
+          RoundedIconButton(
+            onTap: () => context.push(RoutePath.categories),
+            label: 'Categories'.hardcoded,
+            iconPath: AppIcons.categories,
+          ),
+          RoundedIconButton(
+            label: 'Budget'.hardcoded,
+            iconPath: AppIcons.budgets,
+          ),
+          RoundedIconButton(
+            label: 'Saving'.hardcoded,
+            iconPath: AppIcons.savings,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EditButton extends StatelessWidget {
+  const _EditButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: CustomInkWell(
+            onTap: () => context.push(RoutePath.editDashboard),
+            inkColor: AppColors.grey(context),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgIcon(
+                    AppIcons.edit,
+                    color: AppColors.grey(context),
+                    size: 17,
+                  ),
+                  Gap.w8,
+                  Text(
+                    'Edit dashboard'.hardcoded,
+                    style: kNormalTextStyle.copyWith(
+                      color: AppColors.grey(context),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

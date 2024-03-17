@@ -18,17 +18,20 @@ class CustomInkWell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return onTap != null || onLongPress != null
-        ? InkWell(
-            onTap: onTap,
-            onLongPress: onLongPress,
-            splashColor: inkColor != null && inkColor!.opacity == 1
-                ? inkColor!.withOpacity(0.3)
-                : inkColor ?? Colors.transparent,
-            highlightColor: inkColor != null && inkColor!.opacity == 1
-                ? inkColor!.withOpacity(0.3)
-                : inkColor ?? Colors.transparent,
-            borderRadius: borderRadius,
-            child: child,
+        ? Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              onLongPress: onLongPress,
+              splashColor: inkColor != null && inkColor!.opacity == 1
+                  ? inkColor!.withOpacity(0.3)
+                  : inkColor ?? Colors.transparent,
+              highlightColor: inkColor != null && inkColor!.opacity == 1
+                  ? inkColor!.withOpacity(0.3)
+                  : inkColor ?? Colors.transparent,
+              borderRadius: borderRadius,
+              child: child,
+            ),
           )
         : child;
   }

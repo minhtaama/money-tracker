@@ -45,7 +45,7 @@ class RealmDataStore {
     realm.add(
       PersistentValuesDb(
         0,
-        dashboardOrder: DashboardType.values.map((e) => e.databaseValue).toList(),
+        dashboardOrder: DashboardWidgetType.values.map((e) => e.databaseValue).toList(),
       ),
     );
 

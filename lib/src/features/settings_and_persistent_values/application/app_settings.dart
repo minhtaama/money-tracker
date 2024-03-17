@@ -17,35 +17,23 @@ class AppSettingsData {
   final bool showDecimalDigits;
 
   factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
-    ThemeType themeType = switch (settingsDb.themeType) {
-      0 => ThemeType.light,
-      1 => ThemeType.dark,
-      _ => ThemeType.system,
-    };
-
     Currency currency = Currency.values[settingsDb.currencyIndex];
 
     return AppSettingsData._(
       themeIndex: settingsDb.themeIndex,
-      themeType: themeType,
+      themeType: ThemeType.fromDatabaseValue(settingsDb.themeType),
       currency: currency,
       showDecimalDigits: settingsDb.showDecimalDigits,
     );
   }
 
   SettingsDb toDatabase() {
-    int themeTypeRealmData = switch (themeType) {
-      ThemeType.light => 0,
-      ThemeType.dark => 1,
-      ThemeType.system => 2,
-    };
-
     int currencyRealmData = Currency.values.indexOf(currency);
 
     return SettingsDb(
       0,
       themeIndex: themeIndex,
-      themeType: themeTypeRealmData,
+      themeType: themeType.databaseValue,
       currencyIndex: currencyRealmData,
       showDecimalDigits: showDecimalDigits,
     );

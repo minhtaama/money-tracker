@@ -6,18 +6,19 @@ import '../../../utils/enums.dart';
 class AppPersistentValues {
   final LineChartDataType chartDataTypeInHomescreen;
   final bool showAmount;
-  final List<DashboardType> dashboardOrder;
-  final List<DashboardType> hiddenDashboardWidgets;
+  final List<DashboardWidgetType> dashboardOrder;
+  final List<DashboardWidgetType> hiddenDashboardWidgets;
 
   factory AppPersistentValues.fromDatabase(PersistentValuesDb persistentValuesDb) {
     return AppPersistentValues._(
       chartDataTypeInHomescreen:
           LineChartDataType.fromDatabaseValue(persistentValuesDb.chartDataTypeInHomescreen),
       showAmount: persistentValuesDb.showAmount,
-      dashboardOrder:
-          persistentValuesDb.dashboardOrder.map((e) => DashboardType.fromDatabaseValue(e)).toList(),
+      dashboardOrder: persistentValuesDb.dashboardOrder
+          .map((e) => DashboardWidgetType.fromDatabaseValue(e))
+          .toList(),
       hiddenDashboardWidgets: persistentValuesDb.hiddenDashboardWidgets
-          .map((e) => DashboardType.fromDatabaseValue(e))
+          .map((e) => DashboardWidgetType.fromDatabaseValue(e))
           .toList(),
     );
   }
@@ -42,8 +43,8 @@ class AppPersistentValues {
   AppPersistentValues copyWith({
     LineChartDataType? chartDataTypeInHomescreen,
     bool? showAmount,
-    List<DashboardType>? dashboardOrder,
-    List<DashboardType>? hiddenDashboardWidgets,
+    List<DashboardWidgetType>? dashboardOrder,
+    List<DashboardWidgetType>? hiddenDashboardWidgets,
   }) {
     return AppPersistentValues._(
       chartDataTypeInHomescreen: chartDataTypeInHomescreen ?? this.chartDataTypeInHomescreen,
