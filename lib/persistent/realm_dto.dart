@@ -26,11 +26,6 @@ class _AccountDb implements IRealmObjectWithID, _IColorAndIcon, _IOrderable {
   @PrimaryKey()
   late ObjectId id;
 
-  /// Currently, Realm do not support Dart Enum
-  ///
-  /// 0 == AccountType.regular
-  ///
-  /// 1, else == AccountType.credit
   late int type;
 
   @override
@@ -71,8 +66,6 @@ class _CreditDetailsDb {
 
   late int paymentDueDay;
 
-  // 0 => withAverageDailyBalance,
-  // 1, else => payOnlyInGracePeriod,
   late int statementType;
 }
 
@@ -84,11 +77,6 @@ class _CategoryDb implements IRealmObjectWithID, _IOrderable, _IColorAndIcon {
   @PrimaryKey()
   late ObjectId id;
 
-  /// Currently, Realm do not support Dart Enum
-  ///
-  /// 0 == CategoryType.expense
-  ///
-  /// 1, else == CategoryType.income
   late int type;
 
   @override
@@ -129,19 +117,6 @@ class _TransactionDb implements IRealmObjectWithID {
   @PrimaryKey()
   late ObjectId id;
 
-  /// Currently, Realm do not support Dart Enum
-  ///
-  /// 0 == TransactionType.expense
-  ///
-  /// 1 == TransactionType.income
-  ///
-  /// 2 == TransactionType.transfer
-  ///
-  /// 3 == TransactionType.creditSpending
-  ///
-  /// 4 == TransactionType.creditPayment
-  ///
-  /// 5, else == TransactionType.creditCheckpoint
   late int type;
 
   @Indexed()
@@ -204,8 +179,32 @@ class _CreditPaymentDetailsDb {
   double adjustment = 0;
 }
 
-///////////////////////////////////// SETTINGS AND PERSISTENT VALUES /////////////////////////////////
-///////////////////////////////// ALL FIELDS MUST HAVE A DEFAULT VALUE ///////////////////////////////
+////////////////////////////////////// BUDGET /////////////////////////////////////////
+
+@RealmModel()
+class _BudgetDb implements IRealmObjectWithID, _IOrderable {
+  @override
+  @PrimaryKey()
+  late ObjectId id;
+
+  late int type;
+
+  late int periodType;
+
+  late String name;
+
+  late double amount;
+
+  late List<_AccountDb> accounts;
+
+  late List<_CategoryDb> categories;
+
+  @override
+  int? order;
+}
+
+///////////////////////////////////// SETTINGS AND PERSISTENT VALUES /////////////////
+///////////////////////////////// ALL FIELDS MUST HAVE A DEFAULT VALUE ///////////////
 @RealmModel()
 class _SettingsDb {
   @PrimaryKey()
@@ -213,16 +212,8 @@ class _SettingsDb {
 
   int themeIndex = 0;
 
-  /// Currently, Realm do not support Dart Enum
-  ///
-  /// 0 == ThemeType.light
-  ///
-  /// 1 == ThemeType.dark
-  ///
-  /// 2, else == ThemeType.system
   int themeType = 0;
 
-  /// Currently, Realm do not support Dart Enum
   int currencyIndex = 101; // Currency.usd
 
   bool showDecimalDigits = false;

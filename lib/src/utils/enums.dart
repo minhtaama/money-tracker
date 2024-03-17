@@ -71,6 +71,51 @@ enum StatementType {
   }
 }
 
+enum BudgetType {
+  forAccount(0),
+  forCategory(1);
+
+  final int databaseValue;
+
+  const BudgetType(this.databaseValue);
+
+  static BudgetType fromDatabaseValue(int value) {
+    return BudgetType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
+enum BudgetPeriodType {
+  daily(0),
+  weekly(1),
+  monthly(2),
+  yearly(3);
+
+  final int databaseValue;
+
+  const BudgetPeriodType(this.databaseValue);
+
+  static BudgetPeriodType fromDatabaseValue(int value) {
+    return BudgetPeriodType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
+////////////// OTHER ///////////////////////////
+
+enum LineChartDataType {
+  cashflow(0),
+  expense(1),
+  income(2),
+  totalAssets(3);
+
+  final int databaseValue;
+
+  const LineChartDataType(this.databaseValue);
+
+  static LineChartDataType fromDatabaseValue(int value) {
+    return LineChartDataType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
 enum ThemeType {
   light(0),
   dark(1),
@@ -84,8 +129,6 @@ enum ThemeType {
     return ThemeType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
-
-////////////// CURRENCY ///////////////////////////
 
 enum Currency {
   all('ALL', 'Albania Lek', symbol: 'Lek'),
@@ -204,23 +247,6 @@ enum Currency {
   final String code;
   final String name;
   final String? symbol;
-}
-
-////////////// OTHER ///////////////////////////
-
-enum LineChartDataType {
-  cashflow(0),
-  expense(1),
-  income(2),
-  totalAssets(3);
-
-  final int databaseValue;
-
-  const LineChartDataType(this.databaseValue);
-
-  static LineChartDataType fromDatabaseValue(int value) {
-    return LineChartDataType.values.firstWhere((e) => e.databaseValue == value);
-  }
 }
 
 ///////// NO DATABASE VALUE //////////////////////

@@ -123,6 +123,7 @@ class _DashboardMenu2 extends StatelessWidget {
             iconColor: context.appTheme.onBackground,
           ),
           RoundedIconButton(
+            onTap: () => context.push(RoutePath.budgets),
             label: 'Budget'.hardcoded,
             size: 50,
             iconPath: AppIcons.budgets,

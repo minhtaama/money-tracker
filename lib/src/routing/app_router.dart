@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
+import 'package:money_tracker_app/src/features/budget/presentation/add_budget_modal_screen.dart';
+import 'package:money_tracker_app/src/features/budget/presentation/budgets_list_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
@@ -35,6 +37,8 @@ class RoutePath {
   static String get accounts => '/dashboard/accounts';
   static String get accountScreen => '/dashboard/accounts/accountScreen';
   static String get addAccount => '/dashboard/accounts/addAccount';
+  static String get budgets => '/dashboard/budgets';
+  static String get addBudget => '/dashboard/budgets/addBudget';
   static String get transaction => '/transaction';
   static String get editDashboard => '/editDashboard';
 }
@@ -172,6 +176,27 @@ final goRouter = GoRouter(
                     context,
                     state,
                     child: const AddAccountModalScreen(),
+                  ),
+                ),
+              ],
+            ),
+            GoRoute(
+              path: 'budgets',
+              parentNavigatorKey: _rootNavKey,
+              builder: (context, state) => const BudgetsListScreen(),
+              routes: [
+                // GoRoute(
+                //   path: 'budgetScreen',
+                //   parentNavigatorKey: _rootNavKey,
+                //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
+                // ),
+                GoRoute(
+                  path: 'addBudget',
+                  parentNavigatorKey: _rootNavKey,
+                  pageBuilder: (context, state) => showModalBottomSheetPage(
+                    context,
+                    state,
+                    child: const AddBudgetModalScreen(),
                   ),
                 ),
               ],

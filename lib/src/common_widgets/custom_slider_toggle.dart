@@ -12,16 +12,16 @@ class CustomSliderToggle<T> extends StatefulWidget {
   /// The `labels` argument list must has the same length with the `values`,
   /// which display the name of each value.
   const CustomSliderToggle(
-      {Key? key,
+      {super.key,
       this.toggleColor,
       required this.values,
       required this.labels,
       this.height = 45,
+      this.fontSize,
       this.initialValueIndex = 0,
       required this.onTap,
       this.labelsOnToggleColor,
-      this.labelsOnBackgroundColor})
-      : super(key: key);
+      this.labelsOnBackgroundColor});
   final Color? toggleColor;
   final Color? labelsOnToggleColor;
   final Color? labelsOnBackgroundColor;
@@ -30,6 +30,7 @@ class CustomSliderToggle<T> extends StatefulWidget {
   final List<String> labels;
   final double height;
   final ValueChanged<T> onTap;
+  final double? fontSize;
 
   @override
   State<CustomSliderToggle<T>> createState() => _CustomSliderToggleState<T>();
@@ -53,77 +54,68 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
   @override
   Widget build(BuildContext context) {
     double togglePosition = currentValueIndex / (widget.values.length - 1);
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            key: _rootSizedBoxKey,
-            height: widget.height,
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: AppColors.greyBgr(context),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: AnimatedSlide(
-                    duration: k150msDuration,
-                    curve: Curves.easeOut,
-                    offset: Offset(togglePosition, 0),
-                    child: SizedBox(
-                      height: widget.height,
-                      width: _rootSizedBoxWidth / widget.values.length,
-                      child: CardItem(
-                        margin: EdgeInsets.zero,
-                        elevation: 1.5,
-                        isGradient: true,
-                        borderRadius: BorderRadius.circular(100),
-                        color: widget.toggleColor ?? context.appTheme.accent1,
-                      ),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: List.generate(
-                      widget.values.length,
-                      (index) => Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  currentValueIndex = index;
-                                  widget.onTap(widget.values[currentValueIndex]);
-                                });
-                              },
-                              child: SizedBox(
-                                height: widget.height,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      widget.labels[index],
-                                      style: kHeader2TextStyle.copyWith(
-                                        fontSize: 19,
-                                        color: currentValueIndex == index
-                                            ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
-                                            : widget.labelsOnBackgroundColor ??
-                                                context.appTheme.onBackground,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )),
-                )
-              ],
+    return SizedBox(
+      key: _rootSizedBoxKey,
+      height: widget.height,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: AppColors.greyBgr(context),
             ),
           ),
-        ),
-      ],
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AnimatedSlide(
+              duration: k150msDuration,
+              curve: Curves.fastOutSlowIn,
+              offset: Offset(togglePosition, 0),
+              child: SizedBox(
+                height: widget.height,
+                width: _rootSizedBoxWidth / widget.values.length,
+                child: CardItem(
+                  margin: EdgeInsets.zero,
+                  elevation: 1.5,
+                  isGradient: true,
+                  borderRadius: BorderRadius.circular(100),
+                  color: widget.toggleColor ?? context.appTheme.accent1,
+                ),
+              ),
+            ),
+          ),
+          Row(
+            children: List.generate(
+                widget.values.length,
+                (index) => Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          setState(() {
+                            currentValueIndex = index;
+                            widget.onTap(widget.values[currentValueIndex]);
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: AnimatedDefaultTextStyle(
+                            duration: k150msDuration,
+                            curve: Curves.fastOutSlowIn,
+                            style: kHeader2TextStyle.copyWith(
+                              fontSize: widget.fontSize ?? 16,
+                              fontFamily: 'WixMadeforDisplay',
+                              color: currentValueIndex == index
+                                  ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
+                                  : widget.labelsOnBackgroundColor ?? context.appTheme.onBackground,
+                            ),
+                            child: Text(widget.labels[index]),
+                          ),
+                        ),
+                      ),
+                    )),
+          )
+        ],
+      ),
     );
   }
 }

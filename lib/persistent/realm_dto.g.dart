@@ -727,6 +727,104 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
 }
 
 // ignore_for_file: type=lint
+class BudgetDb extends _BudgetDb
+    with RealmEntity, RealmObjectBase, RealmObject {
+  BudgetDb(
+    ObjectId id,
+    int type,
+    int periodType,
+    String name,
+    double amount, {
+    int? order,
+    Iterable<AccountDb> accounts = const [],
+    Iterable<CategoryDb> categories = const [],
+  }) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'periodType', periodType);
+    RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'amount', amount);
+    RealmObjectBase.set(this, 'order', order);
+    RealmObjectBase.set<RealmList<AccountDb>>(
+        this, 'accounts', RealmList<AccountDb>(accounts));
+    RealmObjectBase.set<RealmList<CategoryDb>>(
+        this, 'categories', RealmList<CategoryDb>(categories));
+  }
+
+  BudgetDb._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  int get type => RealmObjectBase.get<int>(this, 'type') as int;
+  @override
+  set type(int value) => RealmObjectBase.set(this, 'type', value);
+
+  @override
+  int get periodType => RealmObjectBase.get<int>(this, 'periodType') as int;
+  @override
+  set periodType(int value) => RealmObjectBase.set(this, 'periodType', value);
+
+  @override
+  String get name => RealmObjectBase.get<String>(this, 'name') as String;
+  @override
+  set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  double get amount => RealmObjectBase.get<double>(this, 'amount') as double;
+  @override
+  set amount(double value) => RealmObjectBase.set(this, 'amount', value);
+
+  @override
+  RealmList<AccountDb> get accounts =>
+      RealmObjectBase.get<AccountDb>(this, 'accounts') as RealmList<AccountDb>;
+  @override
+  set accounts(covariant RealmList<AccountDb> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  RealmList<CategoryDb> get categories =>
+      RealmObjectBase.get<CategoryDb>(this, 'categories')
+          as RealmList<CategoryDb>;
+  @override
+  set categories(covariant RealmList<CategoryDb> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  int? get order => RealmObjectBase.get<int>(this, 'order') as int?;
+  @override
+  set order(int? value) => RealmObjectBase.set(this, 'order', value);
+
+  @override
+  Stream<RealmObjectChanges<BudgetDb>> get changes =>
+      RealmObjectBase.getChanges<BudgetDb>(this);
+
+  @override
+  BudgetDb freeze() => RealmObjectBase.freezeObject<BudgetDb>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(BudgetDb._);
+    return const SchemaObject(ObjectType.realmObject, BudgetDb, 'BudgetDb', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('type', RealmPropertyType.int),
+      SchemaProperty('periodType', RealmPropertyType.int),
+      SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('amount', RealmPropertyType.double),
+      SchemaProperty('accounts', RealmPropertyType.object,
+          linkTarget: 'AccountDb', collectionType: RealmCollectionType.list),
+      SchemaProperty('categories', RealmPropertyType.object,
+          linkTarget: 'CategoryDb', collectionType: RealmCollectionType.list),
+      SchemaProperty('order', RealmPropertyType.int, optional: true),
+    ]);
+  }
+}
+
+// ignore_for_file: type=lint
 class SettingsDb extends _SettingsDb
     with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;

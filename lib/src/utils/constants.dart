@@ -32,6 +32,7 @@ const double kMoneyCarouselViewFraction = 0.55;
 // Durations
 const Duration kNoDuration = Duration(milliseconds: 0);
 const Duration k1msDuration = Duration(milliseconds: 1);
+const Duration k100msDuration = Duration(milliseconds: 100);
 const Duration k150msDuration = Duration(milliseconds: 150);
 const Duration k250msDuration = Duration(milliseconds: 250);
 const Duration k350msDuration = Duration(milliseconds: 350);
