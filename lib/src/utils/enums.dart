@@ -1,6 +1,3 @@
-import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-
 enum TransactionType {
   expense,
   income,
@@ -71,54 +68,6 @@ enum StatementType {
 
   static StatementType fromDatabaseValue(int value) {
     return StatementType.values.firstWhere((e) => e.databaseValue == value);
-  }
-}
-
-enum LineChartDataType {
-  cashflow(0),
-  expense(1),
-  income(2),
-  totalAssets(3);
-
-  final int databaseValue;
-
-  const LineChartDataType(this.databaseValue);
-
-  static LineChartDataType fromDatabaseValue(int value) {
-    return LineChartDataType.values.firstWhere((e) => e.databaseValue == value);
-  }
-}
-
-enum DashboardWidgetType {
-  menu(0),
-  weeklyReport(1),
-  monthlyExpense(2),
-  monthlyIncome(3);
-
-  final int databaseValue;
-
-  const DashboardWidgetType(this.databaseValue);
-
-  static DashboardWidgetType fromDatabaseValue(int value) {
-    return DashboardWidgetType.values.firstWhere((e) => e.databaseValue == value);
-  }
-
-  String get iconPath {
-    return switch (this) {
-      DashboardWidgetType.menu => AppIcons.categories,
-      DashboardWidgetType.weeklyReport => AppIcons.receiptDollar,
-      DashboardWidgetType.monthlyExpense => AppIcons.reports,
-      DashboardWidgetType.monthlyIncome => AppIcons.reports,
-    };
-  }
-
-  String get name {
-    return switch (this) {
-      DashboardWidgetType.menu => 'Menu'.hardcoded,
-      DashboardWidgetType.weeklyReport => 'Weekly Report'.hardcoded,
-      DashboardWidgetType.monthlyExpense => 'Monthly Expense'.hardcoded,
-      DashboardWidgetType.monthlyIncome => 'Monthly Income'.hardcoded,
-    };
   }
 }
 
@@ -255,6 +204,23 @@ enum Currency {
   final String code;
   final String name;
   final String? symbol;
+}
+
+////////////// OTHER ///////////////////////////
+
+enum LineChartDataType {
+  cashflow(0),
+  expense(1),
+  income(2),
+  totalAssets(3);
+
+  final int databaseValue;
+
+  const LineChartDataType(this.databaseValue);
+
+  static LineChartDataType fromDatabaseValue(int value) {
+    return LineChartDataType.values.firstWhere((e) => e.databaseValue == value);
+  }
 }
 
 ///////// NO DATABASE VALUE //////////////////////

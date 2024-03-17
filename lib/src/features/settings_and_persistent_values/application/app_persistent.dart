@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
+import '../../../utils/enums_dashboard.dart';
 
 // Access this class through `context.appPersistentValues`
 class AppPersistentValues {
   final LineChartDataType chartDataTypeInHomescreen;
+
   final bool showAmount;
+
   final List<DashboardWidgetType> dashboardOrder;
   final List<DashboardWidgetType> hiddenDashboardWidgets;
+  //final int dwMenuType;
 
   factory AppPersistentValues.fromDatabase(PersistentValuesDb persistentValuesDb) {
     return AppPersistentValues._(

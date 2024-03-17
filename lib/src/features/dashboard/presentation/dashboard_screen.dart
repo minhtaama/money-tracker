@@ -12,20 +12,20 @@ import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/we
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/icons.dart';
+import '../../../utils/enums_dashboard.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   Widget _getChild(DashboardWidgetType type) {
     return switch (type) {
-      DashboardWidgetType.menu => const _DashboardMenu(),
+      DashboardWidgetType.menu => const _DashboardMenu2(),
       DashboardWidgetType.weeklyReport =>
         const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
       DashboardWidgetType.monthlyExpense =>
@@ -63,8 +63,8 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class _DashboardMenu extends StatelessWidget {
-  const _DashboardMenu();
+class _DashboardMenu1 extends StatelessWidget {
+  const _DashboardMenu1();
 
   @override
   Widget build(BuildContext context) {
@@ -104,26 +104,35 @@ class _DashboardMenu2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           RoundedIconButton(
             onTap: () => context.push(RoutePath.accounts),
             label: 'Accounts'.hardcoded,
+            size: 50,
             iconPath: AppIcons.accounts,
+            iconColor: context.appTheme.onBackground,
           ),
           RoundedIconButton(
             onTap: () => context.push(RoutePath.categories),
             label: 'Categories'.hardcoded,
+            size: 50,
             iconPath: AppIcons.categories,
+            iconColor: context.appTheme.onBackground,
           ),
           RoundedIconButton(
             label: 'Budget'.hardcoded,
+            size: 50,
             iconPath: AppIcons.budgets,
+            iconColor: context.appTheme.onBackground,
           ),
           RoundedIconButton(
             label: 'Saving'.hardcoded,
+            size: 50,
             iconPath: AppIcons.savings,
+            iconColor: context.appTheme.onBackground,
           ),
         ],
       ),

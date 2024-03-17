@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realm/realm.dart';
 import '../src/utils/enums.dart';
+import '../src/utils/enums_dashboard.dart';
 import 'realm_dto.dart';
 
 class RealmDataStore {
