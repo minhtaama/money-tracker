@@ -9,7 +9,7 @@ import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums.dart';
 
-abstract class BaseBudget extends BaseModel<BudgetDb> {
+sealed class BaseBudget extends BaseModel<BudgetDb> {
   final BudgetPeriodType periodType;
 
   final String name;

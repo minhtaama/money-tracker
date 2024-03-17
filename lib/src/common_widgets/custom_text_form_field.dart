@@ -31,6 +31,7 @@ class CustomTextFormField extends StatelessWidget {
     this.contentPadding,
     this.textAlign = TextAlign.start,
     this.initialValue,
+    this.style,
   }) : super(key: key);
   final String hintText;
   final String? helperText;
@@ -56,6 +57,7 @@ class CustomTextFormField extends StatelessWidget {
   final EdgeInsets? contentPadding;
   final TextAlign textAlign;
   final String? initialValue;
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -69,15 +71,16 @@ class CustomTextFormField extends StatelessWidget {
         autovalidateMode: autovalidateMode,
         onFieldSubmitted: onFieldSubmitted,
         cursorColor: context.appTheme.onBackground.withOpacity(0.1),
-        style: withOutlineBorder
-            ? kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground,
-                fontSize: 15,
-              )
-            : kHeader2TextStyle.copyWith(
-                color: context.appTheme.onBackground,
-                fontSize: 18,
-              ),
+        style: style ??
+            (withOutlineBorder
+                ? kHeader3TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                    fontSize: 15,
+                  )
+                : kHeader2TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                    fontSize: 18,
+                  )),
         validator: validator,
         maxLines: maxLines,
         inputFormatters: [
@@ -121,12 +124,12 @@ class CustomTextFormField extends StatelessWidget {
           enabledBorder: withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide:
-                      BorderSide(color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                  borderSide: BorderSide(
+                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 )
               : UnderlineInputBorder(
-                  borderSide:
-                      BorderSide(color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                  borderSide: BorderSide(
+                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 ),
           focusedBorder: withOutlineBorder
               ? OutlineInputBorder(
@@ -137,15 +140,18 @@ class CustomTextFormField extends StatelessWidget {
                   borderSide: BorderSide(color: focusColor, width: 2),
                 ),
           hintText: hintText,
-          hintStyle: withOutlineBorder
-              ? kHeader3TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(enabled ? 0.5 : 0.2),
-                  fontSize: 15,
-                )
-              : kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.5),
-                  fontSize: 18,
-                ),
+          hintStyle: style?.copyWith(
+                color: style?.color?.withOpacity(0.5),
+              ) ??
+              (withOutlineBorder
+                  ? kHeader3TextStyle.copyWith(
+                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.5 : 0.2),
+                      fontSize: 15,
+                    )
+                  : kHeader2TextStyle.copyWith(
+                      color: context.appTheme.onBackground.withOpacity(0.5),
+                      fontSize: 18,
+                    )),
           errorStyle: disableErrorText
               ? const TextStyle(height: 0.1, color: Colors.transparent, fontSize: 0)
               : kNormalTextStyle.copyWith(fontSize: 12, color: context.appTheme.negative),

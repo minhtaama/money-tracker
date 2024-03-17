@@ -1,3 +1,5 @@
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+
 enum TransactionType {
   expense,
   income,
@@ -93,6 +95,15 @@ enum BudgetPeriodType {
   final int databaseValue;
 
   const BudgetPeriodType(this.databaseValue);
+
+  String get asSuffix {
+    return switch (this) {
+      BudgetPeriodType.daily => '/day'.hardcoded,
+      BudgetPeriodType.weekly => '/week'.hardcoded,
+      BudgetPeriodType.monthly => '/month'.hardcoded,
+      BudgetPeriodType.yearly => '/year'.hardcoded,
+    };
+  }
 
   static BudgetPeriodType fromDatabaseValue(int value) {
     return BudgetPeriodType.values.firstWhere((e) => e.databaseValue == value);

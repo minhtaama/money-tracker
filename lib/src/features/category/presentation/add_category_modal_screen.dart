@@ -88,7 +88,9 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
               });
             },
           ),
-          Gap.h16,
+          Gap.h24,
+          Gap.divider(context, indent: 12),
+          Gap.h24,
           Align(
             alignment: Alignment.centerRight,
             child: IconWithTextButton(

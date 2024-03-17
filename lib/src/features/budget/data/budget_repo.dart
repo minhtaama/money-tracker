@@ -14,7 +14,7 @@ class BudgetsRepositoryRealmDb {
   final Realm realm;
 
   RealmResults<BudgetDb> _realmResults() {
-    return realm.all<BudgetDb>().query('SORT(order ASC)');
+    return realm.all<BudgetDb>().query('TRUEPREDICATE SORT(order ASC)');
   }
 
   List<BaseBudget> getList() {
@@ -63,14 +63,16 @@ class BudgetsRepositoryRealmDb {
     final budgetDb = currentBudget.databaseObject;
 
     realm.write(() {
-      budgetDb
-        ..type = type?.databaseValue ?? budgetDb.type
-        ..periodType = periodType?.databaseValue ?? budgetDb.periodType
-        ..name = name ?? budgetDb.name
-        ..amount = amount ?? budgetDb.amount
-        ..accounts = RealmList(accounts?.map((e) => e.databaseObject).toList() ?? budgetDb.accounts)
-        ..categories =
-            RealmList(categories?.map((e) => e.databaseObject).toList() ?? budgetDb.categories);
+      realm.add(
+          BudgetDb(
+              budgetDb.id,
+              type?.databaseValue ?? budgetDb.type,
+              periodType?.databaseValue ?? budgetDb.periodType,
+              name ?? budgetDb.name,
+              amount ?? budgetDb.amount,
+              categories: categories?.map((e) => e.databaseObject).toList() ?? budgetDb.categories,
+              accounts: accounts?.map((e) => e.databaseObject).toList() ?? budgetDb.accounts),
+          update: true);
     });
   }
 

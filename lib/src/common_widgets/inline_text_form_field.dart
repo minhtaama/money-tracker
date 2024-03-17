@@ -12,11 +12,13 @@ class InlineTextFormField extends StatelessWidget {
       this.prefixText,
       this.suffixText,
       this.textSize,
+      this.textStyle,
       this.suffixWidget,
       this.widget,
       this.width,
       this.maxLength = 3,
       this.initialValue,
+      this.keyboardType,
       this.hintText});
   final String? prefixText;
   final String? suffixText;
@@ -29,6 +31,8 @@ class InlineTextFormField extends StatelessWidget {
   final String? hintText;
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
+  final TextInputType? keyboardType;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,8 @@ class InlineTextFormField extends StatelessWidget {
         prefixText != null
             ? Text(
                 prefixText!,
-                style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
+                style: textStyle ??
+                    kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
               )
             : Gap.noGap,
         prefixText != null ? Gap.w8 : Gap.noGap,
@@ -57,7 +62,7 @@ class InlineTextFormField extends StatelessWidget {
                       maxLines: 1,
                       initialValue: initialValue,
                       contentPadding: EdgeInsets.zero,
-                      keyboardType: TextInputType.number,
+                      keyboardType: keyboardType ?? TextInputType.number,
                       textAlign: TextAlign.end,
                       validator: validator,
                       onChanged: onChanged ?? (value) {},
@@ -72,7 +77,7 @@ class InlineTextFormField extends StatelessWidget {
                       maxLength: 3,
                       initialValue: initialValue,
                       contentPadding: EdgeInsets.zero,
-                      keyboardType: TextInputType.number,
+                      keyboardType: keyboardType ?? TextInputType.number,
                       textAlign: TextAlign.end,
                       validator: validator,
                       onChanged: onChanged ?? (value) {},
@@ -82,7 +87,8 @@ class InlineTextFormField extends StatelessWidget {
         suffixText != null
             ? Text(
                 suffixText!,
-                style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
+                style:
+                    kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: textSize),
               )
             : Gap.noGap,
         suffixWidget != null ? Gap.w16 : Gap.noGap,

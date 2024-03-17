@@ -5,9 +5,11 @@ import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
+import 'package:money_tracker_app/src/features/budget/domain/budget.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -26,36 +28,41 @@ import '../../calculator_input/presentation/calculator_input.dart';
 import '../../category/domain/category.dart';
 import '../data/budget_repo.dart';
 
-class AddBudgetModalScreen extends ConsumerStatefulWidget {
-  const AddBudgetModalScreen({super.key});
+class EditBudgetModalScreen extends ConsumerStatefulWidget {
+  const EditBudgetModalScreen({super.key, required this.budget});
+
+  final BaseBudget budget;
 
   @override
-  ConsumerState<AddBudgetModalScreen> createState() => _AddBudgetModalScreenState();
+  ConsumerState<EditBudgetModalScreen> createState() => _EditBudgetModalScreenState();
 }
 
-class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
+class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String _name = '';
-  BudgetType _budgetType = BudgetType.forAccount;
-  BudgetPeriodType _periodType = BudgetPeriodType.monthly;
-  double _amount = 0;
-  List<BaseAccount> _accounts = [];
-  List<Category> _categories = [];
+  late String _name = widget.budget.name;
+  late BudgetType _budgetType =
+      widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
+  late BudgetPeriodType _periodType = widget.budget.periodType;
+  late double _amount = widget.budget.amount;
+  late List<BaseAccount> _accounts =
+      widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
+  late List<Category> _categories =
+      widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: CustomSection(
-        title: 'Add new budget',
+        title: 'Edit budget',
         isWrapByCard: false,
         crossAxisAlignment: CrossAxisAlignment.start,
         sections: [
           CustomSliderToggle<BudgetType>(
             values: const [BudgetType.forCategory, BudgetType.forAccount],
             labels: const ['For Categories', 'For Accounts'],
-            initialValueIndex: 1,
+            initialValueIndex: widget.budget is AccountBudget ? 1 : 0,
             fontSize: 14,
             onTap: (type) {
               setState(() {
@@ -78,7 +85,8 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                   keyboardType: TextInputType.text,
                   validator: (_) => _name == '' ? 'Please input name'.hardcoded : null,
                   onChanged: (value) => _name = value,
-                  hintText: 'Budget name'.hardcoded,
+                  hintText: _name,
+                  autofocus: false,
                   focusColor: context.appTheme.accent1,
                   style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 16),
                 ),
@@ -92,7 +100,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
               Gap.w16,
               Expanded(
                 child: CalculatorInput(
-                  hintText: 'Budget limit'.hardcoded,
+                  hintText: CalService.formatNumberInGroup(_amount.toString()),
                   focusColor: context.appTheme.onBackground,
                   validator: (_) {
                     if (_amount <= 0) {
@@ -192,6 +200,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                   onChanged: (list) {
                     _categories = list;
                   },
+                  initialSelected: _categories,
                 ),
               ],
             ),
@@ -213,25 +222,38 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                   onChanged: (list) {
                     _accounts = list;
                   },
+                  initialSelected: _accounts,
                 ),
               ],
             ),
           ),
-          Gap.h16,
+          Gap.h24,
           Gap.divider(context, indent: 12),
-          Gap.h16,
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconWithTextButton(
-              iconPath: AppIcons.add,
-              label: 'Create',
-              backgroundColor: context.appTheme.accent1,
-              //isDisabled: _periodType == '',
-              onTap: () {
+          Gap.h24,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: BottomButtons(
+              isBigButtonDisabled: false,
+              smallButtonIcon: AppIcons.delete,
+              bigButtonIcon: AppIcons.edit,
+              bigButtonLabel: 'Done'.hardcoded,
+              onSmallButtonTap: () {
+                showConfirmModalBottomSheet(
+                  context: context,
+                  label: 'Are you sure that you want to delete budget ${widget.budget.name}?'.hardcoded,
+                  onConfirm: () {
+                    final budgetRepo = ref.read(budgetsRepositoryRealmProvider);
+                    budgetRepo.delete(widget.budget);
+                    context.pop();
+                  },
+                );
+              },
+              onBigButtonTap: () {
                 if (_formKey.currentState!.validate()) {
                   final budgetRepo = ref.read(budgetsRepositoryRealmProvider);
 
-                  budgetRepo.writeNew(
+                  budgetRepo.edit(
+                    widget.budget,
                     type: _budgetType,
                     periodType: _periodType,
                     name: _name,
@@ -254,23 +276,25 @@ class _Selector<T extends BaseModelWithIcon> extends ConsumerStatefulWidget {
   const _Selector({
     super.key,
     required this.onChanged,
+    required this.initialSelected,
   });
 
   final ValueChanged<List<T>> onChanged;
+  final List<T> initialSelected;
 
   @override
   ConsumerState<_Selector<T>> createState() => _AccountSelectorState();
 }
 
 class _AccountSelectorState<T extends BaseModelWithIcon> extends ConsumerState<_Selector<T>> {
-  final _selectedItems = <T>[];
+  late final _selectedItems = widget.initialSelected;
 
   List<T> _items = [];
 
   @override
   void initState() {
     if (T == BaseAccount) {
-      _items = ref.read(accountRepositoryProvider).getList(null).cast<T>();
+      _items = ref.read(accountRepositoryProvider).getListInfo(null).cast<T>();
     }
     if (T == Category) {
       _items = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense).cast<T>();

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
 import 'dart:math' as math;
@@ -11,17 +12,17 @@ class BarChartServices {
   /// Key runs from 0 (first day of week) to 6 (last day of week)
   Map<int, ({double spending, double income, double ySpending, double yIncome})> getWeeklyReportData(
       DateTime dateTime) {
-    final firstDayOfWeek = dateTime.copyWith(day: dateTime.day - dateTime.weekday); //Monday
-    final lastDayOfWeek = dateTime.copyWith(day: dateTime.day + 7 - dateTime.weekday); //Sunday
+    final range = dateTime.currentWeek;
 
-    final txnsList = transactionRepo.getTransactions(firstDayOfWeek, lastDayOfWeek).toList();
+    final txnsList = transactionRepo.getTransactions(range.start, range.end).toList();
 
     double maxTemp = double.minPositive;
     final List<({int index, double spending, double income})> listTemp = [];
 
     // From Monday to Sunday
     for (int i = 1; i <= 7; i++) {
-      final txnsInWeekday = List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == i);
+      final txnsInWeekday =
+          List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == i);
 
       double spending = 0;
       double income = 0;

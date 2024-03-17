@@ -18,6 +18,7 @@ class MoneyAmount extends StatefulWidget {
   final String? separator;
   final String prefix;
   final String suffix;
+  final bool noAnimation;
 
   const MoneyAmount({
     super.key,
@@ -35,6 +36,7 @@ class MoneyAmount extends StatefulWidget {
     this.separator,
     this.prefix = '',
     this.suffix = '',
+    this.noAnimation = false,
   });
 
   @override

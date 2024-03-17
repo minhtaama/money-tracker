@@ -160,4 +160,33 @@ extension DateTimeExtensions on DateTime {
         return '';
     }
   }
+
+  DateTimeRange get currentDay {
+    final begin = onlyYearMonthDay;
+    final end = copyWith(hour: 23, minute: 59, second: 59);
+
+    return DateTimeRange(start: begin, end: end);
+  }
+
+  DateTimeRange get currentWeek {
+    // TODO: set first day of week
+    final firstDayOfWeek = copyWith(day: day - weekday); //Monday
+    final lastDayOfWeek = copyWith(day: day + 7 - weekday, hour: 23, minute: 59, second: 59); //Sunday
+
+    return DateTimeRange(start: firstDayOfWeek, end: lastDayOfWeek);
+  }
+
+  DateTimeRange get currentMonth {
+    DateTime dayBeginOfMonth = copyWith(day: 1).onlyYearMonthDay;
+    DateTime dayEndOfMonth = copyWith(month: month + 1, day: 0, hour: 23, minute: 59, second: 59);
+
+    return DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth);
+  }
+
+  DateTimeRange get currentYear {
+    DateTime dayBeginOfYear = copyWith(day: 1, month: 1).onlyYearMonthDay;
+    DateTime dayEndOfYear = copyWith(year: year + 1, month: 0, day: 0, hour: 23, minute: 59, second: 59);
+
+    return DateTimeRange(start: dayBeginOfYear, end: dayEndOfYear);
+  }
 }

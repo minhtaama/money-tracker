@@ -40,6 +40,10 @@ class AccountRepositoryRealmDb {
     return _realmResults(type).map((accountDb) => Account.fromDatabase(accountDb)!).toList();
   }
 
+  List<AccountInfo> getListInfo(AccountType? type) {
+    return _realmResults(type).map((accountDb) => Account.fromDatabaseInfoOnly(accountDb)!).toList();
+  }
+
   Account? getAccount(AccountDb accountDb) {
     return Account.fromDatabase(accountDb);
   }
@@ -111,17 +115,21 @@ class AccountRepositoryRealmDb {
         StatementType.payOnlyInGracePeriod => 1,
       };
 
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
+      creditDetailsDb =
+          CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(
+        ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: balance, newAccount: newAccount);
+        ref
+            .read(transactionRepositoryRealmProvider)
+            .addInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -180,8 +188,9 @@ class AccountRepositoryRealmDb {
   void delete(Account account) {
     realm.write(() {
       if (account is CreditAccount) {
-        final txnsDbToDelete =
-            account.transactionsList.where((txn) => txn is! CreditPayment).map((txn) => txn.databaseObject);
+        final txnsDbToDelete = account.transactionsList
+            .where((txn) => txn is! CreditPayment)
+            .map((txn) => txn.databaseObject);
         realm.deleteMany<TransactionDb>(txnsDbToDelete);
       }
       realm.delete<AccountDb>(account.databaseObject);

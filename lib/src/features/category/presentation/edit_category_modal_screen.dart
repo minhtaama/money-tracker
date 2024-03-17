@@ -17,6 +17,7 @@ import '../data/category_repo.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
   const EditCategoryModalScreen(this.currentCategory, {super.key});
+
   final Category currentCategory;
 
   @override

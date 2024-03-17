@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_card.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/income_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/weekly_bar_chart_widget.dart';
@@ -32,6 +33,7 @@ class DashboardScreen extends StatelessWidget {
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
       DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
+      DashboardWidgetType.budgets => const DashboardWidget(title: 'Budgets', child: BudgetsWidget()),
     };
   }
 
