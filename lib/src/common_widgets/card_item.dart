@@ -7,6 +7,7 @@ class CardItem extends StatelessWidget {
   const CardItem(
       {super.key,
       this.duration,
+      this.curve,
       this.child,
       this.color,
       this.height,
@@ -22,6 +23,7 @@ class CardItem extends StatelessWidget {
       this.clip = true,
       this.alignment});
   final Duration? duration;
+  final Curve? curve;
   final Color? color;
   final double? height;
   final double? width;
@@ -43,7 +45,7 @@ class CardItem extends StatelessWidget {
 
     return AnimatedContainer(
       duration: duration ?? k350msDuration,
-      curve: Curves.easeInOut,
+      curve: curve ?? Curves.easeInOut,
       margin: margin,
       constraints: constraints,
       alignment: alignment,
@@ -58,16 +60,9 @@ class CardItem extends StatelessWidget {
                 ? []
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(elevation * 0.05),
-                      // blurRadius: elevation + 0.5,
-                      // spreadRadius: elevation + 0.5,
-                      offset: Offset(0, elevation + 0.5),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 0,
-                      spreadRadius: 0.2,
-                      offset: const Offset(0, 0),
+                      color: Colors.black.withOpacity(elevation * 0.03),
+                      blurRadius: (elevation + 2).clamp(0, 10),
+                      offset: Offset(0, (elevation + 0.5).clamp(0, 4)),
                     ),
                   ]),
         gradient: isGradient

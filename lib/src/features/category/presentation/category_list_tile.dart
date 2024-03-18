@@ -28,16 +28,16 @@ class CategoryListTile extends ConsumerWidget {
     final tags = categoryRepo.getTagList(model)!;
 
     return CardItem(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                height: 45,
-                width: 45,
-                padding: const EdgeInsets.all(8),
+                height: 35,
+                width: 35,
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: model.backgroundColor,
                   borderRadius: BorderRadius.circular(1000),
@@ -51,7 +51,7 @@ class CategoryListTile extends ConsumerWidget {
               Expanded(
                 child: Text(
                   model.name,
-                  style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground),
                 ),
               ),
               Gap.w8,
@@ -60,14 +60,14 @@ class CategoryListTile extends ConsumerWidget {
                 backgroundColor: Colors.transparent,
                 iconColor: context.appTheme.onBackground,
                 onTap: onMenuTap,
+                size: 42,
               ),
             ],
           ),
           tags.isNotEmpty ? Gap.h12 : Gap.noGap,
           Wrap(
             children: [
-              for (CategoryTag tag in tags)
-                CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
+              for (CategoryTag tag in tags) CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
             ],
           )
         ],

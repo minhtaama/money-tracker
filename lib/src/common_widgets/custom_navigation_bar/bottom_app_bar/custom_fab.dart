@@ -225,16 +225,21 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   Widget build(BuildContext context) {
     return FloatingActionButton(
       key: _globalKey,
-      onPressed: () {},
+      onPressed: null,
       shape: const CircleBorder(),
-      elevation: 4,
+      elevation: 0,
       backgroundColor: Colors.transparent,
+      foregroundColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       child: RoundedIconButton(
         iconPath: AppIcons.add,
         iconColor: widget.iconColor ?? context.appTheme.onAccent,
         backgroundColor: widget.color ?? context.appTheme.accent2,
         size: double.infinity,
         onTap: _showOverlay,
+        elevation: 10,
       ),
     );
   }

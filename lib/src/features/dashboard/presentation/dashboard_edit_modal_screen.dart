@@ -19,13 +19,10 @@ class DashboardEditModalScreen extends ConsumerStatefulWidget {
 
 class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScreen> {
   late final List<DashboardWidgetType> _order = List.from(context.appPersistentValues.dashboardOrder);
-  late final List<DashboardWidgetType> _hiddenList =
-      List.from(context.appPersistentValues.hiddenDashboardWidgets);
+  late final List<DashboardWidgetType> _hiddenList = List.from(context.appPersistentValues.hiddenDashboardWidgets);
 
   void _updateDb() {
-    ref
-        .read(persistentControllerProvider.notifier)
-        .set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
+    ref.read(persistentControllerProvider.notifier).set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
   }
 
   @override
@@ -33,7 +30,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
     return CustomSection(
       title: 'Edit Dashboard'.hardcoded,
       subTitle: Text(
-        'Choose which widget to display. Hold to re-order'.hardcoded,
+        'Re-order and choose which widget to display'.hardcoded,
         style: kHeader4TextStyle.copyWith(
           color: context.appTheme.onBackground,
           fontSize: 13,
@@ -41,6 +38,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
       ),
       isWrapByCard: false,
       margin: EdgeInsets.zero,
+      holdToReorder: false,
       onReorder: (oldIndex, newIndex) {
         final item = _order.removeAt(oldIndex);
         _order.insert(newIndex, item);
@@ -68,19 +66,17 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
                       ),
                     ),
                     const Spacer(),
-                    e != DashboardWidgetType.menu
-                        ? _AnimatedToggle(
-                            initialValue: !_hiddenList.contains(e),
-                            onTap: (value) {
-                              if (!_hiddenList.contains(e)) {
-                                _hiddenList.add(e);
-                              } else {
-                                _hiddenList.remove(e);
-                              }
-                              Future.delayed(k150msDuration, _updateDb);
-                            },
-                          )
-                        : Gap.noGap,
+                    _AnimatedToggle(
+                      initialValue: !_hiddenList.contains(e),
+                      onTap: (value) {
+                        if (!_hiddenList.contains(e)) {
+                          _hiddenList.add(e);
+                        } else {
+                          _hiddenList.remove(e);
+                        }
+                        Future.delayed(k150msDuration, _updateDb);
+                      },
+                    )
                   ],
                 ),
               ))

@@ -406,6 +406,27 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
       child: child,
     );
   }
+
+  Widget _optionalWrapper() {
+    return Container(
+      height: 100,
+      decoration: BoxDecoration(
+        color: context.appTheme.negative,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(23),
+          topRight: Radius.circular(23),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (widget.extendedTabBar?.backgroundColor ?? context.appTheme.background0)
+                .withOpacity(context.appTheme.isDarkTheme ? 0.0 : 1),
+            blurRadius: 7,
+            spreadRadius: 5,
+          )
+        ],
+      ),
+    );
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////

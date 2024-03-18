@@ -217,6 +217,12 @@ class _SettingsDb {
   int currencyIndex = 101; // Currency.usd
 
   bool showDecimalDigits = false;
+
+  int longDateType = 0;
+
+  int shortDateType = 0;
+
+  int currencyType = 0;
 }
 
 @RealmModel()

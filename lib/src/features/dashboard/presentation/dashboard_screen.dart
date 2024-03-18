@@ -27,13 +27,12 @@ class DashboardScreen extends StatelessWidget {
   Widget _getChild(DashboardWidgetType type) {
     return switch (type) {
       DashboardWidgetType.menu => const _DashboardMenu2(),
-      DashboardWidgetType.weeklyReport =>
-        const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
+      DashboardWidgetType.weeklyReport => const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
       DashboardWidgetType.monthlyExpense =>
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
       DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
-      DashboardWidgetType.budgets => const DashboardWidget(title: 'Budgets', child: BudgetsWidget()),
+      DashboardWidgetType.budgets => const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
     };
   }
 
@@ -116,6 +115,7 @@ class _DashboardMenu2 extends StatelessWidget {
             size: 50,
             iconPath: AppIcons.accounts,
             iconColor: context.appTheme.onBackground,
+            reactImmediately: false,
           ),
           RoundedIconButton(
             onTap: () => context.push(RoutePath.categories),
@@ -123,6 +123,7 @@ class _DashboardMenu2 extends StatelessWidget {
             size: 50,
             iconPath: AppIcons.categories,
             iconColor: context.appTheme.onBackground,
+            reactImmediately: false,
           ),
           RoundedIconButton(
             onTap: () => context.push(RoutePath.budgets),
@@ -130,12 +131,14 @@ class _DashboardMenu2 extends StatelessWidget {
             size: 50,
             iconPath: AppIcons.budgets,
             iconColor: context.appTheme.onBackground,
+            reactImmediately: false,
           ),
           RoundedIconButton(
             label: 'Saving'.hardcoded,
             size: 50,
             iconPath: AppIcons.savings,
             iconColor: context.appTheme.onBackground,
+            reactImmediately: false,
           ),
         ],
       ),

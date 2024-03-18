@@ -23,26 +23,23 @@ class BudgetServices {
       final range = switch (budget.periodType) {
         BudgetPeriodType.daily => currentDateTime.currentDay,
         BudgetPeriodType.weekly => currentDateTime.currentWeek,
-        BudgetPeriodType.monthly => currentDateTime.currentWeek,
-        BudgetPeriodType.yearly => currentDateTime.currentWeek,
+        BudgetPeriodType.monthly => currentDateTime.currentMonth,
+        BudgetPeriodType.yearly => currentDateTime.currentYear,
       };
 
       List<BaseTransaction> txns = transactionRepo.getTransactions(range.start, range.end);
 
       if (budget is AccountBudget) {
         txns = txns
-            .where((txn) =>
-                budget.accounts.contains(txn.account) && (txn is CreditSpending || txn is Expense))
+            .where((txn) => budget.accounts.contains(txn.account) && (txn is CreditSpending || txn is Expense))
             .toList();
       }
 
       if (budget is CategoryBudget) {
-        txns =
-            txns.whereType<Expense>().where((txn) => budget.categories.contains(txn.category)).toList();
+        txns = txns.whereType<Expense>().where((txn) => budget.categories.contains(txn.category)).toList();
       }
 
-      final currentAmount =
-          txns.isEmpty ? 0.0 : txns.map((e) => e.amount).reduce((value, element) => value + element);
+      final currentAmount = txns.isEmpty ? 0.0 : txns.map((e) => e.amount).reduce((value, element) => value + element);
 
       result.add(BudgetDetail(currentAmount: currentAmount, budget: budget, range: range));
     }

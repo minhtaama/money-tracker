@@ -143,7 +143,7 @@ enum ThemeType {
 
 enum Currency {
   all('ALL', 'Albania Lek', symbol: 'Lek'),
-  afn('AFN', 'Afghanistan Afghani'),
+  afn('AFN', 'Afghanistan Afghani', symbol: '؋'),
   ars('ARS', 'Argentina Peso', symbol: '\$'),
   awg('AWG', 'Aruba Guilder', symbol: 'ƒ'),
   aud('AUD', 'Australia Dollar', symbol: '\$'),
@@ -185,7 +185,7 @@ enum Currency {
   hkd('HKD', 'Hong Kong Dollar', symbol: '\$'),
   huf('HUF', 'Hungary Forint', symbol: 'Ft'),
   isk('ISK', 'Iceland Krona', symbol: 'kr'),
-  inr('INR', 'India Rupee'),
+  inr('INR', 'India Rupee', symbol: 'ir'),
   idr('IDR', 'Indonesia Rupiah', symbol: 'Rp'),
   irr('IRR', 'Iran Rial', symbol: '﷼'),
   imp('IMP', 'Isle of Man Pound', symbol: '£'),
@@ -233,13 +233,13 @@ enum Currency {
   zar('ZAR', 'South Africa Rand', symbol: 'R'),
   lkr('LKR', 'Sri Lanka Rupee', symbol: 'Rs'),
   sek('SEK', 'Sweden Krona', symbol: 'kr'),
-  chf('CHF', 'Switzerland Franc'),
+  chf('CHF', 'Switzerland Franc', symbol: 'chf'),
   srd('SRD', 'Suriname Dollar', symbol: '\$'),
   syp('SYP', 'Syria Pound', symbol: '£'),
   twd('TWD', 'Taiwan New Dollar', symbol: 'NT\$'),
   thb('THB', 'Thailand Baht', symbol: '฿'),
   ttd('TTD', 'Trinidad and Tobago Dollar', symbol: 'TT\$'),
-  try0('TRY', 'Turkey Lira'),
+  try0('TRY', 'Turkey Lira', symbol: '\$tl'),
   tvd('TVD', 'Tuvalu Dollar', symbol: '\$'),
   uah('UAH', 'Ukraine Hryvnia', symbol: '₴'),
   gbp('GBP', 'United Kingdom Pound', symbol: '£'),
@@ -253,11 +253,52 @@ enum Currency {
   ;
 
   /// https://www.xe.com/symbols/
-  const Currency(this.code, this.name, {this.symbol});
+  const Currency(this.code, this.name, {required this.symbol});
 
   final String code;
   final String name;
-  final String? symbol;
+  final String symbol;
+}
+
+// TODO: Config display type
+
+enum CurrencyDisplayType {
+  symbolBefore(0),
+  symbolAfter(1);
+
+  final int databaseValue;
+
+  const CurrencyDisplayType(this.databaseValue);
+
+  static CurrencyDisplayType fromDatabaseValue(int value) {
+    return CurrencyDisplayType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
+enum LongDateFormatType {
+  dayThenMonth(0),
+  monthThenDay(1);
+
+  final int databaseValue;
+
+  const LongDateFormatType(this.databaseValue);
+
+  static LongDateFormatType fromDatabaseValue(int value) {
+    return LongDateFormatType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
+enum ShortDateFormatType {
+  dayThenMonth(0),
+  monthThenDay(1);
+
+  final int databaseValue;
+
+  const ShortDateFormatType(this.databaseValue);
+
+  static ShortDateFormatType fromDatabaseValue(int value) {
+    return ShortDateFormatType.values.firstWhere((e) => e.databaseValue == value);
+  }
 }
 
 ///////// NO DATABASE VALUE //////////////////////

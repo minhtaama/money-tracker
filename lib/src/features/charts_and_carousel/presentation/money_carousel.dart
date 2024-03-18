@@ -127,10 +127,11 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                   widget.leftIconPath != null
                       ? RoundedIconButton(
                           iconPath: widget.leftIconPath!,
-                          size: 36,
+                          size: 38,
                           iconPadding: 8,
                           iconColor: context.appTheme.onBackground.withOpacity(0.65),
                           inkColor: context.appTheme.onBackground.withOpacity(0.25),
+                          backgroundColor: Colors.transparent,
                           onTap: widget.onTapLeftIcon,
                         )
                       : Gap.noGap,
@@ -143,9 +144,10 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
                       ? RoundedIconButton(
                           iconPath: widget.rightIconPath!,
                           iconPadding: 8,
-                          size: 36,
+                          size: 38,
                           iconColor: context.appTheme.onBackground.withOpacity(0.65),
                           inkColor: context.appTheme.onBackground.withOpacity(0.25),
+                          backgroundColor: Colors.transparent,
                           onTap: widget.onTapRightIcon,
                         )
                       : Gap.noGap,

@@ -66,7 +66,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
             badgePositionPercentageOffset: 1,
             radius: dataList.indexOf(e) == touchedIndex ? 41 : 33,
             badgeWidget: AnimatedContainer(
-              duration: k550msDuration,
+              duration: k350msDuration,
               curve: Curves.fastOutSlowIn,
               height: dataList.indexOf(e) == touchedIndex ? 35 : 28,
               width: dataList.indexOf(e) == touchedIndex ? 35 : 28,
@@ -97,12 +97,12 @@ class _CustomPieChartState extends State<CustomPieChart> {
   @override
   Widget build(BuildContext context) {
     return AnimatedScale(
-      duration: k550msDuration,
+      duration: k350msDuration,
       curve: Curves.fastOutSlowIn,
       scale: _scale,
       child: AnimatedOpacity(
         opacity: _opacity,
-        duration: k550msDuration,
+        duration: k350msDuration,
         curve: Curves.fastOutSlowIn,
         child: Stack(
           alignment: Alignment.center,
@@ -124,9 +124,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                         //   _touchedIndex = -1;
                         //   return;
                         // }
-                        if (event.isInterestedForInteractions &&
-                            pieTouchResponse != null &&
-                            event is FlTapDownEvent) {
+                        if (event.isInterestedForInteractions && pieTouchResponse != null && event is FlTapDownEvent) {
                           if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
                             _touchedIndex = -1;
                           } else {
@@ -139,7 +137,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                   },
                 ),
               ),
-              swapAnimationDuration: k550msDuration,
+              swapAnimationDuration: k350msDuration,
               swapAnimationCurve: Curves.fastOutSlowIn,
             ),
           ],

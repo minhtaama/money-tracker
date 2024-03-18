@@ -239,6 +239,7 @@ class _DateSelector extends StatelessWidget {
                                     child: RoundedIconButton(
                                       iconPath: AppIcons.turn,
                                       iconColor: context.appTheme.onBackground,
+                                      backgroundColor: Colors.transparent,
                                       size: 20,
                                       iconPadding: 0,
                                     ),
@@ -257,6 +258,7 @@ class _DateSelector extends StatelessWidget {
           RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
             iconColor: context.appTheme.onBackground,
+            backgroundColor: Colors.transparent,
             onTap: onTapLeft,
             size: 30,
             iconPadding: 5,
@@ -265,6 +267,7 @@ class _DateSelector extends StatelessWidget {
           RoundedIconButton(
             iconPath: AppIcons.arrowRight,
             iconColor: context.appTheme.onBackground,
+            backgroundColor: Colors.transparent,
             onTap: onTapRight,
             size: 30,
             iconPadding: 5,
