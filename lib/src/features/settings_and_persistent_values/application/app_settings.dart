@@ -14,16 +14,23 @@ class AppSettingsData {
 
   final Currency currency;
 
+  final CurrencyType currencyType;
+
   final bool showDecimalDigits;
 
-  factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
-    Currency currency = Currency.values[settingsDb.currencyIndex];
+  final LongDateType longDateType;
 
+  final ShortDateType shortDateType;
+
+  factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
     return AppSettingsData._(
       themeIndex: settingsDb.themeIndex,
       themeType: ThemeType.fromDatabaseValue(settingsDb.themeType),
-      currency: currency,
+      currency: Currency.values[settingsDb.currencyIndex],
+      currencyType: CurrencyType.fromDatabaseValue(settingsDb.currencyType),
       showDecimalDigits: settingsDb.showDecimalDigits,
+      longDateType: LongDateType.fromDatabaseValue(settingsDb.longDateType),
+      shortDateType: ShortDateType.fromDatabaseValue(settingsDb.shortDateType),
     );
   }
 
@@ -43,20 +50,29 @@ class AppSettingsData {
     required this.themeIndex,
     required this.themeType,
     required this.currency,
+    required this.currencyType,
     required this.showDecimalDigits,
+    required this.longDateType,
+    required this.shortDateType,
   });
 
   AppSettingsData copyWith({
     int? themeIndex,
     ThemeType? themeType,
     Currency? currency,
+    CurrencyType? currencyType,
     bool? showDecimalDigits,
+    LongDateType? longDateType,
+    ShortDateType? shortDateType,
   }) {
     return AppSettingsData._(
       themeIndex: themeIndex ?? this.themeIndex,
       themeType: themeType ?? this.themeType,
       currency: currency ?? this.currency,
+      currencyType: currencyType ?? this.currencyType,
       showDecimalDigits: showDecimalDigits ?? this.showDecimalDigits,
+      longDateType: longDateType ?? this.longDateType,
+      shortDateType: shortDateType ?? this.shortDateType,
     );
   }
 }

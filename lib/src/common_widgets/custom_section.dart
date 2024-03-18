@@ -113,9 +113,10 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
             ],
           ),
           CardItem(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.linear,
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
             margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
-            //elevation: widget.isWrapByCard ? 1 : 0,
             color: widget.isWrapByCard ? null : Colors.transparent,
             clip: widget.sectionsClipping,
             child: widget.onReorder == null

@@ -12,17 +12,23 @@ class SettingsController extends Notifier<AppSettingsData> {
   }
 
   Future<void> set({
-    ThemeType? themeType,
     int? themeIndex,
+    ThemeType? themeType,
     Currency? currency,
+    CurrencyType? currencyType,
     bool? showDecimalDigits,
+    LongDateType? longDateType,
+    ShortDateType? shortDateType,
   }) async {
     final realm = ref.read(realmProvider);
     state = state.copyWith(
-      themeType: themeType,
       themeIndex: themeIndex,
+      themeType: themeType,
       currency: currency,
+      currencyType: currencyType,
       showDecimalDigits: showDecimalDigits,
+      longDateType: longDateType,
+      shortDateType: shortDateType,
     );
     realm.write(() => realm.add<SettingsDb>(state.toDatabase(), update: true));
   }

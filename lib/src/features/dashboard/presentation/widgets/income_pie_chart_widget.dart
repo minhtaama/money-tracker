@@ -114,9 +114,9 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
                   ),
                   MoneyAmount(
                     amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
-                    prefix: context.appSettings.currency.symbol ?? '',
-                    style: kHeader1TextStyle.copyWith(
-                        color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
+                    style: kHeader1TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
+                    symbolStyle:
+                        kHeader3TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 20),
                     overflow: TextOverflow.fade,
                     maxLines: 1,
                   ),

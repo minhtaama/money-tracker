@@ -835,6 +835,9 @@ class SettingsDb extends _SettingsDb
     int themeType = 0,
     int currencyIndex = 101,
     bool showDecimalDigits = false,
+    int longDateType = 0,
+    int shortDateType = 0,
+    int currencyType = 0,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<SettingsDb>({
@@ -843,6 +846,9 @@ class SettingsDb extends _SettingsDb
         'themeType': 0,
         'currencyIndex': 101,
         'showDecimalDigits': false,
+        'longDateType': 0,
+        'shortDateType': 0,
+        'currencyType': 0,
       });
     }
     RealmObjectBase.set(this, 'id', id);
@@ -850,6 +856,9 @@ class SettingsDb extends _SettingsDb
     RealmObjectBase.set(this, 'themeType', themeType);
     RealmObjectBase.set(this, 'currencyIndex', currencyIndex);
     RealmObjectBase.set(this, 'showDecimalDigits', showDecimalDigits);
+    RealmObjectBase.set(this, 'longDateType', longDateType);
+    RealmObjectBase.set(this, 'shortDateType', shortDateType);
+    RealmObjectBase.set(this, 'currencyType', currencyType);
   }
 
   SettingsDb._();
@@ -882,6 +891,25 @@ class SettingsDb extends _SettingsDb
       RealmObjectBase.set(this, 'showDecimalDigits', value);
 
   @override
+  int get longDateType => RealmObjectBase.get<int>(this, 'longDateType') as int;
+  @override
+  set longDateType(int value) =>
+      RealmObjectBase.set(this, 'longDateType', value);
+
+  @override
+  int get shortDateType =>
+      RealmObjectBase.get<int>(this, 'shortDateType') as int;
+  @override
+  set shortDateType(int value) =>
+      RealmObjectBase.set(this, 'shortDateType', value);
+
+  @override
+  int get currencyType => RealmObjectBase.get<int>(this, 'currencyType') as int;
+  @override
+  set currencyType(int value) =>
+      RealmObjectBase.set(this, 'currencyType', value);
+
+  @override
   Stream<RealmObjectChanges<SettingsDb>> get changes =>
       RealmObjectBase.getChanges<SettingsDb>(this);
 
@@ -899,6 +927,9 @@ class SettingsDb extends _SettingsDb
       SchemaProperty('themeType', RealmPropertyType.int),
       SchemaProperty('currencyIndex', RealmPropertyType.int),
       SchemaProperty('showDecimalDigits', RealmPropertyType.bool),
+      SchemaProperty('longDateType', RealmPropertyType.int),
+      SchemaProperty('shortDateType', RealmPropertyType.int),
+      SchemaProperty('currencyType', RealmPropertyType.int),
     ]);
   }
 }

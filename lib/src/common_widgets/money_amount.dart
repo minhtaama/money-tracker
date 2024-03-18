@@ -1,6 +1,8 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/widgets.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class MoneyAmount extends StatefulWidget {
@@ -8,17 +10,10 @@ class MoneyAmount extends StatefulWidget {
   final Curve curve;
   final Duration duration;
   final TextStyle? style;
-  final TextAlign? textAlign;
-  final TextDirection? textDirection;
-  final Locale? locale;
-  final bool? softWrap;
-  final TextOverflow? overflow;
-  final int? maxLines;
-  final String? semanticsLabel;
-  final String? separator;
-  final String prefix;
-  final String suffix;
+  final TextStyle? symbolStyle;
   final bool noAnimation;
+  final TextOverflow overflow;
+  final int? maxLines;
 
   const MoneyAmount({
     super.key,
@@ -26,17 +21,10 @@ class MoneyAmount extends StatefulWidget {
     this.curve = Curves.easeInOut,
     this.duration = k550msDuration,
     this.style,
-    this.textAlign,
-    this.textDirection,
-    this.locale,
-    this.softWrap,
-    this.overflow,
-    this.maxLines,
-    this.semanticsLabel,
-    this.separator,
-    this.prefix = '',
-    this.suffix = '',
+    this.symbolStyle,
     this.noAnimation = false,
+    this.overflow = TextOverflow.clip,
+    this.maxLines,
   });
 
   @override
@@ -89,19 +77,17 @@ class _MoneyAmountState extends State<MoneyAmount> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final symbolBefore = context.appSettings.currencyType == CurrencyType.symbolBefore;
+    final symbol = context.appSettings.currency.symbol;
+
     return _MoneyAnimatedText(
       animation: _animation,
       style: widget.style,
-      textAlign: widget.textAlign,
-      textDirection: widget.textDirection,
-      locale: widget.locale,
-      softWrap: widget.softWrap,
-      overflow: widget.overflow,
+      symbolStyle: widget.symbolStyle,
+      prefix: symbolBefore ? symbol : '',
+      suffix: !symbolBefore ? symbol : '',
       maxLines: widget.maxLines,
-      semanticsLabel: widget.semanticsLabel,
-      separator: widget.separator,
-      prefix: widget.prefix,
-      suffix: widget.suffix,
+      overflow: widget.overflow,
     );
   }
 }
@@ -111,44 +97,39 @@ class _MoneyAnimatedText extends AnimatedWidget {
 
   final Animation<double> animation;
   final TextStyle? style;
-  final TextAlign? textAlign;
-  final TextDirection? textDirection;
-  final Locale? locale;
-  final bool? softWrap;
-  final TextOverflow? overflow;
-  final int? maxLines;
-  final String? semanticsLabel;
-  final String? separator;
+  final TextStyle? symbolStyle;
   final String? prefix;
   final String? suffix;
+  final TextOverflow overflow;
+  final int? maxLines;
 
   _MoneyAnimatedText({
     required this.animation,
     this.style,
-    this.textAlign,
-    this.textDirection,
-    this.locale,
-    this.softWrap,
-    this.overflow,
-    this.maxLines,
-    this.semanticsLabel,
-    this.separator,
+    this.symbolStyle,
     this.prefix,
     this.suffix,
+    this.overflow = TextOverflow.clip,
+    this.maxLines,
   }) : super(listenable: animation);
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      '$prefix${CalService.formatCurrency(context, animation.value)}$suffix',
-      style: style,
-      textAlign: textAlign,
-      textDirection: textDirection,
-      locale: locale,
-      softWrap: softWrap,
-      overflow: overflow,
-      maxLines: maxLines,
-      semanticsLabel: semanticsLabel,
+    return Row(
+      children: [
+        EasyRichText(
+          '$prefix ${CalService.formatCurrency(context, animation.value)} $suffix',
+          defaultStyle: style,
+          overflow: overflow,
+          maxLines: maxLines,
+          patternList: [
+            EasyRichTextPattern(
+                targetString: prefix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
+            EasyRichTextPattern(
+                targetString: suffix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -262,42 +262,42 @@ enum Currency {
 
 // TODO: Config display type
 
-enum CurrencyDisplayType {
+enum CurrencyType {
   symbolBefore(0),
   symbolAfter(1);
 
   final int databaseValue;
 
-  const CurrencyDisplayType(this.databaseValue);
+  const CurrencyType(this.databaseValue);
 
-  static CurrencyDisplayType fromDatabaseValue(int value) {
-    return CurrencyDisplayType.values.firstWhere((e) => e.databaseValue == value);
+  static CurrencyType fromDatabaseValue(int value) {
+    return CurrencyType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
-enum LongDateFormatType {
+enum LongDateType {
   dayThenMonth(0),
   monthThenDay(1);
 
   final int databaseValue;
 
-  const LongDateFormatType(this.databaseValue);
+  const LongDateType(this.databaseValue);
 
-  static LongDateFormatType fromDatabaseValue(int value) {
-    return LongDateFormatType.values.firstWhere((e) => e.databaseValue == value);
+  static LongDateType fromDatabaseValue(int value) {
+    return LongDateType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
-enum ShortDateFormatType {
+enum ShortDateType {
   dayThenMonth(0),
   monthThenDay(1);
 
   final int databaseValue;
 
-  const ShortDateFormatType(this.databaseValue);
+  const ShortDateType(this.databaseValue);
 
-  static ShortDateFormatType fromDatabaseValue(int value) {
-    return ShortDateFormatType.values.firstWhere((e) => e.databaseValue == value);
+  static ShortDateType fromDatabaseValue(int value) {
+    return ShortDateType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
