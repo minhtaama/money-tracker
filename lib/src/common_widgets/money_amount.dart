@@ -48,7 +48,7 @@ class _MoneyAmountState extends State<MoneyAmount> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _begin = 0;
+    _begin = widget.noAnimation ? widget.amount : 0;
     _end = widget.amount;
     _controller = AnimationController(duration: widget.duration, vsync: this);
     _curvedAnimation = CurvedAnimation(parent: _controller, curve: widget.curve);
