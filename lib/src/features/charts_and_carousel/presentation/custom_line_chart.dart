@@ -285,7 +285,7 @@ class CustomLineChart extends StatelessWidget {
                         color: color ?? context.appTheme.onBackground,
                       ),
                       Text(
-                        spot.dateTime!.getFormattedDate(hasYear: false),
+                        spot.dateTime!.toShortDate(context, noYear: true),
                         style: textStyle,
                       ),
                     ],
@@ -312,10 +312,8 @@ class CustomLineChart extends StatelessWidget {
 
         final spot = spots[touchedSpot.spotIndex];
         final symbol = context.appSettings.currency.symbol;
-        final dateTime = spot.dateTime?.getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy) ??
-            currentMonth
-                .copyWith(day: touchedSpot.x.toInt())
-                .getFormattedDate(hasYear: false, format: DateTimeFormat.ddmmmyyyy);
+        final dateTime = spot.dateTime?.toShortDate(context, noYear: true) ??
+            currentMonth.copyWith(day: touchedSpot.x.toInt()).toShortDate(context, noYear: true);
 
         final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
 

@@ -72,7 +72,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       padding: EdgeInsets.zero,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -87,7 +87,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                   children: [
                     widget.title != null
                         ? Padding(
-                            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                            padding: const EdgeInsets.only(left: 8.0),
                             child: Text(
                               widget.title!,
                               style: kHeader2TextStyle.copyWith(

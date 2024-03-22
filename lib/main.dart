@@ -57,6 +57,7 @@ class MoneyTrackerApp extends ConsumerWidget {
             ),
             child: MaterialApp.router(
               restorationScopeId: 'app',
+              locale: context.appSettings.locale,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               routerConfig: goRouter,

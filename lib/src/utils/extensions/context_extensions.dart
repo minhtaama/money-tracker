@@ -29,6 +29,13 @@ extension AppThemeBuildContext on BuildContext {
 
   AppPersistentValues get appPersistentValues => AppPersistent.of(this);
 
-  AppThemeData get appTheme =>
-      AppColors.allThemeData[appSettings.themeIndex][_getThemeType(appSettings.themeType)]!;
+  AppThemeData get appTheme => AppColors.allThemeData[appSettings.themeIndex][_getThemeType(appSettings.themeType)]!;
+}
+
+extension LanguageName on Locale {
+  String get languageName => switch (languageCode) {
+        'en' => 'English',
+        'vi' => 'Tiếng Việt',
+        _ => '',
+      };
 }

@@ -834,6 +834,7 @@ class SettingsDb extends _SettingsDb
     int themeIndex = 0,
     int themeType = 0,
     int currencyIndex = 101,
+    String locale = 'en',
     bool showDecimalDigits = false,
     int longDateType = 0,
     int shortDateType = 0,
@@ -845,6 +846,7 @@ class SettingsDb extends _SettingsDb
         'themeIndex': 0,
         'themeType': 0,
         'currencyIndex': 101,
+        'locale': 'en',
         'showDecimalDigits': false,
         'longDateType': 0,
         'shortDateType': 0,
@@ -855,6 +857,7 @@ class SettingsDb extends _SettingsDb
     RealmObjectBase.set(this, 'themeIndex', themeIndex);
     RealmObjectBase.set(this, 'themeType', themeType);
     RealmObjectBase.set(this, 'currencyIndex', currencyIndex);
+    RealmObjectBase.set(this, 'locale', locale);
     RealmObjectBase.set(this, 'showDecimalDigits', showDecimalDigits);
     RealmObjectBase.set(this, 'longDateType', longDateType);
     RealmObjectBase.set(this, 'shortDateType', shortDateType);
@@ -882,6 +885,11 @@ class SettingsDb extends _SettingsDb
   @override
   set currencyIndex(int value) =>
       RealmObjectBase.set(this, 'currencyIndex', value);
+
+  @override
+  String get locale => RealmObjectBase.get<String>(this, 'locale') as String;
+  @override
+  set locale(String value) => RealmObjectBase.set(this, 'locale', value);
 
   @override
   bool get showDecimalDigits =>
@@ -926,6 +934,7 @@ class SettingsDb extends _SettingsDb
       SchemaProperty('themeIndex', RealmPropertyType.int),
       SchemaProperty('themeType', RealmPropertyType.int),
       SchemaProperty('currencyIndex', RealmPropertyType.int),
+      SchemaProperty('locale', RealmPropertyType.string),
       SchemaProperty('showDecimalDigits', RealmPropertyType.bool),
       SchemaProperty('longDateType', RealmPropertyType.int),
       SchemaProperty('shortDateType', RealmPropertyType.int),

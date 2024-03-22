@@ -50,35 +50,6 @@ extension DateTimeExtensions on DateTime {
     return diff.inDays.abs();
   }
 
-  String getFormattedDate({
-    DateTimeFormat format = DateTimeFormat.ddmmyyyy,
-    bool hasDay = true,
-    bool hasMonth = true,
-    bool hasYear = true,
-  }) {
-    NumberFormat formatter = NumberFormat("00");
-    String monthF = hasMonth
-        ? switch (format) {
-            DateTimeFormat.ddmmyyyy || DateTimeFormat.mmddyyyy => formatter.format(month),
-            DateTimeFormat.ddmmmmyyyy || DateTimeFormat.mmmmddyyyy => monthToString(),
-            DateTimeFormat.ddmmmyyyy || DateTimeFormat.mmmddyyyy => monthToString(short: true),
-          }
-        : '';
-    String dayF = hasDay ? formatter.format(day) : '';
-    String yearF = hasYear ? year.toString() : '';
-
-    switch (format) {
-      case DateTimeFormat.ddmmyyyy:
-        return '$dayF${hasDay && hasMonth ? '/' : ''}$monthF${hasMonth && hasYear ? '/' : ''}$yearF';
-      case DateTimeFormat.ddmmmmyyyy || DateTimeFormat.ddmmmyyyy:
-        return '$dayF${hasDay && hasMonth ? ' ' : ''}$monthF${hasYear ? ', ' : ''}$yearF';
-      case DateTimeFormat.mmddyyyy:
-        return '$monthF${hasDay && hasMonth ? '/' : ''}$dayF${hasDay && hasYear ? '/' : ''}$yearF';
-      case DateTimeFormat.mmmmddyyyy || DateTimeFormat.mmmddyyyy:
-        return '$monthF${hasDay && hasMonth ? ' ' : ''}$dayF${hasYear ? ', ' : ''}$yearF';
-    }
-  }
-
   String toShortDate(BuildContext context, {ShortDateType? custom, bool noYear = false}) {
     final type = custom ?? context.appSettings.shortDateType;
     final formatter = NumberFormat("00");
@@ -97,7 +68,7 @@ extension DateTimeExtensions on DateTime {
       ShortDateType.mmdy ||
       ShortDateType.ydmm ||
       ShortDateType.ymmd =>
-        monthToString(short: true),
+        monthToString(context, short: true),
       ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
     };
 
@@ -113,13 +84,13 @@ extension DateTimeExtensions on DateTime {
     };
   }
 
-  String toLongDate(BuildContext context, {LongDateType? custom}) {
+  String toLongDate(BuildContext context, {LongDateType? custom, bool noDay = false}) {
     final type = custom ?? context.appSettings.longDateType;
     final formatter = NumberFormat("00");
 
-    String sDay = formatter.format(day);
+    String sDay = noDay ? '' : formatter.format(day);
     String sYear = year.toString();
-    String sMonth = monthToString();
+    String sMonth = monthToString(context);
 
     return switch (type) {
       LongDateType.dmy => '$sDay $sMonth, $sYear',
@@ -129,53 +100,53 @@ extension DateTimeExtensions on DateTime {
     };
   }
 
-  String monthToString({bool short = false}) {
-    switch (weekday) {
+  String monthToString(BuildContext context, {bool short = false}) {
+    switch (month) {
       case 1:
-        return short ? 'Jan' : 'January'.hardcoded;
+        return short ? context.localize.jan : context.localize.january;
       case 2:
-        return short ? 'Feb' : 'February'.hardcoded;
+        return short ? context.localize.feb : context.localize.february;
       case 3:
-        return short ? 'Mar' : 'March'.hardcoded;
+        return short ? context.localize.mar : context.localize.march;
       case 4:
-        return short ? 'Apr' : 'April'.hardcoded;
+        return short ? context.localize.apr : context.localize.april;
       case 5:
-        return short ? 'May' : 'May'.hardcoded;
+        return short ? context.localize.may : context.localize.mayLong;
       case 6:
-        return short ? 'Jun' : 'June'.hardcoded;
+        return short ? context.localize.jun : context.localize.june;
       case 7:
-        return short ? 'Jul' : 'July'.hardcoded;
+        return short ? context.localize.jul : context.localize.july;
       case 8:
-        return short ? 'Aug' : 'August'.hardcoded;
+        return short ? context.localize.aug : context.localize.august;
       case 9:
-        return short ? 'Sep' : 'September'.hardcoded;
+        return short ? context.localize.sep : context.localize.september;
       case 10:
-        return short ? 'Oct' : 'October'.hardcoded;
+        return short ? context.localize.oct : context.localize.october;
       case 11:
-        return short ? 'Nov' : 'November'.hardcoded;
+        return short ? context.localize.nov : context.localize.november;
       case 12:
-        return short ? 'Dec' : 'December'.hardcoded;
+        return short ? context.localize.dec : context.localize.december;
       default:
         return '';
     }
   }
 
-  String weekdayToString({bool short = false}) {
+  String weekdayToString(BuildContext context, {bool short = false}) {
     switch (weekday) {
       case 1:
-        return short ? 'MON' : 'Monday'.hardcoded;
+        return short ? context.localize.mon : context.localize.monday;
       case 2:
-        return short ? 'TUE' : 'Tuesday'.hardcoded;
+        return short ? context.localize.tue : context.localize.tuesday;
       case 3:
-        return short ? 'WED' : 'Wednesday'.hardcoded;
+        return short ? context.localize.wed : context.localize.wednesday;
       case 4:
-        return short ? 'THU' : 'Thursday'.hardcoded;
+        return short ? context.localize.thu : context.localize.thursday;
       case 5:
-        return short ? 'FRI' : 'Friday'.hardcoded;
+        return short ? context.localize.fri : context.localize.friday;
       case 6:
-        return short ? 'SAT' : 'Saturday'.hardcoded;
+        return short ? context.localize.sat : context.localize.saturday;
       case 7:
-        return short ? 'SUN' : 'Sunday'.hardcoded;
+        return short ? context.localize.sun : context.localize.sunday;
       default:
         return '';
     }

@@ -74,7 +74,7 @@ class DayCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      dateTime.weekdayToString(),
+                      dateTime.weekdayToString(context),
                       style: kHeader3TextStyle.copyWith(
                         color: dateTime.weekday == 6 || dateTime.weekday == 7
                             ? context.appTheme.negative
@@ -84,7 +84,7 @@ class DayCard extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                     Text(
-                      dateTime.getFormattedDate(format: DateTimeFormat.ddmmyyyy, hasDay: false),
+                      dateTime.toLongDate(context, noDay: true),
                       style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
                       textAlign: TextAlign.left,
                     ),

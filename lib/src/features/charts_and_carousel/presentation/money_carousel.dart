@@ -74,8 +74,8 @@ class _MoneyCarouselState extends State<MoneyCarousel> {
               DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
               DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-              String month = DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex))
-                  .getFormattedDate(hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy);
+              String month =
+                  DateTime(_today.year, _today.month + (pageIndex - widget.initialPageIndex)).monthToString(context);
 
               return Consumer(
                 builder: (context, ref, child) {
@@ -270,8 +270,7 @@ class _CarouselContentState extends State<_CarouselContent> {
       Gap.w4,
       EasyRichText(
         CalService.formatCurrency(context, widget.amount, isAbs: true),
-        defaultStyle: kHeader3TextStyle.copyWith(
-            color: context.appTheme.onBackground, fontSize: 23, letterSpacing: 1),
+        defaultStyle: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 23, letterSpacing: 1),
         textAlign: TextAlign.right,
         patternList: [
           EasyRichTextPattern(

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import '../../../../persistent/realm_dto.dart';
@@ -15,6 +17,7 @@ class SettingsController extends Notifier<AppSettingsData> {
     int? themeIndex,
     ThemeType? themeType,
     Currency? currency,
+    Locale? locale,
     CurrencyType? currencyType,
     bool? showDecimalDigits,
     LongDateType? longDateType,
@@ -25,6 +28,7 @@ class SettingsController extends Notifier<AppSettingsData> {
       themeIndex: themeIndex,
       themeType: themeType,
       currency: currency,
+      locale: locale,
       currencyType: currencyType,
       showDecimalDigits: showDecimalDigits,
       longDateType: longDateType,

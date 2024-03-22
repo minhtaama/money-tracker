@@ -89,7 +89,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: IconWithText(
             header:
-                'This account does not have any transactions in ${dayBeginOfMonth.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false, hasYear: false)}. Create a new one by tapping \'+\''
+                'This account does not have any transactions in ${dayBeginOfMonth.monthToString(context)}. Create a new one by tapping \'+\''
                     .hardcoded,
             headerSize: 14,
             iconPath: AppIcons.budgets,
@@ -214,7 +214,7 @@ class _DateSelector extends StatelessWidget {
                   );
                 },
                 child: Row(
-                  key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                  key: ValueKey(displayDate.toLongDate(context, noDay: true)),
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,8 +235,7 @@ class _DateSelector extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              displayDate.getFormattedDate(
-                                  hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy),
+                              displayDate.monthToString(context),
                               style: kHeader1TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.9),
                                 fontSize: 22,

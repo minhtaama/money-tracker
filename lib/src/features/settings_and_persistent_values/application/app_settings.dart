@@ -14,6 +14,8 @@ class AppSettingsData {
 
   final Currency currency;
 
+  final Locale locale;
+
   final CurrencyType currencyType;
 
   final bool showDecimalDigits;
@@ -27,6 +29,7 @@ class AppSettingsData {
       themeIndex: settingsDb.themeIndex,
       themeType: ThemeType.fromDatabaseValue(settingsDb.themeType),
       currency: Currency.values[settingsDb.currencyIndex],
+      locale: Locale(settingsDb.locale),
       currencyType: CurrencyType.fromDatabaseValue(settingsDb.currencyType),
       showDecimalDigits: settingsDb.showDecimalDigits,
       longDateType: LongDateType.fromDatabaseValue(settingsDb.longDateType),
@@ -42,7 +45,11 @@ class AppSettingsData {
       themeIndex: themeIndex,
       themeType: themeType.databaseValue,
       currencyIndex: currencyRealmData,
+      locale: locale.languageCode,
+      currencyType: currencyType.databaseValue,
       showDecimalDigits: showDecimalDigits,
+      longDateType: longDateType.databaseValue,
+      shortDateType: shortDateType.databaseValue,
     );
   }
 
@@ -50,6 +57,7 @@ class AppSettingsData {
     required this.themeIndex,
     required this.themeType,
     required this.currency,
+    required this.locale,
     required this.currencyType,
     required this.showDecimalDigits,
     required this.longDateType,
@@ -60,6 +68,7 @@ class AppSettingsData {
     int? themeIndex,
     ThemeType? themeType,
     Currency? currency,
+    Locale? locale,
     CurrencyType? currencyType,
     bool? showDecimalDigits,
     LongDateType? longDateType,
@@ -69,6 +78,7 @@ class AppSettingsData {
       themeIndex: themeIndex ?? this.themeIndex,
       themeType: themeType ?? this.themeType,
       currency: currency ?? this.currency,
+      locale: locale ?? this.locale,
       currencyType: currencyType ?? this.currencyType,
       showDecimalDigits: showDecimalDigits ?? this.showDecimalDigits,
       longDateType: longDateType ?? this.longDateType,

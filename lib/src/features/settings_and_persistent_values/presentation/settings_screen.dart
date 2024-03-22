@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
@@ -16,6 +17,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
@@ -33,6 +35,8 @@ class SettingsScreen extends ConsumerWidget {
     final currSymbol = currentSettings.currency.symbol;
     final currAmount = CalService.formatCurrency(context, 2000);
 
+    final today = DateTime.now();
+
     return Scaffold(
       backgroundColor: context.appTheme.background1,
       body: CustomTabPage(
@@ -44,80 +48,6 @@ class SettingsScreen extends ConsumerWidget {
         ),
         children: [
           CustomSection(
-            sections: [
-              CustomTile(
-                title: 'Set currency',
-                secondaryTitle: currentSettings.currency.name,
-                secondaryTitleOverflow: true,
-                leading: SvgIcon(
-                  AppIcons.coins,
-                  color: context.appTheme.onBackground,
-                ),
-                trailing: Row(
-                  children: [
-                    Text(
-                      currentSettings.currency.code,
-                      style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
-                    ),
-                    Gap.w4,
-                    SvgIcon(
-                      AppIcons.arrowRight,
-                      color: context.appTheme.onBackground,
-                      size: 17,
-                    ),
-                  ],
-                ),
-                onTap: () => context.push(RoutePath.setCurrency),
-              ),
-              Gap.divider(context),
-              SettingTileToggle(
-                title: 'With decimal digits:',
-                onTap: (int index) {
-                  settingsController.set(showDecimalDigits: index == 0 ? false : true);
-                },
-                valuesCount: 2,
-                initialValueIndex: currentSettings.showDecimalDigits ? 1 : 0,
-              ),
-              SettingTileDropDown<CurrencyType>(
-                title: 'Display style:'.hardcoded,
-                initialValue: currentSettings.currencyType,
-                values: [
-                  (CurrencyType.symbolBefore, '$currSymbol $currAmount'),
-                  (CurrencyType.symbolAfter, '$currAmount $currSymbol'),
-                ],
-                onChanged: (type) => settingsController.set(currencyType: type),
-              ),
-            ],
-          ),
-          CustomSection(
-            title: 'Date format'.hardcoded,
-            sections: [
-              ColorPicker(
-                currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
-                colorsList: AppColors.allThemeData,
-                currentColorIndex: context.appSettings.themeIndex,
-                onColorTap: (int value) {
-                  settingsController.set(themeIndex: value);
-                  statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
-                },
-              ),
-              Gap.divider(context),
-              SettingTileDropDown<LongDateType>(
-                title: 'Long date:'.hardcoded,
-                initialValue: currentSettings.longDateType,
-                values: LongDateType.values.map((e) => (e, e.name)).toList(),
-                onChanged: (type) => settingsController.set(longDateType: type),
-              ),
-              SettingTileDropDown<ShortDateType>(
-                title: 'Short date:'.hardcoded,
-                initialValue: currentSettings.shortDateType,
-                values: ShortDateType.values.map((e) => (e, e.name)).toList(),
-                onChanged: (type) => settingsController.set(shortDateType: type),
-              ),
-            ],
-          ),
-          CustomSection(
-            title: 'Theme',
             sections: [
               ColorPicker(
                 currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
@@ -142,7 +72,73 @@ class SettingsScreen extends ConsumerWidget {
                 initialValueIndex: ThemeType.values.indexOf(currentSettings.themeType),
               ),
             ],
-          )
+          ),
+          CustomSection(
+            sections: [
+              Gap.h4,
+              CustomTile(
+                title: 'Set currency',
+                secondaryTitle: currentSettings.currency.name,
+                secondaryTitleOverflow: true,
+                leading: SvgIcon(
+                  AppIcons.coins,
+                  color: context.appTheme.onBackground,
+                ),
+                trailing: Row(
+                  children: [
+                    Text(
+                      currentSettings.currency.code,
+                      style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+                    ),
+                    Gap.w4,
+                    SvgIcon(
+                      AppIcons.arrowRight,
+                      color: context.appTheme.onBackground,
+                      size: 17,
+                    ),
+                  ],
+                ),
+                onTap: () => context.push(RoutePath.setCurrency),
+              ),
+              Gap.divider(context, indent: 6),
+              SettingTileDropDown<CurrencyType>(
+                title: 'Currency format:'.hardcoded,
+                initialValue: currentSettings.currencyType,
+                values: [
+                  (CurrencyType.symbolBefore, '$currSymbol $currAmount'),
+                  (CurrencyType.symbolAfter, '$currAmount $currSymbol'),
+                ],
+                onChanged: (type) => settingsController.set(currencyType: type),
+              ),
+              SettingTileToggle(
+                title: 'With decimal digits:',
+                onTap: (int index) {
+                  settingsController.set(showDecimalDigits: index == 0 ? false : true);
+                },
+                valuesCount: 2,
+                initialValueIndex: currentSettings.showDecimalDigits ? 1 : 0,
+              ),
+              Gap.divider(context, indent: 6),
+              SettingTileDropDown<Locale>(
+                title: 'Language:'.hardcoded,
+                initialValue: currentSettings.locale,
+                values: AppLocalizations.supportedLocales.map((e) => (e, e.languageName)).toList(),
+                onChanged: (type) => settingsController.set(locale: type),
+              ),
+              SettingTileDropDown<LongDateType>(
+                title: 'Long date format:'.hardcoded,
+                initialValue: currentSettings.longDateType,
+                values: LongDateType.values.map((e) => (e, today.toLongDate(context, custom: e))).toList(),
+                onChanged: (type) => settingsController.set(longDateType: type),
+              ),
+              SettingTileDropDown<ShortDateType>(
+                title: 'Short date format:'.hardcoded,
+                initialValue: currentSettings.shortDateType,
+                values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
+                onChanged: (type) => settingsController.set(shortDateType: type),
+              ),
+            ],
+          ),
         ],
       ),
     );

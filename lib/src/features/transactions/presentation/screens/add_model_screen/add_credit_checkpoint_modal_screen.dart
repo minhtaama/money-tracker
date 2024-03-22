@@ -85,7 +85,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
           ),
           Text(
-            _dateTime.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy),
+            _dateTime.toLongDate(context),
             style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
           ),
           Gap.h8,

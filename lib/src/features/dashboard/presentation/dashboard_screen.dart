@@ -45,7 +45,7 @@ class DashboardScreen extends StatelessWidget {
       smallTabBar: SmallTabBar(
         child: PageHeading(
           title: context.localize.dashboard,
-          secondaryTitle: DateTime.now().getFormattedDate(hasDay: false),
+          secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
           trailing: RoundedIconButton(
             iconPath: AppIcons.settings,
             iconColor: context.appTheme.onBackground,

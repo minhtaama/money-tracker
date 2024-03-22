@@ -216,6 +216,8 @@ class _SettingsDb {
 
   int currencyIndex = 101; // Currency.usd
 
+  String locale = 'en';
+
   bool showDecimalDigits = false;
 
   int longDateType = 0;

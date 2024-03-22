@@ -94,7 +94,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Gap.h16,
         IconWithText(
           header:
-              'You don\'t have any transactions in ${dayBeginOfMonth.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false, hasYear: false)}.\nCreate a new one by tapping \'+\' button'
+              'You don\'t have any transactions in ${dayBeginOfMonth.monthToString(context)}.\nCreate a new one by tapping \'+\' button'
                   .hardcoded,
           headerSize: 14,
           iconPath: AppIcons.budgets,
@@ -115,7 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
-          secondaryTitle: _currentDisplayDate.getFormattedDate(format: DateTimeFormat.ddmmmmyyyy, hasDay: false),
+          secondaryTitle: _currentDisplayDate.toLongDate(context, noDay: true),
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
@@ -202,7 +202,7 @@ class _DateSelector extends StatelessWidget {
                   );
                 },
                 child: Row(
-                  key: ValueKey(displayDate.getFormattedDate(hasDay: false, format: DateTimeFormat.ddmmmmyyyy)),
+                  key: ValueKey(displayDate.toLongDate(context, noDay: true)),
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,8 +223,7 @@ class _DateSelector extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              displayDate.getFormattedDate(
-                                  hasDay: false, hasYear: false, format: DateTimeFormat.ddmmmmyyyy),
+                              displayDate.monthToString(context),
                               style: kHeader1TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.9),
                                 fontSize: 22,
