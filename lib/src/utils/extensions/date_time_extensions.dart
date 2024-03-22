@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 extension DateTimeExtensions on DateTime {
@@ -59,8 +60,8 @@ extension DateTimeExtensions on DateTime {
     String monthF = hasMonth
         ? switch (format) {
             DateTimeFormat.ddmmyyyy || DateTimeFormat.mmddyyyy => formatter.format(month),
-            DateTimeFormat.ddmmmmyyyy || DateTimeFormat.mmmmddyyyy => _monthString(),
-            DateTimeFormat.ddmmmyyyy || DateTimeFormat.mmmddyyyy => _monthStringShort(),
+            DateTimeFormat.ddmmmmyyyy || DateTimeFormat.mmmmddyyyy => monthToString(),
+            DateTimeFormat.ddmmmyyyy || DateTimeFormat.mmmddyyyy => monthToString(short: true),
           }
         : '';
     String dayF = hasDay ? formatter.format(day) : '';
@@ -78,69 +79,88 @@ extension DateTimeExtensions on DateTime {
     }
   }
 
-  String _monthString() {
-    switch (month) {
+  String toShortDate(BuildContext context, {ShortDateType? custom, bool noYear = false}) {
+    final type = custom ?? context.appSettings.shortDateType;
+    final formatter = NumberFormat("00");
+
+    String sDay = formatter.format(day);
+    String sYear = noYear ? '' : year.toString();
+    String yearSeparator = noYear
+        ? ''
+        : switch (type) {
+            ShortDateType.dmmy || ShortDateType.mmdy || ShortDateType.ydmm || ShortDateType.ymmd => ',',
+            ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => '/',
+          };
+
+    String sMonth = switch (type) {
+      ShortDateType.dmmy ||
+      ShortDateType.mmdy ||
+      ShortDateType.ydmm ||
+      ShortDateType.ymmd =>
+        monthToString(short: true),
+      ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
+    };
+
+    return switch (type) {
+      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear',
+      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear',
+      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth',
+      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay',
+      ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear',
+      ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear',
+      ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth',
+      ShortDateType.ymd => '$sYear$yearSeparator$sMonth/$sDay',
+    };
+  }
+
+  String toLongDate(BuildContext context, {LongDateType? custom}) {
+    final type = custom ?? context.appSettings.longDateType;
+    final formatter = NumberFormat("00");
+
+    String sDay = formatter.format(day);
+    String sYear = year.toString();
+    String sMonth = monthToString();
+
+    return switch (type) {
+      LongDateType.dmy => '$sDay $sMonth, $sYear',
+      LongDateType.mdy => '$sMonth $sDay, $sYear',
+      LongDateType.ydm => '$sYear, $sDay $sMonth',
+      LongDateType.ymd => '$sYear, $sMonth $sDay',
+    };
+  }
+
+  String monthToString({bool short = false}) {
+    switch (weekday) {
       case 1:
-        return 'January'.hardcoded;
+        return short ? 'Jan' : 'January'.hardcoded;
       case 2:
-        return 'February'.hardcoded;
+        return short ? 'Feb' : 'February'.hardcoded;
       case 3:
-        return 'March'.hardcoded;
+        return short ? 'Mar' : 'March'.hardcoded;
       case 4:
-        return 'April'.hardcoded;
+        return short ? 'Apr' : 'April'.hardcoded;
       case 5:
-        return 'May'.hardcoded;
+        return short ? 'May' : 'May'.hardcoded;
       case 6:
-        return 'June'.hardcoded;
+        return short ? 'Jun' : 'June'.hardcoded;
       case 7:
-        return 'July'.hardcoded;
+        return short ? 'Jul' : 'July'.hardcoded;
       case 8:
-        return 'August'.hardcoded;
+        return short ? 'Aug' : 'August'.hardcoded;
       case 9:
-        return 'September'.hardcoded;
+        return short ? 'Sep' : 'September'.hardcoded;
       case 10:
-        return 'October'.hardcoded;
+        return short ? 'Oct' : 'October'.hardcoded;
       case 11:
-        return 'November'.hardcoded;
+        return short ? 'Nov' : 'November'.hardcoded;
       case 12:
-        return 'December'.hardcoded;
+        return short ? 'Dec' : 'December'.hardcoded;
       default:
         return '';
     }
   }
 
-  String _monthStringShort() {
-    switch (month) {
-      case 1:
-        return 'JAN'.hardcoded;
-      case 2:
-        return 'FEB'.hardcoded;
-      case 3:
-        return 'MAR'.hardcoded;
-      case 4:
-        return 'APR'.hardcoded;
-      case 5:
-        return 'MAY'.hardcoded;
-      case 6:
-        return 'JUN'.hardcoded;
-      case 7:
-        return 'JUL'.hardcoded;
-      case 8:
-        return 'AUG'.hardcoded;
-      case 9:
-        return 'SEP'.hardcoded;
-      case 10:
-        return 'OCT'.hardcoded;
-      case 11:
-        return 'NOV'.hardcoded;
-      case 12:
-        return 'DEC'.hardcoded;
-      default:
-        return '';
-    }
-  }
-
-  String weekdayString([bool short = false]) {
+  String weekdayToString({bool short = false}) {
     switch (weekday) {
       case 1:
         return short ? 'MON' : 'Monday'.hardcoded;
@@ -161,14 +181,14 @@ extension DateTimeExtensions on DateTime {
     }
   }
 
-  DateTimeRange get currentDay {
+  DateTimeRange get dayRange {
     final begin = onlyYearMonthDay;
     final end = copyWith(hour: 23, minute: 59, second: 59);
 
     return DateTimeRange(start: begin, end: end);
   }
 
-  DateTimeRange get currentWeek {
+  DateTimeRange get weekRange {
     // TODO: set first day of week
     final firstDayOfWeek = copyWith(day: day - weekday); //Monday
     final lastDayOfWeek = copyWith(day: day + 7 - weekday, hour: 23, minute: 59, second: 59); //Sunday
@@ -176,14 +196,14 @@ extension DateTimeExtensions on DateTime {
     return DateTimeRange(start: firstDayOfWeek, end: lastDayOfWeek);
   }
 
-  DateTimeRange get currentMonth {
+  DateTimeRange get monthRange {
     DateTime dayBeginOfMonth = copyWith(day: 1).onlyYearMonthDay;
     DateTime dayEndOfMonth = copyWith(month: month + 1, day: 0, hour: 23, minute: 59, second: 59);
 
     return DateTimeRange(start: dayBeginOfMonth, end: dayEndOfMonth);
   }
 
-  DateTimeRange get currentYear {
+  DateTimeRange get yearRange {
     DateTime dayBeginOfYear = copyWith(day: 1, month: 1).onlyYearMonthDay;
     DateTime dayEndOfYear = copyWith(year: year + 1, month: 0, day: 0, hour: 23, minute: 59, second: 59);
 

@@ -12,7 +12,7 @@ class BarChartServices {
   /// Key runs from 0 (first day of week) to 6 (last day of week)
   Map<int, ({double spending, double income, double ySpending, double yIncome})> getWeeklyReportData(
       DateTime dateTime) {
-    final range = dateTime.currentWeek;
+    final range = dateTime.weekRange;
 
     final txnsList = transactionRepo.getTransactions(range.start, range.end).toList();
 
@@ -21,8 +21,7 @@ class BarChartServices {
 
     // From Monday to Sunday
     for (int i = 1; i <= 7; i++) {
-      final txnsInWeekday =
-          List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == i);
+      final txnsInWeekday = List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == i);
 
       double spending = 0;
       double income = 0;

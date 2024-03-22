@@ -7,9 +7,9 @@ import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/color_picker.dart';
-import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/setting_tile_dropdown.dart';
-import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/setting_tile_toggle.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/color_picker.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/setting_tile_dropdown.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/setting_tile_toggle.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -57,12 +57,13 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       currentSettings.currency.code,
-                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
+                      style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
                     ),
-                    Gap.w8,
+                    Gap.w4,
                     SvgIcon(
                       AppIcons.arrowRight,
                       color: context.appTheme.onBackground,
+                      size: 17,
                     ),
                   ],
                 ),
@@ -89,6 +90,33 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           CustomSection(
+            title: 'Date format'.hardcoded,
+            sections: [
+              ColorPicker(
+                currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
+                colorsList: AppColors.allThemeData,
+                currentColorIndex: context.appSettings.themeIndex,
+                onColorTap: (int value) {
+                  settingsController.set(themeIndex: value);
+                  statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+                },
+              ),
+              Gap.divider(context),
+              SettingTileDropDown<LongDateType>(
+                title: 'Long date:'.hardcoded,
+                initialValue: currentSettings.longDateType,
+                values: LongDateType.values.map((e) => (e, e.name)).toList(),
+                onChanged: (type) => settingsController.set(longDateType: type),
+              ),
+              SettingTileDropDown<ShortDateType>(
+                title: 'Short date:'.hardcoded,
+                initialValue: currentSettings.shortDateType,
+                values: ShortDateType.values.map((e) => (e, e.name)).toList(),
+                onChanged: (type) => settingsController.set(shortDateType: type),
+              ),
+            ],
+          ),
+          CustomSection(
             title: 'Theme',
             sections: [
               ColorPicker(
@@ -102,12 +130,8 @@ class SettingsScreen extends ConsumerWidget {
               ),
               Gap.divider(context),
               SettingTileToggle(
-                title: 'Use dark mode',
-                valueLabels: const [
-                  'Off',
-                  'On',
-                  'System default',
-                ],
+                title: 'Use dark mode'.hardcoded,
+                valueLabels: const ['Off', 'On', 'System default'],
                 onTap: (int index) {
                   settingsController.set(themeType: ThemeType.values[index]);
                   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {

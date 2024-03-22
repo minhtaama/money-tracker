@@ -62,17 +62,10 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
   List<SectionTile> _generateTiles() => List.generate(
         widget.sections.length,
         (index) {
-          if (index != widget.sections.length - 1 && widget.isWrapByCard) {
-            return SectionTile(
-              key: ValueKey(index),
-              child: widget.sections[index],
-            );
-          } else {
-            return SectionTile(
-              key: ValueKey(index),
-              child: widget.sections[index],
-            );
-          }
+          return SectionTile(
+            key: ValueKey(index),
+            child: widget.sections[index],
+          );
         },
       );
 
@@ -94,8 +87,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                   children: [
                     widget.title != null
                         ? Padding(
-                            padding:
-                                widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
                             child: Text(
                               widget.title!,
                               style: kHeader2TextStyle.copyWith(
@@ -114,9 +106,8 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
           CardItem(
             duration: const Duration(milliseconds: 200),
             curve: Curves.linear,
-            padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
-            margin:
-                widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
+            padding: widget.isWrapByCard ? const EdgeInsets.all(8) : EdgeInsets.zero,
+            margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
             color: widget.isWrapByCard ? null : Colors.transparent,
             clip: widget.sectionsClipping,
             child: widget.onReorder == null
@@ -183,9 +174,6 @@ class SectionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 6.0, bottom: 2),
-      child: child,
-    );
+    return child;
   }
 }

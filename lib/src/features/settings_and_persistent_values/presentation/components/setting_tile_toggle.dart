@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../theme_and_ui/colors.dart';
-import '../../../utils/constants.dart';
+import '../../../../theme_and_ui/colors.dart';
+import '../../../../utils/constants.dart';
 
 class SettingTileToggle extends StatefulWidget {
   const SettingTileToggle({

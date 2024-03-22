@@ -21,10 +21,10 @@ class BudgetServices {
       final budget = budgetsList[i];
 
       final range = switch (budget.periodType) {
-        BudgetPeriodType.daily => currentDateTime.currentDay,
-        BudgetPeriodType.weekly => currentDateTime.currentWeek,
-        BudgetPeriodType.monthly => currentDateTime.currentMonth,
-        BudgetPeriodType.yearly => currentDateTime.currentYear,
+        BudgetPeriodType.daily => currentDateTime.dayRange,
+        BudgetPeriodType.weekly => currentDateTime.weekRange,
+        BudgetPeriodType.monthly => currentDateTime.monthRange,
+        BudgetPeriodType.yearly => currentDateTime.yearRange,
       };
 
       List<BaseTransaction> txns = transactionRepo.getTransactions(range.start, range.end);

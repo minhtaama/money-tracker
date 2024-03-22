@@ -276,8 +276,11 @@ enum CurrencyType {
 }
 
 enum LongDateType {
-  dayThenMonth(0),
-  monthThenDay(1);
+  dmy(0),
+  mdy(1),
+  ymd(2),
+  ydm(3),
+  ;
 
   final int databaseValue;
 
@@ -289,8 +292,15 @@ enum LongDateType {
 }
 
 enum ShortDateType {
-  dayThenMonth(0),
-  monthThenDay(1);
+  dmy(0),
+  mdy(1),
+  ymd(2),
+  ydm(3),
+  dmmy(4),
+  mmdy(5),
+  ymmd(6),
+  ydmm(7),
+  ;
 
   final int databaseValue;
 

@@ -4,7 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../utils/constants.dart';
+import '../../../../utils/constants.dart';
 
 class SettingTileDropDown<T> extends StatefulWidget {
   const SettingTileDropDown({
@@ -27,6 +27,26 @@ class SettingTileDropDown<T> extends StatefulWidget {
 }
 
 class _SettingTileDropDownState<T> extends State<SettingTileDropDown<T>> {
+  final GlobalKey _dropdownButtonKey = GlobalKey();
+
+  void _openDropdown() {
+    GestureDetector? detector;
+    void searchForGestureDetector(BuildContext element) {
+      element.visitChildElements((element) {
+        if (element.widget is GestureDetector) {
+          detector = element.widget as GestureDetector;
+        } else {
+          searchForGestureDetector(element);
+        }
+      });
+    }
+
+    searchForGestureDetector(_dropdownButtonKey.currentContext!);
+    assert(detector != null);
+
+    detector?.onTap?.call();
+  }
+
   late T? _selectedValue = widget.initialValue;
 
   late List<DropdownMenuItem<T>> _dropDownItems = widget.values
@@ -41,8 +61,7 @@ class _SettingTileDropDownState<T> extends State<SettingTileDropDown<T>> {
   Widget _menuName(String name) => Text(
         name,
         style: kNormalTextStyle.copyWith(
-          color:
-              context.appTheme.isDarkTheme ? context.appTheme.onAccent : context.appTheme.onBackground,
+          color: context.appTheme.isDarkTheme ? context.appTheme.onAccent : context.appTheme.onBackground,
           fontSize: 13,
         ),
       );
@@ -82,19 +101,19 @@ class _SettingTileDropDownState<T> extends State<SettingTileDropDown<T>> {
   Widget build(BuildContext context) {
     return CustomTile(
       title: widget.title,
+      onTap: _openDropdown,
       trailing: CardItem(
-        color: context.appTheme.isDarkTheme
-            ? context.appTheme.accent1
-            : context.appTheme.background2.withOpacity(0.7),
+        color: context.appTheme.isDarkTheme ? context.appTheme.accent1 : context.appTheme.background2.withOpacity(0.7),
         margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
         child: DropdownButton<T>(
+            key: _dropdownButtonKey,
             items: _dropDownItems,
             value: _selectedValue,
             isDense: true,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            dropdownColor:
-                context.appTheme.isDarkTheme ? context.appTheme.accent1 : context.appTheme.background2,
+            dropdownColor: context.appTheme.isDarkTheme ? context.appTheme.accent1 : context.appTheme.background2,
+            focusColor: Colors.blue,
             alignment: Alignment.centerLeft,
             borderRadius: BorderRadius.circular(16),
             icon: Padding(
@@ -102,9 +121,7 @@ class _SettingTileDropDownState<T> extends State<SettingTileDropDown<T>> {
               child: SvgIcon(
                 AppIcons.switchIcon,
                 size: 16,
-                color: context.appTheme.isDarkTheme
-                    ? context.appTheme.onAccent
-                    : context.appTheme.onBackground,
+                color: context.appTheme.isDarkTheme ? context.appTheme.onAccent : context.appTheme.onBackground,
               ),
             ),
             elevation: 0,

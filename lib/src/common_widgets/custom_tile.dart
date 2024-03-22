@@ -10,6 +10,7 @@ class CustomTile extends StatelessWidget {
     required this.title,
     this.titleSize = 15,
     this.secondaryTitle,
+    this.secondarySize = 12,
     this.secondaryTitleOverflow = false,
     this.leading,
     this.trailing,
@@ -18,6 +19,7 @@ class CustomTile extends StatelessWidget {
   final String title;
   final double titleSize;
   final String? secondaryTitle;
+  final double secondarySize;
   final bool secondaryTitleOverflow;
   final Widget? leading;
   final Widget? trailing;
@@ -26,14 +28,15 @@ class CustomTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomInkWell(
-      inkColor: context.appTheme.onBackground,
+      borderRadius: BorderRadius.circular(12),
+      inkColor: context.appTheme.onBackground.withOpacity(0.1),
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: Row(
           children: [
             leading ?? const SizedBox(),
-            leading != null ? Gap.w16 : const SizedBox(),
+            leading != null ? Gap.w12 : Gap.noGap,
             Expanded(
               child: secondaryTitle != null
                   ? Column(
@@ -50,6 +53,7 @@ class CustomTile extends StatelessWidget {
                           secondaryTitle!,
                           style: kNormalTextStyle.copyWith(
                             color: context.appTheme.onBackground,
+                            fontSize: secondarySize,
                           ),
                           overflow: secondaryTitleOverflow ? TextOverflow.fade : null,
                           softWrap: secondaryTitleOverflow ? false : true,

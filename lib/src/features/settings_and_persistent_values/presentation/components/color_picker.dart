@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../application/app_settings.dart';
+import '../../application/app_settings.dart';
 
 class ColorPicker extends StatelessWidget {
   const ColorPicker(
@@ -37,11 +37,7 @@ class ColorPicker extends StatelessWidget {
 
 class CircleColor extends StatelessWidget {
   const CircleColor(
-      {super.key,
-      required this.color,
-      required this.isSelected,
-      required this.onTap,
-      required this.index});
+      {super.key, required this.color, required this.isSelected, required this.onTap, required this.index});
   final int index;
   final Color color;
   final bool isSelected;
