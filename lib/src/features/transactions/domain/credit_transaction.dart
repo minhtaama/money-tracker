@@ -13,7 +13,10 @@ sealed class BaseCreditTransaction extends BaseTransaction {
 @immutable
 class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWithCategory {
   @override
-  final Category? category;
+  final Category? _category;
+
+  @override
+  Category get category => _category != null ? _category! : DeletedCategory();
 
   @override
   final CategoryTag? categoryTag;
@@ -30,7 +33,7 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
     super.amount,
     super.note,
     super.account,
-    this.category,
+    this._category,
     this.categoryTag, {
     required this.monthsToPay,
     required this.paymentAmount,
@@ -44,7 +47,9 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
+      other is CreditSpending &&
+          runtimeType == other.runtimeType &&
+          databaseObject.id == other.databaseObject.id;
 
   @override
   int get hashCode => databaseObject.id.hashCode;

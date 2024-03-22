@@ -2,7 +2,8 @@ part of 'transaction_base.dart';
 
 @immutable
 sealed class BaseRegularTransaction extends BaseTransaction {
-  const BaseRegularTransaction(super.isarObject, super.dateTime, super.amount, super.note, super.account);
+  const BaseRegularTransaction(
+      super.isarObject, super.dateTime, super.amount, super.note, super.account);
 
   abstract final TransactionType type;
 }
@@ -13,7 +14,10 @@ class Expense extends BaseRegularTransaction implements IBaseTransactionWithCate
   final TransactionType type = TransactionType.expense;
 
   @override
-  final Category? category;
+  final Category? _category;
+
+  @override
+  Category get category => _category != null ? _category! : DeletedCategory();
 
   @override
   final CategoryTag? categoryTag;
@@ -24,7 +28,7 @@ class Expense extends BaseRegularTransaction implements IBaseTransactionWithCate
     super.amount,
     super.note,
     super.account,
-    this.category,
+    this._category,
     this.categoryTag,
   );
 }
@@ -35,7 +39,10 @@ class Income extends BaseRegularTransaction implements IBaseTransactionWithCateg
   final TransactionType type = TransactionType.income;
 
   @override
-  final Category? category;
+  final Category? _category;
+
+  @override
+  Category get category => _category != null ? _category! : DeletedCategory();
 
   @override
   final CategoryTag? categoryTag;
@@ -48,7 +55,7 @@ class Income extends BaseRegularTransaction implements IBaseTransactionWithCateg
     super.amount,
     super.note,
     super.account,
-    this.category,
+    this._category,
     this.categoryTag, {
     required this.isInitialTransaction,
   });

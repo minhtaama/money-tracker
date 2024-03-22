@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
@@ -33,6 +34,8 @@ class PieChartServices {
       final txn = txnsList[i];
       if (map.containsKey(txn.category)) {
         map[txn.category!] = map[txn.category!]! + txn.amount;
+      } else if (txn.category == null) {
+        map[DeletedCategory()] = txn.amount;
       } else {
         map[txn.category!] = txn.amount;
       }

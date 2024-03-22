@@ -12,8 +12,9 @@ class _InstallmentDetails extends ConsumerStatefulWidget {
 class _InstallmentDetailsScreenState extends ConsumerState<_InstallmentDetails> {
   late final CreditSpending _transaction = widget.transaction;
 
-  late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account!.databaseObject) as CreditAccount;
+  late final _creditAccount = ref
+      .read(accountRepositoryProvider)
+      .getAccount(_transaction.account!.databaseObject) as CreditAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +123,6 @@ class _Transaction extends StatelessWidget {
                 transaction.hasInstallment ? const TxnInstallmentIcon() : Gap.noGap,
                 Gap.w4,
                 TxnAmount(
-                  currencyCode: context.appSettings.currency.code,
                   transaction: transaction,
                   fontSize: 15,
                   color: AppColors.grey(context),

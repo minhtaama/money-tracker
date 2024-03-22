@@ -6,7 +6,9 @@ import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/color_picker.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/setting_tile_dropdown.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/setting_tile_toggle.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -14,6 +16,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../data/settings_repo.dart';
@@ -24,8 +27,11 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsController = ref.watch(settingsControllerProvider.notifier);
-    final settingsObject = ref.watch(settingsControllerProvider);
     final statusBarBrightness = ref.read(systemIconBrightnessProvider.notifier);
+
+    final currentSettings = context.appSettings;
+    final currSymbol = currentSettings.currency.symbol;
+    final currAmount = CalService.formatCurrency(context, 2000);
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
@@ -37,39 +43,51 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         children: [
-          CustomSection(sections: [
-            CustomTile(
-              title: 'Set currency',
-              secondaryTitle: settingsObject.currency.name,
-              secondaryTitleOverflow: true,
-              leading: SvgIcon(
-                AppIcons.coins,
-                color: context.appTheme.onBackground,
+          CustomSection(
+            sections: [
+              CustomTile(
+                title: 'Set currency',
+                secondaryTitle: currentSettings.currency.name,
+                secondaryTitleOverflow: true,
+                leading: SvgIcon(
+                  AppIcons.coins,
+                  color: context.appTheme.onBackground,
+                ),
+                trailing: Row(
+                  children: [
+                    Text(
+                      currentSettings.currency.code,
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
+                    ),
+                    Gap.w8,
+                    SvgIcon(
+                      AppIcons.arrowRight,
+                      color: context.appTheme.onBackground,
+                    ),
+                  ],
+                ),
+                onTap: () => context.push(RoutePath.setCurrency),
               ),
-              trailing: Row(
-                children: [
-                  Text(
-                    settingsObject.currency.code,
-                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-                  ),
-                  Gap.w8,
-                  SvgIcon(
-                    AppIcons.arrowRight,
-                    color: context.appTheme.onBackground,
-                  ),
+              Gap.divider(context),
+              SettingTileToggle(
+                title: 'With decimal digits:',
+                onTap: (int index) {
+                  settingsController.set(showDecimalDigits: index == 0 ? false : true);
+                },
+                valuesCount: 2,
+                initialValueIndex: currentSettings.showDecimalDigits ? 1 : 0,
+              ),
+              SettingTileDropDown<CurrencyType>(
+                title: 'Display style:'.hardcoded,
+                initialValue: currentSettings.currencyType,
+                values: [
+                  (CurrencyType.symbolBefore, '$currSymbol $currAmount'),
+                  (CurrencyType.symbolAfter, '$currAmount $currSymbol'),
                 ],
+                onChanged: (type) => settingsController.set(currencyType: type),
               ),
-              onTap: () => context.push(RoutePath.setCurrency),
-            ),
-            SettingTileToggle(
-              title: 'With decimal digits',
-              onTap: (int index) {
-                settingsController.set(showDecimalDigits: index == 0 ? false : true);
-              },
-              valuesCount: 2,
-              initialValueIndex: settingsObject.showDecimalDigits ? 1 : 0,
-            ),
-          ]),
+            ],
+          ),
           CustomSection(
             title: 'Theme',
             sections: [
@@ -82,6 +100,7 @@ class SettingsScreen extends ConsumerWidget {
                   statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
                 },
               ),
+              Gap.divider(context),
               SettingTileToggle(
                 title: 'Use dark mode',
                 valueLabels: const [
@@ -96,7 +115,7 @@ class SettingsScreen extends ConsumerWidget {
                   });
                 },
                 valuesCount: ThemeType.values.length,
-                initialValueIndex: ThemeType.values.indexOf(settingsObject.themeType),
+                initialValueIndex: ThemeType.values.indexOf(currentSettings.themeType),
               ),
             ],
           )

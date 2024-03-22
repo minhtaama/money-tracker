@@ -162,7 +162,7 @@ class _RoundedButtonState extends State<_RoundedButton> {
           margin: EdgeInsets.zero,
           borderRadius: BorderRadius.circular(1000),
           elevation: _scale < 1.0 ? 0 : widget.elevation,
-          isGradient: true,
+          isGradient: false,
           child: Padding(
             padding: EdgeInsets.all(widget.iconPadding),
             child: FittedBox(

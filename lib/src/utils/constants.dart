@@ -48,6 +48,7 @@ const double kDayColumnLineChartWidth = 65.0;
 class Gap {
   static get noGap => const SizedBox();
 
+  static get w2 => const SizedBox(width: 2);
   static get w4 => const SizedBox(width: 4);
   static get w8 => const SizedBox(width: 8);
   static get w10 => const SizedBox(width: 10);

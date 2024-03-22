@@ -217,7 +217,7 @@ class _CarouselContentState extends State<_CarouselContent> {
       return '';
     }
 
-    return '${context.appSettings.currency.symbol} ';
+    return '${context.appSettings.currency.symbol}';
   }
 
   @override
@@ -259,6 +259,32 @@ class _CarouselContentState extends State<_CarouselContent> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> moneyAmount = [
+      Text(
+        _currency(context),
+        style: kHeader3TextStyle.copyWith(
+          color: context.appTheme.onBackground.withOpacity(0.65),
+          fontSize: 20,
+        ),
+      ),
+      Gap.w4,
+      EasyRichText(
+        CalService.formatCurrency(context, widget.amount, isAbs: true),
+        defaultStyle: kHeader3TextStyle.copyWith(
+            color: context.appTheme.onBackground, fontSize: 23, letterSpacing: 1),
+        textAlign: TextAlign.right,
+        patternList: [
+          EasyRichTextPattern(
+            targetString: r'[0-9]+',
+            style: kHeader1TextStyle.copyWith(
+              color: context.appTheme.onBackground,
+              fontSize: 26,
+            ),
+          ),
+        ],
+      ),
+    ];
+
     return AnimatedContainer(
       duration: k250msDuration,
       margin: EdgeInsets.only(
@@ -288,28 +314,9 @@ class _CarouselContentState extends State<_CarouselContent> {
                         fontSize: 20,
                       ),
                     ),
-                    Text(
-                      _currency(context),
-                      style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.onBackground.withOpacity(0.65),
-                        fontSize: 20,
-                      ),
-                    ),
-                    EasyRichText(
-                      CalService.formatCurrency(context, widget.amount, isAbs: true),
-                      defaultStyle: kHeader3TextStyle.copyWith(
-                          color: context.appTheme.onBackground, fontSize: 23, letterSpacing: 1),
-                      textAlign: TextAlign.right,
-                      patternList: [
-                        EasyRichTextPattern(
-                          targetString: r'[0-9]+',
-                          style: kHeader1TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 26,
-                          ),
-                        ),
-                      ],
-                    ),
+                    ...(context.appSettings.currencyType == CurrencyType.symbolBefore
+                        ? moneyAmount
+                        : moneyAmount.reversed),
                   ],
                 ),
               ),

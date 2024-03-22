@@ -6,15 +6,15 @@ import '../utils/constants.dart';
 
 class CustomTile extends StatelessWidget {
   const CustomTile({
-    Key? key,
+    super.key,
     required this.title,
-    this.titleSize = 17,
+    this.titleSize = 15,
     this.secondaryTitle,
     this.secondaryTitleOverflow = false,
     this.leading,
     this.trailing,
     this.onTap,
-  }) : super(key: key);
+  });
   final String title;
   final double titleSize;
   final String? secondaryTitle;

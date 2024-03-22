@@ -93,7 +93,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                         ? false
                         : _isEditMode,
                     isEdited: _isAccountEdited(stateWatch),
-                    account: stateWatch.account ?? _transaction.account!,
+                    account: stateWatch.account ?? _transaction.account,
                     onEditModeTap: _changeAccount,
                   ),
                   Gap.h12,
@@ -105,7 +105,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                               isEditMode: _isEditMode,
                               isEdited: _isCategoryEdited(stateWatch),
                               category: stateWatch.category ??
-                                  (_transaction as IBaseTransactionWithCategory).category!,
+                                  (_transaction as IBaseTransactionWithCategory).category,
                               categoryTag: stateWatch.tag ??
                                   (_transaction as IBaseTransactionWithCategory).categoryTag,
                               onEditModeTap: _changeCategory,
@@ -113,7 +113,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                     Transfer() => _AccountCard(
                         isEditMode: _isEditMode,
                         isEdited: _isToAccountEdited(stateWatch),
-                        account: stateWatch.toAccount ?? (_transaction as Transfer).transferAccount!,
+                        account: stateWatch.toAccount ?? (_transaction as Transfer).transferAccount,
                         onEditModeTap: _changeToAccount,
                       ),
                   },
@@ -218,10 +218,10 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   void _changeNote(String value) => _stateController.changeNote(value);
 
   bool _isAccountEdited(RegularTransactionFormState state) =>
-      state.account != null && state.account != _transaction.account;
+      state.account != null && state.account!.id != _transaction.account.id;
 
   bool _isToAccountEdited(RegularTransactionFormState state) =>
-      state.toAccount != null && state.toAccount != (_transaction as Transfer).transferAccount;
+      state.toAccount != null && state.toAccount!.id != (_transaction as Transfer).transferAccount.id;
 
   bool _isCategoryEdited(RegularTransactionFormState state) =>
       (state.category != null || state.tag != null) &&

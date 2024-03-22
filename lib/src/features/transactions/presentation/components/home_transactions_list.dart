@@ -45,10 +45,12 @@ class HomeTransactionsList extends StatelessWidget {
                     Gap.w8,
                     Expanded(
                       child: switch (transaction) {
-                        Transfer() => _TransferDetails(transaction: transaction, currencyCode: currencyCode),
+                        Transfer() =>
+                          _TransferDetails(transaction: transaction, currencyCode: currencyCode),
                         IBaseTransactionWithCategory() =>
                           _WithCategoryDetails(transaction: transaction, currencyCode: currencyCode),
-                        CreditPayment() => _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
+                        CreditPayment() =>
+                          _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
                         CreditCheckpoint() => Gap.noGap,
                         //TODO: styling checkpoint
                       },
@@ -57,7 +59,7 @@ class HomeTransactionsList extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        TxnAmount(currencyCode: currencyCode, transaction: transaction),
+                        TxnAmount(transaction: transaction),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -111,7 +113,8 @@ class _TransferDetails extends StatelessWidget {
       children: [
         Text(
           'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -134,7 +137,8 @@ class _PaymentDetails extends StatelessWidget {
       children: [
         Text(
           'Payment to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -145,7 +149,8 @@ class _PaymentDetails extends StatelessWidget {
             SvgIcon(
               AppIcons.credit,
               size: 14,
-              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
+              color: context.appTheme.onBackground
+                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
             ),
           ],
         ),

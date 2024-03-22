@@ -8,7 +8,8 @@ import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem(
+      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -32,7 +33,8 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -48,9 +50,10 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   void initState() {
     _animationController = AnimationController(
       vsync: this,
-      duration: k150msDuration,
+      duration: k350msDuration,
+      reverseDuration: k150msDuration,
     );
-    _animation = CurveTween(curve: Curves.fastOutSlowIn).animate(_animationController);
+    _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
 
     super.initState();
   }
@@ -67,12 +70,13 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
-                  onTap: () {
+                  onTap: () async {
+                    await _removeEntry(overlayEntry);
                     widget.roundedButtonItems[index].onTap();
-                    _removeEntry(overlayEntry);
                   },
                   iconPath: widget.roundedButtonItems[index].icon,
                   iconColor: context.appTheme.onBackground,
@@ -93,9 +97,9 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
               return Column(
                 children: [
                   IconWithTextButton(
-                    onTap: () {
+                    onTap: () async {
+                      await _removeEntry(overlayEntry);
                       widget.listItems![index].onTap();
-                      _removeEntry(overlayEntry);
                     },
                     width: null,
                     height: null,
@@ -135,61 +139,63 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     // Create an OverlayEntry
     late OverlayEntry overlayEntry;
 
-    overlayEntry = OverlayEntry(builder: (_) {
-      double overlayBoxHeight = 0;
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {
-          overlayBoxHeight = _globalKey2.currentContext!.size!.height;
-        });
-      });
-      return AnimatedBuilder(
-        animation: _animation,
-        builder: (_, Widget? child) {
-          return Stack(
-            children: [
-              ModalBarrier(
-                onDismiss: () => _removeEntry(overlayEntry),
-                color: context.appTheme.background1.withOpacity(0.5 * _animation.value),
-              ),
-              Positioned(
-                top: fabPosition.dy - overlayBoxHeight,
-                left: fabPosition.dx - overlayBoxWidth / 2,
-                child: ScaleTransition(
-                  scale: _animation,
-                  alignment: Alignment.bottomCenter,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
-                    child: SizedBox(
-                      key: _globalKey2,
-                      width: overlayBoxWidth,
-                      child: Column(
-                        verticalDirection: VerticalDirection.up,
-                        children: [
-                          SizedBox(
-                            height: 150,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: _buttonWidgets(overlayEntry),
-                            ),
+    overlayEntry = OverlayEntry(
+        maintainState: true,
+        builder: (_) {
+          double overlayBoxHeight = 150;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            setState(() {
+              overlayBoxHeight = _globalKey2.currentContext!.size!.height;
+            });
+          });
+          return AnimatedBuilder(
+            animation: _animation,
+            builder: (_, Widget? child) {
+              return Stack(
+                children: [
+                  ModalBarrier(
+                    onDismiss: () async => await _removeEntry(overlayEntry),
+                    color: context.appTheme.background1.withOpacity(0.5 * _animation.value),
+                  ),
+                  Positioned(
+                    top: fabPosition.dy - overlayBoxHeight,
+                    left: fabPosition.dx - overlayBoxWidth / 2,
+                    child: ScaleTransition(
+                      scale: _animation,
+                      alignment: Alignment.bottomCenter,
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+                        child: SizedBox(
+                          key: _globalKey2,
+                          width: overlayBoxWidth,
+                          child: Column(
+                            verticalDirection: VerticalDirection.up,
+                            children: [
+                              SizedBox(
+                                height: 150,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: _buttonWidgets(overlayEntry),
+                                ),
+                              ),
+                              Gap.h32,
+                              ..._listWidgets(overlayEntry),
+                            ],
                           ),
-                          Gap.h32,
-                          ..._listWidgets(overlayEntry),
-                        ],
+                          // child: Row(
+                          //   children: _widgets,
+                          // ),
+                        ),
                       ),
-                      // child: Row(
-                      //   children: _widgets,
-                      // ),
                     ),
                   ),
-                ),
-              ),
-            ],
+                ],
+              );
+            },
           );
-        },
-      );
-    });
+        });
 
     // Insert the entry into overlay
     overlayState.insert(overlayEntry);
@@ -198,7 +204,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     _animationController.forward();
   }
 
-  void _removeEntry(OverlayEntry entry) async {
+  Future<void> _removeEntry(OverlayEntry entry) async {
     // Reverse the animation
     await _animationController.reverse();
 

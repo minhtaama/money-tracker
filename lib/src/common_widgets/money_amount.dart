@@ -115,20 +115,23 @@ class _MoneyAnimatedText extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        EasyRichText(
-          '$prefix ${CalService.formatCurrency(context, animation.value)} $suffix',
-          defaultStyle: style,
-          overflow: overflow,
-          maxLines: maxLines,
-          patternList: [
-            EasyRichTextPattern(
-                targetString: prefix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
-            EasyRichTextPattern(
-                targetString: suffix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
-          ],
-        ),
+    return EasyRichText(
+      '$prefix ${CalService.formatCurrency(context, animation.value)} $suffix',
+      defaultStyle: style,
+      overflow: overflow,
+      maxLines: maxLines,
+      softWrap: false,
+      patternList: [
+        EasyRichTextPattern(
+            targetString: prefix,
+            hasSpecialCharacters: true,
+            style: symbolStyle,
+            matchWordBoundaries: false),
+        EasyRichTextPattern(
+            targetString: suffix,
+            hasSpecialCharacters: true,
+            style: symbolStyle,
+            matchWordBoundaries: false),
       ],
     );
   }

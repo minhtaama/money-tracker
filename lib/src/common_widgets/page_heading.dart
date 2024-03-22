@@ -8,13 +8,12 @@ import '../theme_and_ui/icons.dart';
 
 class PageHeading extends StatelessWidget {
   const PageHeading(
-      {Key? key,
+      {super.key,
       required this.title,
       this.hasBackButton = false,
       this.trailing,
       this.secondaryTitle,
-      this.leadingTitle})
-      : super(key: key);
+      this.leadingTitle});
   final String? leadingTitle;
   final String title;
   final bool hasBackButton;
@@ -33,6 +32,7 @@ class PageHeading extends StatelessWidget {
             hasBackButton
                 ? RoundedIconButton(
                     iconPath: AppIcons.back,
+                    backgroundColor: context.appTheme.background1,
                     iconColor: context.appTheme.onBackground,
                     onTap: () => context.pop(),
                   )
@@ -50,7 +50,8 @@ class PageHeading extends StatelessWidget {
                                   Text(
                                     leadingTitle!,
                                     style: kNormalTextStyle.copyWith(
-                                        color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
+                                        color: context.appTheme.onBackground,
+                                        fontSize: kHeader1TextStyle.fontSize),
                                   ),
                                   Gap.w8,
                                   Expanded(

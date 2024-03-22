@@ -65,13 +65,11 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
           if (index != widget.sections.length - 1 && widget.isWrapByCard) {
             return SectionTile(
               key: ValueKey(index),
-              isHasDivider: true,
               child: widget.sections[index],
             );
           } else {
             return SectionTile(
               key: ValueKey(index),
-              isHasDivider: false,
               child: widget.sections[index],
             );
           }
@@ -96,7 +94,8 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                   children: [
                     widget.title != null
                         ? Padding(
-                            padding: widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
+                            padding:
+                                widget.isWrapByCard ? const EdgeInsets.only(left: 8.0) : EdgeInsets.zero,
                             child: Text(
                               widget.title!,
                               style: kHeader2TextStyle.copyWith(
@@ -116,7 +115,8 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
             duration: const Duration(milliseconds: 200),
             curve: Curves.linear,
             padding: widget.isWrapByCard ? const EdgeInsets.all(16) : EdgeInsets.zero,
-            margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
+            margin:
+                widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
             color: widget.isWrapByCard ? null : Colors.transparent,
             clip: widget.sectionsClipping,
             child: widget.onReorder == null
@@ -178,24 +178,14 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
 }
 
 class SectionTile extends StatelessWidget {
-  const SectionTile({super.key, required this.child, required this.isHasDivider});
-  final bool isHasDivider;
+  const SectionTile({super.key, required this.child});
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    if (isHasDivider) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          child,
-          Gap.h8,
-          Gap.divider(context, indent: 2),
-          Gap.h4,
-        ],
-      );
-    } else {
-      return child;
-    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 6.0, bottom: 2),
+      child: child,
+    );
   }
 }

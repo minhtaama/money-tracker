@@ -21,7 +21,9 @@ class CategoryRepositoryRealmDb {
   }
 
   RealmResults<CategoryTagDb> _tagRealmResults(Category category) {
-    return realm.all<CategoryTagDb>().query('category == \$0 SORT(order ASC)', [category.databaseObject]);
+    return realm
+        .all<CategoryTagDb>()
+        .query('category == \$0 SORT(order ASC)', [category.databaseObject]);
   }
 
   //// CATEGORY ////
@@ -99,7 +101,7 @@ class CategoryRepositoryRealmDb {
   //// CATEGORY TAG ////
 
   List<CategoryTag>? getTagList(Category? category) {
-    if (category == null) {
+    if (category == null || category is DeletedCategory) {
       return null;
     }
 
@@ -117,7 +119,8 @@ class CategoryRepositoryRealmDb {
   CategoryTag? writeNewTag({required String name, required Category category}) {
     final tagsList = getTagList(category)!;
 
-    final newTag = CategoryTagDb(ObjectId(), name, order: tagsList.length, category: category.databaseObject);
+    final newTag =
+        CategoryTagDb(ObjectId(), name, order: tagsList.length, category: category.databaseObject);
 
     realm.write(() {
       realm.add<CategoryTagDb>(newTag);
@@ -163,7 +166,8 @@ final categoryRepositoryRealmProvider = Provider<CategoryRepositoryRealmDb>(
   },
 );
 
-final categoriesChangesRealmProvider = StreamProvider.autoDispose.family<RealmResultsChanges<CategoryDb>, CategoryType>(
+final categoriesChangesRealmProvider =
+    StreamProvider.autoDispose.family<RealmResultsChanges<CategoryDb>, CategoryType>(
   (ref, type) {
     final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
     return categoryRepo._watchListChanges(type);

@@ -94,7 +94,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
               },
             ),
           ),
-          Gap.w24,
+          Gap.w16,
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 12.0),
@@ -114,9 +114,10 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
                   ),
                   MoneyAmount(
                     amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
-                    style: kHeader1TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 23),
-                    symbolStyle:
-                        kHeader3TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 20),
+                    style: kHeader1TextStyle.copyWith(
+                        color: context.appTheme.negative.withOpacity(0.8), fontSize: 23),
+                    symbolStyle: kHeader3TextStyle.copyWith(
+                        color: context.appTheme.negative.withOpacity(0.8), fontSize: 20),
                     overflow: TextOverflow.fade,
                     maxLines: 1,
                   ),

@@ -13,6 +13,7 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../domain/category_tag.dart';
 
@@ -47,7 +48,8 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
 
   late List<CategoryTag>? _tags = categoryRepo.getTagList(_currentCategory);
 
-  late CategoryTag? _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
+  late CategoryTag? _chosenTag =
+      widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
 
   late bool _showTextField = _tags == null || _tags!.isEmpty;
   double _rowWidth = 1;
@@ -57,7 +59,7 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
     _focusNode.addListener(_listener);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        _rowWidth = _key.currentContext!.size!.width;
+        _rowWidth = _key.currentContext?.size?.width ?? 1;
       });
     });
     super.initState();
@@ -162,7 +164,11 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
                 : Gap.noGap,
             AnimatedContainer(
               duration: k250msDuration,
-              width: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null || _tags!.isEmpty
+              width: _showTextField ||
+                      _chosenTag != null ||
+                      _tags == null ||
+                      _currentCategory == null ||
+                      _tags!.isEmpty
                   ? 0
                   : 16,
               height: 25,
@@ -215,7 +221,9 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
               Flexible(
                 child: RoundedIconButton(
                   iconPath: AppIcons.close,
-                  iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
+                  iconColor: context.appTheme.isDarkTheme
+                      ? context.appTheme.onSecondary
+                      : context.appTheme.onPrimary,
                   backgroundColor: Colors.transparent,
                   size: 35,
                   iconPadding: 7,
@@ -269,7 +277,8 @@ class _ChosenTag extends StatelessWidget {
 }
 
 class CategoryTagWidget extends StatelessWidget {
-  const CategoryTagWidget({super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
+  const CategoryTagWidget(
+      {super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
   final ValueSetter<CategoryTag> onLongPress;
@@ -320,7 +329,8 @@ class CategoryTagWidget extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton({super.key, this.focusNode, this.category, required this.onEditingComplete});
+  const AddCategoryTagButton(
+      {super.key, this.focusNode, this.category, required this.onEditingComplete});
   final FocusNode? focusNode;
   final Category? category;
   final ValueSetter<CategoryTag> onEditingComplete;
@@ -356,10 +366,12 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
         focusColor: context.appTheme.primary,
         controller: _controller,
         withOutlineBorder: true,
-        enabled: widget.category == null ? false : true,
+        enabled: widget.category == null || widget.category is DeletedCategory ? false : true,
         maxLength: 40,
         maxLines: 1,
-        hintText: widget.category == null ? 'Choose a category first' : 'New category tag ...',
+        hintText: widget.category == null || widget.category is DeletedCategory
+            ? 'Choose a category first'
+            : 'New category tag ...',
         validator: (value) {
           if (_tags != null && _tags!.map((e) => e.name.toLowerCase()).contains(value?.toLowerCase())) {
             return 'Already has same tag';
@@ -387,7 +399,8 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
             CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
-            categoryRepo.reorderTagToTop(widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
+            categoryRepo.reorderTagToTop(
+                widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
 
             widget.onEditingComplete(newTag!);
 

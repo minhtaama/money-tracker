@@ -79,10 +79,10 @@ class _AnimatedToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOn = currentValueIndex != 0;
-    final bgrColor = isOn ? context.appTheme.accent1 : context.appTheme.onBackground.withOpacity(0.35);
+    final bgrColor = isOn ? context.appTheme.accent1 : context.appTheme.onBackground.withOpacity(0.25);
     final togglePosition = currentValueIndex / (valuesCount - 1);
     const double widthRatio = 1.7;
-    const double size = 30;
+    const double size = 26;
     return SizedBox(
       height: size,
       width: size * widthRatio,
@@ -108,7 +108,7 @@ class _AnimatedToggle extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(1000),
                     //border: Border.all(color: bgrColor, width: 4),
-                    color: context.appTheme.background1,
+                    color: context.appTheme.background0,
                   ),
                 ),
               ),

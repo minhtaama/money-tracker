@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
@@ -10,6 +11,7 @@ import '../../../utils/enums.dart';
 @immutable
 class Category extends BaseModelWithIcon<CategoryDb> {
   final CategoryType type;
+  final bool isNotExistInDatabase;
 
   static Category initialIncome(BuildContext context) {
     return Category._(
@@ -44,5 +46,19 @@ class Category extends BaseModelWithIcon<CategoryDb> {
     required super.backgroundColor,
     required super.iconPath,
     required this.type,
+    this.isNotExistInDatabase = false,
   });
+}
+
+class DeletedCategory extends Category {
+  DeletedCategory()
+      : super._(
+          CategoryDb(ObjectId(), 0, '', 0, '', 0),
+          type: CategoryType.income,
+          name: 'Deleted category'.hardcoded,
+          iconColor: AppColors.black,
+          backgroundColor: Colors.grey[300]!,
+          iconPath: AppIcons.delete,
+          isNotExistInDatabase: true,
+        );
 }

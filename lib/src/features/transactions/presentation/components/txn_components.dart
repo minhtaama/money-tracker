@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -27,7 +29,8 @@ class TxnHomeCategoryIcon extends StatelessWidget {
         if (transaction is Income && (transaction as Income).isInitialTransaction) {
           return AppColors.greyBgr(context);
         }
-        return (transaction as IBaseTransactionWithCategory).category!.backgroundColor;
+        return (transaction as IBaseTransactionWithCategory).category?.backgroundColor ??
+            DeletedCategory().backgroundColor;
       }
 
       return AppColors.greyBgr(context);
@@ -42,8 +45,9 @@ class TxnHomeCategoryIcon extends StatelessWidget {
           );
         }
         return SvgIcon(
-          (transaction as IBaseTransactionWithCategory).category!.iconPath,
-          color: (transaction as IBaseTransactionWithCategory).category!.iconColor,
+          (transaction as IBaseTransactionWithCategory).category?.iconPath ?? DeletedCategory().iconPath,
+          color: (transaction as IBaseTransactionWithCategory).category?.iconColor ??
+              DeletedCategory().iconColor,
         );
       }
 
@@ -260,7 +264,8 @@ class TxnAccountIcon extends ConsumerWidget {
             child: SvgIcon(
               _iconPath(ref),
               size: 14,
-              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
+              color: context.appTheme.onBackground
+                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
             ),
           );
   }
@@ -322,7 +327,8 @@ class TxnToAccountName extends ConsumerWidget {
     return Text(
       name(),
       style: kHeader3TextStyle.copyWith(
-          color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
+          color: context.appTheme.onBackground
+              .withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
           fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -332,15 +338,9 @@ class TxnToAccountName extends ConsumerWidget {
 
 class TxnAmount extends StatelessWidget {
   const TxnAmount(
-      {super.key,
-      required this.currencyCode,
-      required this.transaction,
-      this.fontSize,
-      this.color,
-      this.showPaymentAmount = false})
+      {super.key, required this.transaction, this.fontSize, this.color, this.showPaymentAmount = false})
       : assert(showPaymentAmount == true ? transaction is CreditSpending : true);
 
-  final String currencyCode;
   final BaseTransaction transaction;
   final double? fontSize;
   final bool showPaymentAmount;
@@ -348,22 +348,28 @@ class TxnAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> children = [
+      Text(
+        CalService.formatCurrency(context,
+            showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+        softWrap: false,
+        overflow: TextOverflow.fade,
+        style: kHeader3TextStyle.copyWith(
+            color: color ?? _color(context, transaction), fontSize: fontSize ?? 13),
+      ),
+      Gap.w2,
+      Text(
+        context.appSettings.currency.symbol,
+        style: kNormalTextStyle.copyWith(
+            color: color ?? _color(context, transaction), fontSize: fontSize ?? 12),
+      ),
+    ];
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(
-          CalService.formatCurrency(
-              context, showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
-          softWrap: false,
-          overflow: TextOverflow.fade,
-          style: kHeader3TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 13),
-        ),
-        Gap.w4,
-        Text(
-          currencyCode,
-          style: kHeader3TextStyle.copyWith(color: color ?? _color(context, transaction), fontSize: fontSize ?? 10),
-        ),
-      ],
+      children: context.appSettings.currencyType == CurrencyType.symbolAfter
+          ? children
+          : children.reversed.toList(),
     );
   }
 }
@@ -380,7 +386,8 @@ class TxnNote extends StatelessWidget {
             margin: const EdgeInsets.only(left: 15.5, top: 8),
             padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+              border: Border(
+                  left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
             child: Transform.translate(
               offset: const Offset(0, -1),
@@ -402,7 +409,12 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key, this.height = 27, this.width = 14, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 0.65});
+      {super.key,
+      this.height = 27,
+      this.width = 14,
+      this.adjustY = 1,
+      this.strokeWidth = 1,
+      this.opacity = 0.65});
 
   final double height;
   final double adjustY;
@@ -417,7 +429,8 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity,
+              height: height, width: width, adjustY: adjustY),
         ),
       ),
     );

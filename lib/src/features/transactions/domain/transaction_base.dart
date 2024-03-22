@@ -18,11 +18,13 @@ abstract interface class ITransferable {
 
 @immutable
 abstract interface class IBaseTransactionWithCategory {
-  final Category? category;
+  final Category? _category;
   final CategoryTag? categoryTag;
 
+  Category get category => _category != null ? _category! : DeletedCategory();
+
   const IBaseTransactionWithCategory(
-    this.category,
+    this._category,
     this.categoryTag,
   );
 }

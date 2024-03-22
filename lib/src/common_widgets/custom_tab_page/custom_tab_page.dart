@@ -1,13 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/expanded_page_view.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../theme_and_ui/colors.dart';
 import 'custom_tab_bar.dart';
 
 ////////////////////////////////////////////////////////////////////////
@@ -37,7 +33,8 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state =
+          context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -84,7 +81,8 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: !context.appTheme.isDarkTheme
-                        ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                        ? BorderSide(
+                            color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
                         : BorderSide.none,
                   ),
                 ),
@@ -128,7 +126,8 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   ConsumerState<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
 }
 
-class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView> with TickerProviderStateMixin {
+class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView>
+    with TickerProviderStateMixin {
   late final double _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
   late final double _triggerDividerOffset = 30;
 
@@ -336,7 +335,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
+                                  width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -352,7 +352,8 @@ class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPag
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(
+                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),
