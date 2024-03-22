@@ -67,7 +67,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
       actions: [
         IconWithTextButton(
           iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
-          label: _selectedDay != null ? 'Select'.hardcoded : 'Back'.hardcoded,
+          label: _selectedDay != null ? context.localize.select : context.localize.back,
           height: 30,
           width: 100,
           labelSize: 13,

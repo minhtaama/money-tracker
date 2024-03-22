@@ -8,8 +8,7 @@ import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem(
-      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -33,8 +32,7 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
-    with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -50,7 +48,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   void initState() {
     _animationController = AnimationController(
       vsync: this,
-      duration: k350msDuration,
+      duration: k250msDuration,
       reverseDuration: k150msDuration,
     );
     _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
@@ -70,8 +68,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment:
-                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () async {
@@ -105,7 +102,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     height: null,
                     iconPath: widget.listItems![index].icon,
                     label: widget.listItems![index].label,
-                    padding: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                     labelSize: 15,
                     color: context.appTheme.onBackground.withOpacity(0.5),
                     backgroundColor: Colors.transparent,

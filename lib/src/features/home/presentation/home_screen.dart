@@ -92,13 +92,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (dayCards.isEmpty) {
       return [
         Gap.h16,
-        IconWithText(
-          header:
-              'You don\'t have any transactions in ${dayBeginOfMonth.monthToString(context)}.\nCreate a new one by tapping \'+\' button'
-                  .hardcoded,
-          headerSize: 14,
-          iconPath: AppIcons.budgets,
-          forceIconOnTop: true,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: IconWithText(
+            header: context.localize.noTransactionQuote(dayBeginOfMonth.monthToString(context)),
+            headerSize: 14,
+            iconPath: AppIcons.budgets,
+            forceIconOnTop: true,
+          ),
         ),
         Gap.h48,
       ];

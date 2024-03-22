@@ -1,10 +1,14 @@
 {
   "appTitle": "money_tracker_app",
-  "@appTitle": {
-    "description": "The title of the application"
-  },
+
   "home": "Trang chủ",
   "dashboard": "Bảng tin",
+  "settings": "Cài đặt",
+
+  "accounts": "Tài khoản",
+  "categories": "Danh mục",
+  "budget": "Ngân sách",
+  "saving": "Tiết kiệm",
 
   "mon": "T2",
   "tue": "T3",
@@ -46,5 +50,46 @@
   "september": "Tháng 9",
   "october": "Tháng 10",
   "november": "Tháng 11",
-  "december": "Tháng 12"
+  "december": "Tháng 12",
+
+  "income": "Thu nhập",
+  "transfer": "Chuyển khoản",
+  "expense": "Chi tiêu",
+  "creditSpending": "Chi tiêu tín dụng",
+  "creditPayment": "Thanh toán tín dụng",
+
+  "on": "Bật",
+  "off": "Tắt",
+  "systemDefault": "Mặc định theo hệ thống",
+  "themeColor": "Màu sắc giao diện",
+  "useDarkMode": "Chế độ ban đêm",
+  "setCurrency": "Cài đặt loại tiền tệ",
+  "currencyFormat": "Dạng hiển thị tiền",
+  "withDecimalDigits": "Sử dụng phần thập phân",
+  "language": "Ngôn ngữ",
+  "longDateFormat": "Dạng ngày dài",
+  "shortDateFormat": "Dạng ngày ngắn",
+
+  "goBack": "Không, quay lại",
+  "back": "Quay lại",
+  "done": "Xong",
+  "select": "Chọn",
+
+  "noTransactionQuote": "Không có giao dịch nào trong {month}, Tạo mới bằng các ấn nút +",
+  "@noTransactionQuote": {
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+
+  "noCreditToPayQuote": "Tài khoản này hiện không có chi tiêu tín dụng nào phải thanh toán",
+  "noTxnsBeforeThisTimeQuote": "Không có giao dịch nào xảy ra trước ngày đang chọn",
+  "selectPaymentDayQuote": "Lựa chọn ngày thanh toán.\n Các khoản chi tiêu tín dụng cần phải trả sẽ được hiển thị tại đây",
+  "canOnlyAddAfterCheckpointQuote": "Chỉ có thể thêm giao dịch sau [checkpoint cuối cùng]",
+  "canOnlyAddAfterLatestStatementQuote": "Oops! Chi có thể thêm giao dịch kể từ [kỳ sao kê chứa giao dịch thanh toán cuối cùng]",
+  "oopsFutureStatementQuote": "Oops! Đây là kỳ sao kê trong tương lai!",
+  "oopsPayOnlyInGracePeriodQuote": "Oops! Chỉ có thể thanh toán tín dụng trong thời gian ân hạn (Tuỳ chỉnh của tài khoản)"
 }

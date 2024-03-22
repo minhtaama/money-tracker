@@ -77,20 +77,20 @@ class _DashboardMenu1 extends StatelessWidget {
         children: [
           DashboardCard(
             onTap: () => context.push(RoutePath.accounts),
-            title: 'Accounts'.hardcoded,
+            title: context.localize.accounts,
             icon: AppIcons.accounts,
           ),
           DashboardCard(
             onTap: () => context.push(RoutePath.categories),
-            title: 'Categories'.hardcoded,
+            title: context.localize.categories,
             icon: AppIcons.categories,
           ),
           DashboardCard(
-            title: 'Budget'.hardcoded,
+            title: context.localize.budget,
             icon: AppIcons.budgets,
           ),
           DashboardCard(
-            title: 'Saving'.hardcoded,
+            title: context.localize.saving,
             icon: AppIcons.savings,
           ),
         ],
@@ -111,7 +111,7 @@ class _DashboardMenu2 extends StatelessWidget {
         children: [
           RoundedIconButton(
             onTap: () => context.push(RoutePath.accounts),
-            label: 'Accounts'.hardcoded,
+            label: context.localize.accounts,
             size: 50,
             iconPath: AppIcons.accounts,
             iconColor: context.appTheme.onBackground,
@@ -119,7 +119,7 @@ class _DashboardMenu2 extends StatelessWidget {
           ),
           RoundedIconButton(
             onTap: () => context.push(RoutePath.categories),
-            label: 'Categories'.hardcoded,
+            label: context.localize.categories,
             size: 50,
             iconPath: AppIcons.categories,
             iconColor: context.appTheme.onBackground,
@@ -127,14 +127,14 @@ class _DashboardMenu2 extends StatelessWidget {
           ),
           RoundedIconButton(
             onTap: () => context.push(RoutePath.budgets),
-            label: 'Budget'.hardcoded,
+            label: context.localize.budget,
             size: 50,
             iconPath: AppIcons.budgets,
             iconColor: context.appTheme.onBackground,
             reactImmediately: false,
           ),
           RoundedIconButton(
-            label: 'Saving'.hardcoded,
+            label: context.localize.saving,
             size: 50,
             iconPath: AppIcons.savings,
             iconColor: context.appTheme.onBackground,

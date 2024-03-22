@@ -1,10 +1,14 @@
 {
   "appTitle": "money_tracker_app",
-  "@appTitle": {
-    "description": "The title of the application"
-  },
+
   "home": "Home",
   "dashboard": "Dashboard",
+  "settings": "Settings",
+
+  "accounts": "Accounts",
+  "categories": "Categories",
+  "budget": "Budget",
+  "saving": "Saving",
 
   "mon": "Mon",
   "tue": "Tue",
@@ -46,5 +50,46 @@
   "september": "September",
   "october": "October",
   "november": "November",
-  "december": "December"
+  "december": "December",
+
+  "income": "Income",
+  "transfer": "Transfer",
+  "expense": "Expense",
+  "creditSpending": "Credit spending",
+  "creditPayment": "Credit payment",
+
+  "on": "On",
+  "off": "Off",
+  "systemDefault": "System default",
+  "themeColor": "Theme color",
+  "useDarkMode": "Use dark mode",
+  "setCurrency": "Set Currency",
+  "currencyFormat": "Currency format",
+  "withDecimalDigits": "With decimal digits",
+  "language": "Language",
+  "longDateFormat": "Long date format",
+  "shortDateFormat": "Short date format",
+
+  "goBack": "No, go back",
+  "back": "Back",
+  "done": "Done",
+  "select": "Select",
+
+  "noTransactionQuote": "You don't have any transactions in {month}, Create a new one by tapping ''+'' button",
+  "@noTransactionQuote": {
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+
+  "noCreditToPayQuote": "This credit account currently has no credit/BNPL transaction needed to pay",
+  "noTxnsBeforeThisTimeQuote": "No transactions before this time",
+  "selectPaymentDayQuote": "Select a payment day.\n Spending transaction can be paid will be displayed here",
+  "canOnlyAddAfterCheckpointQuote": "You can only add transaction after [latest checkpoint]",
+  "canOnlyAddAfterLatestStatementQuote": "Oops! You can only add transactions since [the statement contains the latest payment]",
+  "oopsFutureStatementQuote": "Oops! This is future statement!",
+  "oopsPayOnlyInGracePeriodQuote": "Oops! Can only pay in grace period (Account preference)"
 }

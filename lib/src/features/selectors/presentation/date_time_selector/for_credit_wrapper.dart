@@ -58,12 +58,9 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
       _latestCheckpointDateTime = widget.creditAccount!.latestCheckpointDateTime;
       _latestStatementDueDate = widget.creditAccount!.latestClosedStatementDueDate;
       _todayStatementDueDate = widget.creditAccount!.todayStatementDueDate;
-      _paymentDateTimes =
-          widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-      _spendingDateTimes =
-          widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-      _checkpointDateTimes =
-          widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _paymentDateTimes = widget.creditAccount!.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _spendingDateTimes = widget.creditAccount!.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+      _checkpointDateTimes = widget.creditAccount!.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -94,7 +91,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     if (widget.creditAccount!.earliestPayableDate == null) {
       return IconWithText(
         iconPath: AppIcons.done,
-        header: 'This credit account currently has no credit/BNPL transaction needed to pay'.hardcoded,
+        header: context.localize.noCreditToPayQuote,
       );
     }
 
@@ -102,15 +99,14 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
         .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))) {
       return IconWithText(
         iconPath: AppIcons.done,
-        header: 'No transactions before this time'.hardcoded,
+        header: context.localize.noTxnsBeforeThisTimeQuote,
       );
     }
 
     if (selectedDay != null) {
       return CreditInfo(
         chosenDateTime: selectedDay,
-        showPaymentAmount:
-            widget.isForPayment && !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
+        showPaymentAmount: widget.isForPayment && !selectedDay.isBefore(widget.creditAccount!.earliestPayableDate!),
         statement: widget.creditAccount!.statementAt(selectedDay, upperGapAtDueDate: true),
         onDateTap: (dateTime) => setState(() {
           _currentMonthView = dateTime;
@@ -120,8 +116,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
     return IconWithText(
       iconPath: AppIcons.today,
-      header:
-          'Select a payment day.\n Spending transaction can be paid will be displayed here'.hardcoded,
+      header: context.localize.selectPaymentDayQuote,
     );
   }
 
@@ -134,9 +129,8 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           elevation: 0,
-          border: Border.all(
-              color:
-                  context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
+          border:
+              Border.all(color: context.appTheme.onBackground.withOpacity(widget.creditAccount == null ? 0.1 : 0.4)),
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -195,11 +189,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
 class DateSelectorForCheckpoint extends StatefulWidget {
   const DateSelectorForCheckpoint(
-      {super.key,
-      required this.onChanged,
-      required this.labelBuilder,
-      this.initial,
-      this.selectableDayPredicate});
+      {super.key, required this.onChanged, required this.labelBuilder, this.initial, this.selectableDayPredicate});
 
   final DateTime? initial;
   final bool Function(DateTime)? selectableDayPredicate;
@@ -242,8 +232,7 @@ class _DateSelectorForCheckpointState extends State<DateSelectorForCheckpoint> {
                 onActionButtonTap: (dateTime) {
                   if (dateTime != null) {
                     setState(() {
-                      _outputDateTime =
-                          dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                      _outputDateTime = dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                     });
                     context.pop();
                   }
@@ -293,15 +282,14 @@ extension _Details on _DateTimeSelectorCreditState {
     final beforeLatestCheckpoint = dateTime.isBefore(_latestCheckpointDateTime);
     final notInLatestStatement = !dateTime.isAfter(_latestStatementDueDate);
     final inFuture = dateTime.isAfter(_todayStatementDueDate);
-    final canPayOnlyInGracePeriod =
-        widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod;
+    final canPayOnlyInGracePeriod = widget.creditAccount!.statementType == StatementType.payOnlyInGracePeriod;
     final isPayment = widget.isForPayment;
     final notInGracePeriod = !widget.creditAccount!.isInGracePeriod(dateTime);
 
     if (beforeLatestCheckpoint) {
       showErrorDialog(
         context,
-        'You can only add transaction after [latest checkpoint]'.hardcoded,
+        context.localize.canOnlyAddAfterCheckpointQuote,
         enable: showDialog,
       );
       return false;
@@ -310,8 +298,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (notInLatestStatement) {
       showErrorDialog(
         context,
-        'Oops! You can only add transactions since [the statement contains the latest payment]'
-            .hardcoded,
+        context.localize.canOnlyAddAfterLatestStatementQuote,
         enable: showDialog,
       );
       return false;
@@ -320,7 +307,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (inFuture) {
       showErrorDialog(
         context,
-        'Oops! This is future statement!'.hardcoded,
+        context.localize.oopsFutureStatementQuote,
         enable: showDialog,
       );
       return false;
@@ -329,7 +316,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (isPayment && canPayOnlyInGracePeriod && notInGracePeriod) {
       showErrorDialog(
         context,
-        'Oops! Can only pay in grace period (Account preference)'.hardcoded,
+        context.localize.oopsPayOnlyInGracePeriodQuote,
         enable: showDialog,
       );
       return false;

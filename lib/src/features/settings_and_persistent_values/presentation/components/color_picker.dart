@@ -20,16 +20,26 @@ class ColorPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Wrap(
-        spacing: 15,
-        children: List.generate(colorsList.length, (index) {
-          return CircleColor(
-            color: colorsList[index][currentThemeType]!.accent1,
-            isSelected: currentColorIndex == index,
-            onTap: onColorTap,
-            index: index,
-          );
-        }),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.localize.themeColor,
+            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
+          ),
+          Gap.h12,
+          Wrap(
+            spacing: 15,
+            children: List.generate(colorsList.length, (index) {
+              return CircleColor(
+                color: colorsList[index][currentThemeType]!.accent1,
+                isSelected: currentColorIndex == index,
+                onTap: onColorTap,
+                index: index,
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

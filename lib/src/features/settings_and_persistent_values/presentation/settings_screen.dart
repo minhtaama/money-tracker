@@ -40,14 +40,15 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: context.appTheme.background1,
       body: CustomTabPage(
-        smallTabBar: const SmallTabBar(
+        smallTabBar: SmallTabBar(
           child: PageHeading(
             hasBackButton: true,
-            title: 'Settings',
+            title: context.localize.settings,
           ),
         ),
         children: [
           CustomSection(
+            crossAxisAlignment: CrossAxisAlignment.start,
             sections: [
               ColorPicker(
                 currentThemeType: context.appTheme.isDarkTheme ? ThemeType.dark : ThemeType.light,
@@ -58,10 +59,10 @@ class SettingsScreen extends ConsumerWidget {
                   statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
                 },
               ),
-              Gap.divider(context),
+              Gap.divider(context, indent: 6),
               SettingTileToggle(
-                title: 'Use dark mode'.hardcoded,
-                valueLabels: const ['Off', 'On', 'System default'],
+                title: context.localize.useDarkMode,
+                valueLabels: [context.localize.off, context.localize.on, context.localize.systemDefault],
                 onTap: (int index) {
                   settingsController.set(themeType: ThemeType.values[index]);
                   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
@@ -77,7 +78,7 @@ class SettingsScreen extends ConsumerWidget {
             sections: [
               Gap.h4,
               CustomTile(
-                title: 'Set currency',
+                title: context.localize.setCurrency,
                 secondaryTitle: currentSettings.currency.name,
                 secondaryTitleOverflow: true,
                 leading: SvgIcon(
@@ -102,7 +103,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               Gap.divider(context, indent: 6),
               SettingTileDropDown<CurrencyType>(
-                title: 'Currency format:'.hardcoded,
+                title: context.localize.currencyFormat,
                 initialValue: currentSettings.currencyType,
                 values: [
                   (CurrencyType.symbolBefore, '$currSymbol $currAmount'),
@@ -111,28 +112,31 @@ class SettingsScreen extends ConsumerWidget {
                 onChanged: (type) => settingsController.set(currencyType: type),
               ),
               SettingTileToggle(
-                title: 'With decimal digits:',
+                title: context.localize.withDecimalDigits,
                 onTap: (int index) {
                   settingsController.set(showDecimalDigits: index == 0 ? false : true);
                 },
                 valuesCount: 2,
                 initialValueIndex: currentSettings.showDecimalDigits ? 1 : 0,
               ),
-              Gap.divider(context, indent: 6),
+            ],
+          ),
+          CustomSection(
+            sections: [
               SettingTileDropDown<Locale>(
-                title: 'Language:'.hardcoded,
+                title: context.localize.language,
                 initialValue: currentSettings.locale,
                 values: AppLocalizations.supportedLocales.map((e) => (e, e.languageName)).toList(),
                 onChanged: (type) => settingsController.set(locale: type),
               ),
               SettingTileDropDown<LongDateType>(
-                title: 'Long date format:'.hardcoded,
+                title: context.localize.longDateFormat,
                 initialValue: currentSettings.longDateType,
                 values: LongDateType.values.map((e) => (e, today.toLongDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(longDateType: type),
               ),
               SettingTileDropDown<ShortDateType>(
-                title: 'Short date format:'.hardcoded,
+                title: context.localize.shortDateFormat,
                 initialValue: currentSettings.shortDateType,
                 values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(shortDateType: type),

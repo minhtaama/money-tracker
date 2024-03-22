@@ -42,21 +42,21 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     final roundedButtonItems = <FABItem>[
       FABItem(
         icon: AppIcons.income,
-        label: 'Income'.hardcoded,
+        label: context.localize.income,
         color: context.appTheme.onPositive,
         backgroundColor: context.appTheme.positive,
         onTap: () => context.go(RoutePath.addIncome),
       ),
       FABItem(
         icon: AppIcons.transfer,
-        label: 'Transfer'.hardcoded,
+        label: context.localize.transfer,
         color: context.appTheme.onBackground,
         backgroundColor: AppColors.grey(context),
         onTap: () => context.go(RoutePath.addTransfer),
       ),
       FABItem(
         icon: AppIcons.expense,
-        label: 'Expense'.hardcoded,
+        label: context.localize.expense,
         color: context.appTheme.onNegative,
         backgroundColor: context.appTheme.negative,
         onTap: () => context.go(RoutePath.addExpense),
@@ -65,13 +65,13 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
 
     final listItems = <FABItem>[
       FABItem(
-        icon: AppIcons.add,
-        label: 'Credit Spending',
+        icon: AppIcons.receiptDollar,
+        label: context.localize.creditSpending,
         onTap: () => context.go(RoutePath.addCreditSpending),
       ),
       FABItem(
-        icon: AppIcons.add,
-        label: 'Credit Payment',
+        icon: AppIcons.handCoin,
+        label: context.localize.creditPayment,
         onTap: () => context.go(RoutePath.addCreditPayment),
       ),
     ];

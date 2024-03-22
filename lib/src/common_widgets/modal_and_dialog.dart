@@ -110,7 +110,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                         Expanded(
                           child: IconWithTextButton(
                             iconPath: AppIcons.back,
-                            label: 'No, go back!'.hardcoded,
+                            label: context.localize.goBack,
                             color: context.appTheme.onBackground,
                             backgroundColor: AppColors.greyBgr(context),
                             onTap: () => context.pop(),
@@ -130,7 +130,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
                     : [
                         IconWithTextButton(
                           iconPath: AppIcons.back,
-                          label: 'Go back'.hardcoded,
+                          label: context.localize.goBack,
                           color: context.appTheme.onBackground,
                           backgroundColor: AppColors.greyBgr(context),
                           onTap: () => context.pop(),

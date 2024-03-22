@@ -148,7 +148,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         toolBarHeight: 50,
         toolBar: _StatementSelector(
           isToday: _currentPageIndex == _initialPageIndex,
-          dateDisplay: _displayStatementDate.toLongDate(context),
+          dateDisplay: _displayStatementDate.toShortDate(context),
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
           onTapGoToCurrentDate: () {
