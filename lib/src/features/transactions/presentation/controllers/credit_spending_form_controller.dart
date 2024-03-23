@@ -106,7 +106,7 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
       state = state.copyWith(
         installmentAmount: () => state.amount! / state.installmentPeriod!,
       );
-    } else if (initialTransaction != null) {
+    } else if (initialTransaction != null && state.installmentPeriod != null) {
       state = state.copyWith(
         installmentAmount: () => state.amount! / initialTransaction.monthsToPay!,
       );

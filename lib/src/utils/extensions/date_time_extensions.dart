@@ -77,14 +77,14 @@ extension DateTimeExtensions on DateTime {
     };
 
     return switch (type) {
-      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear'.capitalize(),
-      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear'.capitalize(),
-      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth'.capitalize(),
-      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay'.capitalize(),
-      ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear'.capitalize(),
-      ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear'.capitalize(),
-      ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth'.capitalize(),
-      ShortDateType.ymd => '$sYear$yearSeparator$sMonth/$sDay'.capitalize(),
+      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear',
+      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear',
+      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth',
+      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay',
+      ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear',
+      ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear',
+      ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth',
+      ShortDateType.ymd => '$sYear$yearSeparator$sMonth/$sDay',
     };
   }
 
@@ -96,10 +96,10 @@ extension DateTimeExtensions on DateTime {
     String sMonth = monthToString(context);
 
     return switch (type) {
-      LongDateType.dmy => '$sDay $sMonth, $sYear'.capitalize(),
-      LongDateType.mdy => '$sMonth $sDay, $sYear'.capitalize(),
-      LongDateType.ydm => '$sYear, $sDay $sMonth'.capitalize(),
-      LongDateType.ymd => '$sYear, $sMonth $sDay'.capitalize(),
+      LongDateType.dmy => '$sDay $sMonth, $sYear',
+      LongDateType.mdy => '$sMonth $sDay, $sYear',
+      LongDateType.ydm => '$sYear, $sDay $sMonth',
+      LongDateType.ymd => '$sYear, $sMonth $sDay',
     };
   }
 
