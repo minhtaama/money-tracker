@@ -69,35 +69,64 @@ extension DateTimeExtensions on DateTime {
       ShortDateType.ydmm ||
       ShortDateType.ymmd =>
         monthToString(context, short: true),
-      ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
+      ShortDateType.dmy ||
+      ShortDateType.mdy ||
+      ShortDateType.ydm ||
+      ShortDateType.ymd =>
+        formatter.format(month),
     };
 
     return switch (type) {
-      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear',
-      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear',
-      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth',
-      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay',
-      ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear',
-      ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear',
-      ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth',
-      ShortDateType.ymd => '$sYear$yearSeparator$sMonth/$sDay',
+      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear'.capitalize(),
+      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear'.capitalize(),
+      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth'.capitalize(),
+      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay'.capitalize(),
+      ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear'.capitalize(),
+      ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear'.capitalize(),
+      ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth'.capitalize(),
+      ShortDateType.ymd => '$sYear$yearSeparator$sMonth/$sDay'.capitalize(),
     };
   }
 
   String toLongDate(BuildContext context, {LongDateType? custom, bool noDay = false}) {
     final type = custom ?? context.appSettings.longDateType;
-    final formatter = NumberFormat("00");
 
-    String sDay = noDay ? '' : formatter.format(day);
+    String sDay = noDay ? '' : dayToString(context);
     String sYear = year.toString();
     String sMonth = monthToString(context);
 
     return switch (type) {
-      LongDateType.dmy => '$sDay $sMonth, $sYear',
-      LongDateType.mdy => '$sMonth $sDay, $sYear',
-      LongDateType.ydm => '$sYear, $sDay $sMonth',
-      LongDateType.ymd => '$sYear, $sMonth $sDay',
+      LongDateType.dmy => '$sDay $sMonth, $sYear'.capitalize(),
+      LongDateType.mdy => '$sMonth $sDay, $sYear'.capitalize(),
+      LongDateType.ydm => '$sYear, $sDay $sMonth'.capitalize(),
+      LongDateType.ymd => '$sYear, $sMonth $sDay'.capitalize(),
     };
+  }
+
+  String dayToString(BuildContext context) {
+    String sDay = NumberFormat("##").format(day);
+
+    final languageCode = context.appSettings.locale.languageCode;
+
+    if (languageCode == 'vi') {
+      return 'ngày $sDay';
+    }
+
+    if (languageCode == 'en') {
+      String suffix = 'th';
+
+      if (sDay.endsWith('1')) {
+        suffix = 'st';
+      } else if (sDay.endsWith('2')) {
+        suffix = 'nd';
+      } else if (sDay.endsWith('3')) {
+        suffix = 'rd';
+      }
+
+      return '$sDay$suffix';
+    }
+
+    return sDay;
   }
 
   String monthToString(BuildContext context, {bool short = false}) {

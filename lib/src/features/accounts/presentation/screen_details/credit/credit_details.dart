@@ -59,14 +59,16 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
     }
   }
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate =
+      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
   late int _currentPageIndex = _initialPageIndex;
 
   void _onPageChange(int value) {
     _currentPageIndex = value;
-    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate =
+        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -136,11 +138,15 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         controller: _controller,
         smallTabBar: SmallTabBar(
           child: PageHeading(
-              title: widget.creditAccount.name, secondaryTitle: 'Credit account'.hardcoded, hasBackButton: true),
+              title: widget.creditAccount.name,
+              secondaryTitle: 'Credit account'.hardcoded,
+              hasBackButton: true),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedCreditAccountTab(account: widget.creditAccount, displayDate: _displayStatementDate),
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedCreditAccountTab(
+              account: widget.creditAccount, displayDate: _displayStatementDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -156,9 +162,10 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           },
         ),
         itemBuilder: (context, ref, pageIndex) {
-          final currentDateTime =
-              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          final currentDateTime = DateTime(
+              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement =
+              widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
                   _SummaryCard(
@@ -272,6 +279,7 @@ class _StatementSelector extends StatelessWidget {
                               iconPath: AppIcons.turn,
                               iconColor: context.appTheme.onBackground,
                               size: 20,
+                              backgroundColor: Colors.transparent,
                               iconPadding: 0,
                             )
                           : Gap.noGap,
@@ -287,6 +295,7 @@ class _StatementSelector extends StatelessWidget {
           iconPath: AppIcons.arrowLeft,
           iconColor: context.appTheme.onBackground,
           onTap: onTapLeft,
+          backgroundColor: Colors.transparent,
           size: 34,
           iconPadding: 5,
         ),
@@ -295,6 +304,7 @@ class _StatementSelector extends StatelessWidget {
           iconPath: AppIcons.arrowRight,
           iconColor: context.appTheme.onBackground,
           onTap: onTapRight,
+          backgroundColor: Colors.transparent,
           size: 34,
           iconPadding: 5,
         ),

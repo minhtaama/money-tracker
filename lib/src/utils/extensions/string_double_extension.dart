@@ -4,6 +4,10 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 extension StringHardCoded on String {
   String get hardcoded => this;
+
+  String capitalize() {
+    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
+  }
 }
 
 extension DoubleExtension on double {

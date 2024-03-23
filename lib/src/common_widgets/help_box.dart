@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
@@ -50,63 +51,62 @@ class _HelpBoxState extends State<HelpBox> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: k150msDuration,
-      width: double.infinity,
-      margin: _isShow ? widget.margin : EdgeInsets.zero,
-      decoration: BoxDecoration(
-        color: widget.backgroundColor ?? context.appTheme.negative,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: AnimatedSize(
-        duration: k150msDuration,
+    return HideableContainer(
+      hide: !_isShow,
+      child: Container(
+        width: double.infinity,
+        margin: _isShow ? widget.margin : EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: widget.backgroundColor ?? context.appTheme.negative,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: ConstrainedBox(
           constraints: widget.constraints ?? const BoxConstraints.tightForFinite(),
-          child: _isShow
-              ? Stack(
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Row(
                   children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Row(
-                        children: [
-                          const Spacer(),
-                          RoundedIconButton(
-                            iconPath: AppIcons.close,
-                            iconColor: widget.color ?? context.appTheme.onNegative,
-                            size: 35,
-                            iconPadding: 9,
-                            onTap: () {
-                              setState(() {
-                                _isShow = !_isShow;
-                              });
-                              widget.onCloseTap?.call();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Column(
-                        children: [
-                          Gap.h16,
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: IconWithText(
-                              header: widget.header,
-                              text: widget.text,
-                              iconPath: widget.iconPath,
-                              color: widget.color ?? context.appTheme.onNegative,
-                            ),
-                          ),
-                          widget.bottomWidget ?? Gap.noGap,
-                          Gap.h16,
-                        ],
-                      ),
+                    const Spacer(),
+                    RoundedIconButton(
+                      iconPath: AppIcons.close,
+                      iconColor: widget.color ?? context.appTheme.onNegative,
+                      backgroundColor: Colors.transparent,
+                      size: 35,
+                      iconPadding: 9,
+                      reactImmediately: false,
+                      onTap: () {
+                        setState(() {
+                          _isShow = !_isShow;
+                        });
+                        widget.onCloseTap?.call();
+                      },
                     ),
                   ],
-                )
-              : Gap.noGap,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  children: [
+                    Gap.h16,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: IconWithText(
+                        header: widget.header,
+                        text: widget.text,
+                        iconPath: widget.iconPath,
+                        color: widget.color ?? context.appTheme.onNegative,
+                      ),
+                    ),
+                    widget.bottomWidget ?? Gap.noGap,
+                    Gap.h16,
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

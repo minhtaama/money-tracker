@@ -66,7 +66,8 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
 
     Offset helpBoxOffset() {
       double dx = buttonOffset.dx - helpBoxWidth / 2; // Makes center of help box sames as button
-      double dy = buttonOffset.dy - helpBoxHeight - 10; // Make center of help box same as top-center of button
+      double dy =
+          buttonOffset.dy - helpBoxHeight - 10; // Make center of help box same as top-center of button
 
       if (helpBoxWidth / 2 >= Gap.screenWidth(context) - buttonOffset.dx) {
         double offset = helpBoxWidth / 2 - (Gap.screenWidth(context) - buttonOffset.dx);
@@ -96,31 +97,39 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
       return AnimatedBuilder(
           animation: _animation,
           builder: (_, Widget? child) {
-            return Stack(children: [
-              ModalBarrier(
-                onDismiss: () => _removeEntry(overlayEntry),
-              ),
-              Positioned(
-                left: buttonOffset.dx,
-                top: _showBoxUnderButton ? buttonOffset.dy + buttonSize.height + 10 : buttonOffset.dy - 10,
-                child: Opacity(
-                  opacity: _animation.value,
-                  child: _Arrow(_showBoxUnderButton),
+            return BackButtonListener(
+              onBackButtonPressed: () async {
+                await _removeEntry(overlayEntry);
+                return true;
+              },
+              child: Stack(children: [
+                ModalBarrier(
+                  onDismiss: () async => await _removeEntry(overlayEntry),
                 ),
-              ),
-              Positioned(
-                left: helpBoxOffset().dx,
-                top: helpBoxOffset().dy,
-                child: Opacity(
-                  opacity: _animation.value,
-                  child: _HelpBox(
-                    key: _boxKey,
-                    title: widget.title,
-                    text: widget.text,
+                Positioned(
+                  left: buttonOffset.dx,
+                  top: _showBoxUnderButton
+                      ? buttonOffset.dy + buttonSize.height + 10
+                      : buttonOffset.dy - 10,
+                  child: Opacity(
+                    opacity: _animation.value,
+                    child: _Arrow(_showBoxUnderButton),
                   ),
                 ),
-              ),
-            ]);
+                Positioned(
+                  left: helpBoxOffset().dx,
+                  top: helpBoxOffset().dy,
+                  child: Opacity(
+                    opacity: _animation.value,
+                    child: _HelpBox(
+                      key: _boxKey,
+                      title: widget.title,
+                      text: widget.text,
+                    ),
+                  ),
+                ),
+              ]),
+            );
           });
     });
 
@@ -130,7 +139,7 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
     _animationController.forward();
   }
 
-  void _removeEntry(OverlayEntry entry) async {
+  Future<void> _removeEntry(OverlayEntry entry) async {
     // Reverse the animation
     await _animationController.reverse();
 
@@ -163,6 +172,7 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
         iconPadding: 0,
         size: widget.size,
         iconColor: AppColors.grey(context),
+        backgroundColor: Colors.transparent,
         onTap: _showOverlay,
       ),
     );
@@ -190,7 +200,9 @@ class _HelpBox extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             constraints: BoxConstraints(minWidth: 30, maxWidth: Gap.screenWidth(context) - 50),
             decoration: BoxDecoration(
-              color: AppColors.greyBgr(context).withOpacity(0.7),
+              color: context.appTheme.isDarkTheme
+                  ? context.appTheme.accent1.withOpacity(0.7)
+                  : context.appTheme.background2.withOpacity(0.7),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -199,14 +211,22 @@ class _HelpBox extends StatelessWidget {
                 title != null
                     ? Text(
                         title!,
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                        style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.isDarkTheme
+                                ? context.appTheme.onAccent
+                                : context.appTheme.onBackground,
+                            fontSize: 14),
                         textAlign: TextAlign.left,
                       )
                     : Gap.noGap,
                 title != null ? Gap.h4 : Gap.noGap,
                 Text(
                   text,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                  style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.isDarkTheme
+                          ? context.appTheme.onAccent
+                          : context.appTheme.onBackground,
+                      fontSize: 14),
                   textAlign: TextAlign.left,
                 ),
               ],
@@ -227,8 +247,16 @@ class _Arrow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: showUnderButton
-          ? _UpArrowPainter(AppColors.greyBgr(context).withOpacity(0.7))
-          : _DownArrowPainter(AppColors.greyBgr(context).withOpacity(0.7)),
+          ? _UpArrowPainter(
+              context.appTheme.isDarkTheme
+                  ? context.appTheme.accent1.withOpacity(0.7)
+                  : context.appTheme.background2.withOpacity(0.7),
+            )
+          : _DownArrowPainter(
+              context.appTheme.isDarkTheme
+                  ? context.appTheme.accent1.withOpacity(0.7)
+                  : context.appTheme.background2.withOpacity(0.7),
+            ),
     );
   }
 }
