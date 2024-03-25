@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
+import 'package:money_tracker_app/src/common_widgets/help_box.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
@@ -12,6 +14,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
@@ -154,6 +157,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             ],
           ),
           Gap.h16,
+          HelpBox(
+            isShow: true,
+            margin: const EdgeInsets.only(bottom: 16),
+            iconPath: AppIcons.budgets,
+            header: 'Budgets',
+            bottomWidget: BudgetsWidget(),
+          ),
           const Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: TextHeader('OPTIONAL:', fontSize: 11),

@@ -53,7 +53,9 @@ class _HelpBoxState extends State<HelpBox> {
   Widget build(BuildContext context) {
     return HideableContainer(
       hide: !_isShow,
-      child: Container(
+      child: AnimatedContainer(
+        duration: k250msDuration,
+        curve: Curves.fastOutSlowIn,
         width: double.infinity,
         margin: _isShow ? widget.margin : EdgeInsets.zero,
         decoration: BoxDecoration(
