@@ -157,6 +157,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             ],
           ),
           Gap.h16,
+          // TODO: Show budget service widget here
           HelpBox(
             isShow: true,
             margin: const EdgeInsets.only(bottom: 16),

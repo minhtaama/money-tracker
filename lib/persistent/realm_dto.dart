@@ -179,6 +179,47 @@ class _CreditPaymentDetailsDb {
   double adjustment = 0;
 }
 
+/////////////////////////////////////// PLANNED TRANSACTION ////////////////////////////////////
+
+@RealmModel()
+class _TemplateTransactionDb implements IRealmObjectWithID {
+  @override
+  @PrimaryKey()
+  late ObjectId id;
+
+  late int type;
+
+  @Indexed()
+  late DateTime? dateTime;
+
+  late int? dateTimeRepeatType;
+
+  late double? amount;
+
+  String? note;
+
+  late _AccountDb? account;
+
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
+  late _CategoryDb? category;
+
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
+  late _CategoryTagDb? categoryTag;
+
+  /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
+  /// add value to account if Transaction is Transfer, minus value if creditPayment
+  late _AccountDb? transferAccount;
+
+  /// **Only specify this if type is [TransactionType.transfer]**
+  _TransferFeeDb? transferFee;
+
+  /// **Only specify this if type is [TransactionType.creditSpending]**
+  _CreditInstallmentDetailsDb? creditInstallmentDetails;
+
+  /// **Only specify this if type is [TransactionType.creditPayment]**
+  _CreditPaymentDetailsDb? creditPaymentDetails;
+}
+
 ////////////////////////////////////// BUDGET /////////////////////////////////////////
 
 @RealmModel()

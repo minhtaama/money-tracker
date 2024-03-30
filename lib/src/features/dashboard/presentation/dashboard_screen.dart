@@ -140,6 +140,13 @@ class _DashboardMenu2 extends StatelessWidget {
             iconColor: context.appTheme.onBackground,
             reactImmediately: false,
           ),
+          RoundedIconButton(
+            label: 'Upcoming'.hardcoded,
+            size: 50,
+            iconPath: AppIcons.transfer,
+            iconColor: context.appTheme.onBackground,
+            reactImmediately: false,
+          ),
         ],
       ),
     );

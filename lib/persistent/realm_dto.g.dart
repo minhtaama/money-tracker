@@ -727,6 +727,166 @@ class CreditPaymentDetailsDb extends _CreditPaymentDetailsDb
 }
 
 // ignore_for_file: type=lint
+class TemplateTransactionDb extends _TemplateTransactionDb
+    with RealmEntity, RealmObjectBase, RealmObject {
+  TemplateTransactionDb(
+    ObjectId id,
+    int type, {
+    DateTime? dateTime,
+    int? dateTimeRepeatType,
+    double? amount,
+    String? note,
+    AccountDb? account,
+    CategoryDb? category,
+    CategoryTagDb? categoryTag,
+    AccountDb? transferAccount,
+    TransferFeeDb? transferFee,
+    CreditInstallmentDetailsDb? creditInstallmentDetails,
+    CreditPaymentDetailsDb? creditPaymentDetails,
+  }) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'dateTime', dateTime);
+    RealmObjectBase.set(this, 'dateTimeRepeatType', dateTimeRepeatType);
+    RealmObjectBase.set(this, 'amount', amount);
+    RealmObjectBase.set(this, 'note', note);
+    RealmObjectBase.set(this, 'account', account);
+    RealmObjectBase.set(this, 'category', category);
+    RealmObjectBase.set(this, 'categoryTag', categoryTag);
+    RealmObjectBase.set(this, 'transferAccount', transferAccount);
+    RealmObjectBase.set(this, 'transferFee', transferFee);
+    RealmObjectBase.set(
+        this, 'creditInstallmentDetails', creditInstallmentDetails);
+    RealmObjectBase.set(this, 'creditPaymentDetails', creditPaymentDetails);
+  }
+
+  TemplateTransactionDb._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  int get type => RealmObjectBase.get<int>(this, 'type') as int;
+  @override
+  set type(int value) => RealmObjectBase.set(this, 'type', value);
+
+  @override
+  DateTime? get dateTime =>
+      RealmObjectBase.get<DateTime>(this, 'dateTime') as DateTime?;
+  @override
+  set dateTime(DateTime? value) => RealmObjectBase.set(this, 'dateTime', value);
+
+  @override
+  int? get dateTimeRepeatType =>
+      RealmObjectBase.get<int>(this, 'dateTimeRepeatType') as int?;
+  @override
+  set dateTimeRepeatType(int? value) =>
+      RealmObjectBase.set(this, 'dateTimeRepeatType', value);
+
+  @override
+  double? get amount => RealmObjectBase.get<double>(this, 'amount') as double?;
+  @override
+  set amount(double? value) => RealmObjectBase.set(this, 'amount', value);
+
+  @override
+  String? get note => RealmObjectBase.get<String>(this, 'note') as String?;
+  @override
+  set note(String? value) => RealmObjectBase.set(this, 'note', value);
+
+  @override
+  AccountDb? get account =>
+      RealmObjectBase.get<AccountDb>(this, 'account') as AccountDb?;
+  @override
+  set account(covariant AccountDb? value) =>
+      RealmObjectBase.set(this, 'account', value);
+
+  @override
+  CategoryDb? get category =>
+      RealmObjectBase.get<CategoryDb>(this, 'category') as CategoryDb?;
+  @override
+  set category(covariant CategoryDb? value) =>
+      RealmObjectBase.set(this, 'category', value);
+
+  @override
+  CategoryTagDb? get categoryTag =>
+      RealmObjectBase.get<CategoryTagDb>(this, 'categoryTag') as CategoryTagDb?;
+  @override
+  set categoryTag(covariant CategoryTagDb? value) =>
+      RealmObjectBase.set(this, 'categoryTag', value);
+
+  @override
+  AccountDb? get transferAccount =>
+      RealmObjectBase.get<AccountDb>(this, 'transferAccount') as AccountDb?;
+  @override
+  set transferAccount(covariant AccountDb? value) =>
+      RealmObjectBase.set(this, 'transferAccount', value);
+
+  @override
+  TransferFeeDb? get transferFee =>
+      RealmObjectBase.get<TransferFeeDb>(this, 'transferFee') as TransferFeeDb?;
+  @override
+  set transferFee(covariant TransferFeeDb? value) =>
+      RealmObjectBase.set(this, 'transferFee', value);
+
+  @override
+  CreditInstallmentDetailsDb? get creditInstallmentDetails =>
+      RealmObjectBase.get<CreditInstallmentDetailsDb>(
+          this, 'creditInstallmentDetails') as CreditInstallmentDetailsDb?;
+  @override
+  set creditInstallmentDetails(covariant CreditInstallmentDetailsDb? value) =>
+      RealmObjectBase.set(this, 'creditInstallmentDetails', value);
+
+  @override
+  CreditPaymentDetailsDb? get creditPaymentDetails =>
+      RealmObjectBase.get<CreditPaymentDetailsDb>(this, 'creditPaymentDetails')
+          as CreditPaymentDetailsDb?;
+  @override
+  set creditPaymentDetails(covariant CreditPaymentDetailsDb? value) =>
+      RealmObjectBase.set(this, 'creditPaymentDetails', value);
+
+  @override
+  Stream<RealmObjectChanges<TemplateTransactionDb>> get changes =>
+      RealmObjectBase.getChanges<TemplateTransactionDb>(this);
+
+  @override
+  TemplateTransactionDb freeze() =>
+      RealmObjectBase.freezeObject<TemplateTransactionDb>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(TemplateTransactionDb._);
+    return const SchemaObject(ObjectType.realmObject, TemplateTransactionDb,
+        'TemplateTransactionDb', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('type', RealmPropertyType.int),
+      SchemaProperty('dateTime', RealmPropertyType.timestamp,
+          optional: true, indexType: RealmIndexType.regular),
+      SchemaProperty('dateTimeRepeatType', RealmPropertyType.int,
+          optional: true),
+      SchemaProperty('amount', RealmPropertyType.double, optional: true),
+      SchemaProperty('note', RealmPropertyType.string, optional: true),
+      SchemaProperty('account', RealmPropertyType.object,
+          optional: true, linkTarget: 'AccountDb'),
+      SchemaProperty('category', RealmPropertyType.object,
+          optional: true, linkTarget: 'CategoryDb'),
+      SchemaProperty('categoryTag', RealmPropertyType.object,
+          optional: true, linkTarget: 'CategoryTagDb'),
+      SchemaProperty('transferAccount', RealmPropertyType.object,
+          optional: true, linkTarget: 'AccountDb'),
+      SchemaProperty('transferFee', RealmPropertyType.object,
+          optional: true, linkTarget: 'TransferFeeDb'),
+      SchemaProperty('creditInstallmentDetails', RealmPropertyType.object,
+          optional: true, linkTarget: 'CreditInstallmentDetailsDb'),
+      SchemaProperty('creditPaymentDetails', RealmPropertyType.object,
+          optional: true, linkTarget: 'CreditPaymentDetailsDb'),
+    ]);
+  }
+}
+
+// ignore_for_file: type=lint
 class BudgetDb extends _BudgetDb
     with RealmEntity, RealmObjectBase, RealmObject {
   BudgetDb(
