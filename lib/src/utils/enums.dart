@@ -260,8 +260,6 @@ enum Currency {
   final String symbol;
 }
 
-// TODO: Config display type
-
 enum CurrencyType {
   symbolBefore(0),
   symbolAfter(1);
@@ -310,6 +308,22 @@ enum ShortDateType {
     return ShortDateType.values.firstWhere((e) => e.databaseValue == value);
   }
 }
+
+// enum DateTimeRepeatType {
+//   everyXDay(0),
+//   everyXWeek(1),
+//   everyXMonth(2),
+//   everyXYear(3),
+//   ;
+//
+//   final int databaseValue;
+//
+//   const ShortDateType(this.databaseValue);
+//
+//   static ShortDateType fromDatabaseValue(int value) {
+//     return ShortDateType.values.firstWhere((e) => e.databaseValue == value);
+//   }
+// }
 
 ///////// NO DATABASE VALUE //////////////////////
 

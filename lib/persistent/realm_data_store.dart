@@ -17,6 +17,7 @@ class RealmDataStore {
         CategoryTagDb.schema,
         TransactionDb.schema,
         TemplateTransactionDb.schema,
+        RepeatTransactionDb.schema,
         BudgetDb.schema,
         TransferFeeDb.schema,
         CreditInstallmentDetailsDb.schema,

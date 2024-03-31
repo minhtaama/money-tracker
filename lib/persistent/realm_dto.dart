@@ -192,8 +192,6 @@ class _TemplateTransactionDb implements IRealmObjectWithID {
   @Indexed()
   late DateTime? dateTime;
 
-  late int? dateTimeRepeatType;
-
   late double? amount;
 
   String? note;
@@ -212,12 +210,29 @@ class _TemplateTransactionDb implements IRealmObjectWithID {
 
   /// **Only specify this if type is [TransactionType.transfer]**
   _TransferFeeDb? transferFee;
+}
 
-  /// **Only specify this if type is [TransactionType.creditSpending]**
-  _CreditInstallmentDetailsDb? creditInstallmentDetails;
+@RealmModel()
+class _RepeatTransactionDb implements IRealmObjectWithID {
+  // repeat every <everyParameter> <repeatEveryType>, on <repeatOnType> + <onParameter>
+  // Eg: repeat every 2 weeks, on Tue and Wed
 
-  /// **Only specify this if type is [TransactionType.creditPayment]**
-  _CreditPaymentDetailsDb? creditPaymentDetails;
+  @override
+  @PrimaryKey()
+  late ObjectId id;
+
+  late int? repeatEvery; // every [X] day, [X] week, [X] month, [X] year,
+
+  late int? everyParameter; // X
+
+  late int? repeatMonthlyType; // on [Y]th day, on the nth weekday of month (from Y), on days of [Y] in month ,
+
+  late int? repeatYearlyType; // on [Y]th day, on the nth weekday of month (from Y), on days of [Y] in month ,
+
+  late bool autoCreateTransaction;
+
+  // TODO: Do we need backlinks to TransactionDb?
+  late List<_TransactionDb> transactions;
 }
 
 ////////////////////////////////////// BUDGET /////////////////////////////////////////
