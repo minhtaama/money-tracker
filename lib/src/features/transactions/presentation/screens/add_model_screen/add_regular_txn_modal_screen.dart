@@ -4,12 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_box.dart';
+import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
+import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -29,7 +32,8 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -80,6 +84,24 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
     }
   }
 
+  void _submitTemplate() {
+    final tempTxnRepo = ref.read(tempTransactionRepositoryRealmProvider);
+    if (!_stateRead.isAllNull()) {
+      tempTxnRepo.writeNew(
+        transactionType: widget.transactionType,
+        dateTime: _stateRead.dateTime,
+        amount: _stateRead.amount,
+        category: _stateRead.category,
+        tag: _stateRead.tag,
+        account: _stateRead.account,
+        toAccount: _stateRead.toAccount,
+        note: _stateRead.note,
+        fee: null,
+        isChargeOnDestinationAccount: null,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
@@ -120,13 +142,15 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(
+                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) => _categoryValidator(),
-                            onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
+                            onChangedCategory: (newCategory) =>
+                                _stateController.changeCategory(newCategory),
                           )
                         : AccountFormSelector(
                             accountType: AccountType.regular,
@@ -143,9 +167,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                       validator: (_) => _toAccountAndAccountValidator(),
                       onChangedAccount: (newAccount) {
                         if (widget.transactionType != TransactionType.transfer) {
-                          _stateController.changeAccount(newAccount as RegularAccount);
+                          _stateController.changeAccount(newAccount as RegularAccount?);
                         } else {
-                          _stateController.changeToAccount(newAccount as RegularAccount);
+                          _stateController.changeToAccount(newAccount as RegularAccount?);
                         }
                       },
                       otherSelectedAccount:
@@ -187,7 +211,18 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             onChanged: (value) => _stateController.changeNote(value),
           ),
           Gap.h16,
-          BottomButtons(isBigButtonDisabled: _isButtonDisabled, onBigButtonTap: _submit),
+          BottomButtons(
+            isBigButtonDisabled: _isButtonDisabled,
+            onBigButtonTap: _submit,
+            optional: RoundedIconButton(
+              iconPath: AppIcons.add,
+              backgroundColor: Colors.transparent,
+              iconColor:
+                  stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.onBackground,
+              iconPadding: 10,
+              onTap: _submitTemplate,
+            ),
+          ),
         ],
       ),
     );

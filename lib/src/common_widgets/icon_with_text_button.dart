@@ -14,7 +14,7 @@ class IconWithTextButton extends StatelessWidget {
     this.labelSize,
     required this.backgroundColor,
     this.height = 55,
-    this.width = 150,
+    this.width,
     this.padding,
     this.border,
     this.borderRadius,
@@ -68,10 +68,13 @@ class IconWithTextButton extends StatelessWidget {
               Gap.w4,
               Flexible(
                 child: FittedBox(
+                  fit: BoxFit.scaleDown,
                   child: Text(
                     label,
                     style: kHeader2TextStyle.copyWith(
-                      color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                      color: isDisabled
+                          ? context.appTheme.onBackground
+                          : color ?? context.appTheme.onAccent,
                       fontSize: labelSize,
                     ),
                   ),

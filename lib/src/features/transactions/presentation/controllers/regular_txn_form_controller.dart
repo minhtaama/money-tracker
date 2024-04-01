@@ -27,6 +27,15 @@ class RegularTransactionFormState {
     return RegularTransactionFormState._();
   }
 
+  bool isAllNull() {
+    return amount == null &&
+        note == null &&
+        tag == null &&
+        category == null &&
+        account == null &&
+        toAccount == null;
+  }
+
   RegularTransactionFormState._({
     this.dateTime,
     this.amount,
@@ -115,8 +124,7 @@ class RegularTransactionFormController
 }
 
 /// Set arg to `null` if edit mode (initial state has properties all `null`)
-final regularTransactionFormNotifierProvider =
-    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(
-        () {
+final regularTransactionFormNotifierProvider = AutoDisposeNotifierProviderFamily<
+    RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(() {
   return RegularTransactionFormController();
 });

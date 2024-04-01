@@ -1,9 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
-import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
@@ -12,9 +8,6 @@ import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
 import '../domain/template_transaction.dart';
-import '../domain/transaction_base.dart';
-import '../presentation/controllers/credit_payment_form_controller.dart';
-import '../presentation/controllers/regular_txn_form_controller.dart';
 
 class TemplateTransactionRepositoryRealmDb {
   TemplateTransactionRepositoryRealmDb(this.realm);
@@ -91,16 +84,10 @@ final tempTransactionRepositoryRealmProvider = Provider<TemplateTransactionRepos
   },
 );
 
-final tempTransactionsChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
+final tempTransactionsChangesStreamProvider =
+    StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
   (ref) {
     final transactionRepo = ref.watch(tempTransactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges();
   },
 );
-
-// final tempTransactionStreamProvider = StreamProvider.autoDispose.family<BaseTransaction, String>(
-//   (ref, val) {
-//     final transactionRepo = ref.watch(tempTransactionRepositoryRealmProvider);
-//     return transactionRepo._watchTransaction(val);
-//   },
-// );

@@ -49,20 +49,23 @@ class TextHeader extends StatelessWidget {
 }
 
 class BottomButtons extends StatelessWidget {
-  const BottomButtons(
-      {super.key,
-      required this.isBigButtonDisabled,
-      required this.onBigButtonTap,
-      this.smallButtonIcon,
-      this.onSmallButtonTap,
-      this.bigButtonIcon,
-      this.bigButtonLabel});
+  const BottomButtons({
+    super.key,
+    required this.isBigButtonDisabled,
+    required this.onBigButtonTap,
+    this.smallButtonIcon,
+    this.onSmallButtonTap,
+    this.bigButtonIcon,
+    this.bigButtonLabel,
+    this.optional,
+  });
   final bool isBigButtonDisabled;
   final String? smallButtonIcon;
   final VoidCallback? onSmallButtonTap;
   final String? bigButtonIcon;
   final String? bigButtonLabel;
   final VoidCallback onBigButtonTap;
+  final Widget? optional;
 
   @override
   Widget build(BuildContext context) {
@@ -70,18 +73,21 @@ class BottomButtons extends StatelessWidget {
       children: [
         RoundedIconButton(
           iconPath: smallButtonIcon ?? AppIcons.back,
-          backgroundColor: context.appTheme.primary,
-          iconColor: context.appTheme.onPrimary,
-          size: 55,
+          backgroundColor: Colors.transparent,
+          iconColor: context.appTheme.onBackground,
+          iconPadding: 10,
           onTap: onSmallButtonTap ?? () => context.pop(),
         ),
         const Spacer(),
+        optional ?? Gap.noGap,
+        Gap.w12,
         IconWithTextButton(
           iconPath: bigButtonIcon ?? AppIcons.add,
           label: bigButtonLabel ?? 'Add',
           backgroundColor: context.appTheme.accent1,
           isDisabled: isBigButtonDisabled,
           onTap: onBigButtonTap,
+          padding: const EdgeInsets.only(left: 12, right: 18),
         ),
       ],
     );
