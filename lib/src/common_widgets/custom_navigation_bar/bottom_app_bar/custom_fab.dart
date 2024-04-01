@@ -8,7 +8,8 @@ import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
 
 class FABItem {
-  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem(
+      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -32,7 +33,8 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -58,7 +60,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
 
   @override
   void didChangeDependencies() {
-    overlayBoxWidth = MediaQuery.of(context).size.width / 1.2;
+    overlayBoxWidth = (MediaQuery.of(context).size.width / 1.2).clamp(0, 400);
 
     _buttonWidgets = (overlayEntry) {
       return List.generate(
@@ -68,7 +70,8 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () async {
@@ -79,7 +82,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   iconColor: context.appTheme.onBackground,
                   label: widget.roundedButtonItems[index].label,
                   backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
-                  size: overlayBoxWidth / 5.5,
+                  size: 55,
                 ),
               ],
             ),
@@ -188,6 +191,19 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                       ),
                     ),
                   ),
+                  Positioned(
+                    top: fabPosition.dy,
+                    left: fabPosition.dx - 27.5,
+                    child: Opacity(
+                      opacity: _animation.value,
+                      child: RoundedIconButton(
+                        iconPath: AppIcons.fykFace,
+                        iconColor: context.appTheme.onAccent,
+                        backgroundColor: context.appTheme.accent2,
+                        size: 55,
+                      ),
+                    ),
+                  )
                 ],
               );
             },

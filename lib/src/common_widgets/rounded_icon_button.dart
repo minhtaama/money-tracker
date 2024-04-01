@@ -52,20 +52,25 @@ class RoundedIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return label != null
         ? ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: (size ?? 20) * 2),
+            constraints: BoxConstraints(maxWidth: (size ?? 48) * 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                roundedButton(context),
+                SizedBox(
+                  width: size ?? 48,
+                  height: size ?? 48,
+                  child: roundedButton(context),
+                ),
+                Gap.h4,
                 Material(
                   color: Colors.transparent,
                   child: Text(
                     label!,
                     style: kHeader2TextStyle.copyWith(
                       color: context.appTheme.onBackground,
-                      fontSize: labelSize ?? (size != null ? size! / 4 : 20),
+                      fontSize: labelSize ?? (size != null ? size! / 4 : 48 / 4),
                     ),
                     textAlign: TextAlign.center,
                   ),
