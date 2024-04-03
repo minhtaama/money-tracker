@@ -32,8 +32,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -142,15 +141,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(
-                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
                             transactionType: widget.transactionType,
                             validator: (_) => _categoryValidator(),
-                            onChangedCategory: (newCategory) =>
-                                _stateController.changeCategory(newCategory),
+                            onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
                           )
                         : AccountFormSelector(
                             accountType: AccountType.regular,
@@ -215,10 +212,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             isBigButtonDisabled: _isButtonDisabled,
             onBigButtonTap: _submit,
             optional: RoundedIconButton(
-              iconPath: AppIcons.add,
+              iconPath: AppIcons.heartOutline,
+              withBorder: true,
               backgroundColor: Colors.transparent,
-              iconColor:
-                  stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.onBackground,
+              iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.onBackground,
               iconPadding: 10,
               onTap: _submitTemplate,
             ),

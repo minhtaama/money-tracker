@@ -42,8 +42,7 @@ class TextHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: kHeader2TextStyle.copyWith(
-          fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
+      style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
     );
   }
 }
@@ -77,10 +76,11 @@ class BottomButtons extends StatelessWidget {
           iconColor: context.appTheme.onBackground,
           iconPadding: 10,
           onTap: onSmallButtonTap ?? () => context.pop(),
+          withBorder: true,
         ),
         const Spacer(),
         optional ?? Gap.noGap,
-        Gap.w12,
+        Gap.w16,
         IconWithTextButton(
           iconPath: bigButtonIcon ?? AppIcons.add,
           label: bigButtonLabel ?? 'Add',

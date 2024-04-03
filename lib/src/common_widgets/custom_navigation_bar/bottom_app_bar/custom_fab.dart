@@ -1,15 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../rounded_icon_button.dart';
+import 'dart:math' as math;
 
 class FABItem {
-  FABItem(
-      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -21,11 +23,17 @@ class FABItem {
 // https://blog.logrocket.com/complete-guide-implementing-overlays-flutter/#example-2-a-floatingactionbutton-showing-three-other-buttons
 // Create a custom FloatingActionButton that expands more buttons when tapped
 class CustomFloatingActionButton extends StatefulWidget {
-  const CustomFloatingActionButton(
-      {super.key, required this.roundedButtonItems, this.listItems, this.color, this.iconColor})
-      : assert(roundedButtonItems.length == 3);
+  const CustomFloatingActionButton({
+    super.key,
+    required this.roundedButtonItems,
+    this.listItems,
+    this.mainItem,
+    this.color,
+    this.iconColor,
+  }) : assert(roundedButtonItems.length == 3);
   final List<FABItem> roundedButtonItems;
   final List<FABItem>? listItems;
+  final FABItem? mainItem;
   final Color? color;
   final Color? iconColor;
 
@@ -33,13 +41,14 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
-    with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
   late List<Widget> Function(OverlayEntry overlayEntry) _listWidgets;
+  late Widget Function(OverlayEntry overlayEntry, double animationValue) _mainButtonOverlay;
   late double overlayBoxWidth;
+  Size _floatingActionButtonSize = Size.zero;
 
   // GlobalKey is assigned to FloatingActionButton to get the RenderBox object
   // of the returned FloatingActionButton.
@@ -54,6 +63,9 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       reverseDuration: k150msDuration,
     );
     _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      _floatingActionButtonSize = _globalKey.currentContext!.size!;
+    });
 
     super.initState();
   }
@@ -70,8 +82,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment:
-                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () async {
@@ -120,6 +131,18 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             })
           : [];
     };
+
+    _mainButtonOverlay = (overlayEntry, animationValue) => RoundedIconButton(
+          iconPath: widget.mainItem?.icon ?? AppIcons.add,
+          iconColor: widget.mainItem?.color ?? widget.iconColor ?? context.appTheme.onAccent,
+          backgroundColor: widget.mainItem?.backgroundColor ?? widget.color ?? context.appTheme.accent2,
+          iconPadding: 48 - (36 * animationValue),
+          onTap: () async {
+            await _removeEntry(overlayEntry);
+            widget.mainItem?.onTap();
+          },
+          size: _floatingActionButtonSize.width,
+        );
 
     super.didChangeDependencies();
   }
@@ -194,15 +217,22 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   Positioned(
                     top: fabPosition.dy,
                     left: fabPosition.dx - 27.5,
-                    child: Opacity(
-                      opacity: _animation.value,
-                      child: RoundedIconButton(
-                        iconPath: AppIcons.fykFace,
-                        iconColor: context.appTheme.onAccent,
-                        backgroundColor: context.appTheme.accent2,
-                        size: 55,
-                      ),
-                    ),
+                    child: widget.mainItem != null
+                        ? Opacity(
+                            opacity: _animation.value,
+                            child: Transform.rotate(
+                              angle: math.pi * _animation.value,
+                              alignment: Alignment.center,
+                              child: Transform.rotate(
+                                angle: -math.pi,
+                                child: _mainButtonOverlay(overlayEntry, _animation.value),
+                              ),
+                            ),
+                          )
+                        : Transform.rotate(
+                            angle: (math.pi * 3 / 4) * _animation.value,
+                            child: _mainButtonOverlay(overlayEntry, 1),
+                          ),
                   )
                 ],
               );

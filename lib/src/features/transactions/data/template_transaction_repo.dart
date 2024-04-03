@@ -18,9 +18,12 @@ class TemplateTransactionRepositoryRealmDb {
     return realm.all<TemplateTransactionDb>().changes;
   }
 
+  List<TemplateTransactionDb> _realmResults() =>
+      realm.all<TemplateTransactionDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
+
   List<TemplateTransaction> getTransactions() {
     List<TemplateTransactionDb> list =
-        realm.all<TemplateTransactionDb>().query('TRUEPREDICATE SORT(dateTime ASC)').toList();
+        realm.all<TemplateTransactionDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
     return list.map((txn) => TemplateTransaction.fromDatabase(txn)).toList();
   }
 
@@ -32,6 +35,23 @@ class TemplateTransactionRepositoryRealmDb {
     }
     throw StateError('TemplateTransactionDb id is not found');
   }
+
+  /// The list must be the same list displayed in the widget (with the same sort order)
+  // void reorder(int oldIndex, int newIndex) {
+  //   final list = _realmResults().toList();
+  //
+  //   final item = list.removeAt(oldIndex);
+  //   list.insert(newIndex, item);
+  //
+  //   realm.write(
+  //     () {
+  //       // Recreate order to query sort by this property
+  //       for (int i = 0; i < list.length; i++) {
+  //         list[i].order = i;
+  //       }
+  //     },
+  //   );
+  // }
 }
 
 extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
@@ -84,8 +104,7 @@ final tempTransactionRepositoryRealmProvider = Provider<TemplateTransactionRepos
   },
 );
 
-final tempTransactionsChangesStreamProvider =
-    StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
+final tempTransactionsChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
   (ref) {
     final transactionRepo = ref.watch(tempTransactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges();

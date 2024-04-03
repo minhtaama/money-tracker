@@ -66,6 +66,8 @@ class AppIcons {
   static String get fykFace => 'assets/svg/app/fyk_face.svg';
   static String get switchIcon => 'assets/svg/app/switch.svg';
   static String get turn => 'assets/svg/app/turn.svg';
+  static String get heartOutline => 'assets/svg/app/heart-outline.svg';
+  static String get heartFill => 'assets/svg/app/heart-fill.svg';
 
   static String get defaultIcon => 'assets/svg/app/default.svg';
 

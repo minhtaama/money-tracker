@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/main.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -76,6 +77,14 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       ),
     ];
 
+    final mainItem = FABItem(
+      icon: AppIcons.heartOutline,
+      label: '',
+      color: context.appTheme.onAccent,
+      backgroundColor: context.appTheme.accent2,
+      onTap: () => showCustomModalBottomSheet(context: context, child: Placeholder()),
+    );
+
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
@@ -84,6 +93,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
           ? CustomFloatingActionButton(
               roundedButtonItems: roundedButtonItems,
               listItems: listItems,
+              mainItem: mainItem,
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

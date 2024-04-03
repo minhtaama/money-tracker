@@ -14,6 +14,8 @@ class RoundedIconButton extends StatelessWidget {
     this.labelSize,
     this.backgroundColor,
     this.size,
+    this.withBorder = false,
+    this.borderColor,
     this.iconPadding = 12,
     this.onTap,
     this.onLongPress,
@@ -29,6 +31,8 @@ class RoundedIconButton extends StatelessWidget {
   final Color? iconColor;
   final Color? inkColor;
   final double? size;
+  final bool withBorder;
+  final Color? borderColor;
   final double? labelSize;
   final double iconPadding;
   final VoidCallback? onTap;
@@ -46,6 +50,8 @@ class RoundedIconButton extends StatelessWidget {
         onLongPress: onLongPress,
         elevation: elevation,
         reactImmediately: reactImmediately,
+        borderColor: borderColor,
+        withBorder: withBorder,
       );
 
   @override
@@ -87,18 +93,23 @@ class RoundedIconButton extends StatelessWidget {
 }
 
 class _RoundedButton extends StatefulWidget {
-  const _RoundedButton(
-      {super.key,
-      required this.iconPath,
-      required this.backgroundColor,
-      required this.iconColor,
-      required this.inkColor,
-      required this.iconPadding,
-      required this.onTap,
-      required this.onLongPress,
-      required this.elevation,
-      required this.reactImmediately});
+  const _RoundedButton({
+    super.key,
+    required this.withBorder,
+    this.borderColor,
+    required this.iconPath,
+    required this.backgroundColor,
+    required this.iconColor,
+    required this.inkColor,
+    required this.iconPadding,
+    required this.onTap,
+    required this.onLongPress,
+    required this.elevation,
+    required this.reactImmediately,
+  });
 
+  final bool withBorder;
+  final Color? borderColor;
   final String iconPath;
   final Color? backgroundColor;
   final Color? iconColor;
@@ -166,6 +177,9 @@ class _RoundedButtonState extends State<_RoundedButton> {
           padding: EdgeInsets.zero,
           margin: EdgeInsets.zero,
           borderRadius: BorderRadius.circular(1000),
+          border: widget.withBorder
+              ? Border.all(color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground, width: 1.5)
+              : null,
           elevation: _scale < 1.0 ? 0 : widget.elevation,
           isGradient: false,
           child: Padding(
