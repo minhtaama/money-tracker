@@ -149,9 +149,11 @@ class _RoundedButtonState extends State<_RoundedButton> {
               });
               if (widget.reactImmediately) {
                 Future.delayed(k100msDuration, () {
-                  setState(() {
-                    _scale = 1.0;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _scale = 1.0;
+                    });
+                  }
                 });
                 widget.onTap?.call();
               } else {

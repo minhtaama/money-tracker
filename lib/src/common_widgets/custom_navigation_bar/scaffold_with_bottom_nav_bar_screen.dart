@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/main.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_template_transaction.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -82,7 +83,10 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       label: '',
       color: context.appTheme.onAccent,
       backgroundColor: context.appTheme.accent2,
-      onTap: () => showCustomModalBottomSheet(context: context, child: Placeholder()),
+      onTap: () => showCustomModalBottomSheet(
+        context: context,
+        child: const AddTemplateTransactionModalScreen(),
+      ),
     );
 
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go

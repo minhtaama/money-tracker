@@ -37,21 +37,21 @@ class TemplateTransactionRepositoryRealmDb {
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)
-  // void reorder(int oldIndex, int newIndex) {
-  //   final list = _realmResults().toList();
-  //
-  //   final item = list.removeAt(oldIndex);
-  //   list.insert(newIndex, item);
-  //
-  //   realm.write(
-  //     () {
-  //       // Recreate order to query sort by this property
-  //       for (int i = 0; i < list.length; i++) {
-  //         list[i].order = i;
-  //       }
-  //     },
-  //   );
-  // }
+  void reorder(int oldIndex, int newIndex) {
+    final list = _realmResults().toList();
+
+    final item = list.removeAt(oldIndex);
+    list.insert(newIndex, item);
+
+    realm.write(
+      () {
+        // Recreate order to query sort by this property
+        for (int i = 0; i < list.length; i++) {
+          list[i].order = i;
+        }
+      },
+    );
+  }
 }
 
 extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
@@ -72,15 +72,18 @@ extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
+    final order = getTransactions().length;
+
     final newTemplateTransaction = TemplateTransactionDb(
       ObjectId(),
-      TransactionType.income.databaseValue,
+      transactionType.databaseValue,
       dateTime: dateTime,
       amount: amount?.roundTo2DP(),
       note: note,
       category: category?.databaseObject,
       categoryTag: tag?.databaseObject,
       account: account?.databaseObject,
+      order: order,
     );
 
     realm.write(() {

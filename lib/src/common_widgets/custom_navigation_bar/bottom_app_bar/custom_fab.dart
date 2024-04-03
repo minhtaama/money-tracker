@@ -46,9 +46,10 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
   late List<Widget> Function(OverlayEntry overlayEntry) _listWidgets;
-  late Widget Function(OverlayEntry overlayEntry, double animationValue) _mainButtonOverlay;
+  late Widget Function(OverlayEntry overlayEntry, Animation<double>? animation) _mainButtonOverlay;
   late double overlayBoxWidth;
   Size _floatingActionButtonSize = Size.zero;
+  bool _isOverlayShowing = false;
 
   // GlobalKey is assigned to FloatingActionButton to get the RenderBox object
   // of the returned FloatingActionButton.
@@ -132,17 +133,22 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
           : [];
     };
 
-    _mainButtonOverlay = (overlayEntry, animationValue) => RoundedIconButton(
+    _mainButtonOverlay = (overlayEntry, animation) {
+      return Transform.scale(
+        scale: (animation?.isDismissed ?? false) ? (0.8 + 0.2 * animation!.value) : 1,
+        child: RoundedIconButton(
           iconPath: widget.mainItem?.icon ?? AppIcons.add,
           iconColor: widget.mainItem?.color ?? widget.iconColor ?? context.appTheme.onAccent,
           backgroundColor: widget.mainItem?.backgroundColor ?? widget.color ?? context.appTheme.accent2,
-          iconPadding: 48 - (36 * animationValue),
+          iconPadding: 48 - (36 * (animation?.value ?? 1)),
           onTap: () async {
             await _removeEntry(overlayEntry);
             widget.mainItem?.onTap();
           },
           size: _floatingActionButtonSize.width,
-        );
+        ),
+      );
+    };
 
     super.didChangeDependencies();
   }
@@ -154,6 +160,13 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   }
 
   void _showOverlay() {
+    Future.delayed(
+      k150msDuration,
+      () => setState(() {
+        _isOverlayShowing = true;
+      }),
+    );
+
     Offset fabPosition = _getRenderObjectCenterPosition(_globalKey, isTopCenterPoint: true);
 
     // Get OverlayState of the closest instance in context
@@ -225,13 +238,13 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                               alignment: Alignment.center,
                               child: Transform.rotate(
                                 angle: -math.pi,
-                                child: _mainButtonOverlay(overlayEntry, _animation.value),
+                                child: _mainButtonOverlay(overlayEntry, _animation),
                               ),
                             ),
                           )
                         : Transform.rotate(
                             angle: (math.pi * 3 / 4) * _animation.value,
-                            child: _mainButtonOverlay(overlayEntry, 1),
+                            child: _mainButtonOverlay(overlayEntry, null),
                           ),
                   )
                 ],
@@ -248,6 +261,10 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   }
 
   Future<void> _removeEntry(OverlayEntry entry) async {
+    setState(() {
+      _isOverlayShowing = false;
+    });
+
     // Reverse the animation
     await _animationController.reverse();
 
@@ -282,13 +299,16 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       focusColor: Colors.transparent,
       splashColor: Colors.transparent,
       hoverColor: Colors.transparent,
-      child: RoundedIconButton(
-        iconPath: AppIcons.add,
-        iconColor: widget.iconColor ?? context.appTheme.onAccent,
-        backgroundColor: widget.color ?? context.appTheme.accent2,
-        size: double.infinity,
-        onTap: _showOverlay,
-        elevation: 10,
+      child: Opacity(
+        opacity: _isOverlayShowing ? 0 : 1,
+        child: RoundedIconButton(
+          iconPath: AppIcons.add,
+          iconColor: widget.iconColor ?? context.appTheme.onAccent,
+          backgroundColor: widget.color ?? context.appTheme.accent2,
+          size: double.infinity,
+          onTap: _showOverlay,
+          elevation: 10,
+        ),
       ),
     );
   }

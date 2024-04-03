@@ -182,7 +182,7 @@ class _CreditPaymentDetailsDb {
 /////////////////////////////////////// PLANNED TRANSACTION ////////////////////////////////////
 
 @RealmModel()
-class _TemplateTransactionDb implements IRealmObjectWithID {
+class _TemplateTransactionDb implements IRealmObjectWithID, _IOrderable {
   @override
   @PrimaryKey()
   late ObjectId id;
@@ -210,6 +210,9 @@ class _TemplateTransactionDb implements IRealmObjectWithID {
 
   /// **Only specify this if type is [TransactionType.transfer]**
   _TransferFeeDb? transferFee;
+
+  @override
+  int? order;
 }
 
 @RealmModel()

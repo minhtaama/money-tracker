@@ -77,7 +77,6 @@ class _HelpBoxState extends State<HelpBox> {
                       backgroundColor: Colors.transparent,
                       size: 35,
                       iconPadding: 9,
-                      reactImmediately: false,
                       onTap: () {
                         setState(() {
                           _isShow = !_isShow;

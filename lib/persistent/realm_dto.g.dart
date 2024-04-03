@@ -740,6 +740,7 @@ class TemplateTransactionDb extends _TemplateTransactionDb
     CategoryTagDb? categoryTag,
     AccountDb? transferAccount,
     TransferFeeDb? transferFee,
+    int? order,
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'type', type);
@@ -751,6 +752,7 @@ class TemplateTransactionDb extends _TemplateTransactionDb
     RealmObjectBase.set(this, 'categoryTag', categoryTag);
     RealmObjectBase.set(this, 'transferAccount', transferAccount);
     RealmObjectBase.set(this, 'transferFee', transferFee);
+    RealmObjectBase.set(this, 'order', order);
   }
 
   TemplateTransactionDb._();
@@ -817,6 +819,11 @@ class TemplateTransactionDb extends _TemplateTransactionDb
       RealmObjectBase.set(this, 'transferFee', value);
 
   @override
+  int? get order => RealmObjectBase.get<int>(this, 'order') as int?;
+  @override
+  set order(int? value) => RealmObjectBase.set(this, 'order', value);
+
+  @override
   Stream<RealmObjectChanges<TemplateTransactionDb>> get changes =>
       RealmObjectBase.getChanges<TemplateTransactionDb>(this);
 
@@ -846,6 +853,7 @@ class TemplateTransactionDb extends _TemplateTransactionDb
           optional: true, linkTarget: 'AccountDb'),
       SchemaProperty('transferFee', RealmPropertyType.object,
           optional: true, linkTarget: 'TransferFeeDb'),
+      SchemaProperty('order', RealmPropertyType.int, optional: true),
     ]);
   }
 }
