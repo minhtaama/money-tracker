@@ -11,7 +11,8 @@ import '../../rounded_icon_button.dart';
 import 'dart:math' as math;
 
 class FABItem {
-  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem(
+      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -41,7 +42,8 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -83,7 +85,8 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () async {
@@ -146,6 +149,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             widget.mainItem?.onTap();
           },
           size: _floatingActionButtonSize.width,
+          noAnimation: true,
         ),
       );
     };
@@ -231,19 +235,16 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     top: fabPosition.dy,
                     left: fabPosition.dx - 27.5,
                     child: widget.mainItem != null
-                        ? Opacity(
-                            opacity: _animation.value,
+                        ? Transform.rotate(
+                            angle: math.pi * _animation.value,
+                            alignment: Alignment.center,
                             child: Transform.rotate(
-                              angle: math.pi * _animation.value,
-                              alignment: Alignment.center,
-                              child: Transform.rotate(
-                                angle: -math.pi,
-                                child: _mainButtonOverlay(overlayEntry, _animation),
-                              ),
+                              angle: -math.pi,
+                              child: _mainButtonOverlay(overlayEntry, _animation),
                             ),
                           )
                         : Transform.rotate(
-                            angle: (math.pi * 3 / 4) * _animation.value,
+                            angle: (math.pi * 1 / 4) * _animation.value,
                             child: _mainButtonOverlay(overlayEntry, null),
                           ),
                   )

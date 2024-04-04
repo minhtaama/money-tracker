@@ -6,7 +6,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class MoneyAmount extends StatefulWidget {
-  final double amount;
+  final double? amount;
   final Curve curve;
   final Duration duration;
   final TextStyle? style;
@@ -79,6 +79,28 @@ class _MoneyAmountState extends State<MoneyAmount> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     final symbolBefore = context.appSettings.currencyType == CurrencyType.symbolBefore;
     final symbol = context.appSettings.currency.symbol;
+
+    if (widget.amount == null) {
+      return EasyRichText(
+        '${symbolBefore ? symbol : ''} ---- ${!symbolBefore ? symbol : ''}',
+        defaultStyle: widget.style?.copyWith(letterSpacing: 2),
+        overflow: widget.overflow,
+        maxLines: widget.maxLines,
+        softWrap: false,
+        patternList: [
+          EasyRichTextPattern(
+              targetString: symbolBefore ? symbol : '',
+              hasSpecialCharacters: true,
+              style: widget.symbolStyle,
+              matchWordBoundaries: false),
+          EasyRichTextPattern(
+              targetString: !symbolBefore ? symbol : '',
+              hasSpecialCharacters: true,
+              style: widget.symbolStyle,
+              matchWordBoundaries: false),
+        ],
+      );
+    }
 
     return _MoneyAnimatedText(
       animation: _animation,

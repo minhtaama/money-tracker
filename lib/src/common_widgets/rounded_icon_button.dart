@@ -16,6 +16,7 @@ class RoundedIconButton extends StatelessWidget {
     this.size,
     this.withBorder = false,
     this.borderColor,
+    this.borderWidth = 1.5,
     this.iconPadding = 12,
     this.onTap,
     this.onLongPress,
@@ -23,6 +24,7 @@ class RoundedIconButton extends StatelessWidget {
     this.inkColor,
     this.elevation = 0,
     this.reactImmediately = true,
+    this.noAnimation = false,
   });
 
   final String iconPath;
@@ -33,12 +35,14 @@ class RoundedIconButton extends StatelessWidget {
   final double? size;
   final bool withBorder;
   final Color? borderColor;
+  final double borderWidth;
   final double? labelSize;
   final double iconPadding;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final double elevation;
   final bool reactImmediately;
+  final bool noAnimation;
 
   Widget roundedButton(BuildContext context) => _RoundedButton(
         iconPath: iconPath,
@@ -52,6 +56,8 @@ class RoundedIconButton extends StatelessWidget {
         reactImmediately: reactImmediately,
         borderColor: borderColor,
         withBorder: withBorder,
+        borderWidth: borderWidth,
+        noAnimation: noAnimation,
       );
 
   @override
@@ -97,6 +103,7 @@ class _RoundedButton extends StatefulWidget {
     super.key,
     required this.withBorder,
     this.borderColor,
+    required this.borderWidth,
     required this.iconPath,
     required this.backgroundColor,
     required this.iconColor,
@@ -106,10 +113,12 @@ class _RoundedButton extends StatefulWidget {
     required this.onLongPress,
     required this.elevation,
     required this.reactImmediately,
+    required this.noAnimation,
   });
 
   final bool withBorder;
   final Color? borderColor;
+  final double borderWidth;
   final String iconPath;
   final Color? backgroundColor;
   final Color? iconColor;
@@ -119,6 +128,7 @@ class _RoundedButton extends StatefulWidget {
   final VoidCallback? onLongPress;
   final double elevation;
   final bool reactImmediately;
+  final bool noAnimation;
 
   @override
   State<_RoundedButton> createState() => _RoundedButtonState();
@@ -130,7 +140,7 @@ class _RoundedButtonState extends State<_RoundedButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: widget.onTap == null && widget.onLongPress == null
+      onTapDown: widget.onTap == null && widget.onLongPress == null || widget.noAnimation
           ? null
           : (_) => setState(() {
                 _scale = 0.8;
@@ -144,9 +154,11 @@ class _RoundedButtonState extends State<_RoundedButton> {
       onTap: widget.onTap == null && widget.onLongPress == null
           ? null
           : () async {
-              setState(() {
-                _scale = 0.8;
-              });
+              if (!widget.noAnimation) {
+                setState(() {
+                  _scale = 0.8;
+                });
+              }
               if (widget.reactImmediately) {
                 Future.delayed(k100msDuration, () {
                   if (mounted) {
@@ -180,7 +192,9 @@ class _RoundedButtonState extends State<_RoundedButton> {
           margin: EdgeInsets.zero,
           borderRadius: BorderRadius.circular(1000),
           border: widget.withBorder
-              ? Border.all(color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground, width: 1.5)
+              ? Border.all(
+                  color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
+                  width: widget.borderWidth)
               : null,
           elevation: _scale < 1.0 ? 0 : widget.elevation,
           isGradient: false,

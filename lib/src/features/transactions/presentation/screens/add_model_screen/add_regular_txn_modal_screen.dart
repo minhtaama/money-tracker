@@ -10,6 +10,7 @@ import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/bu
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -32,11 +33,13 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
   bool _isTemplateSubmitted = false;
+  TemplateTransaction? _templateTransaction;
 
   String get _title {
     return widget.transactionType == TransactionType.income
@@ -92,7 +95,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         _isTemplateSubmitted = true;
       });
 
-      tempTxnRepo.writeNew(
+      _templateTransaction = tempTxnRepo.writeNew(
         transactionType: widget.transactionType,
         dateTime: _stateRead.dateTime,
         amount: _stateRead.amount,
@@ -104,6 +107,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         fee: null,
         isChargeOnDestinationAccount: null,
       );
+    } else if (_isTemplateSubmitted && _templateTransaction != null) {
+      setState(() {
+        _isTemplateSubmitted = false;
+      });
+
+      tempTxnRepo.delete(_templateTransaction!);
+      _templateTransaction = null;
     }
   }
 
@@ -152,7 +162,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(
+                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
@@ -246,9 +257,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             onBigButtonTap: _submit,
             optional: RoundedIconButton(
               iconPath: _isTemplateSubmitted ? AppIcons.heartFill : AppIcons.heartOutline,
-              withBorder: true,
+              withBorder: false,
               backgroundColor: Colors.transparent,
-              iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.onBackground,
+              iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.primary,
               iconPadding: 10,
               onTap: _submitTemplate,
             ),

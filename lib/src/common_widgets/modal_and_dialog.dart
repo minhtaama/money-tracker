@@ -33,7 +33,8 @@ Future<T?> showCustomDialog<T>({
         padding: const EdgeInsets.all(12.0),
         child: AlertDialog(
           surfaceTintColor: Colors.transparent,
-          backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+          backgroundColor:
+              context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
           elevation: 5,
           content: child,
         ),
@@ -71,9 +72,11 @@ Future<T?> showConfirmModalBottomSheet<T>({
     context: context,
     elevation: 0,
     enableDrag: false,
-    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.6)
+        : AppColors.grey(context).withOpacity(0.6),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -126,24 +129,25 @@ Future<T?> showConfirmModalBottomSheet<T>({
                         )
                       ]
                     : [
-                        IconWithTextButton(
-                          iconPath: AppIcons.back,
-                          label: context.localize.goBack,
-                          color: context.appTheme.onBackground,
-                          backgroundColor: AppColors.greyBgr(context),
-                          onTap: () => context.pop(),
+                        Expanded(
+                          child: IconWithTextButton(
+                            iconPath: AppIcons.back,
+                            label: context.localize.goBack,
+                            color: context.appTheme.onBackground,
+                            backgroundColor: AppColors.greyBgr(context),
+                            onTap: () => context.pop(),
+                          ),
                         ),
-                        const Spacer(),
-                        IconWithTextButton(
+                        Gap.w24,
+                        RoundedIconButton(
                           iconPath: confirmIcon ?? AppIcons.delete,
-                          label: confirmLabel,
-                          color: context.appTheme.onNegative,
+                          iconColor: context.appTheme.onNegative,
                           backgroundColor: context.appTheme.negative,
                           onTap: () {
                             context.pop();
                             onConfirm();
                           },
-                        ),
+                        )
                       ],
               )
             ],
@@ -170,9 +174,11 @@ Future<T?> showCustomModalBottomSheet<T>(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),
-    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7),
+    backgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.9)
+        : AppColors.grey(context).withOpacity(0.7),
     isScrollControlled: true,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -202,9 +208,11 @@ Page<T> showModalBottomSheetPage<T>(BuildContext context, GoRouterState state,
     {required Widget child, bool hasHandle = true}) {
   return ModalBottomSheetPage(
     hasHandle: hasHandle,
-    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    modalBarrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7),
+    backgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    modalBarrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.9)
+        : AppColors.grey(context).withOpacity(0.7),
     child: child,
   );
 }
@@ -261,7 +269,8 @@ class ModalBottomSheetPage<T> extends Page<T> {
               ? Stack(
                   children: [
                     AnimatedPadding(
-                      padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding:
+                          EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
                       duration: const Duration(milliseconds: 0),
                       child: SingleChildScrollView(child: child),
                     ),

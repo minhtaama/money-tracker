@@ -116,6 +116,7 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
             margin:
                 widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
             color: widget.isWrapByCard ? null : Colors.transparent,
+            borderRadius: widget.isWrapByCard ? null : BorderRadius.zero,
             clip: widget.sectionsClipping,
             child: widget.onReorder == null
                 ? Center(

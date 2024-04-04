@@ -55,7 +55,7 @@ class TemplateTransactionRepositoryRealmDb {
 }
 
 extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
-  void writeNew({
+  TemplateTransaction writeNew({
     required TransactionType transactionType,
     required DateTime? dateTime,
     required double? amount,
@@ -89,6 +89,8 @@ extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
     realm.write(() {
       realm.add(newTemplateTransaction);
     });
+
+    return TemplateTransaction.fromDatabase(newTemplateTransaction);
   }
 
   void delete(TemplateTransaction transaction) {
@@ -107,7 +109,8 @@ final tempTransactionRepositoryRealmProvider = Provider<TemplateTransactionRepos
   },
 );
 
-final tempTransactionsChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
+final tempTransactionsChangesStreamProvider =
+    StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
   (ref) {
     final transactionRepo = ref.watch(tempTransactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges();
