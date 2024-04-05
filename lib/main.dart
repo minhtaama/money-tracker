@@ -51,8 +51,7 @@ class MoneyTrackerApp extends ConsumerWidget {
           builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
               systemNavigationBarColor: context.appTheme.background1,
-              systemNavigationBarIconBrightness:
-                  context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
+              systemNavigationBarIconBrightness: context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
               systemNavigationBarDividerColor: Colors.transparent,
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: systemIconBrightness,
@@ -66,6 +65,13 @@ class MoneyTrackerApp extends ConsumerWidget {
               theme: ThemeData(
                 useMaterial3: true,
                 fontFamily: 'WixMadeforDisplay',
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: ZoomPageTransitionsBuilder(
+                      allowEnterRouteSnapshotting: false,
+                    ),
+                  },
+                ),
                 // For showDatePicker2 colors
                 colorScheme: ColorScheme.fromSwatch()
                     .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),

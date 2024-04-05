@@ -32,7 +32,7 @@ class PageHeading extends StatelessWidget {
             hasBackButton
                 ? RoundedIconButton(
                     iconPath: AppIcons.back,
-                    backgroundColor: context.appTheme.background1,
+                    backgroundColor: Colors.transparent,
                     iconColor: context.appTheme.onBackground,
                     onTap: () => context.pop(),
                   )
@@ -50,8 +50,7 @@ class PageHeading extends StatelessWidget {
                                   Text(
                                     leadingTitle!,
                                     style: kNormalTextStyle.copyWith(
-                                        color: context.appTheme.onBackground,
-                                        fontSize: kHeader1TextStyle.fontSize),
+                                        color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
                                   ),
                                   Gap.w8,
                                   Expanded(

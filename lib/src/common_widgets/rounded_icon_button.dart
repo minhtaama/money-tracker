@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../utils/constants.dart';
 import 'card_item.dart';
@@ -25,6 +26,7 @@ class RoundedIconButton extends StatelessWidget {
     this.elevation = 0,
     this.reactImmediately = true,
     this.noAnimation = false,
+    this.useContainerInsteadOfInk = false,
   });
 
   final String iconPath;
@@ -43,6 +45,7 @@ class RoundedIconButton extends StatelessWidget {
   final double elevation;
   final bool reactImmediately;
   final bool noAnimation;
+  final bool useContainerInsteadOfInk;
 
   Widget roundedButton(BuildContext context) => _RoundedButton(
         iconPath: iconPath,
@@ -58,6 +61,7 @@ class RoundedIconButton extends StatelessWidget {
         withBorder: withBorder,
         borderWidth: borderWidth,
         noAnimation: noAnimation,
+        useContainerInsteadOfInk: useContainerInsteadOfInk,
       );
 
   @override
@@ -103,6 +107,7 @@ class _RoundedButton extends StatefulWidget {
     super.key,
     required this.withBorder,
     this.borderColor,
+    this.useContainerInsteadOfInk = false,
     required this.borderWidth,
     required this.iconPath,
     required this.backgroundColor,
@@ -129,6 +134,7 @@ class _RoundedButton extends StatefulWidget {
   final double elevation;
   final bool reactImmediately;
   final bool noAnimation;
+  final bool useContainerInsteadOfInk;
 
   @override
   State<_RoundedButton> createState() => _RoundedButtonState();
@@ -139,65 +145,66 @@ class _RoundedButtonState extends State<_RoundedButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: widget.onTap == null && widget.onLongPress == null || widget.noAnimation
-          ? null
-          : (_) => setState(() {
-                _scale = 0.8;
-              }),
-      onTapUp: (_) => setState(() {
-        _scale = 1.0;
-      }),
-      onTapCancel: () => setState(() {
-        _scale = 1.0;
-      }),
-      onTap: widget.onTap == null && widget.onLongPress == null
-          ? null
-          : () async {
-              if (!widget.noAnimation) {
-                setState(() {
+    return AnimatedScale(
+      scale: _scale,
+      duration: k100msDuration,
+      curve: Curves.fastOutSlowIn,
+      child: InkResponse(
+        splashColor: widget.iconColor?.withOpacity(0.3),
+        highlightColor: widget.iconColor?.withOpacity(
+          widget.backgroundColor == Colors.transparent || widget.backgroundColor?.opacity == 0 ? 0.2 : 0.0,
+        ),
+        onTapDown: widget.onTap == null && widget.onLongPress == null || widget.noAnimation
+            ? null
+            : (_) => setState(() {
                   _scale = 0.8;
-                });
-              }
-              if (widget.reactImmediately) {
-                Future.delayed(k100msDuration, () {
-                  if (mounted) {
+                }),
+        onTapUp: (_) => setState(() {
+          _scale = 1.0;
+        }),
+        onTapCancel: () => setState(() {
+          _scale = 1.0;
+        }),
+        onTap: widget.onTap == null && widget.onLongPress == null
+            ? null
+            : () async {
+                if (!widget.noAnimation) {
+                  setState(() {
+                    _scale = 0.8;
+                  });
+                }
+                if (widget.reactImmediately) {
+                  Future.delayed(k100msDuration, () {
+                    if (mounted) {
+                      setState(() {
+                        _scale = 1.0;
+                      });
+                    }
+                  });
+                  widget.onTap?.call();
+                } else {
+                  await Future.delayed(k100msDuration, () {
                     setState(() {
                       _scale = 1.0;
                     });
-                  }
-                });
-                widget.onTap?.call();
-              } else {
-                await Future.delayed(k100msDuration, () {
-                  setState(() {
-                    _scale = 1.0;
                   });
-                });
-                await Future.delayed(k100msDuration, () {
-                  widget.onTap?.call();
-                });
-              }
-            },
-      onLongPress: widget.onLongPress,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: k100msDuration,
-        curve: Curves.fastOutSlowIn,
-        child: CardItem(
-          duration: k100msDuration,
-          curve: Curves.fastOutSlowIn,
-          color: widget.backgroundColor ?? context.appTheme.background0,
+                  await Future.delayed(k100msDuration, () {
+                    widget.onTap?.call();
+                  });
+                }
+              },
+        onLongPress: widget.onLongPress,
+        child: Container(
           padding: EdgeInsets.zero,
-          margin: EdgeInsets.zero,
-          borderRadius: BorderRadius.circular(1000),
-          border: widget.withBorder
-              ? Border.all(
-                  color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
-                  width: widget.borderWidth)
-              : null,
-          elevation: _scale < 1.0 ? 0 : widget.elevation,
-          isGradient: false,
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? context.appTheme.background0,
+            borderRadius: BorderRadius.circular(1000),
+            border: widget.withBorder
+                ? Border.all(
+                    color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
+                    width: widget.borderWidth)
+                : null,
+          ),
           child: Padding(
             padding: EdgeInsets.all(widget.iconPadding),
             child: FittedBox(

@@ -11,8 +11,7 @@ import '../../rounded_icon_button.dart';
 import 'dart:math' as math;
 
 class FABItem {
-  FABItem(
-      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -42,8 +41,7 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
-    with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
@@ -85,8 +83,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             width: overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment:
-                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () async {
@@ -97,6 +94,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                   iconColor: context.appTheme.onBackground,
                   label: widget.roundedButtonItems[index].label,
                   backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
+                  useContainerInsteadOfInk: true,
                   size: 55,
                 ),
               ],
@@ -150,6 +148,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
           },
           size: _floatingActionButtonSize.width,
           noAnimation: true,
+          useContainerInsteadOfInk: true,
         ),
       );
     };
@@ -191,64 +190,67 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
           return AnimatedBuilder(
             animation: _animation,
             builder: (_, Widget? child) {
-              return Stack(
-                children: [
-                  ModalBarrier(
-                    onDismiss: () async => await _removeEntry(overlayEntry),
-                    color: context.appTheme.background1.withOpacity(0.5 * _animation.value),
-                  ),
-                  Positioned(
-                    top: fabPosition.dy - overlayBoxHeight,
-                    left: fabPosition.dx - overlayBoxWidth / 2,
-                    child: ScaleTransition(
-                      scale: _animation,
-                      alignment: Alignment.bottomCenter,
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
-                        child: SizedBox(
-                          key: _globalKey2,
-                          width: overlayBoxWidth,
-                          child: Column(
-                            verticalDirection: VerticalDirection.up,
-                            children: [
-                              SizedBox(
-                                height: 150,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: _buttonWidgets(overlayEntry),
+              return Material(
+                color: Colors.transparent,
+                child: Stack(
+                  children: [
+                    ModalBarrier(
+                      onDismiss: () async => await _removeEntry(overlayEntry),
+                      color: context.appTheme.background1.withOpacity(0.5 * _animation.value),
+                    ),
+                    Positioned(
+                      top: fabPosition.dy - overlayBoxHeight,
+                      left: fabPosition.dx - overlayBoxWidth / 2,
+                      child: ScaleTransition(
+                        scale: _animation,
+                        alignment: Alignment.bottomCenter,
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+                          child: SizedBox(
+                            key: _globalKey2,
+                            width: overlayBoxWidth,
+                            child: Column(
+                              verticalDirection: VerticalDirection.up,
+                              children: [
+                                SizedBox(
+                                  height: 150,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: _buttonWidgets(overlayEntry),
+                                  ),
                                 ),
-                              ),
-                              Gap.h32,
-                              ..._listWidgets(overlayEntry),
-                            ],
+                                Gap.h32,
+                                ..._listWidgets(overlayEntry),
+                              ],
+                            ),
+                            // child: Row(
+                            //   children: _widgets,
+                            // ),
                           ),
-                          // child: Row(
-                          //   children: _widgets,
-                          // ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: fabPosition.dy,
-                    left: fabPosition.dx - 27.5,
-                    child: widget.mainItem != null
-                        ? Transform.rotate(
-                            angle: math.pi * _animation.value,
-                            alignment: Alignment.center,
-                            child: Transform.rotate(
-                              angle: -math.pi,
-                              child: _mainButtonOverlay(overlayEntry, _animation),
+                    Positioned(
+                      top: fabPosition.dy,
+                      left: fabPosition.dx - 27.5,
+                      child: widget.mainItem != null
+                          ? Transform.rotate(
+                              angle: math.pi * _animation.value,
+                              alignment: Alignment.center,
+                              child: Transform.rotate(
+                                angle: -math.pi,
+                                child: _mainButtonOverlay(overlayEntry, _animation),
+                              ),
+                            )
+                          : Transform.rotate(
+                              angle: (math.pi * 1 / 4) * _animation.value,
+                              child: _mainButtonOverlay(overlayEntry, null),
                             ),
-                          )
-                        : Transform.rotate(
-                            angle: (math.pi * 1 / 4) * _animation.value,
-                            child: _mainButtonOverlay(overlayEntry, null),
-                          ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               );
             },
           );

@@ -80,12 +80,9 @@ class CardItem extends StatelessWidget {
       child: ClipRRect(
         clipBehavior: clip ? Clip.antiAliasWithSaveLayer : Clip.none,
         borderRadius: borderRadius?.subtract(BorderRadius.circular(1)) ?? BorderRadius.circular(15),
-        child: Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: padding,
-            child: child,
-          ),
+        child: Padding(
+          padding: padding,
+          child: child,
         ),
       ),
     );

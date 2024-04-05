@@ -33,8 +33,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -124,6 +123,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
       key: _formKey,
       child: CustomSection(
         title: _title,
+        sectionsClipping: false,
         crossAxisAlignment: CrossAxisAlignment.start,
         isWrapByCard: false,
         sections: [
@@ -162,8 +162,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader(
-                        widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
                     Gap.h4,
                     widget.transactionType != TransactionType.transfer
                         ? CategoryFormSelector(
