@@ -149,68 +149,74 @@ class _RoundedButtonState extends State<_RoundedButton> {
       scale: _scale,
       duration: k100msDuration,
       curve: Curves.fastOutSlowIn,
-      child: InkResponse(
-        splashColor: widget.iconColor?.withOpacity(0.3),
-        highlightColor: widget.iconColor?.withOpacity(
-          widget.backgroundColor == Colors.transparent || widget.backgroundColor?.opacity == 0 ? 0.2 : 0.0,
+      child: Container(
+        padding: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: widget.backgroundColor ?? context.appTheme.background0,
+          borderRadius: BorderRadius.circular(1000),
+          border: widget.withBorder
+              ? Border.all(
+                  color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
+                  width: widget.borderWidth)
+              : null,
         ),
-        onTapDown: widget.onTap == null && widget.onLongPress == null || widget.noAnimation
-            ? null
-            : (_) => setState(() {
-                  _scale = 0.8;
-                }),
-        onTapUp: (_) => setState(() {
-          _scale = 1.0;
-        }),
-        onTapCancel: () => setState(() {
-          _scale = 1.0;
-        }),
-        onTap: widget.onTap == null && widget.onLongPress == null
-            ? null
-            : () async {
-                if (!widget.noAnimation) {
-                  setState(() {
-                    _scale = 0.8;
-                  });
-                }
-                if (widget.reactImmediately) {
-                  Future.delayed(k100msDuration, () {
-                    if (mounted) {
+        child: Material(
+          type: MaterialType.transparency,
+          borderRadius: BorderRadius.circular(1000),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            highlightColor: widget.iconColor?.withOpacity(0.2),
+            splashColor: widget.iconColor?.withOpacity(0.2),
+            // highlightColor: widget.iconColor?.withOpacity(
+            //   widget.backgroundColor == Colors.transparent || widget.backgroundColor?.opacity == 0 ? 0.2 : 0.0,
+            // ),
+            onTapDown: widget.onTap == null && widget.onLongPress == null || widget.noAnimation
+                ? null
+                : (_) => setState(() {
+                      _scale = 0.8;
+                    }),
+            onTapUp: (_) => setState(() {
+              _scale = 1.0;
+            }),
+            onTapCancel: () => setState(() {
+              _scale = 1.0;
+            }),
+            onTap: widget.onTap == null && widget.onLongPress == null
+                ? null
+                : () async {
+                    if (!widget.noAnimation) {
                       setState(() {
-                        _scale = 1.0;
+                        _scale = 0.8;
                       });
                     }
-                  });
-                  widget.onTap?.call();
-                } else {
-                  await Future.delayed(k100msDuration, () {
-                    setState(() {
-                      _scale = 1.0;
-                    });
-                  });
-                  await Future.delayed(k100msDuration, () {
-                    widget.onTap?.call();
-                  });
-                }
-              },
-        onLongPress: widget.onLongPress,
-        child: Container(
-          padding: EdgeInsets.zero,
-          decoration: BoxDecoration(
-            color: widget.backgroundColor ?? context.appTheme.background0,
-            borderRadius: BorderRadius.circular(1000),
-            border: widget.withBorder
-                ? Border.all(
-                    color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
-                    width: widget.borderWidth)
-                : null,
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(widget.iconPadding),
-            child: FittedBox(
-              child: SvgIcon(
-                widget.iconPath,
-                color: widget.iconColor ?? context.appTheme.onBackground,
+                    if (widget.reactImmediately) {
+                      Future.delayed(k100msDuration, () {
+                        if (mounted) {
+                          setState(() {
+                            _scale = 1.0;
+                          });
+                        }
+                      });
+                      widget.onTap?.call();
+                    } else {
+                      await Future.delayed(k100msDuration, () {
+                        setState(() {
+                          _scale = 1.0;
+                        });
+                      });
+                      await Future.delayed(k100msDuration, () {
+                        widget.onTap?.call();
+                      });
+                    }
+                  },
+            onLongPress: widget.onLongPress,
+            child: Padding(
+              padding: EdgeInsets.all(widget.iconPadding),
+              child: FittedBox(
+                child: SvgIcon(
+                  widget.iconPath,
+                  color: widget.iconColor ?? context.appTheme.onBackground,
+                ),
               ),
             ),
           ),
