@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+const kMaxWidthForSmallScreen = 500;
+
 /// Value related to Text. To change more details, use .copyWith()
 const kHeaderTransparent = TextStyle(color: Colors.transparent);
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
@@ -19,6 +20,7 @@ import '../features/settings_and_persistent_values/presentation/settings_screen.
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/transactions/presentation/screens/add_model_screen/add_credit_spending_modal_screen.dart';
+import '../utils/constants.dart';
 import '../utils/enums.dart';
 
 class RoutePath {
@@ -54,6 +56,11 @@ final goRouter = GoRouter(
     ShellRoute(
       navigatorKey: _shellNavKey,
       builder: (context, state, child) {
+        if (Gap.screenWidth(context) > kMaxWidthForSmallScreen) {
+          return ScaffoldWithNavigationRail(
+            child: child,
+          );
+        }
         return ScaffoldWithBottomNavBar(
           child: child,
         );

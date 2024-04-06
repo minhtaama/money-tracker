@@ -23,7 +23,7 @@ class BottomAppBarItem {
 // value (user scroll direction), the BottomAppBar will be visible or not.
 
 class BottomAppBarWithFAB extends ConsumerStatefulWidget {
-  const BottomAppBarWithFAB({Key? key, required this.items, required this.onTabSelected}) : super(key: key);
+  const BottomAppBarWithFAB({super.key, required this.items, required this.onTabSelected});
   final List<BottomAppBarItem> items;
   final ValueChanged<int> onTabSelected;
 

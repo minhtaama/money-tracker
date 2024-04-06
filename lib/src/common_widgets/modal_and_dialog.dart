@@ -170,9 +170,9 @@ PopupRoute<T> _route<T>(
   final modalBarrierColorBottomSheet =
       context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7);
   final modalBarrierColorFloatingSheet =
-      context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.25) : AppColors.grey(context).withOpacity(0.25);
+      context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.25) : AppColors.grey(context).withOpacity(0.1);
 
-  if (Gap.screenWidth(context) > 500) {
+  if (Gap.screenWidth(context) > kMaxWidthForSmallScreen) {
     return CustomFloatingSheetRoute<T>(
       settings: settings,
       backgroundColor: backgroundColor,
@@ -230,8 +230,6 @@ Page<T> showCustomModalPage<T>(
   );
 }
 
-////////////////////
-
 class ModalBottomSheetPage<T> extends Page<T> {
   /// This Page is used with [GoRoute] pageBuilder to build a
   /// ModalBottomSheetPage with a specific path. Remember to
@@ -267,6 +265,8 @@ class ModalBottomSheetPage<T> extends Page<T> {
     return _route(context, child: child, hasHandle: hasHandle, settings: this);
   }
 }
+
+////////////////////
 
 class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
   /// A modal bottom sheet route.
@@ -362,7 +362,7 @@ class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
                 margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                 padding: EdgeInsets.zero,
                 borderRadius: BorderRadius.circular(35),
-                elevation: 10,
+                elevation: context.appTheme.isDarkTheme ? 10 : 5,
                 child: AnimatedPadding(
                   padding: EdgeInsets.only(
                       top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
