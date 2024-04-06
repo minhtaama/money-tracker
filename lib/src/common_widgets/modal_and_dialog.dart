@@ -159,6 +159,7 @@ Future<T?> showConfirmModalBottomSheet<T>({
 ///////////////////////////////
 
 /// Logic to switch between [CustomFloatingSheetRoute] and [CustomModalBottomSheetRoute]
+/// ONLY CHANGE THIS
 PopupRoute<T> _route<T>(
   BuildContext context, {
   required Widget child,
@@ -166,16 +167,20 @@ PopupRoute<T> _route<T>(
   RouteSettings? settings,
 }) {
   final backgroundColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
-  final modalBarrierColor =
+  final modalBarrierColorBottomSheet =
       context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7);
+  final modalBarrierColorFloatingSheet =
+      context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.25) : AppColors.grey(context).withOpacity(0.25);
 
   if (Gap.screenWidth(context) > 500) {
     return CustomFloatingSheetRoute<T>(
       settings: settings,
       backgroundColor: backgroundColor,
+      modalBarrierColor: modalBarrierColorFloatingSheet,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height / 1.1,
-        maxWidth: 450,
+        maxWidth: 400,
+        minWidth: 400,
       ),
       builder: (context) => Padding(
         padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -190,7 +195,7 @@ PopupRoute<T> _route<T>(
       maxHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
     ),
     backgroundColor: backgroundColor,
-    modalBarrierColor: modalBarrierColor,
+    modalBarrierColor: modalBarrierColorBottomSheet,
     enableDrag: hasHandle,
     builder: (context) => child,
   );
@@ -224,6 +229,8 @@ Page<T> showCustomModalPage<T>(
     child: child,
   );
 }
+
+////////////////////
 
 class ModalBottomSheetPage<T> extends Page<T> {
   /// This Page is used with [GoRoute] pageBuilder to build a
@@ -260,8 +267,6 @@ class ModalBottomSheetPage<T> extends Page<T> {
     return _route(context, child: child, hasHandle: hasHandle, settings: this);
   }
 }
-
-////////////////////
 
 class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
   /// A modal bottom sheet route.
@@ -300,7 +305,7 @@ class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
   }
 
   @override
-  Duration get transitionDuration => k550msDuration;
+  Duration get transitionDuration => k350msDuration;
 
   @override
   Duration get reverseTransitionDuration => k250msDuration;
@@ -360,7 +365,7 @@ class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
                 elevation: 10,
                 child: AnimatedPadding(
                   padding: EdgeInsets.only(
-                      top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(0, double.infinity)),
+                      top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
                   duration: const Duration(milliseconds: 50),
                   child: SingleChildScrollView(
                     child: builder(context),
@@ -419,35 +424,12 @@ class CustomModalBottomSheetRoute<T> extends ModalBottomSheetRoute<T> {
             );
           },
         );
-
-  @override
-  Duration get transitionDuration => k550msDuration;
-
-  @override
-  Duration get reverseTransitionDuration => k350msDuration;
-
-  @override
-  bool get barrierDismissible => true;
-
-  @override
-  AnimationController createAnimationController() {
-    return AnimationController(
-      duration: transitionDuration,
-      reverseDuration: reverseTransitionDuration,
-      vsync: navigator!,
-    );
-  }
-
-  @override
-  Animation<double> createAnimation() {
-    return controller!.drive(CurveTween(curve: Curves.fastOutSlowIn));
-  }
 }
 
 ////////////////////
 
 class _Handle extends StatelessWidget {
-  const _Handle({super.key});
+  const _Handle();
 
   @override
   Widget build(BuildContext context) {
