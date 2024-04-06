@@ -17,8 +17,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late final _creditAccount = _transaction.account is DeletedAccount
       ? null
-      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject)
-          as CreditAccount;
+      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
@@ -69,8 +68,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
               _DeleteButton(
                 isEditMode: _isEditMode,
                 isDisable: !_canDelete,
-                disableText:
-                    'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+                disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
                 onConfirm: _delete,
               )
             ]
@@ -146,7 +144,7 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   void _changeFromAccount() async {
     List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
 
-    final returnedValue = await showCustomModalBottomSheet<Account>(
+    final returnedValue = await showCustomModal<Account>(
       context: context,
       child: _ModelWithIconEditSelector(
         title: 'Change Origin:',
@@ -166,8 +164,7 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   bool _isDateTimeEdited(CreditPaymentFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditPaymentFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
 
   bool _submit() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);

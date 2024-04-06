@@ -70,7 +70,7 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addIncome',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showModalBottomSheetPage(
+              pageBuilder: (context, state) => showCustomModalPage(
                 context,
                 state,
                 hasHandle: false,
@@ -80,7 +80,7 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addExpense',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showModalBottomSheetPage(
+              pageBuilder: (context, state) => showCustomModalPage(
                 context,
                 state,
                 hasHandle: false,
@@ -90,7 +90,7 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addTransfer',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showModalBottomSheetPage(
+              pageBuilder: (context, state) => showCustomModalPage(
                 context,
                 state,
                 hasHandle: false,
@@ -100,7 +100,7 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addCreditSpending',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showModalBottomSheetPage(
+              pageBuilder: (context, state) => showCustomModalPage(
                 context,
                 state,
                 hasHandle: false,
@@ -110,7 +110,7 @@ final goRouter = GoRouter(
             GoRoute(
               path: 'addCreditPayment',
               parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showModalBottomSheetPage(
+              pageBuilder: (context, state) => showCustomModalPage(
                 context,
                 state,
                 hasHandle: false,
@@ -151,7 +151,7 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'addCategory',
                   parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showModalBottomSheetPage(
+                  pageBuilder: (context, state) => showCustomModalPage(
                     context,
                     state,
                     child: const AddCategoryModalScreen(),
@@ -172,7 +172,7 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'addAccount',
                   parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showModalBottomSheetPage(
+                  pageBuilder: (context, state) => showCustomModalPage(
                     context,
                     state,
                     child: const AddAccountModalScreen(),
@@ -193,7 +193,7 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'addBudget',
                   parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showModalBottomSheetPage(
+                  pageBuilder: (context, state) => showCustomModalPage(
                     context,
                     state,
                     child: const AddBudgetModalScreen(),
@@ -220,7 +220,7 @@ final goRouter = GoRouter(
           screenType = (state.extra as ({String string, TransactionScreenType type})).type;
         }
 
-        return showModalBottomSheetPage(
+        return showCustomModalPage(
           context,
           state,
           hasHandle: true,
@@ -235,11 +235,11 @@ final goRouter = GoRouter(
       path: '/editDashboard',
       parentNavigatorKey: _rootNavKey,
       pageBuilder: (context, state) {
-        return showModalBottomSheetPage(
+        return showCustomModalPage(
           context,
           state,
           hasHandle: true,
-          child: DashboardEditModalScreen(),
+          child: const DashboardEditModalScreen(),
         );
       },
     ),

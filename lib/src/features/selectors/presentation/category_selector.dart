@@ -57,7 +57,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
           throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
         }
 
-        final returnedValue = await showCustomModalBottomSheet<Category>(
+        final returnedValue = await showCustomModal<Category>(
           context: context,
           child: categoryList.isNotEmpty
               ? Column(

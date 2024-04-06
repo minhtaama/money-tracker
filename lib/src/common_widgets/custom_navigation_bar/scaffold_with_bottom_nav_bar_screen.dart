@@ -83,7 +83,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       label: '',
       color: context.appTheme.onAccent,
       backgroundColor: context.appTheme.accent2,
-      onTap: () => showCustomModalBottomSheet(
+      onTap: () => showCustomModal(
         context: context,
         child: const AddTemplateTransactionModalScreen(),
       ),

@@ -134,7 +134,7 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
   CreditSpendingFormState get _stateRead => ref.read(creditSpendingFormNotifierProvider);
 
   void _changeCategory() async {
-    final returnedCategory = await showCustomModalBottomSheet<List<dynamic>>(
+    final returnedCategory = await showCustomModal<List<dynamic>>(
       context: context,
       child: _CategoryEditSelector(
           transaction: _transaction,

@@ -93,7 +93,7 @@ class _Header extends StatelessWidget {
             ),
           ),
           RoundedIconButton(
-            onTap: () => showCustomModalBottomSheet(
+            onTap: () => showCustomModal(
               context: context,
               child: EditRegularAccountModalScreen(account),
             ),

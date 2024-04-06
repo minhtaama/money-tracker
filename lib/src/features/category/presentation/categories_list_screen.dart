@@ -47,7 +47,7 @@ class CategoriesListScreen extends ConsumerWidget {
                   key: ValueKey(index),
                   model: model,
                   onMenuTap: () {
-                    showCustomModalBottomSheet(
+                    showCustomModal(
                       context: context,
                       child: EditCategoryModalScreen(model),
                     );

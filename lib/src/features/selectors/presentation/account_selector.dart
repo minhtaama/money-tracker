@@ -58,7 +58,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       onTap: () async {
         List<Account> accountList = ref.read(accountRepositoryProvider).getList(widget.accountType);
 
-        final returnedValue = await showCustomModalBottomSheet<Account>(
+        final returnedValue = await showCustomModal<Account>(
           context: context,
           child: accountList.isNotEmpty
               ? Column(

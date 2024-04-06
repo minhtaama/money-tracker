@@ -12,9 +12,8 @@ import 'layout/calculator_layout.dart';
 Future<String?> showCalculatorModalScreen(BuildContext context, {double? initialValue}) {
   final valString = CalService.formatCurrency(context, initialValue ?? 0);
 
-  return showCustomModalBottomSheet<String>(
+  return showCustomModal<String>(
       context: context,
-      wrapWithScrollView: true,
       child: _Calculator(
         initialValue: valString,
       ));
@@ -139,9 +138,8 @@ class _CalculatorInputState extends State<CalculatorInput> {
       enableInteractiveSelection: false,
       enableSuggestions: false,
       onTap: () {
-        showCustomModalBottomSheet(
+        showCustomModal(
             context: context,
-            wrapWithScrollView: true,
             child: _Calculator(
               initialValue: _controller.text,
               resultOutput: (value) {

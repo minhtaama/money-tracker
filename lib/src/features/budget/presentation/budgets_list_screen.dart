@@ -91,8 +91,7 @@ class _BudgetTile extends StatelessWidget {
   List<Widget> _assignedModels() {
     return switch (model) {
       AccountBudget() => (model as AccountBudget).accounts.map((e) => _AssignedModel(model: e)).toList(),
-      CategoryBudget() =>
-        (model as CategoryBudget).categories.map((e) => _AssignedModel(model: e)).toList(),
+      CategoryBudget() => (model as CategoryBudget).categories.map((e) => _AssignedModel(model: e)).toList(),
     };
   }
 
@@ -116,7 +115,7 @@ class _BudgetTile extends StatelessWidget {
                 size: 32,
                 iconPadding: 6,
                 onTap: () {
-                  showCustomModalBottomSheet(
+                  showCustomModal(
                     context: context,
                     child: EditBudgetModalScreen(budget: model),
                   );
@@ -128,8 +127,7 @@ class _BudgetTile extends StatelessWidget {
           Gap.h4,
           Text(
             'Budget:'.hardcoded,
-            style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
           ),
           Gap.h4,
           Row(
@@ -154,8 +152,7 @@ class _BudgetTile extends StatelessWidget {
           Gap.h8,
           Text(
             model is AccountBudget ? 'Assigned accounts:'.hardcoded : 'Assigned categories:'.hardcoded,
-            style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
           ),
           Gap.h8,
           Wrap(
