@@ -49,6 +49,7 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
 
     return CustomSection(
       isWrapByCard: false,
+      sectionsClipping: false,
       title: 'Favorite Transactions'.hardcoded,
       subTitle: Text(
         'Hold to re-order'.hardcoded,
@@ -148,9 +149,8 @@ class _TemplateTransactionTile extends ConsumerWidget {
             ),
           ),
         ),
-        Positioned(
-          top: 0,
-          left: 0,
+        Transform.translate(
+          offset: const Offset(-3, -3),
           child: RoundedIconButton(
             iconPath: AppIcons.close,
             size: 15,
