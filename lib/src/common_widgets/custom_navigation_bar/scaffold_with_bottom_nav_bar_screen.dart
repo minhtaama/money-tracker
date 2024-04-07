@@ -26,8 +26,6 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
 class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNavBar> {
   @override
   Widget build(BuildContext context) {
-    bool isHomeScreen = GoRouterState.of(context).uri.toString() == '/home';
-
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
@@ -47,21 +45,21 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         label: context.localize.income,
         color: context.appTheme.onPositive,
         backgroundColor: context.appTheme.positive,
-        onTap: () => context.go(RoutePath.addIncome),
+        onTap: () => context.push(RoutePath.addIncome),
       ),
       FABItem(
         icon: AppIcons.transfer,
         label: context.localize.transfer,
         color: context.appTheme.onBackground,
         backgroundColor: AppColors.grey(context),
-        onTap: () => context.go(RoutePath.addTransfer),
+        onTap: () => context.push(RoutePath.addTransfer),
       ),
       FABItem(
         icon: AppIcons.expense,
         label: context.localize.expense,
         color: context.appTheme.onNegative,
         backgroundColor: context.appTheme.negative,
-        onTap: () => context.go(RoutePath.addExpense),
+        onTap: () => context.push(RoutePath.addExpense),
       ),
     ];
 
@@ -69,12 +67,12 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
       FABItem(
         icon: AppIcons.receiptDollar,
         label: context.localize.creditSpending,
-        onTap: () => context.go(RoutePath.addCreditSpending),
+        onTap: () => context.push(RoutePath.addCreditSpending),
       ),
       FABItem(
         icon: AppIcons.handCoin,
         label: context.localize.creditPayment,
-        onTap: () => context.go(RoutePath.addCreditPayment),
+        onTap: () => context.push(RoutePath.addCreditPayment),
       ),
     ];
 
@@ -93,19 +91,16 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
-      floatingActionButton: isHomeScreen
-          ? CustomFloatingActionButton(
-              roundedButtonItems: roundedButtonItems,
-              listItems: listItems,
-              mainItem: mainItem,
-            )
-          : null,
+      floatingActionButton: CustomFloatingActionButton(
+        roundedButtonItems: roundedButtonItems,
+        listItems: listItems,
+        mainItem: mainItem,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBarWithFAB(
         items: tabItems,
         onTabSelected: (int tabIndex) {
           context.go(tabItems[tabIndex].path); // Change Tab
-          isHomeScreen = tabIndex == 0;
         },
       ),
       backgroundColor: context.appTheme.background1,

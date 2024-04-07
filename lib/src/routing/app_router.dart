@@ -25,11 +25,11 @@ import '../utils/enums.dart';
 
 class RoutePath {
   static String get home => '/home';
-  static String get addIncome => '/home/addIncome';
-  static String get addExpense => '/home/addExpense';
-  static String get addTransfer => '/home/addTransfer';
-  static String get addCreditSpending => '/home/addCreditSpending';
-  static String get addCreditPayment => '/home/addCreditPayment';
+  static String get addIncome => '/addIncome';
+  static String get addExpense => '/addExpense';
+  static String get addTransfer => '/addTransfer';
+  static String get addCreditSpending => '/addCreditSpending';
+  static String get addCreditPayment => '/addCreditPayment';
   static String get dashboard => '/dashboard';
   static String get settings => '/dashboard/settings';
   static String get setCurrency => '/dashboard/settings/setCurrency';
@@ -73,58 +73,6 @@ final goRouter = GoRouter(
             key: state.pageKey,
             child: const HomeScreen(),
           ),
-          routes: [
-            GoRoute(
-              path: 'addIncome',
-              parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showCustomModalPage(
-                context,
-                state,
-                hasHandle: false,
-                child: const AddRegularTxnModalScreen(TransactionType.income),
-              ),
-            ),
-            GoRoute(
-              path: 'addExpense',
-              parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showCustomModalPage(
-                context,
-                state,
-                hasHandle: false,
-                child: const AddRegularTxnModalScreen(TransactionType.expense),
-              ),
-            ),
-            GoRoute(
-              path: 'addTransfer',
-              parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showCustomModalPage(
-                context,
-                state,
-                hasHandle: false,
-                child: const AddRegularTxnModalScreen(TransactionType.transfer),
-              ),
-            ),
-            GoRoute(
-              path: 'addCreditSpending',
-              parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showCustomModalPage(
-                context,
-                state,
-                hasHandle: false,
-                child: const AddCreditSpendingModalScreen(),
-              ),
-            ),
-            GoRoute(
-              path: 'addCreditPayment',
-              parentNavigatorKey: _rootNavKey,
-              pageBuilder: (context, state) => showCustomModalPage(
-                context,
-                state,
-                hasHandle: false,
-                child: const AddCreditPaymentModalScreen(),
-              ),
-            ),
-          ],
         ),
         GoRoute(
           path: '/dashboard',
@@ -211,6 +159,56 @@ final goRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/addIncome',
+      parentNavigatorKey: _rootNavKey,
+      pageBuilder: (context, state) => showCustomModalPage(
+        context,
+        state,
+        hasHandle: false,
+        child: const AddRegularTxnModalScreen(TransactionType.income),
+      ),
+    ),
+    GoRoute(
+      path: '/addExpense',
+      parentNavigatorKey: _rootNavKey,
+      pageBuilder: (context, state) => showCustomModalPage(
+        context,
+        state,
+        hasHandle: false,
+        child: const AddRegularTxnModalScreen(TransactionType.expense),
+      ),
+    ),
+    GoRoute(
+      path: '/addTransfer',
+      parentNavigatorKey: _rootNavKey,
+      pageBuilder: (context, state) => showCustomModalPage(
+        context,
+        state,
+        hasHandle: false,
+        child: const AddRegularTxnModalScreen(TransactionType.transfer),
+      ),
+    ),
+    GoRoute(
+      path: '/addCreditSpending',
+      parentNavigatorKey: _rootNavKey,
+      pageBuilder: (context, state) => showCustomModalPage(
+        context,
+        state,
+        hasHandle: false,
+        child: const AddCreditSpendingModalScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/addCreditPayment',
+      parentNavigatorKey: _rootNavKey,
+      pageBuilder: (context, state) => showCustomModalPage(
+        context,
+        state,
+        hasHandle: false,
+        child: const AddCreditPaymentModalScreen(),
+      ),
     ),
     GoRoute(
       path: '/transaction',

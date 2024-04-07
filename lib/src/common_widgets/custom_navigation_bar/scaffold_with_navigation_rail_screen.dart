@@ -58,8 +58,6 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithNavigatio
 
   @override
   Widget build(BuildContext context) {
-    bool isHomeScreen = GoRouterState.of(context).uri.toString() == '/home';
-
     final List<RailItem> destinations = [
       RailItem(
         context,
@@ -81,21 +79,21 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithNavigatio
         label: context.localize.income,
         color: context.appTheme.onPositive,
         backgroundColor: context.appTheme.positive,
-        onTap: () => context.go(RoutePath.addIncome),
+        onTap: () => context.push(RoutePath.addIncome),
       ),
       FABItem(
         icon: AppIcons.transfer,
         label: context.localize.transfer,
         color: context.appTheme.onBackground,
         backgroundColor: AppColors.grey(context),
-        onTap: () => context.go(RoutePath.addTransfer),
+        onTap: () => context.push(RoutePath.addTransfer),
       ),
       FABItem(
         icon: AppIcons.expense,
         label: context.localize.expense,
         color: context.appTheme.onNegative,
         backgroundColor: context.appTheme.negative,
-        onTap: () => context.go(RoutePath.addExpense),
+        onTap: () => context.push(RoutePath.addExpense),
       ),
     ];
 
@@ -103,12 +101,12 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithNavigatio
       FABItem(
         icon: AppIcons.receiptDollar,
         label: context.localize.creditSpending,
-        onTap: () => context.go(RoutePath.addCreditSpending),
+        onTap: () => context.push(RoutePath.addCreditSpending),
       ),
       FABItem(
         icon: AppIcons.handCoin,
         label: context.localize.creditPayment,
-        onTap: () => context.go(RoutePath.addCreditPayment),
+        onTap: () => context.push(RoutePath.addCreditPayment),
       ),
     ];
 
@@ -144,14 +142,10 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithNavigatio
             trailing: Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: AnimatedScale(
-                  scale: isHomeScreen ? 1 : 0,
-                  duration: k250msDuration,
-                  child: CustomFloatingActionButton(
-                    roundedButtonItems: roundedButtonItems,
-                    listItems: listItems,
-                    mainItem: mainItem,
-                  ),
+                child: CustomFloatingActionButton(
+                  roundedButtonItems: roundedButtonItems,
+                  listItems: listItems,
+                  mainItem: mainItem,
                 ),
               ),
             ),
@@ -163,7 +157,6 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithNavigatio
             minWidth: 100,
             onDestinationSelected: (int index) {
               context.go(destinations[index].path); // Change Tab
-              isHomeScreen = index == 0;
               _destinationIndex = index;
             },
           ),
