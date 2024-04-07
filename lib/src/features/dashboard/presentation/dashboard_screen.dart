@@ -27,12 +27,14 @@ class DashboardScreen extends StatelessWidget {
   Widget _getChild(DashboardWidgetType type) {
     return switch (type) {
       DashboardWidgetType.menu => const _DashboardMenu2(),
-      DashboardWidgetType.weeklyReport => const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
+      DashboardWidgetType.weeklyReport =>
+        const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
       DashboardWidgetType.monthlyExpense =>
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
       DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
-      DashboardWidgetType.budgets => const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
+      DashboardWidgetType.budgets =>
+        const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
     };
   }
 
@@ -110,7 +112,7 @@ class _DashboardMenu2 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           RoundedIconButton(
-            onTap: () => context.push(RoutePath.accounts),
+            onTap: () => context.go(RoutePath.accounts),
             label: context.localize.accounts,
             size: 50,
             iconPath: AppIcons.accounts,
@@ -118,7 +120,7 @@ class _DashboardMenu2 extends StatelessWidget {
             reactImmediately: false,
           ),
           RoundedIconButton(
-            onTap: () => context.push(RoutePath.categories),
+            onTap: () => context.go(RoutePath.categories),
             label: context.localize.categories,
             size: 50,
             iconPath: AppIcons.categories,
@@ -126,7 +128,7 @@ class _DashboardMenu2 extends StatelessWidget {
             reactImmediately: false,
           ),
           RoundedIconButton(
-            onTap: () => context.push(RoutePath.budgets),
+            onTap: () => context.go(RoutePath.budgets),
             label: context.localize.budget,
             size: 50,
             iconPath: AppIcons.budgets,

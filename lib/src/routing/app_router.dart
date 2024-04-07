@@ -31,16 +31,16 @@ class RoutePath {
   static String get addCreditSpending => '/home/addCreditSpending';
   static String get addCreditPayment => '/home/addCreditPayment';
   static String get dashboard => '/dashboard';
-  static String get settings => '/dashboard/settings';
-  static String get setCurrency => '/dashboard/settings/setCurrency';
-  static String get selectIcon => '/dashboard/selectIcon';
-  static String get categories => '/dashboard/categories';
-  static String get addCategory => '/dashboard/categories/addCategory';
-  static String get accounts => '/dashboard/accounts';
-  static String get accountScreen => '/dashboard/accounts/accountScreen';
-  static String get addAccount => '/dashboard/accounts/addAccount';
-  static String get budgets => '/dashboard/budgets';
-  static String get addBudget => '/dashboard/budgets/addBudget';
+  static String get settings => '/adaptive-route/settings';
+  static String get setCurrency => '/adaptive-route/settings/setCurrency';
+  static String get selectIcon => '/adaptive-route/selectIcon';
+  static String get categories => '/adaptive-route/categories';
+  static String get addCategory => '/adaptive-route/categories/addCategory';
+  static String get accounts => '/adaptive-route/accounts';
+  static String get accountScreen => '/adaptive-route/accounts/accountScreen';
+  static String get addAccount => '/adaptive-route/accounts/addAccount';
+  static String get budgets => '/adaptive-route/budgets';
+  static String get addBudget => '/adaptive-route/budgets/addBudget';
   static String get transaction => '/transaction';
   static String get editDashboard => '/editDashboard';
 }
@@ -48,10 +48,19 @@ class RoutePath {
 final _rootNavKey = GlobalKey<NavigatorState>();
 final _shellNavKey = GlobalKey<NavigatorState>();
 
+final AdaptiveRoute adaptiveRoute = AdaptiveRoute();
+
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
   navigatorKey: _rootNavKey,
   debugLogDiagnostics: true,
+  overridePlatformDefaultLocation: true,
+  redirect: (context, state) {
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    print(state.uri.toString());
+    //print('called');
+    return adaptiveRoute.navigate(state, mediaQuery);
+  },
   routes: [
     ShellRoute(
       navigatorKey: _shellNavKey,
@@ -126,6 +135,7 @@ final goRouter = GoRouter(
             ),
           ],
         ),
+        // Dashboard
         GoRoute(
           path: '/dashboard',
           parentNavigatorKey: _shellNavKey,
@@ -133,84 +143,20 @@ final goRouter = GoRouter(
             key: state.pageKey,
             child: const DashboardScreen(),
           ),
-          routes: [
-            GoRoute(
-                path: 'settings',
-                parentNavigatorKey: _rootNavKey,
-                builder: (context, state) => const SettingsScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'setCurrency',
-                    parentNavigatorKey: _rootNavKey,
-                    builder: (context, state) => const SelectCurrencyScreen(),
-                  )
-                ]),
-            GoRoute(
-              path: 'selectIcon',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const SelectIconsScreen(),
-            ),
-            GoRoute(
-              path: 'categories',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const CategoriesListScreen(),
-              routes: [
-                GoRoute(
-                  path: 'addCategory',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showCustomModalPage(
-                    context,
-                    state,
-                    child: const AddCategoryModalScreen(),
-                  ),
-                )
-              ],
-            ),
-            GoRoute(
-              path: 'accounts',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const AccountsListScreen(),
-              routes: [
-                GoRoute(
-                  path: 'accountScreen',
-                  parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
-                ),
-                GoRoute(
-                  path: 'addAccount',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showCustomModalPage(
-                    context,
-                    state,
-                    child: const AddAccountModalScreen(),
-                  ),
-                ),
-              ],
-            ),
-            GoRoute(
-              path: 'budgets',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const BudgetsListScreen(),
-              routes: [
-                // GoRoute(
-                //   path: 'budgetScreen',
-                //   parentNavigatorKey: _rootNavKey,
-                //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
-                // ),
-                GoRoute(
-                  path: 'addBudget',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showCustomModalPage(
-                    context,
-                    state,
-                    child: const AddBudgetModalScreen(),
-                  ),
-                ),
-              ],
-            )
-          ],
+        ),
+        GoRoute(
+          path: '/big-width',
+          parentNavigatorKey: _shellNavKey,
+          builder: (_, __) => const Placeholder(),
+          routes: _adaptiveRoutes(_shellNavKey),
         ),
       ],
+    ),
+    GoRoute(
+      path: '/small-width',
+      parentNavigatorKey: _rootNavKey,
+      builder: (_, __) => const Placeholder(),
+      routes: _adaptiveRoutes(_rootNavKey),
     ),
     GoRoute(
       path: '/transaction',
@@ -252,3 +198,130 @@ final goRouter = GoRouter(
     ),
   ],
 );
+
+List<GoRoute> _adaptiveRoutes(GlobalKey<NavigatorState> key) => [
+      GoRoute(
+        path: 'settings',
+        parentNavigatorKey: key,
+        builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'setCurrency',
+            //parentNavigatorKey: _rootNavKey,
+            builder: (context, state) => const SelectCurrencyScreen(),
+          )
+        ],
+      ),
+      GoRoute(
+        path: 'selectIcon',
+        parentNavigatorKey: key,
+        builder: (context, state) => const SelectIconsScreen(),
+      ),
+      GoRoute(
+        path: 'categories',
+        parentNavigatorKey: key,
+        builder: (context, state) => const CategoriesListScreen(),
+        routes: [
+          GoRoute(
+            path: 'addCategory',
+            pageBuilder: (context, state) => showCustomModalPage(
+              context,
+              state,
+              child: const AddCategoryModalScreen(),
+            ),
+          )
+        ],
+      ),
+      GoRoute(
+        path: 'accounts',
+        parentNavigatorKey: key,
+        builder: (context, state) => const AccountsListScreen(),
+        routes: [
+          GoRoute(
+            path: 'accountScreen',
+            builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
+          ),
+          GoRoute(
+            path: 'addAccount',
+            pageBuilder: (context, state) => showCustomModalPage(
+              context,
+              state,
+              child: const AddAccountModalScreen(),
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: 'budgets',
+        parentNavigatorKey: key,
+        builder: (context, state) => const BudgetsListScreen(),
+        routes: [
+          // GoRoute(
+          //   path: 'budgetScreen',
+          //   parentNavigatorKey: _rootNavKey,
+          //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
+          // ),
+          GoRoute(
+            path: 'addBudget',
+            pageBuilder: (context, state) => showCustomModalPage(
+              context,
+              state,
+              child: const AddBudgetModalScreen(),
+            ),
+          ),
+        ],
+      )
+    ];
+
+class AdaptiveRoute {
+  String? lastRoute;
+  String? navigate(GoRouterState state, MediaQueryData mediaQuery) {
+    lastRoute = state.uri.toString().contains("/small-width") ||
+            state.uri.toString().contains("/big-width") ||
+            state.uri.toString().contains("/adaptive-route")
+        ? lastRoute
+        : state.uri.toString();
+
+    // final isAdaptiveRoute = lastRoute == null
+    //     ? false
+    //     : lastRoute!.contains("/small-width") ||
+    //         lastRoute!.contains("/big-width") ||
+    //         lastRoute!.contains("/adaptive-route");
+
+    final isAdaptiveRoute = state.uri.toString().contains("/small-width") ||
+        state.uri.toString().contains("/big-width") ||
+        state.uri.toString().contains("/adaptive-route");
+
+    final regexp = RegExp(r'(?<!\w)(/big-width|/small-width|/adaptive-route)(?!\w)');
+    String truePath = state.uri.toString().replaceAll(regexp, '').trim();
+
+    // print('lastRoute: ' + lastRoute.toString());
+    print('realURL2: ' + state.uri.toString());
+    // print('truePath: ' + truePath);
+    print('test: ' + isAdaptiveRoute.toString());
+
+    if (isAdaptiveRoute) {
+      if (mediaQuery.size.width >= kMaxWidthForSmallScreen) {
+        return '/big-width$truePath';
+      } else {
+        return '/small-width$truePath';
+      }
+    }
+
+    return null;
+
+    // if (mediaQuery.size.width >= 700.0) {
+    //   // Desktop Route
+    //   if (state.uri.toString().contains("/mobile")) {
+    //     return "/desktop$lastRoute";
+    //   }
+    //   return "/desktop$changed";
+    // } else {
+    //   //Mobile
+    //   if (state.uri.toString().contains("/desktop")) {
+    //     return "/mobile$lastRoute";
+    //   }
+    //   return "/mobile$changed";
+    // }
+  }
+}
