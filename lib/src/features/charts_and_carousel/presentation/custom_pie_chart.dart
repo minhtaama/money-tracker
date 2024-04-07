@@ -33,13 +33,15 @@ class _CustomPieChartState extends State<CustomPieChart> {
 
   @override
   void didChangeDependencies() {
-    Future.delayed(
-        k1msDuration,
-        () => setState(() {
-              _startDegreeOffset = -270;
-              _scale = 1;
-              _opacity = 1;
-            }));
+    Future.delayed(k1msDuration, () {
+      if (mounted) {
+        setState(() {
+          _startDegreeOffset = -270;
+          _scale = 1;
+          _opacity = 1;
+        });
+      }
+    });
     super.didChangeDependencies();
   }
 
@@ -124,7 +126,9 @@ class _CustomPieChartState extends State<CustomPieChart> {
                         //   _touchedIndex = -1;
                         //   return;
                         // }
-                        if (event.isInterestedForInteractions && pieTouchResponse != null && event is FlTapDownEvent) {
+                        if (event.isInterestedForInteractions &&
+                            pieTouchResponse != null &&
+                            event is FlTapDownEvent) {
                           if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
                             _touchedIndex = -1;
                           } else {

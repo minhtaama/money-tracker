@@ -112,7 +112,7 @@ class _DashboardMenu2 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           RoundedIconButton(
-            onTap: () => context.go(RoutePath.accounts),
+            onTap: () => context.push(RoutePath.accounts),
             label: context.localize.accounts,
             size: 50,
             iconPath: AppIcons.accounts,
@@ -120,7 +120,7 @@ class _DashboardMenu2 extends StatelessWidget {
             reactImmediately: false,
           ),
           RoundedIconButton(
-            onTap: () => context.go(RoutePath.categories),
+            onTap: () => context.push(RoutePath.categories),
             label: context.localize.categories,
             size: 50,
             iconPath: AppIcons.categories,
@@ -128,7 +128,7 @@ class _DashboardMenu2 extends StatelessWidget {
             reactImmediately: false,
           ),
           RoundedIconButton(
-            onTap: () => context.go(RoutePath.budgets),
+            onTap: () => context.push(RoutePath.budgets),
             label: context.localize.budget,
             size: 50,
             iconPath: AppIcons.budgets,

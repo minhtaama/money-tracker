@@ -44,7 +44,8 @@ class RailItem extends NavigationRailDestination {
           ),
           label: Text(
             label,
-            style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, height: 1, fontSize: 13),
+            style: kHeader4TextStyle.copyWith(
+                color: context.appTheme.onBackground, height: 1, fontSize: 13),
           ),
           padding: const EdgeInsets.symmetric(vertical: 8),
         );
@@ -136,51 +137,49 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithNavigatio
       // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       backgroundColor: context.appTheme.background1,
       extendBody: true,
-      body: SafeArea(
-        child: Row(
-          children: [
-            NavigationRail(
-              destinations: destinations,
-              trailing: Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: AnimatedScale(
-                    scale: isHomeScreen ? 1 : 0,
-                    duration: k250msDuration,
-                    child: CustomFloatingActionButton(
-                      roundedButtonItems: roundedButtonItems,
-                      listItems: listItems,
-                      mainItem: mainItem,
-                    ),
+      body: Row(
+        children: [
+          NavigationRail(
+            destinations: destinations,
+            trailing: Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: AnimatedScale(
+                  scale: isHomeScreen ? 1 : 0,
+                  duration: k250msDuration,
+                  child: CustomFloatingActionButton(
+                    roundedButtonItems: roundedButtonItems,
+                    listItems: listItems,
+                    mainItem: mainItem,
                   ),
                 ),
               ),
-              selectedIndex: _destinationIndex,
-              backgroundColor: context.appTheme.background1,
-              labelType: NavigationRailLabelType.all,
-              indicatorColor: context.appTheme.accent1,
-              indicatorShape: const StadiumBorder(),
-              minWidth: 100,
-              onDestinationSelected: (int index) {
-                context.go(destinations[index].path); // Change Tab
-                isHomeScreen = index == 0;
-                _destinationIndex = index;
-              },
             ),
-            Container(
-              width: 1,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [AppColors.greyBorder(context), AppColors.greyBorder(context).withOpacity(0)],
-                stops: const [0, 0.5],
-              )),
-            ),
-            Expanded(child: widget.child),
-          ],
-        ),
+            selectedIndex: _destinationIndex,
+            backgroundColor: context.appTheme.background1,
+            labelType: NavigationRailLabelType.all,
+            indicatorColor: context.appTheme.accent1,
+            indicatorShape: const StadiumBorder(),
+            minWidth: 100,
+            onDestinationSelected: (int index) {
+              context.go(destinations[index].path); // Change Tab
+              isHomeScreen = index == 0;
+              _destinationIndex = index;
+            },
+          ),
+          Container(
+            width: 1,
+            height: double.infinity,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.greyBorder(context), AppColors.greyBorder(context).withOpacity(0)],
+              stops: const [0, 0.5],
+            )),
+          ),
+          Expanded(child: widget.child),
+        ],
       ),
     );
   }
