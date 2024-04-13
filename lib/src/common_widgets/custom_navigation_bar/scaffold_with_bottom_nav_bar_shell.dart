@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/main.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/bottom_app_bar/custom_bottom_app_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_template_transaction.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -9,14 +9,16 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'bottom_app_bar/bottom_app_bar_with_fab.dart';
+import '../../utils/constants.dart';
 import 'bottom_app_bar/custom_fab.dart';
 
 class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
-  /// This is a [StatefulWidget], which return a [Scaffold] with [BottomAppBarWithFAB],
-  /// a [CustomFloatingActionButton] and the child widget.
-  /// This [Scaffold] screen is the [ShellRoute]'s child in [GoRouter] and using `rootNavKey`
-  const ScaffoldWithBottomNavBar({super.key, required this.child});
+  const ScaffoldWithBottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.child,
+  });
+  final int currentIndex;
   final Widget child;
 
   @override
@@ -26,6 +28,8 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
 class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNavBar> {
   @override
   Widget build(BuildContext context) {
+    final isSmallScreen = Gap.screenWidth(context) < kSmallWidthBreakpoint;
+
     final tabItems = <BottomAppBarItem>[
       BottomAppBarItem(
         path: RoutePath.home,
@@ -97,7 +101,9 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         mainItem: mainItem,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBarWithFAB(
+      bottomNavigationBar: CustomBottomAppBar(
+        selectedIndex: widget.currentIndex,
+        isShow: isSmallScreen,
         items: tabItems,
         onTabSelected: (int tabIndex) {
           context.go(tabItems[tabIndex].path); // Change Tab

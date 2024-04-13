@@ -187,10 +187,9 @@ class _DateSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Gap.w24,
-          GestureDetector(
-            onTap: onDateTap,
-            child: SizedBox(
-              width: 200,
+          Expanded(
+            child: GestureDetector(
+              onTap: onDateTap,
               child: AnimatedSwitcher(
                 duration: k150msDuration,
                 transitionBuilder: (Widget child, Animation<double> animation) {
@@ -254,7 +253,6 @@ class _DateSelector extends StatelessWidget {
               ),
             ),
           ),
-          const Spacer(),
           RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
             iconColor: context.appTheme.onBackground,

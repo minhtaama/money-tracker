@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_screen.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
@@ -14,13 +14,12 @@ import 'package:money_tracker_app/src/features/settings_and_persistent_values/pr
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_payment_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/details_modal_screen/transaction_details_modal_screen.dart';
-import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_screen.dart';
+import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_shell.dart';
 import '../common_widgets/modal_and_dialog.dart';
 import '../features/settings_and_persistent_values/presentation/settings_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/transactions/presentation/screens/add_model_screen/add_credit_spending_modal_screen.dart';
-import '../utils/constants.dart';
 import '../utils/enums.dart';
 
 class RoutePath {
@@ -50,203 +49,211 @@ final _shellNavKey = GlobalKey<NavigatorState>();
 
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
-  navigatorKey: _rootNavKey,
+  // navigatorKey: _rootNavKey,
   debugLogDiagnostics: true,
   routes: [
     ShellRoute(
-      navigatorKey: _shellNavKey,
+      navigatorKey: _rootNavKey,
       builder: (context, state, child) {
-        if (Gap.screenWidth(context) > kSmallWidthBreakpoint) {
-          return ScaffoldWithNavigationRail(
-            child: child,
-          );
-        }
-        return ScaffoldWithBottomNavBar(
-          child: child,
+        return ScaffoldWithNavRail(
+          currentIndex: 1,
+          body: child,
         );
       },
       routes: [
-        GoRoute(
-          path: '/home',
-          parentNavigatorKey: _shellNavKey,
-          pageBuilder: (context, state) => NoTransitionPage(
-            key: state.pageKey,
-            child: const HomeScreen(),
-          ),
-        ),
-        GoRoute(
-          path: '/dashboard',
-          parentNavigatorKey: _shellNavKey,
-          pageBuilder: (context, state) => NoTransitionPage(
-            key: state.pageKey,
-            child: const DashboardScreen(),
-          ),
+        ShellRoute(
+          navigatorKey: _shellNavKey,
+          builder: (context, state, child) {
+            return ScaffoldWithBottomNavBar(
+              currentIndex: 1,
+              child: child,
+            );
+          },
           routes: [
             GoRoute(
-                path: 'settings',
-                parentNavigatorKey: _rootNavKey,
-                builder: (context, state) => const SettingsScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'setCurrency',
-                    parentNavigatorKey: _rootNavKey,
-                    builder: (context, state) => const SelectCurrencyScreen(),
-                  )
-                ]),
-            GoRoute(
-              path: 'selectIcon',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const SelectIconsScreen(),
+              path: '/home',
+              parentNavigatorKey: _shellNavKey,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const HomeScreen(),
+              ),
             ),
             GoRoute(
-              path: 'categories',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const CategoriesListScreen(),
+              path: '/dashboard',
+              parentNavigatorKey: _shellNavKey,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const DashboardScreen(),
+              ),
               routes: [
                 GoRoute(
-                  path: 'addCategory',
+                    path: 'settings',
+                    parentNavigatorKey: _rootNavKey,
+                    builder: (context, state) => const SettingsScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'setCurrency',
+                        parentNavigatorKey: _rootNavKey,
+                        builder: (context, state) => const SelectCurrencyScreen(),
+                      )
+                    ]),
+                GoRoute(
+                  path: 'selectIcon',
                   parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showCustomModalPage(
-                    context,
-                    state,
-                    child: const AddCategoryModalScreen(),
-                  ),
+                  builder: (context, state) => const SelectIconsScreen(),
+                ),
+                GoRoute(
+                  path: 'categories',
+                  parentNavigatorKey: _rootNavKey,
+                  builder: (context, state) => const CategoriesListScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'addCategory',
+                      parentNavigatorKey: _rootNavKey,
+                      pageBuilder: (context, state) => showCustomModalPage(
+                        context,
+                        state,
+                        child: const AddCategoryModalScreen(),
+                      ),
+                    )
+                  ],
+                ),
+                GoRoute(
+                  path: 'accounts',
+                  parentNavigatorKey: _rootNavKey,
+                  builder: (context, state) => const AccountsListScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'accountScreen',
+                      parentNavigatorKey: _rootNavKey,
+                      builder: (context, state) =>
+                          AccountScreen(objectIdHexString: state.extra as String),
+                    ),
+                    GoRoute(
+                      path: 'addAccount',
+                      parentNavigatorKey: _rootNavKey,
+                      pageBuilder: (context, state) => showCustomModalPage(
+                        context,
+                        state,
+                        child: const AddAccountModalScreen(),
+                      ),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'budgets',
+                  parentNavigatorKey: _rootNavKey,
+                  builder: (context, state) => const BudgetsListScreen(),
+                  routes: [
+                    // GoRoute(
+                    //   path: 'budgetScreen',
+                    //   parentNavigatorKey: _rootNavKey,
+                    //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
+                    // ),
+                    GoRoute(
+                      path: 'addBudget',
+                      parentNavigatorKey: _rootNavKey,
+                      pageBuilder: (context, state) => showCustomModalPage(
+                        context,
+                        state,
+                        child: const AddBudgetModalScreen(),
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),
-            GoRoute(
-              path: 'accounts',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const AccountsListScreen(),
-              routes: [
-                GoRoute(
-                  path: 'accountScreen',
-                  parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
-                ),
-                GoRoute(
-                  path: 'addAccount',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showCustomModalPage(
-                    context,
-                    state,
-                    child: const AddAccountModalScreen(),
-                  ),
-                ),
-              ],
-            ),
-            GoRoute(
-              path: 'budgets',
-              parentNavigatorKey: _rootNavKey,
-              builder: (context, state) => const BudgetsListScreen(),
-              routes: [
-                // GoRoute(
-                //   path: 'budgetScreen',
-                //   parentNavigatorKey: _rootNavKey,
-                //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
-                // ),
-                GoRoute(
-                  path: 'addBudget',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => showCustomModalPage(
-                    context,
-                    state,
-                    child: const AddBudgetModalScreen(),
-                  ),
-                ),
-              ],
-            )
           ],
         ),
-      ],
-    ),
-    GoRoute(
-      path: '/addIncome',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) => showCustomModalPage(
-        context,
-        state,
-        hasHandle: false,
-        child: const AddRegularTxnModalScreen(TransactionType.income),
-      ),
-    ),
-    GoRoute(
-      path: '/addExpense',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) => showCustomModalPage(
-        context,
-        state,
-        hasHandle: false,
-        child: const AddRegularTxnModalScreen(TransactionType.expense),
-      ),
-    ),
-    GoRoute(
-      path: '/addTransfer',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) => showCustomModalPage(
-        context,
-        state,
-        hasHandle: false,
-        child: const AddRegularTxnModalScreen(TransactionType.transfer),
-      ),
-    ),
-    GoRoute(
-      path: '/addCreditSpending',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) => showCustomModalPage(
-        context,
-        state,
-        hasHandle: false,
-        child: const AddCreditSpendingModalScreen(),
-      ),
-    ),
-    GoRoute(
-      path: '/addCreditPayment',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) => showCustomModalPage(
-        context,
-        state,
-        hasHandle: false,
-        child: const AddCreditPaymentModalScreen(),
-      ),
-    ),
-    GoRoute(
-      path: '/transaction',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) {
-        final String objectIdHexString;
-        final TransactionScreenType screenType;
-
-        if (state.extra is String) {
-          objectIdHexString = state.extra as String;
-          screenType = TransactionScreenType.editable;
-        } else {
-          objectIdHexString = (state.extra as ({String string, TransactionScreenType type})).string;
-          screenType = (state.extra as ({String string, TransactionScreenType type})).type;
-        }
-
-        return showCustomModalPage(
-          context,
-          state,
-          hasHandle: true,
-          child: TransactionDetailsModalScreen(
-            objectIdHexString: objectIdHexString,
-            screenType: screenType,
+        GoRoute(
+          path: '/addIncome',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) => showCustomModalPage(
+            context,
+            state,
+            hasHandle: false,
+            child: const AddRegularTxnModalScreen(TransactionType.income),
           ),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/editDashboard',
-      parentNavigatorKey: _rootNavKey,
-      pageBuilder: (context, state) {
-        return showCustomModalPage(
-          context,
-          state,
-          hasHandle: true,
-          child: const DashboardEditModalScreen(),
-        );
-      },
+        ),
+        GoRoute(
+          path: '/addExpense',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) => showCustomModalPage(
+            context,
+            state,
+            hasHandle: false,
+            child: const AddRegularTxnModalScreen(TransactionType.expense),
+          ),
+        ),
+        GoRoute(
+          path: '/addTransfer',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) => showCustomModalPage(
+            context,
+            state,
+            hasHandle: false,
+            child: const AddRegularTxnModalScreen(TransactionType.transfer),
+          ),
+        ),
+        GoRoute(
+          path: '/addCreditSpending',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) => showCustomModalPage(
+            context,
+            state,
+            hasHandle: false,
+            child: const AddCreditSpendingModalScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/addCreditPayment',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) => showCustomModalPage(
+            context,
+            state,
+            hasHandle: false,
+            child: const AddCreditPaymentModalScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/transaction',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) {
+            final String objectIdHexString;
+            final TransactionScreenType screenType;
+
+            if (state.extra is String) {
+              objectIdHexString = state.extra as String;
+              screenType = TransactionScreenType.editable;
+            } else {
+              objectIdHexString = (state.extra as ({String string, TransactionScreenType type})).string;
+              screenType = (state.extra as ({String string, TransactionScreenType type})).type;
+            }
+
+            return showCustomModalPage(
+              context,
+              state,
+              hasHandle: true,
+              child: TransactionDetailsModalScreen(
+                objectIdHexString: objectIdHexString,
+                screenType: screenType,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/editDashboard',
+          parentNavigatorKey: _rootNavKey,
+          pageBuilder: (context, state) {
+            return showCustomModalPage(
+              context,
+              state,
+              hasHandle: true,
+              child: const DashboardEditModalScreen(),
+            );
+          },
+        ),
+      ],
     ),
   ],
 );

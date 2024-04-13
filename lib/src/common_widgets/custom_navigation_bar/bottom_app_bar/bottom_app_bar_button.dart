@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'bottom_app_bar_with_fab.dart';
+import 'custom_bottom_app_bar.dart';
 
 class BottomAppBarButton extends StatelessWidget {
   const BottomAppBarButton({
@@ -27,7 +26,8 @@ class BottomAppBarButton extends StatelessWidget {
     EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 35 : 30, right: isLeft ? 30 : 35);
     BorderRadius borderRadius = BorderRadius.circular(38);
 
-    Color backgroundColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
+    Color backgroundColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
 
     return Expanded(
       child: Padding(
@@ -53,8 +53,12 @@ class BottomAppBarButton extends StatelessWidget {
                   child: SvgIcon(
                     item.iconData,
                     color: isSelected
-                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground)
-                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground),
+                        ? (context.appTheme.isDarkTheme
+                            ? context.appTheme.secondary1
+                            : context.appTheme.onBackground)
+                        : (context.appTheme.isDarkTheme
+                            ? context.appTheme.secondary1
+                            : context.appTheme.onBackground),
                   ),
                 ),
                 Gap.w4,
