@@ -56,7 +56,7 @@ final goRouter = GoRouter(
     ShellRoute(
       navigatorKey: _shellNavKey,
       builder: (context, state, child) {
-        if (Gap.screenWidth(context) > kMaxWidthForSmallScreen) {
+        if (Gap.screenWidth(context) > kSmallWidthBreakpoint) {
           return ScaffoldWithNavigationRail(
             child: child,
           );

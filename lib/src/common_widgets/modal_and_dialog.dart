@@ -34,7 +34,8 @@ Future<T?> showCustomDialog<T>({
         padding: const EdgeInsets.all(12.0),
         child: AlertDialog(
           surfaceTintColor: Colors.transparent,
-          backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+          backgroundColor:
+              context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
           elevation: 5,
           content: child,
         ),
@@ -72,9 +73,11 @@ Future<T?> showConfirmModalBottomSheet<T>({
     context: context,
     elevation: 0,
     enableDrag: false,
-    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    barrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.6) : AppColors.grey(context).withOpacity(0.6),
+    backgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    barrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.6)
+        : AppColors.grey(context).withOpacity(0.6),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -166,13 +169,16 @@ PopupRoute<T> _route<T>(
   required bool hasHandle,
   RouteSettings? settings,
 }) {
-  final backgroundColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
-  final modalBarrierColorBottomSheet =
-      context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7);
-  final modalBarrierColorFloatingSheet =
-      context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.25) : AppColors.grey(context).withOpacity(0.1);
+  final backgroundColor =
+      context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+  final modalBarrierColorBottomSheet = context.appTheme.isDarkTheme
+      ? AppColors.black.withOpacity(0.9)
+      : AppColors.grey(context).withOpacity(0.7);
+  final modalBarrierColorFloatingSheet = context.appTheme.isDarkTheme
+      ? AppColors.black.withOpacity(0.25)
+      : AppColors.grey(context).withOpacity(0.1);
 
-  if (Gap.screenWidth(context) > kMaxWidthForSmallScreen) {
+  if (Gap.screenWidth(context) > kSmallWidthBreakpoint) {
     return CustomFloatingSheetRoute<T>(
       settings: settings,
       backgroundColor: backgroundColor,
@@ -223,9 +229,11 @@ Page<T> showCustomModalPage<T>(
 }) {
   return ModalBottomSheetPage(
     hasHandle: hasHandle,
-    backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-    modalBarrierColor:
-        context.appTheme.isDarkTheme ? AppColors.black.withOpacity(0.9) : AppColors.grey(context).withOpacity(0.7),
+    backgroundColor:
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+    modalBarrierColor: context.appTheme.isDarkTheme
+        ? AppColors.black.withOpacity(0.9)
+        : AppColors.grey(context).withOpacity(0.7),
     child: child,
   );
 }
@@ -334,7 +342,8 @@ class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
   }
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+  Widget buildPage(
+      BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     final Widget content = Builder(
       builder: (BuildContext context) {
         return AnimatedBuilder(
@@ -365,7 +374,8 @@ class CustomFloatingSheetRoute<T> extends PopupRoute<T> {
                 elevation: context.appTheme.isDarkTheme ? 10 : 5,
                 child: AnimatedPadding(
                   padding: EdgeInsets.only(
-                      top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
+                      top: 16,
+                      bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
                   duration: const Duration(milliseconds: 50),
                   child: SingleChildScrollView(
                     child: builder(context),
@@ -409,7 +419,8 @@ class CustomModalBottomSheetRoute<T> extends ModalBottomSheetRoute<T> {
                   ? Stack(
                       children: [
                         AnimatedPadding(
-                          padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                          padding:
+                              EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
                           duration: const Duration(milliseconds: 0),
                           child: SingleChildScrollView(child: builder(context)),
                         ),
@@ -417,7 +428,8 @@ class CustomModalBottomSheetRoute<T> extends ModalBottomSheetRoute<T> {
                       ],
                     )
                   : AnimatedPadding(
-                      padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding:
+                          EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
                       duration: const Duration(milliseconds: 0),
                       child: SingleChildScrollView(child: builder(context)),
                     ),
