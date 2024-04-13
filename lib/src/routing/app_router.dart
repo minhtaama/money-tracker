@@ -16,6 +16,7 @@ import 'package:money_tracker_app/src/features/transactions/presentation/screens
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/details_modal_screen/transaction_details_modal_screen.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../common_widgets/custom_navigation_bar/bottom_app_bar/custom_bottom_app_bar.dart';
+import '../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import '../common_widgets/custom_navigation_bar/navigation_rail/custom_navigation_rail.dart';
 import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_shell.dart';
 import '../common_widgets/modal_and_dialog.dart';
@@ -23,6 +24,8 @@ import '../features/settings_and_persistent_values/presentation/settings_screen.
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/transactions/presentation/screens/add_model_screen/add_credit_spending_modal_screen.dart';
+import '../features/transactions/presentation/screens/add_model_screen/add_template_transaction.dart';
+import '../theme_and_ui/colors.dart';
 import '../theme_and_ui/icons.dart';
 import '../utils/enums.dart';
 
@@ -51,6 +54,100 @@ class RoutePath {
 final _rootNavKey = GlobalKey<NavigatorState>();
 final _shellNavKey = GlobalKey<NavigatorState>();
 
+_fabRoundedButtonItems(BuildContext context) => <FABItem>[
+      FABItem(
+        icon: AppIcons.income,
+        label: context.localize.income,
+        color: context.appTheme.onPositive,
+        backgroundColor: context.appTheme.positive,
+        onTap: () => context.push(RoutePath.addIncome),
+      ),
+      FABItem(
+        icon: AppIcons.transfer,
+        label: context.localize.transfer,
+        color: context.appTheme.onBackground,
+        backgroundColor: AppColors.grey(context),
+        onTap: () => context.push(RoutePath.addTransfer),
+      ),
+      FABItem(
+        icon: AppIcons.expense,
+        label: context.localize.expense,
+        color: context.appTheme.onNegative,
+        backgroundColor: context.appTheme.negative,
+        onTap: () => context.push(RoutePath.addExpense),
+      ),
+    ];
+
+_fabListItems(BuildContext context) => <FABItem>[
+      FABItem(
+        icon: AppIcons.receiptDollar,
+        label: context.localize.creditSpending,
+        onTap: () => context.push(RoutePath.addCreditSpending),
+      ),
+      FABItem(
+        icon: AppIcons.handCoin,
+        label: context.localize.creditPayment,
+        onTap: () => context.push(RoutePath.addCreditPayment),
+      ),
+    ];
+
+_fabMainItem(BuildContext context) => FABItem(
+      icon: AppIcons.heartOutline,
+      label: '',
+      color: context.appTheme.onAccent,
+      backgroundColor: context.appTheme.accent2,
+      onTap: () => showCustomModal(
+        context: context,
+        child: const AddTemplateTransactionModalScreen(),
+      ),
+    );
+
+_navRailItems(BuildContext context) => <NavigationRailItem>[
+      NavigationRailItem(
+        path: RoutePath.home,
+        iconData: AppIcons.home,
+        text: context.localize.home,
+      ),
+      NavigationRailItem(
+        path: RoutePath.dashboard,
+        iconData: AppIcons.summary,
+        text: context.localize.dashboard,
+      ),
+      NavigationRailItem(
+        path: RoutePath.budgets,
+        iconData: AppIcons.budgets,
+        text: context.localize.budget,
+      ),
+      NavigationRailItem(
+        path: RoutePath.accounts,
+        iconData: AppIcons.accounts,
+        text: context.localize.accounts,
+      ),
+      NavigationRailItem(
+        path: RoutePath.categories,
+        iconData: AppIcons.categories,
+        text: context.localize.categories,
+      ),
+      NavigationRailItem(
+        path: RoutePath.settings,
+        iconData: AppIcons.settings,
+        text: context.localize.settings,
+      ),
+    ];
+
+_bottomTabItems(BuildContext context) => <BottomAppBarItem>[
+      BottomAppBarItem(
+        path: RoutePath.home,
+        iconData: AppIcons.home,
+        text: context.localize.home,
+      ),
+      BottomAppBarItem(
+        path: RoutePath.dashboard,
+        iconData: AppIcons.summary,
+        text: context.localize.dashboard,
+      ),
+    ];
+
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
   debugLogDiagnostics: true,
@@ -58,41 +155,13 @@ final goRouter = GoRouter(
     ShellRoute(
       navigatorKey: _rootNavKey,
       builder: (context, state, child) {
-        final tabItems = <NavigationRailItem>[
-          NavigationRailItem(
-            path: RoutePath.home,
-            iconData: AppIcons.home,
-            text: context.localize.home,
-          ),
-          NavigationRailItem(
-            path: RoutePath.dashboard,
-            iconData: AppIcons.summary,
-            text: context.localize.dashboard,
-          ),
-          NavigationRailItem(
-            path: RoutePath.budgets,
-            iconData: AppIcons.budgets,
-            text: context.localize.budget,
-          ),
-          NavigationRailItem(
-            path: RoutePath.accounts,
-            iconData: AppIcons.accounts,
-            text: context.localize.accounts,
-          ),
-          NavigationRailItem(
-            path: RoutePath.categories,
-            iconData: AppIcons.categories,
-            text: context.localize.categories,
-          ),
-          NavigationRailItem(
-            path: RoutePath.settings,
-            iconData: AppIcons.settings,
-            text: context.localize.settings,
-          ),
-        ];
-
         return ScaffoldWithNavRail(
-          items: tabItems,
+          items: _navRailItems(context),
+          floatingActionButton: CustomFloatingActionButton(
+            roundedButtonItems: _fabRoundedButtonItems(context),
+            listItems: _fabListItems(context),
+            mainItem: _fabMainItem(context),
+          ),
           body: child,
         );
       },
@@ -100,21 +169,13 @@ final goRouter = GoRouter(
         ShellRoute(
           navigatorKey: _shellNavKey,
           builder: (context, state, child) {
-            final tabItems = <BottomAppBarItem>[
-              BottomAppBarItem(
-                path: RoutePath.home,
-                iconData: AppIcons.home,
-                text: context.localize.home,
-              ),
-              BottomAppBarItem(
-                path: RoutePath.dashboard,
-                iconData: AppIcons.summary,
-                text: context.localize.dashboard,
-              ),
-            ];
-
             return ScaffoldWithBottomNavBar(
-              items: tabItems,
+              items: _bottomTabItems(context),
+              floatingActionButton: CustomFloatingActionButton(
+                roundedButtonItems: _fabRoundedButtonItems(context),
+                listItems: _fabListItems(context),
+                mainItem: _fabMainItem(context),
+              ),
               child: child,
             );
           },

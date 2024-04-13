@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'navigation_rail/custom_navigation_rail.dart';
 
@@ -11,10 +10,12 @@ class ScaffoldWithNavRail extends StatefulWidget {
   const ScaffoldWithNavRail({
     super.key,
     required this.items,
+    required this.floatingActionButton,
     required this.body,
   });
 
   final List<NavigationRailItem> items;
+  final Widget floatingActionButton;
   final Widget body;
 
   @override
@@ -24,13 +25,16 @@ class ScaffoldWithNavRail extends StatefulWidget {
 class _ScaffoldWithNavRailState extends State<ScaffoldWithNavRail> {
   @override
   Widget build(BuildContext context) {
-    final isSmallScreen = !context.isBigScreen;
+    final isBigScreen = context.isBigScreen;
     final currentPath = GoRouterState.of(context).uri.toString();
     final currentIndex = widget.items.indexWhere((item) => item.path == currentPath);
 
     return Scaffold(
+      key: navigationRailKey,
       backgroundColor: context.appTheme.background1,
       resizeToAvoidBottomInset: false,
+      floatingActionButton: isBigScreen ? widget.floatingActionButton : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Row(
         children: [
           CustomNavigationRail(
@@ -39,7 +43,7 @@ class _ScaffoldWithNavRailState extends State<ScaffoldWithNavRail> {
             onTabSelected: (int tabIndex) {
               context.go(widget.items[tabIndex].path); // Change Tab
             },
-            isShow: !isSmallScreen,
+            isShow: isBigScreen,
           ),
           Expanded(
             key: navigationRailChildKey,
