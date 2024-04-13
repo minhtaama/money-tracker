@@ -54,6 +54,24 @@ class RoutePath {
 final _rootNavKey = GlobalKey<NavigatorState>();
 final _shellNavKey = GlobalKey<NavigatorState>();
 
+Widget _customTransition(
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final tween =
+      Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
+  return FadeTransition(
+      opacity: animation,
+      child: context.isBigScreen
+          ? child
+          : SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            ));
+}
+
 _fabRoundedButtonItems(BuildContext context) => <FABItem>[
       FABItem(
         icon: AppIcons.income,
@@ -179,9 +197,10 @@ final goRouter = GoRouter(
             GoRoute(
               path: '/home',
               parentNavigatorKey: _shellNavKey,
-              pageBuilder: (context, state) => NoTransitionPage(
+              pageBuilder: (context, state) => CustomTransitionPage(
                 key: state.pageKey,
                 child: const HomeScreen(),
+                transitionsBuilder: _customTransition,
               ),
             ),
             GoRoute(
@@ -190,37 +209,45 @@ final goRouter = GoRouter(
               pageBuilder: (context, state) => CustomTransitionPage(
                 key: state.pageKey,
                 child: const DashboardScreen(),
-                transitionsBuilder: (BuildContext context, Animation<double> animation,
-                    Animation<double> secondaryAnimation, Widget child) {
-                  final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeOut));
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: FadeTransition(opacity: animation, child: child),
-                  );
-                },
+                transitionsBuilder: _customTransition,
               ),
               routes: [
                 GoRoute(
                     path: 'settings',
                     parentNavigatorKey: _rootNavKey,
-                    builder: (context, state) => const SettingsScreen(),
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                          key: state.pageKey,
+                          child: const SettingsScreen(),
+                          transitionsBuilder: _customTransition,
+                        ),
                     routes: [
                       GoRoute(
                         path: 'setCurrency',
                         parentNavigatorKey: _rootNavKey,
-                        builder: (context, state) => const SelectCurrencyScreen(),
+                        pageBuilder: (context, state) => CustomTransitionPage(
+                          key: state.pageKey,
+                          child: const SelectCurrencyScreen(),
+                          transitionsBuilder: _customTransition,
+                        ),
                       )
                     ]),
                 GoRoute(
                   path: 'selectIcon',
                   parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => const SelectIconsScreen(),
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    key: state.pageKey,
+                    child: const SelectIconsScreen(),
+                    transitionsBuilder: _customTransition,
+                  ),
                 ),
                 GoRoute(
                   path: 'categories',
                   parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => const CategoriesListScreen(),
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    key: state.pageKey,
+                    child: const CategoriesListScreen(),
+                    transitionsBuilder: _customTransition,
+                  ),
                   routes: [
                     GoRoute(
                       path: 'addCategory',
@@ -236,13 +263,20 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'accounts',
                   parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => const AccountsListScreen(),
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    key: state.pageKey,
+                    child: const AccountsListScreen(),
+                    transitionsBuilder: _customTransition,
+                  ),
                   routes: [
                     GoRoute(
                       path: 'accountScreen',
                       parentNavigatorKey: _rootNavKey,
-                      builder: (context, state) =>
-                          AccountScreen(objectIdHexString: state.extra as String),
+                      pageBuilder: (context, state) => CustomTransitionPage(
+                        key: state.pageKey,
+                        child: AccountScreen(objectIdHexString: state.extra as String),
+                        transitionsBuilder: _customTransition,
+                      ),
                     ),
                     GoRoute(
                       path: 'addAccount',
@@ -258,7 +292,11 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'budgets',
                   parentNavigatorKey: _rootNavKey,
-                  builder: (context, state) => const BudgetsListScreen(),
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    key: state.pageKey,
+                    child: const BudgetsListScreen(),
+                    transitionsBuilder: _customTransition,
+                  ),
                   routes: [
                     // GoRoute(
                     //   path: 'budgetScreen',

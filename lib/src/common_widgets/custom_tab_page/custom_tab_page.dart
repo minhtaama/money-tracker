@@ -61,35 +61,38 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _CustomListView(
-          smallTabBar: widget.smallTabBar,
-          onOffsetChange: (value) => _onOffsetChange(value),
-          children: [
-            ...widget.children,
-            SizedBox(
-              height: MediaQuery.of(context).padding.bottom + 32,
-            )
-          ],
-        ),
-        AnimatedBuilder(
-            animation: _fadeAnimation,
-            child: widget.smallTabBar,
-            builder: (BuildContext context, Widget? child) {
-              return Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: !context.appTheme.isDarkTheme
-                        ? BorderSide(
-                            color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
-                        : BorderSide.none,
+    return Scaffold(
+      backgroundColor: context.appTheme.background1,
+      body: Stack(
+        children: [
+          _CustomListView(
+            smallTabBar: widget.smallTabBar,
+            onOffsetChange: (value) => _onOffsetChange(value),
+            children: [
+              ...widget.children,
+              SizedBox(
+                height: MediaQuery.of(context).padding.bottom + 32,
+              )
+            ],
+          ),
+          AnimatedBuilder(
+              animation: _fadeAnimation,
+              child: widget.smallTabBar,
+              builder: (BuildContext context, Widget? child) {
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: !context.appTheme.isDarkTheme
+                          ? BorderSide(
+                              color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                          : BorderSide.none,
+                    ),
                   ),
-                ),
-                child: child,
-              );
-            }),
-      ],
+                  child: child,
+                );
+              }),
+        ],
+      ),
     );
   }
 }

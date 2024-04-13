@@ -19,10 +19,13 @@ class DashboardEditModalScreen extends ConsumerStatefulWidget {
 
 class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScreen> {
   late final List<DashboardWidgetType> _order = List.from(context.appPersistentValues.dashboardOrder);
-  late final List<DashboardWidgetType> _hiddenList = List.from(context.appPersistentValues.hiddenDashboardWidgets);
+  late final List<DashboardWidgetType> _hiddenList =
+      List.from(context.appPersistentValues.hiddenDashboardWidgets);
 
   void _updateDb() {
-    ref.read(persistentControllerProvider.notifier).set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
+    ref
+        .read(persistentControllerProvider.notifier)
+        .set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
   }
 
   @override
@@ -38,7 +41,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
       ),
       isWrapByCard: false,
       margin: EdgeInsets.zero,
-      holdToReorder: false,
+      holdToReorder: true,
       onReorder: (oldIndex, newIndex) {
         final item = _order.removeAt(oldIndex);
         _order.insert(newIndex, item);

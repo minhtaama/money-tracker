@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
-import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
@@ -17,7 +16,6 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy(); //remove # character in web link
-  GoRouter.optionURLReflectsImperativeAPIs = true;
 
   // initialize REALM database
   final realmDataStore = RealmDataStore();
