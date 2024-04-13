@@ -48,6 +48,7 @@ class DashboardScreen extends StatelessWidget {
         child: PageHeading(
           title: context.localize.dashboard,
           secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
+          isTopLevelOfNavigationRail: true,
           trailing: RoundedIconButton(
             iconPath: AppIcons.settings,
             iconColor: context.appTheme.onBackground,

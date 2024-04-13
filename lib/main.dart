@@ -31,7 +31,7 @@ Future<void> main() async {
       overrides: [
         realmDataStoreProvider.overrideWithValue(realmDataStore),
       ],
-      child: const MaterialApp(home: MoneyTrackerApp()),
+      child: const MoneyTrackerApp(),
     ),
   );
 }

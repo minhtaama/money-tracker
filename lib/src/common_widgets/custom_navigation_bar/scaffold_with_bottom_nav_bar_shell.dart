@@ -32,8 +32,10 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
     // display above the `tabItem`.
     return Scaffold(
-      floatingActionButton: isSmallScreen ? widget.floatingActionButton : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: widget.floatingActionButton,
+      floatingActionButtonLocation: isSmallScreen
+          ? FloatingActionButtonLocation.centerDocked
+          : FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: CustomBottomAppBar(
         selectedIndex: currentIndex,
         isShow: isSmallScreen,

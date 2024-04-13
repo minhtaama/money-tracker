@@ -246,7 +246,7 @@ class AppSettings extends InheritedWidget {
     if (settings != null) {
       return settings.data;
     } else {
-      throw StateError('Could not find ancestor widget of type `AppTheme`');
+      throw StateError('Could not find ancestor widget of type `AppSettings`');
     }
   }
 

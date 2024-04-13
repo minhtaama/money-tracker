@@ -157,17 +157,13 @@ final goRouter = GoRouter(
       builder: (context, state, child) {
         return ScaffoldWithNavRail(
           items: _navRailItems(context),
-          floatingActionButton: CustomFloatingActionButton(
-            roundedButtonItems: _fabRoundedButtonItems(context),
-            listItems: _fabListItems(context),
-            mainItem: _fabMainItem(context),
-          ),
           body: child,
         );
       },
       routes: [
         ShellRoute(
           navigatorKey: _shellNavKey,
+          parentNavigatorKey: _rootNavKey,
           builder: (context, state, child) {
             return ScaffoldWithBottomNavBar(
               items: _bottomTabItems(context),

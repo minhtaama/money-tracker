@@ -10,12 +10,10 @@ class ScaffoldWithNavRail extends StatefulWidget {
   const ScaffoldWithNavRail({
     super.key,
     required this.items,
-    required this.floatingActionButton,
     required this.body,
   });
 
   final List<NavigationRailItem> items;
-  final Widget floatingActionButton;
   final Widget body;
 
   @override
@@ -33,8 +31,6 @@ class _ScaffoldWithNavRailState extends State<ScaffoldWithNavRail> {
       key: navigationRailKey,
       backgroundColor: context.appTheme.background1,
       resizeToAvoidBottomInset: false,
-      floatingActionButton: isBigScreen ? widget.floatingActionButton : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Row(
         children: [
           CustomNavigationRail(
