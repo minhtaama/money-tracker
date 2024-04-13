@@ -140,9 +140,9 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         controller: _pageController,
         smallTabBar: SmallTabBar(
           child: PageHeading(
-              title: widget.regularAccount.name,
-              secondaryTitle: 'Regular account'.hardcoded,
-              hasBackButton: true),
+            title: widget.regularAccount.name,
+            secondaryTitle: 'Regular account'.hardcoded,
+          ),
         ),
         extendedTabBar: ExtendedTabBar(
           backgroundColor:

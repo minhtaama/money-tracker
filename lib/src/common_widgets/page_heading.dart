@@ -7,21 +7,24 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../theme_and_ui/icons.dart';
 
 class PageHeading extends StatelessWidget {
-  const PageHeading(
-      {super.key,
-      required this.title,
-      this.hasBackButton = false,
-      this.trailing,
-      this.secondaryTitle,
-      this.leadingTitle});
+  const PageHeading({
+    super.key,
+    required this.title,
+    this.isTopLevelOfNavigationRail = false,
+    this.trailing,
+    this.secondaryTitle,
+    this.leadingTitle,
+  });
   final String? leadingTitle;
   final String title;
-  final bool hasBackButton;
+  final bool isTopLevelOfNavigationRail;
   final Widget? trailing;
   final String? secondaryTitle;
 
   @override
   Widget build(BuildContext context) {
+    final canPop = context.isBigScreen ? !isTopLevelOfNavigationRail : true;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -29,7 +32,7 @@ class PageHeading extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            hasBackButton
+            canPop && context.canPop()
                 ? RoundedIconButton(
                     iconPath: AppIcons.back,
                     backgroundColor: Colors.transparent,
@@ -50,7 +53,8 @@ class PageHeading extends StatelessWidget {
                                   Text(
                                     leadingTitle!,
                                     style: kNormalTextStyle.copyWith(
-                                        color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
+                                        color: context.appTheme.onBackground,
+                                        fontSize: kHeader1TextStyle.fontSize),
                                   ),
                                   Gap.w8,
                                   Expanded(

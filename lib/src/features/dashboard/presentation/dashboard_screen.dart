@@ -111,43 +111,53 @@ class _DashboardMenu2 extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          RoundedIconButton(
-            onTap: () => context.push(RoutePath.accounts),
-            label: context.localize.accounts,
-            size: 50,
-            iconPath: AppIcons.accounts,
-            iconColor: context.appTheme.onBackground,
-            reactImmediately: false,
+          Expanded(
+            child: RoundedIconButton(
+              onTap: () => context.go(RoutePath.accounts),
+              label: context.localize.accounts,
+              size: 50,
+              iconPath: AppIcons.accounts,
+              iconColor: context.appTheme.onBackground,
+              reactImmediately: false,
+            ),
           ),
-          RoundedIconButton(
-            onTap: () => context.push(RoutePath.categories),
-            label: context.localize.categories,
-            size: 50,
-            iconPath: AppIcons.categories,
-            iconColor: context.appTheme.onBackground,
-            reactImmediately: false,
+          Expanded(
+            child: RoundedIconButton(
+              onTap: () => context.go(RoutePath.categories),
+              label: context.localize.categories,
+              size: 50,
+              iconPath: AppIcons.categories,
+              iconColor: context.appTheme.onBackground,
+              reactImmediately: false,
+            ),
           ),
-          RoundedIconButton(
-            onTap: () => context.push(RoutePath.budgets),
-            label: context.localize.budget,
-            size: 50,
-            iconPath: AppIcons.budgets,
-            iconColor: context.appTheme.onBackground,
-            reactImmediately: false,
+          Expanded(
+            child: RoundedIconButton(
+              onTap: () => context.go(RoutePath.budgets),
+              label: context.localize.budget,
+              size: 50,
+              iconPath: AppIcons.budgets,
+              iconColor: context.appTheme.onBackground,
+              reactImmediately: false,
+            ),
           ),
-          RoundedIconButton(
-            label: context.localize.saving,
-            size: 50,
-            iconPath: AppIcons.savings,
-            iconColor: context.appTheme.onBackground,
-            reactImmediately: false,
+          Expanded(
+            child: RoundedIconButton(
+              label: context.localize.saving,
+              size: 50,
+              iconPath: AppIcons.savings,
+              iconColor: context.appTheme.onBackground,
+              reactImmediately: false,
+            ),
           ),
-          RoundedIconButton(
-            label: 'Upcoming'.hardcoded,
-            size: 50,
-            iconPath: AppIcons.transfer,
-            iconColor: context.appTheme.onBackground,
-            reactImmediately: false,
+          Expanded(
+            child: RoundedIconButton(
+              label: 'Upcoming'.hardcoded,
+              size: 50,
+              iconPath: AppIcons.transfer,
+              iconColor: context.appTheme.onBackground,
+              reactImmediately: false,
+            ),
           ),
         ],
       ),

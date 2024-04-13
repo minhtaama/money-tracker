@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -11,7 +12,8 @@ import '../../rounded_icon_button.dart';
 import 'dart:math' as math;
 
 class FABItem {
-  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem(
+      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -41,14 +43,19 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late List<Widget> Function(OverlayEntry overlayEntry) _buttonWidgets;
   late List<Widget> Function(OverlayEntry overlayEntry) _listWidgets;
   late Widget Function(OverlayEntry overlayEntry, Animation<double>? animation) _mainButtonOverlay;
-  late double overlayBoxWidth;
-  Size _floatingActionButtonSize = Size.zero;
+  late double _overlayBoxWidth;
+
+  //OverlayEntry? overlayEntry;
+
+  Size _fabSize = Size.zero;
+
   bool _isOverlayShowing = false;
 
   // GlobalKey is assigned to FloatingActionButton to get the RenderBox object
@@ -64,8 +71,9 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       reverseDuration: k150msDuration,
     );
     _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
+
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _floatingActionButtonSize = _globalKey.currentContext!.size!;
+      _fabSize = _globalKey.currentContext!.size!;
     });
 
     super.initState();
@@ -73,17 +81,48 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
 
   @override
   void didChangeDependencies() {
-    overlayBoxWidth = (MediaQuery.of(context).size.width / 1.2).clamp(0, 400);
+    _overlayBoxWidth = (MediaQuery.of(context).size.width / 1.2).clamp(0, 400);
+
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      _fabSize = _globalKey.currentContext!.size!;
+    });
 
     _buttonWidgets = (overlayEntry) {
       return List.generate(
         widget.roundedButtonItems.length,
         (index) {
+          if (context.isBigScreen) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 24.0),
+              child: Row(
+                children: [
+                  RoundedIconButton(
+                    onTap: () async {
+                      await _removeEntry(overlayEntry);
+                      widget.roundedButtonItems[index].onTap();
+                    },
+                    iconPath: widget.roundedButtonItems[index].icon,
+                    iconColor: context.appTheme.onBackground,
+                    label: null,
+                    backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
+                    useContainerInsteadOfInk: true,
+                    size: 55,
+                  ),
+                  Gap.w16,
+                  Text(
+                    widget.roundedButtonItems[index].label,
+                    style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+                  ),
+                ],
+              ),
+            );
+          }
           return SizedBox(
-            width: overlayBoxWidth / 3,
+            width: _overlayBoxWidth / 3,
             child: Column(
               //This is how the overlay buttons is aligned.
-              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
               children: [
                 RoundedIconButton(
                   onTap: () async {
@@ -107,6 +146,34 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     _listWidgets = (overlayEntry) {
       return widget.listItems != null
           ? List.generate(widget.listItems!.length, (index) {
+              if (context.isBigScreen) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: Row(
+                    children: [
+                      RoundedIconButton(
+                        onTap: () async {
+                          await _removeEntry(overlayEntry);
+                          widget.listItems![index].onTap();
+                        },
+                        iconPath: widget.listItems![index].icon,
+                        iconColor: context.appTheme.onBackground,
+                        label: null,
+                        backgroundColor: Colors.transparent,
+                        withBorder: true,
+                        useContainerInsteadOfInk: true,
+                        size: 55,
+                      ),
+                      Gap.w16,
+                      Text(
+                        widget.listItems![index].label,
+                        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               return Column(
                 children: [
                   IconWithTextButton(
@@ -146,7 +213,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             await _removeEntry(overlayEntry);
             widget.mainItem?.onTap();
           },
-          size: _floatingActionButtonSize.width,
+          size: _fabSize.width,
           noAnimation: true,
           useContainerInsteadOfInk: true,
         ),
@@ -170,13 +237,13 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       }),
     );
 
-    Offset fabPosition = _getRenderObjectCenterPosition(_globalKey, isTopCenterPoint: true);
-
     // Get OverlayState of the closest instance in context
     OverlayState overlayState = Overlay.of(context);
 
     // Create an OverlayEntry
     late OverlayEntry overlayEntry;
+
+    final fabPosition = _getRenderObjectCenterPosition(_globalKey, isTopCenterPoint: true);
 
     overlayEntry = OverlayEntry(
         maintainState: true,
@@ -200,28 +267,34 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     ),
                     Positioned(
                       top: fabPosition.dy - overlayBoxHeight,
-                      left: fabPosition.dx - overlayBoxWidth / 2,
+                      left: context.isBigScreen ? 50 - 55 / 2 : fabPosition.dx - _overlayBoxWidth / 2,
                       child: ScaleTransition(
                         scale: _animation,
-                        alignment: Alignment.bottomCenter,
+                        alignment: context.isBigScreen ? Alignment.bottomLeft : Alignment.bottomCenter,
                         child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
                           child: SizedBox(
                             key: _globalKey2,
-                            width: overlayBoxWidth,
+                            width: _overlayBoxWidth,
                             child: Column(
                               verticalDirection: VerticalDirection.up,
                               children: [
                                 SizedBox(
-                                  height: 150,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: _buttonWidgets(overlayEntry),
-                                  ),
+                                  height: context.isBigScreen ? null : 150,
+                                  child: context.isBigScreen
+                                      ? Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: _buttonWidgets(overlayEntry),
+                                        )
+                                      : Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: _buttonWidgets(overlayEntry),
+                                        ),
                                 ),
-                                Gap.h32,
+                                context.isBigScreen ? Gap.noGap : Gap.h32,
                                 ..._listWidgets(overlayEntry),
                               ],
                             ),
@@ -279,8 +352,10 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     // Find RenderBox of the widget using globalKey
     RenderBox renderBox = key.currentContext?.findRenderObject() as RenderBox;
 
+    final ancestorRenderBox = navigationRailChildKey.currentContext?.findRenderObject();
+
     // Get the Offset position of the top-left point
-    Offset topLeftPosition = renderBox.localToGlobal(Offset.zero);
+    Offset topLeftPosition = renderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderBox);
 
     // Get Size of the RenderBox from GlobalKey
     Size? widgetSize = key.currentContext!.size;
@@ -316,3 +391,5 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     );
   }
 }
+
+//TODO: change 100 to kNavigationRailWidth

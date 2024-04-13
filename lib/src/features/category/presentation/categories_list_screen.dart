@@ -69,7 +69,7 @@ class CategoriesListScreen extends ConsumerWidget {
       body: CustomTabPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
-            hasBackButton: true,
+            isTopLevelOfNavigationRail: true,
             title: 'Categories',
             trailing: RoundedIconButton(
               iconPath: AppIcons.add,

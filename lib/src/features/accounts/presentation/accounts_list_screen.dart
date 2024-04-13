@@ -55,7 +55,7 @@ class AccountsListScreen extends ConsumerWidget {
         smallTabBar: SmallTabBar(
           child: PageHeading(
             title: 'Accounts',
-            hasBackButton: true,
+            isTopLevelOfNavigationRail: true,
             trailing: RoundedIconButton(
               iconPath: AppIcons.add,
               iconColor: context.appTheme.onBackground,
@@ -119,7 +119,8 @@ class _AccountTile extends StatelessWidget {
                       ),
                       Text(
                         model is CreditAccount ? 'Credit account' : 'Regular Account',
-                        style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
+                        style: kNormalTextStyle.copyWith(
+                            color: context.appTheme.onBackground, fontSize: 13),
                       ),
                     ],
                   ),
@@ -192,7 +193,8 @@ class _CreditDetails extends StatelessWidget {
           style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
         ),
         Gap.h8,
-        _TxnCreditBar(color: model.backgroundColor, percentage: model.availableAmount / model.creditLimit),
+        _TxnCreditBar(
+            color: model.backgroundColor, percentage: model.availableAmount / model.creditLimit),
         Gap.h8,
       ],
     );

@@ -54,16 +54,18 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
                         ),
                       ),
                       Gap.w4,
-                      AnimatedDefaultTextStyle(
-                        style: TextStyle(
-                          fontFamily: 'WixMadeforDisplay',
-                          color: context.appTheme.onBackground,
-                          fontSize: list.indexOf(e) == index ? 13 : 12,
-                          fontWeight: list.indexOf(e) == index ? FontWeight.w900 : FontWeight.w100,
-                        ),
-                        duration: k250msDuration,
-                        child: Text(
-                          e.key.name,
+                      Expanded(
+                        child: AnimatedDefaultTextStyle(
+                          style: TextStyle(
+                            fontFamily: 'WixMadeforDisplay',
+                            color: context.appTheme.onBackground,
+                            fontSize: list.indexOf(e) == index ? 13 : 12,
+                            fontWeight: list.indexOf(e) == index ? FontWeight.w900 : FontWeight.w100,
+                          ),
+                          duration: k250msDuration,
+                          child: Text(
+                            e.key.name,
+                          ),
                         ),
                       ),
                     ],

@@ -71,7 +71,7 @@ class MoneyTrackerApp extends ConsumerWidget {
                 pageTransitionsTheme: const PageTransitionsTheme(
                   builders: <TargetPlatform, PageTransitionsBuilder>{
                     TargetPlatform.android: ZoomPageTransitionsBuilder(
-                      allowEnterRouteSnapshotting: false,
+                      allowSnapshotting: false,
                     ),
                   },
                 ),

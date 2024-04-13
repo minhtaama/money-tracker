@@ -15,10 +15,10 @@ import 'bottom_app_bar/custom_fab.dart';
 class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
   const ScaffoldWithBottomNavBar({
     super.key,
-    required this.currentIndex,
+    required this.items,
     required this.child,
   });
-  final int currentIndex;
+  final List<BottomAppBarItem> items;
   final Widget child;
 
   @override
@@ -28,20 +28,9 @@ class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
 class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNavBar> {
   @override
   Widget build(BuildContext context) {
-    final isSmallScreen = Gap.screenWidth(context) < kSmallWidthBreakpoint;
-
-    final tabItems = <BottomAppBarItem>[
-      BottomAppBarItem(
-        path: RoutePath.home,
-        iconData: AppIcons.home,
-        text: context.localize.home,
-      ),
-      BottomAppBarItem(
-        path: RoutePath.dashboard,
-        iconData: AppIcons.summary,
-        text: context.localize.dashboard,
-      ),
-    ];
+    final isSmallScreen = !context.isBigScreen;
+    final currentPath = GoRouterState.of(context).uri.toString();
+    final currentIndex = widget.items.indexWhere((item) => item.path == currentPath);
 
     final roundedButtonItems = <FABItem>[
       FABItem(
@@ -100,17 +89,20 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
         listItems: listItems,
         mainItem: mainItem,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: isSmallScreen
+          ? FloatingActionButtonLocation.centerDocked
+          : FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: CustomBottomAppBar(
-        selectedIndex: widget.currentIndex,
+        selectedIndex: currentIndex,
         isShow: isSmallScreen,
-        items: tabItems,
+        items: widget.items,
         onTabSelected: (int tabIndex) {
-          context.go(tabItems[tabIndex].path); // Change Tab
+          context.go(widget.items[tabIndex].path); // Change Tab
         },
       ),
       backgroundColor: context.appTheme.background1,
       extendBody: true,
+      resizeToAvoidBottomInset: false,
       body: widget.child,
     );
   }

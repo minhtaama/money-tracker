@@ -14,12 +14,16 @@ import 'package:money_tracker_app/src/features/settings_and_persistent_values/pr
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_payment_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/details_modal_screen/transaction_details_modal_screen.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../common_widgets/custom_navigation_bar/bottom_app_bar/custom_bottom_app_bar.dart';
+import '../common_widgets/custom_navigation_bar/navigation_rail/custom_navigation_rail.dart';
 import '../common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_shell.dart';
 import '../common_widgets/modal_and_dialog.dart';
 import '../features/settings_and_persistent_values/presentation/settings_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/transactions/presentation/screens/add_model_screen/add_credit_spending_modal_screen.dart';
+import '../theme_and_ui/icons.dart';
 import '../utils/enums.dart';
 
 class RoutePath {
@@ -49,14 +53,46 @@ final _shellNavKey = GlobalKey<NavigatorState>();
 
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
-  // navigatorKey: _rootNavKey,
   debugLogDiagnostics: true,
   routes: [
     ShellRoute(
       navigatorKey: _rootNavKey,
       builder: (context, state, child) {
+        final tabItems = <NavigationRailItem>[
+          NavigationRailItem(
+            path: RoutePath.home,
+            iconData: AppIcons.home,
+            text: context.localize.home,
+          ),
+          NavigationRailItem(
+            path: RoutePath.dashboard,
+            iconData: AppIcons.summary,
+            text: context.localize.dashboard,
+          ),
+          NavigationRailItem(
+            path: RoutePath.budgets,
+            iconData: AppIcons.budgets,
+            text: context.localize.budget,
+          ),
+          NavigationRailItem(
+            path: RoutePath.accounts,
+            iconData: AppIcons.accounts,
+            text: context.localize.accounts,
+          ),
+          NavigationRailItem(
+            path: RoutePath.categories,
+            iconData: AppIcons.categories,
+            text: context.localize.categories,
+          ),
+          NavigationRailItem(
+            path: RoutePath.settings,
+            iconData: AppIcons.settings,
+            text: context.localize.settings,
+          ),
+        ];
+
         return ScaffoldWithNavRail(
-          currentIndex: 1,
+          items: tabItems,
           body: child,
         );
       },
@@ -64,8 +100,21 @@ final goRouter = GoRouter(
         ShellRoute(
           navigatorKey: _shellNavKey,
           builder: (context, state, child) {
+            final tabItems = <BottomAppBarItem>[
+              BottomAppBarItem(
+                path: RoutePath.home,
+                iconData: AppIcons.home,
+                text: context.localize.home,
+              ),
+              BottomAppBarItem(
+                path: RoutePath.dashboard,
+                iconData: AppIcons.summary,
+                text: context.localize.dashboard,
+              ),
+            ];
+
             return ScaffoldWithBottomNavBar(
-              currentIndex: 1,
+              items: tabItems,
               child: child,
             );
           },
@@ -81,9 +130,18 @@ final goRouter = GoRouter(
             GoRoute(
               path: '/dashboard',
               parentNavigatorKey: _shellNavKey,
-              pageBuilder: (context, state) => NoTransitionPage(
+              pageBuilder: (context, state) => CustomTransitionPage(
                 key: state.pageKey,
                 child: const DashboardScreen(),
+                transitionsBuilder: (BuildContext context, Animation<double> animation,
+                    Animation<double> secondaryAnimation, Widget child) {
+                  final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero)
+                      .chain(CurveTween(curve: Curves.easeOut));
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: FadeTransition(opacity: animation, child: child),
+                  );
+                },
               ),
               routes: [
                 GoRoute(

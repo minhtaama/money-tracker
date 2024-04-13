@@ -29,7 +29,6 @@ class SelectCurrencyScreen extends ConsumerWidget {
       body: CustomTabPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
-            hasBackButton: true,
             title: 'Set Currency',
           ),
         ),
