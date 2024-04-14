@@ -12,8 +12,7 @@ import '../../rounded_icon_button.dart';
 import 'dart:math' as math;
 
 class FABItem {
-  FABItem(
-      {required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
+  FABItem({required this.icon, required this.label, this.backgroundColor, this.color, required this.onTap});
 
   final String icon;
   final String label;
@@ -199,8 +198,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
           width: overlayBoxWidth / 3,
           child: Column(
             //This is how the overlay buttons is aligned.
-            mainAxisAlignment:
-                index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
               RoundedIconButton(
                 onTap: () async {
@@ -284,8 +282,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
         child: RoundedIconButton(
           iconPath: widget.mainItem?.icon ?? AppIcons.add,
           iconColor: widget.mainItem?.color ?? widget.iconColor ?? builderContext.appTheme.onAccent,
-          backgroundColor:
-              widget.mainItem?.backgroundColor ?? widget.color ?? builderContext.appTheme.accent2,
+          backgroundColor: widget.mainItem?.backgroundColor ?? widget.color ?? builderContext.appTheme.accent2,
           iconPadding: 48.0 - (36.0 * (animation?.value ?? 1.0)),
           onTap: () async {
             await _removeEntry();
@@ -311,8 +308,8 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
               ),
               Positioned(
                 bottom: Gap.screenHeight(context) - fabPosition.dy,
-                left: fabPosition.dx -
-                    (context.isBigScreen ? overlayBoxWidth - _fabSize.width / 2 : overlayBoxWidth / 2),
+                left:
+                    fabPosition.dx - (context.isBigScreen ? overlayBoxWidth - _fabSize.width / 2 : overlayBoxWidth / 2),
                 child: ScaleTransition(
                   scale: _animation,
                   alignment: builderContext.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
@@ -321,9 +318,8 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
                     child: SizedBox(
                       width: overlayBoxWidth,
                       child: Column(
-                        crossAxisAlignment: builderContext.isBigScreen
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.center,
+                        crossAxisAlignment:
+                            builderContext.isBigScreen ? CrossAxisAlignment.end : CrossAxisAlignment.center,
                         children: [
                           ...listWidgets,
                           builderContext.isBigScreen ? Gap.noGap : Gap.h32,
