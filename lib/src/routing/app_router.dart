@@ -527,20 +527,19 @@ class CustomAppModal<T> extends Page<T> {
   final String? barrierLabel;
 
   @override
-  Route<T> createRoute(BuildContext context) => _CustomAppModalRoute<T>(this);
+  Route<T> createRoute(BuildContext context) => _CustomAppModalRoute<T>(context, this);
 }
 
 class _CustomAppModalRoute<T> extends PopupRoute<T> {
   /// A modal bottom sheet route.
-  _CustomAppModalRoute(CustomAppModal<T> settings) : super(settings: settings);
+  _CustomAppModalRoute(this.context, CustomAppModal<T> settings) : super(settings: settings);
+
+  final BuildContext context;
 
   CustomAppModal<T> get _page => settings as CustomAppModal<T>;
 
   @override
-  bool get barrierDismissible => _page.barrierDismissible;
-
-  @override
-  Color? get barrierColor => _page.barrierColor ?? AppColors.black.withOpacity(0.3);
+  Color? get barrierColor => context.isBigScreen ? null : AppColors.greyBgr(context).withOpacity(0.7);
 
   @override
   String? get barrierLabel => _page.barrierLabel;
@@ -555,9 +554,10 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
   bool get maintainState => _page.maintainState;
 
   @override
-  bool get opaque => _page.opaque;
+  bool get barrierDismissible => true;
 
-  final _controller = ScrollController();
+  @override
+  bool get opaque => false;
 
   @override
   AnimationController createAnimationController() {
@@ -575,47 +575,43 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
 
   @override
   Widget buildPage(BuildContext context, Animation<double> _, Animation<double> __) {
-    final Widget content = Builder(
-      builder: (BuildContext context) {
-        return AnimatedAlign(
-          alignment: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
-          duration: transitionDuration,
-          curve: Curves.easeOut,
-          child: Material(
-            type: MaterialType.transparency,
-            child: _ScrollableChecker(
-              builder: (controller, isScrollable) => CardItem(
-                color: context.appTheme.background1,
-                constraints: BoxConstraints(maxWidth: context.isBigScreen ? 450 : Gap.screenWidth(context)),
-                margin: EdgeInsets.symmetric(
-                    vertical: context.isBigScreen ? 16 : 0, horizontal: context.isBigScreen ? 8 : 0),
-                padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
-                borderRadius: context.isBigScreen
-                    ? const BorderRadius.all(Radius.circular(35))
-                    : BorderRadius.only(
-                        topLeft: Radius.circular(isScrollable ? 0 : 35),
-                        topRight: Radius.circular(isScrollable ? 0 : 35)),
-                elevation: 8,
-                child: AnimatedPadding(
-                  padding: EdgeInsets.only(
-                      top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
-                  duration: const Duration(milliseconds: 50),
-                  child: SingleChildScrollView(
-                    controller: controller,
-                    child: _page.child,
-                  ),
-                ),
-              ),
-            ),
+    final Widget content = _ScrollableChecker(
+      builder: (controller, isScrollable) => CardItem(
+        color: context.appTheme.background1,
+        elevation: 20,
+        constraints: BoxConstraints(
+          maxWidth: context.isBigScreen ? 450 : Gap.screenWidth(context),
+        ),
+        margin: EdgeInsets.symmetric(
+          vertical: context.isBigScreen ? 16 : 0,
+          horizontal: context.isBigScreen ? 8 : 0,
+        ),
+        padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
+        borderRadius: context.isBigScreen
+            ? const BorderRadius.all(Radius.circular(20))
+            : BorderRadius.only(
+                topLeft: Radius.circular(isScrollable ? 0 : 28), topRight: Radius.circular(isScrollable ? 0 : 28)),
+        child: AnimatedPadding(
+          padding:
+              EdgeInsets.only(top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
+          duration: const Duration(milliseconds: 50),
+          child: SingleChildScrollView(
+            controller: controller,
+            child: _page.child,
           ),
-        );
-      },
+        ),
+      ),
     );
 
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: content,
+    return AnimatedAlign(
+      alignment: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
+      duration: transitionDuration,
+      curve: Curves.easeOut,
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: content,
+      ),
     );
   }
 
