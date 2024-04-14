@@ -381,7 +381,7 @@ class CustomAppModalRoute<T> extends _CustomAppModalRoute<T> {
       : super(
           context,
           CustomAppModal(
-            key: ValueKey('abc'),
+            key: const ValueKey('FUCK'),
             child: child,
           ),
         );
@@ -647,7 +647,6 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
 
 class _ScrollableChecker extends StatefulWidget {
   const _ScrollableChecker({
-    super.key,
     required this.builder,
   });
 
