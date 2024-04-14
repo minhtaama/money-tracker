@@ -30,7 +30,7 @@ class DashboardOnlyOrWithHomeScreenWrapper extends StatelessWidget {
     if (context.isBigScreen) {
       return const Row(
         children: [
-          Expanded(child: HomeScreen()),
+          Expanded(child: ClipRect(child: HomeScreen())),
           Expanded(child: _DashboardScreen()),
         ],
       );
@@ -42,9 +42,9 @@ class DashboardOnlyOrWithHomeScreenWrapper extends StatelessWidget {
 class _DashboardScreen extends StatelessWidget {
   const _DashboardScreen({super.key});
 
-  Widget _getChild(DashboardWidgetType type) {
+  Widget _getChild(BuildContext context, DashboardWidgetType type) {
     return switch (type) {
-      DashboardWidgetType.menu => const _DashboardMenu2(),
+      DashboardWidgetType.menu => context.isBigScreen ? Gap.noGap : const _DashboardMenu2(),
       DashboardWidgetType.weeklyReport => const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
       DashboardWidgetType.monthlyExpense =>
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
@@ -65,18 +65,20 @@ class _DashboardScreen extends StatelessWidget {
           title: context.localize.dashboard,
           secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
           isTopLevelOfNavigationRail: true,
-          trailing: RoundedIconButton(
-            iconPath: AppIcons.settings,
-            iconColor: context.appTheme.onBackground,
-            onTap: () => context.push(RoutePath.settings),
-          ),
+          trailing: !context.isBigScreen
+              ? RoundedIconButton(
+                  iconPath: AppIcons.settings,
+                  iconColor: context.appTheme.onBackground,
+                  onTap: () => context.go(RoutePath.settings),
+                )
+              : Gap.noGap,
         ),
       ),
       children: order.map<Widget>((type) {
         if (hiddenWidgets.contains(type)) {
           return Gap.noGap;
         }
-        return _getChild(type);
+        return _getChild(context, type);
       }).toList()
         ..add(const _EditButton()),
     );

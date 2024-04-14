@@ -51,7 +51,8 @@ class MoneyTrackerApp extends ConsumerWidget {
         child: Builder(
           builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
-              systemNavigationBarColor: context.appTheme.background1,
+              systemNavigationBarColor:
+                  context.isBigScreen ? context.appTheme.background2 : context.appTheme.background1,
               systemNavigationBarIconBrightness: context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
               systemNavigationBarDividerColor: Colors.transparent,
               statusBarColor: Colors.transparent,

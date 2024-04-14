@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+import '../theme_and_ui/colors.dart';
+
 class CardItem extends StatelessWidget {
   /// A common widget for this project
   const CardItem(
@@ -60,9 +62,9 @@ class CardItem extends StatelessWidget {
                 ? []
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(elevation * 0.01),
-                      blurRadius: (elevation + 2).clamp(0, 5),
-                      offset: Offset(0, (elevation + 0.5).clamp(0, 2)),
+                      color: AppColors.black.withOpacity(elevation * 0.017),
+                      blurRadius: (elevation + 2).clamp(0, 30),
+                      spreadRadius: (elevation + 0.5).clamp(0, 10),
                     ),
                   ]),
         gradient: isGradient
