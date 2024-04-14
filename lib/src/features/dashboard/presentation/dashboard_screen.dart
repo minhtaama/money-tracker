@@ -27,14 +27,12 @@ class DashboardScreen extends StatelessWidget {
   Widget _getChild(DashboardWidgetType type) {
     return switch (type) {
       DashboardWidgetType.menu => const _DashboardMenu2(),
-      DashboardWidgetType.weeklyReport =>
-        const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
+      DashboardWidgetType.weeklyReport => const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
       DashboardWidgetType.monthlyExpense =>
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
       DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
-      DashboardWidgetType.budgets =>
-        const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
+      DashboardWidgetType.budgets => const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
     };
   }
 
@@ -67,40 +65,40 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class _DashboardMenu1 extends StatelessWidget {
-  const _DashboardMenu1();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          DashboardCard(
-            onTap: () => context.push(RoutePath.accounts),
-            title: context.localize.accounts,
-            icon: AppIcons.accounts,
-          ),
-          DashboardCard(
-            onTap: () => context.push(RoutePath.categories),
-            title: context.localize.categories,
-            icon: AppIcons.categories,
-          ),
-          DashboardCard(
-            title: context.localize.budget,
-            icon: AppIcons.budgets,
-          ),
-          DashboardCard(
-            title: context.localize.saving,
-            icon: AppIcons.savings,
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class _DashboardMenu1 extends StatelessWidget {
+//   const _DashboardMenu1();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+//       child: Wrap(
+//         spacing: 8,
+//         runSpacing: 8,
+//         children: [
+//           DashboardCard(
+//             onTap: () => context.push(RoutePath.accounts),
+//             title: context.localize.accounts,
+//             icon: AppIcons.accounts,
+//           ),
+//           DashboardCard(
+//             onTap: () => context.push(RoutePath.categories),
+//             title: context.localize.categories,
+//             icon: AppIcons.categories,
+//           ),
+//           DashboardCard(
+//             title: context.localize.budget,
+//             icon: AppIcons.budgets,
+//           ),
+//           DashboardCard(
+//             title: context.localize.saving,
+//             icon: AppIcons.savings,
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class _DashboardMenu2 extends StatelessWidget {
   const _DashboardMenu2();

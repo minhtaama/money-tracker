@@ -39,7 +39,7 @@ class RoutePath {
   static const String addTransfer = '/addTransfer';
   static const String addCreditSpending = '/addCreditSpending';
   static const String addCreditPayment = '/addCreditPayment';
-  static const String dashboard = '/dashboard';
+  static const String dashboardOrHomeInBigScreen = '/dashboard';
   static const String settings = '/dashboard/settings';
   static const String setCurrency = '/dashboard/settings/setCurrency';
   static const String selectIcon = '/dashboard/selectIcon';
@@ -107,14 +107,9 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
 
 List<NavigationRailItem> _navRailItems(BuildContext context) => [
       NavigationRailItem(
-        path: RoutePath.home,
+        path: RoutePath.dashboardOrHomeInBigScreen,
         iconData: AppIcons.home,
         text: context.localize.home,
-      ),
-      NavigationRailItem(
-        path: RoutePath.dashboard,
-        iconData: AppIcons.summary,
-        text: context.localize.dashboard,
       ),
       NavigationRailItem(
         path: RoutePath.budgets,
@@ -145,7 +140,7 @@ _bottomTabItems(BuildContext context) => <BottomAppBarItem>[
         text: context.localize.home,
       ),
       BottomAppBarItem(
-        path: RoutePath.dashboard,
+        path: RoutePath.dashboardOrHomeInBigScreen,
         iconData: AppIcons.summary,
         text: context.localize.dashboard,
       ),
@@ -158,6 +153,10 @@ final goRouter = GoRouter(
     final location = routerState.matchedLocation;
     if (kDebugMode) {
       print(location);
+    }
+
+    if (context.isBigScreen && location == RoutePath.home) {
+      return RoutePath.dashboardOrHomeInBigScreen;
     }
 
     return null;
