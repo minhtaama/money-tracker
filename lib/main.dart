@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
@@ -51,31 +52,32 @@ class MoneyTrackerApp extends ConsumerWidget {
           builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
               systemNavigationBarColor: context.appTheme.background1,
-              systemNavigationBarIconBrightness:
-                  context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
+              systemNavigationBarIconBrightness: context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
               systemNavigationBarDividerColor: Colors.transparent,
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: systemIconBrightness,
             ),
-            child: MaterialApp.router(
-              restorationScopeId: 'app',
-              locale: context.appSettings.locale,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              routerConfig: goRouter,
-              theme: ThemeData(
-                useMaterial3: true,
-                fontFamily: 'WixMadeforDisplay',
-                pageTransitionsTheme: const PageTransitionsTheme(
-                  builders: <TargetPlatform, PageTransitionsBuilder>{
-                    TargetPlatform.android: ZoomPageTransitionsBuilder(
-                      allowSnapshotting: false,
-                    ),
-                  },
+            child: Portal(
+              child: MaterialApp.router(
+                restorationScopeId: 'app',
+                locale: context.appSettings.locale,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: goRouter,
+                theme: ThemeData(
+                  useMaterial3: true,
+                  fontFamily: 'WixMadeforDisplay',
+                  pageTransitionsTheme: const PageTransitionsTheme(
+                    builders: <TargetPlatform, PageTransitionsBuilder>{
+                      TargetPlatform.android: ZoomPageTransitionsBuilder(
+                        allowSnapshotting: false,
+                      ),
+                    },
+                  ),
+                  // For showDatePicker2 colors
+                  colorScheme: ColorScheme.fromSwatch()
+                      .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
                 ),
-                // For showDatePicker2 colors
-                colorScheme: ColorScheme.fromSwatch()
-                    .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
               ),
             ),
           ),

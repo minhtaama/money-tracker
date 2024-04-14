@@ -1,9 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -42,23 +38,15 @@ class CustomFloatingActionButton extends StatefulWidget {
   State<CustomFloatingActionButton> createState() => _CustomFloatingActionButtonState();
 }
 
-class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  late double overlayBoxWidth = (Gap.screenWidth(context) / 1.2).clamp(0, 400);
 
-  OverlayEntry? _overlayEntry;
-
-  Size _fabSize = Size.zero;
-
-  // GlobalKey is assigned to FloatingActionButton to get the RenderBox object
-  // of the returned FloatingActionButton.
-  final _buttonKey = GlobalKey();
+  bool _visible = false;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
-
     _animationController = AnimationController(
       vsync: this,
       duration: k250msDuration,
@@ -66,107 +54,188 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     );
     _animation = CurveTween(curve: Curves.easeOut).animate(_animationController);
 
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        _fabSize = _buttonKey.currentContext!.size!;
-      });
-    });
-
     super.initState();
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _animationController.dispose();
-    _overlayEntry?.remove();
-    _overlayEntry?.dispose();
-    _overlayEntry = null;
-    super.dispose();
+  void didChangeDependencies() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        overlayBoxWidth = (Gap.screenWidth(context) / 1.2).clamp(0, 400);
+      });
+    });
+    super.didChangeDependencies();
   }
 
   @override
-  void didChangeMetrics() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        _fabSize = _buttonKey.currentContext!.size!;
-      });
-      Future.delayed(k150msDuration, () => _overlayEntry?.markNeedsBuild());
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _showPortal() {
+    _animationController.forward();
+    setState(() {
+      _visible = true;
     });
-    super.didChangeMetrics();
   }
 
-  void _showOverlay() {
-    // Get OverlayState of the closest instance in context
-    OverlayState overlayState = Overlay.of(navigationRailKey.currentContext!, rootOverlay: true);
-
-    _overlayEntry = OverlayEntry(builder: buildOverlay);
-
-    if (_overlayEntry != null) {
-      // Insert the entry into overlay
-      overlayState.insert(_overlayEntry!);
-
-      // Play the animation of widgets in the entry
-      _animationController.forward();
-    }
-  }
-
-  Future<void> _removeEntry() async {
-    // Reverse the animation
+  Future<void> _hidePortal() async {
     await _animationController.reverse();
-
-    _overlayEntry?.remove();
-    _overlayEntry?.dispose();
-    _overlayEntry = null;
-  }
-
-  Offset _getFabPosition({required bool isTopCenterPoint}) {
-    // Find RenderBox of the widget using globalKey
-    RenderBox renderBox = _buttonKey.currentContext?.findRenderObject() as RenderBox;
-
-    //final ancestorRenderBox = navigationRailChildKey.currentContext?.findRenderObject();
-
-    // Get the Offset position of the top-left point
-    Offset topLeftPosition = renderBox.localToGlobal(Offset.zero);
-
-    return isTopCenterPoint
-        ? Offset(topLeftPosition.dx + _fabSize.width / 2, topLeftPosition.dy)
-        : Offset(topLeftPosition.dx + _fabSize.width / 2, topLeftPosition.dy + _fabSize.height / 2);
+    setState(() {
+      _visible = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    GoRouterState.of(context).uri.toString();
-
-    return FloatingActionButton(
-      key: _buttonKey,
-      onPressed: null,
-      shape: const CircleBorder(),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.transparent,
-      focusColor: Colors.transparent,
-      splashColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      child: RoundedIconButton(
-        iconPath: AppIcons.add,
-        iconColor: widget.iconColor ?? context.appTheme.onAccent,
-        backgroundColor: widget.color ?? context.appTheme.accent2,
-        size: double.infinity,
-        onTap: _showOverlay,
-        elevation: 10,
+    return PortalTarget(
+      visible: _visible,
+      portalFollower: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _hidePortal,
+      ),
+      child: PortalTarget(
+        visible: _visible,
+        anchor: const Aligned(
+          follower: Alignment.center,
+          target: Alignment.center,
+        ),
+        portalFollower: _MainButtons(
+          widget.mainItem,
+          _hidePortal,
+          animation: _animation,
+          color: widget.color,
+          iconColor: widget.iconColor,
+        ),
+        child: PortalTarget(
+          visible: _visible,
+          anchor: Aligned(
+            follower: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
+            target: context.isBigScreen ? Alignment.topRight : Alignment.topCenter,
+          ),
+          portalFollower: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: _PortalFollower(
+              animation: _animation,
+              primaryItems: widget.roundedButtonItems,
+              listItems: widget.listItems,
+              mainItem: widget.mainItem,
+              hideModalFunction: _hidePortal,
+            ),
+          ),
+          child: RoundedIconButton(
+            iconPath: AppIcons.add,
+            iconColor: widget.iconColor ?? context.appTheme.onAccent,
+            backgroundColor: widget.color ?? context.appTheme.accent2,
+            size: 55,
+            onTap: _showPortal,
+            elevation: 10,
+          ),
+        ),
       ),
     );
   }
+}
 
-  Widget buildOverlay(BuildContext builderContext) {
-    double overlayBoxWidth = (Gap.screenWidth(context) / 1.2).clamp(0, 400);
-    Offset fabPosition = _getFabPosition(isTopCenterPoint: false);
+//TODO: change 100 to kNavigationRailWidth
 
-    List<Widget> buttonWidgets = List.generate(
-      widget.roundedButtonItems.length,
-      (index) {
-        if (builderContext.isBigScreen) {
+class _PortalFollower extends AnimatedWidget {
+  const _PortalFollower({
+    required Animation<double> animation,
+    required this.primaryItems,
+    required this.listItems,
+    required this.mainItem,
+    required this.hideModalFunction,
+  }) : super(listenable: animation);
+
+  final List<FABItem> primaryItems;
+  final List<FABItem>? listItems;
+  final FABItem? mainItem;
+  final Future<void> Function() hideModalFunction;
+
+  Animation<double> get _progress => listenable as Animation<double>;
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      alignment: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
+      scale: _progress,
+      child: Column(
+        crossAxisAlignment: context.isBigScreen ? CrossAxisAlignment.end : CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _ListButtons(listItems ?? [], hideModalFunction),
+          context.isBigScreen ? Gap.noGap : Gap.h32,
+          SizedBox(
+            height: context.isBigScreen ? null : 150,
+            child: context.isBigScreen
+                ? _PrimaryButtonsOnBigScreen(primaryItems, hideModalFunction)
+                : _PrimaryButtonsOnSmallScreen(primaryItems, hideModalFunction),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrimaryButtonsOnSmallScreen extends StatelessWidget {
+  const _PrimaryButtonsOnSmallScreen(this.primaryItems, this.hideModalFunction);
+  final Future<void> Function() hideModalFunction;
+
+  final List<FABItem> primaryItems;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: List.generate(
+        primaryItems.length,
+        (index) {
+          return SizedBox(
+            width: Gap.screenWidth(context) / 3,
+            child: Column(
+              //This is how the overlay buttons is aligned.
+              mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children: [
+                RoundedIconButton(
+                  onTap: () async {
+                    await hideModalFunction();
+                    primaryItems[index].onTap();
+                  },
+                  iconPath: primaryItems[index].icon,
+                  iconColor: context.appTheme.onBackground,
+                  label: primaryItems[index].label,
+                  backgroundColor: primaryItems[index].backgroundColor!.withOpacity(0.7),
+                  useContainerInsteadOfInk: true,
+                  size: 55,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PrimaryButtonsOnBigScreen extends StatelessWidget {
+  const _PrimaryButtonsOnBigScreen(this.primaryItems, this.hideModalFunction);
+
+  final List<FABItem> primaryItems;
+  final Future<void> Function() hideModalFunction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(
+        primaryItems.length,
+        (index) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 24.0),
             child: Row(
@@ -174,206 +243,154 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  widget.roundedButtonItems[index].label,
-                  style: kHeader4TextStyle.copyWith(color: builderContext.appTheme.onBackground),
+                  primaryItems[index].label,
+                  style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
                 ),
                 Gap.w16,
                 RoundedIconButton(
                   onTap: () async {
-                    await _removeEntry();
-                    widget.roundedButtonItems[index].onTap();
+                    await hideModalFunction();
+                    primaryItems[index].onTap();
                   },
-                  iconPath: widget.roundedButtonItems[index].icon,
-                  iconColor: builderContext.appTheme.onBackground,
+                  iconPath: primaryItems[index].icon,
+                  iconColor: context.appTheme.onBackground,
                   label: null,
-                  backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
+                  backgroundColor: primaryItems[index].backgroundColor!.withOpacity(0.7),
                   useContainerInsteadOfInk: true,
                   size: 55,
                 ),
               ],
             ),
           );
-        }
-        return SizedBox(
-          width: overlayBoxWidth / 3,
-          child: Column(
-            //This is how the overlay buttons is aligned.
-            mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: [
-              RoundedIconButton(
-                onTap: () async {
-                  await _removeEntry();
-                  widget.roundedButtonItems[index].onTap();
-                },
-                iconPath: widget.roundedButtonItems[index].icon,
-                iconColor: builderContext.appTheme.onBackground,
-                label: widget.roundedButtonItems[index].label,
-                backgroundColor: widget.roundedButtonItems[index].backgroundColor!.withOpacity(0.7),
-                useContainerInsteadOfInk: true,
-                size: 55,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    List<Widget> listWidgets = widget.listItems != null
-        ? List.generate(widget.listItems!.length, (index) {
-            if (builderContext.isBigScreen) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.listItems![index].label,
-                      style: kHeader4TextStyle.copyWith(color: builderContext.appTheme.onBackground),
-                    ),
-                    Gap.w16,
-                    RoundedIconButton(
-                      onTap: () async {
-                        await _removeEntry();
-                        widget.listItems![index].onTap();
-                      },
-                      iconPath: widget.listItems![index].icon,
-                      iconColor: builderContext.appTheme.onBackground,
-                      label: null,
-                      backgroundColor: Colors.transparent,
-                      withBorder: true,
-                      useContainerInsteadOfInk: true,
-                      size: 55,
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            return Column(
-              children: [
-                IconWithTextButton(
-                  onTap: () async {
-                    await _removeEntry();
-                    widget.listItems![index].onTap();
-                  },
-                  width: null,
-                  height: null,
-                  iconPath: widget.listItems![index].icon,
-                  label: widget.listItems![index].label,
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                  labelSize: 15,
-                  color: builderContext.appTheme.onBackground.withOpacity(0.5),
-                  backgroundColor: Colors.transparent,
-                  border: Border.all(
-                    color: builderContext.appTheme.onBackground.withOpacity(0.4),
-                    width: 1.5,
-                  ),
-                ),
-                Gap.h16,
-              ],
-            );
-          })
-        : [];
-
-    mainButtonOverlay(Animation? animation) {
-      return Transform.scale(
-        scale: (animation?.isDismissed ?? false) ? (0.8 + 0.2 * animation!.value) : 1,
-        child: RoundedIconButton(
-          iconPath: widget.mainItem?.icon ?? AppIcons.add,
-          iconColor: widget.mainItem?.color ?? widget.iconColor ?? builderContext.appTheme.onAccent,
-          backgroundColor: widget.mainItem?.backgroundColor ?? widget.color ?? builderContext.appTheme.accent2,
-          iconPadding: 48.0 - (36.0 * (animation?.value ?? 1.0)),
-          onTap: () async {
-            await _removeEntry();
-            widget.mainItem?.onTap();
-          },
-          size: _fabSize.width,
-          noAnimation: true,
-          useContainerInsteadOfInk: true,
-        ),
-      );
-    }
-
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (_, Widget? child) {
-        return Material(
-          color: Colors.transparent,
-          child: Stack(
-            children: [
-              ModalBarrier(
-                onDismiss: () async => await _removeEntry(),
-                color: builderContext.appTheme.background1.withOpacity(0.5 * _animation.value),
-              ),
-              Positioned(
-                bottom: Gap.screenHeight(context) - fabPosition.dy,
-                left:
-                    fabPosition.dx - (context.isBigScreen ? overlayBoxWidth - _fabSize.width / 2 : overlayBoxWidth / 2),
-                child: ScaleTransition(
-                  scale: _animation,
-                  alignment: builderContext.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
-                    child: SizedBox(
-                      width: overlayBoxWidth,
-                      child: Column(
-                        crossAxisAlignment:
-                            builderContext.isBigScreen ? CrossAxisAlignment.end : CrossAxisAlignment.center,
-                        children: [
-                          ...listWidgets,
-                          builderContext.isBigScreen ? Gap.noGap : Gap.h32,
-                          SizedBox(
-                            height: builderContext.isBigScreen ? null : 150,
-                            child: builderContext.isBigScreen
-                                ? Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      ...buttonWidgets,
-                                      Gap.h24,
-                                    ],
-                                  )
-                                : Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: buttonWidgets,
-                                  ),
-                          ),
-                        ],
-                      ),
-                      // child: Row(
-                      //   children: _widgets,
-                      // ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: fabPosition.dy - _fabSize.height / 2,
-                left: fabPosition.dx - _fabSize.width / 2,
-                child: widget.mainItem != null
-                    ? Transform.rotate(
-                        angle: math.pi * _animation.value,
-                        alignment: Alignment.center,
-                        child: Transform.rotate(
-                          angle: -math.pi,
-                          child: mainButtonOverlay(_animation),
-                        ),
-                      )
-                    : Transform.rotate(
-                        angle: (math.pi * 1 / 4) * _animation.value,
-                        child: mainButtonOverlay(null),
-                      ),
-              )
-            ],
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }
 
-//TODO: change 100 to kNavigationRailWidth
+class _ListButtons extends StatelessWidget {
+  const _ListButtons(this.listItems, this.hideModalFunction);
+
+  final List<FABItem> listItems;
+  final Future<void> Function() hideModalFunction;
+
+  Widget buttonOnSmallScreen(BuildContext context, int index) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: IconWithTextButton(
+        onTap: () async {
+          await hideModalFunction();
+          listItems[index].onTap();
+        },
+        width: null,
+        height: null,
+        iconPath: listItems[index].icon,
+        label: listItems[index].label,
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        labelSize: 15,
+        color: context.appTheme.onBackground.withOpacity(0.5),
+        backgroundColor: Colors.transparent,
+        border: Border.all(
+          color: context.appTheme.onBackground.withOpacity(0.4),
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget buttonOnBigScreen(BuildContext context, int index) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            listItems[index].label,
+            style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+          ),
+          Gap.w16,
+          RoundedIconButton(
+            onTap: () async {
+              listItems[index].onTap();
+            },
+            iconPath: listItems[index].icon,
+            iconColor: context.appTheme.onBackground,
+            label: null,
+            backgroundColor: Colors.transparent,
+            withBorder: true,
+            useContainerInsteadOfInk: true,
+            size: 55,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(listItems.length, (index) {
+        if (context.isBigScreen) {
+          return buttonOnBigScreen(context, index);
+        }
+
+        return buttonOnSmallScreen(context, index);
+      }),
+    );
+  }
+}
+
+class _MainButtons extends AnimatedWidget {
+  const _MainButtons(
+    this.mainItem,
+    this.hideModalFunction, {
+    required Animation<double> animation,
+    this.iconColor,
+    this.color,
+  }) : super(listenable: animation);
+
+  final FABItem? mainItem;
+  final Color? iconColor;
+  final Color? color;
+  final Future<void> Function() hideModalFunction;
+
+  Animation<double> get _progress => listenable as Animation<double>;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget child() => Transform.scale(
+          scale: _progress.isDismissed ? (0.8 + 0.2 * _progress.value) : 1,
+          child: RoundedIconButton(
+            iconPath: mainItem?.icon ?? AppIcons.add,
+            iconColor: mainItem?.color ?? iconColor ?? context.appTheme.onAccent,
+            backgroundColor: mainItem?.backgroundColor ?? color ?? context.appTheme.accent2,
+            iconPadding: 48.0 - (36.0 * _progress.value),
+            onTap: () async {
+              await hideModalFunction();
+              mainItem?.onTap();
+            },
+            size: 55,
+            noAnimation: true,
+            useContainerInsteadOfInk: true,
+          ),
+        );
+
+    return mainItem != null
+        ? Transform.rotate(
+            angle: math.pi * _progress.value,
+            alignment: Alignment.center,
+            child: Transform.rotate(
+              angle: -math.pi,
+              child: child(),
+            ),
+          )
+        : Transform.rotate(
+            angle: (math.pi * 1 / 4) * _progress.value,
+            child: child(),
+          );
+  }
+}
