@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
@@ -51,16 +52,10 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
   late CategoryTag? _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
 
   late bool _showTextField = _tags == null || _tags!.isEmpty;
-  double _rowWidth = 1;
 
   @override
   void initState() {
     _focusNode.addListener(_listener);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        _rowWidth = _key.currentContext?.size?.width ?? 1;
-      });
-    });
     super.initState();
   }
 
@@ -104,135 +99,127 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
       _tags = categoryRepo.getTagList(_currentCategory);
     });
 
-    return Stack(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          key: _key,
-          children: [
-            _tags != null && widget.category != null
-                ? Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ShaderMask(
-                        shaderCallback: (Rect rect) {
-                          return LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              widget.fading ?? context.appTheme.background1,
-                              Colors.transparent,
-                              Colors.transparent,
-                              widget.fading ?? context.appTheme.background1
-                            ],
-                            stops: const [0.0, 0.03, 0.97, 1.0],
-                          ).createShader(rect);
-                        },
-                        blendMode: BlendMode.dstOut,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: List.generate(
-                            _tags!.length,
-                            (index) {
-                              return CategoryTagWidget(
-                                categoryTag: _tags![index],
-                                onTap: (tag) {
-                                  categoryRepo.reorderTagToTop(widget.category!, index);
-                                  setState(
-                                    () {
-                                      _chosenTag = tag;
-                                      _tags = categoryRepo.getTagList(widget.category!);
-                                      widget.onTagSelected(_chosenTag);
-                                    },
-                                  );
-                                },
-                                onLongPress: (tag) => showCustomModal(
-                                  context: context,
-                                  child: EditCategoryTag(
-                                    tag,
-                                    category: widget.category!,
+    return LayoutBuilder(builder: (context, constraint) {
+      return Stack(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            key: _key,
+            children: [
+              _tags != null && widget.category != null
+                  ? Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ShaderMask(
+                          shaderCallback: (Rect rect) {
+                            return LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                widget.fading ?? context.appTheme.background1,
+                                Colors.transparent,
+                                Colors.transparent,
+                                widget.fading ?? context.appTheme.background1
+                              ],
+                              stops: const [0.0, 0.03, 0.97, 1.0],
+                            ).createShader(rect);
+                          },
+                          blendMode: BlendMode.dstOut,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: List.generate(
+                              _tags!.length,
+                              (index) {
+                                return CategoryTagWidget(
+                                  categoryTag: _tags![index],
+                                  onTap: (tag) {
+                                    categoryRepo.reorderTagToTop(widget.category!, index);
+                                    setState(
+                                      () {
+                                        _chosenTag = tag;
+                                        _tags = categoryRepo.getTagList(widget.category!);
+                                        widget.onTagSelected(_chosenTag);
+                                      },
+                                    );
+                                  },
+                                  onLongPress: (tag) => showCustomModal(
+                                    context: context,
+                                    child: EditCategoryTag(
+                                      tag,
+                                      category: widget.category!,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                : Gap.noGap,
-            AnimatedContainer(
-              duration: k250msDuration,
-              width: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null || _tags!.isEmpty
-                  ? 0
-                  : 16,
-              height: 25,
-              child: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null
-                  ? null
-                  : Gap.verticalDivider(context),
-            ),
-            AnimatedContainer(
-              duration: k250msDuration,
-              curve: Curves.easeOut,
-              width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
-                  ? _rowWidth
-                  : _chosenTag != null
-                      ? 0
-                      : 50,
-              child: ClipRect(
-                child: AddCategoryTagButton(
-                    focusNode: _focusNode,
-                    category: widget.category,
-                    onEditingComplete: (tag) {
-                      categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
-                      setState(
-                        () {
-                          _chosenTag = tag;
-                          _tags = categoryRepo.getTagList(widget.category!);
-                          widget.onTagSelected(_chosenTag);
-                        },
-                      );
-                    }),
-              ),
-            ),
-          ],
-        ),
-        CardItem(
-          width: _chosenTag != null ? _rowWidth : 0,
-          height: 50,
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.symmetric(horizontal: _chosenTag != null ? 12 : 0),
-          color: _currentCategory?.backgroundColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: _ChosenTag(
-                  chosenTag: _chosenTag?.name,
-                  category: _currentCategory,
+                    )
+                  : Gap.noGap,
+              AnimatedContainer(
+                duration: k250msDuration,
+                curve: Curves.easeOut,
+                width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
+                    ? constraint.maxWidth
+                    : _chosenTag != null
+                        ? 0
+                        : 50,
+                child: ClipRect(
+                  child: AddCategoryTagButton(
+                      focusNode: _focusNode,
+                      category: widget.category,
+                      onEditingComplete: (tag) {
+                        categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
+                        setState(
+                          () {
+                            _chosenTag = tag;
+                            _tags = categoryRepo.getTagList(widget.category!);
+                            widget.onTagSelected(_chosenTag);
+                          },
+                        );
+                      }),
                 ),
               ),
-              Flexible(
-                child: RoundedIconButton(
-                  iconPath: AppIcons.close,
-                  iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
-                  backgroundColor: Colors.transparent,
-                  size: 35,
-                  iconPadding: 7,
-                  onTap: () {
-                    setState(() {
-                      _chosenTag = null;
-                    });
-                    widget.onTagDeSelected?.call();
-                  },
-                ),
-              )
             ],
           ),
-        ),
-      ],
-    );
+          CardItem(
+            width: _chosenTag != null ? constraint.maxWidth : 0,
+            height: 50,
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.symmetric(horizontal: _chosenTag != null ? 12 : 0),
+            color: _currentCategory?.backgroundColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _ChosenTag(
+                    chosenTag: _chosenTag?.name,
+                    category: _currentCategory,
+                  ),
+                ),
+                Flexible(
+                  child: RoundedIconButton(
+                    iconPath: AppIcons.close,
+                    iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
+                    backgroundColor: Colors.transparent,
+                    size: 35,
+                    iconPadding: 7,
+                    onTap: () {
+                      setState(() {
+                        _chosenTag = null;
+                      });
+                      widget.onTagDeSelected?.call();
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 
