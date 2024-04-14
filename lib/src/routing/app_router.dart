@@ -238,8 +238,9 @@ final goRouter = GoRouter(
                     GoRoute(
                       path: 'addCategory',
                       parentNavigatorKey: _railNavKey,
-                      pageBuilder: (context, state) => const CustomAppModal(
-                        child: AddCategoryModalScreen(),
+                      pageBuilder: (context, state) => CustomAppModal(
+                        key: state.pageKey,
+                        child: const AddCategoryModalScreen(),
                       ),
                     )
                   ],
@@ -263,8 +264,9 @@ final goRouter = GoRouter(
                     GoRoute(
                       path: 'addAccount',
                       parentNavigatorKey: _railNavKey,
-                      pageBuilder: (context, state) => const CustomAppModal(
-                        child: AddAccountModalScreen(),
+                      pageBuilder: (context, state) => CustomAppModal(
+                        key: state.pageKey,
+                        child: const AddAccountModalScreen(),
                       ),
                     ),
                   ],
@@ -285,8 +287,9 @@ final goRouter = GoRouter(
                     GoRoute(
                       path: 'addBudget',
                       parentNavigatorKey: _railNavKey,
-                      pageBuilder: (context, state) => const CustomAppModal(
-                        child: AddBudgetModalScreen(),
+                      pageBuilder: (context, state) => CustomAppModal(
+                        key: state.pageKey,
+                        child: const AddBudgetModalScreen(),
                       ),
                     ),
                   ],
@@ -298,36 +301,41 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/addIncome',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => const CustomAppModal(
-            child: AddRegularTxnModalScreen(TransactionType.income),
+          pageBuilder: (context, state) => CustomAppModal(
+            key: state.pageKey,
+            child: const AddRegularTxnModalScreen(TransactionType.income),
           ),
         ),
         GoRoute(
           path: '/addExpense',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => const CustomAppModal(
-            child: AddRegularTxnModalScreen(TransactionType.expense),
+          pageBuilder: (context, state) => CustomAppModal(
+            key: state.pageKey,
+            child: const AddRegularTxnModalScreen(TransactionType.expense),
           ),
         ),
         GoRoute(
           path: '/addTransfer',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => const CustomAppModal(
-            child: AddRegularTxnModalScreen(TransactionType.transfer),
+          pageBuilder: (context, state) => CustomAppModal(
+            key: state.pageKey,
+            child: const AddRegularTxnModalScreen(TransactionType.transfer),
           ),
         ),
         GoRoute(
           path: '/addCreditSpending',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => const CustomAppModal(
-            child: AddCreditSpendingModalScreen(),
+          pageBuilder: (context, state) => CustomAppModal(
+            key: state.pageKey,
+            child: const AddCreditSpendingModalScreen(),
           ),
         ),
         GoRoute(
           path: '/addCreditPayment',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => const CustomAppModal(
-            child: AddCreditPaymentModalScreen(),
+          pageBuilder: (context, state) => CustomAppModal(
+            key: state.pageKey,
+            child: const AddCreditPaymentModalScreen(),
           ),
         ),
         GoRoute(
@@ -346,6 +354,7 @@ final goRouter = GoRouter(
             }
 
             return CustomAppModal(
+              key: state.pageKey,
               child: TransactionDetailsModalScreen(
                 objectIdHexString: objectIdHexString,
                 screenType: screenType,
@@ -356,8 +365,9 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/editDashboard',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => const CustomAppModal(
-            child: DashboardEditModalScreen(),
+          pageBuilder: (context, state) => CustomAppModal(
+            key: state.pageKey,
+            child: const DashboardEditModalScreen(),
           ),
         ),
       ],
@@ -366,107 +376,17 @@ final goRouter = GoRouter(
 );
 
 ////////// FOR [showCustomModal] function //////////
-class CustomAppModalRoute<T> extends PopupRoute<T> {
-  /// A modal bottom sheet route.
-  CustomAppModalRoute(this.context, {required this.child});
-
-  final BuildContext context;
-
-  final Widget child;
-
-  @override
-  Color? get barrierColor => context.isBigScreen ? null : AppColors.greyBgr(context).withOpacity(0.7);
-
-  @override
-  String? get barrierLabel => null;
-
-  @override
-  Duration get transitionDuration => k250msDuration;
-
-  @override
-  Duration get reverseTransitionDuration => k250msDuration;
-
-  @override
-  bool get maintainState => true;
-
-  @override
-  bool get barrierDismissible => true;
-
-  @override
-  bool get opaque => false;
-
-  @override
-  AnimationController createAnimationController() {
-    return AnimationController(
-      duration: transitionDuration,
-      reverseDuration: reverseTransitionDuration,
-      vsync: navigator!,
-    );
-  }
-
-  @override
-  Animation<double> createAnimation() {
-    return controller!.drive(CurveTween(curve: Curves.fastOutSlowIn));
-  }
-
-  @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-    final Widget content = _ScrollableChecker(
-      builder: (controller, isScrollable) => CardItem(
-        color: context.appTheme.background1,
-        elevation: 50,
-        constraints: BoxConstraints(
-          maxWidth: context.isBigScreen ? 450 : Gap.screenWidth(context),
-        ),
-        margin: EdgeInsets.symmetric(
-          vertical: context.isBigScreen ? 16 : 0,
-          horizontal: context.isBigScreen ? 8 : 0,
-        ),
-        padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
-        borderRadius: context.isBigScreen
-            ? const BorderRadius.all(Radius.circular(20))
-            : BorderRadius.only(
-                topLeft: Radius.circular(isScrollable ? 0 : 28), topRight: Radius.circular(isScrollable ? 0 : 28)),
-        child: AnimatedPadding(
-          padding:
-              EdgeInsets.only(top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
-          duration: const Duration(milliseconds: 50),
-          child: SingleChildScrollView(
-            controller: controller,
+class CustomAppModalRoute<T> extends _CustomAppModalRoute<T> {
+  CustomAppModalRoute(BuildContext context, {required Widget child})
+      : super(
+          context,
+          CustomAppModal(
+            key: ValueKey('abc'),
             child: child,
           ),
-        ),
-      ),
-    );
+        );
 
-    return AnimatedAlign(
-      alignment: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
-      duration: transitionDuration,
-      curve: Curves.easeOut,
-      child: MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: content,
-      ),
-    );
-  }
-
-  @override
-  Widget buildTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
-    return FadeTransition(
-      opacity: animation,
-      child: SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      ),
-    );
-  }
+  //final Widget child;
 }
 
 ///////////////// FOR GO ROUTER //////////////////
@@ -627,7 +547,11 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
   CustomAppModal<T> get _page => settings as CustomAppModal<T>;
 
   @override
-  Color? get barrierColor => context.isBigScreen ? null : AppColors.greyBgr(context).withOpacity(0.7);
+  Color? get barrierColor => context.isBigScreen
+      ? null
+      : context.appTheme.isDarkTheme
+          ? AppColors.black.withOpacity(0.35)
+          : AppColors.greyBgr(context).withOpacity(0.7);
 
   @override
   String? get barrierLabel => _page.barrierLabel;
@@ -665,7 +589,7 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
   Widget buildPage(BuildContext context, Animation<double> _, Animation<double> __) {
     final Widget content = _ScrollableChecker(
       builder: (controller, isScrollable) => CardItem(
-        color: context.appTheme.background1,
+        color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
         elevation: 20,
         constraints: BoxConstraints(
           maxWidth: context.isBigScreen ? 450 : Gap.screenWidth(context),

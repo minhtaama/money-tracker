@@ -6,7 +6,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.focusColor,
     required this.onChanged,
@@ -32,7 +32,7 @@ class CustomTextFormField extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.initialValue,
     this.style,
-  }) : super(key: key);
+  });
   final String hintText;
   final String? helperText;
   final TextEditingController? controller;
@@ -124,12 +124,12 @@ class CustomTextFormField extends StatelessWidget {
           enabledBorder: withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
-                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                  borderSide:
+                      BorderSide(color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 )
               : UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                  borderSide:
+                      BorderSide(color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
                 ),
           focusedBorder: withOutlineBorder
               ? OutlineInputBorder(
