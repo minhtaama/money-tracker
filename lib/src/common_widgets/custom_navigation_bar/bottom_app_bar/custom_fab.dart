@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
@@ -91,9 +93,9 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
   Widget build(BuildContext context) {
     return PortalTarget(
       visible: _visible,
-      portalFollower: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _hidePortal,
+      portalFollower: _Backdrop(
+        _hidePortal,
+        animation: _animation,
       ),
       child: PortalTarget(
         visible: _visible,
@@ -137,8 +139,6 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
     );
   }
 }
-
-//TODO: change 100 to kNavigationRailWidth
 
 class _PortalFollower extends AnimatedWidget {
   const _PortalFollower({
@@ -312,6 +312,7 @@ class _ListButtons extends StatelessWidget {
           Gap.w16,
           RoundedIconButton(
             onTap: () async {
+              await hideModalFunction();
               listItems[index].onTap();
             },
             iconPath: listItems[index].icon,
@@ -392,5 +393,35 @@ class _MainButtons extends AnimatedWidget {
             angle: (math.pi * 1 / 4) * _progress.value,
             child: child(),
           );
+  }
+}
+
+class _Backdrop extends AnimatedWidget {
+  const _Backdrop(
+    this.hideModalFunction, {
+    required Animation<double> animation,
+  }) : super(listenable: animation);
+
+  final Future<void> Function() hideModalFunction;
+
+  Animation<double> get _progress => listenable as Animation<double>;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget child() => FadeTransition(
+          opacity: _progress,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () async => await hideModalFunction(),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
+              child: Container(
+                color: context.appTheme.background1.withOpacity(0.5),
+              ),
+            ),
+          ),
+        );
+
+    return child();
   }
 }
