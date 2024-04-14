@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
@@ -32,48 +33,31 @@ import '../utils/constants.dart';
 import '../utils/enums.dart';
 
 class RoutePath {
-  static String get home => '/home';
-  static String get addIncome => '/addIncome';
-  static String get addExpense => '/addExpense';
-  static String get addTransfer => '/addTransfer';
-  static String get addCreditSpending => '/addCreditSpending';
-  static String get addCreditPayment => '/addCreditPayment';
-  static String get dashboard => '/dashboard';
-  static String get settings => '/dashboard/settings';
-  static String get setCurrency => '/dashboard/settings/setCurrency';
-  static String get selectIcon => '/dashboard/selectIcon';
-  static String get categories => '/dashboard/categories';
-  static String get addCategory => '/dashboard/categories/addCategory';
-  static String get accounts => '/dashboard/accounts';
-  static String get accountScreen => '/dashboard/accounts/accountScreen';
-  static String get addAccount => '/dashboard/accounts/addAccount';
-  static String get budgets => '/dashboard/budgets';
-  static String get addBudget => '/dashboard/budgets/addBudget';
-  static String get transaction => '/transaction';
-  static String get editDashboard => '/editDashboard';
+  static const String home = '/home';
+  static const String addIncome = '/addIncome';
+  static const String addExpense = '/addExpense';
+  static const String addTransfer = '/addTransfer';
+  static const String addCreditSpending = '/addCreditSpending';
+  static const String addCreditPayment = '/addCreditPayment';
+  static const String dashboard = '/dashboard';
+  static const String settings = '/dashboard/settings';
+  static const String setCurrency = '/dashboard/settings/setCurrency';
+  static const String selectIcon = '/dashboard/selectIcon';
+  static const String categories = '/dashboard/categories';
+  static const String addCategory = '/dashboard/categories/addCategory';
+  static const String accounts = '/dashboard/accounts';
+  static const String accountScreen = '/dashboard/accounts/accountScreen';
+  static const String addAccount = '/dashboard/accounts/addAccount';
+  static const String budgets = '/dashboard/budgets';
+  static const String addBudget = '/dashboard/budgets/addBudget';
+  static const String transaction = '/transaction';
+  static const String editDashboard = '/editDashboard';
 }
 
-final _rootNavKey = GlobalKey<NavigatorState>();
-final _shellNavKey = GlobalKey<NavigatorState>();
+final _railNavKey = GlobalKey<NavigatorState>();
+final _bottomNavKey = GlobalKey<NavigatorState>();
 
-Widget _customTransition(
-  BuildContext context,
-  Animation<double> animation,
-  Animation<double> secondaryAnimation,
-  Widget child,
-) {
-  final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
-  return FadeTransition(
-      opacity: animation,
-      child: context.isBigScreen
-          ? child
-          : SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            ));
-}
-
-_fabRoundedButtonItems(BuildContext context) => <FABItem>[
+List<FABItem> _fabRoundedButtonItems(BuildContext context) => [
       FABItem(
         icon: AppIcons.income,
         label: context.localize.income,
@@ -97,7 +81,7 @@ _fabRoundedButtonItems(BuildContext context) => <FABItem>[
       ),
     ];
 
-_fabListItems(BuildContext context) => <FABItem>[
+List<FABItem> _fabListItems(BuildContext context) => [
       FABItem(
         icon: AppIcons.receiptDollar,
         label: context.localize.creditSpending,
@@ -110,7 +94,7 @@ _fabListItems(BuildContext context) => <FABItem>[
       ),
     ];
 
-_fabMainItem(BuildContext context) => FABItem(
+FABItem _fabMainItem(BuildContext context) => FABItem(
       icon: AppIcons.heartOutline,
       label: '',
       color: context.appTheme.onAccent,
@@ -121,7 +105,7 @@ _fabMainItem(BuildContext context) => FABItem(
       ),
     );
 
-_navRailItems(BuildContext context) => <NavigationRailItem>[
+List<NavigationRailItem> _navRailItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.home,
         iconData: AppIcons.home,
@@ -170,9 +154,17 @@ _bottomTabItems(BuildContext context) => <BottomAppBarItem>[
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
   debugLogDiagnostics: true,
+  redirect: (context, routerState) {
+    final location = routerState.matchedLocation;
+    if (kDebugMode) {
+      print(location);
+    }
+
+    return null;
+  },
   routes: [
     ShellRoute(
-      navigatorKey: _rootNavKey,
+      navigatorKey: _railNavKey,
       builder: (context, state, child) {
         return ScaffoldWithNavRail(
           items: _navRailItems(context),
@@ -181,8 +173,8 @@ final goRouter = GoRouter(
       },
       routes: [
         ShellRoute(
-          navigatorKey: _shellNavKey,
-          parentNavigatorKey: _rootNavKey,
+          navigatorKey: _bottomNavKey,
+          parentNavigatorKey: _railNavKey,
           builder: (context, state, child) {
             return ScaffoldWithBottomNavBar(
               items: _bottomTabItems(context),
@@ -197,62 +189,56 @@ final goRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/home',
-              parentNavigatorKey: _shellNavKey,
-              pageBuilder: (context, state) => CustomTransitionPage(
+              parentNavigatorKey: _bottomNavKey,
+              pageBuilder: (context, state) => CustomAppPage(
                 key: state.pageKey,
                 child: const HomeScreen(),
-                transitionsBuilder: _customTransition,
               ),
             ),
             GoRoute(
               path: '/dashboard',
-              parentNavigatorKey: _shellNavKey,
-              pageBuilder: (context, state) => CustomTransitionPage(
+              parentNavigatorKey: _bottomNavKey,
+              pageBuilder: (context, state) => CustomAppPage(
                 key: state.pageKey,
                 child: const DashboardScreen(),
-                transitionsBuilder: _customTransition,
               ),
               routes: [
                 GoRoute(
                     path: 'settings',
-                    parentNavigatorKey: _rootNavKey,
-                    pageBuilder: (context, state) => CustomTransitionPage(
+                    parentNavigatorKey: _railNavKey,
+                    pageBuilder: (context, state) => CustomAppPage(
                           key: state.pageKey,
                           child: const SettingsScreen(),
-                          transitionsBuilder: _customTransition,
                         ),
                     routes: [
                       GoRoute(
                         path: 'setCurrency',
-                        parentNavigatorKey: _rootNavKey,
-                        pageBuilder: (context, state) => CustomTransitionPage(
+                        parentNavigatorKey: _railNavKey,
+                        pageBuilder: (context, state) => CustomAppPage(
                           key: state.pageKey,
                           child: const SelectCurrencyScreen(),
-                          transitionsBuilder: _customTransition,
                         ),
                       )
                     ]),
                 GoRoute(
                   path: 'selectIcon',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => CustomTransitionPage(
+                  parentNavigatorKey: _railNavKey,
+                  pageBuilder: (context, state) => CustomAppPage(
                     key: state.pageKey,
                     child: const SelectIconsScreen(),
-                    transitionsBuilder: _customTransition,
                   ),
                 ),
                 GoRoute(
                   path: 'categories',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => CustomTransitionPage(
+                  parentNavigatorKey: _railNavKey,
+                  pageBuilder: (context, state) => CustomAppPage(
                     key: state.pageKey,
                     child: const CategoriesListScreen(),
-                    transitionsBuilder: _customTransition,
                   ),
                   routes: [
                     GoRoute(
                       path: 'addCategory',
-                      parentNavigatorKey: _rootNavKey,
+                      parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => const CustomAppModal(
                         child: AddCategoryModalScreen(),
                       ),
@@ -261,25 +247,23 @@ final goRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'accounts',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => CustomTransitionPage(
+                  parentNavigatorKey: _railNavKey,
+                  pageBuilder: (context, state) => CustomAppPage(
                     key: state.pageKey,
                     child: const AccountsListScreen(),
-                    transitionsBuilder: _customTransition,
                   ),
                   routes: [
                     GoRoute(
                       path: 'accountScreen',
-                      parentNavigatorKey: _rootNavKey,
-                      pageBuilder: (context, state) => CustomTransitionPage(
+                      parentNavigatorKey: _railNavKey,
+                      pageBuilder: (context, state) => CustomAppPage(
                         key: state.pageKey,
                         child: AccountScreen(objectIdHexString: state.extra as String),
-                        transitionsBuilder: _customTransition,
                       ),
                     ),
                     GoRoute(
                       path: 'addAccount',
-                      parentNavigatorKey: _rootNavKey,
+                      parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => const CustomAppModal(
                         child: AddAccountModalScreen(),
                       ),
@@ -288,11 +272,10 @@ final goRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'budgets',
-                  parentNavigatorKey: _rootNavKey,
-                  pageBuilder: (context, state) => CustomTransitionPage(
+                  parentNavigatorKey: _railNavKey,
+                  pageBuilder: (context, state) => CustomAppPage(
                     key: state.pageKey,
                     child: const BudgetsListScreen(),
-                    transitionsBuilder: _customTransition,
                   ),
                   routes: [
                     // GoRoute(
@@ -302,7 +285,7 @@ final goRouter = GoRouter(
                     // ),
                     GoRoute(
                       path: 'addBudget',
-                      parentNavigatorKey: _rootNavKey,
+                      parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => const CustomAppModal(
                         child: AddBudgetModalScreen(),
                       ),
@@ -315,42 +298,42 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/addIncome',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => const CustomAppModal(
             child: AddRegularTxnModalScreen(TransactionType.income),
           ),
         ),
         GoRoute(
           path: '/addExpense',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => const CustomAppModal(
             child: AddRegularTxnModalScreen(TransactionType.expense),
           ),
         ),
         GoRoute(
           path: '/addTransfer',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => const CustomAppModal(
             child: AddRegularTxnModalScreen(TransactionType.transfer),
           ),
         ),
         GoRoute(
           path: '/addCreditSpending',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => const CustomAppModal(
             child: AddCreditSpendingModalScreen(),
           ),
         ),
         GoRoute(
           path: '/addCreditPayment',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => const CustomAppModal(
             child: AddCreditPaymentModalScreen(),
           ),
         ),
         GoRoute(
           path: '/transaction',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) {
             final String objectIdHexString;
             final TransactionScreenType screenType;
@@ -373,7 +356,7 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/editDashboard',
-          parentNavigatorKey: _rootNavKey,
+          parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => const CustomAppModal(
             child: DashboardEditModalScreen(),
           ),
@@ -382,6 +365,112 @@ final goRouter = GoRouter(
     ),
   ],
 );
+
+////////// FOR [showCustomModal] function //////////
+class CustomAppModalRoute<T> extends PopupRoute<T> {
+  /// A modal bottom sheet route.
+  CustomAppModalRoute(this.context, {required this.child});
+
+  final BuildContext context;
+
+  final Widget child;
+
+  @override
+  Color? get barrierColor => context.isBigScreen ? null : AppColors.greyBgr(context).withOpacity(0.7);
+
+  @override
+  String? get barrierLabel => null;
+
+  @override
+  Duration get transitionDuration => k250msDuration;
+
+  @override
+  Duration get reverseTransitionDuration => k250msDuration;
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  bool get opaque => false;
+
+  @override
+  AnimationController createAnimationController() {
+    return AnimationController(
+      duration: transitionDuration,
+      reverseDuration: reverseTransitionDuration,
+      vsync: navigator!,
+    );
+  }
+
+  @override
+  Animation<double> createAnimation() {
+    return controller!.drive(CurveTween(curve: Curves.fastOutSlowIn));
+  }
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+    final Widget content = _ScrollableChecker(
+      builder: (controller, isScrollable) => CardItem(
+        color: context.appTheme.background1,
+        elevation: 50,
+        constraints: BoxConstraints(
+          maxWidth: context.isBigScreen ? 450 : Gap.screenWidth(context),
+        ),
+        margin: EdgeInsets.symmetric(
+          vertical: context.isBigScreen ? 16 : 0,
+          horizontal: context.isBigScreen ? 8 : 0,
+        ),
+        padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
+        borderRadius: context.isBigScreen
+            ? const BorderRadius.all(Radius.circular(20))
+            : BorderRadius.only(
+                topLeft: Radius.circular(isScrollable ? 0 : 28), topRight: Radius.circular(isScrollable ? 0 : 28)),
+        child: AnimatedPadding(
+          padding:
+              EdgeInsets.only(top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
+          duration: const Duration(milliseconds: 50),
+          child: SingleChildScrollView(
+            controller: controller,
+            child: child,
+          ),
+        ),
+      ),
+    );
+
+    return AnimatedAlign(
+      alignment: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
+      duration: transitionDuration,
+      curve: Curves.easeOut,
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: content,
+      ),
+    );
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      ),
+    );
+  }
+}
+
+///////////////// FOR GO ROUTER //////////////////
 
 class CustomAppPage<T> extends Page<T> {
   /// Constructor for a page with custom transition functionality.

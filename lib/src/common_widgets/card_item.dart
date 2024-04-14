@@ -61,8 +61,8 @@ class CardItem extends StatelessWidget {
                 : [
                     BoxShadow(
                       color: Colors.black.withOpacity(elevation * 0.01),
-                      blurRadius: (elevation + 2).clamp(0, 15),
-                      offset: Offset(0, (elevation + 0.5).clamp(0, 4)),
+                      blurRadius: (elevation + 2).clamp(0, 5),
+                      offset: Offset(0, (elevation + 0.5).clamp(0, 2)),
                     ),
                   ]),
         gradient: isGradient
