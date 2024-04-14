@@ -10,6 +10,7 @@ import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/bu
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/income_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/weekly_bar_chart_widget.dart';
+import 'package:money_tracker_app/src/features/home/presentation/home_screen.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -21,8 +22,25 @@ import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums_dashboard.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class DashboardOnlyOrWithHomeScreenWrapper extends StatelessWidget {
+  const DashboardOnlyOrWithHomeScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (context.isBigScreen) {
+      return const Row(
+        children: [
+          Expanded(child: HomeScreen()),
+          Expanded(child: _DashboardScreen()),
+        ],
+      );
+    }
+    return const _DashboardScreen();
+  }
+}
+
+class _DashboardScreen extends StatelessWidget {
+  const _DashboardScreen({super.key});
 
   Widget _getChild(DashboardWidgetType type) {
     return switch (type) {
@@ -111,51 +129,66 @@ class _DashboardMenu2 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Expanded(
-            child: RoundedIconButton(
-              onTap: () => context.go(RoutePath.accounts),
-              label: context.localize.accounts,
-              size: 50,
-              iconPath: AppIcons.accounts,
-              iconColor: context.appTheme.onBackground,
-              reactImmediately: false,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: RoundedIconButton(
+                onTap: () => context.go(RoutePath.accounts),
+                label: context.localize.accounts,
+                size: 50,
+                iconPath: AppIcons.accounts,
+                iconColor: context.appTheme.onBackground,
+                reactImmediately: false,
+              ),
             ),
           ),
           Expanded(
-            child: RoundedIconButton(
-              onTap: () => context.go(RoutePath.categories),
-              label: context.localize.categories,
-              size: 50,
-              iconPath: AppIcons.categories,
-              iconColor: context.appTheme.onBackground,
-              reactImmediately: false,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: RoundedIconButton(
+                onTap: () => context.go(RoutePath.categories),
+                label: context.localize.categories,
+                size: 50,
+                iconPath: AppIcons.categories,
+                iconColor: context.appTheme.onBackground,
+                reactImmediately: false,
+              ),
             ),
           ),
           Expanded(
-            child: RoundedIconButton(
-              onTap: () => context.go(RoutePath.budgets),
-              label: context.localize.budget,
-              size: 50,
-              iconPath: AppIcons.budgets,
-              iconColor: context.appTheme.onBackground,
-              reactImmediately: false,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: RoundedIconButton(
+                onTap: () => context.go(RoutePath.budgets),
+                label: context.localize.budget,
+                size: 50,
+                iconPath: AppIcons.budgets,
+                iconColor: context.appTheme.onBackground,
+                reactImmediately: false,
+              ),
             ),
           ),
           Expanded(
-            child: RoundedIconButton(
-              label: context.localize.saving,
-              size: 50,
-              iconPath: AppIcons.savings,
-              iconColor: context.appTheme.onBackground,
-              reactImmediately: false,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: RoundedIconButton(
+                label: context.localize.saving,
+                size: 50,
+                iconPath: AppIcons.savings,
+                iconColor: context.appTheme.onBackground,
+                reactImmediately: false,
+              ),
             ),
           ),
           Expanded(
-            child: RoundedIconButton(
-              label: 'Upcoming'.hardcoded,
-              size: 50,
-              iconPath: AppIcons.transfer,
-              iconColor: context.appTheme.onBackground,
-              reactImmediately: false,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: RoundedIconButton(
+                label: 'Upcoming'.hardcoded,
+                size: 50,
+                iconPath: AppIcons.transfer,
+                iconColor: context.appTheme.onBackground,
+                reactImmediately: false,
+              ),
             ),
           ),
         ],
