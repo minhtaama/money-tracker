@@ -133,7 +133,7 @@ List<NavigationRailItem> _navRailItems(BuildContext context) => [
       ),
     ];
 
-_bottomTabItems(BuildContext context) => <BottomAppBarItem>[
+List<BottomAppBarItem> _bottomTabItems(BuildContext context) => [
       BottomAppBarItem(
         path: RoutePath.home,
         iconData: AppIcons.home,
