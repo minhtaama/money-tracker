@@ -659,7 +659,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
       width: isDialog
           ? null
           : context.isBigScreen
-              ? 400
+              ? 350
               : double.infinity,
       margin: isDialog
           ? const EdgeInsets.all(38)

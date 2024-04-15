@@ -107,7 +107,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
 
   Widget calendarPicker() => SizedBox(
         height: 300,
-        width: 350,
+        width: context.isBigScreen ? 300 : 350,
         child: CalendarDatePicker2(
           config: widget.config,
           value: [_selectedDay],
