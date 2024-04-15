@@ -60,57 +60,83 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      surfaceTintColor: Colors.transparent,
-      backgroundColor: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-      contentPadding: EdgeInsets.zero,
-      actions: [
-        IconWithTextButton(
-          iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
-          label: _selectedDay != null ? context.localize.select : context.localize.back,
-          height: 30,
-          width: 100,
-          labelSize: 13,
-          iconSize: 20,
-          isDisabled: _selectedDay == null,
-          backgroundColor: context.appTheme.primary,
-          color: context.appTheme.onPrimary,
-          onTap: () {
-            widget.onActionButtonTap?.call(_selectedDay);
-          },
-        ),
-      ],
-      content: SingleChildScrollView(
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: context.isBigScreen ? bigScreenLayout() : smallScreenLayout(),
+    );
+  }
+
+  Widget smallScreenLayout() => SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
-            SizedBox(
-              height: 300,
-              width: 350,
-              child: CalendarDatePicker2(
-                config: widget.config,
-                value: [_selectedDay],
-                displayedMonthDate: _currentMonthView,
-                onDisplayedMonthChanged: (dateTime) {
-                  setState(() {
-                    _currentMonthView = dateTime;
-                  });
-                },
-                onValueChanged: (dateList) {
-                  setState(() {
-                    _selectedDay = dateList[0];
-                  });
-                },
-              ),
-            ),
+            calendarPicker(),
+            button(),
           ],
         ),
-      ),
-    );
-  }
+      );
+
+  Widget bigScreenLayout() => Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              children: [
+                calendarPicker(),
+                button(),
+              ],
+            ),
+          ),
+          widget.contentBuilder == null
+              ? Gap.noGap
+              : Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+                    child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+                  ),
+                ),
+        ],
+      );
+
+  Widget calendarPicker() => SizedBox(
+        height: 300,
+        width: 350,
+        child: CalendarDatePicker2(
+          config: widget.config,
+          value: [_selectedDay],
+          displayedMonthDate: _currentMonthView,
+          onDisplayedMonthChanged: (dateTime) {
+            setState(() {
+              _currentMonthView = dateTime;
+            });
+          },
+          onValueChanged: (dateList) {
+            setState(() {
+              _selectedDay = dateList[0];
+            });
+          },
+        ),
+      );
+
+  Widget button() => IconWithTextButton(
+        iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
+        label: _selectedDay != null ? context.localize.select : context.localize.back,
+        height: 30,
+        width: 100,
+        labelSize: 13,
+        iconSize: 20,
+        isDisabled: _selectedDay == null,
+        backgroundColor: context.appTheme.primary,
+        color: context.appTheme.onPrimary,
+        onTap: () {
+          widget.onActionButtonTap?.call(_selectedDay);
+        },
+      );
 }

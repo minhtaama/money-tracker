@@ -239,7 +239,7 @@ final goRouter = GoRouter(
                     GoRoute(
                       path: 'addCategory',
                       parentNavigatorKey: _railNavKey,
-                      pageBuilder: (context, state) => CustomAppModal(
+                      pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
                         child: const AddCategoryModalScreen(),
                       ),
@@ -265,7 +265,7 @@ final goRouter = GoRouter(
                     GoRoute(
                       path: 'addAccount',
                       parentNavigatorKey: _railNavKey,
-                      pageBuilder: (context, state) => CustomAppModal(
+                      pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
                         child: const AddAccountModalScreen(),
                       ),
@@ -288,7 +288,7 @@ final goRouter = GoRouter(
                     GoRoute(
                       path: 'addBudget',
                       parentNavigatorKey: _railNavKey,
-                      pageBuilder: (context, state) => CustomAppModal(
+                      pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
                         child: const AddBudgetModalScreen(),
                       ),
@@ -302,7 +302,7 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/addIncome',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => CustomAppModal(
+          pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
             child: const AddRegularTxnModalScreen(TransactionType.income),
           ),
@@ -310,7 +310,7 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/addExpense',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => CustomAppModal(
+          pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
             child: const AddRegularTxnModalScreen(TransactionType.expense),
           ),
@@ -318,7 +318,7 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/addTransfer',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => CustomAppModal(
+          pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
             child: const AddRegularTxnModalScreen(TransactionType.transfer),
           ),
@@ -326,7 +326,7 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/addCreditSpending',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => CustomAppModal(
+          pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
             child: const AddCreditSpendingModalScreen(),
           ),
@@ -334,7 +334,7 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/addCreditPayment',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => CustomAppModal(
+          pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
             child: const AddCreditPaymentModalScreen(),
           ),
@@ -354,7 +354,7 @@ final goRouter = GoRouter(
               screenType = (state.extra as ({String string, TransactionScreenType type})).type;
             }
 
-            return CustomAppModal(
+            return CustomAppModalPage(
               key: state.pageKey,
               child: TransactionDetailsModalScreen(
                 objectIdHexString: objectIdHexString,
@@ -366,7 +366,7 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/editDashboard',
           parentNavigatorKey: _railNavKey,
-          pageBuilder: (context, state) => CustomAppModal(
+          pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
             child: const DashboardEditModalScreen(),
           ),
@@ -377,11 +377,11 @@ final goRouter = GoRouter(
 );
 
 ////////// FOR [showCustomModal] function //////////
-class CustomAppModalRoute<T> extends _CustomAppModalRoute<T> {
+class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
   CustomAppModalRoute(BuildContext context, {required Widget child})
       : super(
           context,
-          CustomAppModal(
+          CustomAppModalPage(
             key: const ValueKey('FUCK'),
             child: child,
           ),
@@ -390,7 +390,23 @@ class CustomAppModalRoute<T> extends _CustomAppModalRoute<T> {
   //final Widget child;
 }
 
-///////////////// FOR GO ROUTER //////////////////
+class CustomAppDialogRoute<T> extends _CustomAppModalPageRoute<T> {
+  CustomAppDialogRoute(BuildContext context, {bool isScrollable = false, required Widget child})
+      : super(
+          context,
+          CustomAppModalPage(
+            child: child,
+            isDialog: true,
+            withScrollView: false,
+          ),
+          isDialog: true,
+          withScrollView: false,
+        );
+
+//final Widget child;
+}
+
+///////////////////////// FOR GO ROUTER ///////////////////////////
 
 class CustomAppPage<T> extends Page<T> {
   /// Constructor for a page with custom transition functionality.
@@ -434,6 +450,58 @@ class CustomAppPage<T> extends Page<T> {
   @override
   Route<T> createRoute(BuildContext context) => _CustomAppPageRoute<T>(this);
 }
+
+class CustomAppModalPage<T> extends Page<T> {
+  /// Constructor for a page with custom transition functionality.
+  ///
+  /// To be used instead of MaterialPage or CupertinoPage, which provide
+  /// their own transitions.
+  const CustomAppModalPage({
+    required this.child,
+    this.transitionDuration = k250msDuration,
+    this.reverseTransitionDuration = k250msDuration,
+    this.maintainState = true,
+    this.fullscreenDialog = false,
+    this.opaque = false,
+    this.barrierDismissible = true,
+    this.barrierColor,
+    this.barrierLabel,
+    this.isDialog = false,
+    this.withScrollView = true,
+    super.key,
+    super.name,
+    super.arguments,
+    super.restorationId,
+  });
+
+  final Widget child;
+
+  final Duration transitionDuration;
+
+  final Duration reverseTransitionDuration;
+
+  final bool maintainState;
+
+  final bool fullscreenDialog;
+
+  final bool opaque;
+
+  final bool barrierDismissible;
+
+  final Color? barrierColor;
+
+  final String? barrierLabel;
+
+  final bool isDialog;
+
+  final bool withScrollView;
+
+  @override
+  Route<T> createRoute(BuildContext context) =>
+      _CustomAppModalPageRoute<T>(context, this, isDialog: isDialog, withScrollView: withScrollView);
+}
+
+//////////////////////////// ROUTES ///////////////////////////////
 
 class _CustomAppPageRoute<T> extends PageRoute<T> {
   _CustomAppPageRoute(CustomAppPage<T> page) : super(settings: page);
@@ -496,56 +564,19 @@ class _CustomAppPageRoute<T> extends PageRoute<T> {
   }
 }
 
-class CustomAppModal<T> extends Page<T> {
-  /// Constructor for a page with custom transition functionality.
-  ///
-  /// To be used instead of MaterialPage or CupertinoPage, which provide
-  /// their own transitions.
-  const CustomAppModal({
-    required this.child,
-    this.transitionDuration = k250msDuration,
-    this.reverseTransitionDuration = k250msDuration,
-    this.maintainState = true,
-    this.fullscreenDialog = false,
-    this.opaque = false,
-    this.barrierDismissible = true,
-    this.barrierColor,
-    this.barrierLabel,
-    super.key,
-    super.name,
-    super.arguments,
-    super.restorationId,
-  });
-
-  final Widget child;
-
-  final Duration transitionDuration;
-
-  final Duration reverseTransitionDuration;
-
-  final bool maintainState;
-
-  final bool fullscreenDialog;
-
-  final bool opaque;
-
-  final bool barrierDismissible;
-
-  final Color? barrierColor;
-
-  final String? barrierLabel;
-
-  @override
-  Route<T> createRoute(BuildContext context) => _CustomAppModalRoute<T>(context, this);
-}
-
-class _CustomAppModalRoute<T> extends PopupRoute<T> {
+class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
   /// A modal bottom sheet route.
-  _CustomAppModalRoute(this.context, CustomAppModal<T> settings) : super(settings: settings);
+  _CustomAppModalPageRoute(this.context, CustomAppModalPage<T> settings,
+      {this.isDialog = false, this.withScrollView = true})
+      : super(settings: settings);
 
   final BuildContext context;
 
-  CustomAppModal<T> get _page => settings as CustomAppModal<T>;
+  final bool isDialog;
+
+  final bool withScrollView;
+
+  CustomAppModalPage<T> get _page => settings as CustomAppModalPage<T>;
 
   @override
   Color? get barrierColor => context.isBigScreen
@@ -588,26 +619,32 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
 
   @override
   Widget buildPage(BuildContext context, Animation<double> _, Animation<double> __) {
-    final Widget content = _ScrollableChecker(
+    final Widget contentWithScrollView = _ScrollableChecker(
       builder: (controller, isScrollable) => CardItem(
         color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-        elevation: 20,
-        constraints: BoxConstraints(
-          maxWidth: context.isBigScreen ? 450 : Gap.screenWidth(context),
-        ),
-        margin: EdgeInsets.symmetric(
-          vertical: context.isBigScreen ? 16 : 0,
-          horizontal: context.isBigScreen ? 8 : 0,
-        ),
-        padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
-        borderRadius: context.isBigScreen
+        elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 7 : 20,
+        width: isDialog
+            ? null
+            : context.isBigScreen
+                ? 400
+                : double.infinity,
+        margin: isDialog
+            ? const EdgeInsets.all(38)
+            : EdgeInsets.symmetric(
+                vertical: context.isBigScreen ? 16 : 0,
+                horizontal: context.isBigScreen ? 8 : 0,
+              ),
+        padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 12, right: 12, top: 8),
+        borderRadius: context.isBigScreen || isDialog
             ? const BorderRadius.all(Radius.circular(20))
             : BorderRadius.only(
                 topLeft: Radius.circular(isScrollable ? 0 : 28), topRight: Radius.circular(isScrollable ? 0 : 28)),
         child: AnimatedPadding(
-          padding:
-              EdgeInsets.only(top: 16, bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(8, double.infinity)),
-          duration: const Duration(milliseconds: 50),
+          duration: k1msDuration,
+          padding: EdgeInsets.only(
+            top: isDialog ? 0 : 16,
+            bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(16, double.infinity),
+          ),
           child: SingleChildScrollView(
             controller: controller,
             child: _page.child,
@@ -616,14 +653,46 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
       ),
     );
 
+    final Widget contentNoScrollView = CardItem(
+      color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+      elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 7 : 20,
+      width: isDialog
+          ? null
+          : context.isBigScreen
+              ? 400
+              : double.infinity,
+      margin: isDialog
+          ? const EdgeInsets.all(38)
+          : EdgeInsets.symmetric(
+              vertical: context.isBigScreen ? 16 : 0,
+              horizontal: context.isBigScreen ? 8 : 0,
+            ),
+      padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 12, right: 12, top: 8),
+      borderRadius: context.isBigScreen || isDialog
+          ? const BorderRadius.all(Radius.circular(20))
+          : const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+      child: AnimatedPadding(
+        duration: k1msDuration,
+        padding: EdgeInsets.only(
+          top: isDialog ? 0 : 16,
+          bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(16, double.infinity),
+        ),
+        child: _page.child,
+      ),
+    );
+
     return AnimatedAlign(
-      alignment: context.isBigScreen ? Alignment.bottomRight : Alignment.bottomCenter,
+      alignment: isDialog
+          ? Alignment.center
+          : context.isBigScreen
+              ? Alignment.bottomRight
+              : Alignment.bottomCenter,
       duration: transitionDuration,
       curve: Curves.easeOut,
       child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
-        child: content,
+        child: withScrollView ? contentWithScrollView : contentNoScrollView,
       ),
     );
   }
@@ -645,6 +714,8 @@ class _CustomAppModalRoute<T> extends PopupRoute<T> {
     );
   }
 }
+
+////////////////////// SCROLLABLE CHECKER ////////////////////////
 
 class _ScrollableChecker extends StatefulWidget {
   const _ScrollableChecker({
@@ -679,12 +750,14 @@ class _ScrollableCheckerState extends State<_ScrollableChecker> {
   }
 
   void _listener() {
-    final maxScrollExtent = _scrollController.position.maxScrollExtent;
+    if (_scrollController.hasClients) {
+      final maxScrollExtent = _scrollController.position.maxScrollExtent;
 
-    if (!_isScrollable && maxScrollExtent > 0 || _isScrollable && maxScrollExtent <= 0) {
-      setState(() {
-        _isScrollable = !_isScrollable;
-      });
+      if (!_isScrollable && maxScrollExtent > 0 || _isScrollable && maxScrollExtent <= 0) {
+        setState(() {
+          _isScrollable = !_isScrollable;
+        });
+      }
     }
   }
 

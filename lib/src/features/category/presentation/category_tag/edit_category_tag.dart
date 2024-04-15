@@ -76,7 +76,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
                 backgroundColor: AppColors.greyBgr(context),
                 iconColor: context.appTheme.onBackground,
                 onTap: () {
-                  showConfirmModalBottomSheet(
+                  showConfirmModal(
                     context: context,
                     label: 'Are you sure that you want to delete tag "${widget.tag.name}"?',
                     onConfirm: () {

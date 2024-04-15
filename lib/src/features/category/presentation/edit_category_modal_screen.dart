@@ -89,7 +89,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
               backgroundColor: AppColors.greyBgr(context),
               iconColor: context.appTheme.onBackground,
               onTap: () {
-                showConfirmModalBottomSheet(
+                showConfirmModal(
                   context: context,
                   label: 'Are you sure that you want to delete "${widget.currentCategory.name}"?',
                   onConfirm: () {

@@ -158,7 +158,7 @@ class _TemplateTransactionTile extends ConsumerWidget {
             backgroundColor: context.appTheme.negative,
             useContainerInsteadOfInk: true,
             iconColor: context.appTheme.onNegative,
-            onTap: () => showConfirmModalBottomSheet(
+            onTap: () => showConfirmModal(
               context: context,
               label: 'Delete this favorite transaction?'.hardcoded,
               onConfirm: () {

@@ -152,14 +152,21 @@ class _RoundedButtonState extends State<_RoundedButton> {
       child: Container(
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
-          color: widget.backgroundColor ?? context.appTheme.background0,
-          borderRadius: BorderRadius.circular(1000),
-          border: widget.withBorder
-              ? Border.all(
-                  color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
-                  width: widget.borderWidth)
-              : null,
-        ),
+            color: widget.backgroundColor ?? context.appTheme.background0,
+            borderRadius: BorderRadius.circular(1000),
+            border: widget.withBorder
+                ? Border.all(
+                    color: widget.borderColor ?? widget.iconColor ?? context.appTheme.onBackground,
+                    width: widget.borderWidth)
+                : null,
+            boxShadow: widget.elevation == 0
+                ? []
+                : [
+                    BoxShadow(
+                      color: AppColors.black.withOpacity(_scale == 1 ? widget.elevation * 0.035 : 0),
+                      blurRadius: 8,
+                    ),
+                  ]),
         child: Material(
           type: MaterialType.transparency,
           borderRadius: BorderRadius.circular(1000),

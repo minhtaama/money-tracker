@@ -41,14 +41,11 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late String _name = widget.budget.name;
-  late BudgetType _budgetType =
-      widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
+  late BudgetType _budgetType = widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
   late BudgetPeriodType _periodType = widget.budget.periodType;
   late double _amount = widget.budget.amount;
-  late List<BaseAccount> _accounts =
-      widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
-  late List<Category> _categories =
-      widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
+  late List<BaseAccount> _accounts = widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
+  late List<Category> _categories = widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
 
   @override
   Widget build(BuildContext context) {
@@ -192,8 +189,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                   child: Text(
                     'Select categories registered with budget:'.hardcoded,
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                   ),
                 ),
                 _Selector<Category>(
@@ -214,8 +210,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                   child: Text(
                     'Select accounts registered with budget:'.hardcoded,
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                   ),
                 ),
                 _Selector<BaseAccount>(
@@ -238,7 +233,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
               bigButtonIcon: AppIcons.edit,
               bigButtonLabel: 'Done'.hardcoded,
               onSmallButtonTap: () {
-                showConfirmModalBottomSheet(
+                showConfirmModal(
                   context: context,
                   label: 'Are you sure that you want to delete budget ${widget.budget.name}?'.hardcoded,
                   onConfirm: () {

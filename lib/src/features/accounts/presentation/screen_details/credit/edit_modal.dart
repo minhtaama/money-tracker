@@ -179,13 +179,13 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               backgroundColor: AppColors.greyBgr(context),
               iconColor: context.appTheme.onBackground,
               onTap: () {
-                showConfirmModalBottomSheet(
+                showConfirmModal(
                   context: context,
                   label: 'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?'
                       .hardcoded,
                   subLabel: '1 more confirmation to delete this account'.hardcoded,
                   onConfirm: () {
-                    showConfirmModalBottomSheet(
+                    showConfirmModal(
                       context: context,
                       onlyIcon: true,
                       label: 'Are you sure? All transactions (except payments to this account) will be deleted, too.'

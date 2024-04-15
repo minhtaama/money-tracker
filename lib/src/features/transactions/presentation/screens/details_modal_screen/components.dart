@@ -707,7 +707,7 @@ class _DeleteButton extends StatelessWidget {
         onTap: () async {
           isDisable
               ? showErrorDialog(context, disableText)
-              : showConfirmModalBottomSheet(
+              : showConfirmModal(
                   context: context,
                   label: 'Delete this transaction?'.hardcoded,
                   confirmLabel: 'Yes, delete'.hardcoded,

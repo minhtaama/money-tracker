@@ -195,7 +195,7 @@ class _PrimaryButtonsOnSmallScreen extends StatelessWidget {
         primaryItems.length,
         (index) {
           return SizedBox(
-            width: Gap.screenWidth(context) / 3,
+            width: 120,
             child: Column(
               //This is how the overlay buttons is aligned.
               mainAxisAlignment: index == 0 || index == 2 ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -333,7 +333,7 @@ class _ListButtons extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: context.isBigScreen ? CrossAxisAlignment.end : CrossAxisAlignment.center,
       children: List.generate(listItems.length, (index) {
         if (context.isBigScreen) {
           return buttonOnBigScreen(context, index);

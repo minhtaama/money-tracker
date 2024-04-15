@@ -90,12 +90,12 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
               backgroundColor: AppColors.greyBgr(context),
               iconColor: context.appTheme.onBackground,
               onTap: () async {
-                showConfirmModalBottomSheet(
+                showConfirmModal(
                   context: context,
                   label: 'Are you sure that you want to delete account "${widget.regularAccount.name}"?'.hardcoded,
                   subLabel: '1 more confirmation to delete this account'.hardcoded,
                   onConfirm: () {
-                    showConfirmModalBottomSheet(
+                    showConfirmModal(
                       context: context,
                       onlyIcon: true,
                       label: 'Transactions relate to this account will appear as of "deleted account".'.hardcoded,
