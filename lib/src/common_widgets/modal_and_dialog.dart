@@ -164,5 +164,10 @@ Future<T?> showCustomModal<T>({
   required Widget child,
 }) {
   final NavigatorState navigator = Navigator.of(context);
-  return navigator.push(CustomAppModalRoute(context, child: child));
+  return navigator.push(
+    CustomAppModalRoute(
+      context,
+      child: child,
+    ),
+  );
 }

@@ -149,6 +149,7 @@ _bottomTabItems(BuildContext context) => <BottomAppBarItem>[
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
   debugLogDiagnostics: true,
+  requestFocus: false,
   redirect: (context, routerState) {
     final location = routerState.matchedLocation;
     if (kDebugMode) {
