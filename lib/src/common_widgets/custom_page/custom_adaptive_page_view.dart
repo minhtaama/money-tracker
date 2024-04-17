@@ -50,6 +50,9 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
   late final Animation<double> _fadeTabBarAnimation;
   late final Animation<double> _fadeDividerAnimation;
 
+  late bool _isShowSmallTabBar = widget.extendedTabBar == null ? true : false;
+  late bool _isShowSmallTabBarDivider = false;
+
   @override
   void initState() {
     _tabOffsetController = AnimationController(vsync: this, duration: k1msDuration, upperBound: 1000);
@@ -97,9 +100,129 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
     super.dispose();
   }
 
-  late bool _isShowSmallTabBar = widget.extendedTabBar == null ? true : false;
-  late bool _isShowSmallTabBarDivider = false;
+  @override
+  Widget build(BuildContext context) {
+    if (context.isBigScreen) {
+      return _pageView();
+    }
+    return _scrollableSheet();
+  }
 
+  Widget _scrollableSheet() {
+    return Stack(
+      children: [
+        _extendedTabBar(),
+        DraggableScrollableSheet(
+          controller: _scrollableController,
+          minChildSize: _sheetMinFraction,
+          initialChildSize: _sheetMinFraction,
+          maxChildSize: _sheetMaxFraction,
+          snap: true,
+          snapAnimationDuration: k250msDuration,
+          builder: (context, scrollController) => _sheetWrapper(
+            child: _CustomListView(
+              controller: scrollController,
+              forPageViewWithScrollableSheet: true,
+              smallTabBar: widget.smallTabBar,
+              extendedTabBar: widget.extendedTabBar,
+              onOffsetChange: (value) => _onListViewOffsetChange(value),
+              children: [
+                widget.toolBar != null
+                    ? Transform.translate(
+                        offset: const Offset(0, -7),
+                        child: SizedBox(
+                          height: widget.toolBarHeight,
+                          child: widget.toolBar,
+                        ),
+                      )
+                    : Gap.noGap,
+                widget.toolBar != null ? Gap.h8 : Gap.noGap,
+                ExpandablePageView(
+                  controller: widget.controller,
+                  onPageChanged: _onPageChange,
+                  itemCount: widget.pageItemCount,
+                  itemBuilder: (_, pageIndex) => Consumer(
+                    builder: (context, ref, _) => Column(
+                      children: [
+                        ...widget.itemBuilder(context, ref, pageIndex),
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.bottom + 32,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        _smallTabBar(),
+      ],
+    );
+  }
+
+  Widget _pageView() {
+    return CustomPageView(
+      controller: widget.controller,
+      pageItemCount: widget.pageItemCount,
+      onPageChanged: widget.onPageChanged,
+      itemBuilder: widget.itemBuilder,
+    );
+
+    // return Stack(
+    //   children: [
+    //     _extendedTabBar(),
+    //     DraggableScrollableSheet(
+    //       controller: _scrollableController,
+    //       minChildSize: _sheetMinFraction,
+    //       initialChildSize: _sheetMinFraction,
+    //       maxChildSize: _sheetMaxFraction,
+    //       snap: true,
+    //       snapAnimationDuration: k250msDuration,
+    //       builder: (context, scrollController) => _sheetWrapper(
+    //         child: _CustomListView(
+    //           controller: scrollController,
+    //           forPageViewWithScrollableSheet: true,
+    //           smallTabBar: widget.smallTabBar,
+    //           extendedTabBar: widget.extendedTabBar,
+    //           onOffsetChange: (value) => _onListViewOffsetChange(value),
+    //           children: [
+    //             widget.toolBar != null
+    //                 ? Transform.translate(
+    //                     offset: const Offset(0, -7),
+    //                     child: SizedBox(
+    //                       height: widget.toolBarHeight,
+    //                       child: widget.toolBar,
+    //                     ),
+    //                   )
+    //                 : Gap.noGap,
+    //             widget.toolBar != null ? Gap.h8 : Gap.noGap,
+    //             ExpandablePageView(
+    //               controller: widget.controller,
+    //               onPageChanged: _onPageChange,
+    //               itemCount: widget.pageItemCount,
+    //               itemBuilder: (_, pageIndex) => Consumer(
+    //                 builder: (context, ref, _) => Column(
+    //                   children: [
+    //                     ...widget.itemBuilder(context, ref, pageIndex),
+    //                     SizedBox(
+    //                       height: MediaQuery.of(context).padding.bottom + 32,
+    //                     )
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //     _smallTabBar(),
+    //   ],
+    // );
+  }
+}
+
+extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   void _onSheetHeightChange(double height) {
     _tabOffsetController.value = (height - _sheetMinHeight) / 3;
 
@@ -174,60 +297,6 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
     }
 
     statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _extendedTabBar(),
-        DraggableScrollableSheet(
-          controller: _scrollableController,
-          minChildSize: _sheetMinFraction,
-          initialChildSize: _sheetMinFraction,
-          maxChildSize: _sheetMaxFraction,
-          snap: true,
-          snapAnimationDuration: k250msDuration,
-          builder: (context, scrollController) => _sheetWrapper(
-            child: _CustomListView(
-              controller: scrollController,
-              forPageViewWithScrollableSheet: true,
-              smallTabBar: widget.smallTabBar,
-              extendedTabBar: widget.extendedTabBar,
-              onOffsetChange: (value) => _onListViewOffsetChange(value),
-              children: [
-                widget.toolBar != null
-                    ? Transform.translate(
-                        offset: const Offset(0, -7),
-                        child: SizedBox(
-                          height: widget.toolBarHeight,
-                          child: widget.toolBar,
-                        ),
-                      )
-                    : Gap.noGap,
-                widget.toolBar != null ? Gap.h8 : Gap.noGap,
-                ExpandablePageView(
-                  controller: widget.controller,
-                  onPageChanged: _onPageChange,
-                  itemCount: widget.pageItemCount,
-                  itemBuilder: (_, pageIndex) => Consumer(
-                    builder: (context, ref, _) => Column(
-                      children: [
-                        ...widget.itemBuilder(context, ref, pageIndex),
-                        SizedBox(
-                          height: MediaQuery.of(context).padding.bottom + 32,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        _smallTabBar(),
-      ],
-    );
   }
 
   Widget _smallTabBar() {
@@ -318,7 +387,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
     );
   }
 
-// Widget _optionalWrapper() {
+  // Widget _optionalWrapper() {
 //   return Container(
 //     height: 100,
 //     decoration: BoxDecoration(
