@@ -26,8 +26,6 @@ class ScaffoldWithNavRail extends StatelessWidget {
 
     final currentIndex = combinedItems.indexWhere((item) => item.path == currentPath);
 
-    print(combinedItems);
-
     return Scaffold(
       key: navigationRailKey,
       backgroundColor: context.appTheme.background1,

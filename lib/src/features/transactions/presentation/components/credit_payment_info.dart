@@ -181,7 +181,7 @@ class _ListState extends State<_List> {
       children: [
         widget.showList
             ? ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 200),
+                constraints: const BoxConstraints(maxHeight: 250),
                 child: SingleChildScrollView(
                   reverse: true,
                   child: Stack(

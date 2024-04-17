@@ -85,9 +85,9 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
+          Flexible(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 calendarPicker(),
                 button(),
@@ -96,7 +96,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           ),
           widget.contentBuilder == null
               ? Gap.noGap
-              : Expanded(
+              : Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
                     child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
