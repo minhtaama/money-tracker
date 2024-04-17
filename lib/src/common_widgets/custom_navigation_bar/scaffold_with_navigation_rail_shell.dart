@@ -6,26 +6,27 @@ import 'navigation_rail/custom_navigation_rail.dart';
 final navigationRailChildKey = GlobalKey();
 final navigationRailKey = GlobalKey();
 
-class ScaffoldWithNavRail extends StatefulWidget {
+class ScaffoldWithNavRail extends StatelessWidget {
   const ScaffoldWithNavRail({
     super.key,
-    required this.items,
+    required this.topItems,
+    required this.bottomItems,
     required this.body,
   });
 
-  final List<NavigationRailItem> items;
+  final List<NavigationRailItem> topItems;
+  final List<NavigationRailItem> bottomItems;
   final Widget body;
 
-  @override
-  State<ScaffoldWithNavRail> createState() => _ScaffoldWithNavRailState();
-}
-
-class _ScaffoldWithNavRailState extends State<ScaffoldWithNavRail> {
   @override
   Widget build(BuildContext context) {
     final isBigScreen = context.isBigScreen;
     final currentPath = GoRouterState.of(context).uri.toString();
-    final currentIndex = widget.items.indexWhere((item) => item.path == currentPath);
+    final combinedItems = List.from(topItems)..addAll(bottomItems);
+
+    final currentIndex = combinedItems.indexWhere((item) => item.path == currentPath);
+
+    print(combinedItems);
 
     return Scaffold(
       key: navigationRailKey,
@@ -34,16 +35,17 @@ class _ScaffoldWithNavRailState extends State<ScaffoldWithNavRail> {
       body: Row(
         children: [
           CustomNavigationRail(
-            items: widget.items,
+            topItems: topItems,
+            bottomItems: bottomItems,
             selectedIndex: currentIndex,
             onTabSelected: (int tabIndex) {
-              context.go(widget.items[tabIndex].path); // Change Tab
+              context.go(combinedItems[tabIndex].path); // Change Tab
             },
             isShow: isBigScreen,
           ),
           Expanded(
             key: navigationRailChildKey,
-            child: widget.body,
+            child: body,
           ),
         ],
       ),

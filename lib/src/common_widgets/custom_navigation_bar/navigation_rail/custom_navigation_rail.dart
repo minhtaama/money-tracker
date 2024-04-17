@@ -26,13 +26,15 @@ class NavigationRailItem {
 class CustomNavigationRail extends ConsumerStatefulWidget {
   const CustomNavigationRail({
     super.key,
-    required this.items,
+    required this.topItems,
+    required this.bottomItems,
     required this.selectedIndex,
     required this.onTabSelected,
     required this.isShow,
   });
 
-  final List<NavigationRailItem> items;
+  final List<NavigationRailItem> topItems;
+  final List<NavigationRailItem> bottomItems;
   final int selectedIndex;
   final ValueChanged<int> onTabSelected;
   final bool isShow;
@@ -67,12 +69,24 @@ class _CustomNavigationRailState extends ConsumerState<CustomNavigationRail> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> buttons = List.generate(widget.items.length, (index) {
+    List<Widget> topButtons = List.generate(widget.topItems.length, (index) {
       bool isSelected = _selectedIndex == index;
       return NavigationRailButton(
         index: index,
         onTap: _updateIndex,
-        item: widget.items[index],
+        item: widget.topItems[index],
+        isSelected: isSelected,
+      );
+    });
+
+    List<Widget> bottomButtons = List.generate(widget.bottomItems.length, (index) {
+      final pathIndex = widget.topItems.length + index;
+
+      bool isSelected = _selectedIndex == pathIndex;
+      return NavigationRailButton(
+        index: pathIndex,
+        onTap: _updateIndex,
+        item: widget.bottomItems[index],
         isSelected: isSelected,
       );
     });
@@ -83,6 +97,7 @@ class _CustomNavigationRailState extends ConsumerState<CustomNavigationRail> {
         hide: !widget.isShow,
         axis: Axis.horizontal,
         child: Container(
+          height: double.infinity,
           decoration: BoxDecoration(
             color: context.appTheme.background1,
             border: Border(
@@ -90,13 +105,24 @@ class _CustomNavigationRailState extends ConsumerState<CustomNavigationRail> {
             ),
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: Gap.statusBarHeight(context),
+                height: Gap.statusBarHeight(context) + 10,
               ),
-              ...buttons,
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: topButtons,
+                ),
+              ),
+              const Spacer(),
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: bottomButtons,
+              ),
+              Gap.h12,
             ],
           ),
         ),

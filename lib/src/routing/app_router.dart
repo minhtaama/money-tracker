@@ -105,7 +105,7 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
       ),
     );
 
-List<NavigationRailItem> _navRailItems(BuildContext context) => [
+List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.dashboardOrHomeInBigScreen,
         iconData: AppIcons.home,
@@ -126,6 +126,9 @@ List<NavigationRailItem> _navRailItems(BuildContext context) => [
         iconData: AppIcons.categories,
         text: context.localize.categories,
       ),
+    ];
+
+List<NavigationRailItem> _navRailBottomItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.settings,
         iconData: AppIcons.settings,
@@ -167,7 +170,8 @@ final goRouter = GoRouter(
       navigatorKey: _railNavKey,
       builder: (context, state, child) {
         return ScaffoldWithNavRail(
-          items: _navRailItems(context),
+          topItems: _navRailTopItems(context),
+          bottomItems: _navRailBottomItems(context),
           body: child,
         );
       },
@@ -622,7 +626,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     final Widget contentWithScrollView = _ScrollableChecker(
       builder: (controller, isScrollable) => CardItem(
         color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-        elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 7 : 20,
+        elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 4.5 : 20,
         width: isDialog
             ? null
             : context.isBigScreen
@@ -655,7 +659,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
     final Widget contentNoScrollView = CardItem(
       color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-      elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 7 : 20,
+      elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 4.5 : 20,
       width: isDialog
           ? null
           : context.isBigScreen
