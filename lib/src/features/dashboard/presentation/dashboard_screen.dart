@@ -17,8 +17,8 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums_dashboard.dart';
 

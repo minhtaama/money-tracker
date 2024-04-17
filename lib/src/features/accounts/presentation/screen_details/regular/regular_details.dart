@@ -12,8 +12,8 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
-import '../../../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../../../common_widgets/custom_page/custom_page.dart';
 import '../../../../../common_widgets/icon_with_text.dart';
 import '../../../../../common_widgets/page_heading.dart';
 import '../../../../../common_widgets/rounded_icon_button.dart';

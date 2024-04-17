@@ -1,4 +1,4 @@
-part of 'custom_tab_page.dart';
+part of 'custom_page.dart';
 
 class CustomAdaptivePageView extends ConsumerStatefulWidget {
   const CustomAdaptivePageView({
