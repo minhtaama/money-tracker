@@ -39,7 +39,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
             isTopLevelOfNavigationRail: true,
@@ -89,8 +89,7 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       currentSettings.currency.code,
-                      style:
-                          kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+                      style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
                     ),
                     Gap.w4,
                     SvgIcon(
@@ -133,15 +132,13 @@ class SettingsScreen extends ConsumerWidget {
               SettingTileDropDown<LongDateType>(
                 title: context.localize.longDateFormat,
                 initialValue: currentSettings.longDateType,
-                values:
-                    LongDateType.values.map((e) => (e, today.toLongDate(context, custom: e))).toList(),
+                values: LongDateType.values.map((e) => (e, today.toLongDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(longDateType: type),
               ),
               SettingTileDropDown<ShortDateType>(
                 title: context.localize.shortDateFormat,
                 initialValue: currentSettings.shortDateType,
-                values:
-                    ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
+                values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(shortDateType: type),
               ),
             ],

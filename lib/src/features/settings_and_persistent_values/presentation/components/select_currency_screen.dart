@@ -26,7 +26,7 @@ class SelectCurrencyScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
             title: 'Set Currency',

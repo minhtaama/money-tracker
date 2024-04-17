@@ -66,7 +66,7 @@ class CategoriesListScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
             isTopLevelOfNavigationRail: true,

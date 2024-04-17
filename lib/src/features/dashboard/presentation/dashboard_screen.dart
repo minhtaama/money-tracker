@@ -59,7 +59,7 @@ class _DashboardScreen extends StatelessWidget {
     final order = context.appPersistentValues.dashboardOrder;
     final hiddenWidgets = context.appPersistentValues.hiddenDashboardWidgets;
 
-    return CustomTabPage(
+    return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
           title: context.localize.dashboard,

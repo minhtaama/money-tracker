@@ -73,8 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -111,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     bool showTotalBalance = context.appPersistentValues.showAmount;
 
-    return CustomTabPageWithPageView(
+    return CustomPageWithPageView(
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
@@ -148,8 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList =
-            transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
           transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);

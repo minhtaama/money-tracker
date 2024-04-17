@@ -8,8 +8,8 @@ import 'custom_tab_bar.dart';
 
 ////////////////////////////////////////////////////////////////////////
 
-class CustomTabPage extends ConsumerStatefulWidget {
-  const CustomTabPage({
+class CustomPage extends ConsumerStatefulWidget {
+  const CustomPage({
     super.key,
     required this.smallTabBar,
     this.children = const [],
@@ -18,10 +18,10 @@ class CustomTabPage extends ConsumerStatefulWidget {
   final List<Widget> children;
 
   @override
-  ConsumerState<CustomTabPage> createState() => _CustomTabPageState();
+  ConsumerState<CustomPage> createState() => _CustomPageState();
 }
 
-class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProviderStateMixin {
+class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStateMixin {
   late final double _triggerDividerAtListOffset = 30;
 
   late final AnimationController _fadeController;
@@ -97,8 +97,8 @@ class _CustomTabPageState extends ConsumerState<CustomTabPage> with TickerProvid
 
 ////////////////////////////////////////////////////////////////////////
 
-class CustomTabPageWithPageView extends ConsumerStatefulWidget {
-  const CustomTabPageWithPageView({
+class CustomPageWithPageView extends ConsumerStatefulWidget {
+  const CustomPageWithPageView({
     super.key,
     required this.smallTabBar,
     this.extendedTabBar,
@@ -124,10 +124,10 @@ class CustomTabPageWithPageView extends ConsumerStatefulWidget {
   final VoidCallback? onDragRight;
 
   @override
-  ConsumerState<CustomTabPageWithPageView> createState() => _CustomTabPageWithPageViewState();
+  ConsumerState<CustomPageWithPageView> createState() => _CustomPageWithPageViewState();
 }
 
-class _CustomTabPageWithPageViewState extends ConsumerState<CustomTabPageWithPageView> with TickerProviderStateMixin {
+class _CustomPageWithPageViewState extends ConsumerState<CustomPageWithPageView> with TickerProviderStateMixin {
   late final double _triggerDividerOffset = 30;
 
   late double _triggerSmallTabBarHeight;

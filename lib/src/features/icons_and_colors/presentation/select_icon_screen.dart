@@ -46,7 +46,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
         onTap: () => context.pop([currentCategory, currentIconIndex]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
             title: 'Choose Icon',
