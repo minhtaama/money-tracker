@@ -124,10 +124,10 @@ class CustomPageViewWithScrollableSheet extends ConsumerStatefulWidget {
   final VoidCallback? onDragRight;
 
   @override
-  ConsumerState<CustomPageViewWithScrollableSheet> createState() => _CustomPageWithPageViewState();
+  ConsumerState<CustomPageViewWithScrollableSheet> createState() => _CustomPageViewWithScrollableSheetState();
 }
 
-class _CustomPageWithPageViewState extends ConsumerState<CustomPageViewWithScrollableSheet>
+class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomPageViewWithScrollableSheet>
     with TickerProviderStateMixin {
   late final double _triggerDividerOffset = 30;
 
