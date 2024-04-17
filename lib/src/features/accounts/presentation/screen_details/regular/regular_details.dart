@@ -135,7 +135,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomPageWithPageView(
+      body: CustomPageViewWithScrollableSheet(
         controller: _pageController,
         smallTabBar: SmallTabBar(
           child: PageHeading(

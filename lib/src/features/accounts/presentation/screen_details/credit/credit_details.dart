@@ -132,7 +132,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomPageWithPageView(
+      body: CustomPageViewWithScrollableSheet(
         controller: _controller,
         smallTabBar: SmallTabBar(
           child: PageHeading(

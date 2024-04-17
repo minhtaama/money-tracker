@@ -97,8 +97,8 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
 
 ////////////////////////////////////////////////////////////////////////
 
-class CustomPageWithPageView extends ConsumerStatefulWidget {
-  const CustomPageWithPageView({
+class CustomPageViewWithScrollableSheet extends ConsumerStatefulWidget {
+  const CustomPageViewWithScrollableSheet({
     super.key,
     required this.smallTabBar,
     this.extendedTabBar,
@@ -124,10 +124,11 @@ class CustomPageWithPageView extends ConsumerStatefulWidget {
   final VoidCallback? onDragRight;
 
   @override
-  ConsumerState<CustomPageWithPageView> createState() => _CustomPageWithPageViewState();
+  ConsumerState<CustomPageViewWithScrollableSheet> createState() => _CustomPageWithPageViewState();
 }
 
-class _CustomPageWithPageViewState extends ConsumerState<CustomPageWithPageView> with TickerProviderStateMixin {
+class _CustomPageWithPageViewState extends ConsumerState<CustomPageViewWithScrollableSheet>
+    with TickerProviderStateMixin {
   late final double _triggerDividerOffset = 30;
 
   late double _triggerSmallTabBarHeight;
@@ -168,15 +169,18 @@ class _CustomPageWithPageViewState extends ConsumerState<CustomPageWithPageView>
   void didChangeDependencies() {
     setState(() {
       final safeZoneHeight = (Gap.screenHeight(context) - Gap.statusBarHeight(context));
+
       _sheetMinFraction = 1.0 - (kExtendedCustomTabBarHeight / safeZoneHeight);
       _sheetMaxFraction = 1.0 - (kCustomTabBarHeight - widget.toolBarHeight) / safeZoneHeight;
 
       _sheetMinHeight = _sheetMinFraction * Gap.screenHeight(context);
       _sheetMaxHeight = _sheetMaxFraction * Gap.screenHeight(context);
+
       _sheetMaxOffset = safeZoneHeight - _sheetMinHeight;
 
       _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
     });
+
     super.didChangeDependencies();
   }
 
@@ -363,6 +367,7 @@ class _CustomPageWithPageViewState extends ConsumerState<CustomPageWithPageView>
           );
   }
 
+  /// Actually the widget display above and behind scrollable-sheet.
   Widget _extendedTabBar() {
     final bgColor = widget.extendedTabBar?.backgroundColor ??
         (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0);

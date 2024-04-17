@@ -110,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     bool showTotalBalance = context.appPersistentValues.showAmount;
 
-    return CustomPageWithPageView(
+    return CustomPageViewWithScrollableSheet(
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
