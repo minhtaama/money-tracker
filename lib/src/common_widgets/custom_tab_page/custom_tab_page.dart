@@ -97,6 +97,95 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
 
 ////////////////////////////////////////////////////////////////////////
 
+class CustomPageView extends ConsumerStatefulWidget {
+  const CustomPageView({
+    super.key,
+    required this.smallTabBar,
+    this.children = const [],
+  });
+  final SmallTabBar smallTabBar;
+  final List<Widget> children;
+
+  @override
+  ConsumerState<CustomPageView> createState() => _CustomPageViewState();
+}
+
+class _CustomPageViewState extends ConsumerState<CustomPageView> with TickerProviderStateMixin {
+  late final double _triggerDividerAtListOffset = 30;
+
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    _fadeController = AnimationController(vsync: this, duration: k250msDuration);
+    _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
+
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  late bool _showDivider = false;
+
+  void _onOffsetChange(double offset) {
+    if (offset >= _triggerDividerAtListOffset && _showDivider == false) {
+      _fadeController.forward(from: 0);
+      _showDivider = true;
+    }
+
+    if (offset < _triggerDividerAtListOffset && _showDivider == true) {
+      _fadeController.reverse(from: 1);
+      _showDivider = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.appTheme.background1,
+      body: Stack(
+        children: [
+          _CustomListView(
+            smallTabBar: widget.smallTabBar,
+            onOffsetChange: (value) => _onOffsetChange(value),
+            children: [
+              ...widget.children,
+              SizedBox(
+                height: MediaQuery.of(context).padding.bottom + 32,
+              )
+            ],
+          ),
+          AnimatedBuilder(
+              animation: _fadeAnimation,
+              child: widget.smallTabBar,
+              builder: (BuildContext context, Widget? child) {
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: !context.appTheme.isDarkTheme
+                          ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                          : BorderSide.none,
+                    ),
+                  ),
+                  child: child,
+                );
+              }),
+        ],
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+
 class CustomPageViewWithScrollableSheet extends ConsumerStatefulWidget {
   const CustomPageViewWithScrollableSheet({
     super.key,
@@ -288,7 +377,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomPageVi
           builder: (context, scrollController) => _sheetWrapper(
             child: _CustomListView(
               controller: scrollController,
-              forPageView: true,
+              forPageViewWithScrollableSheet: true,
               smallTabBar: widget.smallTabBar,
               extendedTabBar: widget.extendedTabBar,
               onOffsetChange: (value) => _onListViewOffsetChange(value),
@@ -441,7 +530,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomPageVi
 
 class _CustomListView extends ConsumerStatefulWidget {
   const _CustomListView({
-    this.forPageView = false,
+    this.forPageViewWithScrollableSheet = false,
     this.controller,
     this.smallTabBar,
     this.extendedTabBar,
@@ -449,7 +538,7 @@ class _CustomListView extends ConsumerStatefulWidget {
     this.onOffsetChange,
   });
 
-  final bool forPageView;
+  final bool forPageViewWithScrollableSheet;
   final ScrollController? controller;
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;
@@ -474,7 +563,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   @override
   void dispose() {
     _scrollController.removeListener(_scrollControllerListener);
-    if (!widget.forPageView) {
+    if (!widget.forPageViewWithScrollableSheet) {
       _scrollController.dispose();
     }
     super.dispose();
@@ -493,10 +582,10 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      itemCount: widget.forPageView ? widget.children.length : widget.children.length + 2,
+      itemCount: widget.forPageViewWithScrollableSheet ? widget.children.length : widget.children.length + 2,
       padding: const EdgeInsets.only(top: 25),
       itemBuilder: (context, index) {
-        if (!widget.forPageView) {
+        if (!widget.forPageViewWithScrollableSheet) {
           if (index == 0) {
             return const SizedBox(height: kCustomTabBarHeight);
           }
