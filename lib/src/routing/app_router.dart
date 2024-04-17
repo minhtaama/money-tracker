@@ -204,7 +204,7 @@ final goRouter = GoRouter(
               parentNavigatorKey: _bottomNavKey,
               pageBuilder: (context, state) => CustomAppPage(
                 key: state.pageKey,
-                child: const DashboardOnlyOrWithHomeScreenWrapper(),
+                child: const DashboardAdaptiveWrapper(),
               ),
               routes: [
                 GoRoute(

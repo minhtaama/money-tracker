@@ -79,6 +79,7 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
               child: widget.smallTabBar,
               builder: (BuildContext context, Widget? child) {
                 return Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: !context.appTheme.isDarkTheme
@@ -100,85 +101,61 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
 class CustomPageView extends ConsumerStatefulWidget {
   const CustomPageView({
     super.key,
-    required this.smallTabBar,
-    this.children = const [],
+    this.controller,
+    this.pageItemCount,
+    required this.itemBuilder,
+    this.onPageChanged,
   });
-  final SmallTabBar smallTabBar;
-  final List<Widget> children;
+  final PageController? controller;
+  final int? pageItemCount;
+  final List<Widget> Function(BuildContext, WidgetRef, int) itemBuilder;
+  final ValueChanged<int>? onPageChanged;
 
   @override
   ConsumerState<CustomPageView> createState() => _CustomPageViewState();
 }
 
 class _CustomPageViewState extends ConsumerState<CustomPageView> with TickerProviderStateMixin {
-  late final double _triggerDividerAtListOffset = 30;
+  // late final double _triggerDividerAtListOffset = 30;
+  //
+  // late final AnimationController _fadeController;
 
-  late final AnimationController _fadeController;
-  late final Animation<double> _fadeAnimation;
+  // @override
+  // void initState() {
+  //   _fadeController = AnimationController(vsync: this, duration: k250msDuration);
+  //   _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
+  //
+  //   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+  //     ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+  //   });
+  //   super.initState();
+  // }
 
-  @override
-  void initState() {
-    _fadeController = AnimationController(vsync: this, duration: k250msDuration);
-    _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
-
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    super.dispose();
-  }
-
-  late bool _showDivider = false;
-
-  void _onOffsetChange(double offset) {
-    if (offset >= _triggerDividerAtListOffset && _showDivider == false) {
-      _fadeController.forward(from: 0);
-      _showDivider = true;
-    }
-
-    if (offset < _triggerDividerAtListOffset && _showDivider == true) {
-      _fadeController.reverse(from: 1);
-      _showDivider = false;
-    }
-  }
+  // @override
+  // void dispose() {
+  //   _fadeController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: Stack(
-        children: [
-          _CustomListView(
-            smallTabBar: widget.smallTabBar,
-            onOffsetChange: (value) => _onOffsetChange(value),
+      body: PageView.builder(
+        controller: widget.controller,
+        onPageChanged: widget.onPageChanged,
+        itemCount: widget.pageItemCount,
+        itemBuilder: (_, pageIndex) => Consumer(
+          builder: (context, ref, _) => _CustomListView(
+            smallTabBar: SmallTabBar.empty(),
             children: [
-              ...widget.children,
+              ...widget.itemBuilder(context, ref, pageIndex),
               SizedBox(
                 height: MediaQuery.of(context).padding.bottom + 32,
               )
             ],
           ),
-          AnimatedBuilder(
-              animation: _fadeAnimation,
-              child: widget.smallTabBar,
-              builder: (BuildContext context, Widget? child) {
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: !context.appTheme.isDarkTheme
-                          ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
-                          : BorderSide.none,
-                    ),
-                  ),
-                  child: child,
-                );
-              }),
-        ],
+        ),
       ),
     );
   }
@@ -504,26 +481,26 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomPageVi
     );
   }
 
-  Widget _optionalWrapper() {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        color: context.appTheme.negative,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(23),
-          topRight: Radius.circular(23),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: (widget.extendedTabBar?.backgroundColor ?? context.appTheme.background0)
-                .withOpacity(context.appTheme.isDarkTheme ? 0.0 : 1),
-            blurRadius: 7,
-            spreadRadius: 5,
-          )
-        ],
-      ),
-    );
-  }
+  // Widget _optionalWrapper() {
+  //   return Container(
+  //     height: 100,
+  //     decoration: BoxDecoration(
+  //       color: context.appTheme.negative,
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(23),
+  //         topRight: Radius.circular(23),
+  //       ),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: (widget.extendedTabBar?.backgroundColor ?? context.appTheme.background0)
+  //               .withOpacity(context.appTheme.isDarkTheme ? 0.0 : 1),
+  //           blurRadius: 7,
+  //           spreadRadius: 5,
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -587,7 +564,7 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
       itemBuilder: (context, index) {
         if (!widget.forPageViewWithScrollableSheet) {
           if (index == 0) {
-            return const SizedBox(height: kCustomTabBarHeight);
+            return SizedBox(height: widget.smallTabBar?.height);
           }
           if (index == widget.children.length + 1) {
             return const SizedBox(height: 30);

@@ -22,8 +22,8 @@ import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums_dashboard.dart';
 
-class DashboardOnlyOrWithHomeScreenWrapper extends StatelessWidget {
-  const DashboardOnlyOrWithHomeScreenWrapper({super.key});
+class DashboardAdaptiveWrapper extends StatelessWidget {
+  const DashboardAdaptiveWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +42,17 @@ class DashboardOnlyOrWithHomeScreenWrapper extends StatelessWidget {
 class _DashboardScreen extends StatelessWidget {
   const _DashboardScreen({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    final order = context.appPersistentValues.dashboardOrder;
+    final hiddenWidgets = context.appPersistentValues.hiddenDashboardWidgets;
+
+    if (context.isBigScreen) {
+      return _bigScreen(context, order, hiddenWidgets);
+    }
+    return _smallScreen(context, order, hiddenWidgets);
+  }
+
   Widget _getChild(BuildContext context, DashboardWidgetType type) {
     return switch (type) {
       DashboardWidgetType.menu => context.isBigScreen ? Gap.noGap : const _DashboardMenu2(),
@@ -54,25 +65,18 @@ class _DashboardScreen extends StatelessWidget {
     };
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final order = context.appPersistentValues.dashboardOrder;
-    final hiddenWidgets = context.appPersistentValues.hiddenDashboardWidgets;
-
+  Widget _smallScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
-          title: context.localize.dashboard,
-          secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
-          isTopLevelOfNavigationRail: true,
-          trailing: !context.isBigScreen
-              ? RoundedIconButton(
-                  iconPath: AppIcons.settings,
-                  iconColor: context.appTheme.onBackground,
-                  onTap: () => context.go(RoutePath.settings),
-                )
-              : Gap.noGap,
-        ),
+            title: context.localize.dashboard,
+            secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
+            isTopLevelOfNavigationRail: true,
+            trailing: RoundedIconButton(
+              iconPath: AppIcons.settings,
+              iconColor: context.appTheme.onBackground,
+              onTap: () => context.go(RoutePath.settings),
+            )),
       ),
       children: order.map<Widget>((type) {
         if (hiddenWidgets.contains(type)) {
@@ -81,6 +85,30 @@ class _DashboardScreen extends StatelessWidget {
         return _getChild(context, type);
       }).toList()
         ..add(const _EditButton()),
+    );
+  }
+
+  Widget _bigScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+    return CustomPage(
+      smallTabBar: SmallTabBar.empty(),
+      children: [
+        SizedBox(
+          height: kCustomTabBarHeight,
+          child: PageHeading(
+            title: context.localize.dashboard,
+            secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
+          ),
+        ),
+        ...order.map<Widget>((type) {
+          if (hiddenWidgets.contains(type)) {
+            return Gap.noGap;
+          }
+          return _getChild(context, type);
+        }).toList()
+          ..add(
+            const _EditButton(),
+          ),
+      ],
     );
   }
 }
