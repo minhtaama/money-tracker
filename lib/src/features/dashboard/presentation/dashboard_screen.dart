@@ -40,7 +40,7 @@ class DashboardAdaptiveWrapper extends StatelessWidget {
 }
 
 class _DashboardScreen extends StatelessWidget {
-  const _DashboardScreen({super.key});
+  const _DashboardScreen();
 
   @override
   Widget build(BuildContext context) {
