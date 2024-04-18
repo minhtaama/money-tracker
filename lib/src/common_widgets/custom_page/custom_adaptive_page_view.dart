@@ -111,7 +111,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
   Widget _scrollableSheet() {
     return Stack(
       children: [
-        _extendedTabBar(),
+        _extendedTabBarForScrollableSheet(),
         DraggableScrollableSheet(
           controller: _scrollableController,
           minChildSize: _sheetMinFraction,
@@ -156,69 +156,51 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
             ),
           ),
         ),
-        _smallTabBar(),
+        _smallTabBarForScrollableSheet(),
       ],
     );
   }
 
   Widget _pageView() {
-    return CustomPageView(
-      controller: widget.controller,
-      pageItemCount: widget.pageItemCount,
-      onPageChanged: widget.onPageChanged,
-      itemBuilder: widget.itemBuilder,
+    return Stack(
+      children: [
+        _CustomListView(
+          forPageViewWithScrollableSheet: true,
+          smallTabBar: widget.smallTabBar,
+          extendedTabBar: widget.extendedTabBar,
+          onOffsetChange: (value) => _onListViewOffsetChange(value),
+          children: [
+            _extendedTabBarForPageView(),
+            widget.toolBar != null
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: SizedBox(
+                      height: widget.toolBarHeight,
+                      child: widget.toolBar,
+                    ),
+                  )
+                : Gap.noGap,
+            widget.toolBar != null ? Gap.h8 : Gap.noGap,
+            ExpandablePageView(
+              controller: widget.controller,
+              onPageChanged: _onPageChange,
+              itemCount: widget.pageItemCount,
+              itemBuilder: (_, pageIndex) => Consumer(
+                builder: (context, ref, _) => Column(
+                  children: [
+                    ...widget.itemBuilder(context, ref, pageIndex),
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.bottom + 32,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        _smallTabBarForPageView(),
+      ],
     );
-
-    // return Stack(
-    //   children: [
-    //     _extendedTabBar(),
-    //     DraggableScrollableSheet(
-    //       controller: _scrollableController,
-    //       minChildSize: _sheetMinFraction,
-    //       initialChildSize: _sheetMinFraction,
-    //       maxChildSize: _sheetMaxFraction,
-    //       snap: true,
-    //       snapAnimationDuration: k250msDuration,
-    //       builder: (context, scrollController) => _sheetWrapper(
-    //         child: _CustomListView(
-    //           controller: scrollController,
-    //           forPageViewWithScrollableSheet: true,
-    //           smallTabBar: widget.smallTabBar,
-    //           extendedTabBar: widget.extendedTabBar,
-    //           onOffsetChange: (value) => _onListViewOffsetChange(value),
-    //           children: [
-    //             widget.toolBar != null
-    //                 ? Transform.translate(
-    //                     offset: const Offset(0, -7),
-    //                     child: SizedBox(
-    //                       height: widget.toolBarHeight,
-    //                       child: widget.toolBar,
-    //                     ),
-    //                   )
-    //                 : Gap.noGap,
-    //             widget.toolBar != null ? Gap.h8 : Gap.noGap,
-    //             ExpandablePageView(
-    //               controller: widget.controller,
-    //               onPageChanged: _onPageChange,
-    //               itemCount: widget.pageItemCount,
-    //               itemBuilder: (_, pageIndex) => Consumer(
-    //                 builder: (context, ref, _) => Column(
-    //                   children: [
-    //                     ...widget.itemBuilder(context, ref, pageIndex),
-    //                     SizedBox(
-    //                       height: MediaQuery.of(context).padding.bottom + 32,
-    //                     )
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //     _smallTabBar(),
-    //   ],
-    // );
   }
 }
 
@@ -299,7 +281,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
     statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
   }
 
-  Widget _smallTabBar() {
+  Widget _smallTabBarForScrollableSheet() {
     return widget.extendedTabBar != null
         ? SizeTransition(
             sizeFactor: _fadeTabBarAnimation,
@@ -340,7 +322,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   }
 
   /// Actually the widget display above and behind scrollable-sheet.
-  Widget _extendedTabBar() {
+  Widget _extendedTabBarForScrollableSheet() {
     final bgColor = widget.extendedTabBar?.backgroundColor ??
         (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0);
 
@@ -387,24 +369,24 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
     );
   }
 
-  // Widget _optionalWrapper() {
-//   return Container(
-//     height: 100,
-//     decoration: BoxDecoration(
-//       color: context.appTheme.negative,
-//       borderRadius: const BorderRadius.only(
-//         topLeft: Radius.circular(23),
-//         topRight: Radius.circular(23),
-//       ),
-//       boxShadow: [
-//         BoxShadow(
-//           color: (widget.extendedTabBar?.backgroundColor ?? context.appTheme.background0)
-//               .withOpacity(context.appTheme.isDarkTheme ? 0.0 : 1),
-//           blurRadius: 7,
-//           spreadRadius: 5,
-//         )
-//       ],
-//     ),
-//   );
-// }
+  Widget _smallTabBarForPageView() {
+    return SizedBox(
+      width: double.infinity,
+      child: SmallTabBar.empty(),
+    );
+  }
+
+  Widget _extendedTabBarForPageView() {
+    final bgColor = widget.extendedTabBar?.backgroundColor ??
+        (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0);
+
+    return CardItem(
+      width: double.infinity,
+      height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
+      color: bgColor,
+      padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
+      margin: const EdgeInsets.only(top: 0, left: 16, right: 16, bottom: 16),
+      child: widget.extendedTabBar,
+    );
+  }
 }
