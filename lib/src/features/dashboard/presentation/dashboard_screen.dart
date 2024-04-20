@@ -30,7 +30,7 @@ class DashboardAdaptiveWrapper extends StatelessWidget {
     if (context.isBigScreen) {
       return const Row(
         children: [
-          Expanded(child: ClipRect(child: HomeScreen())),
+          Expanded(child: HomeScreen()),
           Expanded(child: _DashboardScreen()),
         ],
       );

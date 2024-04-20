@@ -44,7 +44,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // DateTime? _maxDate;
 
   void _onPageChange(int value) {
-    _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
+    }
     setState(() {
       _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
     });
@@ -52,17 +54,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _previousPage() {
     _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
-    _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+    }
   }
 
   void _nextPage() {
     _pageController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
-    _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+    }
   }
 
   void _animatedToPage(int page) {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-    _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+    }
   }
 
   List<Widget> _buildTransactionWidgetList(
@@ -123,7 +131,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       extendedTabBar: ExtendedTabBar(
-        child: ExtendedHomeTabForScrollableSheet(
+        child: ExtendedHomeTab(
           carouselController: _carouselController,
           initialPageIndex: _initialPageIndex,
           displayDate: _currentDisplayDate,

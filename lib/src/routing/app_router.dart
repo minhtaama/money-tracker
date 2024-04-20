@@ -570,15 +570,21 @@ class _CustomAppPageRoute<T> extends PageRoute<T> {
 
 class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
   /// A modal bottom sheet route.
-  _CustomAppModalPageRoute(this.context, CustomAppModalPage<T> settings,
-      {this.isDialog = false, this.withScrollView = true})
-      : super(settings: settings);
+  _CustomAppModalPageRoute(
+    this.context,
+    CustomAppModalPage<T> settings, {
+    this.isDialog = false,
+    this.withScrollView = true,
+    this.bigScreenWidth = 350,
+  }) : super(settings: settings);
 
   final BuildContext context;
 
   final bool isDialog;
 
   final bool withScrollView;
+
+  final double bigScreenWidth;
 
   CustomAppModalPage<T> get _page => settings as CustomAppModalPage<T>;
 
@@ -630,7 +636,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
         width: isDialog
             ? null
             : context.isBigScreen
-                ? 400
+                ? bigScreenWidth
                 : double.infinity,
         margin: isDialog
             ? const EdgeInsets.all(38)
@@ -663,7 +669,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
       width: isDialog
           ? null
           : context.isBigScreen
-              ? 350
+              ? bigScreenWidth
               : double.infinity,
       margin: isDialog
           ? const EdgeInsets.all(38)

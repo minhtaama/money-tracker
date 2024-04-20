@@ -38,6 +38,22 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
         'Payment required: ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}'
             .hardcoded;
 
+    if (context.isBigScreen) {
+      return Container(
+        decoration: BoxDecoration(
+          color: account.backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.only(bottom: 5),
+        margin: const EdgeInsets.only(left: 24, right: 24, top: 6),
+        child: _content(data, extraLineY, extraLineText),
+      );
+    }
+
+    return _content(data, extraLineY, extraLineText);
+  }
+
+  Widget _content(CLCData data, double extraLineY, String extraLineText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

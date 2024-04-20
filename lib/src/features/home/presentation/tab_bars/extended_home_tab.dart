@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -8,13 +10,49 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
+import '../../../../common_widgets/card_item.dart';
 import '../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../charts_and_carousel/presentation/money_carousel.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
-class ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
-  const ExtendedHomeTabForScrollableSheet({
+class ExtendedHomeTab extends StatelessWidget {
+  const ExtendedHomeTab(
+      {super.key,
+      required this.carouselController,
+      required this.initialPageIndex,
+      required this.displayDate,
+      required this.showNumber,
+      required this.onEyeTap});
+
+  final PageController carouselController;
+  final int initialPageIndex;
+  final DateTime displayDate;
+  final bool showNumber;
+  final VoidCallback onEyeTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (context.isBigScreen) {
+      return _ExtendedHomeTabForPageView(
+          carouselController: carouselController,
+          initialPageIndex: initialPageIndex,
+          displayDate: displayDate,
+          showNumber: showNumber,
+          onEyeTap: onEyeTap);
+    }
+
+    return _ExtendedHomeTabForScrollableSheet(
+        carouselController: carouselController,
+        initialPageIndex: initialPageIndex,
+        displayDate: displayDate,
+        showNumber: showNumber,
+        onEyeTap: onEyeTap);
+  }
+}
+
+class _ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
+  const _ExtendedHomeTabForScrollableSheet({
     super.key,
     required this.carouselController,
     required this.initialPageIndex,
@@ -30,10 +68,10 @@ class ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
   final VoidCallback onEyeTap;
 
   @override
-  ConsumerState<ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
+  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
 }
 
-class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<ExtendedHomeTabForScrollableSheet> {
+class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHomeTabForScrollableSheet> {
   LineChartDataType _type = LineChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {
@@ -141,6 +179,104 @@ class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<ExtendedHome
             offsetLabelUp: 34,
             // extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
             // extraLineText: extraLineText,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExtendedHomeTabForPageView extends ConsumerStatefulWidget {
+  const _ExtendedHomeTabForPageView({
+    required this.carouselController,
+    required this.initialPageIndex,
+    required this.displayDate,
+    required this.showNumber,
+    required this.onEyeTap,
+  });
+
+  final PageController carouselController;
+  final int initialPageIndex;
+  final DateTime displayDate;
+  final bool showNumber;
+  final VoidCallback onEyeTap;
+
+  @override
+  ConsumerState<_ExtendedHomeTabForPageView> createState() => _ExtendedHomeTabForPageViewState();
+}
+
+class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabForPageView> {
+  String _titleBuilder() {
+    final today = DateTime.now();
+    final displayDate = widget.displayDate;
+    final month = displayDate.monthToString(context);
+
+    return displayDate.isSameMonthAs(today)
+        ? 'Current assets'
+        : displayDate.isInMonthBefore(today)
+            ? 'Assets left in $month'
+            : 'Expected assets in $month';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chartServices = ref.watch(customLineChartServicesProvider);
+    final txnServices = ref.read(customLineChartServicesProvider);
+
+    CLCData data = chartServices.getHomeScreenCLCData(LineChartDataType.totalAssets, widget.displayDate);
+    double avg = chartServices.getAverageAssets();
+    double amount = txnServices.getTotalAssets(widget.displayDate);
+
+    ref.listen(transactionsChangesStreamProvider, (previous, next) {
+      data = chartServices.getHomeScreenCLCData(LineChartDataType.totalAssets, widget.displayDate);
+      avg = chartServices.getAverageAssets();
+    });
+
+    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+
+    final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Gap.h12,
+        Padding(
+          padding: const EdgeInsets.only(left: 25.0),
+          child: MoneyAmount(
+            amount: amount,
+            style: kHeader1TextStyle.copyWith(
+              color: context.appTheme.onBackground,
+            ),
+            symbolStyle: kHeader2TextStyle.copyWith(
+              color: context.appTheme.onBackground,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 25.0),
+          child: Text(
+            _titleBuilder(),
+            style: kNormalTextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.8),
+            ),
+          ),
+        ),
+        Gap.h16,
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.appTheme.background0,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.only(top: 30),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: CustomLineChart(
+              currentMonth: widget.displayDate,
+              data: data,
+              offsetLabelUp: 34,
+              // extraLineY: _type == LineChartDataType.totalAssets ? extraLineY : null,
+              // extraLineText: extraLineText,
+            ),
           ),
         ),
       ],

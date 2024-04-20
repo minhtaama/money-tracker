@@ -179,6 +179,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
               ],
             ),
             Gap.h12,
+            Gap.divider(context, indent: 25),
             ExpandablePageView(
               controller: widget.controller,
               onPageChanged: _onPageChange,
@@ -375,27 +376,22 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   }
 
   Widget _extendedTabBarForPageView() {
-    final bgColor = widget.extendedTabBar?.backgroundColor ??
-        (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0);
-
-    return CardItem(
+    return Container(
       width: double.infinity,
       height: widget.extendedTabBar!.height,
-      color: bgColor,
-      padding: const EdgeInsets.only(top: 16, bottom: 52),
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.only(bottom: 52),
       child: widget.extendedTabBar,
     );
   }
 
   Widget _toolBarForPageView() {
-    final bgColor = context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0;
+    final bgColor = context.appTheme.background0;
 
     return widget.toolBar != null
         ? CardItem(
             width: double.infinity,
             color: bgColor,
-            elevation: 5,
+            elevation: context.appTheme.isDarkTheme ? 30 : 5,
             padding: const EdgeInsets.only(top: 16, bottom: 16),
             margin: const EdgeInsets.symmetric(horizontal: 16),
             child: widget.toolBar,
