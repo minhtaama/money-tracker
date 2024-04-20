@@ -170,17 +170,15 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
           extendedTabBar: widget.extendedTabBar,
           onOffsetChange: (value) => _onListViewOffsetChange(value),
           children: [
-            _extendedTabBarForPageView(),
-            widget.toolBar != null
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                    child: SizedBox(
-                      height: widget.toolBarHeight,
-                      child: widget.toolBar,
-                    ),
-                  )
-                : Gap.noGap,
-            widget.toolBar != null ? Gap.h8 : Gap.noGap,
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.bottomCenter,
+              children: [
+                _extendedTabBarForPageView(),
+                _toolBarForPageView(),
+              ],
+            ),
+            Gap.h12,
             ExpandablePageView(
               controller: widget.controller,
               onPageChanged: _onPageChange,
@@ -382,11 +380,26 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
 
     return CardItem(
       width: double.infinity,
-      height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
+      height: widget.extendedTabBar!.height,
       color: bgColor,
-      padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
-      margin: const EdgeInsets.only(top: 0, left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 16, bottom: 52),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       child: widget.extendedTabBar,
     );
+  }
+
+  Widget _toolBarForPageView() {
+    final bgColor = context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0;
+
+    return widget.toolBar != null
+        ? CardItem(
+            width: double.infinity,
+            color: bgColor,
+            elevation: 5,
+            padding: const EdgeInsets.only(top: 16, bottom: 16),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: widget.toolBar,
+          )
+        : Gap.noGap;
   }
 }

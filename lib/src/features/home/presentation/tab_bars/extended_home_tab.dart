@@ -13,8 +13,8 @@ import '../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../charts_and_carousel/presentation/money_carousel.dart';
 import '../../../transactions/data/transaction_repo.dart';
 
-class ExtendedHomeTab extends ConsumerStatefulWidget {
-  const ExtendedHomeTab({
+class ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
+  const ExtendedHomeTabForScrollableSheet({
     super.key,
     required this.carouselController,
     required this.initialPageIndex,
@@ -30,10 +30,10 @@ class ExtendedHomeTab extends ConsumerStatefulWidget {
   final VoidCallback onEyeTap;
 
   @override
-  ConsumerState<ExtendedHomeTab> createState() => _ExtendedHomeTabState();
+  ConsumerState<ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
 }
 
-class _ExtendedHomeTabState extends ConsumerState<ExtendedHomeTab> {
+class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<ExtendedHomeTabForScrollableSheet> {
   LineChartDataType _type = LineChartDataType.totalAssets;
 
   String _titleBuilder(String month, int pageIndex) {

@@ -123,7 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       extendedTabBar: ExtendedTabBar(
-        child: ExtendedHomeTab(
+        child: ExtendedHomeTabForScrollableSheet(
           carouselController: _carouselController,
           initialPageIndex: _initialPageIndex,
           displayDate: _currentDisplayDate,
