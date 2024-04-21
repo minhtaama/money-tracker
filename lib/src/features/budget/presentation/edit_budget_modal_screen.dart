@@ -227,7 +227,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
           Gap.h24,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: BottomButtons(
+            child: ModalFooter(
               isBigButtonDisabled: false,
               smallButtonIcon: AppIcons.delete,
               bigButtonIcon: AppIcons.edit,

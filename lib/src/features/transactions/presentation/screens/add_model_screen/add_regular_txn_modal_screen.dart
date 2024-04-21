@@ -24,7 +24,9 @@ import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.transactionType, {super.key});
+  const AddRegularTxnModalScreen(this.controller, this.transactionType, {super.key});
+
+  final ScrollController controller;
   final TransactionType transactionType;
 
   @override
@@ -119,152 +121,150 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   @override
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
-    return Form(
-      key: _formKey,
-      child: CustomSection(
+
+    return ModalBody(
+      formKey: _formKey,
+      controller: widget.controller,
+      header: ModalHeader(
         title: _title,
-        sectionsClipping: false,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        isWrapByCard: false,
-        sections: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const CurrencyIcon(),
-              Gap.w16,
-              Expanded(
-                child: CalculatorInput(
-                  hintText: 'Amount',
-                  focusColor: context.appTheme.primary,
-                  validator: (_) => _calculatorValidator(),
-                  formattedResultOutput: (value) {
-                    setState(() {
-                      _isTemplateSubmitted = false;
-                    });
-                    _stateController.changeAmount(value);
-                  },
-                ),
-              ),
-            ],
-          ),
-          Gap.h16,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: DateTimeSelector(
-                  onChanged: (DateTime value) => _stateController.changeDateTime(value),
-                ),
-              ),
-              Gap.w24,
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
-                    Gap.h4,
-                    widget.transactionType != TransactionType.transfer
-                        ? CategoryFormSelector(
-                            transactionType: widget.transactionType,
-                            validator: (_) => _categoryValidator(),
-                            onChangedCategory: (newCategory) {
-                              setState(() {
-                                _isTemplateSubmitted = false;
-                              });
-                              _stateController.changeCategory(newCategory);
-                            },
-                          )
-                        : AccountFormSelector(
-                            accountType: AccountType.regular,
-                            validator: (_) => _sendingAccountValidator(),
-                            onChangedAccount: (newAccount) {
-                              setState(() {
-                                _isTemplateSubmitted = false;
-                              });
-                              _stateController.changeAccount(newAccount as RegularAccount);
-                            },
-                            otherSelectedAccount: stateWatch.account,
-                          ),
-                    Gap.h16,
-                    TextHeader(widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:'),
-                    Gap.h4,
-                    AccountFormSelector(
-                      accountType: AccountType.regular,
-                      validator: (_) => _toAccountAndAccountValidator(),
-                      onChangedAccount: (newAccount) {
-                        setState(() {
-                          _isTemplateSubmitted = false;
-                        });
-                        if (widget.transactionType != TransactionType.transfer) {
-                          _stateController.changeAccount(newAccount as RegularAccount?);
-                        } else {
-                          _stateController.changeToAccount(newAccount as RegularAccount?);
-                        }
-                      },
-                      otherSelectedAccount:
-                          widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Gap.h16,
-          // TODO: Show budget service widget here
-          HelpBox(
-            isShow: true,
-            margin: const EdgeInsets.only(bottom: 16),
-            iconPath: AppIcons.budgets,
-            header: 'Budgets',
-            bottomWidget: BudgetsWidget(),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0),
-            child: TextHeader('OPTIONAL:', fontSize: 11),
-          ),
-          Gap.h4,
-          widget.transactionType != TransactionType.transfer
-              ? CategoryTagSelector(
-                  category: stateWatch.category,
-                  onTagSelected: (value) {
-                    setState(() {
-                      _isTemplateSubmitted = false;
-                    });
-                    _stateController.changeCategoryTag(value);
-                  },
-                )
-              : Gap.noGap,
-          widget.transactionType != TransactionType.transfer ? Gap.h8 : Gap.noGap,
-          CustomTextFormField(
-            autofocus: false,
-            focusColor: context.appTheme.accent1,
-            withOutlineBorder: true,
-            maxLines: 3,
-            hintText: 'Note ...',
-            textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              setState(() {
-                _isTemplateSubmitted = false;
-              });
-              _stateController.changeNote(value);
-            },
-          ),
-          Gap.h16,
-          BottomButtons(
-            isBigButtonDisabled: _isButtonDisabled,
-            onBigButtonTap: _submit,
-            optional: RoundedIconButton(
-              iconPath: _isTemplateSubmitted ? AppIcons.heartFill : AppIcons.heartOutline,
-              withBorder: false,
-              backgroundColor: Colors.transparent,
-              iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.primary,
-              iconPadding: 10,
-              onTap: _submitTemplate,
-            ),
-          ),
-        ],
       ),
+      footer: ModalFooter(
+        isBigButtonDisabled: _isButtonDisabled,
+        onBigButtonTap: _submit,
+        optional: RoundedIconButton(
+          iconPath: _isTemplateSubmitted ? AppIcons.heartFill : AppIcons.heartOutline,
+          withBorder: false,
+          backgroundColor: Colors.transparent,
+          iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.primary,
+          iconPadding: 10,
+          onTap: _submitTemplate,
+        ),
+      ),
+      body: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CurrencyIcon(),
+            Gap.w16,
+            Expanded(
+              child: CalculatorInput(
+                hintText: 'Amount',
+                focusColor: context.appTheme.primary,
+                validator: (_) => _calculatorValidator(),
+                formattedResultOutput: (value) {
+                  setState(() {
+                    _isTemplateSubmitted = false;
+                  });
+                  _stateController.changeAmount(value);
+                },
+              ),
+            ),
+          ],
+        ),
+        Gap.h16,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: DateTimeSelector(
+                onChanged: (DateTime value) => _stateController.changeDateTime(value),
+              ),
+            ),
+            Gap.w24,
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                  Gap.h4,
+                  widget.transactionType != TransactionType.transfer
+                      ? CategoryFormSelector(
+                          transactionType: widget.transactionType,
+                          validator: (_) => _categoryValidator(),
+                          onChangedCategory: (newCategory) {
+                            setState(() {
+                              _isTemplateSubmitted = false;
+                            });
+                            _stateController.changeCategory(newCategory);
+                          },
+                        )
+                      : AccountFormSelector(
+                          accountType: AccountType.regular,
+                          validator: (_) => _sendingAccountValidator(),
+                          onChangedAccount: (newAccount) {
+                            setState(() {
+                              _isTemplateSubmitted = false;
+                            });
+                            _stateController.changeAccount(newAccount as RegularAccount);
+                          },
+                          otherSelectedAccount: stateWatch.account,
+                        ),
+                  Gap.h16,
+                  TextHeader(widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:'),
+                  Gap.h4,
+                  AccountFormSelector(
+                    accountType: AccountType.regular,
+                    validator: (_) => _toAccountAndAccountValidator(),
+                    onChangedAccount: (newAccount) {
+                      setState(() {
+                        _isTemplateSubmitted = false;
+                      });
+                      if (widget.transactionType != TransactionType.transfer) {
+                        _stateController.changeAccount(newAccount as RegularAccount?);
+                      } else {
+                        _stateController.changeToAccount(newAccount as RegularAccount?);
+                      }
+                    },
+                    otherSelectedAccount:
+                        widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Gap.h16,
+        // TODO: Show budget service widget here
+        HelpBox(
+          isShow: true,
+          margin: const EdgeInsets.only(bottom: 16),
+          iconPath: AppIcons.budgets,
+          header: 'Budgets',
+          bottomWidget: BudgetsWidget(),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(left: 8.0),
+          child: TextHeader('OPTIONAL:', fontSize: 11),
+        ),
+        Gap.h4,
+        widget.transactionType != TransactionType.transfer
+            ? CategoryTagSelector(
+                category: stateWatch.category,
+                onTagSelected: (value) {
+                  setState(() {
+                    _isTemplateSubmitted = false;
+                  });
+                  _stateController.changeCategoryTag(value);
+                },
+              )
+            : Gap.noGap,
+        widget.transactionType != TransactionType.transfer ? Gap.h8 : Gap.noGap,
+        CustomTextFormField(
+          autofocus: false,
+          focusColor: context.appTheme.accent1,
+          withOutlineBorder: true,
+          maxLines: 3,
+          hintText: 'Note ...',
+          textInputAction: TextInputAction.done,
+          onChanged: (value) {
+            setState(() {
+              _isTemplateSubmitted = false;
+            });
+            _stateController.changeNote(value);
+          },
+        ),
+      ],
     );
   }
 }

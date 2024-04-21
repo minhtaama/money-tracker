@@ -9,7 +9,6 @@ import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dar
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -112,7 +111,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             },
           ),
           Gap.h24,
-          BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
+          ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
         ],
       ),
     );
