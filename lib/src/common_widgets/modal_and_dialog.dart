@@ -39,7 +39,6 @@ Future<void> showErrorDialog(BuildContext context, String text, {bool enable = t
 Future<T?> showConfirmModal<T>({
   required BuildContext context,
   required String label,
-  bool onlyIcon = false,
   String? subLabel,
   String confirmLabel = 'Confirm',
   String? confirmIcon,
@@ -51,6 +50,7 @@ Future<T?> showConfirmModal<T>({
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
@@ -72,49 +72,28 @@ Future<T?> showConfirmModal<T>({
               : Gap.noGap,
           Gap.h24,
           Row(
-            children: onlyIcon
-                ? [
-                    Expanded(
-                      child: IconWithTextButton(
-                        iconPath: AppIcons.back,
-                        label: context.localize.goBack,
-                        color: context.appTheme.onBackground,
-                        backgroundColor: AppColors.greyBgr(context),
-                        onTap: () => context.pop(),
-                      ),
-                    ),
-                    Gap.w24,
-                    RoundedIconButton(
-                      iconPath: confirmIcon ?? AppIcons.delete,
-                      iconColor: context.appTheme.onNegative,
-                      backgroundColor: context.appTheme.negative,
-                      onLongPress: () {
-                        context.pop();
-                        onConfirm();
-                      },
-                    )
-                  ]
-                : [
-                    Expanded(
-                      child: IconWithTextButton(
-                        iconPath: AppIcons.back,
-                        label: context.localize.goBack,
-                        color: context.appTheme.onBackground,
-                        backgroundColor: AppColors.greyBgr(context),
-                        onTap: () => context.pop(),
-                      ),
-                    ),
-                    Gap.w24,
-                    RoundedIconButton(
-                      iconPath: confirmIcon ?? AppIcons.delete,
-                      iconColor: context.appTheme.onNegative,
-                      backgroundColor: context.appTheme.negative,
-                      onTap: () {
-                        context.pop();
-                        onConfirm();
-                      },
-                    )
-                  ],
+            children: [
+              Expanded(
+                child: IconWithTextButton(
+                  iconPath: AppIcons.back,
+                  labelSize: 18,
+                  label: context.localize.goBack,
+                  color: context.appTheme.onBackground,
+                  backgroundColor: AppColors.greyBgr(context),
+                  onTap: () => context.pop(),
+                ),
+              ),
+              Gap.w24,
+              RoundedIconButton(
+                iconPath: confirmIcon ?? AppIcons.delete,
+                iconColor: context.appTheme.onNegative,
+                backgroundColor: context.appTheme.negative,
+                onTap: () {
+                  context.pop();
+                  onConfirm();
+                },
+              )
+            ],
           )
         ],
       ),

@@ -63,23 +63,38 @@ class IconWithTextButton extends StatelessWidget {
               SvgIcon(
                 iconPath,
                 color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
-                size: iconSize ?? 30,
+                size: iconSize ?? 28,
               ),
-              Gap.w4,
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    label,
-                    style: kHeader2TextStyle.copyWith(
-                      color: isDisabled
-                          ? context.appTheme.onBackground
-                          : color ?? context.appTheme.onAccent,
-                      fontSize: labelSize,
+              width != null
+                  ? Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          label,
+                          style: kHeader2TextStyle.copyWith(
+                            color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                            fontSize: labelSize,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  : Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 4.0),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            label,
+                            style: kHeader2TextStyle.copyWith(
+                              color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                              fontSize: labelSize,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

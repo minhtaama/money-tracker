@@ -20,9 +20,10 @@ import '../../../data/transaction_repo.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddCreditSpendingModalScreen extends ConsumerStatefulWidget {
-  const AddCreditSpendingModalScreen(this.controller, {super.key});
+  const AddCreditSpendingModalScreen(this.controller, this.isScrollable, {super.key});
 
   final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<AddCreditSpendingModalScreen> createState() => _AddCreditTransactionModalScreenState();
@@ -73,9 +74,10 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(creditSpendingFormNotifierProvider);
 
-    return ModalBody(
+    return ModalContent(
       formKey: _formKey,
       controller: widget.controller,
+      isScrollable: widget.isScrollable,
       header: const ModalHeader(
         title: 'Add Credit Spending',
       ),

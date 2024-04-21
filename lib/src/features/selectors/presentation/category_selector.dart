@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
+import '../../../common_widgets/modal_screen_components.dart';
 import '../../../routing/app_router.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums.dart';
@@ -62,14 +63,11 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
           child: categoryList.isNotEmpty
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Gap.h16,
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Choose Category',
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-                      ),
+                    ModalHeader(
+                      withBackButton: false,
+                      title: 'Choose Category'.hardcoded,
                     ),
                     Gap.h16,
                     Wrap(
@@ -100,11 +98,11 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                         );
                       }),
                     ),
-                    Gap.h32,
-                    Gap.h32,
+                    context.isBigScreen ? Gap.noGap : Gap.h32,
                   ],
                 )
               : Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Gap.h8,
                     IconWithText(

@@ -90,8 +90,9 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
                             padding: const EdgeInsets.only(left: 6.0),
                             child: Text(
                               widget.title!,
-                              style: kHeader2TextStyle.copyWith(
+                              style: kHeader1TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.85),
+                                fontSize: 22,
                               ),
                             ),
                           )
@@ -109,12 +110,12 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
               ...?widget.subIcons,
             ],
           ),
+          widget.title != null ? Gap.h16 : Gap.noGap,
           CardItem(
             duration: const Duration(milliseconds: 200),
             curve: Curves.linear,
             padding: widget.isWrapByCard ? const EdgeInsets.all(8) : EdgeInsets.zero,
-            margin:
-                widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.symmetric(vertical: 18),
+            margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.only(bottom: 24),
             color: widget.isWrapByCard ? null : Colors.transparent,
             borderRadius: widget.isWrapByCard ? null : BorderRadius.zero,
             clip: widget.sectionsClipping,

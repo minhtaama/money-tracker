@@ -97,7 +97,6 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
                   onConfirm: () {
                     showConfirmModal(
                       context: context,
-                      onlyIcon: true,
                       label: 'Transactions relate to this account will appear as of "deleted account".'.hardcoded,
                       subLabel: 'Last warning. Hold the delete button to confirm'.hardcoded,
                       onConfirm: () async {

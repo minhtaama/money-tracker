@@ -24,9 +24,10 @@ import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.transactionType, {super.key});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key});
 
   final ScrollController controller;
+  final bool isScrollable;
   final TransactionType transactionType;
 
   @override
@@ -122,16 +123,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
 
-    return ModalBody(
+    return ModalContent(
       formKey: _formKey,
       controller: widget.controller,
+      isScrollable: widget.isScrollable,
       header: ModalHeader(
         title: _title,
-      ),
-      footer: ModalFooter(
-        isBigButtonDisabled: _isButtonDisabled,
-        onBigButtonTap: _submit,
-        optional: RoundedIconButton(
+        trailing: RoundedIconButton(
           iconPath: _isTemplateSubmitted ? AppIcons.heartFill : AppIcons.heartOutline,
           withBorder: false,
           backgroundColor: Colors.transparent,
@@ -139,6 +137,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           iconPadding: 10,
           onTap: _submitTemplate,
         ),
+      ),
+      footer: ModalFooter(
+        isBigButtonDisabled: _isButtonDisabled,
+        onBigButtonTap: _submit,
       ),
       body: [
         Row(

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -63,14 +64,11 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
           child: accountList.isNotEmpty
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Gap.h16,
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Choose Account',
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-                      ),
+                    ModalHeader(
+                      withBackButton: false,
+                      title: 'Choose Account'.hardcoded,
                     ),
                     Gap.h16,
                     Wrap(
@@ -105,11 +103,11 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                         );
                       }),
                     ),
-                    Gap.h32,
-                    Gap.h32,
+                    context.isBigScreen ? Gap.noGap : Gap.h32,
                   ],
                 )
               : Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Gap.h8,
                     IconWithText(

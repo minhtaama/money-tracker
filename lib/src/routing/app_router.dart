@@ -308,7 +308,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller) => AddRegularTxnModalScreen(controller, TransactionType.income),
+            builder: (controller, isScrollable) =>
+                AddRegularTxnModalScreen(controller, isScrollable, TransactionType.income),
           ),
         ),
         GoRoute(
@@ -316,7 +317,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller) => AddRegularTxnModalScreen(controller, TransactionType.expense),
+            builder: (controller, isScrollable) =>
+                AddRegularTxnModalScreen(controller, isScrollable, TransactionType.expense),
           ),
         ),
         GoRoute(
@@ -324,7 +326,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller) => AddRegularTxnModalScreen(controller, TransactionType.transfer),
+            builder: (controller, isScrollable) =>
+                AddRegularTxnModalScreen(controller, isScrollable, TransactionType.transfer),
           ),
         ),
         GoRoute(
@@ -332,7 +335,7 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller) => AddCreditSpendingModalScreen(controller),
+            builder: (controller, isScrollable) => AddCreditSpendingModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(
@@ -340,7 +343,7 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller) => AddCreditPaymentModalScreen(controller),
+            builder: (controller, isScrollable) => AddCreditPaymentModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(
@@ -396,8 +399,11 @@ class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
 class CustomAppDialogRoute<T> extends _CustomAppModalPageRoute<T> {
   /// Use [child] when no need to modify modal wrapper with scrollable content.
   /// If [builder] is specified, will use [builder] instead of [child].
-  CustomAppDialogRoute(BuildContext context, {Widget? child, Widget Function(ScrollController controller)? builder})
-      : super(
+  CustomAppDialogRoute(
+    BuildContext context, {
+    Widget? child,
+    Widget Function(ScrollController controller, bool isScrollable)? builder,
+  }) : super(
           context,
           CustomAppModalPage(
             child: child,
@@ -450,7 +456,7 @@ class CustomAppModalPage<T> extends Page<T> {
 
   /// Use [builder] when need to modify modal wrapper with scrollable content inside.
   /// Must use this controller callback.
-  final Widget Function(ScrollController controller)? builder;
+  final Widget Function(ScrollController controller, bool isScrollable)? builder;
 
   final Duration transitionDuration;
 
@@ -620,7 +626,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     final Widget contentWithScrollView = _ScrollableChecker(
       builder: (controller, isScrollable) => _cardWrapper(
         isScrollable: isScrollable,
-        child: _page.builder!.call(controller),
+        child: _page.builder!.call(controller, isScrollable),
       ),
     );
 

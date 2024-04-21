@@ -15,64 +15,71 @@ class ModalHeader extends StatelessWidget {
     required this.title,
     this.trailing,
     this.secondaryTitle,
+    this.withBackButton = true,
   });
   final String title;
   final Widget? trailing;
   final String? secondaryTitle;
+  final bool withBackButton;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ModalRoute.of(context)!.canPop
-            ? RoundedIconButton(
-                iconPath: AppIcons.back,
-                backgroundColor: Colors.transparent,
-                iconColor: context.appTheme.onBackground,
-                onTap: () => context.pop(),
-              )
-            : const SizedBox(),
-        Gap.w4,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: kHeader1TextStyle.copyWith(
-                  color: context.appTheme.onBackground,
-                  fontSize: 23,
+    return Padding(
+      padding: const EdgeInsets.only(top: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ModalRoute.of(context)!.canPop && withBackButton
+              ? RoundedIconButton(
+                  iconPath: AppIcons.back,
+                  backgroundColor: Colors.transparent,
+                  iconColor: context.appTheme.onBackground,
+                  onTap: () => context.pop(),
+                )
+              : const SizedBox(),
+          Gap.w4,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: kHeader1TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                    fontSize: 23,
+                  ),
                 ),
-              ),
-              secondaryTitle != null
-                  ? Text(
-                      secondaryTitle!,
-                      style: kNormalTextStyle.copyWith(
-                        color: context.appTheme.onBackground.withOpacity(0.8),
-                      ),
-                    )
-                  : Gap.noGap,
-            ],
+                secondaryTitle != null
+                    ? Text(
+                        secondaryTitle!,
+                        style: kNormalTextStyle.copyWith(
+                          color: context.appTheme.onBackground.withOpacity(0.8),
+                        ),
+                      )
+                    : Gap.noGap,
+              ],
+            ),
           ),
-        ),
-        trailing ?? const SizedBox(),
-      ],
+          trailing ?? const SizedBox(),
+        ],
+      ),
     );
   }
 }
 
-class ModalBody extends StatelessWidget {
-  const ModalBody({
+class ModalContent extends StatelessWidget {
+  const ModalContent({
     super.key,
     required this.formKey,
     required this.controller,
+    required this.isScrollable,
     required this.header,
     required this.body,
     required this.footer,
   });
 
   final ScrollController controller;
+  final bool isScrollable;
   final GlobalKey<FormState> formKey;
   final Widget header;
   final List<Widget> body;
@@ -84,21 +91,49 @@ class ModalBody extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         header,
+        Gap.h8,
         Flexible(
-          child: SingleChildScrollView(
-            controller: controller,
-            child: Form(
-              key: formKey,
-              child: CustomSection(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                isWrapByCard: false,
-                sectionsClipping: false,
-                sections: body,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                controller: controller,
+                child: Form(
+                  key: formKey,
+                  child: CustomSection(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    isWrapByCard: false,
+                    sectionsClipping: false,
+                    sections: [
+                      Gap.h8,
+                      ...body,
+                    ],
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: _AnimatedFading(
+                  isFade: isScrollable,
+                  position: _FadingPosition.top,
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: _AnimatedFading(
+                  isFade: isScrollable,
+                  position: _FadingPosition.bottom,
+                ),
+              ),
+            ],
           ),
         ),
+        Gap.h8,
         footer,
+        Gap.h8,
       ],
     );
   }
@@ -113,7 +148,6 @@ class ModalFooter extends StatelessWidget {
     this.onSmallButtonTap,
     this.bigButtonIcon,
     this.bigButtonLabel,
-    this.optional,
   });
   final bool isBigButtonDisabled;
   final String? smallButtonIcon;
@@ -121,7 +155,6 @@ class ModalFooter extends StatelessWidget {
   final String? bigButtonIcon;
   final String? bigButtonLabel;
   final VoidCallback onBigButtonTap;
-  final Widget? optional;
 
   @override
   Widget build(BuildContext context) {
@@ -137,15 +170,13 @@ class ModalFooter extends StatelessWidget {
               )
             : Gap.noGap,
         const Spacer(),
-        optional ?? Gap.noGap,
-        Gap.w16,
         IconWithTextButton(
           iconPath: bigButtonIcon ?? AppIcons.add,
           label: bigButtonLabel ?? 'Add',
           backgroundColor: context.appTheme.accent1,
           isDisabled: isBigButtonDisabled,
           onTap: onBigButtonTap,
-          width: 120,
+          width: 150,
           padding: const EdgeInsets.only(left: 12, right: 18),
         ),
         Gap.w8,
@@ -191,4 +222,36 @@ class TextHeader extends StatelessWidget {
       style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
     );
   }
+}
+
+class _AnimatedFading extends StatelessWidget {
+  const _AnimatedFading({super.key, required this.isFade, required this.position});
+
+  final bool isFade;
+  final _FadingPosition position;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: AnimatedContainer(
+        duration: k250msDuration,
+        height: 30,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: position == _FadingPosition.top ? Alignment.topCenter : Alignment.bottomCenter,
+          end: position == _FadingPosition.top ? Alignment.bottomCenter : Alignment.topCenter,
+          colors: [
+            context.appTheme.background1.withOpacity(isFade ? 1 : 0),
+            context.appTheme.background1.withOpacity(0),
+          ],
+          stops: const [0, 1],
+        )),
+      ),
+    );
+  }
+}
+
+enum _FadingPosition {
+  top,
+  bottom,
 }

@@ -187,7 +187,6 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                   onConfirm: () {
                     showConfirmModal(
                       context: context,
-                      onlyIcon: true,
                       label: 'Are you sure? All transactions (except payments to this account) will be deleted, too.'
                           .hardcoded,
                       subLabel: 'Last warning. The account will be deleted after this confirmation.'.hardcoded,
