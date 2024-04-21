@@ -105,11 +105,14 @@ class _BudgetTile extends StatelessWidget {
           Gap.h8,
           Row(
             children: [
-              Text(
-                model.name,
-                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+              Expanded(
+                child: Text(
+                  model.name,
+                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(),
               RoundedIconButton(
                 iconPath: AppIcons.edit,
                 size: 32,

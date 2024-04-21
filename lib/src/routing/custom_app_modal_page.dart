@@ -87,10 +87,10 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
   @override
   Color? get barrierColor => context.isBigScreen
       ? context.appTheme.isDarkTheme
-          ? AppColors.black.withOpacity(0.35)
+          ? AppColors.black.withOpacity(0.45)
           : AppColors.greyBgr(context).withOpacity(0.45)
       : context.appTheme.isDarkTheme
-          ? AppColors.black.withOpacity(0.35)
+          ? AppColors.black.withOpacity(0.45)
           : AppColors.greyBgr(context).withOpacity(0.7);
 
   @override
@@ -136,9 +136,11 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               : double.infinity,
       margin: isDialog
           ? const EdgeInsets.all(38)
-          : EdgeInsets.symmetric(
-              vertical: context.isBigScreen ? 16 : 0,
-              horizontal: context.isBigScreen ? 8 : 0,
+          : EdgeInsets.only(
+              top: context.isBigScreen ? Gap.statusBarHeight(context) + 10 : 0,
+              bottom: context.isBigScreen ? 16 : 0,
+              left: context.isBigScreen ? 6 : 0,
+              right: context.isBigScreen ? 8 : 0,
             ),
       padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 12, right: 12),
       borderRadius: context.isBigScreen || isDialog
@@ -179,15 +181,20 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _page.secondaryChild != null
-                  ? Padding(
-                      padding: EdgeInsets.only(top: Gap.statusBarHeight(context), bottom: 12, left: 8, right: 24),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: Gap.screenWidth(context) - bigScreenWidth - 8 - 24 - 130),
-                        child: SingleChildScrollView(child: _page.secondaryChild),
+                  ? Flexible(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 350,
+                            maxHeight: Gap.screenHeight(context) - Gap.statusBarHeight(context),
+                          ),
+                          child: SingleChildScrollView(child: _page.secondaryChild),
+                        ),
                       ),
                     )
                   : Gap.noGap,
-              Flexible(child: _page.builder != null ? contentWithScrollView : contentNoScrollView)
+              _page.builder != null ? contentWithScrollView : contentNoScrollView
             ],
           )
         : Column(

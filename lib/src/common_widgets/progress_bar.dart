@@ -49,14 +49,6 @@ class _ProgressBarState extends State<ProgressBar> with TickerProviderStateMixin
 
   @override
   void didUpdateWidget(covariant ProgressBar oldWidget) {
-    if (oldWidget.secondaryPercentage != widget.secondaryPercentage) {
-      _secondaryController = widget.secondaryPercentage != null
-          ? AnimationController(
-              vsync: this,
-            )
-          : null;
-    }
-
     Future.delayed(k1msDuration, () {
       if (oldWidget.percentage != widget.percentage) {
         setState(() {

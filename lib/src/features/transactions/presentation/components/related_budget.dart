@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/features/budget/domain/budget.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
 import '../../../../common_widgets/money_amount.dart';
 import '../../../../common_widgets/progress_bar.dart';
@@ -26,58 +27,71 @@ class RelatedBudget extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 1.0, bottom: 5.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  budgetDetail.budget.name,
-                  style: kHeader2TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
-                    fontSize: 14,
+      child: LayoutBuilder(
+        builder: (context, constraints) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 1.0, bottom: 5.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      budgetDetail.budget.name,
+                      style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.onBackground,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                MoneyAmount(
-                  amount: budgetDetail.currentAmount,
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
-                    fontSize: 12,
-                  ),
-                ),
-                Text(
-                  context.appSettings.currency.symbol ?? '',
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.onBackground.withOpacity(0.65),
-                    fontSize: 10,
-                  ),
-                ),
-                Text(
-                  ' / ${CalService.formatCurrency(context, budgetDetail.budget.amount)}',
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.onBackground.withOpacity(0.65),
-                    fontSize: 10,
-                  ),
-                ),
-              ],
+                  Gap.w4,
+                  constraints.maxWidth < 300
+                      ? Gap.noGap
+                      : MoneyAmount(
+                          key: ValueKey(budgetDetail.budget.id),
+                          amount: budgetDetail.currentAmount + (formState.amount ?? 0),
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 12,
+                          ),
+                        ),
+                  constraints.maxWidth < 300
+                      ? Gap.noGap
+                      : Text(
+                          context.appSettings.currency.symbol ?? '',
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground.withOpacity(0.65),
+                            fontSize: 10,
+                          ),
+                        ),
+                  constraints.maxWidth < 300
+                      ? Gap.noGap
+                      : Text(
+                          ' / ${CalService.formatCurrency(context, budgetDetail.budget.amount)}',
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground.withOpacity(0.65),
+                            fontSize: 10,
+                          ),
+                        ),
+                ],
+              ),
             ),
-          ),
-          ProgressBar(
-            key: ValueKey(budgetDetail.budget.name),
-            color: context.appTheme.primary,
-            secondaryColor: (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount < 0.8
-                ? context.appTheme.positive
-                : context.appTheme.negative,
-            percentage: percentage,
-            secondaryPercentage: secondaryPercentage,
-            height: 12,
-          ),
-        ],
+            ProgressBar(
+              key: ValueKey(budgetDetail.budget.id),
+              color: context.appTheme.primary,
+              secondaryColor: (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount < 0.8
+                  ? context.appTheme.positive
+                  : context.appTheme.negative,
+              percentage: percentage,
+              secondaryPercentage: secondaryPercentage,
+              height: 12,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -104,6 +118,7 @@ class RelatedBudget extends ConsumerWidget {
       color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
       elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 4.5 : 20,
       margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(6),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,12 +133,12 @@ class RelatedBudget extends ConsumerWidget {
                   ),
                 )
               : Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Related budget',
+                    'Budget of ${(regularTransactionFormState.dateTime ?? DateTime.now()).monthToString(context)}',
                     style: kHeader1TextStyle.copyWith(
                       color: context.appTheme.onBackground,
-                      fontSize: 15,
+                      fontSize: 18,
                     ),
                   ),
                 ),
