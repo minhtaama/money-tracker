@@ -93,7 +93,7 @@ class ModalContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         header,
-        Gap.h8,
+        Gap.h12,
         Flexible(
           child: Stack(
             children: [
@@ -106,14 +106,21 @@ class ModalContent extends StatelessWidget {
                     isWrapByCard: false,
                     sectionsClipping: false,
                     sections: [
-                      Gap.h8,
+                      AnimatedContainer(
+                        duration: k150msDuration,
+                        height: isScrollable ? 12 : 1,
+                      ),
                       ...body,
+                      AnimatedContainer(
+                        duration: k150msDuration,
+                        height: isScrollable ? 12 : 1,
+                      ),
                     ],
                   ),
                 ),
               ),
               Positioned(
-                top: 0,
+                top: -1,
                 left: 0,
                 right: 0,
                 child: _AnimatedFading(
@@ -122,7 +129,7 @@ class ModalContent extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 0,
+                bottom: -1,
                 left: 0,
                 right: 0,
                 child: _AnimatedFading(
@@ -133,7 +140,7 @@ class ModalContent extends StatelessWidget {
             ],
           ),
         ),
-        Gap.h8,
+        Gap.h12,
         footer,
         Gap.h8,
       ],
@@ -234,20 +241,24 @@ class _AnimatedFading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+
     return IgnorePointer(
       child: AnimatedContainer(
         duration: k250msDuration,
-        height: 30,
+        height: context.appTheme.isDarkTheme ? 22 : 15,
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: position == _FadingPosition.top ? Alignment.topCenter : Alignment.bottomCenter,
-          end: position == _FadingPosition.top ? Alignment.bottomCenter : Alignment.topCenter,
-          colors: [
-            context.appTheme.background1.withOpacity(isFade ? 1 : 0),
-            context.appTheme.background1.withOpacity(0),
-          ],
-          stops: const [0, 1],
-        )),
+          color: AppColors.greyBorder(context).withOpacity(isFade ? 1 : 0),
+          gradient: LinearGradient(
+            begin: position == _FadingPosition.top ? Alignment.topCenter : Alignment.bottomCenter,
+            end: position == _FadingPosition.top ? Alignment.bottomCenter : Alignment.topCenter,
+            colors: [
+              color.withOpacity(isFade ? 0.5 : 0),
+              color.withOpacity(0),
+            ],
+            stops: const [0, 1],
+          ),
+        ),
       ),
     );
   }

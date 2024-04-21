@@ -21,8 +21,6 @@ class RelatedBudget extends ConsumerWidget {
     final double secondaryPercentage =
         ((budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount).clamp(0, 1);
 
-    print(formState.amount);
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -66,6 +64,7 @@ class RelatedBudget extends ConsumerWidget {
             ),
           ),
           ProgressBar(
+            key: ValueKey(budgetDetail.budget.name),
             color: context.appTheme.primary,
             secondaryColor: (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount < 0.8
                 ? context.appTheme.positive

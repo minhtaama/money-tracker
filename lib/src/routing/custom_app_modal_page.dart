@@ -37,6 +37,7 @@ class CustomAppModalPage<T> extends Page<T> {
   const CustomAppModalPage({
     this.child,
     this.builder,
+    this.secondaryChild,
     this.transitionDuration = k250msDuration,
     this.reverseTransitionDuration = k250msDuration,
     this.isDialog = false,
@@ -53,6 +54,8 @@ class CustomAppModalPage<T> extends Page<T> {
   /// Use [builder] when need to modify modal wrapper with scrollable content inside.
   /// Must use this controller callback.
   final Widget Function(ScrollController controller, bool isScrollable)? builder;
+
+  final Widget? secondaryChild;
 
   final Duration transitionDuration;
 
@@ -166,6 +169,20 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     final Widget contentNoScrollView = _cardWrapper(
       child: _page.child,
     );
+
+    final finalChild = context.isBigScreen
+        ? Row(
+            children: [
+              _page.secondaryChild ?? Gap.noGap,
+              _page.builder != null ? contentWithScrollView : contentNoScrollView
+            ],
+          )
+        : Column(
+            children: [
+              _page.secondaryChild ?? Gap.noGap,
+              _page.builder != null ? contentWithScrollView : contentNoScrollView
+            ],
+          );
 
     return AnimatedAlign(
       alignment: isDialog

@@ -39,6 +39,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
   bool _isTemplateSubmitted = false;
+
   TemplateTransaction? _templateTransaction;
 
   String get _title {
@@ -50,7 +51,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   }
 
   String get _secondaryTitle {
-    return widget.transactionType == TransactionType.transfer ? 'Between regular accounts' : 'For regular accounts';
+    return widget.transactionType == TransactionType.transfer
+        ? 'Between regular accounts'.hardcoded
+        : 'For regular accounts'.hardcoded;
   }
 
   void _submit() {

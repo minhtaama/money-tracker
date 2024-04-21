@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../theme_and_ui/colors.dart';
 import '../utils/constants.dart';
 
 class ProgressBar extends StatefulWidget {
