@@ -202,7 +202,7 @@ class CurrencyIcon extends StatelessWidget {
       borderRadius: BorderRadius.circular(1000),
       child: FittedBox(
         child: Text(
-          context.appSettings.currency.symbol ?? context.appSettings.currency.code,
+          context.appSettings.currency.symbol,
           style: kHeader1TextStyle.copyWith(
             color: context.appTheme.onBackground,
           ),
@@ -227,7 +227,7 @@ class TextHeader extends StatelessWidget {
 }
 
 class _AnimatedFading extends StatelessWidget {
-  const _AnimatedFading({super.key, required this.isFade, required this.position});
+  const _AnimatedFading({required this.isFade, required this.position});
 
   final bool isFade;
   final _FadingPosition position;

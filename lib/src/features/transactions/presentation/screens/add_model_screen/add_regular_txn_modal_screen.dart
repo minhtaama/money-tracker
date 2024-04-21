@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
-import 'package:money_tracker_app/src/common_widgets/help_box.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
-import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/related_budget.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -90,6 +88,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             isChargeOnDestinationAccount: null);
         // TODO: add transfer fee logic
       }
+
       context.pop();
     }
   }
@@ -233,13 +232,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         ),
         Gap.h16,
         // TODO: Show budget service widget here
-        HelpBox(
-          isShow: true,
-          margin: const EdgeInsets.only(bottom: 16),
-          iconPath: AppIcons.budgets,
-          header: 'Budgets',
-          bottomWidget: BudgetsWidget(),
-        ),
+        widget.transactionType == TransactionType.expense
+            ? RelatedBudget(transactionType: widget.transactionType)
+            : Gap.noGap,
+        Gap.h16,
         const Padding(
           padding: EdgeInsets.only(left: 8.0),
           child: TextHeader('OPTIONAL:', fontSize: 11),

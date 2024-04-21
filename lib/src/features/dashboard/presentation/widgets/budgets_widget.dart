@@ -1,59 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
+import 'package:money_tracker_app/src/common_widgets/progress_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/budget/application/budget_services.dart';
 import 'package:money_tracker_app/src/features/budget/domain/budget.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-
-import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
 
-class BudgetsWidget extends ConsumerStatefulWidget {
+class BudgetsWidget extends ConsumerWidget {
   const BudgetsWidget({super.key});
 
-  @override
-  ConsumerState<BudgetsWidget> createState() => _BudgetsWidgetState();
-}
+  List<Widget> _itemIcons(BuildContext context, BudgetDetail budgetDetail) {
+    final budget = budgetDetail.budget;
+    return switch (budget) {
+      AccountBudget() => budget.accounts
+          .map((e) => Padding(
+                padding: const EdgeInsets.only(left: 1.5),
+                child: RoundedIconButton(
+                  iconPath: e.iconPath,
+                  iconColor: context.appTheme.onBackground,
+                  size: 17,
+                  iconPadding: 0,
+                ),
+              ))
+          .toList(),
+      CategoryBudget() => budget.categories
+          .map((e) => Padding(
+                padding: const EdgeInsets.only(left: 1.5),
+                child: RoundedIconButton(
+                  iconPath: e.iconPath,
+                  iconColor: context.appTheme.onBackground,
+                  size: 17,
+                  iconPadding: 0,
+                ),
+              ))
+          .toList(),
+    };
+  }
 
-class _BudgetsWidgetState extends ConsumerState<BudgetsWidget> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final budgetService = ref.watch(budgetServicesProvider);
     final list = budgetService.getBudgetDetails(DateTime.now());
 
     return Column(
       children: list.map((e) {
-        List<Widget> itemIcons() {
-          final budget = e.budget;
-          return switch (budget) {
-            AccountBudget() => budget.accounts
-                .map((e) => Padding(
-                      padding: const EdgeInsets.only(left: 1.5),
-                      child: RoundedIconButton(
-                        iconPath: e.iconPath,
-                        iconColor: context.appTheme.onBackground,
-                        size: 17,
-                        iconPadding: 0,
-                      ),
-                    ))
-                .toList(),
-            CategoryBudget() => budget.categories
-                .map((e) => Padding(
-                      padding: const EdgeInsets.only(left: 1.5),
-                      child: RoundedIconButton(
-                        iconPath: e.iconPath,
-                        iconColor: context.appTheme.onBackground,
-                        size: 17,
-                        iconPadding: 0,
-                      ),
-                    ))
-                .toList(),
-          };
-        }
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -70,14 +65,12 @@ class _BudgetsWidgetState extends ConsumerState<BudgetsWidget> {
                     ),
                   ),
                   const Spacer(),
-                  ...itemIcons(),
+                  ..._itemIcons(context, e),
                 ],
               ),
             ),
-            _BudgetBar(
-              color: e.currentAmount / e.budget.amount < 0.8
-                  ? context.appTheme.positive
-                  : context.appTheme.negative,
+            ProgressBar(
+              color: e.currentAmount / e.budget.amount < 0.8 ? context.appTheme.positive : context.appTheme.negative,
               percentage: (e.currentAmount / e.budget.amount).clamp(0, 1),
             ),
             Padding(
@@ -121,32 +114,6 @@ class _BudgetsWidgetState extends ConsumerState<BudgetsWidget> {
           ],
         );
       }).toList(),
-    );
-  }
-}
-
-class _BudgetBar extends StatelessWidget {
-  const _BudgetBar({required this.color, required this.percentage});
-
-  final double percentage;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      width: double.infinity,
-      duration: k250msDuration,
-      height: 18,
-      alignment: Alignment.centerLeft,
-      padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: AppColors.greyBgr(context),
-        gradient: LinearGradient(
-          colors: [color, context.appTheme.onBackground.withOpacity(0.1)],
-          stops: [percentage, percentage],
-        ),
-      ),
     );
   }
 }
