@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../routing/custom_app_modal_page.dart';
 import '../utils/constants.dart';
-import 'card_item.dart';
 import 'icon_with_text.dart';
 import 'icon_with_text_button.dart';
 
