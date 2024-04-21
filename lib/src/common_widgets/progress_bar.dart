@@ -10,12 +10,14 @@ class ProgressBar extends StatefulWidget {
     required this.percentage,
     this.secondaryPercentage,
     this.secondaryColor,
+    this.height,
   });
 
   final double percentage;
   final double? secondaryPercentage;
   final Color color;
   final Color? secondaryColor;
+  final double? height;
 
   @override
   State<ProgressBar> createState() => _ProgressBarState();
@@ -84,7 +86,7 @@ class _ProgressBarState extends State<ProgressBar> with TickerProviderStateMixin
       children: [
         Container(
           width: double.infinity,
-          height: 18,
+          height: widget.height ?? 18,
           alignment: Alignment.centerLeft,
           padding: EdgeInsets.zero,
           decoration: BoxDecoration(
@@ -99,7 +101,7 @@ class _ProgressBarState extends State<ProgressBar> with TickerProviderStateMixin
                 axisAlignment: -1.0,
                 child: Container(
                   width: double.infinity,
-                  height: 18,
+                  height: widget.height ?? 18,
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.zero,
                   decoration: BoxDecoration(
@@ -115,7 +117,7 @@ class _ProgressBarState extends State<ProgressBar> with TickerProviderStateMixin
           axisAlignment: -1.0,
           child: Container(
             width: double.infinity,
-            height: 18,
+            height: widget.height ?? 18,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(

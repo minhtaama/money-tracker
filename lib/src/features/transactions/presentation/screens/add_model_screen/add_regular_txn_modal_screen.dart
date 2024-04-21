@@ -234,11 +234,6 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           ],
         ),
         Gap.h16,
-        // TODO: Show budget service widget here
-        widget.transactionType == TransactionType.expense
-            ? RelatedBudget(transactionType: widget.transactionType)
-            : Gap.noGap,
-        Gap.h16,
         const Padding(
           padding: EdgeInsets.only(left: 8.0),
           child: TextHeader('OPTIONAL:', fontSize: 11),

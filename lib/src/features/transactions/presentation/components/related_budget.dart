@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/features/budget/domain/budget.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../../../common_widgets/money_amount.dart';
 import '../../../../common_widgets/progress_bar.dart';
+import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/constants.dart';
 import '../../../budget/application/budget_services.dart';
 import '../../../calculator_input/application/calculator_service.dart';
@@ -25,6 +28,7 @@ class RelatedBudget extends ConsumerWidget {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 1.0, bottom: 5.0),
@@ -35,7 +39,7 @@ class RelatedBudget extends ConsumerWidget {
                   budgetDetail.budget.name,
                   style: kHeader2TextStyle.copyWith(
                     color: context.appTheme.onBackground,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
                 const Spacer(),
@@ -43,21 +47,21 @@ class RelatedBudget extends ConsumerWidget {
                   amount: budgetDetail.currentAmount,
                   style: kHeader3TextStyle.copyWith(
                     color: context.appTheme.onBackground,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
                 Text(
                   context.appSettings.currency.symbol ?? '',
                   style: kHeader3TextStyle.copyWith(
                     color: context.appTheme.onBackground.withOpacity(0.65),
-                    fontSize: 12,
+                    fontSize: 10,
                   ),
                 ),
                 Text(
                   ' / ${CalService.formatCurrency(context, budgetDetail.budget.amount)}',
                   style: kHeader3TextStyle.copyWith(
                     color: context.appTheme.onBackground.withOpacity(0.65),
-                    fontSize: 12,
+                    fontSize: 10,
                   ),
                 ),
               ],
@@ -71,6 +75,7 @@ class RelatedBudget extends ConsumerWidget {
                 : context.appTheme.negative,
             percentage: percentage,
             secondaryPercentage: secondaryPercentage,
+            height: 12,
           ),
         ],
       ),
@@ -95,8 +100,36 @@ class RelatedBudget extends ConsumerWidget {
       },
     );
 
-    return Column(
-      children: list.map((e) => _budget(context, e, regularTransactionFormState)).toList(),
+    return CardItem(
+      color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+      elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 4.5 : 20,
+      margin: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          list.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconWithText(
+                    forceIconOnTop: true,
+                    iconPath: AppIcons.budgets,
+                    header: 'Related budget will be shown here',
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                  child: Text(
+                    'Related budget',
+                    style: kHeader1TextStyle.copyWith(
+                      color: context.appTheme.onBackground,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+          ...list.map((e) => _budget(context, e, regularTransactionFormState))
+        ],
+      ),
     );
   }
 }

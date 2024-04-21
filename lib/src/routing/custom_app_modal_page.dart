@@ -86,7 +86,9 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
   @override
   Color? get barrierColor => context.isBigScreen
-      ? null
+      ? context.appTheme.isDarkTheme
+          ? AppColors.black.withOpacity(0.35)
+          : AppColors.greyBgr(context).withOpacity(0.45)
       : context.appTheme.isDarkTheme
           ? AppColors.black.withOpacity(0.35)
           : AppColors.greyBgr(context).withOpacity(0.7);
@@ -138,12 +140,13 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               vertical: context.isBigScreen ? 16 : 0,
               horizontal: context.isBigScreen ? 8 : 0,
             ),
-      padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 12, right: 12, top: 8),
+      padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 12, right: 12),
       borderRadius: context.isBigScreen || isDialog
           ? const BorderRadius.all(Radius.circular(20))
           : BorderRadius.only(
-              topLeft: Radius.circular((isScrollable ?? false) ? 0 : 28),
-              topRight: Radius.circular((isScrollable ?? false) ? 0 : 28)),
+              topLeft: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
+              topRight: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
+            ),
       child: AnimatedPadding(
         duration: k1msDuration,
         padding: EdgeInsets.only(
@@ -172,15 +175,34 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
     final finalChild = context.isBigScreen
         ? Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _page.secondaryChild ?? Gap.noGap,
-              _page.builder != null ? contentWithScrollView : contentNoScrollView
+              _page.secondaryChild != null
+                  ? Padding(
+                      padding: EdgeInsets.only(top: Gap.statusBarHeight(context), bottom: 12, left: 8, right: 24),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: Gap.screenWidth(context) - bigScreenWidth - 8 - 24 - 130),
+                        child: SingleChildScrollView(child: _page.secondaryChild),
+                      ),
+                    )
+                  : Gap.noGap,
+              Flexible(child: _page.builder != null ? contentWithScrollView : contentNoScrollView)
             ],
           )
         : Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _page.secondaryChild ?? Gap.noGap,
-              _page.builder != null ? contentWithScrollView : contentNoScrollView
+              _page.secondaryChild != null
+                  ? Padding(
+                      padding: EdgeInsets.only(top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
+                        child: SingleChildScrollView(child: _page.secondaryChild),
+                      ),
+                    )
+                  : Gap.noGap,
+              Flexible(child: _page.builder != null ? contentWithScrollView : contentNoScrollView)
             ],
           );
 
@@ -195,7 +217,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
       child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
-        child: _page.builder != null ? contentWithScrollView : contentNoScrollView,
+        child: finalChild,
       ),
     );
   }

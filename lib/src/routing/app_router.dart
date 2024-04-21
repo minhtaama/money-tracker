@@ -12,6 +12,7 @@ import 'package:money_tracker_app/src/features/category/presentation/categories_
 import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/select_currency_screen.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/related_budget.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_payment_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/details_modal_screen/transaction_details_modal_screen.dart';
@@ -319,6 +320,7 @@ final goRouter = GoRouter(
             key: state.pageKey,
             builder: (controller, isScrollable) =>
                 AddRegularTxnModalScreen(controller, isScrollable, TransactionType.expense),
+            secondaryChild: const RelatedBudget(transactionType: TransactionType.expense),
           ),
         ),
         GoRoute(
