@@ -78,8 +78,9 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
       formKey: _formKey,
       controller: widget.controller,
       isScrollable: widget.isScrollable,
-      header: const ModalHeader(
-        title: 'Add Credit Spending',
+      header: ModalHeader(
+        title: 'Add Spending'.hardcoded,
+        secondaryTitle: 'For credit accounts'.hardcoded,
       ),
       footer: ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit),
       body: [

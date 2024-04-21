@@ -45,10 +45,14 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
   String get _title {
     return widget.transactionType == TransactionType.income
-        ? 'Add Income'
+        ? 'Add Income'.hardcoded
         : widget.transactionType == TransactionType.expense
-            ? 'Add Expense'
-            : 'Transfer between accounts';
+            ? 'Add Expense'.hardcoded
+            : 'Add Transfer'.hardcoded;
+  }
+
+  String get _secondaryTitle {
+    return widget.transactionType == TransactionType.transfer ? 'Between regular accounts' : 'For regular accounts';
   }
 
   void _submit() {
@@ -129,6 +133,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
       isScrollable: widget.isScrollable,
       header: ModalHeader(
         title: _title,
+        secondaryTitle: _secondaryTitle,
         trailing: RoundedIconButton(
           iconPath: _isTemplateSubmitted ? AppIcons.heartFill : AppIcons.heartOutline,
           withBorder: false,
