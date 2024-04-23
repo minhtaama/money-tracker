@@ -14,7 +14,6 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../domain/category_tag.dart';
 

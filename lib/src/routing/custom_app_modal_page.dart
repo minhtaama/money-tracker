@@ -135,7 +135,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               ? bigScreenWidth
               : double.infinity,
       margin: isDialog
-          ? const EdgeInsets.all(38)
+          ? const EdgeInsets.all(24)
           : EdgeInsets.only(
               top: context.isBigScreen ? Gap.statusBarHeight(context) + 10 : 0,
               bottom: context.isBigScreen ? 16 : 0,
@@ -149,11 +149,10 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               topLeft: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
               topRight: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
             ),
-      child: AnimatedPadding(
-        duration: k1msDuration,
+      child: Padding(
         padding: EdgeInsets.only(
           top: isDialog ? 0 : 16,
-          bottom: (MediaQuery.of(context).viewInsets.bottom).clamp(16, double.infinity),
+          bottom: 16,
         ),
         child: child,
       ),
@@ -175,43 +174,49 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
       child: _page.child,
     );
 
-    final finalChild = context.isBigScreen
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _page.secondaryChild != null
-                  ? Flexible(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 350,
-                            maxHeight: Gap.screenHeight(context) - Gap.statusBarHeight(context),
+    final finalChild = isDialog
+        ? _page.builder != null
+            ? contentWithScrollView
+            : contentNoScrollView
+        : context.isBigScreen
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _page.secondaryChild != null
+                      ? Flexible(
+                          child: Padding(
+                            padding:
+                                EdgeInsets.only(top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: 350,
+                                maxHeight: Gap.screenHeight(context) - Gap.statusBarHeight(context),
+                              ),
+                              child: SingleChildScrollView(child: _page.secondaryChild),
+                            ),
                           ),
-                          child: SingleChildScrollView(child: _page.secondaryChild),
-                        ),
-                      ),
-                    )
-                  : Gap.noGap,
-              _page.builder != null ? contentWithScrollView : contentNoScrollView
-            ],
-          )
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _page.secondaryChild != null
-                  ? Padding(
-                      padding: EdgeInsets.only(top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
-                        child: SingleChildScrollView(child: _page.secondaryChild),
-                      ),
-                    )
-                  : Gap.noGap,
-              Flexible(child: _page.builder != null ? contentWithScrollView : contentNoScrollView)
-            ],
-          );
+                        )
+                      : Gap.noGap,
+                  _page.builder != null ? contentWithScrollView : contentNoScrollView
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _page.secondaryChild != null
+                      ? Padding(
+                          padding:
+                              EdgeInsets.only(top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
+                            child: SingleChildScrollView(child: _page.secondaryChild),
+                          ),
+                        )
+                      : Gap.noGap,
+                  Flexible(child: _page.builder != null ? contentWithScrollView : contentNoScrollView)
+                ],
+              );
 
     return AnimatedAlign(
       alignment: isDialog

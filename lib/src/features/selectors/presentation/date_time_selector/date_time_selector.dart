@@ -89,7 +89,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                calendarPicker(),
+                Flexible(child: calendarPicker()),
                 button(),
               ],
             ),
@@ -106,7 +106,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
       );
 
   Widget calendarPicker() => SizedBox(
-        height: 300,
+        height: 290,
         width: context.isBigScreen ? 300 : 350,
         child: CalendarDatePicker2(
           config: widget.config,

@@ -13,9 +13,10 @@ Future<T?> showStatefulDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext context, StateSetter stateSetter) builder,
 }) {
+  final key = GlobalKey();
   return showCustomDialog<T>(
     context: context,
-    child: StatefulBuilder(builder: builder),
+    child: StatefulBuilder(key: key, builder: builder),
   );
 }
 

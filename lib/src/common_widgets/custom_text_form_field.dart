@@ -88,8 +88,10 @@ class CustomTextFormField extends StatelessWidget {
         ],
         textInputAction: textInputAction,
         keyboardType: keyboardType,
-        onTapOutside: (_) {
-          FocusManager.instance.primaryFocus?.unfocus();
+        onTapOutside: (event) {
+          if (event.down) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
           onTapOutside?.call();
         },
         onEditingComplete: () {

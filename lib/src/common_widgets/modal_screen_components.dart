@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'custom_section.dart';
 import 'icon_with_text_button.dart';
@@ -69,7 +70,7 @@ class ModalHeader extends StatelessWidget {
   }
 }
 
-class ModalContent extends StatelessWidget {
+class ModalContent extends StatefulWidget {
   const ModalContent({
     super.key,
     required this.formKey,
@@ -88,60 +89,84 @@ class ModalContent extends StatelessWidget {
   final Widget footer;
 
   @override
+  State<ModalContent> createState() => _ModalContentState();
+}
+
+class _ModalContentState extends State<ModalContent> {
+  final _footerKey = GlobalKey();
+  double _footerHeight = 0;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _footerHeight = _footerKey.currentContext!.size!.height;
+      });
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final color = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final padding = (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        header,
+        widget.header,
         Gap.h12,
         Flexible(
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                controller: controller,
-                child: Form(
-                  key: formKey,
-                  child: CustomSection(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    isWrapByCard: false,
-                    sectionsClipping: false,
-                    sections: [
-                      AnimatedContainer(
-                        duration: k150msDuration,
-                        height: isScrollable ? 12 : 1,
-                      ),
-                      ...body,
-                      AnimatedContainer(
-                        duration: k150msDuration,
-                        height: isScrollable ? 12 : 1,
-                      ),
-                    ],
+          child: Padding(
+            padding: EdgeInsets.only(bottom: padding),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: widget.controller,
+                  child: Form(
+                    key: widget.formKey,
+                    child: CustomSection(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      isWrapByCard: false,
+                      sectionsClipping: false,
+                      sections: [
+                        AnimatedContainer(
+                          duration: k150msDuration,
+                          height: widget.isScrollable ? 12 : 1,
+                        ),
+                        ...widget.body,
+                        AnimatedContainer(
+                          duration: k150msDuration,
+                          height: widget.isScrollable ? 12 : 1,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: -1,
-                left: 0,
-                right: 0,
-                child: _AnimatedFading(
-                  isFade: isScrollable,
-                  position: _FadingPosition.top,
+                Positioned(
+                  top: -0.2,
+                  left: 0,
+                  right: 0,
+                  child: _AnimatedFading(
+                    isFade: widget.isScrollable,
+                    position: _FadingPosition.top,
+                  ),
                 ),
-              ),
-              Positioned(
-                bottom: -1,
-                left: 0,
-                right: 0,
-                child: _AnimatedFading(
-                  isFade: isScrollable,
-                  position: _FadingPosition.bottom,
+                Positioned(
+                  bottom: -0.2,
+                  left: 0,
+                  right: 0,
+                  child: _AnimatedFading(
+                    isFade: widget.isScrollable,
+                    position: _FadingPosition.bottom,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         Gap.h12,
-        footer,
+        SizedBox(key: _footerKey, child: widget.footer),
         Gap.h8,
       ],
     );
@@ -246,14 +271,15 @@ class _AnimatedFading extends StatelessWidget {
     return IgnorePointer(
       child: AnimatedContainer(
         duration: k250msDuration,
-        height: context.appTheme.isDarkTheme ? 22 : 15,
+        //height: context.appTheme.isDarkTheme ? 22 : 15,
+        height: 10,
         decoration: BoxDecoration(
-          color: AppColors.greyBorder(context).withOpacity(isFade ? 1 : 0),
+          color: AppColors.grey(context).withOpacity(isFade ? 1 : 0),
           gradient: LinearGradient(
             begin: position == _FadingPosition.top ? Alignment.topCenter : Alignment.bottomCenter,
             end: position == _FadingPosition.top ? Alignment.bottomCenter : Alignment.topCenter,
             colors: [
-              color.withOpacity(isFade ? 0.5 : 0),
+              color.withOpacity(isFade ? 0.7 : 0),
               color.withOpacity(0),
             ],
             stops: const [0, 1],
