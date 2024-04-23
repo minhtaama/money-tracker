@@ -61,9 +61,11 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
 
   @override
   void didUpdateWidget(covariant CategoryTagSelector oldWidget) {
-    _currentCategory = widget.category;
-    _tags = categoryRepo.getTagList(_currentCategory);
-    _showTextField = _tags == null || _tags!.isEmpty;
+    if (widget.category != oldWidget.category) {
+      _currentCategory = widget.category;
+      _tags = categoryRepo.getTagList(_currentCategory);
+      _showTextField = _tags == null || _tags!.isEmpty;
+    }
 
     if (widget.initialChosenTag != oldWidget.initialChosenTag && widget.initialChosenTag != null) {
       _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
