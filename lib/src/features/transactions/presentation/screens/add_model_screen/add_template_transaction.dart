@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
@@ -48,21 +49,13 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
             ];
     }
 
-    return CustomSection(
-      isWrapByCard: false,
-      sectionsClipping: false,
-      title: 'Favorite Transactions'.hardcoded,
-      subTitle: Text(
-        'Hold to re-order'.hardcoded,
-        style: kHeader4TextStyle.copyWith(
-          fontSize: 13,
-          color: context.appTheme.onBackground,
-        ),
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Favorite Transactions'.hardcoded,
+        secondaryTitle: 'Hold to re-order'.hardcoded,
       ),
-      margin: EdgeInsets.zero,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      onReorder: (oldIndex, newIndex) => templateRepository.reorder(oldIndex, newIndex),
-      sections: buildTemplateTiles(context),
+      body: buildTemplateTiles(context),
+      footer: Gap.noGap,
     );
   }
 }
@@ -96,73 +89,79 @@ class _TemplateTransactionTile extends ConsumerWidget {
     //     '',
     // };
 
-    return AnimatedSwipeTile(
-      buttons: [
-        RoundedIconButton(
-          iconPath: AppIcons.close,
-          size: 35,
-          iconPadding: 6,
-          elevation: 18,
-          backgroundColor: context.appTheme.negative,
-          iconColor: context.appTheme.onNegative,
-          onTap: () => showConfirmModal(
-            context: context,
-            label: 'Delete this favorite transaction?'.hardcoded,
-            onConfirm: () {
-              final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
-              tempRepo.delete(model);
-            },
-          ),
-        ),
-      ],
-      child: CardItem(
-        margin: const EdgeInsets.symmetric(vertical: 6.0),
-        padding: const EdgeInsets.only(top: 2.0, left: 2.0),
-        border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
-        child: GestureDetector(
-          // onTap: () => onTransactionTap?.call(transaction),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedSwipeTile(
+          buttons: [
+            RoundedIconButton(
+              iconPath: AppIcons.delete,
+              size: 35,
+              iconPadding: 6,
+              elevation: 18,
+              backgroundColor: context.appTheme.negative,
+              iconColor: context.appTheme.onNegative,
+              onTap: () => showConfirmModal(
+                context: context,
+                label: 'Delete this favorite transaction?'.hardcoded,
+                onConfirm: () {
+                  final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
+                  tempRepo.delete(model);
+                },
+              ),
+            ),
+          ],
+          child: CardItem(
+            margin: EdgeInsets.zero,
+            padding: const EdgeInsets.only(top: 2.0, left: 2.0),
+            border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+            child: GestureDetector(
+              // onTap: () => onTransactionTap?.call(transaction),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _CategoryIcon(model: model),
-                    Gap.w8,
-                    Expanded(
-                      child: switch (model.type) {
-                        TransactionType.transfer => _TransferDetails(model: model),
-                        _ => _WithCategoryDetails(model: model),
-                      },
-                    ),
-                    Gap.w16,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        MoneyAmount(
-                          amount: model.amount,
-                          noAnimation: true,
-                          style: kHeader2TextStyle.copyWith(
-                            color: color,
-                            fontSize: 13,
-                          ),
+                        _CategoryIcon(model: model),
+                        Gap.w8,
+                        Expanded(
+                          child: switch (model.type) {
+                            TransactionType.transfer => _TransferDetails(model: model),
+                            _ => _WithCategoryDetails(model: model),
+                          },
                         ),
-                        Row(
+                        Gap.w16,
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            _AccountName(model: model),
-                            Gap.w4,
-                            _AccountIcon(model: model),
+                            MoneyAmount(
+                              amount: model.amount,
+                              noAnimation: true,
+                              style: kHeader2TextStyle.copyWith(
+                                color: color,
+                                fontSize: 13,
+                              ),
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                _AccountName(model: model),
+                                Gap.w4,
+                                _AccountIcon(model: model),
+                              ],
+                            ),
                           ],
                         ),
                       ],
                     ),
+                    _Note(model: model),
                   ],
                 ),
-                _Note(model: model),
-              ],
+              ),
             ),
           ),
         ),

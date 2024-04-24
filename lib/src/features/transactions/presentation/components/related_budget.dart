@@ -62,7 +62,8 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
                 child: IconWithText(
                   forceIconOnTop: true,
                   iconPath: AppIcons.budgets,
-                  header: 'Related budget will be shown here',
+                  header: 'Related budget will be shown here'.hardcoded,
+                  text: 'Tap to hide'.hardcoded,
                   onTap: () => setState(() {
                     _showContent = false;
                   }),

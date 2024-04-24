@@ -73,17 +73,17 @@ class ModalHeader extends StatelessWidget {
 class ModalContent extends StatefulWidget {
   const ModalContent({
     super.key,
-    required this.formKey,
-    required this.controller,
-    required this.isScrollable,
+    this.formKey,
+    this.controller,
+    this.isScrollable = false,
     required this.header,
     required this.body,
     required this.footer,
   });
 
-  final ScrollController controller;
+  final ScrollController? controller;
   final bool isScrollable;
-  final GlobalKey<FormState> formKey;
+  final GlobalKey<FormState>? formKey;
   final Widget header;
   final List<Widget> body;
   final Widget footer;

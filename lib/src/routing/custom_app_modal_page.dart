@@ -6,11 +6,13 @@ import '../theme_and_ui/colors.dart';
 import '../utils/constants.dart';
 
 class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
-  CustomAppModalRoute(BuildContext context, {required Widget child})
+  CustomAppModalRoute(BuildContext context,
+      {Widget? child, Widget Function(ScrollController controller, bool isScrollable)? builder})
       : super(
           context,
           CustomAppModalPage(
             child: child,
+            builder: builder,
           ),
         );
 }
