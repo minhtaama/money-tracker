@@ -61,7 +61,7 @@ class BudgetsWidget extends ConsumerWidget {
                     e.budget.name,
                     style: kHeader2TextStyle.copyWith(
                       color: context.appTheme.onBackground,
-                      fontSize: 16,
+                      fontSize: 14,
                     ),
                   ),
                   const Spacer(),
@@ -83,21 +83,18 @@ class BudgetsWidget extends ConsumerWidget {
                     amount: e.currentAmount,
                     style: kHeader3TextStyle.copyWith(
                       color: context.appTheme.onBackground,
-                      fontSize: 14,
+                      fontSize: 12,
+                    ),
+                    symbolStyle: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.onBackground,
+                      fontSize: 10,
                     ),
                   ),
                   Text(
-                    context.appSettings.currency.symbol ?? '',
+                    '/${CalService.formatCurrency(context, e.budget.amount)}',
                     style: kHeader3TextStyle.copyWith(
                       color: context.appTheme.onBackground.withOpacity(0.65),
-                      fontSize: 12,
-                    ),
-                  ),
-                  Text(
-                    ' / ${CalService.formatCurrency(context, e.budget.amount)}',
-                    style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.onBackground.withOpacity(0.65),
-                      fontSize: 12,
+                      fontSize: 10,
                     ),
                   ),
                   const Spacer(),
