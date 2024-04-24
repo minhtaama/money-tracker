@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/animated_swipe_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
@@ -95,80 +96,77 @@ class _TemplateTransactionTile extends ConsumerWidget {
     //     '',
     // };
 
-    return Stack(
-      children: [
-        CardItem(
-          margin: const EdgeInsets.only(bottom: 12.0),
-          padding: const EdgeInsets.only(top: 2.0, left: 2.0),
-          border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
-          child: GestureDetector(
-            // onTap: () => onTransactionTap?.call(transaction),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _CategoryIcon(model: model),
-                      Gap.w8,
-                      Expanded(
-                        child: switch (model.type) {
-                          TransactionType.transfer => _TransferDetails(model: model),
-                          _ => _WithCategoryDetails(model: model),
-                        },
-                      ),
-                      Gap.w16,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          MoneyAmount(
-                            amount: model.amount,
-                            noAnimation: true,
-                            style: kHeader2TextStyle.copyWith(
-                              color: color,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              _AccountName(model: model),
-                              Gap.w4,
-                              _AccountIcon(model: model),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  _Note(model: model),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Transform.translate(
-          offset: const Offset(-3, -3),
-          child: RoundedIconButton(
-            iconPath: AppIcons.close,
-            size: 15,
-            iconPadding: 3,
-            backgroundColor: context.appTheme.negative,
-            useContainerInsteadOfInk: true,
-            iconColor: context.appTheme.onNegative,
-            onTap: () => showConfirmModal(
-              context: context,
-              label: 'Delete this favorite transaction?'.hardcoded,
-              onConfirm: () {
-                final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
-                tempRepo.delete(model);
-              },
-            ),
+    return AnimatedSwipeTile(
+      buttons: [
+        RoundedIconButton(
+          iconPath: AppIcons.close,
+          size: 35,
+          iconPadding: 6,
+          elevation: 18,
+          backgroundColor: context.appTheme.negative,
+          iconColor: context.appTheme.onNegative,
+          onTap: () => showConfirmModal(
+            context: context,
+            label: 'Delete this favorite transaction?'.hardcoded,
+            onConfirm: () {
+              final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
+              tempRepo.delete(model);
+            },
           ),
         ),
       ],
+      child: CardItem(
+        margin: const EdgeInsets.symmetric(vertical: 6.0),
+        padding: const EdgeInsets.only(top: 2.0, left: 2.0),
+        border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+        child: GestureDetector(
+          // onTap: () => onTransactionTap?.call(transaction),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _CategoryIcon(model: model),
+                    Gap.w8,
+                    Expanded(
+                      child: switch (model.type) {
+                        TransactionType.transfer => _TransferDetails(model: model),
+                        _ => _WithCategoryDetails(model: model),
+                      },
+                    ),
+                    Gap.w16,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        MoneyAmount(
+                          amount: model.amount,
+                          noAnimation: true,
+                          style: kHeader2TextStyle.copyWith(
+                            color: color,
+                            fontSize: 13,
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            _AccountName(model: model),
+                            Gap.w4,
+                            _AccountIcon(model: model),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                _Note(model: model),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
