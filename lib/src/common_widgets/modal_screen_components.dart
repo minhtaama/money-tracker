@@ -16,11 +16,13 @@ class ModalHeader extends StatelessWidget {
     required this.title,
     this.trailing,
     this.secondaryTitle,
+    this.subTitle,
     this.withBackButton = true,
   });
   final String title;
   final Widget? trailing;
   final String? secondaryTitle;
+  final Widget? subTitle;
   final bool withBackButton;
 
   @override
@@ -60,6 +62,7 @@ class ModalHeader extends StatelessWidget {
                         ),
                       )
                     : Gap.noGap,
+                subTitle ?? Gap.noGap,
               ],
             ),
           ),
