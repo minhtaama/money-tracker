@@ -118,13 +118,15 @@ Future<T?> showCustomDialog<T>({
 /// rather than pushing a new screen.
 Future<T?> showCustomModal<T>({
   required BuildContext context,
-  required Widget child,
+  Widget? child,
+  Widget Function(ScrollController, bool)? builder,
 }) {
   final NavigatorState navigator = Navigator.of(context);
   return navigator.push(
     CustomAppModalRoute(
       context,
       child: child,
+      builder: builder,
     ),
   );
 }

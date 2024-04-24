@@ -102,7 +102,7 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
       backgroundColor: context.appTheme.accent2,
       onTap: () => showCustomModal(
         context: context,
-        child: const AddTemplateTransactionModalScreen(),
+        builder: (controller, isScrollable) => AddTemplateTransactionModalScreen(controller, isScrollable),
       ),
     );
 

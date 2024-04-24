@@ -19,7 +19,10 @@ import '../../../../../utils/constants.dart';
 import '../../../data/template_transaction_repo.dart';
 
 class AddTemplateTransactionModalScreen extends ConsumerWidget {
-  const AddTemplateTransactionModalScreen({super.key});
+  const AddTemplateTransactionModalScreen(this.controller, this.isScrollable, {super.key});
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,6 +53,8 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
     }
 
     return ModalContent(
+      controller: controller,
+      isScrollable: isScrollable,
       header: ModalHeader(
         title: 'Favorite Transactions'.hardcoded,
         secondaryTitle: 'Hold to re-order'.hardcoded,
