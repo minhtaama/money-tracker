@@ -295,7 +295,7 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        child: const AddBudgetModalScreen(),
+                        builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],

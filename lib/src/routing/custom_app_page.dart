@@ -75,12 +75,10 @@ class _CustomAppPageRoute<T> extends PageRoute<T> {
     final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.fastOutSlowIn));
     return FadeTransition(
       opacity: animation.drive(CurveTween(curve: Curves.easeOut)),
-      child: context.isBigScreen
-          ? child
-          : SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            ),
+      child: SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      ),
     );
   }
 }

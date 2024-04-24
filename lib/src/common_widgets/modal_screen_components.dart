@@ -197,11 +197,12 @@ class ModalFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        Gap.w16,
         smallButtonIcon != null
             ? RoundedIconButton(
                 iconPath: smallButtonIcon ?? AppIcons.back,
-                backgroundColor: Colors.transparent,
-                iconColor: context.appTheme.primary,
+                backgroundColor: context.appTheme.negative.withOpacity(0.85),
+                iconColor: context.appTheme.onNegative,
                 iconPadding: 10,
                 onTap: onSmallButtonTap,
               )

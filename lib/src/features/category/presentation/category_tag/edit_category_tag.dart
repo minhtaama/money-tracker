@@ -16,7 +16,7 @@ import '../../data/category_repo.dart';
 import '../../domain/category_tag.dart';
 
 class EditCategoryTag extends ConsumerStatefulWidget {
-  const EditCategoryTag(this.tag, {Key? key, required this.category}) : super(key: key);
+  const EditCategoryTag(this.tag, {super.key, required this.category});
 
   final CategoryTag tag;
   final Category category;

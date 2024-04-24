@@ -120,7 +120,8 @@ class _BudgetTile extends StatelessWidget {
                 onTap: () {
                   showCustomModal(
                     context: context,
-                    child: EditBudgetModalScreen(budget: model),
+                    builder: (controller, isScrollable) =>
+                        EditBudgetModalScreen(controller, isScrollable, budget: model),
                   );
                 },
               ),
