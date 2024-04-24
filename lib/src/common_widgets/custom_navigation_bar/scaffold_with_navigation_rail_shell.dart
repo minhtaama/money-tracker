@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'navigation_rail/custom_navigation_rail.dart';
 
@@ -22,9 +23,15 @@ class ScaffoldWithNavRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final isBigScreen = context.isBigScreen;
     final currentPath = GoRouterState.of(context).uri.toString();
-    final combinedItems = List.from(topItems)..addAll(bottomItems);
 
-    final currentIndex = combinedItems.indexWhere((item) => item.path == currentPath);
+    final List<NavigationRailItem> combinedItems = List.from(topItems)..addAll(bottomItems);
+
+    final currentIndex = combinedItems.indexWhere((item) {
+      if (currentPath == RoutePath.home) {
+        return item.path == RoutePath.dashboardOrHomeInBigScreen;
+      }
+      return item.path == currentPath;
+    });
 
     return Scaffold(
       key: navigationRailKey,

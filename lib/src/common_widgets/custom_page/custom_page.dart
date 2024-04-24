@@ -105,6 +105,7 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
 
 class _CustomListView extends ConsumerStatefulWidget {
   const _CustomListView({
+    super.key,
     this.forPageViewWithScrollableSheet = false,
     this.controller,
     this.smallTabBar,
@@ -138,9 +139,10 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   @override
   void dispose() {
     _scrollController.removeListener(_scrollControllerListener);
-    if (!widget.forPageViewWithScrollableSheet) {
-      _scrollController.dispose();
-    }
+    _scrollController.dispose();
+    // if (!widget.forPageViewWithScrollableSheet) {
+    //   _scrollController.dispose();
+    // }
     super.dispose();
   }
 

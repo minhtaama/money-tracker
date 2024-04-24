@@ -60,6 +60,12 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   List<Widget> _buildTransactionWidgetList(
     List<BaseTransaction> transactionList,
     DateTime dayBeginOfMonth,

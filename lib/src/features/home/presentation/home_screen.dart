@@ -73,6 +73,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _carouselController.dispose();
+    super.dispose();
+  }
+
   List<Widget> _buildTransactionWidgetList(
     List<BaseTransaction> transactionList,
     DateTime dayBeginOfMonth,
