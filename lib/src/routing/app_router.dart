@@ -154,6 +154,18 @@ final goRouter = GoRouter(
   initialLocation: RoutePath.home,
   debugLogDiagnostics: true,
   requestFocus: false,
+  redirect: (context, routerState) {
+    final location = routerState.matchedLocation;
+    if (kDebugMode) {
+      print(location);
+    }
+
+    if (context.isBigScreen && location == RoutePath.home) {
+      return RoutePath.dashboardOrHomeInBigScreen;
+    }
+
+    return null;
+  },
   routes: [
     ShellRoute(
       navigatorKey: _railNavKey,
