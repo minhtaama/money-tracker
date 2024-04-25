@@ -25,6 +25,7 @@ class CategoryFormSelector extends FormField<Category> {
             children: [
               CategorySelector(
                   transactionType: transactionType,
+                  initialValue: initialValue,
                   onChangedCategory: (newCategory) {
                     state.didChange(newCategory);
                     onChangedCategory(newCategory);
@@ -63,6 +64,7 @@ class AccountFormSelector extends FormField<Account> {
             children: [
               AccountSelector(
                   accountType: accountType,
+                  initialValue: initialValue,
                   otherSelectedAccount: otherSelectedAccount,
                   onChangedAccount: (newAccount) {
                     state.didChange(newAccount);

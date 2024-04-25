@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/animated_swipe_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -122,22 +123,26 @@ class _TemplateTransactionTile extends ConsumerWidget {
           ],
           child: CardItem(
             margin: EdgeInsets.zero,
-            padding: const EdgeInsets.only(top: 2.0, left: 2.0),
+            padding: EdgeInsets.zero,
             border:
                 context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
             child: CustomInkWell(
               inkColor: AppColors.grey(context),
-              onTap: () async => await showCustomModal(
-                context: context,
-                builder: (controller, isScrollable) => AddRegularTxnModalScreen(
-                  controller,
-                  isScrollable,
-                  model.type,
-                  template: model,
-                ),
-              ).then(
-                (_) => context.pop(),
-              ),
+              onTap: () {
+                context.pop();
+                showCustomModal(
+                  context: context,
+                  builder: (controller, isScrollable) => Material(
+                    type: MaterialType.transparency,
+                    child: AddRegularTxnModalScreen(
+                      controller,
+                      isScrollable,
+                      model.type,
+                      template: model,
+                    ),
+                  ),
+                );
+              },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
                 child: Column(

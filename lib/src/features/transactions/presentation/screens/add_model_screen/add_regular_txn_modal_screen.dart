@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
@@ -172,6 +173,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Expanded(
               child: CalculatorInput(
                 hintText: 'Amount',
+                initialValue: stateWatch.amount != null
+                    ? CalService.formatCurrency(context, stateWatch.amount!)
+                    : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -205,6 +209,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                       ? CategoryFormSelector(
                           transactionType: widget.transactionType,
                           validator: (_) => _categoryValidator(),
+                          initialValue: stateWatch.category,
                           onChangedCategory: (newCategory) {
                             setState(() {
                               _isTemplateSubmitted = false;
@@ -215,6 +220,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                       : AccountFormSelector(
                           accountType: AccountType.regular,
                           validator: (_) => _sendingAccountValidator(),
+                          initialValue: stateWatch.account,
                           onChangedAccount: (newAccount) {
                             setState(() {
                               _isTemplateSubmitted = false;
@@ -229,6 +235,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                   AccountFormSelector(
                     accountType: AccountType.regular,
                     validator: (_) => _toAccountAndAccountValidator(),
+                    initialValue: widget.transactionType != TransactionType.transfer
+                        ? stateWatch.account
+                        : stateWatch.toAccount,
                     onChangedAccount: (newAccount) {
                       setState(() {
                         _isTemplateSubmitted = false;
@@ -256,6 +265,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         widget.transactionType != TransactionType.transfer
             ? CategoryTagSelector(
                 category: stateWatch.category,
+                initialChosenTag: stateWatch.tag,
                 onTagSelected: (value) {
                   setState(() {
                     _isTemplateSubmitted = false;
@@ -271,6 +281,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           withOutlineBorder: true,
           maxLines: 3,
           hintText: 'Note ...',
+          initialValue: stateWatch.note,
           textInputAction: TextInputAction.done,
           onChanged: (value) {
             setState(() {

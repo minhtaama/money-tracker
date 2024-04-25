@@ -200,13 +200,13 @@ final goRouter = GoRouter(
         ShellRoute(
           navigatorKey: _bottomNavKey,
           parentNavigatorKey: _railNavKey,
-          builder: (context, state, child) {
+          builder: (context2, state, child) {
             return ScaffoldWithBottomNavBar(
-              items: _bottomTabItems(context),
+              items: _bottomTabItems(context2),
               floatingActionButton: CustomFloatingActionButton(
-                roundedButtonItems: _fabRoundedButtonItems(context),
-                listItems: _fabListItems(context),
-                mainItem: _fabMainItem(context),
+                roundedButtonItems: _fabRoundedButtonItems(context2),
+                listItems: _fabListItems(context2),
+                mainItem: _fabMainItem(context2),
               ),
               child: child,
             );

@@ -108,8 +108,10 @@ Future<T?> showCustomDialog<T>({
   final NavigatorState navigator = Navigator.of(context);
   return navigator.push(
     CustomAppDialogRoute(
-      context,
-      child: child,
+      child: Material(
+        type: MaterialType.transparency,
+        child: child,
+      ),
     ),
   );
 }
@@ -124,7 +126,6 @@ Future<T?> showCustomModal<T>({
   final NavigatorState navigator = Navigator.of(context);
   return navigator.push(
     CustomAppModalRoute(
-      context,
       child: child,
       builder: builder,
     ),

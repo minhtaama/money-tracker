@@ -18,10 +18,12 @@ class CategorySelector extends ConsumerStatefulWidget {
   const CategorySelector({
     super.key,
     required this.transactionType,
+    this.initialValue,
     required this.onChangedCategory,
   }) : assert(transactionType != TransactionType.transfer);
 
   final ValueChanged<Category?> onChangedCategory;
+  final Category? initialValue;
   final TransactionType transactionType;
 
   @override
@@ -29,21 +31,35 @@ class CategorySelector extends ConsumerStatefulWidget {
 }
 
 class _CategorySelectorState extends ConsumerState<CategorySelector> {
-  Category? currentCategory;
+  late Category? _currentCategory = widget.initialValue;
+
+  @override
+  void didUpdateWidget(covariant CategorySelector oldWidget) {
+    if (widget.initialValue != oldWidget.initialValue) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          _currentCategory = widget.initialValue;
+        });
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
     return IconWithTextButton(
-      label: currentCategory != null ? currentCategory!.name : 'Add Category',
+      label: _currentCategory != null ? _currentCategory!.name : 'Add Category',
       labelSize: 15,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      iconPath: currentCategory != null ? currentCategory!.iconPath : AppIcons.add,
-      backgroundColor: currentCategory != null ? currentCategory!.backgroundColor : Colors.transparent,
-      color: currentCategory != null ? currentCategory!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
+      iconPath: _currentCategory != null ? _currentCategory!.iconPath : AppIcons.add,
+      backgroundColor: _currentCategory != null ? _currentCategory!.backgroundColor : Colors.transparent,
+      color: _currentCategory != null
+          ? _currentCategory!.iconColor
+          : context.appTheme.onBackground.withOpacity(0.4),
       width: null,
       height: null,
-      border: currentCategory != null
+      border: _currentCategory != null
           ? null
           : Border.all(
               color: context.appTheme.onBackground.withOpacity(0.4),
@@ -55,7 +71,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription(
+              'Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModal<Category>(
@@ -82,14 +99,15 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                           borderRadius: BorderRadius.circular(16),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           border: Border.all(
-                            color: currentCategory?.databaseObject.id == category.databaseObject.id
+                            color: _currentCategory?.databaseObject.id == category.databaseObject.id
                                 ? category.backgroundColor
                                 : context.appTheme.onBackground.withOpacity(0.4),
                           ),
-                          backgroundColor: currentCategory?.databaseObject.id == category.databaseObject.id
-                              ? category.backgroundColor
-                              : Colors.transparent,
-                          color: currentCategory?.databaseObject.id == category.databaseObject.id
+                          backgroundColor:
+                              _currentCategory?.databaseObject.id == category.databaseObject.id
+                                  ? category.backgroundColor
+                                  : Colors.transparent,
+                          color: _currentCategory?.databaseObject.id == category.databaseObject.id
                               ? category.iconColor
                               : context.appTheme.onBackground,
                           onTap: () => context.pop<Category>(category),
@@ -122,12 +140,13 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (currentCategory != null && currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
-              currentCategory = null;
-              widget.onChangedCategory(currentCategory);
+            if (_currentCategory != null &&
+                _currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
+              _currentCategory = null;
+              widget.onChangedCategory(_currentCategory);
             } else {
-              currentCategory = returnedValue;
-              widget.onChangedCategory(currentCategory);
+              _currentCategory = returnedValue;
+              widget.onChangedCategory(_currentCategory);
             }
           }
         });

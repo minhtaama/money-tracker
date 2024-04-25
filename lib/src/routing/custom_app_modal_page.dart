@@ -6,10 +6,9 @@ import '../theme_and_ui/colors.dart';
 import '../utils/constants.dart';
 
 class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
-  CustomAppModalRoute(BuildContext context,
+  CustomAppModalRoute(
       {Widget? child, Widget Function(ScrollController controller, bool isScrollable)? builder})
       : super(
-          context,
           CustomAppModalPage(
             child: child,
             builder: builder,
@@ -20,12 +19,10 @@ class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
 class CustomAppDialogRoute<T> extends _CustomAppModalPageRoute<T> {
   /// Use [child] when no need to modify modal wrapper with scrollable content.
   /// If [builder] is specified, will use [builder] instead of [child].
-  CustomAppDialogRoute(
-    BuildContext context, {
+  CustomAppDialogRoute({
     Widget? child,
     Widget Function(ScrollController controller, bool isScrollable)? builder,
   }) : super(
-          context,
           CustomAppModalPage(
             child: child,
             builder: builder,
@@ -66,20 +63,16 @@ class CustomAppModalPage<T> extends Page<T> {
   final bool isDialog;
 
   @override
-  Route<T> createRoute(BuildContext context) =>
-      _CustomAppModalPageRoute<T>(context, this, isDialog: isDialog);
+  Route<T> createRoute(BuildContext context) => _CustomAppModalPageRoute<T>(this, isDialog: isDialog);
 }
 
 class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
   /// A modal bottom sheet route.
   _CustomAppModalPageRoute(
-    this.context,
     CustomAppModalPage<T> settings, {
     this.isDialog = false,
     this.bigScreenWidth = 350,
   }) : super(settings: settings);
-
-  final BuildContext context;
 
   final bool isDialog;
 
@@ -88,13 +81,13 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
   CustomAppModalPage<T> get _page => settings as CustomAppModalPage<T>;
 
   @override
-  Color? get barrierColor => context.isBigScreen
-      ? context.appTheme.isDarkTheme
+  Color? get barrierColor => navigator!.context.isBigScreen
+      ? navigator!.context.appTheme.isDarkTheme
           ? AppColors.black.withOpacity(0.45)
-          : AppColors.greyBgr(context).withOpacity(0.45)
-      : context.appTheme.isDarkTheme
+          : AppColors.greyBgr(navigator!.context).withOpacity(0.45)
+      : navigator!.context.appTheme.isDarkTheme
           ? AppColors.black.withOpacity(0.45)
-          : AppColors.greyBgr(context).withOpacity(0.7);
+          : AppColors.greyBgr(navigator!.context).withOpacity(0.7);
 
   @override
   String? get barrierLabel => null;
@@ -128,7 +121,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     return controller!.drive(CurveTween(curve: Curves.fastOutSlowIn));
   }
 
-  Widget _cardWrapper({Widget? child, bool? isScrollable}) {
+  Widget _cardWrapper(BuildContext context, {Widget? child, bool? isScrollable}) {
     return CardItem(
       color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
       elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 4.5 : 20,
@@ -163,65 +156,69 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     );
   }
 
+  Widget _contentWithScrollView(BuildContext context) => _ScrollableChecker(
+        builder: (controller, isScrollable) => _cardWrapper(
+          context,
+          isScrollable: isScrollable,
+          child: _page.builder!.call(controller, isScrollable),
+        ),
+      );
+
+  Widget _contentNoScrollView(BuildContext context) => _cardWrapper(
+        context,
+        child: _page.child,
+      );
+
+  Widget _finalChild(BuildContext context) => isDialog
+      ? _page.builder != null
+          ? _contentWithScrollView(context)
+          : _contentNoScrollView(context)
+      : context.isBigScreen
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _page.secondaryChild != null
+                    ? Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 350,
+                              maxHeight: Gap.screenHeight(context) - Gap.statusBarHeight(context),
+                            ),
+                            child: SingleChildScrollView(child: _page.secondaryChild),
+                          ),
+                        ),
+                      )
+                    : Gap.noGap,
+                _page.builder != null ? _contentWithScrollView(context) : _contentNoScrollView(context)
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _page.secondaryChild != null
+                    ? Padding(
+                        padding: EdgeInsets.only(
+                            top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
+                          child: SingleChildScrollView(child: _page.secondaryChild),
+                        ),
+                      )
+                    : Gap.noGap,
+                Flexible(
+                    child: _page.builder != null
+                        ? _contentWithScrollView(context)
+                        : _contentNoScrollView(context))
+              ],
+            );
+
   @override
   Widget buildPage(BuildContext context, Animation<double> _, Animation<double> __) {
     assert(_page.child != null || _page.builder != null);
-
-    final Widget contentWithScrollView = _ScrollableChecker(
-      key: ValueKey(_page.name),
-      builder: (controller, isScrollable) => _cardWrapper(
-        isScrollable: isScrollable,
-        child: _page.builder!.call(controller, isScrollable),
-      ),
-    );
-
-    final Widget contentNoScrollView = _cardWrapper(
-      child: _page.child,
-    );
-
-    final finalChild = isDialog
-        ? _page.builder != null
-            ? contentWithScrollView
-            : contentNoScrollView
-        : context.isBigScreen
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _page.secondaryChild != null
-                      ? Flexible(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: 350,
-                                maxHeight: Gap.screenHeight(context) - Gap.statusBarHeight(context),
-                              ),
-                              child: SingleChildScrollView(child: _page.secondaryChild),
-                            ),
-                          ),
-                        )
-                      : Gap.noGap,
-                  _page.builder != null ? contentWithScrollView : contentNoScrollView
-                ],
-              )
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _page.secondaryChild != null
-                      ? Padding(
-                          padding: EdgeInsets.only(
-                              top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
-                            child: SingleChildScrollView(child: _page.secondaryChild),
-                          ),
-                        )
-                      : Gap.noGap,
-                  Flexible(child: _page.builder != null ? contentWithScrollView : contentNoScrollView)
-                ],
-              );
 
     return AnimatedAlign(
       alignment: isDialog
@@ -234,7 +231,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
       child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
-        child: finalChild,
+        child: _finalChild(context),
       ),
     );
   }
