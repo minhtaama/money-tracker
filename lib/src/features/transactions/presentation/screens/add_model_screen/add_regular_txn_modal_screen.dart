@@ -8,7 +8,6 @@ import 'package:money_tracker_app/src/features/transactions/data/template_transa
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/components/related_budget.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -22,11 +21,14 @@ import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
+      {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
   final TransactionType transactionType;
+
+  final TemplateTransaction? template;
 
   @override
   ConsumerState<AddRegularTxnModalScreen> createState() => _AddTransactionModalScreenState();
@@ -34,12 +36,12 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
   bool _isTemplateSubmitted = false;
-
   TemplateTransaction? _templateTransaction;
 
   String get _title {
@@ -123,6 +125,18 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
       tempTxnRepo.delete(_templateTransaction!);
       _templateTransaction = null;
     }
+  }
+
+  @override
+  void initState() {
+    if (widget.template != null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _templateTransaction = widget.template;
+        _isTemplateSubmitted = true;
+        _stateController.updateStateFromTemplate(_templateTransaction!);
+      });
+    }
+    super.initState();
   }
 
   @override

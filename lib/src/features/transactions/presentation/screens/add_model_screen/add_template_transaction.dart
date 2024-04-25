@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/animated_swipe_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -10,11 +10,13 @@ import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../../../common_widgets/custom_inkwell.dart';
 import '../../../../../utils/constants.dart';
 import '../../../data/template_transaction_repo.dart';
 
@@ -28,10 +30,10 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final templateRepository = ref.watch(tempTransactionRepositoryRealmProvider);
 
-    List<TemplateTransaction> templateTransactions = templateRepository.getTransactions();
+    List<TemplateTransaction> templateTransactions = templateRepository.getTemplate();
 
     ref.watch(tempTransactionsChangesStreamProvider).whenData((_) {
-      templateTransactions = templateRepository.getTransactions();
+      templateTransactions = templateRepository.getTemplate();
     });
 
     List<Widget> buildTemplateTiles(BuildContext context) {
@@ -123,8 +125,19 @@ class _TemplateTransactionTile extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 2.0, left: 2.0),
             border:
                 context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
-            child: GestureDetector(
-              // onTap: () => onTransactionTap?.call(transaction),
+            child: CustomInkWell(
+              inkColor: AppColors.grey(context),
+              onTap: () async => await showCustomModal(
+                context: context,
+                builder: (controller, isScrollable) => AddRegularTxnModalScreen(
+                  controller,
+                  isScrollable,
+                  model.type,
+                  template: model,
+                ),
+              ).then(
+                (_) => context.pop(),
+              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
                 child: Column(
@@ -216,7 +229,7 @@ class _CategoryIcon extends StatelessWidget {
 }
 
 class _AccountIcon extends ConsumerWidget {
-  const _AccountIcon({super.key, required this.model});
+  const _AccountIcon({required this.model});
 
   final TemplateTransaction model;
 

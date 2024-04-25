@@ -66,7 +66,8 @@ class CustomAppModalPage<T> extends Page<T> {
   final bool isDialog;
 
   @override
-  Route<T> createRoute(BuildContext context) => _CustomAppModalPageRoute<T>(context, this, isDialog: isDialog);
+  Route<T> createRoute(BuildContext context) =>
+      _CustomAppModalPageRoute<T>(context, this, isDialog: isDialog);
 }
 
 class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
@@ -149,7 +150,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
           ? const BorderRadius.all(Radius.circular(20))
           : BorderRadius.only(
               topLeft: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
-              topRight: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
+              topRight:
+                  Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 28),
             ),
       child: Padding(
         padding: EdgeInsets.only(
@@ -166,6 +168,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     assert(_page.child != null || _page.builder != null);
 
     final Widget contentWithScrollView = _ScrollableChecker(
+      key: ValueKey(_page.name),
       builder: (controller, isScrollable) => _cardWrapper(
         isScrollable: isScrollable,
         child: _page.builder!.call(controller, isScrollable),
@@ -188,8 +191,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                   _page.secondaryChild != null
                       ? Flexible(
                           child: Padding(
-                            padding:
-                                EdgeInsets.only(top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
+                            padding: EdgeInsets.only(
+                                top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
                                 maxWidth: 350,
@@ -208,8 +211,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                 children: [
                   _page.secondaryChild != null
                       ? Padding(
-                          padding:
-                              EdgeInsets.only(top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
+                          padding: EdgeInsets.only(
+                              top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
                             child: SingleChildScrollView(child: _page.secondaryChild),
@@ -243,7 +246,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
+    final tween =
+        Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(
@@ -256,6 +260,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
 class _ScrollableChecker extends StatefulWidget {
   const _ScrollableChecker({
+    super.key,
     required this.builder,
   });
 

@@ -9,7 +9,6 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -116,7 +115,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                       textAlign: TextAlign.end,
                       formattedResultOutput: (value) => calculatorOutput = value,
                       focusColor: context.appTheme.secondary1,
-                      hintText: CalService.formatNumberInGroup(widget.currentCreditAccount.creditLimit.toString())),
+                      hintText: CalService.formatNumberInGroup(
+                          widget.currentCreditAccount.creditLimit.toString())),
                 ),
               ),
               Gap.h12,
@@ -150,7 +150,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               ),
               CustomRadio<StatementType>(
                 label: 'Using Average Daily Balance'.hardcoded,
-                subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'.hardcoded,
+                subLabel:
+                    'Can make payment in billing cycle, interest is calculated by ADB method'.hardcoded,
                 value: StatementType.withAverageDailyBalance,
                 groupValue: statementType,
                 onChanged: (value) => setState(() {
@@ -159,7 +160,9 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               ),
               CustomRadio<StatementType>(
                 label: 'Payment only in grace period',
-                subLabel: 'Can not make payment in billing cycle, interest is calculated by other method.'.hardcoded,
+                subLabel:
+                    'Can not make payment in billing cycle, interest is calculated by other method.'
+                        .hardcoded,
                 value: StatementType.payOnlyInGracePeriod,
                 groupValue: statementType,
                 onChanged: (value) => setState(() {
@@ -181,19 +184,23 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               onTap: () {
                 showConfirmModal(
                   context: context,
-                  label: 'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?'
-                      .hardcoded,
+                  label:
+                      'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?'
+                          .hardcoded,
                   subLabel: '1 more confirmation to delete this account'.hardcoded,
                   onConfirm: () {
                     showConfirmModal(
                       context: context,
-                      label: 'Are you sure? All transactions (except payments to this account) will be deleted, too.'
-                          .hardcoded,
-                      subLabel: 'Last warning. The account will be deleted after this confirmation.'.hardcoded,
+                      label:
+                          'Are you sure? All transactions (except payments to this account) will be deleted, too.'
+                              .hardcoded,
+                      subLabel:
+                          'Last warning. The account will be deleted after this confirmation.'.hardcoded,
                       onConfirm: () async {
                         context.go(RoutePath.accounts);
                         final accountRepo = ref.read(accountRepositoryProvider);
-                        await Future.delayed(k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
+                        await Future.delayed(
+                            k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
                       },
                     );
                   },
