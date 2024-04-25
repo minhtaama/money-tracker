@@ -109,7 +109,7 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
 class _CustomListView extends ConsumerStatefulWidget {
   const _CustomListView({
     super.key,
-    this.forPageViewWithScrollableSheet = false,
+    this.noPersistentSmallTabBar = false,
     this.controller,
     this.smallTabBar,
     this.extendedTabBar,
@@ -117,7 +117,7 @@ class _CustomListView extends ConsumerStatefulWidget {
     this.onOffsetChange,
   });
 
-  final bool forPageViewWithScrollableSheet;
+  final bool noPersistentSmallTabBar;
   final ScrollController? controller;
   final SmallTabBar? smallTabBar;
   final ExtendedTabBar? extendedTabBar;
@@ -162,11 +162,10 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      itemCount:
-          widget.forPageViewWithScrollableSheet ? widget.children.length : widget.children.length + 2,
+      itemCount: widget.noPersistentSmallTabBar ? widget.children.length : widget.children.length + 2,
       padding: const EdgeInsets.only(top: 25),
       itemBuilder: (context, index) {
-        if (!widget.forPageViewWithScrollableSheet) {
+        if (!widget.noPersistentSmallTabBar) {
           if (index == 0) {
             return SizedBox(height: widget.smallTabBar?.height);
           }

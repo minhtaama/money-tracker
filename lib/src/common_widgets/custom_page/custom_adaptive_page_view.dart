@@ -122,7 +122,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
           builder: (context, scrollController) => _sheetWrapper(
             child: _CustomListView(
               controller: scrollController,
-              forPageViewWithScrollableSheet: true,
+              noPersistentSmallTabBar: true,
               smallTabBar: widget.smallTabBar,
               extendedTabBar: widget.extendedTabBar,
               onOffsetChange: (value) => _onListViewOffsetChange(value),
@@ -165,9 +165,9 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
     return Stack(
       children: [
         _CustomListView(
+          noPersistentSmallTabBar: true,
           smallTabBar: widget.smallTabBar,
           extendedTabBar: widget.extendedTabBar,
-          onOffsetChange: (value) => _onListViewOffsetChange(value),
           children: [
             Stack(
               clipBehavior: Clip.none,

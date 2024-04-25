@@ -22,25 +22,8 @@ import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums_dashboard.dart';
 
-class DashboardAdaptiveWrapper extends StatelessWidget {
-  const DashboardAdaptiveWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    if (context.isBigScreen) {
-      return const Row(
-        children: [
-          Expanded(child: HomeScreen()),
-          Expanded(child: _DashboardScreen()),
-        ],
-      );
-    }
-    return const _DashboardScreen();
-  }
-}
-
-class _DashboardScreen extends StatelessWidget {
-  const _DashboardScreen();
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,16 +39,19 @@ class _DashboardScreen extends StatelessWidget {
   Widget _getChild(BuildContext context, DashboardWidgetType type) {
     return switch (type) {
       DashboardWidgetType.menu => context.isBigScreen ? Gap.noGap : const _DashboardMenu2(),
-      DashboardWidgetType.weeklyReport => const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
+      DashboardWidgetType.weeklyReport =>
+        const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
       DashboardWidgetType.monthlyExpense =>
         const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
       DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
-      DashboardWidgetType.budgets => const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
+      DashboardWidgetType.budgets =>
+        const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
     };
   }
 
-  Widget _smallScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+  Widget _smallScreen(
+      BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
@@ -88,7 +74,8 @@ class _DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _bigScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+  Widget _bigScreen(
+      BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar.empty(),
       children: [

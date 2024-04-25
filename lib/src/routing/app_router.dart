@@ -102,7 +102,8 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
       backgroundColor: context.appTheme.accent2,
       onTap: () => showCustomModal(
         context: context,
-        builder: (controller, isScrollable) => AddTemplateTransactionModalScreen(controller, isScrollable),
+        builder: (controller, isScrollable) =>
+            AddTemplateTransactionModalScreen(controller, isScrollable),
       ),
     );
 
@@ -150,22 +151,41 @@ List<BottomAppBarItem> _bottomTabItems(BuildContext context) => [
       ),
     ];
 
+class HomeAndDashboardAdaptiveWrapper extends StatelessWidget {
+  const HomeAndDashboardAdaptiveWrapper({super.key, required this.smallScreen});
+
+  final Widget smallScreen;
+
+  @override
+  Widget build(BuildContext context) {
+    if (context.isBigScreen) {
+      return const Row(
+        children: [
+          Expanded(child: HomeScreen()),
+          Expanded(child: DashboardScreen()),
+        ],
+      );
+    }
+    return smallScreen;
+  }
+}
+
 final goRouter = GoRouter(
   initialLocation: RoutePath.home,
   debugLogDiagnostics: true,
   requestFocus: false,
-  redirect: (context, routerState) {
-    final location = routerState.matchedLocation;
-    if (kDebugMode) {
-      print(location);
-    }
-
-    if (context.isBigScreen && location == RoutePath.home) {
-      return RoutePath.dashboardOrHomeInBigScreen;
-    }
-
-    return null;
-  },
+  // redirect: (context, routerState) {
+  //   final location = routerState.matchedLocation;
+  //   if (kDebugMode) {
+  //     print(location);
+  //   }
+  //
+  //   if (context.isBigScreen && location == RoutePath.home) {
+  //     return RoutePath.dashboardOrHomeInBigScreen;
+  //   }
+  //
+  //   return null;
+  // },
   routes: [
     ShellRoute(
       navigatorKey: _railNavKey,
@@ -197,7 +217,9 @@ final goRouter = GoRouter(
               parentNavigatorKey: _bottomNavKey,
               pageBuilder: (context, state) => CustomAppPage(
                 key: state.pageKey,
-                child: const HomeScreen(),
+                child: const HomeAndDashboardAdaptiveWrapper(
+                  smallScreen: HomeScreen(),
+                ),
               ),
             ),
             GoRoute(
@@ -205,7 +227,9 @@ final goRouter = GoRouter(
               parentNavigatorKey: _bottomNavKey,
               pageBuilder: (context, state) => CustomAppPage(
                 key: state.pageKey,
-                child: const DashboardAdaptiveWrapper(),
+                child: const HomeAndDashboardAdaptiveWrapper(
+                  smallScreen: DashboardScreen(),
+                ),
               ),
               routes: [
                 GoRoute(
@@ -295,7 +319,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -337,7 +362,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller, isScrollable) => AddCreditSpendingModalScreen(controller, isScrollable),
+            builder: (controller, isScrollable) =>
+                AddCreditSpendingModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(
