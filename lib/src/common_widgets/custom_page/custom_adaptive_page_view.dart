@@ -165,7 +165,6 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
     return Stack(
       children: [
         _CustomListView(
-          forPageViewWithScrollableSheet: true,
           smallTabBar: widget.smallTabBar,
           extendedTabBar: widget.extendedTabBar,
           onOffsetChange: (value) => _onListViewOffsetChange(value),
@@ -296,7 +295,8 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
+                                  width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -312,7 +312,8 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(
+                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),

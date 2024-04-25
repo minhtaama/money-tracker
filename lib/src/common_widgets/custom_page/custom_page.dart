@@ -36,7 +36,8 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state =
+          context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -88,7 +89,9 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
                         ? null
                         : Border(
                             bottom: !context.appTheme.isDarkTheme
-                                ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                                ? BorderSide(
+                                    color: Colors.grey.shade300.withOpacity(_fadeAnimation.value),
+                                    width: 1.5)
                                 : BorderSide.none,
                           ),
                   ),
@@ -128,6 +131,7 @@ class _CustomListView extends ConsumerStatefulWidget {
 class _CustomListViewState extends ConsumerState<_CustomListView> {
   late final ScrollController _scrollController =
       widget.controller ?? ScrollController(); // ScrollController used for ListView
+
   double scrollPixelsOffset = 0;
 
   @override
@@ -139,10 +143,9 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   @override
   void dispose() {
     _scrollController.removeListener(_scrollControllerListener);
-    _scrollController.dispose();
-    // if (!widget.forPageViewWithScrollableSheet) {
-    //   _scrollController.dispose();
-    // }
+    if (widget.controller == null) {
+      _scrollController.dispose();
+    }
     super.dispose();
   }
 
@@ -159,7 +162,8 @@ class _CustomListViewState extends ConsumerState<_CustomListView> {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      itemCount: widget.forPageViewWithScrollableSheet ? widget.children.length : widget.children.length + 2,
+      itemCount:
+          widget.forPageViewWithScrollableSheet ? widget.children.length : widget.children.length + 2,
       padding: const EdgeInsets.only(top: 25),
       itemBuilder: (context, index) {
         if (!widget.forPageViewWithScrollableSheet) {
