@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
@@ -59,14 +60,16 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
     }
   }
 
-  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate =
+      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
   late int _currentPageIndex = _initialPageIndex;
 
   void _onPageChange(int value) {
     _currentPageIndex = value;
-    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate =
+        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -147,8 +150,10 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedCreditAccountTab(account: widget.creditAccount, displayDate: _displayStatementDate),
+          backgroundColor:
+              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedCreditAccountTab(
+              account: widget.creditAccount, displayDate: _displayStatementDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -164,9 +169,10 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           },
         ),
         itemBuilder: (context, ref, pageIndex) {
-          final currentDateTime =
-              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          final currentDateTime = DateTime(
+              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement =
+              widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
                   _SummaryCard(
@@ -235,59 +241,59 @@ class _StatementSelector extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Gap.w24,
-        GestureDetector(
-          onTap: onTapGoToCurrentDate,
-          child: SizedBox(
-            width: 180,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Statement date',
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.isDarkTheme
-                        ? context.appTheme.onBackground.withOpacity(0.7)
-                        : context.appTheme.onSecondary.withOpacity(0.7),
-                    fontSize: 12,
+        Expanded(
+          child: GestureDetector(
+            onTap: onTapGoToCurrentDate,
+            child: SizedBox(
+              width: 180,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Statement date',
+                    style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.isDarkTheme
+                          ? context.appTheme.onBackground.withOpacity(0.7)
+                          : context.appTheme.onSecondary.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-                AnimatedSwitcher(
-                  duration: k150msDuration,
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: Tween<double>(
-                        begin: 0,
-                        end: 1,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  child: Row(
-                    key: ValueKey(dateDisplay),
-                    children: [
-                      Text(
-                        key: ValueKey(dateDisplay),
-                        dateDisplay,
-                        style: kHeader1TextStyle.copyWith(
-                          color: context.appTheme.onBackground.withOpacity(0.9),
-                          fontSize: 22,
+                  AnimatedSwitcher(
+                    duration: k150msDuration,
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: Tween<double>(
+                          begin: 0,
+                          end: 1,
+                        ).animate(animation),
+                        child: child,
+                      );
+                    },
+                    child: Row(
+                      key: ValueKey(dateDisplay),
+                      children: [
+                        Text(
+                          key: ValueKey(dateDisplay),
+                          dateDisplay,
+                          style: kHeader1TextStyle.copyWith(
+                            color: context.appTheme.onBackground.withOpacity(0.9),
+                            fontSize: 22,
+                          ),
                         ),
-                      ),
-                      Gap.w8,
-                      !isToday
-                          ? RoundedIconButton(
-                              iconPath: AppIcons.turn,
-                              iconColor: context.appTheme.onBackground,
-                              size: 20,
-                              backgroundColor: Colors.transparent,
-                              iconPadding: 0,
-                            )
-                          : Gap.noGap,
-                    ],
+                        Gap.w8,
+                        !isToday
+                            ? SvgIcon(
+                                AppIcons.turn,
+                                color: context.appTheme.onBackground,
+                                size: 20,
+                              )
+                            : Gap.noGap,
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

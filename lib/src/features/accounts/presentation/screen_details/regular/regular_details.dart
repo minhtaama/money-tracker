@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/components/extended_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
@@ -74,7 +75,8 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -150,8 +152,10 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedRegularAccountTab(account: widget.regularAccount, displayDate: _currentDisplayDate),
+          backgroundColor:
+              widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedRegularAccountTab(
+              account: widget.regularAccount, displayDate: _currentDisplayDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -166,12 +170,12 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-          List<BaseTransaction> transactionList =
-              transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+          List<BaseTransaction> transactionList = transactionRepository.getTransactionsOfAccount(
+              widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
 
           ref.listen(transactionsChangesStreamProvider, (_, __) {
-            transactionList =
-                transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+            transactionList = transactionRepository.getTransactionsOfAccount(
+                widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
             setState(() {});
           });
 
@@ -206,69 +210,69 @@ class _DateSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Gap.w24,
-          GestureDetector(
-            onTap: onDateTap,
-            child: SizedBox(
-              width: 200,
-              child: AnimatedSwitcher(
-                duration: k150msDuration,
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(
-                    opacity: Tween<double>(
-                      begin: 0,
-                      end: 1,
-                    ).animate(animation),
-                    child: child,
-                  );
-                },
-                child: Row(
-                  key: ValueKey(displayDate.toLongDate(context, noDay: true)),
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0),
-                          child: Text(
-                            displayDate.year.toString(),
-                            style: kHeader3TextStyle.copyWith(
-                              color: context.appTheme.onBackground.withOpacity(0.9),
-                              fontSize: 13,
-                              letterSpacing: 0.5,
-                              height: 0.99,
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              displayDate.monthToString(context),
-                              style: kHeader1TextStyle.copyWith(
+          Expanded(
+            child: GestureDetector(
+              onTap: onDateTap,
+              child: SizedBox(
+                width: 200,
+                child: AnimatedSwitcher(
+                  duration: k150msDuration,
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: Tween<double>(
+                        begin: 0,
+                        end: 1,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                  child: Row(
+                    key: ValueKey(displayDate.toLongDate(context, noDay: true)),
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 0),
+                            child: Text(
+                              displayDate.year.toString(),
+                              style: kHeader3TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.9),
-                                fontSize: 22,
-                                letterSpacing: 0.6,
-                                height: 1.2,
+                                fontSize: 13,
+                                letterSpacing: 0.5,
+                                height: 0.99,
                               ),
                             ),
-                            Gap.w8,
-                            !today
-                                ? Transform.translate(
-                                    offset: const Offset(0, 2),
-                                    child: RoundedIconButton(
-                                      iconPath: AppIcons.turn,
-                                      iconColor: context.appTheme.onBackground,
-                                      backgroundColor: Colors.transparent,
-                                      size: 20,
-                                      iconPadding: 0,
-                                    ),
-                                  )
-                                : Gap.noGap,
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                displayDate.monthToString(context),
+                                style: kHeader1TextStyle.copyWith(
+                                  color: context.appTheme.onBackground.withOpacity(0.9),
+                                  fontSize: 22,
+                                  letterSpacing: 0.6,
+                                  height: 1.2,
+                                ),
+                              ),
+                              Gap.w8,
+                              !today
+                                  ? Transform.translate(
+                                      offset: const Offset(0, 2),
+                                      child: SvgIcon(
+                                        AppIcons.turn,
+                                        color: context.appTheme.onBackground,
+                                        size: 20,
+                                      ),
+                                    )
+                                  : Gap.noGap,
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

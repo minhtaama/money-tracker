@@ -13,6 +13,7 @@ import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
+import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../transactions/domain/transaction_base.dart';
@@ -88,7 +89,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -162,7 +164,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList =
+            transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
           transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
@@ -177,7 +180,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 class _DateSelector extends StatelessWidget {
   const _DateSelector({
-    super.key,
     required this.displayDate,
     this.onTapLeft,
     this.onTapRight,
@@ -248,12 +250,10 @@ class _DateSelector extends StatelessWidget {
                             !today
                                 ? Transform.translate(
                                     offset: const Offset(0, 2),
-                                    child: RoundedIconButton(
-                                      iconPath: AppIcons.turn,
-                                      iconColor: context.appTheme.onBackground,
-                                      backgroundColor: Colors.transparent,
+                                    child: SvgIcon(
+                                      AppIcons.turn,
+                                      color: context.appTheme.onBackground,
                                       size: 20,
-                                      iconPadding: 0,
                                     ),
                                   )
                                 : Gap.noGap,
