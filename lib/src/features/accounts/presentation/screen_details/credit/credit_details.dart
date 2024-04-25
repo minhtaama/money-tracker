@@ -297,7 +297,6 @@ class _StatementSelector extends StatelessWidget {
             ),
           ),
         ),
-        const Spacer(),
         RoundedIconButton(
           iconPath: AppIcons.arrowLeft,
           iconColor: context.appTheme.onBackground,
