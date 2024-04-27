@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
@@ -54,10 +55,11 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
 
   @override
   Widget build(BuildContext context) {
-    return CustomSection(
-      title: 'Edit credit account'.hardcoded,
-      isWrapByCard: false,
-      sections: [
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Edit credit account'.hardcoded,
+      ),
+      body: [
         Row(
           children: [
             IconSelectButton(
@@ -115,8 +117,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                       textAlign: TextAlign.end,
                       formattedResultOutput: (value) => calculatorOutput = value,
                       focusColor: context.appTheme.secondary1,
-                      hintText: CalService.formatNumberInGroup(
-                          widget.currentCreditAccount.creditLimit.toString())),
+                      hintText: CalService.formatNumberInGroup(widget.currentCreditAccount.creditLimit.toString())),
                 ),
               ),
               Gap.h12,
@@ -150,8 +151,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               ),
               CustomRadio<StatementType>(
                 label: 'Using Average Daily Balance'.hardcoded,
-                subLabel:
-                    'Can make payment in billing cycle, interest is calculated by ADB method'.hardcoded,
+                subLabel: 'Can make payment in billing cycle, interest is calculated by ADB method'.hardcoded,
                 value: StatementType.withAverageDailyBalance,
                 groupValue: statementType,
                 onChanged: (value) => setState(() {
@@ -160,9 +160,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
               ),
               CustomRadio<StatementType>(
                 label: 'Payment only in grace period',
-                subLabel:
-                    'Can not make payment in billing cycle, interest is calculated by other method.'
-                        .hardcoded,
+                subLabel: 'Can not make payment in billing cycle, interest is calculated by other method.'.hardcoded,
                 value: StatementType.payOnlyInGracePeriod,
                 groupValue: statementType,
                 onChanged: (value) => setState(() {
@@ -172,66 +170,48 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
             ],
           ),
         ),
-        Gap.h24,
-        Row(
-          children: [
-            RoundedIconButton(
-              size: 55,
-              iconPath: AppIcons.delete,
-              iconPadding: 15,
-              backgroundColor: AppColors.greyBgr(context),
-              iconColor: context.appTheme.onBackground,
-              onTap: () {
-                showConfirmModal(
-                  context: context,
-                  label:
-                      'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?'
-                          .hardcoded,
-                  subLabel: '1 more confirmation to delete this account'.hardcoded,
-                  onConfirm: () {
-                    showConfirmModal(
-                      context: context,
-                      label:
-                          'Are you sure? All transactions (except payments to this account) will be deleted, too.'
-                              .hardcoded,
-                      subLabel:
-                          'Last warning. The account will be deleted after this confirmation.'.hardcoded,
-                      onConfirm: () async {
-                        context.go(RoutePath.accounts);
-                        final accountRepo = ref.read(accountRepositoryProvider);
-                        await Future.delayed(
-                            k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-            const Spacer(),
-            IconWithTextButton(
-              iconPath: AppIcons.edit,
-              label: 'Done',
-              backgroundColor: context.appTheme.accent1,
-              onTap: () {
-                final accountRepo = ref.read(accountRepositoryProvider);
-
-                accountRepo.editCreditAccount(
-                  widget.currentCreditAccount,
-                  iconCategory: newIconCategory,
-                  iconIndex: newIconIndex,
-                  name: newName,
-                  colorIndex: newColorIndex,
-                  apr: apr == '' ? null : double.tryParse(apr),
-                  statementType: statementType,
-                  creditLimit: CalService.formatToDouble(calculatorOutput),
-                );
-
-                context.pop();
-              },
-            ),
-          ],
-        ),
       ],
+      footer: ModalFooter(
+        isBigButtonDisabled: false,
+        smallButtonIcon: AppIcons.delete,
+        onSmallButtonTap: () {
+          showConfirmModal(
+            context: context,
+            label:
+                'Are you sure that you want to delete credit account "${widget.currentCreditAccount.name}"?'.hardcoded,
+            subLabel: '1 more confirmation to delete this account'.hardcoded,
+            onConfirm: () {
+              showConfirmModal(
+                context: context,
+                label:
+                    'Are you sure? All transactions (except payments to this account) will be deleted, too.'.hardcoded,
+                subLabel: 'Last warning. The account will be deleted after this confirmation.'.hardcoded,
+                onConfirm: () async {
+                  context.go(RoutePath.accounts);
+                  final accountRepo = ref.read(accountRepositoryProvider);
+                  await Future.delayed(k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
+                },
+              );
+            },
+          );
+        },
+        onBigButtonTap: () {
+          final accountRepo = ref.read(accountRepositoryProvider);
+
+          accountRepo.editCreditAccount(
+            widget.currentCreditAccount,
+            iconCategory: newIconCategory,
+            iconIndex: newIconIndex,
+            name: newName,
+            colorIndex: newColorIndex,
+            apr: apr == '' ? null : double.tryParse(apr),
+            statementType: statementType,
+            creditLimit: CalService.formatToDouble(calculatorOutput),
+          );
+
+          context.pop();
+        },
+      ),
     );
   }
 }

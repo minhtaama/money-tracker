@@ -1,10 +1,13 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _PaymentDetails extends ConsumerStatefulWidget {
-  const _PaymentDetails(this.screenType, {required this.transaction});
+  const _PaymentDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
 
   final CreditPayment transaction;
   final TransactionScreenType screenType;
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<_PaymentDetails> createState() => _PaymentDetailsState();
@@ -37,45 +40,50 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(creditPaymentFormNotifierProvider);
 
-    return CustomSection(
-      title: 'Credit Payment'.hardcoded,
-      subTitle: _DateTime(
-        isEditMode: _transaction.account is DeletedAccount ? false : _isEditMode,
-        isEdited: _isDateTimeEdited(stateWatch),
-        dateTime: stateWatch.dateTime ?? _transaction.dateTime,
-        onEditModeTap: _changeDateTime,
-      ),
-      subIcons: widget.screenType == TransactionScreenType.editable
-          ? [
-              widget.transaction.isAdjustToAPRChange
-                  ? Gap.noGap
-                  : _EditButton(
-                      isEditMode: _isEditMode,
-                      onTap: () {
-                        if (_isEditMode) {
-                          if (_submit()) {
-                            setState(() {
-                              _isEditMode = !_isEditMode;
-                            });
-                          }
-                        } else {
-                          setState(() {
-                            _isEditMode = !_isEditMode;
-                          });
-                        }
-                      },
-                    ),
-              _DeleteButton(
-                isEditMode: _isEditMode,
-                isDisable: !_canDelete,
-                disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
-                onConfirm: _delete,
+    return ModalContent(
+      controller: widget.controller,
+      isScrollable: widget.isScrollable,
+      header: ModalHeader(
+        title: 'Credit Payment'.hardcoded,
+        subTitle: _DateTime(
+          isEditMode: _transaction.account is DeletedAccount ? false : _isEditMode,
+          isEdited: _isDateTimeEdited(stateWatch),
+          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+          onEditModeTap: _changeDateTime,
+        ),
+        trailing: widget.screenType == TransactionScreenType.editable
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  widget.transaction.isAdjustToAPRChange
+                      ? Gap.noGap
+                      : _EditButton(
+                          isEditMode: _isEditMode,
+                          onTap: () {
+                            if (_isEditMode) {
+                              if (_submit()) {
+                                setState(() {
+                                  _isEditMode = !_isEditMode;
+                                });
+                              }
+                            } else {
+                              setState(() {
+                                _isEditMode = !_isEditMode;
+                              });
+                            }
+                          },
+                        ),
+                  _DeleteButton(
+                    isEditMode: _isEditMode,
+                    isDisable: !_canDelete,
+                    disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+                    onConfirm: _delete,
+                  )
+                ],
               )
-            ]
-          : null,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      isWrapByCard: false,
-      sections: [
+            : null,
+      ),
+      body: [
         _Amount(
           isEditMode: false,
           transactionType: TransactionType.creditPayment,
@@ -118,6 +126,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
         ),
         Gap.h16,
       ],
+      footer: Gap.noGap,
     );
   }
 }

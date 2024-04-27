@@ -162,6 +162,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                 Gap.w12,
                 RoundedIconButton(
                   iconPath: transaction.hasInstallment ? AppIcons.installment : AppIcons.handCoin,
+                  backgroundColor: Colors.transparent,
                   iconColor: context.appTheme.negative,
                   iconPadding: 0,
                   size: 26,
@@ -228,19 +229,17 @@ class _DateTime extends StatelessWidget {
         isEdited: isEdited,
         onTap: onEditModeTap,
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               '${formatter.format(dateTime.hour)}:${formatter.format(dateTime.minute)}',
-              style:
-                  kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: kNormalTextStyle.fontSize),
+              style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
             ),
             Gap.w8,
             Flexible(
               child: Text(
                 dateTime.toLongDate(context),
-                style: kNormalTextStyle.copyWith(
-                  color: context.appTheme.onBackground,
-                ),
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
               ),
             ),
           ],

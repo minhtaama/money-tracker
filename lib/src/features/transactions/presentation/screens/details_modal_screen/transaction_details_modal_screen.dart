@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
@@ -48,7 +49,9 @@ part 'installment_details.dart';
 part 'regular_details.dart';
 
 class TransactionDetailsModalScreen extends ConsumerWidget {
-  const TransactionDetailsModalScreen({
+  const TransactionDetailsModalScreen(
+    this.controller,
+    this.isScrollable, {
     super.key,
     required this.objectIdHexString,
     required this.screenType,
@@ -56,6 +59,9 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
 
   final String objectIdHexString;
   final TransactionScreenType screenType;
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,11 +76,12 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
 
       return switch (transaction) {
         BaseRegularTransaction() =>
-          _RegularDetails(screenType, transaction: transaction as BaseRegularTransaction),
+          _RegularDetails(screenType, controller, isScrollable, transaction: transaction as BaseRegularTransaction),
         CreditSpending() => screenType == TransactionScreenType.installmentToPay
             ? _InstallmentDetails(transaction: transaction as CreditSpending)
-            : _SpendingDetails(screenType, transaction: transaction as CreditSpending),
-        CreditPayment() => _PaymentDetails(screenType, transaction: transaction as CreditPayment),
+            : _SpendingDetails(screenType, controller, isScrollable, transaction: transaction as CreditSpending),
+        CreditPayment() =>
+          _PaymentDetails(screenType, controller, isScrollable, transaction: transaction as CreditPayment),
         CreditCheckpoint() => const Placeholder(),
       };
     } catch (e) {

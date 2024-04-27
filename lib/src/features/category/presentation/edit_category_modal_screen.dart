@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
@@ -13,6 +14,7 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../data/category_repo.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
@@ -41,10 +43,11 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
 
   @override
   Widget build(BuildContext context) {
-    return CustomSection(
-      title: 'Edit Category',
-      isWrapByCard: false,
-      sections: [
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Edit Category'.hardcoded,
+      ),
+      body: [
         Row(
           children: [
             IconSelectButton(
@@ -79,49 +82,35 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             });
           },
         ),
-        Gap.h24,
-        Row(
-          children: [
-            RoundedIconButton(
-              size: 55,
-              iconPath: AppIcons.delete,
-              iconPadding: 15,
-              backgroundColor: AppColors.greyBgr(context),
-              iconColor: context.appTheme.onBackground,
-              onTap: () {
-                showConfirmModal(
-                  context: context,
-                  label: 'Are you sure that you want to delete "${widget.currentCategory.name}"?',
-                  onConfirm: () {
-                    final categoryRepository = ref.read(categoryRepositoryRealmProvider);
-                    categoryRepository.delete(widget.currentCategory);
-                    context.pop();
-                  },
-                );
-              },
-            ),
-            const Spacer(),
-            IconWithTextButton(
-              iconPath: AppIcons.edit,
-              label: 'Done',
-              backgroundColor: context.appTheme.accent1,
-              onTap: () async {
-                final categoryRepository = ref.read(categoryRepositoryRealmProvider);
-                categoryRepository.edit(
-                  widget.currentCategory,
-                  iconCategory: newIconCategory,
-                  iconIndex: newIconIndex,
-                  name: newName,
-                  colorIndex: newColorIndex,
-                );
-                if (mounted) {
-                  context.pop();
-                }
-              },
-            ),
-          ],
-        ),
       ],
+      footer: ModalFooter(
+        isBigButtonDisabled: false,
+        smallButtonIcon: AppIcons.delete,
+        onSmallButtonTap: () {
+          showConfirmModal(
+            context: context,
+            label: 'Are you sure that you want to delete "${widget.currentCategory.name}"?',
+            onConfirm: () {
+              final categoryRepository = ref.read(categoryRepositoryRealmProvider);
+              categoryRepository.delete(widget.currentCategory);
+              context.pop();
+            },
+          );
+        },
+        onBigButtonTap: () async {
+          final categoryRepository = ref.read(categoryRepositoryRealmProvider);
+          categoryRepository.edit(
+            widget.currentCategory,
+            iconCategory: newIconCategory,
+            iconIndex: newIconIndex,
+            name: newName,
+            colorIndex: newColorIndex,
+          );
+          if (mounted) {
+            context.pop();
+          }
+        },
+      ),
     );
   }
 }

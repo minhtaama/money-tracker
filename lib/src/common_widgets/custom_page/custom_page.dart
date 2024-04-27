@@ -36,8 +36,7 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state =
-          context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -89,9 +88,7 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
                         ? null
                         : Border(
                             bottom: !context.appTheme.isDarkTheme
-                                ? BorderSide(
-                                    color: Colors.grey.shade300.withOpacity(_fadeAnimation.value),
-                                    width: 1.5)
+                                ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
                                 : BorderSide.none,
                           ),
                   ),
@@ -108,7 +105,6 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
 
 class _CustomListView extends ConsumerStatefulWidget {
   const _CustomListView({
-    super.key,
     this.noPersistentSmallTabBar = false,
     this.controller,
     this.smallTabBar,
