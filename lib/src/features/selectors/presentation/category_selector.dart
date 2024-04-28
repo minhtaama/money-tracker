@@ -154,15 +154,27 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                   children: [
                     Gap.h8,
                     IconWithText(
-                        header:
-                            'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
-                                .hardcoded,
-                        headerSize: 14,
-                        iconPath: AppIcons.accounts,
-                        onTap: () {
-                          context.pop();
-                          context.push(RoutePath.addCategory);
-                        }),
+                      header:
+                          'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
+                              .hardcoded,
+                      headerSize: 14,
+                      iconPath: AppIcons.accounts,
+                      onTap: () async {
+                        final categoryType = widget.transactionType == TransactionType.income
+                            ? CategoryType.income
+                            : CategoryType.expense;
+
+                        final newCategory = await showCustomModal<Category>(
+                          context: context,
+                          child: AddCategoryModalScreen(initialType: categoryType),
+                        );
+                        if (mounted) {
+                          if (newCategory != null && newCategory.type == categoryType) {
+                            context.pop<Category>(newCategory);
+                          }
+                        }
+                      },
+                    ),
                     Gap.h48,
                   ],
                 ),

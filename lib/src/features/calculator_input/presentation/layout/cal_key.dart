@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/card_item.dart';
+import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../utils/constants.dart';
 
 class CalKey extends StatelessWidget {
   const CalKey({
-    Key? key,
+    super.key,
     required this.text,
     required this.onInput,
     this.value,
-  }) : super(key: key);
+  });
   final String text;
   final String? value;
   final ValueSetter<String> onInput;
@@ -19,7 +20,7 @@ class CalKey extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardItem(
       key: key,
-      color: AppColors.grey(context),
+      color: AppColors.greyBgr(context),
       width: 70,
       height: 70,
       padding: EdgeInsets.zero,
@@ -27,9 +28,9 @@ class CalKey extends StatelessWidget {
       borderRadius: BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
-      child: InkWell(
+      child: CustomInkWell(
         onTap: () => onInput(value ?? text),
-        highlightColor: context.appTheme.onBackground.withAlpha(105),
+        inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: Text(

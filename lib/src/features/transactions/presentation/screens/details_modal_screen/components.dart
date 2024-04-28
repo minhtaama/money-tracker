@@ -174,7 +174,8 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                         children: [
                           Text(
                             'Installment payment in ${transaction.monthsToPay} months'.hardcoded,
-                            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                            style: kHeader3TextStyle.copyWith(
+                                color: context.appTheme.onBackground, fontSize: 14),
                           ),
                           Gap.h2,
                           Row(
@@ -201,7 +202,8 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                       )
                     : Text(
                         'Pay before due date'.hardcoded,
-                        style: kHeader3TextStyle.copyWith(color: context.appTheme.negative, fontSize: 16),
+                        style:
+                            kHeader3TextStyle.copyWith(color: context.appTheme.negative, fontSize: 16),
                       ),
               ],
             ),
@@ -212,7 +214,8 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime({required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
+  const _DateTime(
+      {required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
 
   final bool isEditMode;
   final bool isEdited;
@@ -250,7 +253,8 @@ class _DateTime extends StatelessWidget {
 }
 
 class _AccountCard extends StatelessWidget {
-  const _AccountCard({required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
+  const _AccountCard(
+      {required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
   final bool isEditMode;
   final bool isEdited;
   final BaseAccount account;
@@ -258,7 +262,8 @@ class _AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = account.backgroundColor.withOpacity(0.2).addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0);
+    final bgColor =
+        account.backgroundColor.withOpacity(0.2).addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0);
 
     return _NeumorphicEditWrap(
       isEditMode: isEditMode,
@@ -288,7 +293,9 @@ class _AccountCard extends StatelessWidget {
                     ..scale(5.0),
                   child: SvgIcon(
                     account.iconPath,
-                    color: isEditMode ? account.backgroundColor.addDark(0.2) : account.backgroundColor.addDark(0.2),
+                    color: isEditMode
+                        ? account.backgroundColor.addDark(0.2)
+                        : account.backgroundColor.addDark(0.2),
                   ),
                 ),
               ),
@@ -298,8 +305,8 @@ class _AccountCard extends StatelessWidget {
                 children: [
                   Text(
                     account is CreditAccountInfo ? 'CREDIT ACCOUNT:' : 'ACCOUNT:',
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                    style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                   ),
                   Gap.h4,
                   Row(
@@ -307,7 +314,8 @@ class _AccountCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           account.name,
-                          style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
+                          style: kHeader2TextStyle.copyWith(
+                              color: context.appTheme.onBackground, fontSize: 20),
                         ),
                       ),
                       Gap.w48,
@@ -325,7 +333,11 @@ class _AccountCard extends StatelessWidget {
 
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard(
-      {required this.isEditMode, this.isEdited = false, required this.category, this.categoryTag, this.onEditModeTap});
+      {required this.isEditMode,
+      this.isEdited = false,
+      required this.category,
+      this.categoryTag,
+      this.onEditModeTap});
 
   final bool isEditMode;
   final bool isEdited;
@@ -351,7 +363,8 @@ class _CategoryCard extends StatelessWidget {
           children: [
             Text(
               'CATEGORY:',
-              style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+              style: kHeader2TextStyle.copyWith(
+                  color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
             ),
             Gap.h8,
             Row(
@@ -371,12 +384,14 @@ class _CategoryCard extends StatelessWidget {
                     children: [
                       Text(
                         category.name,
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
+                        style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.onBackground, fontSize: 20),
                       ),
                       categoryTag != null && categoryTag != CategoryTag.noTag
                           ? Text(
                               '# ${categoryTag!.name}',
-                              style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
+                              style: kHeader3TextStyle.copyWith(
+                                  color: context.appTheme.onBackground, fontSize: 15),
                             )
                           : const SizedBox(),
                     ],
@@ -392,7 +407,8 @@ class _CategoryCard extends StatelessWidget {
 }
 
 class _Note extends StatelessWidget {
-  const _Note({required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeChanged});
+  const _Note(
+      {required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeChanged});
   final bool isEditMode;
   final bool isEdited;
   final String? note;
@@ -415,8 +431,8 @@ class _Note extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   'NOTE:',
-                  style:
-                      kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                  style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                 ),
               ),
               Gap.h4,
@@ -457,16 +473,21 @@ class _NeumorphicEditWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow =
+        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow =
+        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final containerColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return Stack(
       children: [
         AnimatedContainer(
           duration: k250msDuration,
           curve: Curves.easeOut,
-          padding: isEditMode && withPadding ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6) : EdgeInsets.zero,
+          padding: isEditMode && withPadding
+              ? const EdgeInsets.symmetric(vertical: 4, horizontal: 6)
+              : EdgeInsets.zero,
           margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
           decoration: BoxDecoration(
             color: containerColor,
@@ -539,9 +560,12 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final bgEditColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow =
+        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow =
+        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final bgEditColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
@@ -551,7 +575,9 @@ class _NeumorphicEditCardWrap extends StatelessWidget {
             margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
             elevation: 0,
             padding: EdgeInsets.zero,
-            color: isEditMode ? bgEditColor : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+            color: isEditMode
+                ? bgEditColor
+                : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
             boxShadow: [
               BoxShadow(
                 color: isEditMode
@@ -606,9 +632,12 @@ class _EditButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final topLeftShadow =
+        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
+    final bottomRightShadow =
+        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
+    final containerColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return CardItem(
       width: isEditMode ? 75 : 40,
@@ -667,7 +696,8 @@ class _EditButton extends StatelessWidget {
                       Gap.w8,
                       Text(
                         'DONE',
-                        style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
+                        style: kHeader2TextStyle.copyWith(
+                            fontSize: 15, color: context.appTheme.onBackground),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -684,7 +714,10 @@ class _EditButton extends StatelessWidget {
 
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton(
-      {required this.isEditMode, required this.onConfirm, this.isDisable = false, this.disableText = ''});
+      {required this.isEditMode,
+      required this.onConfirm,
+      this.isDisable = false,
+      this.disableText = ''});
 
   final bool isEditMode;
   final bool isDisable;
@@ -693,7 +726,8 @@ class _DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final containerColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final containerColor =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return CardItem(
       width: isEditMode ? 0 : 40,
@@ -757,17 +791,11 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
   Widget build(BuildContext context) {
     return list.isNotEmpty
         ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Gap.h16,
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  title,
-                  style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-                ),
-              ),
-              Gap.h16,
+              TextHeader(title),
+              Gap.h8,
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
@@ -787,12 +815,14 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
                             ? element.backgroundColor
                             : context.appTheme.onBackground.withOpacity(0.4),
                       ),
-                      backgroundColor: selectedItem == element ? element.backgroundColor : Colors.transparent,
+                      backgroundColor:
+                          selectedItem == element ? element.backgroundColor : Colors.transparent,
                       color: selectedItem == element ? element.iconColor : context.appTheme.onBackground,
                       inkColor: element.backgroundColor,
                       onTap: onItemTap != null
                           ? () => onItemTap?.call(element)
-                          : () => selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
+                          : () =>
+                              selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
                       height: null,
                       width: null,
                     ),
@@ -856,11 +886,13 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Edit Category'.hardcoded,
+      ),
+      body: [
         _ModelWithIconEditSelector(
-          title: 'Choose Category:'.hardcoded,
+          title: 'Change Category:'.hardcoded,
           withBottomGap: false,
           list: _categoryList,
           selectedItem: _selectedCategory,
@@ -870,13 +902,7 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
           }),
         ),
         Gap.h16,
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            'Choose Tag:'.hardcoded,
-            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-          ),
-        ),
+        TextHeader('Change Tag:'.hardcoded),
         Gap.h16,
         CategoryTagSelector(
           category: _selectedCategory,
@@ -888,23 +914,13 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
             _selectedTag = CategoryTag.noTag;
           }),
         ),
-        Gap.h24,
-        Row(
-          children: [
-            const Spacer(),
-            IconWithTextButton(
-              iconPath: AppIcons.done,
-              label: 'Done',
-              backgroundColor: context.appTheme.accent2,
-              color: context.appTheme.onAccent,
-              height: 55,
-              width: 130,
-              onTap: () => context.pop<List<dynamic>>([_selectedCategory, _selectedTag]),
-            ),
-          ],
-        ),
-        Gap.h32,
       ],
+      footer: ModalFooter(
+        isBigButtonDisabled: false,
+        bigButtonIcon: AppIcons.done,
+        bigButtonLabel: context.localize.done,
+        onBigButtonTap: () => context.pop<List<dynamic>>([_selectedCategory, _selectedTag]),
+      ),
     );
   }
 }

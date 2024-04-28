@@ -196,6 +196,7 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
+                  flex: 6,
                   child: _ChosenTag(
                     chosenTag: _chosenTag?.name,
                     category: _currentCategory,

@@ -220,15 +220,17 @@ class _CalculatorState extends State<_Calculator> {
             result: _formattedString,
           ),
           Gap.divider(context),
-          KeysLayout(
-            onInput: _add,
-            onEqual: _equal,
-            onBackspace: _backspace,
-            onAC: _ac,
-            onDone: () {
-              _equal();
-              context.pop<String>(_formattedString);
-            },
+          Flexible(
+            child: KeysLayout(
+              onInput: _add,
+              onEqual: _equal,
+              onBackspace: _backspace,
+              onAC: _ac,
+              onDone: () {
+                _equal();
+                context.pop<String>(_formattedString);
+              },
+            ),
           ),
           Gap.h16,
         ],
