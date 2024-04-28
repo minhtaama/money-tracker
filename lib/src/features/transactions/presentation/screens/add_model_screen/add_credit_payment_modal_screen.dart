@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_box.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
@@ -127,20 +126,20 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextHeader('Pay to credit account:'.hardcoded),
-                  Gap.h4,
-                  AccountFormSelector(
-                    accountType: AccountType.credit,
-                    validator: (_) => _creditAccountValidator(),
-                    onChangedAccount: _onCreditAccountChange,
-                  ),
-                  Gap.h8,
-                  const TextHeader('Payment account:'),
+                  TextHeader('Payment from:'.hardcoded),
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.regular,
                     validator: (_) => _fromRegularAccountValidator(),
                     onChangedAccount: _onRegularAccountChange,
+                  ),
+                  Gap.h8,
+                  const TextHeader('Credit account to pay:'),
+                  Gap.h4,
+                  AccountFormSelector(
+                    accountType: AccountType.credit,
+                    validator: (_) => _creditAccountValidator(),
+                    onChangedAccount: _onCreditAccountChange,
                   ),
                 ],
               ),
@@ -286,8 +285,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                       stateWatch.totalBalanceAmount.roundBySetting(context) -
                                               stateWatch.userPaymentAmount!.roundBySetting(context) >
                                           0
-                                  ? CalService.formatCurrency(
-                                      context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                  ? CalService.formatCurrency(context,
+                                      stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                   : '???',
                               textAlign: TextAlign.right,
                               controller: _remainingInputController,

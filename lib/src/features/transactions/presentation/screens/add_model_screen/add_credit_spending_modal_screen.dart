@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
@@ -173,20 +172,21 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const TextHeader('Expense Category:'),
-                  Gap.h4,
-                  CategoryFormSelector(
-                    transactionType: TransactionType.expense,
-                    validator: (_) => _categoryValidator(),
-                    onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
-                  ),
-                  Gap.h16,
                   const TextHeader('Credit Account:'),
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.credit,
                     validator: (_) => _creditAccountValidator(),
-                    onChangedAccount: (newAccount) => _stateController.changeCreditAccount(newAccount as CreditAccount),
+                    onChangedAccount: (newAccount) =>
+                        _stateController.changeCreditAccount(newAccount as CreditAccount),
+                  ),
+                  Gap.h16,
+                  const TextHeader('Expense category:'),
+                  Gap.h4,
+                  CategoryFormSelector(
+                    transactionType: TransactionType.expense,
+                    validator: (_) => _categoryValidator(),
+                    onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
                   ),
                 ],
               ),

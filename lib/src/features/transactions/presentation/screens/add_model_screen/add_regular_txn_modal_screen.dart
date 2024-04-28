@@ -203,7 +203,22 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'From:'),
+                  TextHeader(widget.transactionType != TransactionType.transfer ? 'Account:' : 'From:'),
+                  Gap.h4,
+                  AccountFormSelector(
+                    accountType: AccountType.regular,
+                    validator: (_) => _sendingAccountValidator(),
+                    initialValue: stateWatch.account,
+                    onChangedAccount: (newAccount) {
+                      setState(() {
+                        _isTemplateSubmitted = false;
+                      });
+                      _stateController.changeAccount(newAccount as RegularAccount);
+                    },
+                    otherSelectedAccount: stateWatch.account,
+                  ),
+                  Gap.h16,
+                  TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'To:'),
                   Gap.h4,
                   widget.transactionType != TransactionType.transfer
                       ? CategoryFormSelector(
@@ -219,38 +234,24 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                         )
                       : AccountFormSelector(
                           accountType: AccountType.regular,
-                          validator: (_) => _sendingAccountValidator(),
-                          initialValue: stateWatch.account,
+                          validator: (_) => _toAccountAndAccountValidator(),
+                          initialValue: widget.transactionType != TransactionType.transfer
+                              ? stateWatch.account
+                              : stateWatch.toAccount,
                           onChangedAccount: (newAccount) {
                             setState(() {
                               _isTemplateSubmitted = false;
                             });
-                            _stateController.changeAccount(newAccount as RegularAccount);
+                            if (widget.transactionType != TransactionType.transfer) {
+                              _stateController.changeAccount(newAccount as RegularAccount?);
+                            } else {
+                              _stateController.changeToAccount(newAccount as RegularAccount?);
+                            }
                           },
-                          otherSelectedAccount: stateWatch.account,
+                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
+                              ? stateWatch.account
+                              : null,
                         ),
-                  Gap.h16,
-                  TextHeader(widget.transactionType != TransactionType.transfer ? 'Account:' : 'To:'),
-                  Gap.h4,
-                  AccountFormSelector(
-                    accountType: AccountType.regular,
-                    validator: (_) => _toAccountAndAccountValidator(),
-                    initialValue: widget.transactionType != TransactionType.transfer
-                        ? stateWatch.account
-                        : stateWatch.toAccount,
-                    onChangedAccount: (newAccount) {
-                      setState(() {
-                        _isTemplateSubmitted = false;
-                      });
-                      if (widget.transactionType != TransactionType.transfer) {
-                        _stateController.changeAccount(newAccount as RegularAccount?);
-                      } else {
-                        _stateController.changeToAccount(newAccount as RegularAccount?);
-                      }
-                    },
-                    otherSelectedAccount:
-                        widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
-                  ),
                 ],
               ),
             ),

@@ -58,7 +58,7 @@ class ModalHeader extends StatelessWidget {
                         secondaryTitle!,
                         style: kHeader3TextStyle.copyWith(
                           color: context.appTheme.onBackground.withOpacity(0.8),
-                          fontSize: 14,
+                          fontSize: 13,
                         ),
                       )
                     : Gap.noGap,
