@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
+import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -11,6 +12,7 @@ import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
 import '../../../common_widgets/modal_screen_components.dart';
 import '../../../routing/app_router.dart';
+import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums.dart';
 
@@ -90,31 +92,59 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: List.generate(categoryList.length, (index) {
-                        final category = categoryList[index];
-                        return IconWithTextButton(
-                          iconPath: category.iconPath,
-                          label: category.name,
-                          labelSize: 18,
-                          borderRadius: BorderRadius.circular(16),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          border: Border.all(
-                            color: _currentCategory?.databaseObject.id == category.databaseObject.id
-                                ? category.backgroundColor
-                                : context.appTheme.onBackground.withOpacity(0.4),
-                          ),
-                          backgroundColor:
-                              _currentCategory?.databaseObject.id == category.databaseObject.id
+                      children: [
+                        ...List.generate(categoryList.length, (index) {
+                          final category = categoryList[index];
+                          return IconWithTextButton(
+                            iconPath: category.iconPath,
+                            label: category.name,
+                            labelSize: 18,
+                            borderRadius: BorderRadius.circular(16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            border: Border.all(
+                              color: _currentCategory?.databaseObject.id == category.databaseObject.id
                                   ? category.backgroundColor
-                                  : Colors.transparent,
-                          color: _currentCategory?.databaseObject.id == category.databaseObject.id
-                              ? category.iconColor
-                              : context.appTheme.onBackground,
-                          onTap: () => context.pop<Category>(category),
+                                  : context.appTheme.onBackground.withOpacity(0.4),
+                            ),
+                            backgroundColor:
+                                _currentCategory?.databaseObject.id == category.databaseObject.id
+                                    ? category.backgroundColor
+                                    : Colors.transparent,
+                            color: _currentCategory?.databaseObject.id == category.databaseObject.id
+                                ? category.iconColor
+                                : context.appTheme.onBackground,
+                            onTap: () => context.pop<Category>(category),
+                            height: null,
+                            width: null,
+                          );
+                        }),
+                        IconWithTextButton(
+                          iconPath: AppIcons.add,
+                          color: AppColors.grey(context),
+                          backgroundColor: Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                           height: null,
-                          width: null,
-                        );
-                      }),
+                          border: Border.all(
+                            color: AppColors.grey(context),
+                          ),
+                          onTap: () async {
+                            final categoryType = widget.transactionType == TransactionType.income
+                                ? CategoryType.income
+                                : CategoryType.expense;
+
+                            final newCategory = await showCustomModal<Category>(
+                              context: context,
+                              child: AddCategoryModalScreen(initialType: categoryType),
+                            );
+                            if (mounted) {
+                              if (newCategory != null && newCategory.type == categoryType) {
+                                context.pop<Category>(newCategory);
+                              }
+                            }
+                          },
+                        )
+                      ],
                     ),
                     context.isBigScreen ? Gap.noGap : Gap.h32,
                   ],

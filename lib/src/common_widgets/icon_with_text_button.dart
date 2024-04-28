@@ -10,7 +10,7 @@ class IconWithTextButton extends StatelessWidget {
   const IconWithTextButton({
     super.key,
     required this.iconPath,
-    required this.label,
+    this.label,
     this.labelSize,
     required this.backgroundColor,
     this.height = 55,
@@ -27,7 +27,7 @@ class IconWithTextButton extends StatelessWidget {
 
   final String iconPath;
   final double? iconSize;
-  final String label;
+  final String? label;
   final double? labelSize;
   final Color backgroundColor;
   final Color? color;
@@ -66,35 +66,43 @@ class IconWithTextButton extends StatelessWidget {
                 size: iconSize ?? 28,
               ),
               width != null
-                  ? Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          label,
-                          style: kHeader2TextStyle.copyWith(
-                            color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
-                            fontSize: labelSize,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  : Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 4.0),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            label,
-                            style: kHeader2TextStyle.copyWith(
-                              color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
-                              fontSize: labelSize,
+                  ? label == null
+                      ? Gap.noGap
+                      : Expanded(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              label!,
+                              style: kHeader2TextStyle.copyWith(
+                                color: isDisabled
+                                    ? context.appTheme.onBackground
+                                    : color ?? context.appTheme.onAccent,
+                                fontSize: labelSize,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
+                          ),
+                        )
+                  : label == null
+                      ? Gap.noGap
+                      : Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 4.0),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                label!,
+                                style: kHeader2TextStyle.copyWith(
+                                  color: isDisabled
+                                      ? context.appTheme.onBackground
+                                      : color ?? context.appTheme.onAccent,
+                                  fontSize: labelSize,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
             ],
           ),
         ),

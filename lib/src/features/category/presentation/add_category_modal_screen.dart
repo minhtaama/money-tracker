@@ -13,7 +13,9 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 class AddCategoryModalScreen extends ConsumerStatefulWidget {
-  const AddCategoryModalScreen({super.key});
+  const AddCategoryModalScreen({super.key, this.initialType});
+
+  final CategoryType? initialType;
 
   @override
   ConsumerState<AddCategoryModalScreen> createState() => _AddCategoryModalScreenState();
@@ -22,7 +24,7 @@ class AddCategoryModalScreen extends ConsumerStatefulWidget {
 class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  CategoryType categoryType = CategoryType.expense;
+  late CategoryType categoryType = widget.initialType ?? CategoryType.expense;
   String categoryName = '';
   String iconCategory = '';
   int iconIndex = 0;
@@ -37,7 +39,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
         CustomSliderToggle<CategoryType>(
           values: const [CategoryType.income, CategoryType.expense],
           labels: const ['Income', 'Expense'],
-          initialValueIndex: 1,
+          initialValueIndex: categoryType == CategoryType.expense ? 1 : 0,
           onTap: (type) {
             categoryType = type;
           },
@@ -91,14 +93,14 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
         onBigButtonTap: () {
           if (_formKey.currentState!.validate()) {
             final categoryRepository = ref.read(categoryRepositoryRealmProvider);
-            categoryRepository.writeNew(
+            final category = categoryRepository.writeNew(
               type: categoryType,
               iconCategory: iconCategory,
               iconIndex: iconIndex,
               name: categoryName,
               colorIndex: colorIndex,
             );
-            context.pop();
+            context.pop(category);
           }
         },
       ),

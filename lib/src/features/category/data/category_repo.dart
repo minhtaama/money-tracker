@@ -36,7 +36,7 @@ class CategoryRepositoryRealmDb {
     return realm.all<CategoryDb>().changes;
   }
 
-  void writeNew({
+  Category writeNew({
     required CategoryType type,
     required String iconCategory,
     required int iconIndex,
@@ -58,6 +58,8 @@ class CategoryRepositoryRealmDb {
     realm.write(() {
       realm.add(newCategory);
     });
+
+    return Category.fromDatabase(newCategory)!;
   }
 
   void edit(
