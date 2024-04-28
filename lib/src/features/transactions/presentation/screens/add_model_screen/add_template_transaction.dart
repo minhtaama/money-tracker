@@ -31,10 +31,10 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final templateRepository = ref.watch(tempTransactionRepositoryRealmProvider);
 
-    List<TemplateTransaction> templateTransactions = templateRepository.getTemplate();
+    List<TemplateTransaction> templateTransactions = templateRepository.getTemplates();
 
     ref.watch(tempTransactionsChangesStreamProvider).whenData((_) {
-      templateTransactions = templateRepository.getTemplate();
+      templateTransactions = templateRepository.getTemplates();
     });
 
     List<Widget> buildTemplateTiles(BuildContext context) {

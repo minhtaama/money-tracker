@@ -21,7 +21,7 @@ class TemplateTransactionRepositoryRealmDb {
   List<TemplateTransactionDb> _realmResults() =>
       realm.all<TemplateTransactionDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
 
-  List<TemplateTransaction> getTemplate() {
+  List<TemplateTransaction> getTemplates() {
     List<TemplateTransactionDb> list =
         realm.all<TemplateTransactionDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
     return list.map((txn) => TemplateTransaction.fromDatabase(txn)).toList();
@@ -72,7 +72,7 @@ extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
       transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
     }
 
-    final order = getTemplate().length;
+    final order = getTemplates().length;
 
     final newTemplateTransaction = TemplateTransactionDb(
       ObjectId(),

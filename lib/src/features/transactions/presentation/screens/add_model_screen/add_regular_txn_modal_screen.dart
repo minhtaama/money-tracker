@@ -42,7 +42,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
-  bool _isTemplateSubmitted = false;
+  bool _isTemplate = false;
   TemplateTransaction? _templateTransaction;
 
   String get _title {
@@ -101,9 +101,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
   void _submitTemplate() {
     final tempTxnRepo = ref.read(tempTransactionRepositoryRealmProvider);
-    if (!_stateRead.isAllNull() && !_isTemplateSubmitted) {
+    if (!_stateRead.isAllNull() && !_isTemplate) {
       setState(() {
-        _isTemplateSubmitted = true;
+        _isTemplate = true;
       });
 
       _templateTransaction = tempTxnRepo.writeNew(
@@ -118,9 +118,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         fee: null,
         isChargeOnDestinationAccount: null,
       );
-    } else if (_isTemplateSubmitted && _templateTransaction != null) {
+    } else if (_isTemplate && _templateTransaction != null) {
       setState(() {
-        _isTemplateSubmitted = false;
+        _isTemplate = false;
       });
 
       tempTxnRepo.delete(_templateTransaction!);
@@ -128,12 +128,33 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
     }
   }
 
+  void _checkIfIsTemplate() {
+    final tempTxnRepo = ref.read(tempTransactionRepositoryRealmProvider);
+    final templateList = tempTxnRepo.getTemplates();
+    try {
+      _templateTransaction = templateList.firstWhere((temp) =>
+          temp.type == widget.transactionType &&
+          temp.note == _stateRead.note &&
+          temp.toAccount == _stateRead.toAccount?.toAccountInfo() &&
+          temp.account == _stateRead.account?.toAccountInfo() &&
+          temp.category == _stateRead.category &&
+          temp.categoryTag == _stateRead.tag &&
+          temp.amount == _stateRead.amount);
+    } catch (_) {
+      _templateTransaction = null;
+    }
+
+    setState(() {
+      _isTemplate = _templateTransaction != null;
+    });
+  }
+
   @override
   void initState() {
     if (widget.template != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         _templateTransaction = widget.template;
-        _isTemplateSubmitted = true;
+        _isTemplate = _templateTransaction != null;
         _stateController.updateStateFromTemplate(_templateTransaction!);
       });
     }
@@ -152,7 +173,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         title: _title,
         secondaryTitle: _secondaryTitle,
         trailing: RoundedIconButton(
-          iconPath: _isTemplateSubmitted ? AppIcons.heartFill : AppIcons.heartOutline,
+          iconPath: _isTemplate ? AppIcons.heartFill : AppIcons.heartOutline,
           withBorder: false,
           backgroundColor: Colors.transparent,
           iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.primary,
@@ -179,10 +200,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
-                  setState(() {
-                    _isTemplateSubmitted = false;
-                  });
                   _stateController.changeAmount(value);
+                  _checkIfIsTemplate();
                 },
               ),
             ),
@@ -210,10 +229,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                     validator: (_) => _sendingAccountValidator(),
                     initialValue: stateWatch.account,
                     onChangedAccount: (newAccount) {
-                      setState(() {
-                        _isTemplateSubmitted = false;
-                      });
                       _stateController.changeAccount(newAccount as RegularAccount);
+                      _checkIfIsTemplate();
                     },
                     otherSelectedAccount: stateWatch.account,
                   ),
@@ -226,10 +243,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                           validator: (_) => _categoryValidator(),
                           initialValue: stateWatch.category,
                           onChangedCategory: (newCategory) {
-                            setState(() {
-                              _isTemplateSubmitted = false;
-                            });
                             _stateController.changeCategory(newCategory);
+                            _checkIfIsTemplate();
                           },
                         )
                       : AccountFormSelector(
@@ -239,14 +254,12 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                               ? stateWatch.account
                               : stateWatch.toAccount,
                           onChangedAccount: (newAccount) {
-                            setState(() {
-                              _isTemplateSubmitted = false;
-                            });
                             if (widget.transactionType != TransactionType.transfer) {
                               _stateController.changeAccount(newAccount as RegularAccount?);
                             } else {
                               _stateController.changeToAccount(newAccount as RegularAccount?);
                             }
+                            _checkIfIsTemplate();
                           },
                           otherSelectedAccount: widget.transactionType == TransactionType.transfer
                               ? stateWatch.account
@@ -268,10 +281,12 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 category: stateWatch.category,
                 initialChosenTag: stateWatch.tag,
                 onTagSelected: (value) {
-                  setState(() {
-                    _isTemplateSubmitted = false;
-                  });
                   _stateController.changeCategoryTag(value);
+                  _checkIfIsTemplate();
+                },
+                onTagDeSelected: () {
+                  _stateController.changeCategoryTag(null);
+                  _checkIfIsTemplate();
                 },
               )
             : Gap.noGap,
@@ -285,10 +300,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           initialValue: stateWatch.note,
           textInputAction: TextInputAction.done,
           onChanged: (value) {
-            setState(() {
-              _isTemplateSubmitted = false;
-            });
             _stateController.changeNote(value);
+            _checkIfIsTemplate();
           },
         ),
       ],

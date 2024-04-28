@@ -204,6 +204,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
         CategoryTagSelector(
           category: stateWatch.category,
           onTagSelected: (value) => _stateController.changeCategoryTag(value),
+          onTagDeSelected: () => _stateController.changeCategoryTag(null),
         ),
         Gap.h8,
         CustomTextFormField(
