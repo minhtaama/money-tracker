@@ -25,6 +25,7 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
+  "localeDefault": "Default",
 
   "jan": "Jan",
   "feb": "Feb",
@@ -69,6 +70,7 @@
   "language": "Language",
   "longDateFormat": "Long date format",
   "shortDateFormat": "Short date format",
+  "firstDayOfWeek": "First day of week",
 
   "goBack": "No, go back",
   "back": "Back",

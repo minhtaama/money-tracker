@@ -176,7 +176,7 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
       calendarType: CalendarDatePicker2Type.single,
       firstDate: firstDate,
       lastDate: lastDate,
-      firstDayOfWeek: firstDayOfWeek,
+      firstDayOfWeek: context.appSettings.firstDayOfWeek.databaseValue,
       selectableDayPredicate: selectableDayPredicate,
       selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary,
       selectedRangeHighlightColor: context.appTheme.isDarkTheme

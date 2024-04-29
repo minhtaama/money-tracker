@@ -23,8 +23,9 @@
   "wednesday": "Thứ tư",
   "thursday": "Thứ năm",
   "friday": "Thứ sáu",
-  "saturday": "Thứ 7",
+  "saturday": "Thứ bảy",
   "sunday": "Chủ nhật",
+  "localeDefault": "Mặc định",
 
   "jan": "th1",
   "feb": "th2",
@@ -69,6 +70,7 @@
   "language": "Ngôn ngữ",
   "longDateFormat": "Dạng ngày dài",
   "shortDateFormat": "Dạng ngày ngắn",
+  "firstDayOfWeek": "Ngày đầu tiên trong tuần",
 
   "goBack": "Không, quay lại",
   "back": "Quay lại",

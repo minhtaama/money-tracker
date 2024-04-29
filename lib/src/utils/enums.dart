@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 enum TransactionType {
@@ -306,6 +308,31 @@ enum ShortDateType {
 
   static ShortDateType fromDatabaseValue(int value) {
     return ShortDateType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
+enum FirstDayOfWeek {
+  localeDefault(null),
+  sunday(0),
+  monday(1),
+  saturday(6),
+  ;
+
+  final int? databaseValue;
+
+  const FirstDayOfWeek(this.databaseValue);
+
+  static FirstDayOfWeek fromDatabaseValue(int? value) {
+    return FirstDayOfWeek.values.firstWhere((e) => e.databaseValue == value);
+  }
+
+  String getName(BuildContext context) {
+    return switch (this) {
+      FirstDayOfWeek.localeDefault => context.localize.localeDefault,
+      FirstDayOfWeek.sunday => context.localize.sunday,
+      FirstDayOfWeek.monday => context.localize.monday,
+      FirstDayOfWeek.saturday => context.localize.saturday,
+    };
   }
 }
 

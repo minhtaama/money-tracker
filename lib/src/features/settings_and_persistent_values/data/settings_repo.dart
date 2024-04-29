@@ -22,8 +22,10 @@ class SettingsController extends Notifier<AppSettingsData> {
     bool? showDecimalDigits,
     LongDateType? longDateType,
     ShortDateType? shortDateType,
+    FirstDayOfWeek? firstDayOfWeek,
   }) async {
     final realm = ref.read(realmProvider);
+
     state = state.copyWith(
       themeIndex: themeIndex,
       themeType: themeType,
@@ -33,7 +35,9 @@ class SettingsController extends Notifier<AppSettingsData> {
       showDecimalDigits: showDecimalDigits,
       longDateType: longDateType,
       shortDateType: shortDateType,
+      firstDayOfWeek: firstDayOfWeek,
     );
+
     realm.write(() => realm.add<SettingsDb>(state.toDatabase(), update: true));
   }
 }

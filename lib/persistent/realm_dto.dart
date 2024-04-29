@@ -284,6 +284,9 @@ class _SettingsDb {
   int shortDateType = 0;
 
   int currencyType = 0;
+
+  // null == default
+  int? firstDayOfWeek;
 }
 
 @RealmModel()

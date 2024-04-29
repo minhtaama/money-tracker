@@ -1070,6 +1070,7 @@ class SettingsDb extends _SettingsDb
     int longDateType = 0,
     int shortDateType = 0,
     int currencyType = 0,
+    int? firstDayOfWeek,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<SettingsDb>({
@@ -1093,6 +1094,7 @@ class SettingsDb extends _SettingsDb
     RealmObjectBase.set(this, 'longDateType', longDateType);
     RealmObjectBase.set(this, 'shortDateType', shortDateType);
     RealmObjectBase.set(this, 'currencyType', currencyType);
+    RealmObjectBase.set(this, 'firstDayOfWeek', firstDayOfWeek);
   }
 
   SettingsDb._();
@@ -1149,6 +1151,13 @@ class SettingsDb extends _SettingsDb
       RealmObjectBase.set(this, 'currencyType', value);
 
   @override
+  int? get firstDayOfWeek =>
+      RealmObjectBase.get<int>(this, 'firstDayOfWeek') as int?;
+  @override
+  set firstDayOfWeek(int? value) =>
+      RealmObjectBase.set(this, 'firstDayOfWeek', value);
+
+  @override
   Stream<RealmObjectChanges<SettingsDb>> get changes =>
       RealmObjectBase.getChanges<SettingsDb>(this);
 
@@ -1170,6 +1179,7 @@ class SettingsDb extends _SettingsDb
       SchemaProperty('longDateType', RealmPropertyType.int),
       SchemaProperty('shortDateType', RealmPropertyType.int),
       SchemaProperty('currencyType', RealmPropertyType.int),
+      SchemaProperty('firstDayOfWeek', RealmPropertyType.int, optional: true),
     ]);
   }
 }

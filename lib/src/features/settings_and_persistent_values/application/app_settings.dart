@@ -24,6 +24,8 @@ class AppSettingsData {
 
   final ShortDateType shortDateType;
 
+  final FirstDayOfWeek firstDayOfWeek;
+
   factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
     return AppSettingsData._(
       themeIndex: settingsDb.themeIndex,
@@ -34,6 +36,7 @@ class AppSettingsData {
       showDecimalDigits: settingsDb.showDecimalDigits,
       longDateType: LongDateType.fromDatabaseValue(settingsDb.longDateType),
       shortDateType: ShortDateType.fromDatabaseValue(settingsDb.shortDateType),
+      firstDayOfWeek: FirstDayOfWeek.fromDatabaseValue(settingsDb.firstDayOfWeek),
     );
   }
 
@@ -50,6 +53,7 @@ class AppSettingsData {
       showDecimalDigits: showDecimalDigits,
       longDateType: longDateType.databaseValue,
       shortDateType: shortDateType.databaseValue,
+      firstDayOfWeek: firstDayOfWeek.databaseValue,
     );
   }
 
@@ -62,6 +66,7 @@ class AppSettingsData {
     required this.showDecimalDigits,
     required this.longDateType,
     required this.shortDateType,
+    required this.firstDayOfWeek,
   });
 
   AppSettingsData copyWith({
@@ -73,6 +78,7 @@ class AppSettingsData {
     bool? showDecimalDigits,
     LongDateType? longDateType,
     ShortDateType? shortDateType,
+    FirstDayOfWeek? firstDayOfWeek,
   }) {
     return AppSettingsData._(
       themeIndex: themeIndex ?? this.themeIndex,
@@ -83,6 +89,7 @@ class AppSettingsData {
       showDecimalDigits: showDecimalDigits ?? this.showDecimalDigits,
       longDateType: longDateType ?? this.longDateType,
       shortDateType: shortDateType ?? this.shortDateType,
+      firstDayOfWeek: firstDayOfWeek ?? this.firstDayOfWeek,
     );
   }
 }

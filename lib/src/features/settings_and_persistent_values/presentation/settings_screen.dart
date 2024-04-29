@@ -18,7 +18,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../data/settings_repo.dart';
@@ -140,6 +139,12 @@ class SettingsScreen extends ConsumerWidget {
                 initialValue: currentSettings.shortDateType,
                 values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(shortDateType: type),
+              ),
+              SettingTileDropDown<FirstDayOfWeek>(
+                title: context.localize.firstDayOfWeek,
+                initialValue: currentSettings.firstDayOfWeek,
+                values: FirstDayOfWeek.values.map((e) => (e, e.getName(context))).toList(),
+                onChanged: (weekDay) => settingsController.set(firstDayOfWeek: weekDay),
               ),
             ],
           ),
