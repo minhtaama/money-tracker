@@ -61,7 +61,7 @@ class StatementPayOnlyInGracePeriod extends Statement {
       }
 
       if (txn is CreditPayment) {
-        if (!txn.dateTime.isAfter(previousStatement.dueDate)) {
+        if (!txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
           paidInBillingCycleInPreviousGracePeriod += txn.afterAdjustedAmount;
         }
 

@@ -103,7 +103,7 @@ sealed class Statement {
 
   @override
   String toString() {
-    return 'Statement{startDate: ${date.start}, dueDate: ${date.due}}';
+    return 'Statement{startDate: ${date.start}, endDate: ${date.end}, dueDate: ${date.due}}';
   }
 
   @override

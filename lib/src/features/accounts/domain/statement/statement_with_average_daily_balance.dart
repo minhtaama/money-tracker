@@ -64,7 +64,7 @@ class StatementWithAverageDailyBalance extends Statement {
       if (txn is CreditPayment) {
         paidInBillingCycle += txn.afterAdjustedAmount;
 
-        if (!txn.dateTime.isAfter(previousStatement.dueDate)) {
+        if (!txn.dateTime.onlyYearMonthDay.isAfter(previousStatement.dueDate)) {
           paidInBillingCycleInPreviousGracePeriod += txn.afterAdjustedAmount;
         }
 

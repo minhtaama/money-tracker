@@ -170,8 +170,6 @@ extension CreditAccountMethods on CreditAccount {
     final date = dateTime.onlyYearMonthDay;
     final latestStatement = statementsList[statementsList.length - 1];
 
-    print(statementsList);
-
     // If statement is already in credit account statements list
     // for (Statement statement in statementsList) {
     //   if (date.compareTo(statement.date.previousDue) > 0 && date.compareTo(statement.date.due) <= 0) {
