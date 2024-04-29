@@ -216,7 +216,7 @@ class _TemplateTransactionDb implements IRealmObjectWithID, _IOrderable {
 }
 
 @RealmModel()
-class _RepeatTransactionDb implements IRealmObjectWithID {
+class _RecurringDetailsDb implements IRealmObjectWithID, _IOrderable {
   // repeat every <everyParameter> <repeatEveryType>, on <repeatOnType> + <onParameter>
   // Eg: repeat every 2 weeks, on Tue and Wed
 
@@ -224,18 +224,24 @@ class _RepeatTransactionDb implements IRealmObjectWithID {
   @PrimaryKey()
   late ObjectId id;
 
-  late int? repeatEvery; // every [X] day, [X] week, [X] month, [X] year,
+  late int repeatEveryX; // every [X] day, [X] week, [X] month, [X] year,
 
-  late int? everyParameter; // X
+  late int x; // X
 
-  late int? repeatMonthlyType; // on [Y]th day, on the nth weekday of month (from Y), on days of [Y] in month ,
+  late List<DateTime> patternsOn = [];
 
-  late int? repeatYearlyType; // on [Y]th day, on the nth weekday of month (from Y), on days of [Y] in month ,
+  late DateTime? endRecurringOn;
 
-  late bool autoCreateTransaction;
+  late bool autoCreateTransaction = false;
 
-  // TODO: Do we need backlinks to TransactionDb?
-  late List<_TransactionDb> transactions;
+  late _TemplateTransactionDb? templateTransaction;
+
+  late List<DateTime> addedOn = [];
+
+  late List<DateTime> skippedOn = [];
+
+  @override
+  int? order;
 }
 
 ////////////////////////////////////// BUDGET /////////////////////////////////////////

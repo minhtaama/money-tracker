@@ -112,6 +112,22 @@ enum BudgetPeriodType {
   }
 }
 
+enum RecurringRepeatEvery {
+  xDay(0),
+  xWeek(1),
+  xMonth(2),
+  xYear(3),
+  ;
+
+  final int databaseValue;
+
+  const RecurringRepeatEvery(this.databaseValue);
+
+  static RecurringRepeatEvery fromDatabaseValue(int value) {
+    return RecurringRepeatEvery.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
 ////////////// OTHER ///////////////////////////
 
 enum LineChartDataType {
@@ -336,24 +352,6 @@ enum FirstDayOfWeek {
   }
 }
 
-// enum DateTimeRepeatType {
-//   everyXDay(0),
-//   everyXWeek(1),
-//   everyXMonth(2),
-//   everyXYear(3),
-//   ;
-//
-//   final int databaseValue;
-//
-//   const ShortDateType(this.databaseValue);
-//
-//   static ShortDateType fromDatabaseValue(int value) {
-//     return ShortDateType.values.firstWhere((e) => e.databaseValue == value);
-//   }
-// }
-
 ///////// NO DATABASE VALUE //////////////////////
-
-enum DateTimeFormat { ddmmyyyy, ddmmmyyyy, ddmmmmyyyy, mmddyyyy, mmmddyyyy, mmmmddyyyy }
 
 enum TransactionScreenType { editable, uneditable, installmentToPay }

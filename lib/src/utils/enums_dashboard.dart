@@ -1,5 +1,4 @@
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import 'package:realm/realm.dart';
 import '../theme_and_ui/icons.dart';
 
 enum DashboardWidgetType {
