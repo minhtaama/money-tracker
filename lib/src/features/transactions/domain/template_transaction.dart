@@ -28,26 +28,40 @@ class TemplateTransaction extends BaseModel<TemplateTransactionDb> {
   const TemplateTransaction._(
     super._databaseObject,
     this.type,
-    this.dateTime,
     this.amount,
     this.note,
     this.account,
     this.toAccount,
     this.category,
-    this.categoryTag,
-  );
+    this.categoryTag, {
+    this.dateTime,
+  });
 
   static TemplateTransaction fromDatabase(TemplateTransactionDb templateTransactionDb) {
     return TemplateTransaction._(
       templateTransactionDb,
       TransactionType.fromDatabaseValue(templateTransactionDb.type),
-      templateTransactionDb.dateTime?.toLocal(),
       templateTransactionDb.amount,
       templateTransactionDb.note,
       Account.fromDatabaseInfoOnly(templateTransactionDb.account),
       Account.fromDatabaseInfoOnly(templateTransactionDb.transferAccount),
       Category.fromDatabase(templateTransactionDb.category),
       CategoryTag.fromDatabase(templateTransactionDb.categoryTag),
+      dateTime: templateTransactionDb.dateTime?.toLocal(),
+    );
+  }
+
+  TemplateTransaction withDateTime(DateTime dateTime) {
+    return TemplateTransaction._(
+      databaseObject,
+      type,
+      amount,
+      note,
+      account,
+      toAccount,
+      category,
+      categoryTag,
+      dateTime: dateTime,
     );
   }
 }

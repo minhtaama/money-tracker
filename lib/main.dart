@@ -50,9 +50,9 @@ class MoneyTrackerApp extends ConsumerWidget {
       child: AppSettings(
         data: appSettings,
         child: Builder(builder: (context) {
-          //TODO: REMOVE TEST
-          final recurrence = Recurrence.test();
-          recurrence.getUpcomingTransactionInMonth(context, DateTime.now());
+          // //TODO: REMOVE TEST
+          // final recurrence = Recurrence.test();
+          // recurrence.getUpcomingTransactionInMonth(context, DateTime.now());
 
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
