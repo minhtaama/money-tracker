@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/features/transactions/data/template_transa
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/add_recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -22,8 +23,7 @@ import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
-      {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -37,8 +37,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -194,9 +193,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Expanded(
               child: CalculatorInput(
                 hintText: 'Amount',
-                initialValue: stateWatch.amount != null
-                    ? CalService.formatCurrency(context, stateWatch.amount!)
-                    : null,
+                initialValue: stateWatch.amount != null ? CalService.formatCurrency(context, stateWatch.amount!) : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -261,15 +258,16 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
-                              ? stateWatch.account
-                              : null,
+                          otherSelectedAccount:
+                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
                         ),
                 ],
               ),
             ),
           ],
         ),
+        Gap.h12,
+        CreateRecurrenceWidget(onChanged: (_) {}),
         Gap.h16,
         const Padding(
           padding: EdgeInsets.only(left: 8.0),

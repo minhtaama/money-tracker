@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/features/transactions/domain/template_tran
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:realm/realm.dart';
 
 class Recurrence extends BaseModel<RecurrenceDb> {
   final RepeatEvery type;
@@ -108,20 +107,20 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     return targetDates.map((e) => templateTransaction.withDateTime(e)).toList();
   }
 
-  factory Recurrence.test() {
-    return Recurrence._(
-      RecurrenceDb(ObjectId(), 1, 2, DateTime.now()),
-      type: RepeatEvery.xMonth,
-      interval: 3,
-      repeatOn: [DateTime(2024, 4, 9)],
-      startOn: DateTime(2024, 4, 15),
-      endOn: null,
-      autoCreateTransaction: true,
-      templateTransaction: TemplateTransaction.fromDatabase(TemplateTransactionDb(ObjectId(), 1)),
-      addedTransactions: const [],
-      skippedOn: const [],
-    );
-  }
+  // factory Recurrence.test() {
+  //   return Recurrence._(
+  //     RecurrenceDb(ObjectId(), 1, 2, DateTime.now()),
+  //     type: RepeatEvery.xMonth,
+  //     interval: 3,
+  //     repeatOn: [DateTime(2024, 4, 9)],
+  //     startOn: DateTime(2024, 4, 15),
+  //     endOn: null,
+  //     autoCreateTransaction: true,
+  //     templateTransaction: TemplateTransaction.fromDatabase(TemplateTransactionDb(ObjectId(), 1)),
+  //     addedTransactions: const [],
+  //     skippedOn: const [],
+  //   );
+  // }
 
   factory Recurrence.fromDatabase(RecurrenceDb db) {
     return Recurrence._(

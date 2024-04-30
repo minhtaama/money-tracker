@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/recurring_details.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
