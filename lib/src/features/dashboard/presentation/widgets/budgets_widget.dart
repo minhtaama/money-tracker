@@ -45,7 +45,7 @@ class BudgetsWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final budgetService = ref.watch(budgetServicesProvider);
-    final list = budgetService.getBudgetDetails(DateTime.now());
+    final list = budgetService.getBudgetDetails(context, DateTime.now());
 
     return Column(
       children: list.map((e) {

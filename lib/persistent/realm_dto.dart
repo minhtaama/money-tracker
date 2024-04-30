@@ -152,6 +152,8 @@ class _TransactionDb implements IRealmObjectWithID {
 
   /// **Only specify this if type is [TransactionType.creditCheckpoint]**
   late List<_TransactionDb> creditCheckpointFinishedInstallments;
+
+  late _RecurrenceDb? recurrence;
 }
 
 @RealmModel(ObjectType.embeddedObject)
@@ -216,7 +218,7 @@ class _TemplateTransactionDb implements IRealmObjectWithID, _IOrderable {
 }
 
 @RealmModel()
-class _RecurringDetailsDb implements IRealmObjectWithID, _IOrderable {
+class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
   // repeat every <everyParameter> <repeatEveryType>, on <repeatOnType> + <onParameter>
   // Eg: repeat every 2 weeks, on Tue and Wed
 
@@ -224,19 +226,22 @@ class _RecurringDetailsDb implements IRealmObjectWithID, _IOrderable {
   @PrimaryKey()
   late ObjectId id;
 
-  late int repeatEveryX; // every [X] day, [X] week, [X] month, [X] year,
+  late int type; // every [X] day, [X] week, [X] month, [X] year,
 
-  late int x; // X
+  late int repeatInterval; // X
 
-  late List<DateTime> patternsOn = [];
+  late List<DateTime> repeatOn = [];
 
-  late DateTime? endRecurringOn;
+  late DateTime startOn;
+
+  late DateTime? endOn;
 
   late bool autoCreateTransaction = false;
 
   late _TemplateTransactionDb? templateTransaction;
 
-  late List<DateTime> addedOn = [];
+  @Backlink(#recurrence)
+  late Iterable<_TransactionDb> addedTransactions = [];
 
   late List<DateTime> skippedOn = [];
 

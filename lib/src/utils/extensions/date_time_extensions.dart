@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 extension DateTimeExtensions on DateTime {
   int get daysInMonth {
@@ -69,11 +69,7 @@ extension DateTimeExtensions on DateTime {
       ShortDateType.ydmm ||
       ShortDateType.ymmd =>
         monthToString(context, short: true),
-      ShortDateType.dmy ||
-      ShortDateType.mdy ||
-      ShortDateType.ydm ||
-      ShortDateType.ymd =>
-        formatter.format(month),
+      ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
     };
 
     return switch (type) {
@@ -188,13 +184,33 @@ extension DateTimeExtensions on DateTime {
     return DateTimeRange(start: begin, end: end);
   }
 
-  DateTimeRange get weekRange {
-    // TODO: set first day of week
-    final firstDayOfWeek = copyWith(day: day - weekday); //Monday
-    final lastDayOfWeek = copyWith(day: day + 7 - weekday, hour: 23, minute: 59, second: 59); //Sunday
+  DateTimeRange weekRange(BuildContext context) {
+    final userFirstDay = context.appSettings.firstDayOfWeek;
+    final offset = switch (userFirstDay) {
+      FirstDayOfWeek.monday => 0,
+      FirstDayOfWeek.sunday => -1,
+      FirstDayOfWeek.saturday => -2,
+      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
+          0 => -1, //Sun
+          1 => 0, //Mon
+          2 => -6, //Tue
+          3 => -5, //Wed
+          4 => -4, //Thu
+          5 => -3, //Fri
+          6 => -2, //Sat
+          _ => throw StateError('Wrong index of first day of week'),
+        },
+    };
 
-    return DateTimeRange(start: firstDayOfWeek, end: lastDayOfWeek);
+    final firstDay = copyWith(day: day - weekday + offset).onlyYearMonthDay; // Monday - offset
+    final lastDay = copyWith(day: day + 7 - weekday + offset, hour: 23, minute: 59, second: 59); // Sunday - offset
+
+    return DateTimeRange(start: firstDay, end: lastDay);
   }
+
+  // List<DateTimeRange> weekRangeInMonth(BuildContext context) {
+  //
+  // }
 
   DateTimeRange get monthRange {
     DateTime dayBeginOfMonth = copyWith(day: 1).onlyYearMonthDay;

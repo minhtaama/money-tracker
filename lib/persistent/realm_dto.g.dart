@@ -397,6 +397,7 @@ class TransactionDb extends _TransactionDb
     TransferFeeDb? transferFee,
     CreditInstallmentDetailsDb? creditInstallmentDetails,
     CreditPaymentDetailsDb? creditPaymentDetails,
+    RecurrenceDb? recurrence,
     Iterable<TransactionDb> creditCheckpointFinishedInstallments = const [],
   }) {
     if (!_defaultsSet) {
@@ -418,6 +419,7 @@ class TransactionDb extends _TransactionDb
     RealmObjectBase.set(
         this, 'creditInstallmentDetails', creditInstallmentDetails);
     RealmObjectBase.set(this, 'creditPaymentDetails', creditPaymentDetails);
+    RealmObjectBase.set(this, 'recurrence', recurrence);
     RealmObjectBase.set<RealmList<TransactionDb>>(
         this,
         'creditCheckpointFinishedInstallments',
@@ -521,6 +523,13 @@ class TransactionDb extends _TransactionDb
       throw RealmUnsupportedSetError();
 
   @override
+  RecurrenceDb? get recurrence =>
+      RealmObjectBase.get<RecurrenceDb>(this, 'recurrence') as RecurrenceDb?;
+  @override
+  set recurrence(covariant RecurrenceDb? value) =>
+      RealmObjectBase.set(this, 'recurrence', value);
+
+  @override
   Stream<RealmObjectChanges<TransactionDb>> get changes =>
       RealmObjectBase.getChanges<TransactionDb>(this);
 
@@ -558,6 +567,8 @@ class TransactionDb extends _TransactionDb
           'creditCheckpointFinishedInstallments', RealmPropertyType.object,
           linkTarget: 'TransactionDb',
           collectionType: RealmCollectionType.list),
+      SchemaProperty('recurrence', RealmPropertyType.object,
+          optional: true, linkTarget: 'RecurrenceDb'),
     ]);
   }
 }
@@ -859,43 +870,42 @@ class TemplateTransactionDb extends _TemplateTransactionDb
 }
 
 // ignore_for_file: type=lint
-class RecurringDetailsDb extends _RecurringDetailsDb
+class RecurrenceDb extends _RecurrenceDb
     with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;
 
-  RecurringDetailsDb(
+  RecurrenceDb(
     ObjectId id,
-    int repeatEveryX,
-    int x, {
-    DateTime? endRecurringOn,
+    int type,
+    int repeatInterval,
+    DateTime startOn, {
+    DateTime? endOn,
     bool autoCreateTransaction = false,
     TemplateTransactionDb? templateTransaction,
     int? order,
-    Iterable<DateTime> patternsOn = const [],
-    Iterable<DateTime> addedOn = const [],
+    Iterable<DateTime> repeatOn = const [],
     Iterable<DateTime> skippedOn = const [],
   }) {
     if (!_defaultsSet) {
-      _defaultsSet = RealmObjectBase.setDefaults<RecurringDetailsDb>({
+      _defaultsSet = RealmObjectBase.setDefaults<RecurrenceDb>({
         'autoCreateTransaction': false,
       });
     }
     RealmObjectBase.set(this, 'id', id);
-    RealmObjectBase.set(this, 'repeatEveryX', repeatEveryX);
-    RealmObjectBase.set(this, 'x', x);
-    RealmObjectBase.set(this, 'endRecurringOn', endRecurringOn);
+    RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'repeatInterval', repeatInterval);
+    RealmObjectBase.set(this, 'startOn', startOn);
+    RealmObjectBase.set(this, 'endOn', endOn);
     RealmObjectBase.set(this, 'autoCreateTransaction', autoCreateTransaction);
     RealmObjectBase.set(this, 'templateTransaction', templateTransaction);
     RealmObjectBase.set(this, 'order', order);
     RealmObjectBase.set<RealmList<DateTime>>(
-        this, 'patternsOn', RealmList<DateTime>(patternsOn));
-    RealmObjectBase.set<RealmList<DateTime>>(
-        this, 'addedOn', RealmList<DateTime>(addedOn));
+        this, 'repeatOn', RealmList<DateTime>(repeatOn));
     RealmObjectBase.set<RealmList<DateTime>>(
         this, 'skippedOn', RealmList<DateTime>(skippedOn));
   }
 
-  RecurringDetailsDb._();
+  RecurrenceDb._();
 
   @override
   ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
@@ -903,29 +913,35 @@ class RecurringDetailsDb extends _RecurringDetailsDb
   set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
 
   @override
-  int get repeatEveryX => RealmObjectBase.get<int>(this, 'repeatEveryX') as int;
+  int get type => RealmObjectBase.get<int>(this, 'type') as int;
   @override
-  set repeatEveryX(int value) =>
-      RealmObjectBase.set(this, 'repeatEveryX', value);
+  set type(int value) => RealmObjectBase.set(this, 'type', value);
 
   @override
-  int get x => RealmObjectBase.get<int>(this, 'x') as int;
+  int get repeatInterval =>
+      RealmObjectBase.get<int>(this, 'repeatInterval') as int;
   @override
-  set x(int value) => RealmObjectBase.set(this, 'x', value);
+  set repeatInterval(int value) =>
+      RealmObjectBase.set(this, 'repeatInterval', value);
 
   @override
-  RealmList<DateTime> get patternsOn =>
-      RealmObjectBase.get<DateTime>(this, 'patternsOn') as RealmList<DateTime>;
+  RealmList<DateTime> get repeatOn =>
+      RealmObjectBase.get<DateTime>(this, 'repeatOn') as RealmList<DateTime>;
   @override
-  set patternsOn(covariant RealmList<DateTime> value) =>
+  set repeatOn(covariant RealmList<DateTime> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  DateTime? get endRecurringOn =>
-      RealmObjectBase.get<DateTime>(this, 'endRecurringOn') as DateTime?;
+  DateTime get startOn =>
+      RealmObjectBase.get<DateTime>(this, 'startOn') as DateTime;
   @override
-  set endRecurringOn(DateTime? value) =>
-      RealmObjectBase.set(this, 'endRecurringOn', value);
+  set startOn(DateTime value) => RealmObjectBase.set(this, 'startOn', value);
+
+  @override
+  DateTime? get endOn =>
+      RealmObjectBase.get<DateTime>(this, 'endOn') as DateTime?;
+  @override
+  set endOn(DateTime? value) => RealmObjectBase.set(this, 'endOn', value);
 
   @override
   bool get autoCreateTransaction =>
@@ -943,13 +959,6 @@ class RecurringDetailsDb extends _RecurringDetailsDb
       RealmObjectBase.set(this, 'templateTransaction', value);
 
   @override
-  RealmList<DateTime> get addedOn =>
-      RealmObjectBase.get<DateTime>(this, 'addedOn') as RealmList<DateTime>;
-  @override
-  set addedOn(covariant RealmList<DateTime> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
   RealmList<DateTime> get skippedOn =>
       RealmObjectBase.get<DateTime>(this, 'skippedOn') as RealmList<DateTime>;
   @override
@@ -962,34 +971,48 @@ class RecurringDetailsDb extends _RecurringDetailsDb
   set order(int? value) => RealmObjectBase.set(this, 'order', value);
 
   @override
-  Stream<RealmObjectChanges<RecurringDetailsDb>> get changes =>
-      RealmObjectBase.getChanges<RecurringDetailsDb>(this);
+  RealmResults<TransactionDb> get addedTransactions {
+    if (!isManaged) {
+      throw RealmError('Using backlinks is only possible for managed objects.');
+    }
+    return RealmObjectBase.get<TransactionDb>(this, 'addedTransactions')
+        as RealmResults<TransactionDb>;
+  }
 
   @override
-  RecurringDetailsDb freeze() =>
-      RealmObjectBase.freezeObject<RecurringDetailsDb>(this);
+  set addedTransactions(covariant RealmResults<TransactionDb> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  Stream<RealmObjectChanges<RecurrenceDb>> get changes =>
+      RealmObjectBase.getChanges<RecurrenceDb>(this);
+
+  @override
+  RecurrenceDb freeze() => RealmObjectBase.freezeObject<RecurrenceDb>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(RecurringDetailsDb._);
+    RealmObjectBase.registerFactory(RecurrenceDb._);
     return const SchemaObject(
-        ObjectType.realmObject, RecurringDetailsDb, 'RecurringDetailsDb', [
+        ObjectType.realmObject, RecurrenceDb, 'RecurrenceDb', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
-      SchemaProperty('repeatEveryX', RealmPropertyType.int),
-      SchemaProperty('x', RealmPropertyType.int),
-      SchemaProperty('patternsOn', RealmPropertyType.timestamp,
+      SchemaProperty('type', RealmPropertyType.int),
+      SchemaProperty('repeatInterval', RealmPropertyType.int),
+      SchemaProperty('repeatOn', RealmPropertyType.timestamp,
           collectionType: RealmCollectionType.list),
-      SchemaProperty('endRecurringOn', RealmPropertyType.timestamp,
-          optional: true),
+      SchemaProperty('startOn', RealmPropertyType.timestamp),
+      SchemaProperty('endOn', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('autoCreateTransaction', RealmPropertyType.bool),
       SchemaProperty('templateTransaction', RealmPropertyType.object,
           optional: true, linkTarget: 'TemplateTransactionDb'),
-      SchemaProperty('addedOn', RealmPropertyType.timestamp,
-          collectionType: RealmCollectionType.list),
       SchemaProperty('skippedOn', RealmPropertyType.timestamp,
           collectionType: RealmCollectionType.list),
       SchemaProperty('order', RealmPropertyType.int, optional: true),
+      SchemaProperty('addedTransactions', RealmPropertyType.linkingObjects,
+          linkOriginProperty: 'recurrence',
+          collectionType: RealmCollectionType.list,
+          linkTarget: 'TransactionDb'),
     ]);
   }
 }

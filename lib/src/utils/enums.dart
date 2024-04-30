@@ -112,7 +112,7 @@ enum BudgetPeriodType {
   }
 }
 
-enum RecurringRepeatEvery {
+enum RepeatEvery {
   xDay(0),
   xWeek(1),
   xMonth(2),
@@ -121,10 +121,10 @@ enum RecurringRepeatEvery {
 
   final int databaseValue;
 
-  const RecurringRepeatEvery(this.databaseValue);
+  const RepeatEvery(this.databaseValue);
 
-  static RecurringRepeatEvery fromDatabaseValue(int value) {
-    return RecurringRepeatEvery.values.firstWhere((e) => e.databaseValue == value);
+  static RepeatEvery fromDatabaseValue(int value) {
+    return RepeatEvery.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 

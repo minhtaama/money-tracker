@@ -13,7 +13,7 @@ class BudgetServices {
   final TransactionRepositoryRealmDb transactionRepo;
   final BudgetsRepositoryRealmDb budgetRepo;
 
-  List<BudgetDetail> getBudgetDetails(DateTime currentDateTime) {
+  List<BudgetDetail> getBudgetDetails(BuildContext context, DateTime currentDateTime) {
     final budgetsList = budgetRepo.getList();
     final result = <BudgetDetail>[];
 
@@ -22,7 +22,7 @@ class BudgetServices {
 
       final range = switch (budget.periodType) {
         BudgetPeriodType.daily => currentDateTime.dayRange,
-        BudgetPeriodType.weekly => currentDateTime.weekRange,
+        BudgetPeriodType.weekly => currentDateTime.weekRange(context),
         BudgetPeriodType.monthly => currentDateTime.monthRange,
         BudgetPeriodType.yearly => currentDateTime.yearRange,
       };

@@ -1,32 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/recurring_details.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
-import '../../../utils/enums.dart';
-import '../../accounts/domain/account_base.dart';
-import '../../category/domain/category.dart';
-import '../../category/domain/category_tag.dart';
-import '../domain/template_transaction.dart';
 
-class RecurringRepositoryRealmDb {
-  RecurringRepositoryRealmDb(this.realm);
+class RecurrenceRepositoryRealmDb {
+  RecurrenceRepositoryRealmDb(this.realm);
 
   final Realm realm;
 
-  Stream<RealmResultsChanges<RecurringDetailsDb>> _watchListChanges() {
-    return realm.all<RecurringDetailsDb>().changes;
+  Stream<RealmResultsChanges<RecurrenceDb>> _watchListChanges() {
+    return realm.all<RecurrenceDb>().changes;
   }
 
-  List<RecurringDetailsDb> _realmResults() =>
-      realm.all<RecurringDetailsDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
+  List<RecurrenceDb> _realmResults() => realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
 
-  // List<TemplateTransaction> getTemplates() {
-  //   List<TemplateTransactionDb> list =
-  //       realm.all<TemplateTransactionDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
-  //   return list.map((txn) => TemplateTransaction.fromDatabase(txn)).toList();
-  // }
-  //
+  List<Recurrence> getRecurrences() {
+    List<RecurrenceDb> list = realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
+    return list.map((recurrence) => Recurrence.fromDatabase(recurrence)).toList();
+  }
+
   // TemplateTransaction getTemplateFromHex(String objectIdHexString) {
   //   ObjectId objId = ObjectId.fromHexString(objectIdHexString);
   //   final txnDb = realm.find<TemplateTransactionDb>(objId);
@@ -54,64 +51,69 @@ class RecurringRepositoryRealmDb {
   }
 }
 
-extension ModifyRecurringData on RecurringRepositoryRealmDb {
-  // TemplateTransaction writeNew({
-  //   required TransactionType transactionType,
-  //   required DateTime? dateTime,
-  //   required double? amount,
-  //   required Category? category,
-  //   required CategoryTag? tag,
-  //   required RegularAccount? account,
-  //   required RegularAccount? toAccount,
-  //   required String? note,
-  //   required double? fee,
-  //   required bool? isChargeOnDestinationAccount,
-  // }) {
-  //   TransferFeeDb? transferFee;
-  //   if (fee != null && isChargeOnDestinationAccount != null) {
-  //     transferFee = TransferFeeDb(amount: fee, chargeOnDestination: isChargeOnDestinationAccount);
-  //   }
-  //
-  //   final order = getTemplates().length;
-  //
-  //   final newTemplateTransaction = TemplateTransactionDb(
-  //     ObjectId(),
-  //     transactionType.databaseValue,
-  //     dateTime: dateTime,
-  //     amount: amount?.roundTo2DP(),
-  //     note: note,
-  //     category: category?.databaseObject,
-  //     categoryTag: tag?.databaseObject,
-  //     account: account?.databaseObject,
-  //     order: order,
-  //   );
-  //
-  //   realm.write(() {
-  //     realm.add(newTemplateTransaction);
-  //   });
-  //
-  //   return TemplateTransaction.fromDatabase(newTemplateTransaction);
-  // }
+extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
+  Recurrence writeNew({
+    required RepeatEvery type,
+    required int interval,
+    required List<DateTime> repeatOn,
+    required DateTime? endOn,
+    required bool autoCreateTransaction,
+    required TemplateTransaction templateTransaction,
+  }) {
+    final order = getRecurrences().length;
 
-  // void delete(TemplateTransaction transaction) {
-  //   realm.write(() {
-  //     realm.delete<TemplateTransactionDb>(transaction.databaseObject);
-  //   });
-  // }
+    final newRecurrence = RecurrenceDb(
+      ObjectId(),
+      type.databaseValue,
+      interval,
+      DateTime.now().onlyYearMonthDay,
+      repeatOn: repeatOn.map((e) => e.onlyYearMonthDay),
+      endOn: endOn?.onlyYearMonthDay,
+      autoCreateTransaction: autoCreateTransaction,
+      templateTransaction: templateTransaction.databaseObject,
+      order: order,
+    );
+
+    realm.write(() {
+      realm.add(newRecurrence);
+    });
+
+    return Recurrence.fromDatabase(newRecurrence);
+  }
+
+  // List<TemplateTransaction> getAllUpcomingTransactionOfMonth(DateTime dateTime) {}
+
+  void addSkippedDateTime(DateTime dateTime, Recurrence recurrence) {
+    realm.write(() {
+      recurrence.databaseObject.skippedOn.add(dateTime);
+    });
+  }
+
+  void removeSkippedDateTime(DateTime dateTime, Recurrence recurrence) {
+    realm.write(() {
+      recurrence.databaseObject.skippedOn.remove(dateTime);
+    });
+  }
+
+  void delete(Recurrence recurrence) {
+    realm.write(() {
+      realm.delete<RecurrenceDb>(recurrence.databaseObject);
+    });
+  }
 }
 
 /////////////////// PROVIDERS //////////////////////////
 
-final recurringRepositoryRealmProvider = Provider<RecurringRepositoryRealmDb>(
+final recurrenceRepositoryRealmProvider = Provider<RecurrenceRepositoryRealmDb>(
   (ref) {
     final realm = ref.watch(realmProvider);
-    return RecurringRepositoryRealmDb(realm);
+    return RecurrenceRepositoryRealmDb(realm);
   },
 );
 
-final recurringChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<RecurringDetailsDb>>(
+final recurrenceChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<RecurrenceDb>>(
   (ref) {
-    final recurringRepo = ref.watch(recurringRepositoryRealmProvider);
-    return recurringRepo._watchListChanges();
+    final recurrenceRepo = ref.watch(recurrenceRepositoryRealmProvider);
+    return recurrenceRepo._watchListChanges();
   },
 );

@@ -16,7 +16,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
   @override
   Widget build(BuildContext context) {
     final barServices = ref.watch(customBarChartServicesProvider);
-    final map = barServices.getWeeklyReportData(DateTime.now());
+    final map = barServices.getWeeklyReportData(context, DateTime.now());
 
     return SizedBox(
       height: 160,

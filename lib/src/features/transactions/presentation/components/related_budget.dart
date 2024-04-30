@@ -41,7 +41,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
 
     final list = ref
         .watch(budgetServicesProvider)
-        .getBudgetDetails(regularTransactionFormState.dateTime ?? DateTime.now())
+        .getBudgetDetails(context, regularTransactionFormState.dateTime ?? DateTime.now())
         .where(
       (budgetDetail) {
         final budget = budgetDetail.budget;

@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../../theme_and_ui/colors.dart';
+import '../../../utils/enums.dart';
 
 class CustomBarChart extends StatefulWidget {
   const CustomBarChart({
@@ -120,7 +121,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                getTitlesWidget: bottomTitles,
+                getTitlesWidget: (value, meta) => bottomTitles(context, value, meta),
                 reservedSize: 24,
               ),
             ),
@@ -153,8 +154,39 @@ class _CustomBarChartState extends State<CustomBarChart> {
     );
   }
 
-  Widget bottomTitles(double value, TitleMeta meta) {
-    final titles = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  Widget bottomTitles(BuildContext context, double value, TitleMeta meta) {
+    final weekDays = <String>[
+      context.localize.mon,
+      context.localize.tue,
+      context.localize.wed,
+      context.localize.thu,
+      context.localize.fri,
+      context.localize.sat,
+      context.localize.sun
+    ];
+
+    final offset = switch (context.appSettings.firstDayOfWeek) {
+      FirstDayOfWeek.monday => 0,
+      FirstDayOfWeek.sunday => -1,
+      FirstDayOfWeek.saturday => -2,
+      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
+          0 => -1, //Sun
+          1 => 0, //Mon
+          2 => -6, //Tue
+          3 => -5, //Wed
+          4 => -4, //Thu
+          5 => -3, //Fri
+          6 => -2, //Sat
+          _ => throw StateError('Wrong index of first day of week'),
+        },
+    };
+
+    final titles = List.from(weekDays);
+    if (offset != 0) {
+      titles
+        ..removeAt(weekDays.length + offset)
+        ..insertAll(0, weekDays.sublist(weekDays.length + offset, weekDays.length));
+    }
 
     final Widget text = Text(
       titles[value.toInt()],
