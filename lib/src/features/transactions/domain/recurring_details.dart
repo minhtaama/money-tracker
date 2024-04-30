@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/transactions/domain/template_tran
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:realm/realm.dart';
 
 class Recurrence extends BaseModel<RecurrenceDb> {
   final RepeatEvery type;
@@ -28,26 +29,50 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   final List<DateTime> skippedOn;
 
-  // List<TemplateTransaction> getUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
-  //   final targetMonthRange = dateTime.monthRange;
-  //   if (targetMonthRange.end.isBefore(startOn)) {
-  //     return [];
-  //   }
-  //
-  //   final startAnchorDate = switch(type) {
-  //     RepeatEvery.xDay => startOn,
-  //     RepeatEvery.xWeek => startOn.weekRange(context).start,
-  //     RepeatEvery.xMonth => startOn.monthRange.start,
-  //     RepeatEvery.xYear => startOn.yearRange.start,
-  //   };
-  //
-  //   final List<DateTime> targetAnchorDate = switch(type) {
-  //     RepeatEvery.xDay => startOn,
-  //     RepeatEvery.xWeek => startOn.weekRange(context).start,
-  //     RepeatEvery.xMonth => startOn.monthRange.start,
-  //     RepeatEvery.xYear => startOn.yearRange.start,
-  //   }
-  // }
+  List<TemplateTransaction> getUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
+    final targetMonthRange = dateTime.monthRange;
+    if (targetMonthRange.end.isBefore(startOn)) {
+      return [];
+    }
+
+    final startAnchorDate = switch (type) {
+      RepeatEvery.xDay => startOn,
+      RepeatEvery.xWeek => startOn.weekRange(context).start,
+      RepeatEvery.xMonth => startOn.monthRange.start,
+      RepeatEvery.xYear => startOn.yearRange.start,
+    };
+
+    final List<DateTime> targetAnchorDate = switch (type) {
+      RepeatEvery.xDay => <DateTime>[
+          for (DateTime date = targetMonthRange.start;
+              !date.isAfter(targetMonthRange.end);
+              date = date.copyWith(day: date.day + 1))
+            date
+        ],
+      RepeatEvery.xWeek => startOn.weekRangeInMonth(context).map((e) => e.start).toList(),
+      RepeatEvery.xMonth => [startOn.monthRange.start],
+      RepeatEvery.xYear => [startOn.yearRange.start],
+    };
+
+    print(targetAnchorDate);
+
+    return [];
+  }
+
+  factory Recurrence.test() {
+    return Recurrence._(
+      RecurrenceDb(ObjectId(), 1, 2, DateTime.now()),
+      type: RepeatEvery.xWeek,
+      interval: 1,
+      repeatOn: [DateTime(2024, 4, 9)],
+      startOn: DateTime(2024, 3, 15),
+      endOn: null,
+      autoCreateTransaction: true,
+      templateTransaction: TemplateTransaction.fromDatabase(TemplateTransactionDb(ObjectId(), 1)),
+      addedTransactions: const [],
+      skippedOn: const [],
+    );
+  }
 
   factory Recurrence.fromDatabase(RecurrenceDb db) {
     return Recurrence._(

@@ -186,31 +186,50 @@ extension DateTimeExtensions on DateTime {
 
   DateTimeRange weekRange(BuildContext context) {
     final userFirstDay = context.appSettings.firstDayOfWeek;
-    final offset = switch (userFirstDay) {
-      FirstDayOfWeek.monday => 0,
-      FirstDayOfWeek.sunday => -1,
-      FirstDayOfWeek.saturday => -2,
+
+    final weekDayOfFirstDayOfWeekISO8601 = switch (userFirstDay) {
+      FirstDayOfWeek.monday => 1,
+      FirstDayOfWeek.sunday => 7,
+      FirstDayOfWeek.saturday => 6,
       FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
-          0 => -1, //Sun
-          1 => 0, //Mon
-          2 => -6, //Tue
-          3 => -5, //Wed
-          4 => -4, //Thu
-          5 => -3, //Fri
-          6 => -2, //Sat
+          0 => 7, //0: Sun
+          1 => 1, //1: Mon,
+          2 => 2, //2: Tue
+          3 => 3, //3: Wed
+          4 => 4, //4: Thu
+          5 => 5, //5: Fri
+          6 => 6, //6: Sat
           _ => throw StateError('Wrong index of first day of week'),
         },
     };
 
-    final firstDay = copyWith(day: day - weekday + offset).onlyYearMonthDay; // Monday - offset
-    final lastDay = copyWith(day: day + 7 - weekday + offset, hour: 23, minute: 59, second: 59); // Sunday - offset
+    final offset = weekday >= weekDayOfFirstDayOfWeekISO8601
+        ? weekday - weekDayOfFirstDayOfWeekISO8601
+        : weekday - 1 + (8 - weekDayOfFirstDayOfWeekISO8601);
+
+    final firstDay = copyWith(day: day - offset).onlyYearMonthDay;
+
+    final lastDay = firstDay.add(const Duration(days: 6));
 
     return DateTimeRange(start: firstDay, end: lastDay);
   }
 
-  // List<DateTimeRange> weekRangeInMonth(BuildContext context) {
-  //
-  // }
+  List<DateTimeRange> weekRangeInMonth(BuildContext context) {
+    final monthRange = this.monthRange;
+    final result = <DateTimeRange>[];
+
+    DateTime start = monthRange.start;
+    int i = 0;
+
+    while (start.isBefore(monthRange.end.onlyYearMonthDay)) {
+      final weekRange = start.weekRange(context);
+      result.add(weekRange);
+
+      start = weekRange.end.onlyYearMonthDay.copyWith(day: weekRange.end.day + 1);
+    }
+
+    return result;
+  }
 
   DateTimeRange get monthRange {
     DateTime dayBeginOfMonth = copyWith(day: 1).onlyYearMonthDay;

@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dar
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/settings_repo.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/recurring_details.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_settings.dart';
@@ -48,8 +49,12 @@ class MoneyTrackerApp extends ConsumerWidget {
       data: appPersistentValues,
       child: AppSettings(
         data: appSettings,
-        child: Builder(
-          builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
+        child: Builder(builder: (context) {
+          //TODO: REMOVE TEST
+          final recurrence = Recurrence.test();
+          recurrence.getUpcomingTransactionInMonth(context, DateTime.now());
+
+          return AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
               systemNavigationBarColor:
                   context.isBigScreen ? context.appTheme.background2 : context.appTheme.background1,
@@ -81,8 +86,8 @@ class MoneyTrackerApp extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
