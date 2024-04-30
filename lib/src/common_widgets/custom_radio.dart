@@ -5,14 +5,17 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 class CustomRadio<T> extends StatelessWidget {
   const CustomRadio({
     super.key,
-    required this.label,
+    this.label,
+    this.labelWidget,
     this.subLabel,
     required this.value,
     required this.groupValue,
     this.onChanged,
     this.width,
-  });
-  final String label;
+  }) : assert(label != null || labelWidget != null);
+
+  final String? label;
+  final Widget? labelWidget;
   final String? subLabel;
   final T value;
   final T groupValue;
@@ -24,10 +27,12 @@ class CustomRadio<T> extends StatelessWidget {
     return SizedBox(
       width: width,
       child: RadioListTile(
-        title: Text(
-          label,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
-        ),
+        title: label != null
+            ? Text(
+                label!,
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+              )
+            : labelWidget!,
         subtitle: subLabel != null
             ? Text(
                 subLabel!,
@@ -37,8 +42,24 @@ class CustomRadio<T> extends StatelessWidget {
         value: value,
         groupValue: groupValue,
         onChanged: onChanged,
-        activeColor: context.appTheme.primary,
         hoverColor: context.appTheme.primary,
+        overlayColor: MaterialStateProperty.resolveWith(
+          (states) {
+            if (states.contains(MaterialState.pressed)) {
+              return context.appTheme.primary.withOpacity(0.25);
+            }
+
+            return null;
+          },
+        ),
+        fillColor: MaterialStateProperty.resolveWith(
+          (states) {
+            if (states.contains(MaterialState.selected)) {
+              return context.appTheme.primary;
+            }
+            return context.appTheme.onBackground.withOpacity(0.65);
+          },
+        ),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
         contentPadding: const EdgeInsets.only(right: 12),

@@ -29,17 +29,20 @@ part 'components.dart';
 part 'config.dart';
 
 class _CustomCalendarDialog extends StatefulWidget {
-  const _CustomCalendarDialog(
-      {required this.config,
-      this.currentDay,
-      this.currentMonthView,
-      required this.onActionButtonTap,
-      this.contentBuilder});
+  const _CustomCalendarDialog({
+    required this.config,
+    this.currentDay,
+    this.currentMonthView,
+    required this.onActionButtonTap,
+    this.showReturnNullButton = false,
+    this.contentBuilder,
+  });
 
   final CalendarDatePicker2Config config;
   final DateTime? currentDay;
   final DateTime? currentMonthView;
   final ValueSetter<DateTime?>? onActionButtonTap;
+  final bool showReturnNullButton;
   final Widget? Function({required DateTime monthView, DateTime? selectedDay})? contentBuilder;
 
   @override
@@ -76,7 +79,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             calendarPicker(),
-            button(),
+            actionButtons(),
           ],
         ),
       );
@@ -90,7 +93,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(child: calendarPicker()),
-                button(),
+                actionButtons(),
               ],
             ),
           ),
@@ -125,6 +128,15 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
         ),
       );
 
+  Widget actionButtons() => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          widget.showReturnNullButton ? returnNullButton() : Gap.noGap,
+          widget.showReturnNullButton ? Gap.w24 : Gap.noGap,
+          button(),
+        ],
+      );
+
   Widget button() => IconWithTextButton(
         iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
         label: _selectedDay != null ? context.localize.select : context.localize.back,
@@ -137,6 +149,21 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
         color: context.appTheme.onPrimary,
         onTap: () {
           widget.onActionButtonTap?.call(_selectedDay);
+        },
+      );
+
+  Widget returnNullButton() => IconWithTextButton(
+        iconPath: AppIcons.close,
+        label: 'Clear date'.hardcoded,
+        height: 30,
+        width: 100,
+        labelSize: 13,
+        iconSize: 20,
+        isDisabled: false,
+        backgroundColor: context.appTheme.negative,
+        color: context.appTheme.onNegative,
+        onTap: () {
+          widget.onActionButtonTap?.call(null);
         },
       );
 }

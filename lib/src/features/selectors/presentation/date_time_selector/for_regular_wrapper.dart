@@ -72,12 +72,19 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
 }
 
 class DateSelector extends StatefulWidget {
-  const DateSelector(
-      {super.key, required this.onChanged, required this.labelBuilder, this.initial, this.selectableDayPredicate});
+  const DateSelector({
+    super.key,
+    this.onChanged,
+    this.onChangedNullable,
+    required this.labelBuilder,
+    this.initial,
+    this.selectableDayPredicate,
+  }) : assert(onChanged != null && onChangedNullable == null || onChanged == null && onChangedNullable != null);
 
   final DateTime? initial;
   final bool Function(DateTime)? selectableDayPredicate;
-  final ValueSetter<DateTime> onChanged;
+  final ValueSetter<DateTime>? onChanged;
+  final ValueSetter<DateTime?>? onChangedNullable;
   final String Function(DateTime?) labelBuilder;
 
   @override
@@ -85,7 +92,7 @@ class DateSelector extends StatefulWidget {
 }
 
 class _DateSelectorState extends State<DateSelector> {
-  late DateTime _outputDateTime = widget.initial ?? DateTime.now();
+  late DateTime? _outputDateTime = widget.onChangedNullable != null ? widget.initial : widget.initial ?? DateTime.now();
   //late DateTime _selectedDay = DateTime.now();
 
   @override
@@ -113,23 +120,81 @@ class _DateSelectorState extends State<DateSelector> {
                   selectableDayPredicate: widget.selectableDayPredicate,
                 ),
                 currentDay: _outputDateTime,
+                showReturnNullButton: widget.onChangedNullable != null,
                 onActionButtonTap: (dateTime) {
-                  if (dateTime != null) {
-                    setState(() {
-                      _outputDateTime = dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
-                    });
-                    context.pop();
-                  }
+                  // if (dateTime == null && widget.onChangedNullable != null) {
+                  //   setState(() {
+                  //     _outputDateTime = null;
+                  //   });
+                  //   context.pop();
+                  // }
+                  //
+                  // else if (dateTime != null) {
+                  //   setState(() {
+                  //     _outputDateTime = dateTime.onlyYearMonthDay;
+                  //   });
+                  //   context.pop();
+                  // }
+
+                  setState(() {
+                    _outputDateTime = dateTime?.onlyYearMonthDay;
+                  });
+
+                  context.pop();
                 },
               );
             },
           );
-          widget.onChanged(_outputDateTime);
+
+          if (_outputDateTime != null) {
+            widget.onChanged?.call(_outputDateTime!);
+          }
+
+          widget.onChangedNullable?.call(_outputDateTime);
         },
         child: _DateWidget(
           dateTime: _outputDateTime,
           labelBuilder: widget.labelBuilder,
         ),
+      ),
+    );
+  }
+}
+
+class CustomCalendar extends StatefulWidget {
+  const CustomCalendar({super.key, required this.onValueChanged, this.displayedMonthDate, required this.value});
+
+  final void Function(List<DateTime?>) onValueChanged;
+  final List<DateTime> value;
+  final DateTime? displayedMonthDate;
+
+  @override
+  State<CustomCalendar> createState() => _CustomCalendarState();
+}
+
+class _CustomCalendarState extends State<CustomCalendar> {
+  List<DateTime?> _selected = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 290,
+      width: context.isBigScreen ? 300 : 350,
+      child: CalendarDatePicker2(
+        config: _customConfig(
+          context,
+          calendarType: CalendarDatePicker2Type.multi,
+          dayBuilder: _dayBuilderRegular,
+        ),
+        value: widget.value,
+        displayedMonthDate: widget.displayedMonthDate,
+        onValueChanged: (dateList) {
+          setState(() {
+            _selected = dateList;
+          });
+
+          widget.onValueChanged(_selected);
+        },
       ),
     );
   }
@@ -144,27 +209,28 @@ Widget _dayBuilderRegular(BuildContext context,
     TextStyle? textStyle}) {
   return Align(
     alignment: Alignment.center,
-    child: Container(
+    child: CardItem(
       height: 33,
       width: 33,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(1000),
-        border: isToday != null && isToday
-            ? Border.all(
-                color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
-              )
-            : null,
-        color: isSelected != null && isSelected ? context.appTheme.primary : Colors.transparent,
-      ),
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.zero,
+      borderRadius: BorderRadius.circular(1000),
+      border: isToday != null && isToday
+          ? Border.all(
+              color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
+            )
+          : null,
+      color: context.appTheme.primary.withOpacity(isSelected != null && isSelected ? 1 : 0),
       child: Center(
         child: Text(
           date.day.toString(),
-          style: kNormalTextStyle.copyWith(
+          style: kHeader2TextStyle.copyWith(
             color: isDisabled != null && isDisabled
                 ? AppColors.greyBgr(context)
                 : isSelected != null && isSelected
                     ? context.appTheme.onPrimary
                     : context.appTheme.onBackground,
+            fontSize: 15,
           ),
         ),
       ),

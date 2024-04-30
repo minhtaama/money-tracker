@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/features/transactions/data/template_transa
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/components/add_recurrence.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/components/recurrence_widget.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -267,7 +267,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           ],
         ),
         Gap.h12,
-        CreateRecurrenceWidget(onChanged: (_) {}),
+        RecurrenceWidget(onChanged: (_) {}),
         Gap.h16,
         const Padding(
           padding: EdgeInsets.only(left: 8.0),

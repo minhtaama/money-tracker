@@ -52,7 +52,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
               date = date.copyWith(day: date.day + 1))
             date.dayRange
         ],
-      RepeatEvery.xWeek => dateTime.weekRangeInMonth(context),
+      RepeatEvery.xWeek => dateTime.weekRangesInMonth(context),
       RepeatEvery.xMonth => [dateTime.monthRange],
       RepeatEvery.xYear => [dateTime.yearRange],
     };

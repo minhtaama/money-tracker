@@ -214,7 +214,7 @@ extension DateTimeExtensions on DateTime {
     return DateTimeRange(start: firstDay, end: lastDay);
   }
 
-  List<DateTimeRange> weekRangeInMonth(BuildContext context) {
+  List<DateTimeRange> weekRangesInMonth(BuildContext context) {
     final monthRange = this.monthRange;
     final result = <DateTimeRange>[];
 
