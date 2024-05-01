@@ -69,7 +69,11 @@ extension DateTimeExtensions on DateTime {
       ShortDateType.ydmm ||
       ShortDateType.ymmd =>
         monthToString(context, short: true),
-      ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
+      ShortDateType.dmy ||
+      ShortDateType.mdy ||
+      ShortDateType.ydm ||
+      ShortDateType.ymd =>
+        formatter.format(month),
     };
 
     return switch (type) {
@@ -128,29 +132,29 @@ extension DateTimeExtensions on DateTime {
   String monthToString(BuildContext context, {bool short = false}) {
     switch (month) {
       case 1:
-        return short ? context.localize.jan : context.localize.january;
+        return short ? context.loc.jan : context.loc.january;
       case 2:
-        return short ? context.localize.feb : context.localize.february;
+        return short ? context.loc.feb : context.loc.february;
       case 3:
-        return short ? context.localize.mar : context.localize.march;
+        return short ? context.loc.mar : context.loc.march;
       case 4:
-        return short ? context.localize.apr : context.localize.april;
+        return short ? context.loc.apr : context.loc.april;
       case 5:
-        return short ? context.localize.may : context.localize.mayLong;
+        return short ? context.loc.may : context.loc.mayLong;
       case 6:
-        return short ? context.localize.jun : context.localize.june;
+        return short ? context.loc.jun : context.loc.june;
       case 7:
-        return short ? context.localize.jul : context.localize.july;
+        return short ? context.loc.jul : context.loc.july;
       case 8:
-        return short ? context.localize.aug : context.localize.august;
+        return short ? context.loc.aug : context.loc.august;
       case 9:
-        return short ? context.localize.sep : context.localize.september;
+        return short ? context.loc.sep : context.loc.september;
       case 10:
-        return short ? context.localize.oct : context.localize.october;
+        return short ? context.loc.oct : context.loc.october;
       case 11:
-        return short ? context.localize.nov : context.localize.november;
+        return short ? context.loc.nov : context.loc.november;
       case 12:
-        return short ? context.localize.dec : context.localize.december;
+        return short ? context.loc.dec : context.loc.december;
       default:
         return '';
     }
@@ -159,19 +163,19 @@ extension DateTimeExtensions on DateTime {
   String weekdayToString(BuildContext context, {bool short = false}) {
     switch (weekday) {
       case 1:
-        return short ? context.localize.mon : context.localize.monday;
+        return short ? context.loc.mon : context.loc.monday;
       case 2:
-        return short ? context.localize.tue : context.localize.tuesday;
+        return short ? context.loc.tue : context.loc.tuesday;
       case 3:
-        return short ? context.localize.wed : context.localize.wednesday;
+        return short ? context.loc.wed : context.loc.wednesday;
       case 4:
-        return short ? context.localize.thu : context.localize.thursday;
+        return short ? context.loc.thu : context.loc.thursday;
       case 5:
-        return short ? context.localize.fri : context.localize.friday;
+        return short ? context.loc.fri : context.loc.friday;
       case 6:
-        return short ? context.localize.sat : context.localize.saturday;
+        return short ? context.loc.sat : context.loc.saturday;
       case 7:
-        return short ? context.localize.sun : context.localize.sunday;
+        return short ? context.loc.sun : context.loc.sunday;
       default:
         return '';
     }

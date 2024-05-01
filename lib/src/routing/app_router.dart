@@ -61,21 +61,21 @@ final _bottomNavKey = GlobalKey<NavigatorState>();
 List<FABItem> _fabRoundedButtonItems(BuildContext context) => [
       FABItem(
         icon: AppIcons.income,
-        label: context.localize.income,
+        label: context.loc.income,
         color: context.appTheme.onPositive,
         backgroundColor: context.appTheme.positive,
         onTap: () => context.push(RoutePath.addIncome),
       ),
       FABItem(
         icon: AppIcons.transfer,
-        label: context.localize.transfer,
+        label: context.loc.transfer,
         color: context.appTheme.onBackground,
         backgroundColor: AppColors.grey(context),
         onTap: () => context.push(RoutePath.addTransfer),
       ),
       FABItem(
         icon: AppIcons.expense,
-        label: context.localize.expense,
+        label: context.loc.expense,
         color: context.appTheme.onNegative,
         backgroundColor: context.appTheme.negative,
         onTap: () => context.push(RoutePath.addExpense),
@@ -85,12 +85,12 @@ List<FABItem> _fabRoundedButtonItems(BuildContext context) => [
 List<FABItem> _fabListItems(BuildContext context) => [
       FABItem(
         icon: AppIcons.receiptDollar,
-        label: context.localize.creditSpending,
+        label: context.loc.creditSpending,
         onTap: () => context.push(RoutePath.addCreditSpending),
       ),
       FABItem(
         icon: AppIcons.handCoin,
-        label: context.localize.creditPayment,
+        label: context.loc.creditPayment,
         onTap: () => context.push(RoutePath.addCreditPayment),
       ),
     ];
@@ -111,22 +111,22 @@ List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.dashboardOrHomeInBigScreen,
         iconData: AppIcons.home,
-        text: context.localize.home,
+        text: context.loc.home,
       ),
       NavigationRailItem(
         path: RoutePath.budgets,
         iconData: AppIcons.budgets,
-        text: context.localize.budgets,
+        text: context.loc.budgets,
       ),
       NavigationRailItem(
         path: RoutePath.accounts,
         iconData: AppIcons.accounts,
-        text: context.localize.accounts,
+        text: context.loc.accounts,
       ),
       NavigationRailItem(
         path: RoutePath.categories,
         iconData: AppIcons.categories,
-        text: context.localize.categories,
+        text: context.loc.categories,
       ),
     ];
 
@@ -134,7 +134,7 @@ List<NavigationRailItem> _navRailBottomItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.settings,
         iconData: AppIcons.settings,
-        text: context.localize.settings,
+        text: context.loc.settings,
       ),
     ];
 
@@ -142,12 +142,12 @@ List<BottomAppBarItem> _bottomTabItems(BuildContext context) => [
       BottomAppBarItem(
         path: RoutePath.home,
         iconData: AppIcons.home,
-        text: context.localize.home,
+        text: context.loc.home,
       ),
       BottomAppBarItem(
         path: RoutePath.dashboardOrHomeInBigScreen,
         iconData: AppIcons.summary,
-        text: context.localize.dashboard,
+        text: context.loc.dashboard,
       ),
     ];
 

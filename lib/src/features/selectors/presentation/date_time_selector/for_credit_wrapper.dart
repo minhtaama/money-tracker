@@ -94,7 +94,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
     if (widget.creditAccount!.earliestPayableDate == null) {
       return IconWithText(
         iconPath: AppIcons.done,
-        header: context.localize.quoteCreditCalendarDialog1,
+        header: context.loc.quoteCreditCalendarDialog1,
       );
     }
 
@@ -102,7 +102,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
         .copyWith(month: widget.creditAccount!.earliestPayableDate!.month - 1))) {
       return IconWithText(
         iconPath: AppIcons.done,
-        header: context.localize.quoteCreditCalendarDialog2,
+        header: context.loc.quoteCreditCalendarDialog2,
       );
     }
 
@@ -120,7 +120,7 @@ class _DateTimeSelectorCreditState extends ConsumerState<DateTimeSelectorCredit>
 
     return IconWithText(
       iconPath: AppIcons.today,
-      header: context.localize.quoteCreditCalendarDialog3,
+      header: context.loc.quoteCreditCalendarDialog3,
     );
   }
 
@@ -300,7 +300,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (beforeLatestCheckpoint) {
       showErrorDialog(
         context,
-        context.localize.quoteCreditCalendarDialog4,
+        context.loc.quoteCreditCalendarDialog4,
         enable: showDialog,
       );
       return false;
@@ -309,7 +309,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (notInLatestStatement) {
       showErrorDialog(
         context,
-        context.localize.quoteCreditCalendarDialog5,
+        context.loc.quoteCreditCalendarDialog5,
         enable: showDialog,
       );
       return false;
@@ -318,7 +318,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (inFuture) {
       showErrorDialog(
         context,
-        context.localize.quoteCreditCalendarDialog6,
+        context.loc.quoteCreditCalendarDialog6,
         enable: showDialog,
       );
       return false;
@@ -327,7 +327,7 @@ extension _Details on _DateTimeSelectorCreditState {
     if (isPayment && canPayOnlyInGracePeriod && notInGracePeriod) {
       showErrorDialog(
         context,
-        context.localize.quoteCreditCalendarDialog7,
+        context.loc.quoteCreditCalendarDialog7,
         enable: showDialog,
       );
       return false;

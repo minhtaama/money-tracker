@@ -344,10 +344,10 @@ enum FirstDayOfWeek {
 
   String getName(BuildContext context) {
     return switch (this) {
-      FirstDayOfWeek.localeDefault => context.localize.localeDefault,
-      FirstDayOfWeek.sunday => context.localize.sunday,
-      FirstDayOfWeek.monday => context.localize.monday,
-      FirstDayOfWeek.saturday => context.localize.saturday,
+      FirstDayOfWeek.localeDefault => context.loc.localeDefault,
+      FirstDayOfWeek.sunday => context.loc.sunday,
+      FirstDayOfWeek.monday => context.loc.monday,
+      FirstDayOfWeek.saturday => context.loc.saturday,
     };
   }
 }

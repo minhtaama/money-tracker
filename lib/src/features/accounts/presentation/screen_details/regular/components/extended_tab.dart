@@ -99,7 +99,7 @@ class _Header extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Regular account'.hardcoded,
+                  context.loc.regularAccount,
                   style: kNormalTextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 13,

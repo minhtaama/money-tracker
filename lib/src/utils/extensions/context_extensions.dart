@@ -10,7 +10,7 @@ import '../enums.dart';
 // https://codewithandrea.com/articles/flutter-localization-build-context-extension/#buildcontext-extension-to-the-rescue
 
 extension LocalizedBuildContext on BuildContext {
-  AppLocalizations get localize => AppLocalizations.of(this);
+  AppLocalizations get loc => AppLocalizations.of(this);
 }
 
 extension MediaQueryBuildContext on BuildContext {
@@ -34,7 +34,8 @@ extension AppSettingsBuildContext on BuildContext {
 
   AppPersistentValues get appPersistentValues => AppPersistent.of(this);
 
-  AppThemeData get appTheme => AppColors.allThemeData[appSettings.themeIndex][_getThemeType(appSettings.themeType)]!;
+  AppThemeData get appTheme =>
+      AppColors.allThemeData[appSettings.themeIndex][_getThemeType(appSettings.themeType)]!;
 }
 
 extension LanguageName on Locale {

@@ -75,7 +75,8 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+              child:
+                  widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             calendarPicker(),
@@ -102,7 +103,8 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
               : Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-                    child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+                    child: widget.contentBuilder
+                        ?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
                   ),
                 ),
         ],
@@ -139,7 +141,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
 
   Widget button() => IconWithTextButton(
         iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
-        label: _selectedDay != null ? context.localize.select : context.localize.back,
+        label: _selectedDay != null ? context.loc.select : context.loc.back,
         height: 30,
         width: 100,
         labelSize: 13,

@@ -1,7 +1,7 @@
 {
   "appTitle": "money_tracker_app",
 
-  "@_________________________TITLES__________________________": {},
+  "@_________________________ [ GENERAL TITLES] __________________________": {},
 
   "home": "Home",
   "dashboard": "Dashboard",
@@ -13,6 +13,8 @@
   "recurrence": "Recurrence",
 
   "account": "Account",
+  "creditAccount": "Credit account",
+  "regularAccount": "Regular account",
   "category": "Category",
   "budget": "Budget",
   "saving": "Saving",
@@ -23,7 +25,9 @@
   "creditSpending": "Credit spending",
   "creditPayment": "Credit payment",
 
-  "@________________________BUTTON_TITLES_____________________": {},
+  "today": "Today",
+
+  "@___________________ [ GENERAL BUTTON TITLES ] ________________": {},
 
   "goBack": "No, go back",
   "back": "Back",
@@ -31,7 +35,7 @@
   "select": "Select",
   "delete": "Delete",
 
-  "@______________________GENERAL_DATE_TIME_____________________": {},
+  "@_____________________ [ GENERAL DATE TIME ] ___________________": {},
 
   "mon": "Mon",
   "tue": "Tue",
@@ -76,7 +80,128 @@
   "november": "November",
   "december": "December",
 
-  "@_________________________SETTINGS_PAGE__________________": {},
+
+
+  "@___________________________ [ ACCOUNT SCREEN ] _____________________________": {},
+
+  "deleteAccountConfirm1": "1 more confirmation to delete this account",
+  "deleteAccountConfirm2": "Last warning. The account will be deleted after this confirmation.",
+
+
+  "@______ [ Regular account screen ] ______": {},
+
+  "quoteRegularAccountScreen": "This account does not have any transactions in {month}, Create a new one by tapping ''+'' button",
+  "@quoteRegularAccountScreen": {
+    "description": "Quote display in regular account screen, when that month doesn't have any transaction",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+
+  "@______ [ Regular account edit modal ] ______": {},
+
+  "editRegularAccount": "Edit account",
+
+  "areYouSureToDeleteRegularAccount1": "Are you sure that you want to delete account \"{accountName}\"",
+  "@areYouSureToDeleteRegularAccount1": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "areYouSureToDeleteRegularAccount2": "Transactions relate to this account will appear as of \"deleted account\".",
+
+
+
+  "@______ [ Credit account screen ] ______": {},
+
+  "noTransactionMadeBeforeThisDay": "No transactions has made before this day",
+  "tapToAddBalanceCheckpoint": "Tap to add balance checkpoint",
+
+
+  "@______ [ Credit account edit modal ] ______": {},
+
+  "editCreditAccount": "Edit credit account",
+  "creditLimit": "Credit limit:",
+  "accountAPR": "Account APR",
+  "paymentAndInterestPreferences": "Payment & Interest preferences:",
+
+  "annualPercentageRate": "Annual Percentage Rate",
+  "annualPercentageRateExplanation": "A standardized measure to express the total cost of borrowing over a year, includes the interest rate and any associated fees.",
+
+  "usingADB": "Using Average Daily Balance",
+  "usingADBExplanation": "Can make payment in billing cycle, interest is calculated by ADB method",
+
+  "paymentOnlyGracePeriod": "Payment only in grace period",
+  "paymentOnlyGracePeriodExplanation": "Can not make payment in billing cycle, interest is calculated by other method.",
+
+  "areYouSureToDeleteCreditAccount1": "Are you sure that you want to delete credit account \"{accountName}\"",
+  "@areYouSureToDeleteCreditAccount1": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "areYouSureToDeleteCreditAccount2": "Are you sure? All transactions (except payments to this account) will be deleted, too.",
+
+
+
+  "@______ [ CreditAccount/Components ] ______": {},
+
+  "quoteCreditAccountComponent1": "This statement has been closed",
+  "quoteCreditAccountComponent1_1": "Unable to modify",
+
+  "quoteCreditAccountComponent2": "This statement has balance checkpoint",
+  "quoteCreditAccountComponent2_1": "Used to modify the total balance or to remove any on-going installments at statement date",
+
+  "quoteCreditAccountComponent3": "Because of carry-over balance, interest might be added in next statement even if pay-in-full",
+
+  "quoteCreditAccountComponent4": "Pay-in-full before this day for interest-free",
+
+  "payment": "Payment",
+  "@payment": {
+    "description": "paid amount"
+  },
+
+  "oustdBalance": "Oustd. balance:",
+  "instLeft": "Inst. left:",
+  "paymentRequired": "Payment required:",
+
+  "previousDueDate": "Previous due date",
+  "endOfLastGrace": "End of last grace period",
+  "statementDate": "Statement date",
+  "withAdjustmentCheckpoint": "With adjustment checkpoint",
+  "paymentDueDate": "Payment due date",
+
+  "daysLeftUntilStatementDate": "{count, plural, =0{Tomorrow is} =1{1 day left until} other{{count} days left until}} statement date",
+  "@daysLeftUntilStatementDate": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "daysLeftUntilPaymentDueDate": "{count, plural, =0{Tomorrow is} =1{1 day left until} other{{count} days left until}} payment due date",
+  "@daysLeftUntilPaymentDueDate": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+
+  "@_________________________ [ SETTINGS SCREEN ] __________________": {},
 
   "on": "On",
   "off": "Off",
@@ -91,7 +216,9 @@
   "shortDateFormat": "Short date format",
   "firstDayOfWeek": "First day of week",
 
-  "@__________________________HOME_PAGE_________________________": {},
+
+
+  "@_________________________ [ HOME PAGE SCREEN ] _________________________": {},
 
   "quoteHomepage": "You don't have any transactions in {month}, Create a new one by tapping ''+'' button",
   "@quoteHomepage": {
@@ -104,7 +231,9 @@
     }
   },
 
-  "@_______________________RECURRENCE_PAGE____________________": {},
+
+
+  "@________________ [ TRANSACTION/CREATE_RECURRENCE_MODAL ] _______________": {},
 
   "dayS": "day(s)",
   "weekS": "week(s)",
@@ -215,7 +344,9 @@
     "description": "Prefix of recurrence option"
   },
 
-  "@________________CREDIT_DATE_TIME_SELECTOR_DIALOG____________": {},
+
+
+  "@_______________[ CREDIT DATETIME SELECTOR DIALOG ]____________": {},
 
   "quoteCreditCalendarDialog1": "This credit account currently has no credit/BNPL transaction needed to pay",
   "@quoteCreditCalendarDialog1": {

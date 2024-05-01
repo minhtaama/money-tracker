@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
-import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
@@ -45,7 +42,7 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
   Widget build(BuildContext context) {
     return ModalContent(
       header: ModalHeader(
-        title: 'Edit account'.hardcoded,
+        title: context.loc.editRegularAccount,
       ),
       body: [
         Row(
@@ -89,13 +86,13 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
         onSmallButtonTap: () async {
           showConfirmModal(
             context: context,
-            label: 'Are you sure that you want to delete account "${widget.regularAccount.name}"?'.hardcoded,
-            subLabel: '1 more confirmation to delete this account'.hardcoded,
+            label: context.loc.areYouSureToDeleteRegularAccount1(widget.regularAccount.name),
+            subLabel: context.loc.deleteAccountConfirm1,
             onConfirm: () {
               showConfirmModal(
                 context: context,
-                label: 'Transactions relate to this account will appear as of "deleted account".'.hardcoded,
-                subLabel: 'Last warning. Hold the delete button to confirm'.hardcoded,
+                label: context.loc.areYouSureToDeleteRegularAccount2,
+                subLabel: context.loc.deleteAccountConfirm2,
                 onConfirm: () async {
                   context.go(RoutePath.accounts);
                   final accountRepo = ref.read(accountRepositoryProvider);

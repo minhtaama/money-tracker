@@ -21,7 +21,6 @@ import '../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../theme_and_ui/colors.dart';
 import '../../../../../theme_and_ui/icons.dart';
 import '../../../../../utils/constants.dart';
-import '../../../../../utils/enums.dart';
 import '../../../../transactions/domain/transaction_base.dart';
 
 class RegularScreenDetails extends ConsumerStatefulWidget {
@@ -96,9 +95,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: IconWithText(
-            header:
-                'This account does not have any transactions in ${dayBeginOfMonth.monthToString(context)}. Create a new one by tapping \'+\''
-                    .hardcoded,
+            header: context.loc.quoteRegularAccountScreen(dayBeginOfMonth.monthToString(context)),
             headerSize: 14,
             iconPath: AppIcons.budgets,
             forceIconOnTop: true,
@@ -121,21 +118,21 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         roundedButtonItems: [
           FABItem(
             icon: AppIcons.income,
-            label: 'Income'.hardcoded,
+            label: context.loc.income,
             color: context.appTheme.onPositive,
             backgroundColor: context.appTheme.positive,
             onTap: () => context.push(RoutePath.addIncome),
           ),
           FABItem(
             icon: AppIcons.transfer,
-            label: 'Transfer'.hardcoded,
+            label: context.loc.transfer,
             color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
             onTap: () => context.push(RoutePath.addTransfer),
           ),
           FABItem(
             icon: AppIcons.expense,
-            label: 'Expense'.hardcoded,
+            label: context.loc.expense,
             color: context.appTheme.onNegative,
             backgroundColor: context.appTheme.negative,
             onTap: () => context.push(RoutePath.addExpense),
@@ -148,7 +145,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         smallTabBar: SmallTabBar(
           child: PageHeading(
             title: widget.regularAccount.name,
-            secondaryTitle: 'Regular account'.hardcoded,
+            secondaryTitle: context.loc.regularAccount,
           ),
         ),
         extendedTabBar: ExtendedTabBar(

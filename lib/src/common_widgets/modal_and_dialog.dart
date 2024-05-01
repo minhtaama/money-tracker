@@ -77,7 +77,7 @@ Future<T?> showConfirmModal<T>({
                 child: IconWithTextButton(
                   iconPath: AppIcons.back,
                   labelSize: 18,
-                  label: context.localize.goBack,
+                  label: context.loc.goBack,
                   color: context.appTheme.onBackground,
                   backgroundColor: AppColors.greyBgr(context),
                   onTap: () => context.pop(),

@@ -24,7 +24,7 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
 
   switch (form.type) {
     case RepeatEvery.xDay || null:
-      everyN = context.localize.everyNDay(form.interval);
+      everyN = context.loc.everyNDay(form.interval);
       repeatPattern = '';
       break;
 
@@ -38,8 +38,8 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             ),
           )
           .toList();
-      everyN = context.localize.everyNWeek(form.interval);
-      repeatPattern = context.localize.repeatPattern('xWeek', list.join(", "));
+      everyN = context.loc.everyNWeek(form.interval);
+      repeatPattern = context.loc.repeatPattern('xWeek', list.join(", "));
       break;
 
     case RepeatEvery.xMonth:
@@ -49,8 +49,8 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.dayToString(context),
           )
           .toList();
-      everyN = context.localize.everyNMonth(form.interval);
-      repeatPattern = context.localize.repeatPattern('xMonth', list.join(", "));
+      everyN = context.loc.everyNMonth(form.interval);
+      repeatPattern = context.loc.repeatPattern('xMonth', list.join(", "));
       break;
 
     case RepeatEvery.xYear:
@@ -60,17 +60,16 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.toShortDate(context, noYear: true),
           )
           .toList();
-      everyN = context.localize.everyNYear(form.interval);
-      repeatPattern = context.localize.repeatPattern('xYear', list.join(", "));
+      everyN = context.loc.everyNYear(form.interval);
+      repeatPattern = context.loc.repeatPattern('xYear', list.join(", "));
       break;
   }
 
-  String endDate =
-      form.endOn != null ? context.localize.untilEndDate(form.endOn!.toLongDate(context)) : '';
+  String endDate = form.endOn != null ? context.loc.untilEndDate(form.endOn!.toLongDate(context)) : '';
 
   return form.type == null
-      ? context.localize.quoteRecurrence1
-      : context.localize.quoteRecurrence2(everyN, repeatPattern, endDate);
+      ? context.loc.quoteRecurrence1
+      : context.loc.quoteRecurrence2(everyN, repeatPattern, endDate);
 }
 
 class CreateRecurrenceWidget extends ConsumerStatefulWidget {
@@ -134,7 +133,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
               Expanded(
                 child: Text(
                   _recurrenceForm == null
-                      ? context.localize.doNotRepeat
+                      ? context.loc.doNotRepeat
                       : _recurrenceExpression(context, _recurrenceForm!),
                   style: kHeader3TextStyle.copyWith(
                       color: _recurrenceForm == null
@@ -173,7 +172,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        secondaryTitle: context.localize.recurrence,
+        secondaryTitle: context.loc.recurrence,
         subTitle: Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: Text(
@@ -294,7 +293,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                     _form = _form.copyWith(endOn: () => dateTime);
                   }),
                   labelBuilder: (dateTime) {
-                    return dateTime == null ? context.localize.forever : dateTime.toLongDate(context);
+                    return dateTime == null ? context.loc.forever : dateTime.toLongDate(context);
                   },
                 ),
               ],
@@ -304,7 +303,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       ],
       footer: ModalFooter(
         isBigButtonDisabled: _isBigButtonDisabled(),
-        bigButtonLabel: context.localize.done,
+        bigButtonLabel: context.loc.done,
         bigButtonIcon: AppIcons.done,
         onBigButtonTap: () {
           if (!_isBigButtonDisabled()) {
@@ -318,11 +317,11 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
 
   Widget _label(RepeatEvery? repeat) {
     final suffix = switch (repeat) {
-      RepeatEvery.xDay => context.localize.dayS,
-      RepeatEvery.xWeek => context.localize.weekS,
-      RepeatEvery.xMonth => context.localize.monthS,
-      RepeatEvery.xYear => context.localize.yearS,
-      null => context.localize.doNotRepeat,
+      RepeatEvery.xDay => context.loc.dayS,
+      RepeatEvery.xWeek => context.loc.weekS,
+      RepeatEvery.xMonth => context.loc.monthS,
+      RepeatEvery.xYear => context.loc.yearS,
+      null => context.loc.doNotRepeat,
     };
 
     if (repeat == null) {
@@ -333,7 +332,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
     }
 
     return InlineTextFormField(
-      prefixText: context.localize.repeatEvery,
+      prefixText: context.loc.repeatEvery,
       suffixText: suffix,
       width: 30,
       maxLength: 2,
@@ -492,7 +491,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               Gap.w4,
               Expanded(
                 child: Text(
-                  context.localize.selectDayToRepeat,
+                  context.loc.selectDayToRepeat,
                   style: kNormalTextStyle.copyWith(
                     color: context.appTheme.onBackground,
                     fontSize: 11,
@@ -517,7 +516,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                 Gap.w4,
                 Expanded(
                   child: Text(
-                    context.localize.wrongInterval,
+                    context.loc.wrongInterval,
                     style: kNormalTextStyle.copyWith(
                       color: context.appTheme.negative,
                       fontSize: 11,

@@ -57,7 +57,7 @@ class DashboardScreen extends StatelessWidget {
     return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
-            title: context.localize.dashboard,
+            title: context.loc.dashboard,
             secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
             isTopLevelOfNavigationRail: true,
             trailing: RoundedIconButton(
@@ -84,7 +84,7 @@ class DashboardScreen extends StatelessWidget {
         SizedBox(
           height: kCustomTabBarHeight,
           child: PageHeading(
-            title: context.localize.dashboard,
+            title: context.loc.dashboard,
             secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
           ),
         ),
@@ -152,7 +152,7 @@ class _DashboardMenu2 extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
                 onTap: () => context.go(RoutePath.accounts),
-                label: context.localize.accounts,
+                label: context.loc.accounts,
                 size: 50,
                 iconPath: AppIcons.accounts,
                 iconColor: context.appTheme.onBackground,
@@ -165,7 +165,7 @@ class _DashboardMenu2 extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
                 onTap: () => context.go(RoutePath.categories),
-                label: context.localize.categories,
+                label: context.loc.categories,
                 size: 50,
                 iconPath: AppIcons.categories,
                 iconColor: context.appTheme.onBackground,
@@ -178,7 +178,7 @@ class _DashboardMenu2 extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
                 onTap: () => context.go(RoutePath.budgets),
-                label: context.localize.budgets,
+                label: context.loc.budgets,
                 size: 50,
                 iconPath: AppIcons.budgets,
                 iconColor: context.appTheme.onBackground,
@@ -190,7 +190,7 @@ class _DashboardMenu2 extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
-                label: context.localize.savings,
+                label: context.loc.savings,
                 size: 50,
                 iconPath: AppIcons.savings,
                 iconColor: context.appTheme.onBackground,

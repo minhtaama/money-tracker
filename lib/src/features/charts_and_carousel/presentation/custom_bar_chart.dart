@@ -156,13 +156,13 @@ class _CustomBarChartState extends State<CustomBarChart> {
 
   Widget bottomTitles(BuildContext context, double value, TitleMeta meta) {
     final weekDays = <String>[
-      context.localize.mon,
-      context.localize.tue,
-      context.localize.wed,
-      context.localize.thu,
-      context.localize.fri,
-      context.localize.sat,
-      context.localize.sun
+      context.loc.mon,
+      context.loc.tue,
+      context.loc.wed,
+      context.loc.thu,
+      context.loc.fri,
+      context.loc.sat,
+      context.loc.sun
     ];
 
     final offset = switch (context.appSettings.firstDayOfWeek) {

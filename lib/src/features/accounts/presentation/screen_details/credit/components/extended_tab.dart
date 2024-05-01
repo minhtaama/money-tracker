@@ -35,8 +35,7 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
 
     final extraLineY = (data as CLCDataForCredit).extraLineY;
     final extraLineText =
-        'Payment required: ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}'
-            .hardcoded;
+        '${context.loc.paymentRequired} ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}';
 
     if (context.isBigScreen) {
       return Container(
@@ -108,7 +107,7 @@ class _Header extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Credit account'.hardcoded,
+                  context.loc.creditAccount,
                   style: kHeader3TextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 13,

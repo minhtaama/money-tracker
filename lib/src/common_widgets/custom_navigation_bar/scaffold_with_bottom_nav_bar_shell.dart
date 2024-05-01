@@ -4,8 +4,6 @@ import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/botto
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'bottom_app_bar/custom_fab.dart';
-
 class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
   const ScaffoldWithBottomNavBar({
     super.key,

@@ -24,7 +24,7 @@ class ColorPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.localize.themeColor,
+            context.loc.themeColor,
             style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
           ),
           Gap.h12,
@@ -47,7 +47,11 @@ class ColorPicker extends StatelessWidget {
 
 class CircleColor extends StatelessWidget {
   const CircleColor(
-      {super.key, required this.color, required this.isSelected, required this.onTap, required this.index});
+      {super.key,
+      required this.color,
+      required this.isSelected,
+      required this.onTap,
+      required this.index});
   final int index;
   final Color color;
   final bool isSelected;

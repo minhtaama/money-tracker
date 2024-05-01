@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'custom_section.dart';
 import 'icon_with_text_button.dart';
@@ -115,8 +114,8 @@ class _ModalContentState extends State<ModalContent> {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    // final color =
+    //     context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
     final padding =
         (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
 

@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
@@ -119,7 +118,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         roundedButtonItems: [
           FABItem(
             icon: AppIcons.receiptDollar,
-            label: 'Spending'.hardcoded,
+            label: context.loc.creditSpending,
             color: context.appTheme.onNegative,
             backgroundColor: context.appTheme.negative,
             onTap: () => context.push(RoutePath.addCreditSpending),
@@ -133,7 +132,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           ),
           FABItem(
             icon: AppIcons.handCoin,
-            label: 'Payment'.hardcoded,
+            label: context.loc.creditPayment,
             color: context.appTheme.onPositive,
             backgroundColor: context.appTheme.positive,
             onTap: () => context.push(RoutePath.addCreditPayment),
@@ -146,7 +145,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         smallTabBar: SmallTabBar(
           child: PageHeading(
             title: widget.creditAccount.name,
-            secondaryTitle: 'Credit account'.hardcoded,
+            secondaryTitle: context.loc.creditAccount,
           ),
         ),
         extendedTabBar: ExtendedTabBar(
@@ -208,8 +207,8 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
                       ),
                     ),
                     forceIconOnTop: true,
-                    header: 'No transactions has made before this day'.hardcoded,
-                    text: 'Tap to add balance checkpoint'.hardcoded,
+                    header: context.loc.noTransactionMadeBeforeThisDay,
+                    text: context.loc.tapToAddBalanceCheckpoint,
                   ),
                 ];
         },

@@ -918,7 +918,7 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
       footer: ModalFooter(
         isBigButtonDisabled: false,
         bigButtonIcon: AppIcons.done,
-        bigButtonLabel: context.localize.done,
+        bigButtonLabel: context.loc.done,
         onBigButtonTap: () => context.pop<List<dynamic>>([_selectedCategory, _selectedTag]),
       ),
     );

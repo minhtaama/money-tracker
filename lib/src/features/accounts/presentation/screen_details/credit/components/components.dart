@@ -6,7 +6,8 @@ class _SummaryCard extends StatelessWidget {
   final Statement statement;
   final bool isClosedStatement;
 
-  Widget _buildText(BuildContext context, {String? text, String? richText, int color = 0, bool bold = false}) {
+  Widget _buildText(BuildContext context,
+      {String? text, String? richText, int color = 0, bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -103,8 +104,8 @@ class _SummaryCard extends StatelessWidget {
                     ? IconWithText(
                         iconPath: AppIcons.done,
                         iconSize: 30,
-                        header: 'This statement has been closed'.hardcoded,
-                        text: 'Unable to modify'.hardcoded,
+                        header: context.loc.quoteCreditAccountComponent1,
+                        text: context.loc.quoteCreditAccountComponent1_1,
                       )
                     : Gap.noGap,
                 isClosedStatement ? Gap.h16 : Gap.noGap,
@@ -118,7 +119,8 @@ class _SummaryCard extends StatelessWidget {
                     ? _buildText(
                         context,
                         text: 'Interest:',
-                        richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
+                        richText:
+                            '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
                         color: interest.roundBySetting(context) <= 0 ? 0 : -1,
                       )
                     : Gap.noGap,
@@ -149,9 +151,8 @@ class _SummaryCard extends StatelessWidget {
                 IconWithText(
                   iconPath: AppIcons.statementCheckpoint,
                   iconSize: 30,
-                  header: 'This statement has balance checkpoint'.hardcoded,
-                  text: 'Used to modify the total balance or to remove any on-going installments at statement date'
-                      .hardcoded,
+                  header: context.loc.quoteCreditAccountComponent2,
+                  text: context.loc.quoteCreditAccountComponent2_1,
                 ),
                 Gap.h16,
                 _buildText(
@@ -210,7 +211,14 @@ extension _StatementDetails on _SummaryCard {
 
 class _Header extends StatelessWidget {
   const _Header(
-      {super.key, this.dateTime, required this.h1, this.h2, this.dateColor, this.dateBgColor, this.color, this.onTap});
+      {super.key,
+      this.dateTime,
+      required this.h1,
+      this.h2,
+      this.dateColor,
+      this.dateBgColor,
+      this.color,
+      this.onTap});
 
   final DateTime? dateTime;
   final Color? dateColor;
@@ -242,7 +250,8 @@ class _Header extends StatelessWidget {
                 children: [
                   Text(
                     h1,
-                    style: kHeader2TextStyle.copyWith(fontSize: 14, color: color ?? AppColors.grey(context)),
+                    style: kHeader2TextStyle.copyWith(
+                        fontSize: 14, color: color ?? AppColors.grey(context)),
                   ),
                   h2 != null
                       ? Row(
@@ -260,8 +269,8 @@ class _Header extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 h2!,
-                                style:
-                                    kHeader3TextStyle.copyWith(fontSize: 11, color: color ?? AppColors.grey(context)),
+                                style: kHeader3TextStyle.copyWith(
+                                    fontSize: 11, color: color ?? AppColors.grey(context)),
                               ),
                             ),
                           ],
@@ -377,7 +386,8 @@ class _InstallmentToPayTransaction extends StatelessWidget {
                           children: [
                             Text(
                               'Instm. payment of:',
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: AppColors.grey(context)),
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: AppColors.grey(context)),
                             ),
                             TxnCategoryName(
                               transaction: transaction,
@@ -497,7 +507,7 @@ class _Payment extends StatelessWidget {
         Gap.w8,
         Expanded(
           child: Text(
-            'Payment'.hardcoded,
+            context.loc.payment,
             style: kHeader3TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
           ),
         ),
@@ -536,8 +546,8 @@ class _Checkpoint extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Oustd. balance: ${statement.checkpoint!.unpaidOfInstallments != 0 ? CalService.formatCurrency(context, transaction.amount) : ''} ${statement.checkpoint!.unpaidOfInstallments != 0 ? context.appSettings.currency.code : ''}'
-                            .hardcoded,
+                        '${context.loc.oustdBalance}'
+                        '${statement.checkpoint!.unpaidOfInstallments != 0 ? CalService.formatCurrency(context, transaction.amount) : ''} ${statement.checkpoint!.unpaidOfInstallments != 0 ? context.appSettings.currency.code : ''}',
                         style: kHeader3TextStyle.copyWith(
                             fontSize: statement.checkpoint!.unpaidOfInstallments != 0 ? 12 : 14,
                             color: context.appTheme.onBackground),
@@ -546,9 +556,9 @@ class _Checkpoint extends StatelessWidget {
                       ),
                       statement.checkpoint!.unpaidOfInstallments != 0
                           ? Text(
-                              'Inst. left: ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.appSettings.currency.code}'
-                                  .hardcoded,
-                              style: kHeader3TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground),
+                              '${context.loc.instLeft} ${CalService.formatCurrency(context, statement.checkpoint!.unpaidOfInstallments)} ${context.appSettings.currency.code}',
+                              style: kHeader3TextStyle.copyWith(
+                                  fontSize: 12, color: context.appTheme.onBackground),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             )
@@ -559,12 +569,12 @@ class _Checkpoint extends StatelessWidget {
               ),
               const FittedBox(child: _CheckpointArrow()),
               Text(
-                CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay).hardcoded,
+                CalService.formatCurrency(context, statement.checkpoint!.unpaidToPay),
                 style: kHeader2TextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
               ),
               Gap.w4,
               Text(
-                context.appSettings.currency.code.hardcoded,
+                context.appSettings.currency.code,
                 style: kNormalTextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
               ),
             ],
