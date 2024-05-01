@@ -13,13 +13,13 @@ import '../utils/constants.dart';
 class ModalHeader extends StatelessWidget {
   const ModalHeader({
     super.key,
-    required this.title,
+    this.title,
     this.trailing,
     this.secondaryTitle,
     this.subTitle,
     this.withBackButton = true,
   });
-  final String title;
+  final String? title;
   final Widget? trailing;
   final String? secondaryTitle;
   final Widget? subTitle;
@@ -45,14 +45,16 @@ class ModalHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: kHeader1TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
-                    fontSize: 23,
-                    height: 1.2,
-                  ),
-                ),
+                title != null
+                    ? Text(
+                        title!,
+                        style: kHeader1TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 23,
+                          height: 1.2,
+                        ),
+                      )
+                    : Gap.noGap,
                 secondaryTitle != null
                     ? Text(
                         secondaryTitle!,
@@ -180,6 +182,7 @@ class ModalFooter extends StatelessWidget {
     this.onSmallButtonTap,
     this.bigButtonIcon,
     this.bigButtonLabel,
+    this.optional,
   });
   final bool isBigButtonDisabled;
   final String? smallButtonIcon;
@@ -187,22 +190,25 @@ class ModalFooter extends StatelessWidget {
   final String? bigButtonIcon;
   final String? bigButtonLabel;
   final VoidCallback onBigButtonTap;
+  final Widget? optional;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Gap.w16,
-        smallButtonIcon != null
-            ? RoundedIconButton(
-                iconPath: smallButtonIcon ?? AppIcons.back,
-                backgroundColor: context.appTheme.negative.withOpacity(0.85),
-                iconColor: context.appTheme.onNegative,
-                iconPadding: 10,
-                onTap: onSmallButtonTap,
-              )
-            : Gap.noGap,
-        const Spacer(),
+        optional != null
+            ? Expanded(child: optional!)
+            : (smallButtonIcon != null
+                ? RoundedIconButton(
+                    iconPath: smallButtonIcon ?? AppIcons.back,
+                    backgroundColor: context.appTheme.negative.withOpacity(0.85),
+                    iconColor: context.appTheme.onNegative,
+                    iconPadding: 10,
+                    onTap: onSmallButtonTap,
+                  )
+                : Gap.noGap),
+        optional != null ? Gap.noGap : const Spacer(),
         IconWithTextButton(
           iconPath: bigButtonIcon ?? AppIcons.add,
           label: bigButtonLabel ?? 'Add',

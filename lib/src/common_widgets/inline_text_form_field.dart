@@ -55,7 +55,7 @@ class InlineTextFormField extends StatelessWidget {
                     width: width,
                     child: CustomTextFormField(
                       hintText: hintText ?? '',
-                      focusColor: context.appTheme.secondary1,
+                      focusColor: context.appTheme.primary,
                       autofocus: false,
                       disableErrorText: true,
                       maxLength: maxLength,
@@ -71,7 +71,7 @@ class InlineTextFormField extends StatelessWidget {
                 : Expanded(
                     child: CustomTextFormField(
                       hintText: hintText ?? '',
-                      focusColor: context.appTheme.secondary1,
+                      focusColor: context.appTheme.primary,
                       autofocus: false,
                       disableErrorText: true,
                       maxLength: 3,

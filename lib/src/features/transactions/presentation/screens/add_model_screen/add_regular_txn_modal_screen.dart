@@ -23,7 +23,8 @@ import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
+      {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -37,12 +38,14 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
   bool _isTemplate = false;
   TemplateTransaction? _templateTransaction;
+  RecurrenceForm? _recurrenceForm;
 
   String get _title {
     return widget.transactionType == TransactionType.income
@@ -193,7 +196,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Expanded(
               child: CalculatorInput(
                 hintText: 'Amount',
-                initialValue: stateWatch.amount != null ? CalService.formatCurrency(context, stateWatch.amount!) : null,
+                initialValue: stateWatch.amount != null
+                    ? CalService.formatCurrency(context, stateWatch.amount!)
+                    : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -258,8 +263,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount:
-                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
+                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
+                              ? stateWatch.account
+                              : null,
                         ),
                 ],
               ),
@@ -267,7 +273,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           ],
         ),
         Gap.h12,
-        RecurrenceWidget(onChanged: (_) {}),
+        RecurrenceWidget(onChanged: (form) {
+          _recurrenceForm = form;
+        }),
         Gap.h16,
         const Padding(
           padding: EdgeInsets.only(left: 8.0),
