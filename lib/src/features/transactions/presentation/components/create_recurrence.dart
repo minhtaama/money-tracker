@@ -173,7 +173,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        secondaryTitle: 'Recurrence:'.hardcoded,
+        secondaryTitle: context.localize.recurrence,
         subTitle: Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: Text(
