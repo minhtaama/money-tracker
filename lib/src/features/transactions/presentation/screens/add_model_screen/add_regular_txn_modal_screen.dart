@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
+import 'package:money_tracker_app/src/features/transactions/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -21,6 +22,7 @@ import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
+import '../../../domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
   const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
@@ -64,37 +66,66 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
   void _submit() {
     if (_formKey.currentState!.validate()) {
       final transactionRepo = ref.read(transactionRepositoryRealmProvider);
+      final recurrenceRepo = ref.read(recurrenceRepositoryRealmProvider);
 
-      if (widget.transactionType == TransactionType.income) {
-        transactionRepo.writeNewIncome(
-          dateTime: _stateRead.dateTime!,
-          amount: _stateRead.amount!,
-          category: _stateRead.category!,
-          tag: _stateRead.tag,
-          account: _stateRead.account!,
-          note: _stateRead.note,
+      Recurrence? recurrence;
+
+      if (_recurrenceForm != null) {
+        recurrence = recurrenceRepo.writeNew(
+          type: _recurrenceForm!.type!,
+          interval: _recurrenceForm!.interval,
+          repeatOn: _recurrenceForm!.repeatOn,
+          endOn: _recurrenceForm!.endOn,
+          autoCreateTransaction: _recurrenceForm!.autoCreateTransaction,
+          transactionType: widget.transactionType,
+          transactionForm: _stateRead,
         );
       }
-      if (widget.transactionType == TransactionType.expense) {
-        transactionRepo.writeNewExpense(
-          dateTime: _stateRead.dateTime!,
-          amount: _stateRead.amount!,
-          category: _stateRead.category!,
-          tag: _stateRead.tag,
-          account: _stateRead.account!,
-          note: _stateRead.note,
-        );
-      }
-      if (widget.transactionType == TransactionType.transfer) {
-        transactionRepo.writeNewTransfer(
+
+      switch (widget.transactionType) {
+        case TransactionType.expense:
+          transactionRepo.writeNewExpense(
+            dateTime: _stateRead.dateTime!,
+            amount: _stateRead.amount!,
+            category: _stateRead.category!,
+            tag: _stateRead.tag,
+            account: _stateRead.account!,
+            note: _stateRead.note,
+            recurrence: recurrence,
+          );
+          break;
+
+        case TransactionType.income:
+          transactionRepo.writeNewIncome(
+            dateTime: _stateRead.dateTime!,
+            amount: _stateRead.amount!,
+            category: _stateRead.category!,
+            tag: _stateRead.tag,
+            account: _stateRead.account!,
+            note: _stateRead.note,
+            recurrence: recurrence,
+          );
+          break;
+
+        case TransactionType.transfer:
+          // TODO: add transfer fee logic
+          transactionRepo.writeNewTransfer(
             dateTime: _stateRead.dateTime!,
             amount: _stateRead.amount!,
             account: _stateRead.account!,
             toAccount: _stateRead.toAccount!,
             note: _stateRead.note,
             fee: null,
-            isChargeOnDestinationAccount: null);
-        // TODO: add transfer fee logic
+            isChargeOnDestinationAccount: null,
+            recurrence: recurrence,
+          );
+          break;
+
+        case TransactionType.creditSpending ||
+              TransactionType.creditPayment ||
+              TransactionType.creditCheckpoint ||
+              TransactionType.installmentToPay:
+          throw StateError('Wrong TransactionType when submitting a regular transaction');
       }
 
       context.pop();

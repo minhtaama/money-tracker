@@ -881,7 +881,7 @@ class RecurrenceDb extends _RecurrenceDb
     DateTime startOn, {
     DateTime? endOn,
     bool autoCreateTransaction = false,
-    TemplateTransactionDb? templateTransaction,
+    TransactionDataDb? transactionData,
     int? order,
     Iterable<DateTime> repeatOn = const [],
     Iterable<DateTime> skippedOn = const [],
@@ -897,7 +897,7 @@ class RecurrenceDb extends _RecurrenceDb
     RealmObjectBase.set(this, 'startOn', startOn);
     RealmObjectBase.set(this, 'endOn', endOn);
     RealmObjectBase.set(this, 'autoCreateTransaction', autoCreateTransaction);
-    RealmObjectBase.set(this, 'templateTransaction', templateTransaction);
+    RealmObjectBase.set(this, 'transactionData', transactionData);
     RealmObjectBase.set(this, 'order', order);
     RealmObjectBase.set<RealmList<DateTime>>(
         this, 'repeatOn', RealmList<DateTime>(repeatOn));
@@ -951,12 +951,12 @@ class RecurrenceDb extends _RecurrenceDb
       RealmObjectBase.set(this, 'autoCreateTransaction', value);
 
   @override
-  TemplateTransactionDb? get templateTransaction =>
-      RealmObjectBase.get<TemplateTransactionDb>(this, 'templateTransaction')
-          as TemplateTransactionDb?;
+  TransactionDataDb? get transactionData =>
+      RealmObjectBase.get<TransactionDataDb>(this, 'transactionData')
+          as TransactionDataDb?;
   @override
-  set templateTransaction(covariant TemplateTransactionDb? value) =>
-      RealmObjectBase.set(this, 'templateTransaction', value);
+  set transactionData(covariant TransactionDataDb? value) =>
+      RealmObjectBase.set(this, 'transactionData', value);
 
   @override
   RealmList<DateTime> get skippedOn =>
@@ -1004,8 +1004,8 @@ class RecurrenceDb extends _RecurrenceDb
       SchemaProperty('startOn', RealmPropertyType.timestamp),
       SchemaProperty('endOn', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('autoCreateTransaction', RealmPropertyType.bool),
-      SchemaProperty('templateTransaction', RealmPropertyType.object,
-          optional: true, linkTarget: 'TemplateTransactionDb'),
+      SchemaProperty('transactionData', RealmPropertyType.object,
+          optional: true, linkTarget: 'TransactionDataDb'),
       SchemaProperty('skippedOn', RealmPropertyType.timestamp,
           collectionType: RealmCollectionType.list),
       SchemaProperty('order', RealmPropertyType.int, optional: true),
@@ -1013,6 +1013,122 @@ class RecurrenceDb extends _RecurrenceDb
           linkOriginProperty: 'recurrence',
           collectionType: RealmCollectionType.list,
           linkTarget: 'TransactionDb'),
+    ]);
+  }
+}
+
+// ignore_for_file: type=lint
+class TransactionDataDb extends _TransactionDataDb
+    with RealmEntity, RealmObjectBase, EmbeddedObject {
+  TransactionDataDb(
+    int type, {
+    DateTime? dateTime,
+    double? amount,
+    String? note,
+    AccountDb? account,
+    CategoryDb? category,
+    CategoryTagDb? categoryTag,
+    AccountDb? transferAccount,
+    TransferFeeDb? transferFee,
+  }) {
+    RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'dateTime', dateTime);
+    RealmObjectBase.set(this, 'amount', amount);
+    RealmObjectBase.set(this, 'note', note);
+    RealmObjectBase.set(this, 'account', account);
+    RealmObjectBase.set(this, 'category', category);
+    RealmObjectBase.set(this, 'categoryTag', categoryTag);
+    RealmObjectBase.set(this, 'transferAccount', transferAccount);
+    RealmObjectBase.set(this, 'transferFee', transferFee);
+  }
+
+  TransactionDataDb._();
+
+  @override
+  int get type => RealmObjectBase.get<int>(this, 'type') as int;
+  @override
+  set type(int value) => RealmObjectBase.set(this, 'type', value);
+
+  @override
+  DateTime? get dateTime =>
+      RealmObjectBase.get<DateTime>(this, 'dateTime') as DateTime?;
+  @override
+  set dateTime(DateTime? value) => RealmObjectBase.set(this, 'dateTime', value);
+
+  @override
+  double? get amount => RealmObjectBase.get<double>(this, 'amount') as double?;
+  @override
+  set amount(double? value) => RealmObjectBase.set(this, 'amount', value);
+
+  @override
+  String? get note => RealmObjectBase.get<String>(this, 'note') as String?;
+  @override
+  set note(String? value) => RealmObjectBase.set(this, 'note', value);
+
+  @override
+  AccountDb? get account =>
+      RealmObjectBase.get<AccountDb>(this, 'account') as AccountDb?;
+  @override
+  set account(covariant AccountDb? value) =>
+      RealmObjectBase.set(this, 'account', value);
+
+  @override
+  CategoryDb? get category =>
+      RealmObjectBase.get<CategoryDb>(this, 'category') as CategoryDb?;
+  @override
+  set category(covariant CategoryDb? value) =>
+      RealmObjectBase.set(this, 'category', value);
+
+  @override
+  CategoryTagDb? get categoryTag =>
+      RealmObjectBase.get<CategoryTagDb>(this, 'categoryTag') as CategoryTagDb?;
+  @override
+  set categoryTag(covariant CategoryTagDb? value) =>
+      RealmObjectBase.set(this, 'categoryTag', value);
+
+  @override
+  AccountDb? get transferAccount =>
+      RealmObjectBase.get<AccountDb>(this, 'transferAccount') as AccountDb?;
+  @override
+  set transferAccount(covariant AccountDb? value) =>
+      RealmObjectBase.set(this, 'transferAccount', value);
+
+  @override
+  TransferFeeDb? get transferFee =>
+      RealmObjectBase.get<TransferFeeDb>(this, 'transferFee') as TransferFeeDb?;
+  @override
+  set transferFee(covariant TransferFeeDb? value) =>
+      RealmObjectBase.set(this, 'transferFee', value);
+
+  @override
+  Stream<RealmObjectChanges<TransactionDataDb>> get changes =>
+      RealmObjectBase.getChanges<TransactionDataDb>(this);
+
+  @override
+  TransactionDataDb freeze() =>
+      RealmObjectBase.freezeObject<TransactionDataDb>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(TransactionDataDb._);
+    return const SchemaObject(
+        ObjectType.embeddedObject, TransactionDataDb, 'TransactionDataDb', [
+      SchemaProperty('type', RealmPropertyType.int),
+      SchemaProperty('dateTime', RealmPropertyType.timestamp,
+          optional: true, indexType: RealmIndexType.regular),
+      SchemaProperty('amount', RealmPropertyType.double, optional: true),
+      SchemaProperty('note', RealmPropertyType.string, optional: true),
+      SchemaProperty('account', RealmPropertyType.object,
+          optional: true, linkTarget: 'AccountDb'),
+      SchemaProperty('category', RealmPropertyType.object,
+          optional: true, linkTarget: 'CategoryDb'),
+      SchemaProperty('categoryTag', RealmPropertyType.object,
+          optional: true, linkTarget: 'CategoryTagDb'),
+      SchemaProperty('transferAccount', RealmPropertyType.object,
+          optional: true, linkTarget: 'AccountDb'),
+      SchemaProperty('transferFee', RealmPropertyType.object,
+          optional: true, linkTarget: 'TransferFeeDb'),
     ]);
   }
 }

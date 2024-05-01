@@ -238,7 +238,9 @@ class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
 
   late bool autoCreateTransaction = false;
 
-  late _TemplateTransactionDb? templateTransaction;
+  //late _TemplateTransactionDb? templateTransaction;
+
+  late _TransactionDataDb? transactionData;
 
   @Backlink(#recurrence)
   late Iterable<_TransactionDb> addedTransactions = [];
@@ -247,6 +249,33 @@ class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
 
   @override
   int? order;
+}
+
+@RealmModel(ObjectType.embeddedObject)
+class _TransactionDataDb {
+  late int type;
+
+  @Indexed()
+  late DateTime? dateTime;
+
+  late double? amount;
+
+  String? note;
+
+  late _AccountDb? account;
+
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
+  late _CategoryDb? category;
+
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
+  late _CategoryTagDb? categoryTag;
+
+  /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
+  /// add value to account if Transaction is Transfer, minus value if creditPayment
+  late _AccountDb? transferAccount;
+
+  /// **Only specify this if type is [TransactionType.transfer]**
+  _TransferFeeDb? transferFee;
 }
 
 ////////////////////////////////////// BUDGET /////////////////////////////////////////

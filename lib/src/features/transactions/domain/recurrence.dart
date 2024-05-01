@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../accounts/domain/account_base.dart';
+import '../../category/domain/category.dart';
+import '../../category/domain/category_tag.dart';
 
 class Recurrence extends BaseModel<RecurrenceDb> {
   final RepeatEvery type;
@@ -24,13 +26,13 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   final bool autoCreateTransaction;
 
-  final TemplateTransaction templateTransaction;
+  final TransactionData transactionData;
 
   final List<BaseTransaction> addedTransactions;
 
   final List<DateTime> skippedOn;
 
-  List<TemplateTransaction> getUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
+  List<TransactionData> getUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
     final targetMonthRange = dateTime.monthRange;
     if (targetMonthRange.end.isBefore(startOn)) {
       return [];
@@ -84,7 +86,9 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       final selectedWeekDay = repeatOn.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
-        for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
+        for (DateTime date = range.start;
+            !date.isAfter(range.end);
+            date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
             targetDates.add(date);
           }
@@ -104,23 +108,8 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
     print(targetDates);
 
-    return targetDates.map((e) => templateTransaction.withDateTime(e)).toList();
+    return targetDates.map((e) => transactionData.withDateTime(e)).toList();
   }
-
-  // factory Recurrence.test() {
-  //   return Recurrence._(
-  //     RecurrenceDb(ObjectId(), 1, 2, DateTime.now()),
-  //     type: RepeatEvery.xMonth,
-  //     interval: 3,
-  //     repeatOn: [DateTime(2024, 4, 9)],
-  //     startOn: DateTime(2024, 4, 15),
-  //     endOn: null,
-  //     autoCreateTransaction: true,
-  //     templateTransaction: TemplateTransaction.fromDatabase(TemplateTransactionDb(ObjectId(), 1)),
-  //     addedTransactions: const [],
-  //     skippedOn: const [],
-  //   );
-  // }
 
   factory Recurrence.fromDatabase(RecurrenceDb db) {
     return Recurrence._(
@@ -131,7 +120,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       startOn: db.startOn.toLocal(),
       endOn: db.endOn?.toLocal(),
       autoCreateTransaction: db.autoCreateTransaction,
-      templateTransaction: TemplateTransaction.fromDatabase(db.templateTransaction!),
+      transactionData: TransactionData.fromDatabase(db.transactionData!),
       addedTransactions: db.addedTransactions.map((txn) => BaseTransaction.fromDatabase(txn)).toList(),
       skippedOn: db.skippedOn.map((dateTime) => dateTime.toLocal()).toList(),
     );
@@ -145,8 +134,67 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     required this.startOn,
     this.endOn,
     required this.autoCreateTransaction,
-    required this.templateTransaction,
+    required this.transactionData,
     required this.addedTransactions,
     required this.skippedOn,
   });
+}
+
+@immutable
+class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
+  final TransactionType type;
+
+  final DateTime? dateTime;
+
+  final double? amount;
+
+  final String? note;
+
+  final AccountInfo? account;
+
+  final AccountInfo? toAccount;
+
+  final Category? category;
+
+  final CategoryTag? categoryTag;
+
+  const TransactionData._(
+    super._databaseObject,
+    this.type,
+    this.amount,
+    this.note,
+    this.account,
+    this.toAccount,
+    this.category,
+    this.categoryTag, {
+    this.dateTime,
+  });
+
+  static TransactionData fromDatabase(TransactionDataDb dataDb) {
+    return TransactionData._(
+      dataDb,
+      TransactionType.fromDatabaseValue(dataDb.type),
+      dataDb.amount,
+      dataDb.note,
+      Account.fromDatabaseInfoOnly(dataDb.account),
+      Account.fromDatabaseInfoOnly(dataDb.transferAccount),
+      Category.fromDatabase(dataDb.category),
+      CategoryTag.fromDatabase(dataDb.categoryTag),
+      dateTime: dataDb.dateTime?.toLocal(),
+    );
+  }
+
+  TransactionData withDateTime(DateTime dateTime) {
+    return TransactionData._(
+      databaseObject,
+      type,
+      amount,
+      note,
+      account,
+      toAccount,
+      category,
+      categoryTag,
+      dateTime: dateTime,
+    );
+  }
 }

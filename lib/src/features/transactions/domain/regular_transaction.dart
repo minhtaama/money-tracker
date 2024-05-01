@@ -84,7 +84,7 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
 }
 
 @immutable
-class Fee {
+class Fee extends BaseEmbeddedModel<TransferFeeDb> {
   final double amount;
   final bool onDestination;
 
@@ -92,8 +92,8 @@ class Fee {
     if (txn.transferFee == null) {
       return null;
     }
-    return Fee(txn.transferFee!.amount, txn.transferFee!.chargeOnDestination);
+    return Fee(txn.transferFee!, txn.transferFee!.amount, txn.transferFee!.chargeOnDestination);
   }
 
-  const Fee(this.amount, this.onDestination);
+  const Fee(super._databaseObject, this.amount, this.onDestination);
 }
