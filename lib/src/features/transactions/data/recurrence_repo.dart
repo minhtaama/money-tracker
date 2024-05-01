@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/recurrence.dart';
@@ -96,7 +97,19 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     return Recurrence.fromDatabase(newRecurrence);
   }
 
-  // List<TemplateTransaction> getAllUpcomingTransactionOfMonth(DateTime dateTime) {}
+  List<TransactionData> getAllUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
+    final results = <TransactionData>[];
+
+    final allRecurrences = getRecurrences();
+
+    for (Recurrence recurrence in allRecurrences) {
+      results.addAll(recurrence.getUpcomingTransactionInMonth(context, dateTime));
+    }
+
+    results.sort((a, b) => a.dateTime!.compareTo(b.dateTime!));
+
+    return results;
+  }
 
   void addSkippedDateTime(DateTime dateTime, Recurrence recurrence) {
     realm.write(() {

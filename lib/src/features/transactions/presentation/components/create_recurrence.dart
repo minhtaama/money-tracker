@@ -73,16 +73,16 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
           .hardcoded;
 }
 
-class RecurrenceWidget extends ConsumerStatefulWidget {
-  const RecurrenceWidget({super.key, required this.onChanged});
+class CreateRecurrenceWidget extends ConsumerStatefulWidget {
+  const CreateRecurrenceWidget({super.key, required this.onChanged});
 
   final void Function(RecurrenceForm? recurrenceForm) onChanged;
 
   @override
-  ConsumerState<RecurrenceWidget> createState() => _CreateRecurrenceWidgetState();
+  ConsumerState<CreateRecurrenceWidget> createState() => _CreateRecurrenceWidgetState();
 }
 
-class _CreateRecurrenceWidgetState extends ConsumerState<RecurrenceWidget> {
+class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget> {
   RecurrenceForm? _recurrenceForm;
 
   @override
@@ -496,7 +496,6 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                   style: kNormalTextStyle.copyWith(
                     color: context.appTheme.onBackground,
                     fontSize: 11,
-                    height: 0.99,
                   ),
                 ),
               ),
@@ -504,29 +503,30 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
             ],
           ),
         ),
-        Gap.h4,
         HideableContainer(
           hide: _form.interval >= 1,
-          child: Row(
-            children: [
-              SvgIcon(
-                AppIcons.sadFace,
-                color: context.appTheme.negative,
-                size: 17,
-              ),
-              Gap.w4,
-              Expanded(
-                child: Text(
-                  'Wrong interval format'.hardcoded,
-                  style: kNormalTextStyle.copyWith(
-                    color: context.appTheme.negative,
-                    fontSize: 11,
-                    height: 0.99,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6.0),
+            child: Row(
+              children: [
+                SvgIcon(
+                  AppIcons.sadFace,
+                  color: context.appTheme.negative,
+                  size: 17,
+                ),
+                Gap.w4,
+                Expanded(
+                  child: Text(
+                    'Wrong interval format'.hardcoded,
+                    style: kNormalTextStyle.copyWith(
+                      color: context.appTheme.negative,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
-              ),
-              Gap.w10,
-            ],
+                Gap.w10,
+              ],
+            ),
           ),
         ),
       ],

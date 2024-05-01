@@ -106,7 +106,9 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
     targetDates.removeWhere((element) => !element.isAfter(startOn));
 
-    print(targetDates);
+    if (endOn != null) {
+      targetDates.removeWhere((element) => element.isAfter(endOn!));
+    }
 
     return targetDates.map((e) => transactionData.withDateTime(e)).toList();
   }
@@ -196,5 +198,10 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
       categoryTag,
       dateTime: dateTime,
     );
+  }
+
+  @override
+  String toString() {
+    return '\nTransactionData{type: ${type.name}, dateTime: $dateTime, amount: $amount, note: $note, account: ${account?.name}, toAccount: ${toAccount?.name}, category: ${category?.name}, categoryTag: ${categoryTag?.name}}\n';
   }
 }

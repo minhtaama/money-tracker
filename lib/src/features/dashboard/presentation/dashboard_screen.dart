@@ -4,13 +4,13 @@ import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_card.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/income_pie_chart_widget.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/recurrence_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/weekly_bar_chart_widget.dart';
-import 'package:money_tracker_app/src/features/home/presentation/home_screen.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/recurrence.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -47,6 +47,8 @@ class DashboardScreen extends StatelessWidget {
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
       DashboardWidgetType.budgets =>
         const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
+      DashboardWidgetType.recurrences =>
+        const DashboardWidget(title: 'Recurrences', child: RecurrenceWidget()),
     };
   }
 
@@ -200,9 +202,9 @@ class _DashboardMenu2 extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
-                label: 'Upcoming'.hardcoded,
+                label: 'Recurrence'.hardcoded,
                 size: 50,
-                iconPath: AppIcons.transfer,
+                iconPath: AppIcons.switchIcon,
                 iconColor: context.appTheme.onBackground,
                 reactImmediately: false,
               ),
