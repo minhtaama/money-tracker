@@ -1,14 +1,36 @@
 {
   "appTitle": "money_tracker_app",
 
+  "@_________________________TITLES__________________________": {},
+
   "home": "Home",
   "dashboard": "Dashboard",
   "settings": "Settings",
-
   "accounts": "Accounts",
   "categories": "Categories",
+  "budgets": "Budgets",
+  "savings": "Saving",
+
+  "account": "Account",
+  "category": "Category",
   "budget": "Budget",
   "saving": "Saving",
+
+  "income": "Income",
+  "transfer": "Transfer",
+  "expense": "Expense",
+  "creditSpending": "Credit spending",
+  "creditPayment": "Credit payment",
+
+  "@________________________BUTTON_TITLES_____________________": {},
+
+  "goBack": "No, go back",
+  "back": "Back",
+  "done": "Done",
+  "select": "Select",
+  "delete": "Delete",
+
+  "@______________________GENERAL_DATE_TIME_____________________": {},
 
   "mon": "Mon",
   "tue": "Tue",
@@ -53,11 +75,7 @@
   "november": "November",
   "december": "December",
 
-  "income": "Income",
-  "transfer": "Transfer",
-  "expense": "Expense",
-  "creditSpending": "Credit spending",
-  "creditPayment": "Credit payment",
+  "@_________________________SETTINGS_PAGE__________________": {},
 
   "on": "On",
   "off": "Off",
@@ -72,13 +90,11 @@
   "shortDateFormat": "Short date format",
   "firstDayOfWeek": "First day of week",
 
-  "goBack": "No, go back",
-  "back": "Back",
-  "done": "Done",
-  "select": "Select",
+  "@__________________________HOME_PAGE_________________________": {},
 
-  "noTransactionQuote": "You don't have any transactions in {month}, Create a new one by tapping ''+'' button",
-  "@noTransactionQuote": {
+  "quoteHomepage": "You don't have any transactions in {month}, Create a new one by tapping ''+'' button",
+  "@quoteHomepage": {
+    "description": "Quote display in homescreen, when that month doesn't have any transaction",
     "placeholders": {
       "month": {
         "type": "String",
@@ -87,11 +103,151 @@
     }
   },
 
-  "noCreditToPayQuote": "This credit account currently has no credit/BNPL transaction needed to pay",
-  "noTxnsBeforeThisTimeQuote": "No transactions before this time",
-  "selectPaymentDayQuote": "Select a payment day.\n Spending transaction can be paid will be displayed here",
-  "canOnlyAddAfterCheckpointQuote": "You can only add transaction after [latest checkpoint]",
-  "canOnlyAddAfterLatestStatementQuote": "Oops! You can only add transactions since [the statement contains the latest payment]",
-  "oopsFutureStatementQuote": "Oops! This is future statement!",
-  "oopsPayOnlyInGracePeriodQuote": "Oops! Can only pay in grace period (Account preference)"
+  "@_______________________RECURRENCE_PAGE____________________": {},
+
+  "dayS": "day(s)",
+  "weekS": "week(s)",
+  "monthS": "month(s)",
+  "yearS": "year(s)",
+  "forever": "Forever",
+  "selectDayToRepeat": "Select day to repeat",
+  "wrongInterval": "Wrong interval format",
+
+  "everyNDay": "{count, plural, =0{no day} =1{every day} other{every {count} days}}",
+  "@everyNDay": {
+    "description": "every day, every 2 days",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "everyNWeek": "{count, plural, =0{no week} =1{every week} other{every {count} weeks}}",
+  "@everyNWeek": {
+    "description": "every week, every 2 weeks",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "everyNMonth": "{count, plural, =0{no month} =1{every month} other{every {count} months}}",
+  "@everyNMonth": {
+    "description": "every month, every 2 months",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "everyNYear": "{count, plural, =0{no year} =1{every year} other{every {count} years}}",
+  "@everyNYear": {
+    "description": "every year, every 2 years",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "repeatPattern": "{kind, select, xWeek{on} xMonth{on the} xYear{on} other{}} {pattern}",
+  "@repeatPattern": {
+    "description": "A message express repeat pattern",
+    "placeholders": {
+      "kind": {
+        "type": "String",
+        "description": "prefix to list. Kind is xWeek, xMonth or xYear"
+      },
+      "pattern": {
+        "type": "String",
+        "description": "list of days/dates that the transaction repeat"
+      }
+    }
+  },
+
+  "untilEndDate": "until {endDate}",
+  "@untilEndDate": {
+    "description": "A message express end date of recurrence",
+    "placeholders": {
+      "endDate": {
+        "type": "String"
+      }
+    }
+  },
+
+  "quoteRecurrence1": "This transaction doesn't repeat",
+
+  "quoteRecurrence2": "This transaction will repeat {everyN} {repeatPattern} {endDate}",
+  "@quoteRecurrence2": {
+    "description": "Quote express the recurrence of transaction",
+    "example": "This transaction will repeat every 2 months on the 1st, 3rd, 25th until forever",
+    "placeholders": {
+      "everyN": {
+        "type": "String",
+        "description": "Use [everyN...] localization"
+      },
+      "repeatPattern": {
+        "type": "String",
+        "description": "Use [repeatPattern] localization"
+      },
+      "endDate": {
+        "type": "String",
+        "description": "Use [untilEndDate] localization"
+      }
+    }
+  },
+
+  "doNotRepeat": "Do not repeat",
+  "@doNotRepeat": {
+    "description": "Name of no recurrence option"
+  },
+
+  "repeatEvery": "Repeat every",
+  "@repeatEvery": {
+    "description": "Prefix of recurrence option"
+  },
+
+  "@________________CREDIT_DATE_TIME_SELECTOR_DIALOG____________": {},
+
+  "quoteCreditCalendarDialog1": "This credit account currently has no credit/BNPL transaction needed to pay",
+  "@quoteCreditCalendarDialog1": {
+    "description": "Show in credit date time selector dialog"
+  },
+
+  "quoteCreditCalendarDialog2": "No transactions before this time",
+  "@quoteCreditCalendarDialog2": {
+    "description": "Show in credit date time selector dialog"
+  },
+
+  "quoteCreditCalendarDialog3": "Select a payment day.\n Spending transaction can be paid will be displayed here",
+  "@quoteCreditCalendarDialog3": {
+    "description": "Show in credit date time selector dialog when first display"
+  },
+
+  "quoteCreditCalendarDialog4": "You can only add transaction after [latest checkpoint]",
+  "@quoteCreditCalendarDialog4": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog5": "Oops! You can only add transactions since [the statement contains the latest payment]",
+  "@quoteCreditCalendarDialog5": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog6": "Oops! This is future statement!",
+  "@quoteCreditCalendarDialog6": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog7": "Oops! Can only pay in grace period (Account preference)",
+  "@quoteCreditCalendarDialog7": {
+    "description": "Show as error pop-up dialog when user select day"
+  }
 }

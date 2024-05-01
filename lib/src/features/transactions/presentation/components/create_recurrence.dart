@@ -19,15 +19,13 @@ import '../../../../utils/enums.dart';
 import '../../../selectors/presentation/date_time_selector/date_time_selector.dart';
 
 String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
-  final until = form.endOn != null ? 'until ${form.endOn!.toLongDate(context)}'.hardcoded : 'forever';
-
-  String repeatType;
-  String repeatOn;
+  String everyN;
+  String repeatPattern;
 
   switch (form.type) {
     case RepeatEvery.xDay || null:
-      repeatType = form.interval <= 1 ? 'day' : 'days'.hardcoded;
-      repeatOn = '';
+      everyN = context.localize.everyNDay(form.interval);
+      repeatPattern = '';
       break;
 
     case RepeatEvery.xWeek:
@@ -40,8 +38,8 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             ),
           )
           .toList();
-      repeatType = form.interval <= 1 ? 'week' : 'weeks'.hardcoded;
-      repeatOn = '${list.isEmpty ? '' : ' on '.hardcoded}${list.join(", ")}';
+      everyN = context.localize.everyNWeek(form.interval);
+      repeatPattern = context.localize.repeatPattern('xWeek', list.join(", "));
       break;
 
     case RepeatEvery.xMonth:
@@ -51,8 +49,8 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.dayToString(context),
           )
           .toList();
-      repeatType = form.interval <= 1 ? 'month' : 'month'.hardcoded;
-      repeatOn = '${list.isEmpty ? '' : ' on day '.hardcoded}${list.join(", ")}';
+      everyN = context.localize.everyNMonth(form.interval);
+      repeatPattern = context.localize.repeatPattern('xMonth', list.join(", "));
       break;
 
     case RepeatEvery.xYear:
@@ -62,15 +60,17 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.toShortDate(context, noYear: true),
           )
           .toList();
-      repeatType = form.interval <= 1 ? 'year' : 'years'.hardcoded;
-      repeatOn = '${list.isEmpty ? '' : ' on '.hardcoded} ${list.join(", ")}';
+      everyN = context.localize.everyNYear(form.interval);
+      repeatPattern = context.localize.repeatPattern('xYear', list.join(", "));
       break;
   }
 
+  String endDate =
+      form.endOn != null ? context.localize.untilEndDate(form.endOn!.toLongDate(context)) : '';
+
   return form.type == null
-      ? 'This transaction does not repeat'.hardcoded
-      : 'This transaction will repeat every ${form.interval <= 1 ? '' : '${form.interval} '}$repeatType$repeatOn $until.'
-          .hardcoded;
+      ? context.localize.quoteRecurrence1
+      : context.localize.quoteRecurrence2(everyN, repeatPattern, endDate);
 }
 
 class CreateRecurrenceWidget extends ConsumerStatefulWidget {
@@ -134,7 +134,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
               Expanded(
                 child: Text(
                   _recurrenceForm == null
-                      ? 'No repeat'.hardcoded
+                      ? context.localize.doNotRepeat
                       : _recurrenceExpression(context, _recurrenceForm!),
                   style: kHeader3TextStyle.copyWith(
                       color: _recurrenceForm == null
@@ -294,7 +294,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                     _form = _form.copyWith(endOn: () => dateTime);
                   }),
                   labelBuilder: (dateTime) {
-                    return dateTime == null ? 'Forever'.hardcoded : dateTime.toLongDate(context);
+                    return dateTime == null ? context.localize.forever : dateTime.toLongDate(context);
                   },
                 ),
               ],
@@ -318,11 +318,11 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
 
   Widget _label(RepeatEvery? repeat) {
     final suffix = switch (repeat) {
-      RepeatEvery.xDay => 'day(s)'.hardcoded,
-      RepeatEvery.xWeek => 'week(s)'.hardcoded,
-      RepeatEvery.xMonth => 'month(s)'.hardcoded,
-      RepeatEvery.xYear => 'year(s)'.hardcoded,
-      null => 'Do not repeat'.hardcoded,
+      RepeatEvery.xDay => context.localize.dayS,
+      RepeatEvery.xWeek => context.localize.weekS,
+      RepeatEvery.xMonth => context.localize.monthS,
+      RepeatEvery.xYear => context.localize.yearS,
+      null => context.localize.doNotRepeat,
     };
 
     if (repeat == null) {
@@ -333,7 +333,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
     }
 
     return InlineTextFormField(
-      prefixText: 'Repeat every'.hardcoded,
+      prefixText: context.localize.repeatEvery,
       suffixText: suffix,
       width: 30,
       maxLength: 2,
@@ -492,7 +492,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               Gap.w4,
               Expanded(
                 child: Text(
-                  'Select days to repeat'.hardcoded,
+                  context.localize.selectDayToRepeat,
                   style: kNormalTextStyle.copyWith(
                     color: context.appTheme.onBackground,
                     fontSize: 11,
@@ -517,7 +517,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                 Gap.w4,
                 Expanded(
                   child: Text(
-                    'Wrong interval format'.hardcoded,
+                    context.localize.wrongInterval,
                     style: kNormalTextStyle.copyWith(
                       color: context.appTheme.negative,
                       fontSize: 11,

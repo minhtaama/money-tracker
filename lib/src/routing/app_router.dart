@@ -102,7 +102,8 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
       backgroundColor: context.appTheme.accent2,
       onTap: () => showCustomModal(
         context: context,
-        builder: (controller, isScrollable) => AddTemplateTransactionModalScreen(controller, isScrollable),
+        builder: (controller, isScrollable) =>
+            AddTemplateTransactionModalScreen(controller, isScrollable),
       ),
     );
 
@@ -115,7 +116,7 @@ List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.budgets,
         iconData: AppIcons.budgets,
-        text: context.localize.budget,
+        text: context.localize.budgets,
       ),
       NavigationRailItem(
         path: RoutePath.accounts,
@@ -283,7 +284,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddAccountModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddAccountModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -306,7 +308,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -348,7 +351,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller, isScrollable) => AddCreditSpendingModalScreen(controller, isScrollable),
+            builder: (controller, isScrollable) =>
+                AddCreditSpendingModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(

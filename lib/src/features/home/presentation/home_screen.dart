@@ -110,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: IconWithText(
-            header: context.localize.noTransactionQuote(dayBeginOfMonth.monthToString(context)),
+            header: context.localize.quoteHomepage(dayBeginOfMonth.monthToString(context)),
             headerSize: 14,
             iconPath: AppIcons.budgets,
             forceIconOnTop: true,

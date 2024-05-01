@@ -178,7 +178,7 @@ class _DashboardMenu2 extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
                 onTap: () => context.go(RoutePath.budgets),
-                label: context.localize.budget,
+                label: context.localize.budgets,
                 size: 50,
                 iconPath: AppIcons.budgets,
                 iconColor: context.appTheme.onBackground,
@@ -190,7 +190,7 @@ class _DashboardMenu2 extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
-                label: context.localize.saving,
+                label: context.localize.savings,
                 size: 50,
                 iconPath: AppIcons.savings,
                 iconColor: context.appTheme.onBackground,
