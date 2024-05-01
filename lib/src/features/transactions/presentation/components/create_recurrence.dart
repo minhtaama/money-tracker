@@ -10,7 +10,6 @@ import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dar
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/custom_radio.dart';
 import '../../../../theme_and_ui/icons.dart';
@@ -39,7 +38,7 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
           )
           .toList();
       everyN = context.loc.everyNWeek(form.interval);
-      repeatPattern = context.loc.repeatPattern('xWeek', list.join(", "));
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(", "));
       break;
 
     case RepeatEvery.xMonth:
@@ -50,7 +49,7 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
           )
           .toList();
       everyN = context.loc.everyNMonth(form.interval);
-      repeatPattern = context.loc.repeatPattern('xMonth', list.join(", "));
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(", "));
       break;
 
     case RepeatEvery.xYear:
@@ -61,7 +60,7 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
           )
           .toList();
       everyN = context.loc.everyNYear(form.interval);
-      repeatPattern = context.loc.repeatPattern('xYear', list.join(", "));
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(", "));
       break;
   }
 
@@ -550,6 +549,8 @@ class RecurrenceForm {
 
   // /// Only year, month, day
   // final DateTime startOn;
+
+  //TODO: change startOn
 
   /// Only year, month, day
   final DateTime? endOn;
