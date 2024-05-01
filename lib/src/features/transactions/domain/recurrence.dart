@@ -202,6 +202,6 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
 
   @override
   String toString() {
-    return '\nTransactionData{type: ${type.name}, dateTime: $dateTime, amount: $amount, note: $note, account: ${account?.name}, toAccount: ${toAccount?.name}, category: ${category?.name}, categoryTag: ${categoryTag?.name}}\n';
+    return 'TransactionData{type: ${type.name}, dateTime: $dateTime, amount: $amount, note: $note, account: ${account?.name}, toAccount: ${toAccount?.name}, category: ${category?.name}, categoryTag: ${categoryTag?.name}}';
   }
 }

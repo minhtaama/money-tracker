@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
