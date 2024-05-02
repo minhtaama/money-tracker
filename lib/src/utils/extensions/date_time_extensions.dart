@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 extension DateTimeExtensions on DateTime {
   int get daysInMonth {
@@ -14,6 +13,10 @@ extension DateTimeExtensions on DateTime {
 
   /// Returns [DateTime] without timestamp.
   DateTime get onlyYearMonthDay => DateTime(year, month, day);
+
+  bool isSameDayAs(DateTime date) {
+    return year == date.year && month == date.month && day == date.day;
+  }
 
   bool isSameMonthAs(DateTime date) {
     return year == date.year && month == date.month;
@@ -59,7 +62,7 @@ extension DateTimeExtensions on DateTime {
     String yearSeparator = noYear
         ? ''
         : switch (type) {
-            ShortDateType.dmmy || ShortDateType.mmdy || ShortDateType.ydmm || ShortDateType.ymmd => ',',
+            ShortDateType.dmmy || ShortDateType.mmdy || ShortDateType.ydmm || ShortDateType.ymmd => ', ',
             ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => '/',
           };
 
@@ -69,18 +72,14 @@ extension DateTimeExtensions on DateTime {
       ShortDateType.ydmm ||
       ShortDateType.ymmd =>
         monthToString(context, short: true),
-      ShortDateType.dmy ||
-      ShortDateType.mdy ||
-      ShortDateType.ydm ||
-      ShortDateType.ymd =>
-        formatter.format(month),
+      ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
     };
 
     return switch (type) {
-      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear',
-      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear',
-      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth',
-      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay',
+      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator$sYear',
+      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator$sYear',
+      ShortDateType.ydmm => '$sYear$yearSeparator$sDay $sMonth',
+      ShortDateType.ymmd => '$sYear$yearSeparator$sMonth $sDay',
       ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear',
       ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear',
       ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth',

@@ -314,7 +314,7 @@
 
   "quoteRecurrence1": "This transaction doesn't repeat",
 
-  "quoteRecurrence2": "This transaction will repeat {everyN} {repeatPattern} {endDate}",
+  "quoteRecurrence2": "This transaction will start on {startDate} and repeat {everyN} {repeatPattern} {endDate}",
   "@quoteRecurrence2": {
     "description": "Quote express the recurrence of transaction",
     "example": "This transaction will repeat every 2 months on the 1st, 3rd, 25th until forever",
@@ -326,6 +326,9 @@
       "repeatPattern": {
         "type": "String",
         "description": "Use [repeatPattern] localization"
+      },
+      "startDate": {
+        "type": "String"
       },
       "endDate": {
         "type": "String",

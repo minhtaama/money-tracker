@@ -37,8 +37,11 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             ),
           )
           .toList();
+      final last = list.removeLast();
+      final stringPatterns = '${list.join(', ')} & $last';
+
       everyN = context.loc.everyNWeek(form.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(", "));
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', stringPatterns);
       break;
 
     case RepeatEvery.xMonth:
@@ -48,8 +51,11 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.dayToString(context),
           )
           .toList();
+      final last = list.removeLast();
+      final stringPatterns = '${list.join(', ')} & $last';
+
       everyN = context.loc.everyNMonth(form.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(", "));
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', stringPatterns);
       break;
 
     case RepeatEvery.xYear:
@@ -59,21 +65,32 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.toShortDate(context, noYear: true),
           )
           .toList();
+      final last = list.removeLast();
+      final stringPatterns = '${list.join(', ')} & $last';
+
       everyN = context.loc.everyNYear(form.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(", "));
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', stringPatterns);
       break;
   }
 
-  String endDate = form.endOn != null ? context.loc.untilEndDate(form.endOn!.toLongDate(context)) : '';
+  String startDate = form.startOn.isSameDayAs(DateTime.now()) ? context.loc.today : form.startOn.toShortDate(context);
+  String endDate = form.endOn != null ? context.loc.untilEndDate(form.endOn!.toShortDate(context)) : '';
 
   return form.type == null
       ? context.loc.quoteRecurrence1
-      : context.loc.quoteRecurrence2(everyN, repeatPattern, endDate);
+      : context.loc.quoteRecurrence2(everyN, repeatPattern, startDate, endDate);
 }
 
 class CreateRecurrenceWidget extends ConsumerStatefulWidget {
-  const CreateRecurrenceWidget({super.key, required this.onChanged});
+  const CreateRecurrenceWidget({
+    super.key,
+    required this.initialForm,
+    required this.transactionDateTime,
+    required this.onChanged,
+  });
 
+  final RecurrenceForm? initialForm;
+  final DateTime transactionDateTime;
   final void Function(RecurrenceForm? recurrenceForm) onChanged;
 
   @override
@@ -81,7 +98,17 @@ class CreateRecurrenceWidget extends ConsumerStatefulWidget {
 }
 
 class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget> {
-  RecurrenceForm? _recurrenceForm;
+  late RecurrenceForm? _recurrenceForm = widget.initialForm;
+
+  @override
+  void didUpdateWidget(covariant CreateRecurrenceWidget oldWidget) {
+    if (widget.initialForm != oldWidget.initialForm) {
+      setState(() {
+        _recurrenceForm = widget.initialForm;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +116,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       color: context.appTheme.primary.withOpacity(_recurrenceForm == null ? 0 : 1),
-      border: Border.all(
-          color: context.appTheme.onBackground.withOpacity(_recurrenceForm == null ? 0.4 : 0)),
+      border: Border.all(color: context.appTheme.onBackground.withOpacity(_recurrenceForm == null ? 0.4 : 0)),
       width: double.infinity,
       child: CustomInkWell(
         inkColor: _recurrenceForm == null ? context.appTheme.onBackground : context.appTheme.onPrimary,
@@ -101,6 +127,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
               controller,
               isScrollable,
               initialForm: _recurrenceForm,
+              transactionDateTime: widget.transactionDateTime,
             ),
           );
 
@@ -131,9 +158,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
               Gap.w8,
               Expanded(
                 child: Text(
-                  _recurrenceForm == null
-                      ? context.loc.doNotRepeat
-                      : _recurrenceExpression(context, _recurrenceForm!),
+                  _recurrenceForm == null ? context.loc.doNotRepeat : _recurrenceExpression(context, _recurrenceForm!),
                   style: kHeader3TextStyle.copyWith(
                       color: _recurrenceForm == null
                           ? context.appTheme.onBackground.withOpacity(0.4)
@@ -152,9 +177,15 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
 ////////////////////////////////////////////
 
 class _CreateRecurrenceModal extends StatefulWidget {
-  const _CreateRecurrenceModal(this.controller, this.isScrollable, {required this.initialForm});
+  const _CreateRecurrenceModal(
+    this.controller,
+    this.isScrollable, {
+    required this.initialForm,
+    required this.transactionDateTime,
+  });
 
   final RecurrenceForm? initialForm;
+  final DateTime transactionDateTime;
   final ScrollController controller;
   final bool isScrollable;
 
@@ -163,7 +194,7 @@ class _CreateRecurrenceModal extends StatefulWidget {
 }
 
 class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
-  late RecurrenceForm _form = widget.initialForm ?? RecurrenceForm.initial();
+  late RecurrenceForm _form = widget.initialForm ?? RecurrenceForm.initial(widget.transactionDateTime);
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +223,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               value: null,
               groupValue: _form.type,
               onChanged: (value) => setState(() {
-                _form = RecurrenceForm.initial();
+                _form = _form.copyWith(type: () => null);
               }),
             ),
           ],
@@ -288,6 +319,8 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                 Gap.w4,
                 DateSelector(
                   initial: _form.endOn,
+                  selectableDayPredicate: (dateTime) =>
+                      dateTime.onlyYearMonthDay.isAfter(_form.startOn.onlyYearMonthDay),
                   onChangedNullable: (dateTime) => setState(() {
                     _form = _form.copyWith(endOn: () => dateTime);
                   }),
@@ -376,6 +409,9 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               child: CardItem(
                 color: bgColor,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: context.appTheme.primary.withOpacity(date.isSameDayAs(DateTime.now()) ? 1 : 0),
+                ),
                 padding: EdgeInsets.zero,
                 margin: EdgeInsets.zero,
                 child: CustomInkWell(
@@ -423,6 +459,9 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
           height: 33,
           width: 33,
           borderRadius: BorderRadius.circular(1000),
+          border: Border.all(
+            color: context.appTheme.primary.withOpacity(date.isSameDayAs(DateTime.now()) ? 1 : 0),
+          ),
           padding: EdgeInsets.zero,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: CustomInkWell(
@@ -466,8 +505,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       margin: const EdgeInsets.symmetric(vertical: 2),
       padding: const EdgeInsets.symmetric(vertical: 2),
       color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.08 : 0),
-      border: Border.all(
-          color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.5 : 0)),
+      border: Border.all(color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.5 : 0)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: children,
@@ -532,8 +570,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
   }
 
   bool _isBigButtonDisabled() {
-    return (_form.repeatOn.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) ||
-        _form.interval <= 0;
+    return (_form.repeatOn.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) || _form.interval <= 0;
   }
 }
 
@@ -547,8 +584,8 @@ class RecurrenceForm {
   /// Only year, month, day
   final List<DateTime> repeatOn;
 
-  // /// Only year, month, day
-  // final DateTime startOn;
+  /// Only year, month, day
+  final DateTime startOn;
 
   //TODO: change startOn
 
@@ -557,9 +594,12 @@ class RecurrenceForm {
 
   final bool autoCreateTransaction;
 
-  factory RecurrenceForm.initial() {
+  factory RecurrenceForm.initial(DateTime txnDateTime) {
+    final today = DateTime.now().onlyYearMonthDay;
+    final startOn = txnDateTime.onlyYearMonthDay.isAfter(today) ? txnDateTime.onlyYearMonthDay : today;
+
     return RecurrenceForm._(
-      //startOn: DateTime.now(),
+      startOn: startOn,
       interval: 1,
       repeatOn: [],
       autoCreateTransaction: true,
@@ -570,7 +610,7 @@ class RecurrenceForm {
     this.type,
     required this.interval,
     required this.repeatOn,
-    //required this.startOn,
+    required this.startOn,
     this.endOn,
     required this.autoCreateTransaction,
   });
@@ -587,7 +627,21 @@ class RecurrenceForm {
       endOn: endOn != null ? endOn() : this.endOn,
       repeatOn: repeatOn,
       autoCreateTransaction: autoCreateTransaction ?? this.autoCreateTransaction,
-      //startOn: startOn,
+      startOn: startOn,
+    );
+  }
+
+  RecurrenceForm updateStartOnDate(DateTime dateTime) {
+    final today = DateTime.now().onlyYearMonthDay;
+    final startOn = dateTime.onlyYearMonthDay.isAfter(today) ? dateTime.onlyYearMonthDay : today;
+
+    return RecurrenceForm._(
+      type: type,
+      interval: interval,
+      endOn: endOn,
+      repeatOn: repeatOn,
+      autoCreateTransaction: autoCreateTransaction,
+      startOn: startOn,
     );
   }
 

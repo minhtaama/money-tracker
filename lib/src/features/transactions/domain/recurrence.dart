@@ -86,9 +86,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       final selectedWeekDay = repeatOn.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
-        for (DateTime date = range.start;
-            !date.isAfter(range.end);
-            date = date.add(const Duration(days: 1))) {
+        for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
             targetDates.add(date);
           }
@@ -118,7 +116,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       db,
       type: RepeatEvery.fromDatabaseValue(db.type),
       interval: db.repeatInterval,
-      repeatOn: db.repeatOn,
+      repeatOn: db.repeatOn.map((e) => e.toLocal()).toList(),
       startOn: db.startOn.toLocal(),
       endOn: db.endOn?.toLocal(),
       autoCreateTransaction: db.autoCreateTransaction,

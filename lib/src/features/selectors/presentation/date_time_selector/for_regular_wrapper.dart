@@ -31,9 +31,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                 onTimeChange: (newTime) {
                   setState(() {
                     _outputDateTime = newTime.copyWith(
-                        year: _outputDateTime.year,
-                        month: _outputDateTime.month,
-                        day: _outputDateTime.day);
+                        year: _outputDateTime.year, month: _outputDateTime.month, day: _outputDateTime.day);
                   });
                   widget.onChanged(_outputDateTime);
                 },
@@ -50,8 +48,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                         onActionButtonTap: (dateTime) {
                           if (dateTime != null) {
                             setState(() {
-                              _outputDateTime = dateTime.copyWith(
-                                  hour: _outputDateTime.hour, minute: _outputDateTime.minute);
+                              _outputDateTime =
+                                  dateTime.copyWith(hour: _outputDateTime.hour, minute: _outputDateTime.minute);
                             });
                             context.pop();
                           }
@@ -81,8 +79,7 @@ class DateSelector extends StatefulWidget {
     required this.labelBuilder,
     this.initial,
     this.selectableDayPredicate,
-  }) : assert(onChanged != null && onChangedNullable == null ||
-            onChanged == null && onChangedNullable != null);
+  }) : assert(onChanged != null && onChangedNullable == null || onChanged == null && onChangedNullable != null);
 
   final DateTime? initial;
   final bool Function(DateTime)? selectableDayPredicate;
@@ -95,8 +92,7 @@ class DateSelector extends StatefulWidget {
 }
 
 class _DateSelectorState extends State<DateSelector> {
-  late DateTime? _outputDateTime =
-      widget.onChangedNullable != null ? widget.initial : widget.initial ?? DateTime.now();
+  late DateTime? _outputDateTime = widget.onChangedNullable != null ? widget.initial : widget.initial ?? DateTime.now();
   //late DateTime _selectedDay = DateTime.now();
 
   @override
@@ -169,11 +165,16 @@ class _DateSelectorState extends State<DateSelector> {
 
 class CustomCalendar extends StatefulWidget {
   const CustomCalendar(
-      {super.key, required this.onValueChanged, this.displayedMonthDate, required this.value});
+      {super.key,
+      required this.onValueChanged,
+      this.displayedMonthDate,
+      required this.value,
+      this.selectableDayPredicate});
 
   final void Function(List<DateTime?>) onValueChanged;
   final List<DateTime> value;
   final DateTime? displayedMonthDate;
+  final bool Function(DateTime)? selectableDayPredicate;
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -192,6 +193,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
           context,
           calendarType: CalendarDatePicker2Type.multi,
           dayBuilder: _dayBuilderRegular,
+          selectableDayPredicate: widget.selectableDayPredicate,
         ),
         value: widget.value,
         displayedMonthDate: widget.displayedMonthDate,
@@ -224,9 +226,7 @@ Widget _dayBuilderRegular(BuildContext context,
       borderRadius: BorderRadius.circular(1000),
       border: isToday != null && isToday
           ? Border.all(
-              color: isDisabled != null && isDisabled
-                  ? AppColors.greyBgr(context)
-                  : context.appTheme.primary,
+              color: isDisabled != null && isDisabled ? AppColors.greyBgr(context) : context.appTheme.primary,
             )
           : null,
       color: context.appTheme.primary.withOpacity(isSelected != null && isSelected ? 1 : 0),
