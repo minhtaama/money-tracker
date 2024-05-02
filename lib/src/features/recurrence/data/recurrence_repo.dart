@@ -94,16 +94,18 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     return Recurrence.fromDatabase(newRecurrence);
   }
 
-  List<TransactionData> getAllRecurrenceTransactionInMonth(BuildContext context, DateTime dateTime) {
-    final results = <TransactionData>[];
+  Map<TransactionData, List<DateTime>> getAllRecurrenceTransactionInMonth(BuildContext context, DateTime dateTime) {
+    final results = <TransactionData, List<DateTime>>{};
 
     final allRecurrences = getRecurrences();
 
     for (Recurrence recurrence in allRecurrences) {
-      results.addAll(recurrence.getRecurrenceTransactionInMonth(context, dateTime));
+      results[recurrence.transactionData] =
+          recurrence.getRecurrenceTransactionInMonth(context, dateTime).map((e) => e.dateTime!).toList()
+            ..sort(
+              (a, b) => a.compareTo(b),
+            );
     }
-
-    results.sort((a, b) => a.dateTime!.compareTo(b.dateTime!));
 
     return results;
   }

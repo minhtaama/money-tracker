@@ -36,7 +36,7 @@ enum DashboardWidgetType {
       DashboardWidgetType.monthlyExpense => 'Monthly Expense'.hardcoded,
       DashboardWidgetType.monthlyIncome => 'Monthly Income'.hardcoded,
       DashboardWidgetType.budgets => 'Budgets'.hardcoded,
-      DashboardWidgetType.upcomingTransactions => 'Recurrences'.hardcoded,
+      DashboardWidgetType.upcomingTransactions => 'Upcoming Transactions'.hardcoded,
     };
   }
 }

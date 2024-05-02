@@ -73,9 +73,10 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
 }
 
 class TransactionDataTile extends ConsumerWidget {
-  const TransactionDataTile({super.key, required this.model});
+  const TransactionDataTile({super.key, required this.model, this.withoutIconColor = false});
 
   final TransactionData model;
+  final bool withoutIconColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -96,8 +97,11 @@ class TransactionDataTile extends ConsumerWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _CategoryIcon(model: model),
-            Gap.w8,
+            _CategoryIcon(
+              model: model,
+              withoutIconColor: withoutIconColor,
+            ),
+            withoutIconColor ? Gap.w4 : Gap.w8,
             Expanded(
               child: switch (model.type) {
                 TransactionType.transfer => _TransferDetails(model: model),
@@ -135,9 +139,10 @@ class TransactionDataTile extends ConsumerWidget {
 }
 
 class _CategoryIcon extends StatelessWidget {
-  const _CategoryIcon({required this.model});
+  const _CategoryIcon({required this.model, required this.withoutIconColor});
 
   final TransactionData model;
+  final bool withoutIconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -155,16 +160,18 @@ class _CategoryIcon extends StatelessWidget {
 
       return SvgIcon(
         model.category?.iconPath ?? AppIcons.defaultIcon,
-        color: model.category?.iconColor ?? context.appTheme.onBackground,
+        color: withoutIconColor
+            ? context.appTheme.onBackground
+            : model.category?.iconColor ?? context.appTheme.onBackground,
       );
     }
 
     return Container(
       height: 28,
       width: 28,
-      padding: const EdgeInsets.all(4),
+      padding: EdgeInsets.all(withoutIconColor ? 2.5 : 4),
       decoration: BoxDecoration(
-        color: color(),
+        color: withoutIconColor ? Colors.transparent : color(),
         borderRadius: BorderRadius.circular(100),
       ),
       child: child(),
