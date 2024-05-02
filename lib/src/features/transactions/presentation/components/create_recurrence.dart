@@ -37,11 +37,9 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             ),
           )
           .toList();
-      final last = list.removeLast();
-      final stringPatterns = '${list.join(', ')} & $last';
 
       everyN = context.loc.everyNWeek(form.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', stringPatterns);
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(', '));
       break;
 
     case RepeatEvery.xMonth:
@@ -51,11 +49,9 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.dayToString(context),
           )
           .toList();
-      final last = list.removeLast();
-      final stringPatterns = '${list.join(', ')} & $last';
 
       everyN = context.loc.everyNMonth(form.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', stringPatterns);
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(', '));
       break;
 
     case RepeatEvery.xYear:
@@ -65,15 +61,14 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
             (date) => date.toShortDate(context, noYear: true),
           )
           .toList();
-      final last = list.removeLast();
-      final stringPatterns = '${list.join(', ')} & $last';
 
       everyN = context.loc.everyNYear(form.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', stringPatterns);
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(', '));
       break;
   }
 
-  String startDate = form.startOn.isSameDayAs(DateTime.now()) ? context.loc.today : form.startOn.toShortDate(context);
+  String startDate =
+      form.startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : form.startOn.toShortDate(context);
   String endDate = form.endOn != null ? context.loc.untilEndDate(form.endOn!.toShortDate(context)) : '';
 
   return form.type == null
