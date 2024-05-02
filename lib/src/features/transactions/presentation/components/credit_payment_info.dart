@@ -19,7 +19,7 @@ import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/statement/base_class/statement.dart';
 import '../../domain/transaction_base.dart';
-import 'txn_components.dart';
+import 'base_transaction_components.dart';
 
 class CreditInfo extends StatelessWidget {
   const CreditInfo({

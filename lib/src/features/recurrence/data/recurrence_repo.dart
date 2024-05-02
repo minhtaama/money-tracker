@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/recurrence.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
+import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
 import '../../../../persistent/realm_dto.dart';
-import '../presentation/controllers/regular_txn_form_controller.dart';
+import '../../transactions/presentation/controllers/regular_txn_form_controller.dart';
 
 class RecurrenceRepositoryRealmDb {
   RecurrenceRepositoryRealmDb(this.realm);
@@ -19,8 +17,7 @@ class RecurrenceRepositoryRealmDb {
     return realm.all<RecurrenceDb>().changes;
   }
 
-  List<RecurrenceDb> _realmResults() =>
-      realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
+  List<RecurrenceDb> _realmResults() => realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
 
   List<Recurrence> getRecurrences() {
     List<RecurrenceDb> list = realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
@@ -97,13 +94,13 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     return Recurrence.fromDatabase(newRecurrence);
   }
 
-  List<TransactionData> getAllUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
+  List<TransactionData> getAllRecurrenceTransactionInMonth(BuildContext context, DateTime dateTime) {
     final results = <TransactionData>[];
 
     final allRecurrences = getRecurrences();
 
     for (Recurrence recurrence in allRecurrences) {
-      results.addAll(recurrence.getUpcomingTransactionInMonth(context, dateTime));
+      results.addAll(recurrence.getRecurrenceTransactionInMonth(context, dateTime));
     }
 
     results.sort((a, b) => a.dateTime!.compareTo(b.dateTime!));

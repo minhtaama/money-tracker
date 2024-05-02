@@ -5,12 +5,12 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
-import 'package:money_tracker_app/src/features/transactions/data/recurrence_repo.dart';
+import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
-import 'package:money_tracker_app/src/features/transactions/presentation/components/create_recurrence.dart';
+import 'package:money_tracker_app/src/features/recurrence/presentation/create_recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/regular_txn_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
@@ -22,7 +22,7 @@ import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
-import '../../../domain/recurrence.dart';
+import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
   const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});

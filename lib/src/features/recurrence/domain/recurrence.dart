@@ -32,7 +32,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   final List<DateTime> skippedOn;
 
-  List<TransactionData> getUpcomingTransactionInMonth(BuildContext context, DateTime dateTime) {
+  List<TransactionData> getRecurrenceTransactionInMonth(BuildContext context, DateTime dateTime) {
     final targetMonthRange = dateTime.monthRange;
     if (targetMonthRange.end.isBefore(startOn)) {
       return [];

@@ -27,7 +27,7 @@ import '../../../../../utils/enums.dart';
 import '../../../../calculator_input/application/calculator_service.dart';
 import '../../../../transactions/domain/transaction_base.dart';
 import '../../../../transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
-import '../../../../transactions/presentation/components/txn_components.dart';
+import '../../../../transactions/presentation/components/base_transaction_components.dart';
 import '../../../domain/account_base.dart';
 import '../../../domain/statement/base_class/statement.dart';
 
@@ -59,16 +59,14 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
     }
   }
 
-  late DateTime _displayStatementDate =
-      _today.copyWith(day: _statementDay, month: _initialStatementMonth);
+  late DateTime _displayStatementDate = _today.copyWith(day: _statementDay, month: _initialStatementMonth);
 
   late final int _initialPageIndex = _displayStatementDate.getMonthsDifferent(Calendar.minDate);
   late int _currentPageIndex = _initialPageIndex;
 
   void _onPageChange(int value) {
     _currentPageIndex = value;
-    _displayStatementDate =
-        DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
+    _displayStatementDate = DateTime(_today.year, _initialStatementMonth + (value - _initialPageIndex), _statementDay);
     setState(() {});
   }
 
@@ -149,10 +147,8 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor:
-              widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedCreditAccountTab(
-              account: widget.creditAccount, displayDate: _displayStatementDate),
+          backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedCreditAccountTab(account: widget.creditAccount, displayDate: _displayStatementDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -168,10 +164,9 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           },
         ),
         itemBuilder: (context, ref, pageIndex) {
-          final currentDateTime = DateTime(
-              _today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
-          final Statement? statement =
-              widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
+          final currentDateTime =
+              DateTime(_today.year, _initialStatementMonth + (pageIndex - _initialPageIndex), _statementDay);
+          final Statement? statement = widget.creditAccount.statementAt(currentDateTime, upperGapAtDueDate: true);
           return statement != null
               ? [
                   _SummaryCard(

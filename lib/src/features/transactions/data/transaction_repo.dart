@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/domain/recurrence.dart';
+import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -23,9 +23,7 @@ class TransactionRepositoryRealmDb {
   final Realm realm;
 
   Stream<RealmResultsChanges<TransactionDb>> _watchListChanges(DateTime lower, DateTime upper) {
-    return realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
+    return realm.all<TransactionDb>().query('dateTime >= \$0 AND dateTime <= \$1', [lower, upper]).changes;
   }
 
   /// Put this inside realm write transaction to update [BalanceAtDateTime],
@@ -44,8 +42,7 @@ class TransactionRepositoryRealmDb {
           balanceAtDateTimes.lastIndexWhere((e) => dateTime.isInMonthAfter(e.date.toLocal()));
       final nearestBalance =
           nearestIndexFromTxnDateTime == -1 ? 0 : balanceAtDateTimes[nearestIndexFromTxnDateTime].amount;
-      realm
-          .add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
+      realm.add(BalanceAtDateTimeDb(ObjectId(), dateTime.onlyYearMonth.toUtc(), amount + nearestBalance));
 
       balanceAtDateTimes = getSortedBalanceAtDateTimeList();
       index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
@@ -62,9 +59,9 @@ class TransactionRepositoryRealmDb {
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm.all<TransactionDb>().query(
-        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)',
-        [lower, upper]).toList();
+    List<TransactionDb> list = realm
+        .all<TransactionDb>()
+        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 
@@ -98,8 +95,7 @@ class TransactionRepositoryRealmDb {
 
   /// A De-normalization list stores total balance in a month
   List<BalanceAtDateTime> getSortedBalanceAtDateTimeList() {
-    List<BalanceAtDateTimeDb> list =
-        realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
+    List<BalanceAtDateTimeDb> list = realm.all<BalanceAtDateTimeDb>().query('TRUEPREDICATE SORT(date ASC)').toList();
 
     return list.map((txn) => BalanceAtDateTime.fromDatabase(txn)).toList();
   }
@@ -282,8 +278,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       category: category.databaseObject,
       categoryTag: tag?.databaseObject,
       account: account.databaseObject,
-      creditInstallmentDetails:
-          monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null,
+      creditInstallmentDetails: monthsToPay != null && paymentAmount != null ? creditInstallmentDb : null,
     );
 
     realm.write(() {
@@ -372,8 +367,8 @@ extension EditTransaction on TransactionRepositoryRealmDb {
         }
 
         if (transaction.type == TransactionType.expense) {
-          _updateBalanceAtDateTime(state.dateTime ?? transaction.dateTime,
-              -(state.amount!.roundTo2DP() - transaction.amount));
+          _updateBalanceAtDateTime(
+              state.dateTime ?? transaction.dateTime, -(state.amount!.roundTo2DP() - transaction.amount));
         }
 
         txnDb.amount = state.amount!.roundTo2DP();
@@ -419,10 +414,9 @@ extension EditTransaction on TransactionRepositoryRealmDb {
       if (state.amount != null) {
         // Modify the adjustment amount of next payment base on amount changes of this spending
         try {
-          final nextPaymentDb =
-              (Account.fromDatabase(transaction.account.databaseObject) as CreditAccount)
-                  .getNextPayment(from: transaction)
-                  .databaseObject;
+          final nextPaymentDb = (Account.fromDatabase(transaction.account.databaseObject) as CreditAccount)
+              .getNextPayment(from: transaction)
+              .databaseObject;
 
           final different = state.amount!.roundTo2DP() - transaction.amount;
 

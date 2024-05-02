@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dar
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/settings_repo.dart';
-import 'package:money_tracker_app/src/features/transactions/data/recurrence_repo.dart';
+import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_settings.dart';
@@ -54,8 +54,7 @@ class MoneyTrackerApp extends ConsumerWidget {
             value: SystemUiOverlayStyle(
               systemNavigationBarColor:
                   context.isBigScreen ? context.appTheme.background2 : context.appTheme.background1,
-              systemNavigationBarIconBrightness:
-                  context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
+              systemNavigationBarIconBrightness: context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
               systemNavigationBarDividerColor: Colors.transparent,
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: systemIconBrightness,
