@@ -8,7 +8,7 @@ import 'package:money_tracker_app/src/features/dashboard/presentation/components
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/income_pie_chart_widget.dart';
-import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/recurrence_widget.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/upcoming_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/weekly_bar_chart_widget.dart';
 import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
@@ -45,7 +45,8 @@ class DashboardScreen extends StatelessWidget {
       DashboardWidgetType.monthlyIncome =>
         const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
       DashboardWidgetType.budgets => const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
-      DashboardWidgetType.recurrences => const DashboardWidget(title: 'Recurrences', child: RecurrenceWidget()),
+      DashboardWidgetType.upcomingTransactions =>
+        const DashboardWidget(title: 'Upcoming Transactions', child: UpcomingWidget()),
     };
   }
 
@@ -197,7 +198,8 @@ class _DashboardMenu2 extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
-                label: 'Recurrence'.hardcoded,
+                onTap: () => context.go(RoutePath.recurrence),
+                label: context.loc.recurrence,
                 size: 50,
                 iconPath: AppIcons.switchIcon,
                 iconColor: context.appTheme.onBackground,

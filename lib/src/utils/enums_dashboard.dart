@@ -7,7 +7,7 @@ enum DashboardWidgetType {
   monthlyExpense(2),
   monthlyIncome(3),
   budgets(4),
-  recurrences(5),
+  upcomingTransactions(5),
   ;
 
   final int databaseValue;
@@ -25,7 +25,7 @@ enum DashboardWidgetType {
       DashboardWidgetType.monthlyExpense => AppIcons.reports,
       DashboardWidgetType.monthlyIncome => AppIcons.reports,
       DashboardWidgetType.budgets => AppIcons.budgets,
-      DashboardWidgetType.recurrences => AppIcons.switchIcon,
+      DashboardWidgetType.upcomingTransactions => AppIcons.switchIcon,
     };
   }
 
@@ -36,7 +36,7 @@ enum DashboardWidgetType {
       DashboardWidgetType.monthlyExpense => 'Monthly Expense'.hardcoded,
       DashboardWidgetType.monthlyIncome => 'Monthly Income'.hardcoded,
       DashboardWidgetType.budgets => 'Budgets'.hardcoded,
-      DashboardWidgetType.recurrences => 'Recurrences'.hardcoded,
+      DashboardWidgetType.upcomingTransactions => 'Recurrences'.hardcoded,
     };
   }
 }

@@ -1,51 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../../common_widgets/animated_swipe_tile.dart';
-import '../../../../common_widgets/card_item.dart';
-import '../../../../common_widgets/custom_inkwell.dart';
-import '../../../../common_widgets/modal_and_dialog.dart';
-import '../../../../common_widgets/money_amount.dart';
-import '../../../../common_widgets/rounded_icon_button.dart';
-import '../../../../common_widgets/svg_icon.dart';
-import '../../../../theme_and_ui/colors.dart';
-import '../../../../theme_and_ui/icons.dart';
-import '../../../../utils/constants.dart';
-import '../../../../utils/enums.dart';
+import '../../../common_widgets/card_item.dart';
+import '../../../common_widgets/custom_inkwell.dart';
+import '../../../common_widgets/money_amount.dart';
+import '../../../common_widgets/svg_icon.dart';
+import '../../../theme_and_ui/colors.dart';
+import '../../../theme_and_ui/icons.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/enums.dart';
 
-class RecurrenceWidget extends ConsumerWidget {
-  const RecurrenceWidget({super.key});
+String recurrenceExpression(BuildContext context, Recurrence recurrence) {
+  String everyN;
+  String repeatPattern;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final recRepo = ref.watch(recurrenceRepositoryRealmProvider);
-    final list = recRepo.getAllRecurrenceTransactionInMonth(context, DateTime.now());
+  switch (recurrence.type) {
+    case RepeatEvery.xDay:
+      everyN = context.loc.everyNDay(recurrence.interval);
+      repeatPattern = '';
+      break;
 
-    return SizedBox(
-      height: 200,
-      child: SingleChildScrollView(
-        child: Column(
-          children: list
-              .map((e) => Column(
-                    children: [
-                      Text(e.dateTime!.toString()),
-                      _TransactionDataTile(model: e),
-                    ],
-                  ))
-              .toList(),
-        ),
-      ),
-    );
+    case RepeatEvery.xWeek:
+      final sort = List<DateTime>.from(recurrence.repeatOn)..sort((a, b) => a.weekday - b.weekday);
+      final list = sort
+          .map(
+            (date) => date.weekdayToString(
+              context,
+              short: recurrence.repeatOn.length <= 2 ? false : true,
+            ),
+          )
+          .toList();
+
+      everyN = context.loc.everyNWeek(recurrence.interval);
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(', '));
+      break;
+
+    case RepeatEvery.xMonth:
+      final sort = List<DateTime>.from(recurrence.repeatOn)..sort((a, b) => a.day - b.day);
+      final list = sort
+          .map(
+            (date) => date.dayToString(context),
+          )
+          .toList();
+
+      everyN = context.loc.everyNMonth(recurrence.interval);
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(', '));
+      break;
+
+    case RepeatEvery.xYear:
+      final sort = List<DateTime>.from(recurrence.repeatOn)..sort((a, b) => a.compareTo(b));
+      final list = sort
+          .map(
+            (date) => date.toShortDate(context, noYear: true),
+          )
+          .toList();
+
+      everyN = context.loc.everyNYear(recurrence.interval);
+      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(', '));
+      break;
   }
+
+  String startDate = recurrence.startOn.isSameDayAs(DateTime.now())
+      ? context.loc.today.toLowerCase()
+      : recurrence.startOn.toShortDate(context);
+  String endDate = recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
+
+  return context.loc.quoteRecurrence2(everyN, repeatPattern, startDate, endDate);
 }
 
-class _TransactionDataTile extends ConsumerWidget {
-  const _TransactionDataTile({required this.model});
+class TransactionDataTile extends ConsumerWidget {
+  const TransactionDataTile({super.key, required this.model});
 
   final TransactionData model;
 
@@ -62,86 +90,46 @@ class _TransactionDataTile extends ConsumerWidget {
         AppColors.grey(context),
     };
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: AnimatedSwipeTile(
-          buttons: [
-            RoundedIconButton(
-              iconPath: AppIcons.delete,
-              size: 35,
-              iconPadding: 6,
-              elevation: 18,
-              backgroundColor: context.appTheme.negative,
-              iconColor: context.appTheme.onNegative,
-              onTap: () => showConfirmModal(
-                context: context,
-                label: 'Delete this favorite transaction?'.hardcoded,
-                onConfirm: () {
-                  // final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
-                  // tempRepo.delete(model);
-                },
-              ),
-            ),
-          ],
-          child: CardItem(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.zero,
-            border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
-            child: CustomInkWell(
-              inkColor: AppColors.grey(context),
-              onTap: () {
-                //
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _CategoryIcon(model: model),
+            Gap.w8,
+            Expanded(
+              child: switch (model.type) {
+                TransactionType.transfer => _TransferDetails(model: model),
+                _ => _WithCategoryDetails(model: model),
               },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            Gap.w16,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                MoneyAmount(
+                  amount: model.amount,
+                  noAnimation: true,
+                  style: kHeader2TextStyle.copyWith(
+                    color: color,
+                    fontSize: 13,
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _CategoryIcon(model: model),
-                        Gap.w8,
-                        Expanded(
-                          child: switch (model.type) {
-                            TransactionType.transfer => _TransferDetails(model: model),
-                            _ => _WithCategoryDetails(model: model),
-                          },
-                        ),
-                        Gap.w16,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            MoneyAmount(
-                              amount: model.amount,
-                              noAnimation: true,
-                              style: kHeader2TextStyle.copyWith(
-                                color: color,
-                                fontSize: 13,
-                              ),
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                _AccountName(model: model),
-                                Gap.w4,
-                                _AccountIcon(model: model),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    _Note(model: model),
+                    _AccountName(model: model),
+                    Gap.w4,
+                    _AccountIcon(model: model),
                   ],
                 ),
-              ),
+              ],
             ),
-          ),
+          ],
         ),
-      ),
+        _Note(model: model),
+      ],
     );
   }
 }
