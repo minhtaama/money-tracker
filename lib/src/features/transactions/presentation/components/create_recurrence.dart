@@ -523,7 +523,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               Gap.w4,
               Expanded(
                 child: Text(
-                  context.loc.selectDayToRepeat,
+                  context.loc.selectRepeatCondition,
                   style: kNormalTextStyle.copyWith(
                     color: context.appTheme.onBackground,
                     fontSize: 11,
