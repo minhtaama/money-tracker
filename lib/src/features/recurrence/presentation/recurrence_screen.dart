@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/animated_swipe_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
@@ -99,7 +98,7 @@ class _RecurrenceScreenTileState extends ConsumerState<_RecurrenceScreenTile> {
           child: HideableContainer(
             hide: !_showExpression,
             child: Padding(
-              padding: const EdgeInsets.only(top: 6.0),
+              padding: const EdgeInsets.only(top: 6.0, bottom: 12.0),
               child: Text(
                 recurrenceExpression(context, widget.re),
                 style: kHeader4TextStyle.copyWith(
