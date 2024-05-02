@@ -69,7 +69,13 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
       : recurrence.startOn.toShortDate(context);
   String endDate = recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
 
-  return context.loc.quoteRecurrence2(everyN, repeatPattern, startDate, endDate);
+  return context.loc.quoteRecurrence3(
+    everyN,
+    repeatPattern,
+    recurrence.startOn.isSameDayAs(DateTime.now()).toString(),
+    startDate,
+    endDate,
+  );
 }
 
 class TransactionDataTile extends ConsumerWidget {

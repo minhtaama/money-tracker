@@ -73,7 +73,13 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
 
   return form.type == null
       ? context.loc.quoteRecurrence1
-      : context.loc.quoteRecurrence2(everyN, repeatPattern, startDate, endDate);
+      : context.loc.quoteRecurrence2(
+          everyN,
+          repeatPattern,
+          form.startOn.isSameDayAs(DateTime.now()).toString(),
+          startDate,
+          endDate,
+        );
 }
 
 class CreateRecurrenceWidget extends ConsumerStatefulWidget {

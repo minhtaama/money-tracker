@@ -324,7 +324,7 @@
 
   "quoteRecurrence1": "This transaction doesn't repeat",
 
-  "quoteRecurrence2": "This transaction will start on {startDate} and repeat {everyN} {repeatPattern} {endDate}",
+  "quoteRecurrence2": "This transaction will start{isTodayStartDate, select, true{} other{ on}} {startDate} and repeat {everyN} {repeatPattern} {endDate}",
   "@quoteRecurrence2": {
     "description": "Quote express the recurrence of transaction in future tense",
     "example": "This transaction will repeat every 2 months on the 1st, 3rd, 25th until forever",
@@ -337,6 +337,9 @@
         "type": "String",
         "description": "Use [repeatPattern] localization"
       },
+      "isTodayStartDate": {
+        "type": "String"
+      },
       "startDate": {
         "type": "String"
       },
@@ -347,7 +350,7 @@
     }
   },
 
-  "quoteRecurrence3": "This transaction started {isTodayStartDate, select, true{} false{on}} {startDate} and repeat {everyN} {repeatPattern} {endDate}",
+  "quoteRecurrence3": "This transaction started{isTodayStartDate, select, true{} other{ on}} {startDate} and repeat {everyN} {repeatPattern} {endDate}",
   "@quoteRecurrence3": {
     "description": "Quote express the recurrence of transaction in past tense",
     "example": "This transaction repeats every 2 months on the 1st, 3rd, 25th until forever",
