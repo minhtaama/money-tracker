@@ -138,7 +138,7 @@ class _TransactionDb implements IRealmObjectWithID {
   bool isInitialTransaction = false;
 
   /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
-  /// add value to account if Transaction is Transfer, minus value if creditPayment
+  /// transferAccount has value added if Transaction is Transfer, and minus value if creditPayment
   late _AccountDb? transferAccount;
 
   /// **Only specify this if type is [TransactionType.transfer]**
@@ -237,8 +237,6 @@ class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
   late DateTime? endOn;
 
   late bool autoCreateTransaction = false;
-
-  //late _TemplateTransactionDb? templateTransaction;
 
   late _TransactionDataDb? transactionData;
 

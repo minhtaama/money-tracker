@@ -5,8 +5,6 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../common_widgets/card_item.dart';
-import '../../../common_widgets/custom_inkwell.dart';
 import '../../../common_widgets/money_amount.dart';
 import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/colors.dart';
