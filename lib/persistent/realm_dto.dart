@@ -1,7 +1,7 @@
 import 'package:realm/realm.dart';
 import '../src/utils/enums.dart';
 
-part 'realm_dto.g.dart';
+part 'realm_dto.realm.dart';
 
 abstract interface class IRealmObjectWithID {
   late ObjectId id;
