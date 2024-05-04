@@ -3,9 +3,11 @@ part of 'transaction_base.dart';
 @immutable
 sealed class BaseRegularTransaction extends BaseTransaction {
   const BaseRegularTransaction(
-      super.isarObject, super.dateTime, super.amount, super.note, super.account);
+      super.databaseObject, super.dateTime, super.amount, super.note, super.account, this.recurrence);
 
   abstract final TransactionType type;
+
+  final Recurrence? recurrence;
 }
 
 @immutable
@@ -17,7 +19,7 @@ class Expense extends BaseRegularTransaction implements IBaseTransactionWithCate
   final Category? _category;
 
   @override
-  Category get category => _category != null ? _category! : DeletedCategory();
+  Category get category => _category ?? DeletedCategory();
 
   @override
   final CategoryTag? categoryTag;
@@ -28,6 +30,7 @@ class Expense extends BaseRegularTransaction implements IBaseTransactionWithCate
     super.amount,
     super.note,
     super.account,
+    super.recurrence,
     this._category,
     this.categoryTag,
   );
@@ -42,7 +45,7 @@ class Income extends BaseRegularTransaction implements IBaseTransactionWithCateg
   final Category? _category;
 
   @override
-  Category get category => _category != null ? _category! : DeletedCategory();
+  Category get category => _category ?? DeletedCategory();
 
   @override
   final CategoryTag? categoryTag;
@@ -55,6 +58,7 @@ class Income extends BaseRegularTransaction implements IBaseTransactionWithCateg
     super.amount,
     super.note,
     super.account,
+    super.recurrence,
     this._category,
     this.categoryTag, {
     required this.isInitialTransaction,
@@ -67,7 +71,7 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
   final TransactionType type = TransactionType.transfer;
 
   @override
-  AccountInfo get transferAccount => _transferAccount != null ? _transferAccount! : DeletedAccount();
+  AccountInfo get transferAccount => _transferAccount ?? DeletedAccount();
 
   final RegularAccountInfo? _transferAccount;
   final Fee? fee;
@@ -77,7 +81,8 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
     super.dateTime,
     super.amount,
     super.note,
-    super.account, {
+    super.account,
+    super.recurrence, {
     required RegularAccountInfo? transferAccount,
     required this.fee,
   }) : _transferAccount = transferAccount;

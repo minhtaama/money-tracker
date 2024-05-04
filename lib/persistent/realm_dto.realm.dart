@@ -1071,6 +1071,7 @@ Iterable<DateTime> repeatOn = const [],
 DateTime? endOn,
 bool autoCreateTransaction = false,
 TransactionDataDb? transactionData,
+Map<String,DateTime> addedOn = const {},
 Iterable<DateTime> skippedOn = const [],
 int? order,
 }
@@ -1088,6 +1089,7 @@ RealmObjectBase.set(this, 'startOn', startOn);
 RealmObjectBase.set(this, 'endOn', endOn);
 RealmObjectBase.set(this, 'autoCreateTransaction', autoCreateTransaction);
 RealmObjectBase.set(this, 'transactionData', transactionData);
+RealmObjectBase.set<RealmMap<DateTime>>(this, 'addedOn', RealmMap<DateTime>(addedOn));
 RealmObjectBase.set<RealmList<DateTime>>(this, 'skippedOn', RealmList<DateTime>(skippedOn));
 RealmObjectBase.set(this, 'order', order);
 }
@@ -1135,6 +1137,11 @@ TransactionDataDb? get transactionData => RealmObjectBase.get<TransactionDataDb>
 set transactionData(covariant TransactionDataDb? value) => RealmObjectBase.set(this, 'transactionData', value);
 
 @override
+RealmMap<DateTime> get addedOn => RealmObjectBase.get<DateTime>(this, 'addedOn') as RealmMap<DateTime>;
+@override
+set addedOn(covariant RealmMap<DateTime> value) => throw RealmUnsupportedSetError();
+
+@override
 RealmList<DateTime> get skippedOn => RealmObjectBase.get<DateTime>(this, 'skippedOn') as RealmList<DateTime>;
 @override
 set skippedOn(covariant RealmList<DateTime> value) => throw RealmUnsupportedSetError();
@@ -1143,13 +1150,6 @@ set skippedOn(covariant RealmList<DateTime> value) => throw RealmUnsupportedSetE
 int? get order => RealmObjectBase.get<int>(this, 'order') as int?;
 @override
 set order(int? value) => RealmObjectBase.set(this, 'order', value);
-
-@override
-RealmResults<TransactionDb> get addedTransactions {
-if (!isManaged) { throw RealmError('Using backlinks is only possible for managed objects.'); }
-return RealmObjectBase.get<TransactionDb>(this, 'addedTransactions') as RealmResults<TransactionDb>;}
-@override
-set addedTransactions(covariant RealmResults<TransactionDb> value) => throw RealmUnsupportedSetError();
 
 @override
 Stream<RealmObjectChanges<RecurrenceDb>> get changes => RealmObjectBase.getChanges<RecurrenceDb>(this);
@@ -1170,6 +1170,7 @@ return <String, dynamic>{
 'endOn': endOn.toEJson(),
 'autoCreateTransaction': autoCreateTransaction.toEJson(),
 'transactionData': transactionData.toEJson(),
+'addedOn': addedOn.toEJson(),
 'skippedOn': skippedOn.toEJson(),
 'order': order.toEJson(),
 };
@@ -1186,6 +1187,7 @@ return switch (ejson) {
 'endOn': EJsonValue endOn,
 'autoCreateTransaction': EJsonValue autoCreateTransaction,
 'transactionData': EJsonValue transactionData,
+'addedOn': EJsonValue addedOn,
 'skippedOn': EJsonValue skippedOn,
 'order': EJsonValue order,
 } => RecurrenceDb(
@@ -1197,6 +1199,7 @@ repeatOn: fromEJson(repeatOn),
 endOn: fromEJson(endOn),
 autoCreateTransaction: fromEJson(autoCreateTransaction),
 transactionData: fromEJson(transactionData),
+addedOn: fromEJson(addedOn),
 skippedOn: fromEJson(skippedOn),
 order: fromEJson(order),
 ),
@@ -1215,9 +1218,9 @@ SchemaProperty('startOn', RealmPropertyType.timestamp),
 SchemaProperty('endOn', RealmPropertyType.timestamp, optional: true),
 SchemaProperty('autoCreateTransaction', RealmPropertyType.bool),
 SchemaProperty('transactionData', RealmPropertyType.object, optional: true,linkTarget: 'TransactionDataDb'),
+SchemaProperty('addedOn', RealmPropertyType.timestamp, collectionType: RealmCollectionType.map),
 SchemaProperty('skippedOn', RealmPropertyType.timestamp, collectionType: RealmCollectionType.list),
 SchemaProperty('order', RealmPropertyType.int, optional: true),
-SchemaProperty('addedTransactions', RealmPropertyType.linkingObjects, linkOriginProperty: 'recurrence',collectionType: RealmCollectionType.list,linkTarget: 'TransactionDb'),
 ]);
 }();
 

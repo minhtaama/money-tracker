@@ -240,8 +240,7 @@ class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
 
   late _TransactionDataDb? transactionData;
 
-  @Backlink(#recurrence)
-  late Iterable<_TransactionDb> addedTransactions = [];
+  late Map<String, DateTime> addedOn = {};
 
   late List<DateTime> skippedOn = [];
 

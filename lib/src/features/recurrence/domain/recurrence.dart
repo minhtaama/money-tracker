@@ -28,7 +28,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   final TransactionData transactionData;
 
-  final List<BaseTransaction> addedTransactions;
+  final Map<String, DateTime> addOn;
 
   final List<DateTime> skippedOn;
 
@@ -86,7 +86,9 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       final selectedWeekDay = repeatOn.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
-        for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
+        for (DateTime date = range.start;
+            !date.isAfter(range.end);
+            date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
             targetDates.add(date);
           }
@@ -111,7 +113,11 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     return targetDates.map((e) => transactionData.withDateTime(e)).toList();
   }
 
-  factory Recurrence.fromDatabase(RecurrenceDb db) {
+  static Recurrence? fromDatabase(RecurrenceDb? db) {
+    if (db == null) {
+      return null;
+    }
+
     return Recurrence._(
       db,
       type: RepeatEvery.fromDatabaseValue(db.type),
@@ -121,7 +127,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       endOn: db.endOn?.toLocal(),
       autoCreateTransaction: db.autoCreateTransaction,
       transactionData: TransactionData.fromDatabase(db.transactionData!),
-      addedTransactions: db.addedTransactions.map((txn) => BaseTransaction.fromDatabase(txn)).toList(),
+      addOn: db.addedOn,
       skippedOn: db.skippedOn.map((dateTime) => dateTime.toLocal()).toList(),
     );
   }
@@ -135,7 +141,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     this.endOn,
     required this.autoCreateTransaction,
     required this.transactionData,
-    required this.addedTransactions,
+    required this.addOn,
     required this.skippedOn,
   });
 }

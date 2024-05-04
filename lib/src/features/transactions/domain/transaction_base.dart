@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
+import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../persistent/realm_dto.dart';
@@ -21,7 +22,7 @@ abstract interface class IBaseTransactionWithCategory {
   final Category? _category;
   final CategoryTag? categoryTag;
 
-  Category get category => _category != null ? _category! : DeletedCategory();
+  Category get category => _category ?? DeletedCategory();
 
   const IBaseTransactionWithCategory(
     this._category,
@@ -37,7 +38,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
 
   final AccountInfo? _account;
 
-  AccountInfo get account => _account != null ? _account! : DeletedAccount();
+  AccountInfo get account => _account ?? DeletedAccount();
 
   const BaseTransaction(
     super._databaseObject,
@@ -58,6 +59,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseInfoOnly(txn.account),
+          Recurrence.fromDatabase(txn.recurrence),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
         );
@@ -69,6 +71,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseInfoOnly(txn.account),
+          Recurrence.fromDatabase(txn.recurrence),
           Category.fromDatabase(txn.category),
           CategoryTag.fromDatabase(txn.categoryTag),
           isInitialTransaction: txn.isInitialTransaction,
@@ -81,6 +84,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.amount,
           txn.note,
           Account.fromDatabaseInfoOnly(txn.account),
+          Recurrence.fromDatabase(txn.recurrence),
           transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as RegularAccountInfo?,
           fee: Fee._fromDatabase(txn),
         );

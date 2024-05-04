@@ -17,11 +17,12 @@ class RecurrenceRepositoryRealmDb {
     return realm.all<RecurrenceDb>().changes;
   }
 
-  List<RecurrenceDb> _realmResults() => realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
+  List<RecurrenceDb> _realmResults() =>
+      realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
 
   List<Recurrence> getRecurrences() {
     List<RecurrenceDb> list = realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
-    return list.map((recurrence) => Recurrence.fromDatabase(recurrence)).toList();
+    return list.map((recurrence) => Recurrence.fromDatabase(recurrence)!).toList();
   }
 
   // TemplateTransaction getTemplateFromHex(String objectIdHexString) {
@@ -91,10 +92,11 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
       realm.add(newRecurrence);
     });
 
-    return Recurrence.fromDatabase(newRecurrence);
+    return Recurrence.fromDatabase(newRecurrence)!;
   }
 
-  Map<TransactionData, List<DateTime>> getAllRecurrenceTransactionInMonth(BuildContext context, DateTime dateTime) {
+  Map<TransactionData, List<DateTime>> getAllRecurrenceTransactionInMonth(
+      BuildContext context, DateTime dateTime) {
     final results = <TransactionData, List<DateTime>>{};
 
     final allRecurrences = getRecurrences();
