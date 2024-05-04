@@ -11,28 +11,42 @@ import '../../category/domain/category_tag.dart';
 class Recurrence extends BaseModel<RecurrenceDb> {
   final RepeatEvery type;
 
-  /// [interval] means `target date` = `startDate` * nth * [interval]
-  /// which is similar to `every X parameter`.
+  /// # Interval
+  /// means `targetDate` = `startDate` * nth * [interval].
+  ///
+  /// Similar to "every X days/weeks/months/years".
   final int interval;
 
-  /// Only year, month, day
-  final List<DateTime> repeatOn;
+  /// # Only year, month, day
+  ///
+  /// ## WARNING: These DateTimes do not reflect the correct day to write transaction.
+  /// ## Use [Recurrence.getRecurrencePatternInMonth] instead.
+  final List<DateTime> patterns;
 
-  /// Only year, month, day
+  /// # Only year, month, day
   final DateTime startOn;
 
-  /// Only year, month, day
+  /// # Only year, month, day
   final DateTime? endOn;
 
   final bool autoCreateTransaction;
 
   final TransactionData transactionData;
 
-  final Map<String, DateTime> addOn;
+  /// **Key**: ObjectID's hexString of the linked/written transaction.
+  ///
+  /// **Value**: the DateTime that this transaction should be repeated on.
+  /// This DateTime maybe different from the transaction's DateTime in case
+  /// of user customization. This value is used to compare with the [TransactionData.dateTime] values
+  /// returns from [Recurrence.getRecurrencePatternInMonth] function.
+  final Map<String, DateTime> addedOn;
 
   final List<DateTime> skippedOn;
 
-  List<TransactionData> getRecurrenceTransactionInMonth(BuildContext context, DateTime dateTime) {
+  /// This function evaluates the [patterns] and returns [TransactionData] objects
+  /// which has its [TransactionData.dateTime] correctly aligned with the [patterns] in the
+  /// current month.
+  List<TransactionData> getRecurrencePatternInMonth(BuildContext context, DateTime dateTime) {
     final targetMonthRange = dateTime.monthRange;
     if (targetMonthRange.end.isBefore(startOn)) {
       return [];
@@ -83,7 +97,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     }
 
     if (type == RepeatEvery.xWeek) {
-      final selectedWeekDay = repeatOn.map((e) => e.weekday);
+      final selectedWeekDay = patterns.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
         for (DateTime date = range.start;
@@ -97,11 +111,11 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     }
 
     if (type == RepeatEvery.xMonth) {
-      targetDates = repeatOn.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month)).toList();
+      targetDates = patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month)).toList();
     }
 
     if (type == RepeatEvery.xYear) {
-      targetDates = repeatOn.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month)).toList();
+      targetDates = patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month)).toList();
     }
 
     targetDates.removeWhere((element) => !element.isAfter(startOn));
@@ -122,12 +136,12 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       db,
       type: RepeatEvery.fromDatabaseValue(db.type),
       interval: db.repeatInterval,
-      repeatOn: db.repeatOn.map((e) => e.toLocal()).toList(),
+      patterns: db.patterns.map((e) => e.toLocal()).toList(),
       startOn: db.startOn.toLocal(),
       endOn: db.endOn?.toLocal(),
       autoCreateTransaction: db.autoCreateTransaction,
       transactionData: TransactionData.fromDatabase(db.transactionData!),
-      addOn: db.addedOn,
+      addedOn: db.addedOn,
       skippedOn: db.skippedOn.map((dateTime) => dateTime.toLocal()).toList(),
     );
   }
@@ -136,12 +150,12 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     super.databaseObject, {
     required this.type,
     required this.interval,
-    required this.repeatOn,
+    required this.patterns,
     required this.startOn,
     this.endOn,
     required this.autoCreateTransaction,
     required this.transactionData,
-    required this.addOn,
+    required this.addedOn,
     required this.skippedOn,
   });
 }

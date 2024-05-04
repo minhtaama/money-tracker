@@ -230,7 +230,7 @@ class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
 
   late int repeatInterval; // X
 
-  late List<DateTime> repeatOn = [];
+  late List<DateTime> patterns = [];
 
   late DateTime startOn;
 

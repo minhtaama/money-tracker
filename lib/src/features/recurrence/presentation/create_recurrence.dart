@@ -28,12 +28,12 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
       break;
 
     case RepeatEvery.xWeek:
-      final sort = List<DateTime>.from(form.repeatOn)..sort((a, b) => a.weekday - b.weekday);
+      final sort = List<DateTime>.from(form.patterns)..sort((a, b) => a.weekday - b.weekday);
       final list = sort
           .map(
             (date) => date.weekdayToString(
               context,
-              short: form.repeatOn.length <= 2 ? false : true,
+              short: form.patterns.length <= 2 ? false : true,
             ),
           )
           .toList();
@@ -43,7 +43,7 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
       break;
 
     case RepeatEvery.xMonth:
-      final sort = List<DateTime>.from(form.repeatOn)..sort((a, b) => a.day - b.day);
+      final sort = List<DateTime>.from(form.patterns)..sort((a, b) => a.day - b.day);
       final list = sort
           .map(
             (date) => date.dayToString(context),
@@ -55,7 +55,7 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
       break;
 
     case RepeatEvery.xYear:
-      final sort = List<DateTime>.from(form.repeatOn)..sort((a, b) => a.compareTo(b));
+      final sort = List<DateTime>.from(form.patterns)..sort((a, b) => a.compareTo(b));
       final list = sort
           .map(
             (date) => date.toShortDate(context, noYear: true),
@@ -242,7 +242,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               groupValue: _form.type,
               onChanged: (value) => setState(() {
                 _form = _form.copyWith(type: () => value);
-                _form.repeatOn.clear();
+                _form.patterns.clear();
               }),
             ),
           ],
@@ -256,7 +256,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               groupValue: _form.type,
               onChanged: (value) => setState(() {
                 _form = _form.copyWith(type: () => value);
-                _form.repeatOn.clear();
+                _form.patterns.clear();
               }),
             ),
             HideableContainer(
@@ -274,7 +274,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               groupValue: _form.type,
               onChanged: (value) => setState(() {
                 _form = _form.copyWith(type: () => value);
-                _form.repeatOn.clear();
+                _form.patterns.clear();
               }),
             ),
             HideableContainer(
@@ -292,7 +292,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               groupValue: _form.type,
               onChanged: (value) => setState(() {
                 _form = _form.copyWith(type: () => value);
-                _form.repeatOn.clear();
+                _form.patterns.clear();
               }),
             ),
             HideableContainer(
@@ -300,10 +300,10 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: CustomCalendar(
-                  value: _form.repeatOn,
+                  value: _form.patterns,
                   onValueChanged: (list) => setState(() {
-                    _form.repeatOn.clear();
-                    _form.repeatOn.addAll(list.whereType<DateTime>());
+                    _form.patterns.clear();
+                    _form.patterns.addAll(list.whereType<DateTime>());
                   }),
                 ),
               ),
@@ -399,7 +399,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: datePatterns.map(
           (date) {
-            final isAdded = _form.repeatOn.contains(date);
+            final isAdded = _form.patterns.contains(date);
             final isSun = date.weekday == 7;
 
             final bgColor = context.appTheme.primary.withOpacity(isAdded ? 1 : 0);
@@ -422,13 +422,13 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                 child: CustomInkWell(
                   inkColor: context.appTheme.primary,
                   onTap: () {
-                    if (_form.repeatOn.contains(date)) {
+                    if (_form.patterns.contains(date)) {
                       setState(() {
-                        _form.repeatOn.remove(date);
+                        _form.patterns.remove(date);
                       });
                     } else {
                       setState(() {
-                        _form.repeatOn.add(date);
+                        _form.patterns.add(date);
                       });
                     }
                   },
@@ -452,7 +452,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
     Widget item(int i) {
       final date = DateTime(2024, 5, i);
 
-      final isAdded = _form.repeatOn.contains(date);
+      final isAdded = _form.patterns.contains(date);
 
       final bgColor = context.appTheme.primary.withOpacity(isAdded ? 1 : 0);
 
@@ -472,13 +472,13 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
           child: CustomInkWell(
             inkColor: context.appTheme.primary,
             onTap: () {
-              if (_form.repeatOn.contains(date)) {
+              if (_form.patterns.contains(date)) {
                 setState(() {
-                  _form.repeatOn.remove(date);
+                  _form.patterns.remove(date);
                 });
               } else {
                 setState(() {
-                  _form.repeatOn.add(date);
+                  _form.patterns.add(date);
                 });
               }
             },
@@ -523,7 +523,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
     return Column(
       children: [
         HideableContainer(
-          hide: _form.repeatOn.isNotEmpty || _form.type == null || _form.type == RepeatEvery.xDay,
+          hide: _form.patterns.isNotEmpty || _form.type == null || _form.type == RepeatEvery.xDay,
           child: Row(
             children: [
               SvgIcon(
@@ -576,7 +576,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
   }
 
   bool _isBigButtonDisabled() {
-    return (_form.repeatOn.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) ||
+    return (_form.patterns.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) ||
         _form.interval <= 0;
   }
 }
@@ -589,7 +589,7 @@ class RecurrenceForm {
   final int interval;
 
   /// Only year, month, day
-  final List<DateTime> repeatOn;
+  final List<DateTime> patterns;
 
   /// Only year, month, day
   final DateTime startOn;
@@ -608,7 +608,7 @@ class RecurrenceForm {
     return RecurrenceForm._(
       startOn: startOn,
       interval: 1,
-      repeatOn: [],
+      patterns: [],
       autoCreateTransaction: true,
     );
   }
@@ -616,7 +616,7 @@ class RecurrenceForm {
   RecurrenceForm._({
     this.type,
     required this.interval,
-    required this.repeatOn,
+    required this.patterns,
     required this.startOn,
     this.endOn,
     required this.autoCreateTransaction,
@@ -632,7 +632,7 @@ class RecurrenceForm {
       type: type != null ? type() : this.type,
       interval: interval ?? this.interval,
       endOn: endOn != null ? endOn() : this.endOn,
-      repeatOn: repeatOn,
+      patterns: patterns,
       autoCreateTransaction: autoCreateTransaction ?? this.autoCreateTransaction,
       startOn: startOn,
     );
@@ -646,7 +646,7 @@ class RecurrenceForm {
       type: type,
       interval: interval,
       endOn: endOn,
-      repeatOn: repeatOn,
+      patterns: patterns,
       autoCreateTransaction: autoCreateTransaction,
       startOn: startOn,
     );
@@ -654,6 +654,6 @@ class RecurrenceForm {
 
   @override
   String toString() {
-    return 'RecurrenceForm{runtimeType: $runtimeType, type: $type, interval: $interval, repeatOn: $repeatOn, endOn: $endOn, autoCreateTransaction: $autoCreateTransaction}';
+    return 'RecurrenceForm{runtimeType: $runtimeType, type: $type, interval: $interval, repeatOn: $patterns, endOn: $endOn, autoCreateTransaction: $autoCreateTransaction}';
   }
 }

@@ -56,7 +56,7 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
   Recurrence writeNew({
     required RepeatEvery type,
     required int interval,
-    required List<DateTime> repeatOn,
+    required List<DateTime> patterns,
     required DateTime? endOn,
     required bool autoCreateTransaction,
     required TransactionType transactionType,
@@ -81,7 +81,7 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
       type.databaseValue,
       interval,
       DateTime.now().onlyYearMonthDay,
-      repeatOn: repeatOn.map((e) => e.onlyYearMonthDay),
+      patterns: patterns.map((e) => e.onlyYearMonthDay),
       endOn: endOn?.onlyYearMonthDay,
       autoCreateTransaction: autoCreateTransaction,
       transactionData: newTransactionData,
@@ -103,7 +103,7 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
 
     for (Recurrence recurrence in allRecurrences) {
       results[recurrence.transactionData] =
-          recurrence.getRecurrenceTransactionInMonth(context, dateTime).map((e) => e.dateTime!).toList()
+          recurrence.getRecurrencePatternInMonth(context, dateTime).map((e) => e.dateTime!).toList()
             ..sort(
               (a, b) => a.compareTo(b),
             );

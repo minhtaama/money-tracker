@@ -23,12 +23,12 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
       break;
 
     case RepeatEvery.xWeek:
-      final sort = List<DateTime>.from(recurrence.repeatOn)..sort((a, b) => a.weekday - b.weekday);
+      final sort = List<DateTime>.from(recurrence.patterns)..sort((a, b) => a.weekday - b.weekday);
       final list = sort
           .map(
             (date) => date.weekdayToString(
               context,
-              short: recurrence.repeatOn.length <= 2 ? false : true,
+              short: recurrence.patterns.length <= 2 ? false : true,
             ),
           )
           .toList();
@@ -38,7 +38,7 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
       break;
 
     case RepeatEvery.xMonth:
-      final sort = List<DateTime>.from(recurrence.repeatOn)..sort((a, b) => a.day - b.day);
+      final sort = List<DateTime>.from(recurrence.patterns)..sort((a, b) => a.day - b.day);
       final list = sort
           .map(
             (date) => date.dayToString(context),
@@ -50,7 +50,7 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
       break;
 
     case RepeatEvery.xYear:
-      final sort = List<DateTime>.from(recurrence.repeatOn)..sort((a, b) => a.compareTo(b));
+      final sort = List<DateTime>.from(recurrence.patterns)..sort((a, b) => a.compareTo(b));
       final list = sort
           .map(
             (date) => date.toShortDate(context, noYear: true),
@@ -65,7 +65,8 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
   String startDate = recurrence.startOn.isSameDayAs(DateTime.now())
       ? context.loc.today.toLowerCase()
       : recurrence.startOn.toShortDate(context);
-  String endDate = recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
+  String endDate =
+      recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
 
   return context.loc.quoteRecurrence3(
     everyN,
@@ -220,8 +221,9 @@ class _AccountName extends ConsumerWidget {
     return Text(
       name(),
       style: kHeader4TextStyle.copyWith(
-        color: context.appTheme.onBackground
-            .withOpacity(destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
+        color: context.appTheme.onBackground.withOpacity(destination
+            ? (model.toAccount != null ? 0.65 : 0.25)
+            : (model.account != null ? 0.65 : 0.25)),
         fontSize: 11,
       ),
       softWrap: false,
@@ -242,7 +244,8 @@ class _Note extends StatelessWidget {
             margin: const EdgeInsets.only(left: 15.5, top: 8),
             padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+              border: Border(
+                  left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
             child: Transform.translate(
               offset: const Offset(0, -1),
@@ -342,7 +345,8 @@ class _TransferDetails extends StatelessWidget {
       children: [
         Text(
           'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),

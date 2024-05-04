@@ -1067,7 +1067,7 @@ int type,
 int repeatInterval,
 DateTime startOn,
 {
-Iterable<DateTime> repeatOn = const [],
+Iterable<DateTime> patterns = const [],
 DateTime? endOn,
 bool autoCreateTransaction = false,
 TransactionDataDb? transactionData,
@@ -1084,7 +1084,7 @@ if (!_defaultsSet) {
 RealmObjectBase.set(this, 'id', id);
 RealmObjectBase.set(this, 'type', type);
 RealmObjectBase.set(this, 'repeatInterval', repeatInterval);
-RealmObjectBase.set<RealmList<DateTime>>(this, 'repeatOn', RealmList<DateTime>(repeatOn));
+RealmObjectBase.set<RealmList<DateTime>>(this, 'patterns', RealmList<DateTime>(patterns));
 RealmObjectBase.set(this, 'startOn', startOn);
 RealmObjectBase.set(this, 'endOn', endOn);
 RealmObjectBase.set(this, 'autoCreateTransaction', autoCreateTransaction);
@@ -1112,9 +1112,9 @@ int get repeatInterval => RealmObjectBase.get<int>(this, 'repeatInterval') as in
 set repeatInterval(int value) => RealmObjectBase.set(this, 'repeatInterval', value);
 
 @override
-RealmList<DateTime> get repeatOn => RealmObjectBase.get<DateTime>(this, 'repeatOn') as RealmList<DateTime>;
+RealmList<DateTime> get patterns => RealmObjectBase.get<DateTime>(this, 'patterns') as RealmList<DateTime>;
 @override
-set repeatOn(covariant RealmList<DateTime> value) => throw RealmUnsupportedSetError();
+set patterns(covariant RealmList<DateTime> value) => throw RealmUnsupportedSetError();
 
 @override
 DateTime get startOn => RealmObjectBase.get<DateTime>(this, 'startOn') as DateTime;
@@ -1165,7 +1165,7 @@ return <String, dynamic>{
 'id': id.toEJson(),
 'type': type.toEJson(),
 'repeatInterval': repeatInterval.toEJson(),
-'repeatOn': repeatOn.toEJson(),
+'patterns': patterns.toEJson(),
 'startOn': startOn.toEJson(),
 'endOn': endOn.toEJson(),
 'autoCreateTransaction': autoCreateTransaction.toEJson(),
@@ -1182,7 +1182,7 @@ return switch (ejson) {
 'id': EJsonValue id,
 'type': EJsonValue type,
 'repeatInterval': EJsonValue repeatInterval,
-'repeatOn': EJsonValue repeatOn,
+'patterns': EJsonValue patterns,
 'startOn': EJsonValue startOn,
 'endOn': EJsonValue endOn,
 'autoCreateTransaction': EJsonValue autoCreateTransaction,
@@ -1195,7 +1195,7 @@ fromEJson(id),
 fromEJson(type),
 fromEJson(repeatInterval),
 fromEJson(startOn),
-repeatOn: fromEJson(repeatOn),
+patterns: fromEJson(patterns),
 endOn: fromEJson(endOn),
 autoCreateTransaction: fromEJson(autoCreateTransaction),
 transactionData: fromEJson(transactionData),
@@ -1213,7 +1213,7 @@ return SchemaObject(ObjectType.realmObject, RecurrenceDb, 'RecurrenceDb', [
 SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
 SchemaProperty('type', RealmPropertyType.int),
 SchemaProperty('repeatInterval', RealmPropertyType.int),
-SchemaProperty('repeatOn', RealmPropertyType.timestamp, collectionType: RealmCollectionType.list),
+SchemaProperty('patterns', RealmPropertyType.timestamp, collectionType: RealmCollectionType.list),
 SchemaProperty('startOn', RealmPropertyType.timestamp),
 SchemaProperty('endOn', RealmPropertyType.timestamp, optional: true),
 SchemaProperty('autoCreateTransaction', RealmPropertyType.bool),
