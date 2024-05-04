@@ -76,7 +76,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
           barGroups: buildBarGroups(),
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
-              tooltipBgColor: Colors.grey,
+              getTooltipColor: (_) => Colors.grey,
               getTooltipItem: (a, b, c, d) => null,
             ),
             touchCallback: (FlTouchEvent event, response) {

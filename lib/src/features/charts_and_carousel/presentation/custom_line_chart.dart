@@ -71,8 +71,10 @@ class CustomLineChart extends StatelessWidget {
     final todayIndex = spots.indexWhere((e) => e.isToday);
     final hasToday = todayIndex != -1;
 
-    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
-    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
+    final statementDayIndex =
+        isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+    final previousDueDayIndex =
+        isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
 
     // 0.2 is added for step chart to display correctly
     final todayPercent = hasToday && _customLineType == _CustomLineType.solidToDashed
@@ -80,7 +82,10 @@ class CustomLineChart extends StatelessWidget {
         : 0.0;
 
     final optionalLineGradient = LinearGradient(
-      colors: [color ?? context.appTheme.accent1, color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)],
+      colors: [
+        color ?? context.appTheme.accent1,
+        color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)
+      ],
       stops: [todayPercent, todayPercent + 0.00000001],
     );
 
@@ -202,7 +207,9 @@ class CustomLineChart extends StatelessWidget {
                 context,
                 color: color ?? context.appTheme.accent1,
                 dotColor: todayDotColor ??
-                    (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0),
+                    (context.appTheme.isDarkTheme
+                        ? context.appTheme.background2
+                        : context.appTheme.background0),
                 boxUnderDot: boxUnderDot,
               );
             }
@@ -251,7 +258,8 @@ class CustomLineChart extends StatelessWidget {
 
     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
       final spot = spots.firstWhere((spot) => spot.x == value,
-          orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
+          orElse: () =>
+              CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
 
       final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
 
@@ -266,7 +274,8 @@ class CustomLineChart extends StatelessWidget {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.center;
 
-      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+      final textStyle =
+          kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
 
       return isShowTitle
           ? Transform.translate(
@@ -274,7 +283,8 @@ class CustomLineChart extends StatelessWidget {
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
-                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+                fitInside:
+                    SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
                 child: FittedBox(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -315,7 +325,8 @@ class CustomLineChart extends StatelessWidget {
         final dateTime = spot.dateTime?.toShortDate(context, noYear: true) ??
             currentMonth.copyWith(day: touchedSpot.x.toInt()).toShortDate(context, noYear: true);
 
-        final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
+        final line1 =
+            isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
 
         String line2() {
           if (isForCredit) {
@@ -349,13 +360,16 @@ class CustomLineChart extends StatelessWidget {
             ? 'Oustd. Bal: $symbol${CalService.formatCurrency(context, (data as CLCDataForCredit).maxAmount - spot.amount)}\n'
             : dateTime;
 
-        final line4 = isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
+        final line4 =
+            isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
 
         items.add(LineTooltipItem(
           line1,
           kHeader2TextStyle.copyWith(
             color: lum == null
-                ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                ? (context.appTheme.isDarkTheme
+                    ? context.appTheme.onBackground
+                    : context.appTheme.onSecondary)
                 : lum > 0.5
                     ? AppColors.black
                     : AppColors.white,
@@ -367,7 +381,9 @@ class CustomLineChart extends StatelessWidget {
               text: line2(),
               style: kHeader2TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -378,7 +394,9 @@ class CustomLineChart extends StatelessWidget {
               text: line3,
               style: kHeader3TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -389,7 +407,9 @@ class CustomLineChart extends StatelessWidget {
               text: line4,
               style: kHeader3TextStyle.copyWith(
                 color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
+                    ? (context.appTheme.isDarkTheme
+                        ? context.appTheme.onBackground
+                        : context.appTheme.onSecondary)
                     : lum > 0.5
                         ? AppColors.black
                         : AppColors.white,
@@ -431,7 +451,8 @@ class CustomLineChart extends StatelessWidget {
         maxContentWidth: 500,
         tooltipHorizontalAlignment: FLHorizontalAlignment.center,
         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        tooltipBgColor: color?.withOpacity(0.5) ??
+        getTooltipColor: (_) =>
+            color?.withOpacity(0.5) ??
             (context.appTheme.isDarkTheme
                 ? context.appTheme.background0.withOpacity(0.5)
                 : context.appTheme.secondary2.withOpacity(0.5)),
@@ -651,4 +672,13 @@ class FlDotTodayPainter extends FlDotPainter {
         dotColor,
         dotStrokeWidth,
       ];
+
+  @override
+  FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) {
+    return FlDotTodayPainter(context, color: color);
+  }
+
+  @override
+  // TODO: implement mainColor
+  Color get mainColor => color;
 }

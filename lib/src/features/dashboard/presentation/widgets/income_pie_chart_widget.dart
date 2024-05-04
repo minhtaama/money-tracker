@@ -80,8 +80,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 170,
+          Expanded(
             child: CustomPieChart(
               values: map,
               center: SvgIcon(

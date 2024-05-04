@@ -67,8 +67,9 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
       break;
   }
 
-  String startDate =
-      form.startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : form.startOn.toShortDate(context);
+  String startDate = form.startOn.isSameDayAs(DateTime.now())
+      ? context.loc.today.toLowerCase()
+      : form.startOn.toShortDate(context);
   String endDate = form.endOn != null ? context.loc.untilEndDate(form.endOn!.toShortDate(context)) : '';
 
   return form.type == null
@@ -117,7 +118,8 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       color: context.appTheme.primary.withOpacity(_recurrenceForm == null ? 0 : 1),
-      border: Border.all(color: context.appTheme.onBackground.withOpacity(_recurrenceForm == null ? 0.4 : 0)),
+      border: Border.all(
+          color: context.appTheme.onBackground.withOpacity(_recurrenceForm == null ? 0.4 : 0)),
       width: double.infinity,
       child: CustomInkWell(
         inkColor: _recurrenceForm == null ? context.appTheme.onBackground : context.appTheme.onPrimary,
@@ -159,7 +161,9 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
               Gap.w8,
               Expanded(
                 child: Text(
-                  _recurrenceForm == null ? context.loc.doNotRepeat : _recurrenceExpression(context, _recurrenceForm!),
+                  _recurrenceForm == null
+                      ? context.loc.doNotRepeat
+                      : _recurrenceExpression(context, _recurrenceForm!),
                   style: kHeader3TextStyle.copyWith(
                       color: _recurrenceForm == null
                           ? context.appTheme.onBackground.withOpacity(0.4)
@@ -396,13 +400,13 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
         children: datePatterns.map(
           (date) {
             final isAdded = _form.repeatOn.contains(date);
-            final isSunSat = date.weekday == 6 || date.weekday == 7;
+            final isSun = date.weekday == 7;
 
             final bgColor = context.appTheme.primary.withOpacity(isAdded ? 1 : 0);
 
             final fgColor = isAdded
                 ? context.appTheme.onPrimary
-                : isSunSat
+                : isSun
                     ? context.appTheme.negative
                     : context.appTheme.onBackground;
 
@@ -506,7 +510,8 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       margin: const EdgeInsets.symmetric(vertical: 2),
       padding: const EdgeInsets.symmetric(vertical: 2),
       color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.08 : 0),
-      border: Border.all(color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.5 : 0)),
+      border: Border.all(
+          color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.5 : 0)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: children,
@@ -571,7 +576,8 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
   }
 
   bool _isBigButtonDisabled() {
-    return (_form.repeatOn.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) || _form.interval <= 0;
+    return (_form.repeatOn.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) ||
+        _form.interval <= 0;
   }
 }
 

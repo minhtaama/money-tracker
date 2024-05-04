@@ -3,9 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/home_transactions_list.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../transactions/domain/transaction_base.dart';
@@ -85,7 +83,8 @@ class DayCard extends StatelessWidget {
                     ),
                     Text(
                       dateTime.toLongDate(context, noDay: true),
-                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
+                      style:
+                          kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
                       textAlign: TextAlign.left,
                     ),
                   ],
