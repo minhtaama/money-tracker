@@ -32,13 +32,28 @@ sealed class AccountInfo extends BaseAccount {
 
   /// This class is used as a link from other domain
   const AccountInfo(
-    super._isarObject, {
+    super.databaseObject, {
     required super.name,
     required super.iconColor,
     required super.backgroundColor,
     required super.iconPath,
     this.isNotExistInDatabase = false,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == other &&
+          other is AccountInfo &&
+          runtimeType == other.runtimeType &&
+          databaseObject.id == other.databaseObject.id;
+
+  @override
+  int get hashCode => super.hashCode ^ databaseObject.id.hashCode;
+
+  Account toAccount() {
+    return Account.fromDatabase(databaseObject)!;
+  }
 }
 
 class DeletedAccount extends AccountInfo {

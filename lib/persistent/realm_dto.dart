@@ -138,7 +138,7 @@ class _TransactionDb implements IRealmObjectWithID {
   bool isInitialTransaction = false;
 
   /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
-  /// add value to account if Transaction is Transfer, minus value if creditPayment
+  /// transferAccount has value added if Transaction is Transfer, and minus value if creditPayment
   late _AccountDb? transferAccount;
 
   /// **Only specify this if type is [TransactionType.transfer]**
@@ -152,6 +152,8 @@ class _TransactionDb implements IRealmObjectWithID {
 
   /// **Only specify this if type is [TransactionType.creditCheckpoint]**
   late List<_TransactionDb> creditCheckpointFinishedInstallments;
+
+  late _RecurrenceDb? recurrence;
 }
 
 @RealmModel(ObjectType.embeddedObject)
@@ -216,7 +218,7 @@ class _TemplateTransactionDb implements IRealmObjectWithID, _IOrderable {
 }
 
 @RealmModel()
-class _RepeatTransactionDb implements IRealmObjectWithID {
+class _RecurrenceDb implements IRealmObjectWithID, _IOrderable {
   // repeat every <everyParameter> <repeatEveryType>, on <repeatOnType> + <onParameter>
   // Eg: repeat every 2 weeks, on Tue and Wed
 
@@ -224,18 +226,54 @@ class _RepeatTransactionDb implements IRealmObjectWithID {
   @PrimaryKey()
   late ObjectId id;
 
-  late int? repeatEvery; // every [X] day, [X] week, [X] month, [X] year,
+  late int type; // every [X] day, [X] week, [X] month, [X] year,
 
-  late int? everyParameter; // X
+  late int repeatInterval; // X
 
-  late int? repeatMonthlyType; // on [Y]th day, on the nth weekday of month (from Y), on days of [Y] in month ,
+  late List<DateTime> repeatOn = [];
 
-  late int? repeatYearlyType; // on [Y]th day, on the nth weekday of month (from Y), on days of [Y] in month ,
+  late DateTime startOn;
 
-  late bool autoCreateTransaction;
+  late DateTime? endOn;
 
-  // TODO: Do we need backlinks to TransactionDb?
-  late List<_TransactionDb> transactions;
+  late bool autoCreateTransaction = false;
+
+  late _TransactionDataDb? transactionData;
+
+  @Backlink(#recurrence)
+  late Iterable<_TransactionDb> addedTransactions = [];
+
+  late List<DateTime> skippedOn = [];
+
+  @override
+  int? order;
+}
+
+@RealmModel(ObjectType.embeddedObject)
+class _TransactionDataDb {
+  late int type;
+
+  @Indexed()
+  late DateTime? dateTime;
+
+  late double? amount;
+
+  String? note;
+
+  late _AccountDb? account;
+
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
+  late _CategoryDb? category;
+
+  /// **Only specify this if type is NOT [TransactionType.transfer] and [TransactionType.creditPayment]**
+  late _CategoryTagDb? categoryTag;
+
+  /// **Only specify this if type is [TransactionType.transfer] and [TransactionType.creditPayment]**
+  /// add value to account if Transaction is Transfer, minus value if creditPayment
+  late _AccountDb? transferAccount;
+
+  /// **Only specify this if type is [TransactionType.transfer]**
+  _TransferFeeDb? transferFee;
 }
 
 ////////////////////////////////////// BUDGET /////////////////////////////////////////
@@ -284,6 +322,9 @@ class _SettingsDb {
   int shortDateType = 0;
 
   int currencyType = 0;
+
+  // null == default
+  int? firstDayOfWeek;
 }
 
 @RealmModel()

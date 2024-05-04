@@ -4,9 +4,9 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-class CustomTextFormField extends StatelessWidget {
+class CustomTextFormField extends StatefulWidget {
   const CustomTextFormField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.focusColor,
     required this.onChanged,
@@ -32,7 +32,7 @@ class CustomTextFormField extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.initialValue,
     this.style,
-  }) : super(key: key);
+  });
   final String hintText;
   final String? helperText;
   final TextEditingController? controller;
@@ -60,19 +60,54 @@ class CustomTextFormField extends StatelessWidget {
   final TextStyle? style;
 
   @override
+  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
+}
+
+class _CustomTextFormFieldState extends State<CustomTextFormField> {
+  late final TextEditingController _controller = widget.controller ?? TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.initialValue != null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _controller.text = widget.initialValue!;
+      });
+    }
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomTextFormField oldWidget) {
+    if (widget.initialValue != null && widget.initialValue != oldWidget.initialValue) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _controller.text = widget.initialValue!;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      ignoring: !enabled,
+      ignoring: !widget.enabled,
       child: TextFormField(
-        controller: controller,
-        autofocus: autofocus,
-        focusNode: focusNode,
-        textAlign: textAlign,
-        autovalidateMode: autovalidateMode,
-        onFieldSubmitted: onFieldSubmitted,
+        controller: _controller,
+        autofocus: widget.autofocus,
+        focusNode: widget.focusNode,
+        textAlign: widget.textAlign,
+        autovalidateMode: widget.autovalidateMode,
+        onFieldSubmitted: widget.onFieldSubmitted,
         cursorColor: context.appTheme.onBackground.withOpacity(0.1),
-        style: style ??
-            (withOutlineBorder
+        style: widget.style ??
+            (widget.withOutlineBorder
                 ? kHeader3TextStyle.copyWith(
                     color: context.appTheme.onBackground,
                     fontSize: 15,
@@ -81,39 +116,39 @@ class CustomTextFormField extends StatelessWidget {
                     color: context.appTheme.onBackground,
                     fontSize: 18,
                   )),
-        validator: validator,
-        maxLines: maxLines,
+        validator: widget.validator,
+        maxLines: widget.maxLines,
         inputFormatters: [
-          LengthLimitingTextInputFormatter(maxLength),
+          LengthLimitingTextInputFormatter(widget.maxLength),
         ],
-        textInputAction: textInputAction,
-        keyboardType: keyboardType,
-        onTapOutside: (_) {
+        textInputAction: widget.textInputAction,
+        keyboardType: widget.keyboardType,
+        onTapOutside: (event) {
           FocusManager.instance.primaryFocus?.unfocus();
-          onTapOutside?.call();
+          widget.onTapOutside?.call();
         },
         onEditingComplete: () {
-          onEditingComplete?.call();
+          widget.onEditingComplete?.call();
           FocusManager.instance.primaryFocus?.unfocus();
         },
-        initialValue: initialValue,
         decoration: InputDecoration(
-          contentPadding: contentPadding ?? (withOutlineBorder ? const EdgeInsets.all(12) : null),
-          isDense: contentPadding != null ? true : null,
+          contentPadding:
+              widget.contentPadding ?? (widget.withOutlineBorder ? const EdgeInsets.all(12) : null),
+          isDense: widget.contentPadding != null ? true : null,
           focusColor: context.appTheme.primary,
-          prefixIcon: prefixIcon,
+          prefixIcon: widget.prefixIcon,
           prefixIconConstraints: const BoxConstraints(minWidth: 0),
-          suffixIcon: suffixIcon,
+          suffixIcon: widget.suffixIcon,
           suffixIconConstraints: const BoxConstraints(minWidth: 0),
-          focusedErrorBorder: withOutlineBorder
+          focusedErrorBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: focusColor, width: 2),
+                  borderSide: BorderSide(color: widget.focusColor, width: 2),
                 )
               : UnderlineInputBorder(
-                  borderSide: BorderSide(color: focusColor, width: 2),
+                  borderSide: BorderSide(color: widget.focusColor, width: 2),
                 ),
-          errorBorder: withOutlineBorder
+          errorBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(color: context.appTheme.negative, width: 1),
@@ -121,43 +156,45 @@ class CustomTextFormField extends StatelessWidget {
               : UnderlineInputBorder(
                   borderSide: BorderSide(color: context.appTheme.negative, width: 1),
                 ),
-          enabledBorder: withOutlineBorder
+          enabledBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(
-                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.4 : 0.2),
+                      width: 1),
                 )
               : UnderlineInputBorder(
                   borderSide: BorderSide(
-                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.4 : 0.2), width: 1),
+                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.4 : 0.2),
+                      width: 1),
                 ),
-          focusedBorder: withOutlineBorder
+          focusedBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: focusColor, width: 2),
+                  borderSide: BorderSide(color: widget.focusColor, width: 2),
                 )
               : UnderlineInputBorder(
-                  borderSide: BorderSide(color: focusColor, width: 2),
+                  borderSide: BorderSide(color: widget.focusColor, width: 2),
                 ),
-          hintText: hintText,
-          hintStyle: style?.copyWith(
-                color: style?.color?.withOpacity(0.5),
+          hintText: widget.hintText,
+          hintStyle: widget.style?.copyWith(
+                color: widget.style?.color?.withOpacity(0.5),
               ) ??
-              (withOutlineBorder
+              (widget.withOutlineBorder
                   ? kHeader3TextStyle.copyWith(
-                      color: context.appTheme.onBackground.withOpacity(enabled ? 0.5 : 0.2),
+                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.5 : 0.2),
                       fontSize: 15,
                     )
                   : kHeader2TextStyle.copyWith(
                       color: context.appTheme.onBackground.withOpacity(0.5),
                       fontSize: 18,
                     )),
-          errorStyle: disableErrorText
+          errorStyle: widget.disableErrorText
               ? const TextStyle(height: 0.1, color: Colors.transparent, fontSize: 0)
               : kNormalTextStyle.copyWith(fontSize: 12, color: context.appTheme.negative),
-          helperText: helperText,
+          helperText: widget.helperText,
         ),
-        onChanged: onChanged,
+        onChanged: widget.onChanged,
       ),
     );
   }

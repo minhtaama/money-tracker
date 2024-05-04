@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-const kMaxWidthForSmallScreen = 500;
+const kSmallWidthBreakpoint = 500;
 
 /// Value related to Text. To change more details, use .copyWith()
 const kHeaderTransparent = TextStyle(color: Colors.transparent);
 
 /// Value related to Text. To change more details, use .copyWith()
-const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28);
+const kHeader1TextStyle = TextStyle(fontWeight: FontWeight.w900, fontSize: 28, fontFamily: 'WixMadeforDisplay');
 
 /// Value related to Text. To change more details, use .copyWith()
-const kHeader2TextStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 21);
+const kHeader2TextStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 21, fontFamily: 'WixMadeforDisplay');
 
 /// Value related to Text. To change more details, use .copyWith()
-const kHeader3TextStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 18);
+const kHeader3TextStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 18, fontFamily: 'WixMadeforDisplay');
 
 /// Value related to Text. To change more details, use .copyWith()
-const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15);
+const kHeader4TextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 15, fontFamily: 'WixMadeforDisplay');
 
 /// Value related to Text. To change more details, use .copyWith()
-const kNormalTextStyle = TextStyle(fontSize: 15);
+const kNormalTextStyle = TextStyle(fontSize: 15, fontFamily: 'WixMadeforDisplay');
 
 /// Value related to CustomTabBar and CustomTabPage
 const double kCustomTabBarHeight = 80;
@@ -79,14 +79,14 @@ class Gap {
 
   static verticalDivider(BuildContext context, {double? indent}) => VerticalDivider(
         color: context.appTheme.onBackground.withOpacity(0.25),
-        thickness: 1,
+        thickness: 2,
         indent: indent,
         endIndent: indent,
       );
 
   static get expanded => const Expanded(child: SizedBox());
 
-  static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;
+  static double statusBarHeight(BuildContext context) => MediaQuery.of(context).viewPadding.top;
   static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
   static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
 }

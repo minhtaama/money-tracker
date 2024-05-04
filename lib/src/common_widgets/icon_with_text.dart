@@ -16,7 +16,7 @@ class IconWithText extends StatelessWidget {
     this.headerSize,
     this.text,
     this.textSize,
-    this.forceIconOnTop = false,
+    this.forceIconOnTop = true,
   });
 
   final String? iconPath;
@@ -40,7 +40,7 @@ class IconWithText extends StatelessWidget {
         children: [
           forceIconOnTop
               ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SvgIcon(
                       iconPath ?? AppIcons.minus,
@@ -83,8 +83,7 @@ class IconWithText extends StatelessWidget {
           text != null
               ? Text(
                   text!,
-                  style: kNormalTextStyle.copyWith(
-                      color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
+                  style: kNormalTextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
                   textAlign: TextAlign.center,
                 )
               : Gap.noGap,

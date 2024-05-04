@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'bottom_app_bar_button.dart';
@@ -22,18 +23,34 @@ class BottomAppBarItem {
 // BottomAppBar which watch to the showBottomAppBarStateProvider. Based on the provider
 // value (user scroll direction), the BottomAppBar will be visible or not.
 
-class BottomAppBarWithFAB extends ConsumerStatefulWidget {
-  const BottomAppBarWithFAB({super.key, required this.items, required this.onTabSelected});
+class CustomBottomAppBar extends ConsumerStatefulWidget {
+  const CustomBottomAppBar({
+    super.key,
+    required this.items,
+    required this.selectedIndex,
+    required this.onTabSelected,
+    required this.isShow,
+  });
+
   final List<BottomAppBarItem> items;
+  final int selectedIndex;
   final ValueChanged<int> onTabSelected;
+  final bool isShow;
 
   @override
-  ConsumerState<BottomAppBarWithFAB> createState() => _BottomAppBarWithFABState();
+  ConsumerState<CustomBottomAppBar> createState() => _CustomBottomAppBarState();
 }
 
-class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
-  late List<Widget> buttons;
-  int _selectedIndex = 0;
+class _CustomBottomAppBarState extends ConsumerState<CustomBottomAppBar> {
+  late int _selectedIndex = widget.selectedIndex;
+
+  @override
+  void didUpdateWidget(covariant CustomBottomAppBar oldWidget) {
+    if (oldWidget.selectedIndex != widget.selectedIndex) {
+      _selectedIndex = widget.selectedIndex;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   void _updateIndex(int index) async {
     // wait for button animation
@@ -50,13 +67,6 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
 
   @override
   Widget build(BuildContext context) {
-    // // Watch to the provider value (represent user scroll direction)
-    // final isShowAppBar = ref.watch(scrollForwardStateProvider);
-
-    // double bottomAppBarHeight = isShowAppBar ? kBottomAppBarHeight : 0;
-    // bool isBottomAppBarGoUp = bottomAppBarHeight == kBottomAppBarHeight;
-
-    //Generate button from items argument
     List<Widget> buttons = List.generate(widget.items.length, (index) {
       bool isSelected = _selectedIndex == index;
       return BottomAppBarButton(
@@ -70,21 +80,25 @@ class _BottomAppBarWithFABState extends ConsumerState<BottomAppBarWithFAB> {
 
     return Theme(
       data: ThemeData(useMaterial3: false),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-              top:
-                  context.appTheme.isDarkTheme ? BorderSide.none : BorderSide(color: Colors.grey.shade200, width: 1.5)),
-        ),
-        child: BottomAppBar(
-          height: kBottomAppBarHeight,
-          color: context.appTheme.background1,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: buttons,
+      child: HideableContainer(
+        hide: !widget.isShow,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+                top: context.appTheme.isDarkTheme
+                    ? BorderSide.none
+                    : BorderSide(color: Colors.grey.shade200, width: 1.5)),
+          ),
+          child: BottomAppBar(
+            height: kBottomAppBarHeight,
+            color: context.appTheme.background1,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: buttons,
+            ),
           ),
         ),
       ),

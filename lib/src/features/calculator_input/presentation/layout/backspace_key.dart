@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/svg_icon.dart';
+import '../../../../theme_and_ui/colors.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../../utils/constants.dart';
 
 class BackspaceKey extends StatelessWidget {
   const BackspaceKey({
-    Key? key,
+    super.key,
     required this.onBackspace,
-  }) : super(key: key);
+  });
   final VoidCallback onBackspace;
 
   @override
@@ -24,9 +26,9 @@ class BackspaceKey extends StatelessWidget {
       borderRadius: BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
-      child: InkWell(
+      child: CustomInkWell(
         onTap: onBackspace,
-        highlightColor: context.appTheme.negative.withAlpha(105),
+        inkColor: context.appTheme.onBackground,
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: SvgIcon(
@@ -42,9 +44,9 @@ class BackspaceKey extends StatelessWidget {
 
 class ACKey extends StatelessWidget {
   const ACKey({
-    Key? key,
+    super.key,
     required this.onAC,
-  }) : super(key: key);
+  });
   final VoidCallback onAC;
 
   @override
@@ -59,9 +61,9 @@ class ACKey extends StatelessWidget {
       borderRadius: BorderRadius.circular(1000),
       elevation: 0,
       isGradient: true,
-      child: InkWell(
+      child: CustomInkWell(
         onTap: onAC,
-        highlightColor: context.appTheme.onBackground.withAlpha(105),
+        inkColor: context.appTheme.onBackground,
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: Text(

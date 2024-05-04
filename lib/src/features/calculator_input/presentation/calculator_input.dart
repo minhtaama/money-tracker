@@ -79,16 +79,17 @@ class _CalculatorInputState extends State<CalculatorInput> {
     super.dispose();
   }
 
-  // @override
-  // void didUpdateWidget(covariant CalculatorInput oldWidget) {
-  //   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-  //     if (widget.initialValue != null) {
-  //       _controller.text = widget.initialValue!;
-  //       widget.formattedResultOutput(widget.initialValue!);
-  //     }
-  //   });
-  //   super.didUpdateWidget(oldWidget);
-  // }
+  @override
+  void didUpdateWidget(covariant CalculatorInput oldWidget) {
+    if (widget.initialValue != oldWidget.initialValue) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        if (widget.initialValue != null) {
+          _controller.text = widget.initialValue!;
+        }
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -219,15 +220,17 @@ class _CalculatorState extends State<_Calculator> {
             result: _formattedString,
           ),
           Gap.divider(context),
-          KeysLayout(
-            onInput: _add,
-            onEqual: _equal,
-            onBackspace: _backspace,
-            onAC: _ac,
-            onDone: () {
-              _equal();
-              context.pop<String>(_formattedString);
-            },
+          Flexible(
+            child: KeysLayout(
+              onInput: _add,
+              onEqual: _equal,
+              onBackspace: _backspace,
+              onAC: _ac,
+              onDone: () {
+                _equal();
+                context.pop<String>(_formattedString);
+              },
+            ),
           ),
           Gap.h16,
         ],

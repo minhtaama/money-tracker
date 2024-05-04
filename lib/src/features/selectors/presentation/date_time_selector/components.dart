@@ -100,7 +100,7 @@ class _DateWidget extends StatelessWidget {
       child: Center(
         child: Text(
           labelBuilder(dateTime),
-          style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 13),
+          style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
         ),
       ),
     );

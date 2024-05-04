@@ -162,6 +162,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                 Gap.w12,
                 RoundedIconButton(
                   iconPath: transaction.hasInstallment ? AppIcons.installment : AppIcons.handCoin,
+                  backgroundColor: Colors.transparent,
                   iconColor: context.appTheme.negative,
                   iconPadding: 0,
                   size: 26,
@@ -231,17 +232,17 @@ class _DateTime extends StatelessWidget {
         isEdited: isEdited,
         onTap: onEditModeTap,
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               '${formatter.format(dateTime.hour)}:${formatter.format(dateTime.minute)}',
-              style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground, fontSize: kNormalTextStyle.fontSize),
+              style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
             ),
             Gap.w8,
-            Text(
-              dateTime.toLongDate(context),
-              style: kNormalTextStyle.copyWith(
-                color: context.appTheme.onBackground,
+            Flexible(
+              child: Text(
+                dateTime.toLongDate(context),
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
               ),
             ),
           ],
@@ -739,7 +740,7 @@ class _DeleteButton extends StatelessWidget {
         onTap: () async {
           isDisable
               ? showErrorDialog(context, disableText)
-              : showConfirmModalBottomSheet(
+              : showConfirmModal(
                   context: context,
                   label: 'Delete this transaction?'.hardcoded,
                   confirmLabel: 'Yes, delete'.hardcoded,
@@ -790,17 +791,11 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
   Widget build(BuildContext context) {
     return list.isNotEmpty
         ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Gap.h16,
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  title,
-                  style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-                ),
-              ),
-              Gap.h16,
+              TextHeader(title),
+              Gap.h8,
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
@@ -891,11 +886,13 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Edit Category'.hardcoded,
+      ),
+      body: [
         _ModelWithIconEditSelector(
-          title: 'Choose Category:'.hardcoded,
+          title: 'Change Category:'.hardcoded,
           withBottomGap: false,
           list: _categoryList,
           selectedItem: _selectedCategory,
@@ -905,13 +902,7 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
           }),
         ),
         Gap.h16,
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            'Choose Tag:'.hardcoded,
-            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground),
-          ),
-        ),
+        TextHeader('Change Tag:'.hardcoded),
         Gap.h16,
         CategoryTagSelector(
           category: _selectedCategory,
@@ -923,23 +914,13 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
             _selectedTag = CategoryTag.noTag;
           }),
         ),
-        Gap.h24,
-        Row(
-          children: [
-            const Spacer(),
-            IconWithTextButton(
-              iconPath: AppIcons.done,
-              label: 'Done',
-              backgroundColor: context.appTheme.accent2,
-              color: context.appTheme.onAccent,
-              height: 55,
-              width: 130,
-              onTap: () => context.pop<List<dynamic>>([_selectedCategory, _selectedTag]),
-            ),
-          ],
-        ),
-        Gap.h32,
       ],
+      footer: ModalFooter(
+        isBigButtonDisabled: false,
+        bigButtonIcon: AppIcons.done,
+        bigButtonLabel: context.loc.done,
+        onBigButtonTap: () => context.pop<List<dynamic>>([_selectedCategory, _selectedTag]),
+      ),
     );
   }
 }

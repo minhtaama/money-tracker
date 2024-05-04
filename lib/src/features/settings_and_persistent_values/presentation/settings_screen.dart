@@ -18,9 +18,8 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_page/custom_page.dart';
 import '../data/settings_repo.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -39,11 +38,11 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
-            hasBackButton: true,
-            title: context.localize.settings,
+            isTopLevelOfNavigationRail: true,
+            title: context.loc.settings,
           ),
         ),
         children: [
@@ -61,8 +60,8 @@ class SettingsScreen extends ConsumerWidget {
               ),
               Gap.divider(context, indent: 6),
               SettingTileToggle(
-                title: context.localize.useDarkMode,
-                valueLabels: [context.localize.off, context.localize.on, context.localize.systemDefault],
+                title: context.loc.useDarkMode,
+                valueLabels: [context.loc.off, context.loc.on, context.loc.systemDefault],
                 onTap: (int index) {
                   settingsController.set(themeType: ThemeType.values[index]);
                   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
@@ -78,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
             sections: [
               Gap.h4,
               CustomTile(
-                title: context.localize.setCurrency,
+                title: context.loc.setCurrency,
                 secondaryTitle: currentSettings.currency.name,
                 secondaryTitleOverflow: true,
                 leading: SvgIcon(
@@ -89,7 +88,8 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       currentSettings.currency.code,
-                      style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+                      style:
+                          kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
                     ),
                     Gap.w4,
                     SvgIcon(
@@ -103,7 +103,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               Gap.divider(context, indent: 6),
               SettingTileDropDown<CurrencyType>(
-                title: context.localize.currencyFormat,
+                title: context.loc.currencyFormat,
                 initialValue: currentSettings.currencyType,
                 values: [
                   (CurrencyType.symbolBefore, '$currSymbol $currAmount'),
@@ -112,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
                 onChanged: (type) => settingsController.set(currencyType: type),
               ),
               SettingTileToggle(
-                title: context.localize.withDecimalDigits,
+                title: context.loc.withDecimalDigits,
                 onTap: (int index) {
                   settingsController.set(showDecimalDigits: index == 0 ? false : true);
                 },
@@ -124,22 +124,30 @@ class SettingsScreen extends ConsumerWidget {
           CustomSection(
             sections: [
               SettingTileDropDown<Locale>(
-                title: context.localize.language,
+                title: context.loc.language,
                 initialValue: currentSettings.locale,
                 values: AppLocalizations.supportedLocales.map((e) => (e, e.languageName)).toList(),
                 onChanged: (type) => settingsController.set(locale: type),
               ),
               SettingTileDropDown<LongDateType>(
-                title: context.localize.longDateFormat,
+                title: context.loc.longDateFormat,
                 initialValue: currentSettings.longDateType,
-                values: LongDateType.values.map((e) => (e, today.toLongDate(context, custom: e))).toList(),
+                values:
+                    LongDateType.values.map((e) => (e, today.toLongDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(longDateType: type),
               ),
               SettingTileDropDown<ShortDateType>(
-                title: context.localize.shortDateFormat,
+                title: context.loc.shortDateFormat,
                 initialValue: currentSettings.shortDateType,
-                values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
+                values:
+                    ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
                 onChanged: (type) => settingsController.set(shortDateType: type),
+              ),
+              SettingTileDropDown<FirstDayOfWeek>(
+                title: context.loc.firstDayOfWeek,
+                initialValue: currentSettings.firstDayOfWeek,
+                values: FirstDayOfWeek.values.map((e) => (e, e.getName(context))).toList(),
+                onChanged: (weekDay) => settingsController.set(firstDayOfWeek: weekDay),
               ),
             ],
           ),

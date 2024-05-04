@@ -1,13 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../utils/constants.dart';
+import 'custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 
 class HelpButton extends StatefulWidget {
   const HelpButton({
@@ -69,8 +69,10 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
       double dy =
           buttonOffset.dy - helpBoxHeight - 10; // Make center of help box same as top-center of button
 
-      if (helpBoxWidth / 2 >= Gap.screenWidth(context) - buttonOffset.dx) {
-        double offset = helpBoxWidth / 2 - (Gap.screenWidth(context) - buttonOffset.dx);
+      if (helpBoxWidth / 2 >=
+          Gap.screenWidth(context) - (context.isBigScreen ? 100 : 0) - buttonOffset.dx) {
+        double offset = helpBoxWidth / 2 -
+            (Gap.screenWidth(context) - (context.isBigScreen ? 100 : 0) - buttonOffset.dx);
         dx = dx - offset - 10;
       } else if (helpBoxWidth / 2 >= buttonOffset.dx) {
         double offset = helpBoxWidth / 2 - buttonOffset.dx;
@@ -151,8 +153,11 @@ class _HelpButtonState extends State<HelpButton> with SingleTickerProviderStateM
     // Find RenderBox of the widget using globalKey
     RenderBox renderBox = key.currentContext?.findRenderObject() as RenderBox;
 
+    //final rail = key.currentContext?.findAncestorStateOfType<ScaffoldWithBottomNavBarState>();
+    final ancestorRenderObject = navigationRailChildKey.currentContext?.findRenderObject();
+
     // Get the Offset position of the top-left point
-    Offset topLeftPosition = renderBox.localToGlobal(Offset.zero);
+    Offset topLeftPosition = renderBox.localToGlobal(Offset.zero, ancestor: ancestorRenderObject);
 
     // Get Size of the RenderBox from GlobalKey
     Size? widgetSize = key.currentContext!.size;
@@ -198,7 +203,8 @@ class _HelpBox extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
           child: Container(
             padding: const EdgeInsets.all(12),
-            constraints: BoxConstraints(minWidth: 30, maxWidth: Gap.screenWidth(context) - 50),
+            constraints: BoxConstraints(
+                minWidth: 30, maxWidth: Gap.screenWidth(context) - (context.isBigScreen ? 100 : 0) - 50),
             decoration: BoxDecoration(
               color: context.appTheme.isDarkTheme
                   ? context.appTheme.accent1.withOpacity(0.7)

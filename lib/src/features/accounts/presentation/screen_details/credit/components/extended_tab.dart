@@ -35,9 +35,24 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
 
     final extraLineY = (data as CLCDataForCredit).extraLineY;
     final extraLineText =
-        'Payment required: ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}'
-            .hardcoded;
+        '${context.loc.paymentRequired} ${CalService.formatCurrency(context, (data as CLCDataForCredit).balanceRemaining)} ${context.appSettings.currency.code}';
 
+    if (context.isBigScreen) {
+      return Container(
+        decoration: BoxDecoration(
+          color: account.backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.only(bottom: 5),
+        margin: const EdgeInsets.only(left: 24, right: 24, top: 6),
+        child: _content(data, extraLineY, extraLineText),
+      );
+    }
+
+    return _content(data, extraLineY, extraLineText);
+  }
+
+  Widget _content(CLCData data, double extraLineY, String extraLineText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -92,7 +107,7 @@ class _Header extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Credit account'.hardcoded,
+                  context.loc.creditAccount,
                   style: kHeader3TextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 13,

@@ -171,7 +171,21 @@ extension CreditAccountMethods on CreditAccount {
     final latestStatement = statementsList[statementsList.length - 1];
 
     // If statement is already in credit account statements list
-    for (Statement statement in statementsList) {
+    // for (Statement statement in statementsList) {
+    //   if (date.compareTo(statement.date.previousDue) > 0 && date.compareTo(statement.date.due) <= 0) {
+    //     return statement;
+    //   }
+    // }
+
+    // If statement is already in credit account statements list
+    for (int i = 0; i < statementsList.length; i++) {
+      final statement = statementsList[i];
+      if (i == 0) {
+        if (date.compareTo(statement.date.previousDue) >= 0 && date.compareTo(statement.date.due) <= 0) {
+          return statement;
+        }
+      }
+
       if (date.compareTo(statement.date.previousDue) > 0 && date.compareTo(statement.date.due) <= 0) {
         return statement;
       }

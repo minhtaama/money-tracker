@@ -29,9 +29,11 @@ import '../../category/domain/category.dart';
 import '../data/budget_repo.dart';
 
 class EditBudgetModalScreen extends ConsumerStatefulWidget {
-  const EditBudgetModalScreen({super.key, required this.budget});
+  const EditBudgetModalScreen(this.controller, this.isScrollable, {super.key, required this.budget});
 
   final BaseBudget budget;
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<EditBudgetModalScreen> createState() => _EditBudgetModalScreenState();
@@ -41,232 +43,221 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late String _name = widget.budget.name;
-  late BudgetType _budgetType =
-      widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
+  late BudgetType _budgetType = widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
   late BudgetPeriodType _periodType = widget.budget.periodType;
   late double _amount = widget.budget.amount;
-  late List<BaseAccount> _accounts =
-      widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
-  late List<Category> _categories =
-      widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
+  late List<BaseAccount> _accounts = widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
+  late List<Category> _categories = widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: CustomSection(
-        title: 'Edit budget',
-        isWrapByCard: false,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        sections: [
-          CustomSliderToggle<BudgetType>(
-            values: const [BudgetType.forCategory, BudgetType.forAccount],
-            labels: const ['For Categories', 'For Accounts'],
-            initialValueIndex: widget.budget is AccountBudget ? 1 : 0,
-            fontSize: 14,
-            onTap: (type) {
-              setState(() {
-                _budgetType = type;
-              });
+    return ModalContent(
+      formKey: _formKey,
+      controller: widget.controller,
+      isScrollable: widget.isScrollable,
+      header: ModalHeader(
+        title: 'Edit budget'.hardcoded,
+      ),
+      body: [
+        CustomSliderToggle<BudgetType>(
+          values: const [BudgetType.forCategory, BudgetType.forAccount],
+          labels: const ['For Categories', 'For Accounts'],
+          initialValueIndex: widget.budget is AccountBudget ? 1 : 0,
+          fontSize: 14,
+          onTap: (type) {
+            setState(() {
+              _budgetType = type;
+            });
+          },
+        ),
+        Gap.h16,
+        Row(
+          children: [
+            RoundedIconButton(
+              iconPath: AppIcons.budgets,
+              iconColor: context.appTheme.onBackground,
+              backgroundColor: AppColors.greyBgr(context),
+              size: 50,
+            ),
+            Gap.w16,
+            Expanded(
+              child: CustomTextFormField(
+                keyboardType: TextInputType.text,
+                validator: (_) => _name == '' ? 'Please input name'.hardcoded : null,
+                onChanged: (value) => _name = value,
+                hintText: _name,
+                autofocus: false,
+                focusColor: context.appTheme.accent1,
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        Gap.h16,
+        Row(
+          children: [
+            const CurrencyIcon(),
+            Gap.w16,
+            Expanded(
+              child: CalculatorInput(
+                hintText: CalService.formatNumberInGroup(_amount.toString()),
+                focusColor: context.appTheme.onBackground,
+                validator: (_) {
+                  if (_amount <= 0) {
+                    return 'Invalid amount';
+                  }
+                  return null;
+                },
+                formattedResultOutput: (value) {
+                  _amount = CalService.formatToDouble(value)!;
+                },
+              ),
+            ),
+          ],
+        ),
+        Gap.h16,
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 8.0, bottom: 6.0),
+          child: Text(
+            'Budget Period:',
+            style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.greyBorder(context)),
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CustomRadio<BudgetPeriodType>(
+                    label: 'Daily'.hardcoded,
+                    width: 135,
+                    value: BudgetPeriodType.daily,
+                    groupValue: _periodType,
+                    onChanged: (value) => setState(() {
+                      _periodType = value!;
+                    }),
+                  ),
+                  CustomRadio<BudgetPeriodType>(
+                    label: 'Weekly'.hardcoded,
+                    width: 135,
+                    value: BudgetPeriodType.weekly,
+                    groupValue: _periodType,
+                    onChanged: (value) => setState(() {
+                      _periodType = value!;
+                    }),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CustomRadio<BudgetPeriodType>(
+                    label: 'Monthly'.hardcoded,
+                    width: 135,
+                    value: BudgetPeriodType.monthly,
+                    groupValue: _periodType,
+                    onChanged: (value) => setState(() {
+                      _periodType = value!;
+                    }),
+                  ),
+                  CustomRadio<BudgetPeriodType>(
+                    label: 'Yearly'.hardcoded,
+                    width: 135,
+                    value: BudgetPeriodType.yearly,
+                    groupValue: _periodType,
+                    onChanged: (value) => setState(() {
+                      _periodType = value!;
+                    }),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Gap.h16,
+        HideableContainer(
+          hide: _budgetType == BudgetType.forAccount,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                child: Text(
+                  'Select categories registered with budget:'.hardcoded,
+                  style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                ),
+              ),
+              _Selector<Category>(
+                onChanged: (list) {
+                  _categories = list;
+                },
+                initialSelected: _categories,
+              ),
+            ],
+          ),
+        ),
+        HideableContainer(
+          hide: _budgetType == BudgetType.forCategory,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                child: Text(
+                  'Select accounts registered with budget:'.hardcoded,
+                  style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                ),
+              ),
+              _Selector<BaseAccount>(
+                onChanged: (list) {
+                  _accounts = list;
+                },
+                initialSelected: _accounts,
+              ),
+            ],
+          ),
+        ),
+      ],
+      footer: ModalFooter(
+        isBigButtonDisabled: false,
+        smallButtonIcon: AppIcons.delete,
+        bigButtonIcon: AppIcons.edit,
+        bigButtonLabel: 'Done'.hardcoded,
+        onSmallButtonTap: () {
+          showConfirmModal(
+            context: context,
+            label: 'Are you sure that you want to delete budget ${widget.budget.name}?'.hardcoded,
+            onConfirm: () {
+              final budgetRepo = ref.read(budgetsRepositoryRealmProvider);
+              budgetRepo.delete(widget.budget);
+              context.pop();
             },
-          ),
-          Gap.h16,
-          Row(
-            children: [
-              RoundedIconButton(
-                iconPath: AppIcons.budgets,
-                iconColor: context.appTheme.onBackground,
-                backgroundColor: AppColors.greyBgr(context),
-                size: 50,
-              ),
-              Gap.w16,
-              Expanded(
-                child: CustomTextFormField(
-                  keyboardType: TextInputType.text,
-                  validator: (_) => _name == '' ? 'Please input name'.hardcoded : null,
-                  onChanged: (value) => _name = value,
-                  hintText: _name,
-                  autofocus: false,
-                  focusColor: context.appTheme.accent1,
-                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 16),
-                ),
-              ),
-            ],
-          ),
-          Gap.h16,
-          Row(
-            children: [
-              const CurrencyIcon(),
-              Gap.w16,
-              Expanded(
-                child: CalculatorInput(
-                  hintText: CalService.formatNumberInGroup(_amount.toString()),
-                  focusColor: context.appTheme.onBackground,
-                  validator: (_) {
-                    if (_amount <= 0) {
-                      return 'Invalid amount';
-                    }
-                    return null;
-                  },
-                  formattedResultOutput: (value) {
-                    _amount = CalService.formatToDouble(value)!;
-                  },
-                ),
-              ),
-            ],
-          ),
-          Gap.h16,
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0, top: 8.0, bottom: 6.0),
-            child: Text(
-              'Budget Period:',
-              style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.greyBorder(context)),
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CustomRadio<BudgetPeriodType>(
-                      label: 'Daily'.hardcoded,
-                      width: 135,
-                      value: BudgetPeriodType.daily,
-                      groupValue: _periodType,
-                      onChanged: (value) => setState(() {
-                        _periodType = value!;
-                      }),
-                    ),
-                    CustomRadio<BudgetPeriodType>(
-                      label: 'Weekly'.hardcoded,
-                      width: 135,
-                      value: BudgetPeriodType.weekly,
-                      groupValue: _periodType,
-                      onChanged: (value) => setState(() {
-                        _periodType = value!;
-                      }),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CustomRadio<BudgetPeriodType>(
-                      label: 'Monthly'.hardcoded,
-                      width: 135,
-                      value: BudgetPeriodType.monthly,
-                      groupValue: _periodType,
-                      onChanged: (value) => setState(() {
-                        _periodType = value!;
-                      }),
-                    ),
-                    CustomRadio<BudgetPeriodType>(
-                      label: 'Yearly'.hardcoded,
-                      width: 135,
-                      value: BudgetPeriodType.yearly,
-                      groupValue: _periodType,
-                      onChanged: (value) => setState(() {
-                        _periodType = value!;
-                      }),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Gap.h16,
-          HideableContainer(
-            hide: _budgetType == BudgetType.forAccount,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                  child: Text(
-                    'Select categories registered with budget:'.hardcoded,
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
-                  ),
-                ),
-                _Selector<Category>(
-                  onChanged: (list) {
-                    _categories = list;
-                  },
-                  initialSelected: _categories,
-                ),
-              ],
-            ),
-          ),
-          HideableContainer(
-            hide: _budgetType == BudgetType.forCategory,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                  child: Text(
-                    'Select accounts registered with budget:'.hardcoded,
-                    style:
-                        kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
-                  ),
-                ),
-                _Selector<BaseAccount>(
-                  onChanged: (list) {
-                    _accounts = list;
-                  },
-                  initialSelected: _accounts,
-                ),
-              ],
-            ),
-          ),
-          Gap.h24,
-          Gap.divider(context, indent: 12),
-          Gap.h24,
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: BottomButtons(
-              isBigButtonDisabled: false,
-              smallButtonIcon: AppIcons.delete,
-              bigButtonIcon: AppIcons.edit,
-              bigButtonLabel: 'Done'.hardcoded,
-              onSmallButtonTap: () {
-                showConfirmModalBottomSheet(
-                  context: context,
-                  label: 'Are you sure that you want to delete budget ${widget.budget.name}?'.hardcoded,
-                  onConfirm: () {
-                    final budgetRepo = ref.read(budgetsRepositoryRealmProvider);
-                    budgetRepo.delete(widget.budget);
-                    context.pop();
-                  },
-                );
-              },
-              onBigButtonTap: () {
-                if (_formKey.currentState!.validate()) {
-                  final budgetRepo = ref.read(budgetsRepositoryRealmProvider);
+          );
+        },
+        onBigButtonTap: () {
+          if (_formKey.currentState!.validate()) {
+            final budgetRepo = ref.read(budgetsRepositoryRealmProvider);
 
-                  budgetRepo.edit(
-                    widget.budget,
-                    type: _budgetType,
-                    periodType: _periodType,
-                    name: _name,
-                    amount: _amount,
-                    accounts: _accounts,
-                    categories: _categories,
-                  );
-                  context.pop();
-                }
-              },
-            ),
-          ),
-        ],
+            budgetRepo.edit(
+              widget.budget,
+              type: _budgetType,
+              periodType: _periodType,
+              name: _name,
+              amount: _amount,
+              accounts: _accounts,
+              categories: _categories,
+            );
+            context.pop();
+          }
+        },
       ),
     );
   }

@@ -1,10 +1,14 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _RegularDetails extends ConsumerStatefulWidget {
-  const _RegularDetails(this.screenType, {required this.transaction});
+  const _RegularDetails(this.screenType, this.controller, this.isScrollable,
+      {required this.transaction});
 
   final BaseRegularTransaction transaction;
   final TransactionScreenType screenType;
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<_RegularDetails> createState() => _RegularDetailsState();
@@ -29,41 +33,46 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(regularTransactionFormNotifierProvider(null));
 
-    return CustomSection(
-      title: _title,
-      subTitle: _DateTime(
-        isEditMode: _isEditMode,
-        isEdited: _isDateTimeEdited(stateWatch),
-        dateTime: stateWatch.dateTime ?? _transaction.dateTime,
-        onEditModeTap: _changeDateTime,
+    return ModalContent(
+      controller: widget.controller,
+      isScrollable: widget.isScrollable,
+      header: ModalHeader(
+        title: _title,
+        subTitle: _DateTime(
+          isEditMode: _isEditMode,
+          isEdited: _isDateTimeEdited(stateWatch),
+          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+          onEditModeTap: _changeDateTime,
+        ),
+        trailing: widget.screenType == TransactionScreenType.editable
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _EditButton(
+                    isEditMode: _isEditMode,
+                    onTap: () {
+                      if (_isEditMode) {
+                        if (_submit()) {
+                          setState(() {
+                            _isEditMode = !_isEditMode;
+                          });
+                        }
+                      } else {
+                        setState(() {
+                          _isEditMode = !_isEditMode;
+                        });
+                      }
+                    },
+                  ),
+                  _DeleteButton(
+                    isEditMode: _isEditMode,
+                    onConfirm: _delete,
+                  ),
+                ],
+              )
+            : null,
       ),
-      subIcons: widget.screenType == TransactionScreenType.editable
-          ? [
-              _EditButton(
-                isEditMode: _isEditMode,
-                onTap: () {
-                  if (_isEditMode) {
-                    if (_submit()) {
-                      setState(() {
-                        _isEditMode = !_isEditMode;
-                      });
-                    }
-                  } else {
-                    setState(() {
-                      _isEditMode = !_isEditMode;
-                    });
-                  }
-                },
-              ),
-              _DeleteButton(
-                isEditMode: _isEditMode,
-                onConfirm: _delete,
-              ),
-            ]
-          : null,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      isWrapByCard: false,
-      sections: [
+      body: [
         _Amount(
           isEditMode: _isEditMode,
           isEdited: _isAmountEdited(stateWatch),
@@ -89,8 +98,9 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
               child: Column(
                 children: [
                   _AccountCard(
-                    isEditMode:
-                        (_transaction is Income && (_transaction as Income).isInitialTransaction) ? false : _isEditMode,
+                    isEditMode: (_transaction is Income && (_transaction as Income).isInitialTransaction)
+                        ? false
+                        : _isEditMode,
                     isEdited: _isAccountEdited(stateWatch),
                     account: stateWatch.account ?? _transaction.account,
                     onEditModeTap: _changeAccount,
@@ -103,8 +113,10 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                           : _CategoryCard(
                               isEditMode: _isEditMode,
                               isEdited: _isCategoryEdited(stateWatch),
-                              category: stateWatch.category ?? (_transaction as IBaseTransactionWithCategory).category,
-                              categoryTag: stateWatch.tag ?? (_transaction as IBaseTransactionWithCategory).categoryTag,
+                              category: stateWatch.category ??
+                                  (_transaction as IBaseTransactionWithCategory).category,
+                              categoryTag: stateWatch.tag ??
+                                  (_transaction as IBaseTransactionWithCategory).categoryTag,
                               onEditModeTap: _changeCategory,
                             ),
                     Transfer() => _AccountCard(
@@ -128,6 +140,7 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
         ),
         Gap.h16,
       ],
+      footer: Gap.noGap,
     );
   }
 }
@@ -137,7 +150,8 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
 
   String get _title {
     return switch (_transaction) {
-      Income() => (_transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
+      Income() =>
+        (_transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
     };
@@ -148,10 +162,18 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
 
     final returnedValue = await showCustomModal<Account>(
       context: context,
-      child: _ModelWithIconEditSelector(
-        title: 'Change Origin:',
-        selectedItem: _stateRead.account ?? _transaction.account,
-        list: accountList,
+      child: ModalContent(
+        header: ModalHeader(
+          title: 'Edit Account'.hardcoded,
+        ),
+        body: [
+          _ModelWithIconEditSelector(
+            title: 'Change Origin:',
+            selectedItem: _stateRead.account ?? _transaction.account,
+            list: accountList,
+          ),
+        ],
+        footer: Gap.noGap,
       ),
     );
 
@@ -163,10 +185,18 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
 
     final returnedValue = await showCustomModal<Account>(
       context: context,
-      child: _ModelWithIconEditSelector(
-        title: 'Change Destination:',
-        selectedItem: _stateRead.toAccount ?? (_transaction as Transfer).transferAccount,
-        list: accountList,
+      child: ModalContent(
+        header: ModalHeader(
+          title: 'Edit Account'.hardcoded,
+        ),
+        body: [
+          _ModelWithIconEditSelector(
+            title: 'Change Destination:',
+            selectedItem: _stateRead.toAccount ?? (_transaction as Transfer).transferAccount,
+            list: accountList,
+          ),
+        ],
+        footer: Gap.noGap,
       ),
     );
 
@@ -230,7 +260,8 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   bool _isDateTimeEdited(RegularTransactionFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(RegularTransactionFormState state) => state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(RegularTransactionFormState state) =>
+      state.note != null && state.note != _transaction.note;
 
   bool _submit() {
     final isTransfer = _transaction is Transfer;

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -161,13 +162,14 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     realm.deleteMany<TransactionDb>(list);
   }
 
-  void writeNewIncome({
+  Income writeNewIncome({
     required DateTime dateTime,
     required double amount,
     required Category category,
     required CategoryTag? tag,
     required RegularAccount account,
     required String? note,
+    required Recurrence? recurrence,
   }) {
     final newTransaction = TransactionDb(
       ObjectId(),
@@ -178,21 +180,25 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       category: category.databaseObject,
       categoryTag: tag?.databaseObject,
       account: account.databaseObject,
+      recurrence: recurrence?.databaseObject,
     );
 
     realm.write(() {
       realm.add(newTransaction);
       _updateBalanceAtDateTime(dateTime, amount.roundTo2DP());
     });
+
+    return BaseTransaction.fromDatabase(newTransaction) as Income;
   }
 
-  void writeNewExpense({
+  Expense writeNewExpense({
     required DateTime dateTime,
     required double amount,
     required Category category,
     required CategoryTag? tag,
     required RegularAccount account,
     required String? note,
+    required Recurrence? recurrence,
   }) {
     final newTransaction = TransactionDb(
       ObjectId(),
@@ -203,15 +209,18 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       category: category.databaseObject,
       categoryTag: tag?.databaseObject,
       account: account.databaseObject,
+      recurrence: recurrence?.databaseObject,
     );
 
     realm.write(() {
       realm.add(newTransaction);
       _updateBalanceAtDateTime(dateTime, -amount.roundTo2DP());
     });
+
+    return BaseTransaction.fromDatabase(newTransaction) as Expense;
   }
 
-  void writeNewTransfer({
+  Transfer writeNewTransfer({
     required DateTime dateTime,
     required double amount,
     required RegularAccount account,
@@ -219,6 +228,7 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required String? note,
     required double? fee,
     required bool? isChargeOnDestinationAccount,
+    required Recurrence? recurrence,
   }) {
     TransferFeeDb? transferFee;
     if (fee != null && isChargeOnDestinationAccount != null) {
@@ -234,11 +244,14 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
       account: account.databaseObject,
       transferAccount: toAccount.databaseObject,
       transferFee: transferFee,
+      recurrence: recurrence?.databaseObject,
     );
 
     realm.write(() {
       realm.add(newTransaction);
     });
+
+    return BaseTransaction.fromDatabase(newTransaction) as Transfer;
   }
 
   void writeNewCreditSpending({

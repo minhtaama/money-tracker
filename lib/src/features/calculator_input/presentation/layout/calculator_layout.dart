@@ -8,10 +8,10 @@ import 'equal_key.dart';
 
 class CalDisplay extends StatelessWidget {
   const CalDisplay({
-    Key? key,
+    super.key,
     required this.previousExpression,
     required this.result,
-  }) : super(key: key);
+  });
   final String previousExpression;
   final String result;
 
@@ -59,13 +59,13 @@ class CalDisplay extends StatelessWidget {
 
 class KeysLayout extends StatelessWidget {
   const KeysLayout({
-    Key? key,
+    super.key,
     required this.onInput,
     required this.onEqual,
     required this.onBackspace,
     required this.onAC,
     required this.onDone,
-  }) : super(key: key);
+  });
   final ValueSetter<String> onInput;
   final VoidCallback onEqual;
   final VoidCallback onBackspace;

@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/animated_swipe_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
+import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../../../common_widgets/custom_inkwell.dart';
 import '../../../../../utils/constants.dart';
 import '../../../data/template_transaction_repo.dart';
 
 class AddTemplateTransactionModalScreen extends ConsumerWidget {
-  const AddTemplateTransactionModalScreen({super.key});
+  const AddTemplateTransactionModalScreen(this.controller, this.isScrollable, {super.key});
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final templateRepository = ref.watch(tempTransactionRepositoryRealmProvider);
 
-    List<TemplateTransaction> templateTransactions = templateRepository.getTransactions();
+    List<TemplateTransaction> templateTransactions = templateRepository.getTemplates();
 
     ref.watch(tempTransactionsChangesStreamProvider).whenData((_) {
-      templateTransactions = templateRepository.getTransactions();
+      templateTransactions = templateRepository.getTemplates();
     });
 
     List<Widget> buildTemplateTiles(BuildContext context) {
@@ -47,21 +55,16 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
             ];
     }
 
-    return CustomSection(
-      isWrapByCard: false,
-      sectionsClipping: false,
-      title: 'Favorite Transactions'.hardcoded,
-      subTitle: Text(
-        'Hold to re-order'.hardcoded,
-        style: kHeader4TextStyle.copyWith(
-          fontSize: 13,
-          color: context.appTheme.onBackground,
-        ),
+    return ModalContent(
+      controller: controller,
+      isScrollable: isScrollable,
+      header: ModalHeader(
+        title: 'Favorite Transactions'.hardcoded,
+        secondaryTitle: 'Hold to re-order'.hardcoded,
       ),
-      margin: EdgeInsets.zero,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      onReorder: (oldIndex, newIndex) => templateRepository.reorder(oldIndex, newIndex),
-      sections: buildTemplateTiles(context),
+      body: buildTemplateTiles(context),
+      onReorder: templateRepository.reorder,
+      footer: Gap.noGap,
     );
   }
 }
@@ -84,91 +87,98 @@ class _TemplateTransactionTile extends ConsumerWidget {
         AppColors.grey(context),
     };
 
-    // final text = switch (model.type) {
-    //   TransactionType.transfer => context.localize.transfer,
-    //   TransactionType.income => context.localize.income,
-    //   TransactionType.expense => context.localize.expense,
-    //   TransactionType.creditPayment ||
-    //   TransactionType.creditSpending ||
-    //   TransactionType.creditCheckpoint ||
-    //   TransactionType.installmentToPay =>
-    //     '',
-    // };
-
-    return Stack(
-      children: [
-        CardItem(
-          margin: const EdgeInsets.only(bottom: 12.0),
-          padding: const EdgeInsets.only(top: 2.0, left: 2.0),
-          border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
-          child: GestureDetector(
-            // onTap: () => onTransactionTap?.call(transaction),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _CategoryIcon(model: model),
-                      Gap.w8,
-                      Expanded(
-                        child: switch (model.type) {
-                          TransactionType.transfer => _TransferDetails(model: model),
-                          _ => _WithCategoryDetails(model: model),
-                        },
-                      ),
-                      Gap.w16,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          MoneyAmount(
-                            amount: model.amount,
-                            noAnimation: true,
-                            style: kHeader2TextStyle.copyWith(
-                              color: color,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              _AccountName(model: model),
-                              Gap.w4,
-                              _AccountIcon(model: model),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedSwipeTile(
+          buttons: [
+            RoundedIconButton(
+              iconPath: AppIcons.delete,
+              size: 35,
+              iconPadding: 6,
+              elevation: 18,
+              backgroundColor: context.appTheme.negative,
+              iconColor: context.appTheme.onNegative,
+              onTap: () => showConfirmModal(
+                context: context,
+                label: 'Delete this favorite transaction?'.hardcoded,
+                onConfirm: () {
+                  final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
+                  tempRepo.delete(model);
+                },
+              ),
+            ),
+          ],
+          child: CardItem(
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
+            border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+            child: CustomInkWell(
+              inkColor: AppColors.grey(context),
+              onTap: () {
+                context.pop();
+                showCustomModal(
+                  context: context,
+                  builder: (controller, isScrollable) => Material(
+                    type: MaterialType.transparency,
+                    child: AddRegularTxnModalScreen(
+                      controller,
+                      isScrollable,
+                      model.type,
+                      template: model,
+                    ),
                   ),
-                  _Note(model: model),
-                ],
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _CategoryIcon(model: model),
+                        Gap.w8,
+                        Expanded(
+                          child: switch (model.type) {
+                            TransactionType.transfer => _TransferDetails(model: model),
+                            _ => _WithCategoryDetails(model: model),
+                          },
+                        ),
+                        Gap.w16,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            MoneyAmount(
+                              amount: model.amount,
+                              noAnimation: true,
+                              style: kHeader2TextStyle.copyWith(
+                                color: color,
+                                fontSize: 13,
+                              ),
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                _AccountName(model: model),
+                                Gap.w4,
+                                _AccountIcon(model: model),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    _Note(model: model),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-        Transform.translate(
-          offset: const Offset(-3, -3),
-          child: RoundedIconButton(
-            iconPath: AppIcons.close,
-            size: 15,
-            iconPadding: 3,
-            backgroundColor: context.appTheme.negative,
-            useContainerInsteadOfInk: true,
-            iconColor: context.appTheme.onNegative,
-            onTap: () => showConfirmModalBottomSheet(
-              context: context,
-              label: 'Delete this favorite transaction?'.hardcoded,
-              onConfirm: () {
-                final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
-                tempRepo.delete(model);
-              },
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -212,7 +222,7 @@ class _CategoryIcon extends StatelessWidget {
 }
 
 class _AccountIcon extends ConsumerWidget {
-  const _AccountIcon({super.key, required this.model});
+  const _AccountIcon({required this.model});
 
   final TemplateTransaction model;
 

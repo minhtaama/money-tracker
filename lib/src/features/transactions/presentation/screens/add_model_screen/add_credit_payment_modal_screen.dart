@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_box.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
@@ -26,7 +25,10 @@ import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddCreditPaymentModalScreen extends ConsumerStatefulWidget {
-  const AddCreditPaymentModalScreen({super.key});
+  const AddCreditPaymentModalScreen(this.controller, this.isScrollable, {super.key});
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<AddCreditPaymentModalScreen> createState() => _AddCreditPaymentModalScreenState();
@@ -95,238 +97,237 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
   @override
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(creditPaymentFormNotifierProvider);
-    return Form(
-      key: _formKey,
-      child: CustomSection(
-        title: 'Add Credit Payment',
-        crossAxisAlignment: CrossAxisAlignment.start,
-        isWrapByCard: false,
-        sectionsClipping: false,
-        sections: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: CreditDateTimeFormSelector(
-                  creditAccount: stateWatch.creditAccount,
-                  disableText: 'Choose credit account first'.hardcoded,
-                  initialDate: stateWatch.dateTime,
-                  isForPayment: true,
-                  onChanged: _onDateTimeChange,
-                  validator: (_) => _dateTimeValidator(),
-                ),
+    return ModalContent(
+      formKey: _formKey,
+      controller: widget.controller,
+      isScrollable: widget.isScrollable,
+      header: ModalHeader(
+        title: 'Add Payment',
+        secondaryTitle: 'For credit accounts'.hardcoded,
+      ),
+      footer: ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit),
+      body: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: CreditDateTimeFormSelector(
+                creditAccount: stateWatch.creditAccount,
+                disableText: 'Choose credit account first'.hardcoded,
+                initialDate: stateWatch.dateTime,
+                isForPayment: true,
+                onChanged: _onDateTimeChange,
+                validator: (_) => _dateTimeValidator(),
               ),
-              Gap.w24,
-              Expanded(
-                flex: 2,
+            ),
+            Gap.w24,
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextHeader('Payment from:'.hardcoded),
+                  Gap.h4,
+                  AccountFormSelector(
+                    accountType: AccountType.regular,
+                    validator: (_) => _fromRegularAccountValidator(),
+                    onChangedAccount: _onRegularAccountChange,
+                  ),
+                  Gap.h8,
+                  const TextHeader('Credit account to pay:'),
+                  Gap.h4,
+                  AccountFormSelector(
+                    accountType: AccountType.credit,
+                    validator: (_) => _creditAccountValidator(),
+                    onChangedAccount: _onCreditAccountChange,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        !_hidePayment ? Gap.h16 : Gap.noGap,
+        HideableContainer(
+          hide: _hidePayment,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomBox(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextHeader('Pay to credit account:'.hardcoded),
-                    Gap.h4,
-                    AccountFormSelector(
-                      accountType: AccountType.credit,
-                      validator: (_) => _creditAccountValidator(),
-                      onChangedAccount: _onCreditAccountChange,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: CreditInfo(
+                        showPaymentAmount: true,
+                        showList: false,
+                        chosenDateTime: stateWatch.dateTime?.onlyYearMonthDay,
+                        statement: stateWatch.statement,
+                      ),
                     ),
+                    Gap.divider(context, indent: 6),
                     Gap.h8,
-                    const TextHeader('Payment account:'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2.0),
+                      child: Text(
+                        'Payment amount:',
+                        style: kHeader3TextStyle.copyWith(
+                          fontSize: 14,
+                          color: context.appTheme.onBackground.withOpacity(0.8),
+                        ),
+                      ),
+                    ),
                     Gap.h4,
-                    AccountFormSelector(
-                      accountType: AccountType.regular,
-                      validator: (_) => _fromRegularAccountValidator(),
-                      onChangedAccount: _onRegularAccountChange,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const CurrencyIcon(),
+                        Gap.w8,
+                        Expanded(
+                          child: CalculatorInput(
+                            suffix: Transform.translate(
+                              offset: const Offset(0, 5),
+                              child: SvgIcon(
+                                AppIcons.receiptCheck,
+                                size: 27,
+                                color: context.appTheme.onBackground,
+                              ),
+                            ),
+                            hintText: '???',
+                            controller: _paymentInputController,
+                            focusColor: context.appTheme.primary,
+                            fontSize: 25,
+                            validator: (_) => _paymentInputValidator(context),
+                            formattedResultOutput: _onPaymentInputChange,
+                          ),
+                        ),
+                        Gap.w8,
+                      ],
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-          !_hidePayment ? Gap.h16 : Gap.noGap,
-          HideableContainer(
-            hide: _hidePayment,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomBox(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4.0),
-                        child: CreditInfo(
-                          showPaymentAmount: true,
-                          showList: false,
-                          chosenDateTime: stateWatch.dateTime?.onlyYearMonthDay,
-                          statement: stateWatch.statement,
-                        ),
-                      ),
-                      Gap.divider(context, indent: 6),
-                      Gap.h8,
-                      Padding(
-                        padding: const EdgeInsets.only(left: 2.0),
-                        child: Text(
-                          'Payment amount:',
-                          style: kHeader3TextStyle.copyWith(
-                            fontSize: 14,
-                            color: context.appTheme.onBackground.withOpacity(0.8),
-                          ),
-                        ),
-                      ),
-                      Gap.h4,
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              Gap.h4,
+              HelpBox(
+                isShow: _showHelpBox && _stateController.isPaymentTooHighThanBalance(context),
+                iconPath: AppIcons.sadFace,
+                margin: const EdgeInsets.only(top: 8),
+                header: 'Too high than balance to pay!'.hardcoded,
+                text:
+                    'Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount'
+                        .hardcoded,
+                onCloseTap: () => setState(() {
+                  _showHelpBox = false;
+                }),
+              ),
+              HelpBox(
+                isShow: _showHelpBox && _stateController.isPaymentQuiteHighThanBalance(context),
+                iconPath: AppIcons.fykFace,
+                margin: const EdgeInsets.only(top: 8),
+                backgroundColor: context.appTheme.positive,
+                color: context.appTheme.onPositive,
+                header: 'Pay amount is quite higher'.hardcoded,
+                text:
+                    'Are there some hidden fee or some small transaction you forgot to add? If not a full payment, you must specify the balance after payment amount'
+                        .hardcoded,
+                onCloseTap: () => setState(() {
+                  _showHelpBox = false;
+                }),
+              ),
+              HelpBox(
+                isShow: _showHelpBox && _stateController.isPaymentCloseToBalance(context),
+                iconPath: AppIcons.fykFace,
+                margin: const EdgeInsets.only(top: 8),
+                backgroundColor: context.appTheme.positive,
+                color: context.appTheme.onPositive,
+                header: 'Close to balance to pay!'.hardcoded,
+                text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
+                onCloseTap: () => setState(() {
+                  _showHelpBox = false;
+                }),
+              ),
+              HelpBox(
+                isShow: _showHelpBox && _stateController.isPaymentEqualBalance(context),
+                iconPath: AppIcons.fykFace,
+                margin: const EdgeInsets.only(top: 8),
+                backgroundColor: context.appTheme.positive,
+                color: context.appTheme.onPositive,
+                header: 'Exact balance to pay!'.hardcoded,
+                onCloseTap: () => setState(() {
+                  _showHelpBox = false;
+                }),
+              ),
+              HelpBox(
+                isShow: _showHelpBox && _stateController.isNoNeedPayment(context),
+                iconPath: AppIcons.fykFace,
+                margin: const EdgeInsets.only(top: 8),
+                backgroundColor: context.appTheme.positive,
+                color: context.appTheme.onPositive,
+                header: 'No balance left to pay!'.hardcoded,
+                onCloseTap: () => setState(() {
+                  _showHelpBox = false;
+                }),
+              ),
+              !_stateController.isNoNeedPayment(context)
+                  ? CustomCheckbox(
+                      onChanged: _onToggleFullPaymentCheckbox,
+                      label: 'Full payment',
+                      showOptionalWidgetWhenValueIsFalse: true,
+                      optionalWidget: Column(
                         children: [
-                          const CurrencyIcon(),
-                          Gap.w8,
-                          Expanded(
-                            child: CalculatorInput(
-                              suffix: Transform.translate(
-                                offset: const Offset(0, 5),
-                                child: SvgIcon(
-                                  AppIcons.receiptCheck,
-                                  size: 27,
-                                  color: context.appTheme.onBackground,
-                                ),
-                              ),
-                              hintText: '???',
-                              controller: _paymentInputController,
+                          InlineTextFormField(
+                            prefixText: 'Bal. after payment:'.hardcoded,
+                            suffixText: context.appSettings.currency.code,
+                            textSize: 14,
+                            widget: CalculatorInput(
+                              hintText: stateWatch.userPaymentAmount != null &&
+                                      stateWatch.totalBalanceAmount.roundBySetting(context) -
+                                              stateWatch.userPaymentAmount!.roundBySetting(context) >
+                                          0
+                                  ? CalService.formatCurrency(context,
+                                      stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                  : '???',
+                              textAlign: TextAlign.right,
+                              controller: _remainingInputController,
+                              isDense: true,
+                              fontSize: 16,
                               focusColor: context.appTheme.primary,
-                              fontSize: 25,
-                              validator: (_) => _paymentInputValidator(context),
-                              formattedResultOutput: _onPaymentInputChange,
+                              validator: (_) => _remainingInputValidator(context),
+                              formattedResultOutput: _onRemainingInputChange,
                             ),
                           ),
-                          Gap.w8,
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                Gap.h4,
-                HelpBox(
-                  isShow: _showHelpBox && _stateController.isPaymentTooHighThanBalance(context),
-                  iconPath: AppIcons.sadFace,
-                  margin: const EdgeInsets.only(top: 8),
-                  header: 'Too high than balance to pay!'.hardcoded,
-                  text:
-                      'Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount'
-                          .hardcoded,
-                  onCloseTap: () => setState(() {
-                    _showHelpBox = false;
-                  }),
-                ),
-                HelpBox(
-                  isShow: _showHelpBox && _stateController.isPaymentQuiteHighThanBalance(context),
-                  iconPath: AppIcons.fykFace,
-                  margin: const EdgeInsets.only(top: 8),
-                  backgroundColor: context.appTheme.positive,
-                  color: context.appTheme.onPositive,
-                  header: 'Pay amount is quite higher'.hardcoded,
-                  text:
-                      'Are there some hidden fee or some small transaction you forgot to add? If not a full payment, you must specify the balance after payment amount'
-                          .hardcoded,
-                  onCloseTap: () => setState(() {
-                    _showHelpBox = false;
-                  }),
-                ),
-                HelpBox(
-                  isShow: _showHelpBox && _stateController.isPaymentCloseToBalance(context),
-                  iconPath: AppIcons.fykFace,
-                  margin: const EdgeInsets.only(top: 8),
-                  backgroundColor: context.appTheme.positive,
-                  color: context.appTheme.onPositive,
-                  header: 'Close to balance to pay!'.hardcoded,
-                  text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
-                  onCloseTap: () => setState(() {
-                    _showHelpBox = false;
-                  }),
-                ),
-                HelpBox(
-                  isShow: _showHelpBox && _stateController.isPaymentEqualBalance(context),
-                  iconPath: AppIcons.fykFace,
-                  margin: const EdgeInsets.only(top: 8),
-                  backgroundColor: context.appTheme.positive,
-                  color: context.appTheme.onPositive,
-                  header: 'Exact balance to pay!'.hardcoded,
-                  onCloseTap: () => setState(() {
-                    _showHelpBox = false;
-                  }),
-                ),
-                HelpBox(
-                  isShow: _showHelpBox && _stateController.isNoNeedPayment(context),
-                  iconPath: AppIcons.fykFace,
-                  margin: const EdgeInsets.only(top: 8),
-                  backgroundColor: context.appTheme.positive,
-                  color: context.appTheme.onPositive,
-                  header: 'No balance left to pay!'.hardcoded,
-                  onCloseTap: () => setState(() {
-                    _showHelpBox = false;
-                  }),
-                ),
-                !_stateController.isNoNeedPayment(context)
-                    ? CustomCheckbox(
-                        onChanged: _onToggleFullPaymentCheckbox,
-                        label: 'Full payment',
-                        showOptionalWidgetWhenValueIsFalse: true,
-                        optionalWidget: Column(
-                          children: [
-                            InlineTextFormField(
-                              prefixText: 'Bal. after payment:'.hardcoded,
-                              suffixText: context.appSettings.currency.code,
-                              textSize: 14,
-                              widget: CalculatorInput(
-                                hintText: stateWatch.userPaymentAmount != null &&
-                                        stateWatch.totalBalanceAmount.roundBySetting(context) -
-                                                stateWatch.userPaymentAmount!.roundBySetting(context) >
-                                            0
-                                    ? CalService.formatCurrency(
-                                        context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
-                                    : '???',
-                                textAlign: TextAlign.right,
-                                controller: _remainingInputController,
-                                isDense: true,
-                                fontSize: 16,
-                                focusColor: context.appTheme.primary,
-                                validator: (_) => _remainingInputValidator(context),
-                                formattedResultOutput: _onRemainingInputChange,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Gap.noGap,
-              ],
+                    )
+                  : Gap.noGap,
+            ],
+          ),
+        ),
+        Gap.h16,
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(
+            'OPTIONAL:',
+            style: kHeader2TextStyle.copyWith(
+              fontSize: 11,
+              color: context.appTheme.onBackground.withOpacity(0.4),
             ),
           ),
-          Gap.h16,
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text(
-              'OPTIONAL:',
-              style: kHeader2TextStyle.copyWith(
-                fontSize: 11,
-                color: context.appTheme.onBackground.withOpacity(0.4),
-              ),
-            ),
-          ),
-          Gap.h4,
-          CustomTextFormField(
-            autofocus: false,
-            focusColor: context.appTheme.accent1,
-            withOutlineBorder: true,
-            maxLines: 3,
-            hintText: 'Note ...',
-            textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              _stateController.changeNote(value);
-            },
-          ),
-          Gap.h16,
-          BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
-        ],
-      ),
+        ),
+        Gap.h4,
+        CustomTextFormField(
+          autofocus: false,
+          focusColor: context.appTheme.accent1,
+          withOutlineBorder: true,
+          maxLines: 3,
+          hintText: 'Note ...',
+          textInputAction: TextInputAction.done,
+          onChanged: (value) {
+            _stateController.changeNote(value);
+          },
+        ),
+      ],
     );
   }
 }

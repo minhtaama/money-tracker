@@ -7,8 +7,8 @@ import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../../common_widgets/custom_page/custom_page.dart';
 import '../../../../common_widgets/page_heading.dart';
 import '../../../../utils/constants.dart';
 import '../../data/settings_repo.dart';
@@ -26,10 +26,9 @@ class SelectCurrencyScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
-            hasBackButton: true,
             title: 'Set Currency',
           ),
         ),

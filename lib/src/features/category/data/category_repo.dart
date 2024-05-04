@@ -36,7 +36,7 @@ class CategoryRepositoryRealmDb {
     return realm.all<CategoryDb>().changes;
   }
 
-  void writeNew({
+  Category writeNew({
     required CategoryType type,
     required String iconCategory,
     required int iconIndex,
@@ -58,6 +58,8 @@ class CategoryRepositoryRealmDb {
     realm.write(() {
       realm.add(newCategory);
     });
+
+    return Category.fromDatabase(newCategory)!;
   }
 
   void edit(
@@ -79,7 +81,15 @@ class CategoryRepositoryRealmDb {
   }
 
   void delete(Category category) {
-    realm.write(() async => realm.delete(category.databaseObject));
+    realm.write(() {
+      final tags = getTagList(category);
+      if (tags != null) {
+        for (CategoryTag tag in tags) {
+          realm.delete(tag.databaseObject);
+        }
+      }
+      realm.delete(category.databaseObject);
+    });
   }
 
   void reorder(CategoryType type, int oldIndex, int newIndex) {

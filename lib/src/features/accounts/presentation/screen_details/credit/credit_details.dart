@@ -3,8 +3,8 @@ import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_bar.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_tab_page/custom_tab_page.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/credit/components/extended_tab.dart';
@@ -27,7 +27,7 @@ import '../../../../../utils/enums.dart';
 import '../../../../calculator_input/application/calculator_service.dart';
 import '../../../../transactions/domain/transaction_base.dart';
 import '../../../../transactions/presentation/screens/add_model_screen/add_credit_checkpoint_modal_screen.dart';
-import '../../../../transactions/presentation/components/txn_components.dart';
+import '../../../../transactions/presentation/components/base_transaction_components.dart';
 import '../../../domain/account_base.dart';
 import '../../../domain/statement/base_class/statement.dart';
 
@@ -101,6 +101,12 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appTheme.background1,
@@ -110,7 +116,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         roundedButtonItems: [
           FABItem(
             icon: AppIcons.receiptDollar,
-            label: 'Spending'.hardcoded,
+            label: context.loc.creditSpending,
             color: context.appTheme.onNegative,
             backgroundColor: context.appTheme.negative,
             onTap: () => context.push(RoutePath.addCreditSpending),
@@ -124,7 +130,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
           ),
           FABItem(
             icon: AppIcons.handCoin,
-            label: 'Payment'.hardcoded,
+            label: context.loc.creditPayment,
             color: context.appTheme.onPositive,
             backgroundColor: context.appTheme.positive,
             onTap: () => context.push(RoutePath.addCreditPayment),
@@ -132,11 +138,13 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomTabPageWithPageView(
+      body: CustomAdaptivePageView(
         controller: _controller,
         smallTabBar: SmallTabBar(
           child: PageHeading(
-              title: widget.creditAccount.name, secondaryTitle: 'Credit account'.hardcoded, hasBackButton: true),
+            title: widget.creditAccount.name,
+            secondaryTitle: context.loc.creditAccount,
+          ),
         ),
         extendedTabBar: ExtendedTabBar(
           backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
@@ -194,8 +202,8 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
                       ),
                     ),
                     forceIconOnTop: true,
-                    header: 'No transactions has made before this day'.hardcoded,
-                    text: 'Tap to add balance checkpoint'.hardcoded,
+                    header: context.loc.noTransactionMadeBeforeThisDay,
+                    text: context.loc.tapToAddBalanceCheckpoint,
                   ),
                 ];
         },
@@ -227,63 +235,62 @@ class _StatementSelector extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Gap.w24,
-        GestureDetector(
-          onTap: onTapGoToCurrentDate,
-          child: SizedBox(
-            width: 180,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Statement date',
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.isDarkTheme
-                        ? context.appTheme.onBackground.withOpacity(0.7)
-                        : context.appTheme.onSecondary.withOpacity(0.7),
-                    fontSize: 12,
+        Expanded(
+          child: GestureDetector(
+            onTap: onTapGoToCurrentDate,
+            child: SizedBox(
+              width: 180,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Statement date',
+                    style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.isDarkTheme
+                          ? context.appTheme.onBackground.withOpacity(0.7)
+                          : context.appTheme.onSecondary.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-                AnimatedSwitcher(
-                  duration: k150msDuration,
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: Tween<double>(
-                        begin: 0,
-                        end: 1,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  child: Row(
-                    key: ValueKey(dateDisplay),
-                    children: [
-                      Text(
-                        key: ValueKey(dateDisplay),
-                        dateDisplay,
-                        style: kHeader1TextStyle.copyWith(
-                          color: context.appTheme.onBackground.withOpacity(0.9),
-                          fontSize: 22,
+                  AnimatedSwitcher(
+                    duration: k150msDuration,
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: Tween<double>(
+                          begin: 0,
+                          end: 1,
+                        ).animate(animation),
+                        child: child,
+                      );
+                    },
+                    child: Row(
+                      key: ValueKey(dateDisplay),
+                      children: [
+                        Text(
+                          key: ValueKey(dateDisplay),
+                          dateDisplay,
+                          style: kHeader1TextStyle.copyWith(
+                            color: context.appTheme.onBackground.withOpacity(0.9),
+                            fontSize: 22,
+                          ),
                         ),
-                      ),
-                      Gap.w8,
-                      !isToday
-                          ? RoundedIconButton(
-                              iconPath: AppIcons.turn,
-                              iconColor: context.appTheme.onBackground,
-                              size: 20,
-                              backgroundColor: Colors.transparent,
-                              iconPadding: 0,
-                            )
-                          : Gap.noGap,
-                    ],
+                        Gap.w8,
+                        !isToday
+                            ? SvgIcon(
+                                AppIcons.turn,
+                                color: context.appTheme.onBackground,
+                                size: 20,
+                              )
+                            : Gap.noGap,
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-        const Spacer(),
         RoundedIconButton(
           iconPath: AppIcons.arrowLeft,
           iconColor: context.appTheme.onBackground,

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/edit_modal.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../../common_widgets/modal_and_dialog.dart';
 import '../../../../../../common_widgets/rounded_icon_button.dart';
@@ -31,6 +32,22 @@ class ExtendedRegularAccountTab extends ConsumerWidget {
       data = chartServices.getRegularCLCData(account, displayDate);
     });
 
+    if (context.isBigScreen) {
+      return Container(
+        decoration: BoxDecoration(
+          color: account.backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.only(bottom: 4),
+        margin: const EdgeInsets.only(left: 24, right: 24, top: 6),
+        child: _content(data),
+      );
+    }
+
+    return _content(data);
+  }
+
+  Widget _content(CLCData data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -82,7 +99,7 @@ class _Header extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Regular account'.hardcoded,
+                  context.loc.regularAccount,
                   style: kNormalTextStyle.copyWith(
                     color: account.iconColor,
                     fontSize: 13,

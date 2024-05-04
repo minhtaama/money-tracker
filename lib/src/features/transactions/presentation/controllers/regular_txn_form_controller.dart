@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/template_transaction.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
@@ -90,6 +91,18 @@ class RegularTransactionFormController
         account: () => null,
         toAccount: () => null,
       ),
+    );
+  }
+
+  void updateStateFromTemplate(TemplateTransaction template) {
+    state = state.copyWith(
+      dateTime: () => template.dateTime,
+      amount: () => template.amount,
+      note: () => template.note,
+      tag: () => template.categoryTag,
+      category: () => template.category,
+      account: () => template.account?.toAccount() as RegularAccount?,
+      toAccount: () => template.toAccount?.toAccount() as RegularAccount?,
     );
   }
 

@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../../utils/enums.dart';
 import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
 import 'dart:math' as math;
@@ -11,17 +14,42 @@ class BarChartServices {
 
   /// Key runs from 0 (first day of week) to 6 (last day of week)
   Map<int, ({double spending, double income, double ySpending, double yIncome})> getWeeklyReportData(
-      DateTime dateTime) {
-    final range = dateTime.weekRange;
+      BuildContext context, DateTime dateTime) {
+    final range = dateTime.weekRange(context);
 
     final txnsList = transactionRepo.getTransactions(range.start, range.end).toList();
 
     double maxTemp = double.minPositive;
     final List<({int index, double spending, double income})> listTemp = [];
 
+    final weekDays = <int>[1, 2, 3, 4, 5, 6, 7];
+
+    final offset = switch (context.appSettings.firstDayOfWeek) {
+      FirstDayOfWeek.monday => 0,
+      FirstDayOfWeek.sunday => -1,
+      FirstDayOfWeek.saturday => -2,
+      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
+          0 => -1, //Sun
+          1 => 0, //Mon
+          2 => -6, //Tue
+          3 => -5, //Wed
+          4 => -4, //Thu
+          5 => -3, //Fri
+          6 => -2, //Sat
+          _ => throw StateError('Wrong index of first day of week'),
+        },
+    };
+
+    if (offset != 0) {
+      weekDays
+        ..removeAt(weekDays.length + offset)
+        ..insertAll(0, weekDays.sublist(weekDays.length + offset, weekDays.length));
+    }
+
     // From Monday to Sunday
-    for (int i = 1; i <= 7; i++) {
-      final txnsInWeekday = List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == i);
+    for (int i = 0; i <= weekDays.length - 1; i++) {
+      final weekDay = weekDays[i];
+      final txnsInWeekday = List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == weekDay);
 
       double spending = 0;
       double income = 0;
@@ -36,7 +64,7 @@ class BarChartServices {
       }
 
       maxTemp = math.max(maxTemp, math.max(income, spending));
-      listTemp.add((index: i - 1, spending: spending, income: income));
+      listTemp.add((index: i, spending: spending, income: income));
     }
 
     return {

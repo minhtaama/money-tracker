@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/components/extended_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
@@ -12,15 +13,14 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
-import '../../../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../../../common_widgets/custom_page/custom_page.dart';
 import '../../../../../common_widgets/icon_with_text.dart';
 import '../../../../../common_widgets/page_heading.dart';
 import '../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../theme_and_ui/colors.dart';
 import '../../../../../theme_and_ui/icons.dart';
 import '../../../../../utils/constants.dart';
-import '../../../../../utils/enums.dart';
 import '../../../../transactions/domain/transaction_base.dart';
 
 class RegularScreenDetails extends ConsumerStatefulWidget {
@@ -60,6 +60,12 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   List<Widget> _buildTransactionWidgetList(
     List<BaseTransaction> transactionList,
     DateTime dayBeginOfMonth,
@@ -89,9 +95,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: IconWithText(
-            header:
-                'This account does not have any transactions in ${dayBeginOfMonth.monthToString(context)}. Create a new one by tapping \'+\''
-                    .hardcoded,
+            header: context.loc.quoteRegularAccountScreen(dayBeginOfMonth.monthToString(context)),
             headerSize: 14,
             iconPath: AppIcons.budgets,
             forceIconOnTop: true,
@@ -114,21 +118,21 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         roundedButtonItems: [
           FABItem(
             icon: AppIcons.income,
-            label: 'Income'.hardcoded,
+            label: context.loc.income,
             color: context.appTheme.onPositive,
             backgroundColor: context.appTheme.positive,
             onTap: () => context.push(RoutePath.addIncome),
           ),
           FABItem(
             icon: AppIcons.transfer,
-            label: 'Transfer'.hardcoded,
+            label: context.loc.transfer,
             color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
             onTap: () => context.push(RoutePath.addTransfer),
           ),
           FABItem(
             icon: AppIcons.expense,
-            label: 'Expense'.hardcoded,
+            label: context.loc.expense,
             color: context.appTheme.onNegative,
             backgroundColor: context.appTheme.negative,
             onTap: () => context.push(RoutePath.addExpense),
@@ -136,13 +140,13 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomTabPageWithPageView(
+      body: CustomAdaptivePageView(
         controller: _pageController,
         smallTabBar: SmallTabBar(
           child: PageHeading(
-              title: widget.regularAccount.name,
-              secondaryTitle: 'Regular account'.hardcoded,
-              hasBackButton: true),
+            title: widget.regularAccount.name,
+            secondaryTitle: context.loc.regularAccount,
+          ),
         ),
         extendedTabBar: ExtendedTabBar(
           backgroundColor:
@@ -203,69 +207,69 @@ class _DateSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Gap.w24,
-          GestureDetector(
-            onTap: onDateTap,
-            child: SizedBox(
-              width: 200,
-              child: AnimatedSwitcher(
-                duration: k150msDuration,
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(
-                    opacity: Tween<double>(
-                      begin: 0,
-                      end: 1,
-                    ).animate(animation),
-                    child: child,
-                  );
-                },
-                child: Row(
-                  key: ValueKey(displayDate.toLongDate(context, noDay: true)),
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0),
-                          child: Text(
-                            displayDate.year.toString(),
-                            style: kHeader3TextStyle.copyWith(
-                              color: context.appTheme.onBackground.withOpacity(0.9),
-                              fontSize: 13,
-                              letterSpacing: 0.5,
-                              height: 0.99,
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              displayDate.monthToString(context),
-                              style: kHeader1TextStyle.copyWith(
+          Expanded(
+            child: GestureDetector(
+              onTap: onDateTap,
+              child: SizedBox(
+                width: 200,
+                child: AnimatedSwitcher(
+                  duration: k150msDuration,
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: Tween<double>(
+                        begin: 0,
+                        end: 1,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                  child: Row(
+                    key: ValueKey(displayDate.toLongDate(context, noDay: true)),
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 0),
+                            child: Text(
+                              displayDate.year.toString(),
+                              style: kHeader3TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.9),
-                                fontSize: 22,
-                                letterSpacing: 0.6,
-                                height: 1.2,
+                                fontSize: 13,
+                                letterSpacing: 0.5,
+                                height: 0.99,
                               ),
                             ),
-                            Gap.w8,
-                            !today
-                                ? Transform.translate(
-                                    offset: const Offset(0, 2),
-                                    child: RoundedIconButton(
-                                      iconPath: AppIcons.turn,
-                                      iconColor: context.appTheme.onBackground,
-                                      backgroundColor: Colors.transparent,
-                                      size: 20,
-                                      iconPadding: 0,
-                                    ),
-                                  )
-                                : Gap.noGap,
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                displayDate.monthToString(context),
+                                style: kHeader1TextStyle.copyWith(
+                                  color: context.appTheme.onBackground.withOpacity(0.9),
+                                  fontSize: 22,
+                                  letterSpacing: 0.6,
+                                  height: 1.2,
+                                ),
+                              ),
+                              Gap.w8,
+                              !today
+                                  ? Transform.translate(
+                                      offset: const Offset(0, 2),
+                                      child: SvgIcon(
+                                        AppIcons.turn,
+                                        color: context.appTheme.onBackground,
+                                        size: 20,
+                                      ),
+                                    )
+                                  : Gap.noGap,
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

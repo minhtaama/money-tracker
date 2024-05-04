@@ -12,6 +12,11 @@ class SmallTabBar extends StatelessWidget {
   final Widget child;
   final double height;
 
+  factory SmallTabBar.empty() => SmallTabBar(
+        child: Gap.noGap,
+        height: 0,
+      );
+
   @override
   Widget build(BuildContext context) {
     return Container(

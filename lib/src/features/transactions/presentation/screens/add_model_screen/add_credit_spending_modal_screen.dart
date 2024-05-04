@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
@@ -20,7 +19,10 @@ import '../../../data/transaction_repo.dart';
 import '../../../../selectors/presentation/forms.dart';
 
 class AddCreditSpendingModalScreen extends ConsumerStatefulWidget {
-  const AddCreditSpendingModalScreen({super.key});
+  const AddCreditSpendingModalScreen(this.controller, this.isScrollable, {super.key});
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<AddCreditSpendingModalScreen> createState() => _AddCreditTransactionModalScreenState();
@@ -71,149 +73,150 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(creditSpendingFormNotifierProvider);
 
-    return Form(
-      key: _formKey,
-      child: CustomSection(
-        title: 'Add Credit Transaction'.hardcoded,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        isWrapByCard: false,
-        sections: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const CurrencyIcon(),
-              Gap.w16,
-              Expanded(
-                child: CalculatorInput(
-                  hintText: 'Spending Amount',
-                  focusColor: context.appTheme.primary,
-                  validator: (_) => _calSpendingAmountValidator(),
-                  formattedResultOutput: (value) {
-                    _stateController.changeAmount(value);
-                    _changeInstallmentControllerText();
-                  },
-                ),
-              ),
-              Gap.w16,
-              HelpButton(
-                text: 'All fees must be included.'.hardcoded,
-                yOffset: 4,
-              )
-            ],
-          ),
-          Gap.h4,
-          CustomCheckbox(
-            label: 'Installment payment'.hardcoded,
-            labelSuffix: HelpButton(
-                title: 'Installment payment'.hardcoded,
-                text:
-                    'For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \'Spending Amount\' (Because installment payment is a fixed amount, see more details in your banking contract).'
-                        .hardcoded),
-            onChanged: (value) {
-              if (!value) {
-                _stateController.changeInstallmentPeriod(null);
-              }
-              _changeInstallmentControllerText();
-            },
-            optionalWidget: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InlineTextFormField(
-                  prefixText: 'Installment Period:',
-                  suffixText: 'month(s)',
-                  validator: (_) => stateWatch.installmentPeriod == null ? 'error' : null,
-                  onChanged: (value) {
-                    _stateController.changeInstallmentPeriod(int.tryParse(value));
-                    _changeInstallmentControllerText();
-                  },
-                ),
-                Gap.h8,
-                InlineTextFormField(
-                  prefixText: 'Payment amount:',
-                  suffixText: context.appSettings.currency.code,
-                  widget: CalculatorInput(
-                      controller: _installmentPaymentController,
-                      fontSize: 18,
-                      isDense: true,
-                      textAlign: TextAlign.end,
-                      validator: (_) => _installmentPaymentValidator(),
-                      formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
-                      focusColor: context.appTheme.secondary1,
-                      hintText: ''),
-                ),
-              ],
-            ),
-          ),
-          Gap.h8,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: CreditDateTimeFormSelector(
-                  creditAccount: stateWatch.creditAccount,
-                  isForPayment: false,
-                  disableText: 'Choose credit account first'.hardcoded,
-                  initialDate: stateWatch.dateTime,
-                  onChanged: (dateTime, statement) {
-                    if (dateTime != null) {
-                      _stateController.changeDateTime(dateTime);
-                    }
-                  },
-                ),
-              ),
-              Gap.w24,
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const TextHeader('Expense Category:'),
-                    Gap.h4,
-                    CategoryFormSelector(
-                      transactionType: TransactionType.expense,
-                      validator: (_) => _categoryValidator(),
-                      onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
-                    ),
-                    Gap.h16,
-                    const TextHeader('Credit Account:'),
-                    Gap.h4,
-                    AccountFormSelector(
-                      accountType: AccountType.credit,
-                      validator: (_) => _creditAccountValidator(),
-                      onChangedAccount: (newAccount) =>
-                          _stateController.changeCreditAccount(newAccount as CreditAccount),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Gap.h16,
-          const Padding(
-              padding: EdgeInsets.only(left: 8.0),
-              child: TextHeader(
-                'OPTIONAL:',
-                fontSize: 11,
-              )),
-          Gap.h4,
-          CategoryTagSelector(
-            category: stateWatch.category,
-            onTagSelected: (value) => _stateController.changeCategoryTag(value),
-          ),
-          Gap.h8,
-          CustomTextFormField(
-            autofocus: false,
-            focusColor: context.appTheme.accent1,
-            withOutlineBorder: true,
-            maxLines: 3,
-            hintText: 'Note ...',
-            textInputAction: TextInputAction.done,
-            onChanged: (value) => _stateController.changeNote(value),
-          ),
-          Gap.h16,
-          BottomButtons(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit)
-        ],
+    return ModalContent(
+      formKey: _formKey,
+      controller: widget.controller,
+      isScrollable: widget.isScrollable,
+      header: ModalHeader(
+        title: 'Add Spending'.hardcoded,
+        secondaryTitle: 'For credit accounts'.hardcoded,
       ),
+      footer: ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit),
+      body: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CurrencyIcon(),
+            Gap.w16,
+            Expanded(
+              child: CalculatorInput(
+                hintText: 'Spending Amount',
+                focusColor: context.appTheme.primary,
+                validator: (_) => _calSpendingAmountValidator(),
+                formattedResultOutput: (value) {
+                  _stateController.changeAmount(value);
+                  _changeInstallmentControllerText();
+                },
+              ),
+            ),
+            Gap.w16,
+            HelpButton(
+              text: 'All fees must be included.'.hardcoded,
+              yOffset: 4,
+            )
+          ],
+        ),
+        Gap.h4,
+        CustomCheckbox(
+          label: 'Installment payment'.hardcoded,
+          labelSuffix: HelpButton(
+              title: 'Installment payment'.hardcoded,
+              text:
+                  'For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \'Spending Amount\' (Because installment payment is a fixed amount, see more details in your banking contract).'
+                      .hardcoded),
+          onChanged: (value) {
+            if (!value) {
+              _stateController.changeInstallmentPeriod(null);
+            }
+            _changeInstallmentControllerText();
+          },
+          optionalWidget: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InlineTextFormField(
+                prefixText: 'Installment Period:',
+                suffixText: 'month(s)',
+                validator: (_) => stateWatch.installmentPeriod == null ? 'error' : null,
+                onChanged: (value) {
+                  _stateController.changeInstallmentPeriod(int.tryParse(value));
+                  _changeInstallmentControllerText();
+                },
+              ),
+              Gap.h8,
+              InlineTextFormField(
+                prefixText: 'Payment amount:',
+                suffixText: context.appSettings.currency.code,
+                widget: CalculatorInput(
+                    controller: _installmentPaymentController,
+                    fontSize: 18,
+                    isDense: true,
+                    textAlign: TextAlign.end,
+                    validator: (_) => _installmentPaymentValidator(),
+                    formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
+                    focusColor: context.appTheme.secondary1,
+                    hintText: ''),
+              ),
+            ],
+          ),
+        ),
+        Gap.h8,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: CreditDateTimeFormSelector(
+                creditAccount: stateWatch.creditAccount,
+                isForPayment: false,
+                disableText: 'Choose credit account first'.hardcoded,
+                initialDate: stateWatch.dateTime,
+                onChanged: (dateTime, statement) {
+                  if (dateTime != null) {
+                    _stateController.changeDateTime(dateTime);
+                  }
+                },
+              ),
+            ),
+            Gap.w24,
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const TextHeader('Credit Account:'),
+                  Gap.h4,
+                  AccountFormSelector(
+                    accountType: AccountType.credit,
+                    validator: (_) => _creditAccountValidator(),
+                    onChangedAccount: (newAccount) =>
+                        _stateController.changeCreditAccount(newAccount as CreditAccount),
+                  ),
+                  Gap.h16,
+                  const TextHeader('Expense category:'),
+                  Gap.h4,
+                  CategoryFormSelector(
+                    transactionType: TransactionType.expense,
+                    validator: (_) => _categoryValidator(),
+                    onChangedCategory: (newCategory) => _stateController.changeCategory(newCategory),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Gap.h16,
+        const Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: TextHeader(
+              'OPTIONAL:',
+              fontSize: 11,
+            )),
+        Gap.h4,
+        CategoryTagSelector(
+          category: stateWatch.category,
+          onTagSelected: (value) => _stateController.changeCategoryTag(value),
+          onTagDeSelected: () => _stateController.changeCategoryTag(null),
+        ),
+        Gap.h8,
+        CustomTextFormField(
+          autofocus: false,
+          focusColor: context.appTheme.accent1,
+          withOutlineBorder: true,
+          maxLines: 3,
+          hintText: 'Note ...',
+          textInputAction: TextInputAction.done,
+          onChanged: (value) => _stateController.changeNote(value),
+        ),
+      ],
     );
   }
 }

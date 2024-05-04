@@ -9,10 +9,11 @@ import 'package:money_tracker_app/src/features/transactions/data/transaction_rep
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
+import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../transactions/domain/transaction_base.dart';
@@ -44,7 +45,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // DateTime? _maxDate;
 
   void _onPageChange(int value) {
-    _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
+    }
     setState(() {
       _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
     });
@@ -52,17 +55,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _previousPage() {
     _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
-    _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
+    }
   }
 
   void _nextPage() {
     _pageController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
-    _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
+    }
   }
 
   void _animatedToPage(int page) {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-    _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+    if (!context.isBigScreen) {
+      _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _carouselController.dispose();
+    super.dispose();
   }
 
   List<Widget> _buildTransactionWidgetList(
@@ -94,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: IconWithText(
-            header: context.localize.noTransactionQuote(dayBeginOfMonth.monthToString(context)),
+            header: context.loc.quoteHomepage(dayBeginOfMonth.monthToString(context)),
             headerSize: 14,
             iconPath: AppIcons.budgets,
             forceIconOnTop: true,
@@ -111,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     bool showTotalBalance = context.appPersistentValues.showAmount;
 
-    return CustomTabPageWithPageView(
+    return CustomAdaptivePageView(
       controller: _pageController,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
@@ -164,7 +180,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 class _DateSelector extends StatelessWidget {
   const _DateSelector({
-    super.key,
     required this.displayDate,
     this.onTapLeft,
     this.onTapRight,
@@ -187,10 +202,9 @@ class _DateSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Gap.w24,
-          GestureDetector(
-            onTap: onDateTap,
-            child: SizedBox(
-              width: 200,
+          Expanded(
+            child: GestureDetector(
+              onTap: onDateTap,
               child: AnimatedSwitcher(
                 duration: k150msDuration,
                 transitionBuilder: (Widget child, Animation<double> animation) {
@@ -236,12 +250,10 @@ class _DateSelector extends StatelessWidget {
                             !today
                                 ? Transform.translate(
                                     offset: const Offset(0, 2),
-                                    child: RoundedIconButton(
-                                      iconPath: AppIcons.turn,
-                                      iconColor: context.appTheme.onBackground,
-                                      backgroundColor: Colors.transparent,
+                                    child: SvgIcon(
+                                      AppIcons.turn,
+                                      color: context.appTheme.onBackground,
                                       size: 20,
-                                      iconPadding: 0,
                                     ),
                                   )
                                 : Gap.noGap,
@@ -254,7 +266,6 @@ class _DateSelector extends StatelessWidget {
               ),
             ),
           ),
-          const Spacer(),
           RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
             iconColor: context.appTheme.onBackground,

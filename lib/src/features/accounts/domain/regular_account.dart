@@ -37,4 +37,8 @@ class RegularAccount extends Account {
     required this.transactionsList,
     required this.transferTransactionsList,
   });
+
+  AccountInfo toAccountInfo() {
+    return Account.fromDatabaseInfoOnly(databaseObject)!;
+  }
 }

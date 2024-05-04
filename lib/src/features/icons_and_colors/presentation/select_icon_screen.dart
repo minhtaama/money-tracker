@@ -8,8 +8,8 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../utils/constants.dart';
 
 class SelectIconsScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
         onTap: () => context.pop([currentCategory, currentIconIndex]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: const SmallTabBar(
           child: PageHeading(
             title: 'Choose Icon',

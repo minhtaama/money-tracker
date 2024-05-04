@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 enum TransactionType {
@@ -107,6 +109,22 @@ enum BudgetPeriodType {
 
   static BudgetPeriodType fromDatabaseValue(int value) {
     return BudgetPeriodType.values.firstWhere((e) => e.databaseValue == value);
+  }
+}
+
+enum RepeatEvery {
+  xDay(0),
+  xWeek(1),
+  xMonth(2),
+  xYear(3),
+  ;
+
+  final int databaseValue;
+
+  const RepeatEvery(this.databaseValue);
+
+  static RepeatEvery fromDatabaseValue(int value) {
+    return RepeatEvery.values.firstWhere((e) => e.databaseValue == value);
   }
 }
 
@@ -309,24 +327,31 @@ enum ShortDateType {
   }
 }
 
-// enum DateTimeRepeatType {
-//   everyXDay(0),
-//   everyXWeek(1),
-//   everyXMonth(2),
-//   everyXYear(3),
-//   ;
-//
-//   final int databaseValue;
-//
-//   const ShortDateType(this.databaseValue);
-//
-//   static ShortDateType fromDatabaseValue(int value) {
-//     return ShortDateType.values.firstWhere((e) => e.databaseValue == value);
-//   }
-// }
+enum FirstDayOfWeek {
+  localeDefault(null),
+  sunday(0),
+  monday(1),
+  saturday(6),
+  ;
+
+  final int? databaseValue;
+
+  const FirstDayOfWeek(this.databaseValue);
+
+  static FirstDayOfWeek fromDatabaseValue(int? value) {
+    return FirstDayOfWeek.values.firstWhere((e) => e.databaseValue == value);
+  }
+
+  String getName(BuildContext context) {
+    return switch (this) {
+      FirstDayOfWeek.localeDefault => context.loc.localeDefault,
+      FirstDayOfWeek.sunday => context.loc.sunday,
+      FirstDayOfWeek.monday => context.loc.monday,
+      FirstDayOfWeek.saturday => context.loc.saturday,
+    };
+  }
+}
 
 ///////// NO DATABASE VALUE //////////////////////
-
-enum DateTimeFormat { ddmmyyyy, ddmmmyyyy, ddmmmmyyyy, mmddyyyy, mmmddyyyy, mmmmddyyyy }
 
 enum TransactionScreenType { editable, uneditable, installmentToPay }

@@ -9,14 +9,14 @@ class _DayBuilder {
     Color bgrColor,
     Border? bgrBorder,
   ) {
-    return Container(
+    return CardItem(
       height: 33,
       width: 33,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(1000),
-        border: bgrBorder,
-        color: bgrColor,
-      ),
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.zero,
+      borderRadius: BorderRadius.circular(1000),
+      border: bgrBorder,
+      color: bgrColor,
     );
   }
 
@@ -150,6 +150,7 @@ class _DayBuilder {
 CalendarDatePicker2WithActionButtonsConfig _customConfig(
   BuildContext context, {
   DateTime? firstDate,
+  CalendarDatePicker2Type calendarType = CalendarDatePicker2Type.single,
   DateTime? lastDate,
   int? firstDayOfWeek,
   double? controlsHeight,
@@ -173,10 +174,10 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
   })? dayBuilder,
 }) {
   return CalendarDatePicker2WithActionButtonsConfig(
-      calendarType: CalendarDatePicker2Type.single,
+      calendarType: calendarType,
       firstDate: firstDate,
       lastDate: lastDate,
-      firstDayOfWeek: firstDayOfWeek,
+      firstDayOfWeek: context.appSettings.firstDayOfWeek.databaseValue,
       selectableDayPredicate: selectableDayPredicate,
       selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary,
       selectedRangeHighlightColor: context.appTheme.isDarkTheme

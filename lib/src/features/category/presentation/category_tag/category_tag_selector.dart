@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
@@ -13,7 +14,6 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../common_widgets/custom_text_form_field.dart';
 import '../../domain/category_tag.dart';
 
@@ -48,34 +48,31 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
 
   late List<CategoryTag>? _tags = categoryRepo.getTagList(_currentCategory);
 
-  late CategoryTag? _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
+  late CategoryTag? _chosenTag =
+      widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
 
   late bool _showTextField = _tags == null || _tags!.isEmpty;
-  double _rowWidth = 1;
 
   @override
   void initState() {
     _focusNode.addListener(_listener);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        _rowWidth = _key.currentContext?.size?.width ?? 1;
-      });
-    });
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant CategoryTagSelector oldWidget) {
-    _currentCategory = widget.category;
-    _tags = categoryRepo.getTagList(_currentCategory);
-    _showTextField = _tags == null || _tags!.isEmpty;
+    if (widget.category != oldWidget.category) {
+      _currentCategory = widget.category;
+      _tags = categoryRepo.getTagList(_currentCategory);
+      _showTextField = _tags == null || _tags!.isEmpty;
+    }
 
     if (widget.initialChosenTag != oldWidget.initialChosenTag && widget.initialChosenTag != null) {
       _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
-    }
-    if (_currentCategory == null || _currentCategory != oldWidget.category) {
+    } else if (_currentCategory == null || _currentCategory != oldWidget.category) {
       _chosenTag = null;
     }
+
     super.didUpdateWidget(oldWidget);
   }
 
@@ -104,135 +101,130 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
       _tags = categoryRepo.getTagList(_currentCategory);
     });
 
-    return Stack(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          key: _key,
-          children: [
-            _tags != null && widget.category != null
-                ? Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ShaderMask(
-                        shaderCallback: (Rect rect) {
-                          return LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              widget.fading ?? context.appTheme.background1,
-                              Colors.transparent,
-                              Colors.transparent,
-                              widget.fading ?? context.appTheme.background1
-                            ],
-                            stops: const [0.0, 0.03, 0.97, 1.0],
-                          ).createShader(rect);
-                        },
-                        blendMode: BlendMode.dstOut,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: List.generate(
-                            _tags!.length,
-                            (index) {
-                              return CategoryTagWidget(
-                                categoryTag: _tags![index],
-                                onTap: (tag) {
-                                  categoryRepo.reorderTagToTop(widget.category!, index);
-                                  setState(
-                                    () {
-                                      _chosenTag = tag;
-                                      _tags = categoryRepo.getTagList(widget.category!);
-                                      widget.onTagSelected(_chosenTag);
-                                    },
-                                  );
-                                },
-                                onLongPress: (tag) => showCustomModal(
-                                  context: context,
-                                  child: EditCategoryTag(
-                                    tag,
-                                    category: widget.category!,
+    return LayoutBuilder(builder: (context, constraint) {
+      return Stack(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            key: _key,
+            children: [
+              _tags != null && widget.category != null
+                  ? Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ShaderMask(
+                          shaderCallback: (Rect rect) {
+                            return LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                widget.fading ?? context.appTheme.background1,
+                                Colors.transparent,
+                                Colors.transparent,
+                                widget.fading ?? context.appTheme.background1
+                              ],
+                              stops: const [0.0, 0.03, 0.97, 1.0],
+                            ).createShader(rect);
+                          },
+                          blendMode: BlendMode.dstOut,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: List.generate(
+                              _tags!.length,
+                              (index) {
+                                return CategoryTagWidget(
+                                  categoryTag: _tags![index],
+                                  onTap: (tag) {
+                                    categoryRepo.reorderTagToTop(widget.category!, index);
+                                    setState(
+                                      () {
+                                        _chosenTag = tag;
+                                        _tags = categoryRepo.getTagList(widget.category!);
+                                        widget.onTagSelected(_chosenTag);
+                                      },
+                                    );
+                                  },
+                                  onLongPress: (tag) => showCustomModal(
+                                    context: context,
+                                    child: EditCategoryTag(
+                                      tag,
+                                      category: widget.category!,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                : Gap.noGap,
-            AnimatedContainer(
-              duration: k250msDuration,
-              width: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null || _tags!.isEmpty
-                  ? 0
-                  : 16,
-              height: 25,
-              child: _showTextField || _chosenTag != null || _tags == null || _currentCategory == null
-                  ? null
-                  : Gap.verticalDivider(context),
-            ),
-            AnimatedContainer(
-              duration: k250msDuration,
-              curve: Curves.easeOut,
-              width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
-                  ? _rowWidth
-                  : _chosenTag != null
-                      ? 0
-                      : 50,
-              child: ClipRect(
-                child: AddCategoryTagButton(
-                    focusNode: _focusNode,
-                    category: widget.category,
-                    onEditingComplete: (tag) {
-                      categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
-                      setState(
-                        () {
-                          _chosenTag = tag;
-                          _tags = categoryRepo.getTagList(widget.category!);
-                          widget.onTagSelected(_chosenTag);
-                        },
-                      );
-                    }),
-              ),
-            ),
-          ],
-        ),
-        CardItem(
-          width: _chosenTag != null ? _rowWidth : 0,
-          height: 50,
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.symmetric(horizontal: _chosenTag != null ? 12 : 0),
-          color: _currentCategory?.backgroundColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: _ChosenTag(
-                  chosenTag: _chosenTag?.name,
-                  category: _currentCategory,
+                    )
+                  : Gap.noGap,
+              AnimatedContainer(
+                duration: k250msDuration,
+                curve: Curves.easeOut,
+                width: _tags == null || _currentCategory == null || _tags!.isEmpty || _showTextField
+                    ? constraint.maxWidth
+                    : _chosenTag != null
+                        ? 0
+                        : 50,
+                child: ClipRect(
+                  child: AddCategoryTagButton(
+                      focusNode: _focusNode,
+                      category: widget.category,
+                      onEditingComplete: (tag) {
+                        categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
+                        setState(
+                          () {
+                            _chosenTag = tag;
+                            _tags = categoryRepo.getTagList(widget.category!);
+                            widget.onTagSelected(_chosenTag);
+                          },
+                        );
+                      }),
                 ),
               ),
-              Flexible(
-                child: RoundedIconButton(
-                  iconPath: AppIcons.close,
-                  iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
-                  backgroundColor: Colors.transparent,
-                  size: 35,
-                  iconPadding: 7,
-                  onTap: () {
-                    setState(() {
-                      _chosenTag = null;
-                    });
-                    widget.onTagDeSelected?.call();
-                  },
-                ),
-              )
             ],
           ),
-        ),
-      ],
-    );
+          CardItem(
+            width: _chosenTag != null ? constraint.maxWidth : 0,
+            height: 50,
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.symmetric(horizontal: _chosenTag != null ? 12 : 0),
+            color: _currentCategory?.backgroundColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: _ChosenTag(
+                    chosenTag: _chosenTag?.name,
+                    category: _currentCategory,
+                  ),
+                ),
+                Flexible(
+                  child: RoundedIconButton(
+                    iconPath: AppIcons.close,
+                    iconColor: context.appTheme.isDarkTheme
+                        ? context.appTheme.onSecondary
+                        : context.appTheme.onPrimary,
+                    backgroundColor: Colors.transparent,
+                    size: 35,
+                    iconPadding: 7,
+                    onTap: () {
+                      setState(() {
+                        _chosenTag = null;
+                      });
+                      widget.onTagDeSelected?.call();
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 
@@ -270,7 +262,8 @@ class _ChosenTag extends StatelessWidget {
 }
 
 class CategoryTagWidget extends StatelessWidget {
-  const CategoryTagWidget({super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
+  const CategoryTagWidget(
+      {super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
   final ValueSetter<CategoryTag> onLongPress;
@@ -321,7 +314,8 @@ class CategoryTagWidget extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton({super.key, this.focusNode, this.category, required this.onEditingComplete});
+  const AddCategoryTagButton(
+      {super.key, this.focusNode, this.category, required this.onEditingComplete});
   final FocusNode? focusNode;
   final Category? category;
   final ValueSetter<CategoryTag> onEditingComplete;
@@ -390,7 +384,8 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
             CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
-            categoryRepo.reorderTagToTop(widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
+            categoryRepo.reorderTagToTop(
+                widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
 
             widget.onEditingComplete(newTag!);
 

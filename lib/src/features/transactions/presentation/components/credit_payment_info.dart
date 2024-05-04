@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
@@ -18,7 +19,7 @@ import '../../../../utils/constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../accounts/domain/statement/base_class/statement.dart';
 import '../../domain/transaction_base.dart';
-import 'txn_components.dart';
+import 'base_transaction_components.dart';
 
 class CreditInfo extends StatelessWidget {
   const CreditInfo({
@@ -180,7 +181,7 @@ class _ListState extends State<_List> {
       children: [
         widget.showList
             ? ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 200),
+                constraints: const BoxConstraints(maxHeight: 250),
                 child: SingleChildScrollView(
                   reverse: true,
                   child: Stack(
@@ -265,40 +266,42 @@ class _ListState extends State<_List> {
               )
             : Gap.noGap,
         widget.showPaymentAmount
-            ? Padding(
-                padding: EdgeInsets.only(
-                    top: widget.showList ? 8.0 : 0.0,
-                    left: widget.showList ? 8.0 : 0.0,
-                    right: widget.showList ? 8.0 : 0.0),
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  runSpacing: 2,
-                  children: [
-                    Text(
-                      '${interest > 0 ? 'Estimated balance' : 'Balance'} to pay at selected day:',
-                      style: kHeader3TextStyle.copyWith(
-                          fontSize: widget.showList ? 12 : 13, color: context.appTheme.primary.withOpacity(0.7)),
-                    ),
-                    Gap.w4,
-                    Row(
-                      children: [
-                        Text(
-                          '${interest > 0 ? '~ ' : ''}${fullPaymentAmount(context) ?? ''} ${context.appSettings.currency.code}',
-                          style: kHeader2TextStyle.copyWith(
-                              fontSize: widget.showList ? 14 : 16, color: context.appTheme.primary),
-                          overflow: TextOverflow.fade,
-                          maxLines: 1,
-                        ),
-                        Gap.w8,
-                        HelpButton(
-                          text: 'For easier tracking, you can only pay for transactions happens before selected day'
-                              .hardcoded,
-                          size: 18,
-                        ),
-                      ],
-                    ),
-                  ],
+            ? Flexible(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      top: widget.showList ? 8.0 : 0.0,
+                      left: widget.showList ? 8.0 : 0.0,
+                      right: widget.showList ? 8.0 : 0.0),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    runSpacing: 2,
+                    children: [
+                      Text(
+                        '${interest > 0 ? 'Estimated balance' : 'Balance'} to pay at selected day:',
+                        style: kHeader3TextStyle.copyWith(
+                            fontSize: widget.showList ? 12 : 13, color: context.appTheme.primary.withOpacity(0.7)),
+                      ),
+                      Gap.w4,
+                      Row(
+                        children: [
+                          Text(
+                            '${interest > 0 ? '~ ' : ''}${fullPaymentAmount(context) ?? ''} ${context.appSettings.currency.code}',
+                            style: kHeader2TextStyle.copyWith(
+                                fontSize: widget.showList ? 14 : 16, color: context.appTheme.primary),
+                            overflow: TextOverflow.fade,
+                            maxLines: 1,
+                          ),
+                          Gap.w8,
+                          HelpButton(
+                            text: 'For easier tracking, you can only pay for transactions happens before selected day'
+                                .hardcoded,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               )
             : Gap.noGap,
@@ -668,7 +671,6 @@ class _DateTime extends StatelessWidget {
               color: isSelectedDay ? context.appTheme.primary : AppColors.greyBgr(context),
               borderRadius: BorderRadius.circular(8),
             ),
-            width: 20,
             constraints: const BoxConstraints(minHeight: 18),
             padding: const EdgeInsets.all(3),
             child: Center(
@@ -679,20 +681,19 @@ class _DateTime extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      dateTime!.day.toString(),
-                      style: kHeader2TextStyle.copyWith(
+                      NumberFormat('00').format(dateTime!.day),
+                      style: kHeader1TextStyle.copyWith(
                           color: isSelectedDay ? context.appTheme.onPrimary : context.appTheme.onBackground,
-                          fontSize: 10,
+                          fontSize: 12,
                           height: 1),
                     ),
                     noMonth
                         ? Gap.noGap
                         : Text(
-                            dateTime!.monthToString(context, short: true),
+                            dateTime!.monthToString(context, short: true).toUpperCase(),
                             style: kHeader3TextStyle.copyWith(
                                 color: isSelectedDay ? context.appTheme.onPrimary : context.appTheme.onBackground,
-                                fontSize: 10,
-                                height: 1),
+                                fontSize: 7),
                           ),
                   ],
                 ),

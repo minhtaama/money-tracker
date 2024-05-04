@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 extension DateTimeExtensions on DateTime {
   int get daysInMonth {
@@ -14,6 +13,10 @@ extension DateTimeExtensions on DateTime {
 
   /// Returns [DateTime] without timestamp.
   DateTime get onlyYearMonthDay => DateTime(year, month, day);
+
+  bool isSameDayAs(DateTime date) {
+    return year == date.year && month == date.month && day == date.day;
+  }
 
   bool isSameMonthAs(DateTime date) {
     return year == date.year && month == date.month;
@@ -59,7 +62,7 @@ extension DateTimeExtensions on DateTime {
     String yearSeparator = noYear
         ? ''
         : switch (type) {
-            ShortDateType.dmmy || ShortDateType.mmdy || ShortDateType.ydmm || ShortDateType.ymmd => ',',
+            ShortDateType.dmmy || ShortDateType.mmdy || ShortDateType.ydmm || ShortDateType.ymmd => ', ',
             ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => '/',
           };
 
@@ -69,18 +72,14 @@ extension DateTimeExtensions on DateTime {
       ShortDateType.ydmm ||
       ShortDateType.ymmd =>
         monthToString(context, short: true),
-      ShortDateType.dmy ||
-      ShortDateType.mdy ||
-      ShortDateType.ydm ||
-      ShortDateType.ymd =>
-        formatter.format(month),
+      ShortDateType.dmy || ShortDateType.mdy || ShortDateType.ydm || ShortDateType.ymd => formatter.format(month),
     };
 
     return switch (type) {
-      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator $sYear',
-      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator $sYear',
-      ShortDateType.ydmm => '$sYear$yearSeparator $sDay $sMonth',
-      ShortDateType.ymmd => '$sYear$yearSeparator $sMonth $sDay',
+      ShortDateType.dmmy => '$sDay $sMonth$yearSeparator$sYear',
+      ShortDateType.mmdy => '$sMonth $sDay$yearSeparator$sYear',
+      ShortDateType.ydmm => '$sYear$yearSeparator$sDay $sMonth',
+      ShortDateType.ymmd => '$sYear$yearSeparator$sMonth $sDay',
       ShortDateType.dmy => '$sDay/$sMonth$yearSeparator$sYear',
       ShortDateType.mdy => '$sMonth/$sDay$yearSeparator$sYear',
       ShortDateType.ydm => '$sYear$yearSeparator$sDay/$sMonth',
@@ -132,29 +131,29 @@ extension DateTimeExtensions on DateTime {
   String monthToString(BuildContext context, {bool short = false}) {
     switch (month) {
       case 1:
-        return short ? context.localize.jan : context.localize.january;
+        return short ? context.loc.jan : context.loc.january;
       case 2:
-        return short ? context.localize.feb : context.localize.february;
+        return short ? context.loc.feb : context.loc.february;
       case 3:
-        return short ? context.localize.mar : context.localize.march;
+        return short ? context.loc.mar : context.loc.march;
       case 4:
-        return short ? context.localize.apr : context.localize.april;
+        return short ? context.loc.apr : context.loc.april;
       case 5:
-        return short ? context.localize.may : context.localize.mayLong;
+        return short ? context.loc.may : context.loc.mayLong;
       case 6:
-        return short ? context.localize.jun : context.localize.june;
+        return short ? context.loc.jun : context.loc.june;
       case 7:
-        return short ? context.localize.jul : context.localize.july;
+        return short ? context.loc.jul : context.loc.july;
       case 8:
-        return short ? context.localize.aug : context.localize.august;
+        return short ? context.loc.aug : context.loc.august;
       case 9:
-        return short ? context.localize.sep : context.localize.september;
+        return short ? context.loc.sep : context.loc.september;
       case 10:
-        return short ? context.localize.oct : context.localize.october;
+        return short ? context.loc.oct : context.loc.october;
       case 11:
-        return short ? context.localize.nov : context.localize.november;
+        return short ? context.loc.nov : context.loc.november;
       case 12:
-        return short ? context.localize.dec : context.localize.december;
+        return short ? context.loc.dec : context.loc.december;
       default:
         return '';
     }
@@ -163,19 +162,19 @@ extension DateTimeExtensions on DateTime {
   String weekdayToString(BuildContext context, {bool short = false}) {
     switch (weekday) {
       case 1:
-        return short ? context.localize.mon : context.localize.monday;
+        return short ? context.loc.mon : context.loc.monday;
       case 2:
-        return short ? context.localize.tue : context.localize.tuesday;
+        return short ? context.loc.tue : context.loc.tuesday;
       case 3:
-        return short ? context.localize.wed : context.localize.wednesday;
+        return short ? context.loc.wed : context.loc.wednesday;
       case 4:
-        return short ? context.localize.thu : context.localize.thursday;
+        return short ? context.loc.thu : context.loc.thursday;
       case 5:
-        return short ? context.localize.fri : context.localize.friday;
+        return short ? context.loc.fri : context.loc.friday;
       case 6:
-        return short ? context.localize.sat : context.localize.saturday;
+        return short ? context.loc.sat : context.loc.saturday;
       case 7:
-        return short ? context.localize.sun : context.localize.sunday;
+        return short ? context.loc.sun : context.loc.sunday;
       default:
         return '';
     }
@@ -188,12 +187,51 @@ extension DateTimeExtensions on DateTime {
     return DateTimeRange(start: begin, end: end);
   }
 
-  DateTimeRange get weekRange {
-    // TODO: set first day of week
-    final firstDayOfWeek = copyWith(day: day - weekday); //Monday
-    final lastDayOfWeek = copyWith(day: day + 7 - weekday, hour: 23, minute: 59, second: 59); //Sunday
+  DateTimeRange weekRange(BuildContext context) {
+    final userFirstDay = context.appSettings.firstDayOfWeek;
 
-    return DateTimeRange(start: firstDayOfWeek, end: lastDayOfWeek);
+    final weekDayOfFirstDayOfWeekISO8601 = switch (userFirstDay) {
+      FirstDayOfWeek.monday => 1,
+      FirstDayOfWeek.sunday => 7,
+      FirstDayOfWeek.saturday => 6,
+      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
+          0 => 7, //0: Sun
+          1 => 1, //1: Mon,
+          2 => 2, //2: Tue
+          3 => 3, //3: Wed
+          4 => 4, //4: Thu
+          5 => 5, //5: Fri
+          6 => 6, //6: Sat
+          _ => throw StateError('Wrong index of first day of week'),
+        },
+    };
+
+    final offset = weekday >= weekDayOfFirstDayOfWeekISO8601
+        ? weekday - weekDayOfFirstDayOfWeekISO8601
+        : weekday - 1 + (8 - weekDayOfFirstDayOfWeekISO8601);
+
+    final firstDay = copyWith(day: day - offset).onlyYearMonthDay;
+
+    final lastDay = firstDay.add(const Duration(days: 6));
+
+    return DateTimeRange(start: firstDay, end: lastDay);
+  }
+
+  List<DateTimeRange> weekRangesInMonth(BuildContext context) {
+    final monthRange = this.monthRange;
+    final result = <DateTimeRange>[];
+
+    DateTime start = monthRange.start;
+    int i = 0;
+
+    while (start.isBefore(monthRange.end.onlyYearMonthDay)) {
+      final weekRange = start.weekRange(context);
+      result.add(weekRange);
+
+      start = weekRange.end.onlyYearMonthDay.copyWith(day: weekRange.end.day + 1);
+    }
+
+    return result;
   }
 
   DateTimeRange get monthRange {

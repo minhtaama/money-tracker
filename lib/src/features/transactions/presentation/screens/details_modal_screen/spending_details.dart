@@ -1,10 +1,13 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _SpendingDetails extends ConsumerStatefulWidget {
-  const _SpendingDetails(this.screenType, {required this.transaction});
+  const _SpendingDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
 
   final CreditSpending transaction;
   final TransactionScreenType screenType;
+
+  final ScrollController controller;
+  final bool isScrollable;
 
   @override
   ConsumerState<_SpendingDetails> createState() => _SpendingDetailsState();
@@ -47,43 +50,46 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
   Widget build(BuildContext context) {
     final stateWatch = ref.watch(creditSpendingFormNotifierProvider);
 
-    return CustomSection(
-      title: 'Credit Spending'.hardcoded,
-      subTitle: _DateTime(
-        isEditMode: _isEditMode,
-        isEdited: _isDateTimeEdited(stateWatch),
-        dateTime: stateWatch.dateTime ?? _transaction.dateTime,
-        onEditModeTap: _changeDateTime,
-      ),
-      subIcons: widget.screenType == TransactionScreenType.editable
-          ? [
-              _EditButton(
-                isEditMode: _isEditMode,
-                onTap: () {
-                  if (_isEditMode) {
-                    if (_submit()) {
-                      setState(() {
-                        _isEditMode = !_isEditMode;
-                      });
-                    }
-                  } else {
-                    setState(() {
-                      _isEditMode = !_isEditMode;
-                    });
-                  }
-                },
-              ),
-              _DeleteButton(
-                isEditMode: _isEditMode,
-                isDisable: !_canDelete,
-                disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
-                onConfirm: _delete,
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Credit Spending'.hardcoded,
+        subTitle: _DateTime(
+          isEditMode: _isEditMode,
+          isEdited: _isDateTimeEdited(stateWatch),
+          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+          onEditModeTap: _changeDateTime,
+        ),
+        trailing: widget.screenType == TransactionScreenType.editable
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _EditButton(
+                    isEditMode: _isEditMode,
+                    onTap: () {
+                      if (_isEditMode) {
+                        if (_submit()) {
+                          setState(() {
+                            _isEditMode = !_isEditMode;
+                          });
+                        }
+                      } else {
+                        setState(() {
+                          _isEditMode = !_isEditMode;
+                        });
+                      }
+                    },
+                  ),
+                  _DeleteButton(
+                    isEditMode: _isEditMode,
+                    isDisable: !_canDelete,
+                    disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
+                    onConfirm: _delete,
+                  )
+                ],
               )
-            ]
-          : null,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      isWrapByCard: false,
-      sections: [
+            : null,
+      ),
+      body: [
         _Amount(
           isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
           isEdited: _isAmountEdited(stateWatch),
@@ -113,7 +119,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
         _CategoryCard(
           isEditMode: _isEditMode,
           isEdited: _isCategoryEdited(stateWatch),
-          category: stateWatch.category ?? _transaction.category!,
+          category: stateWatch.category ?? _transaction.category,
           categoryTag: stateWatch.tag ?? _transaction.categoryTag,
           onEditModeTap: _changeCategory,
         ),
@@ -126,6 +132,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
         ),
         Gap.h16,
       ],
+      footer: Gap.noGap,
     );
   }
 }

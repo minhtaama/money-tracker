@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,8 +10,8 @@ import 'package:money_tracker_app/src/features/calculator_input/application/calc
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_bar.dart';
-import '../../../common_widgets/custom_tab_page/custom_tab_page.dart';
+import '../../../common_widgets/custom_page/custom_tab_bar.dart';
+import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/constants.dart';
 import '../domain/account_base.dart';
@@ -51,11 +49,11 @@ class AccountsListScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.appTheme.background1,
-      body: CustomTabPage(
+      body: CustomPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
             title: 'Accounts',
-            hasBackButton: true,
+            isTopLevelOfNavigationRail: true,
             trailing: RoundedIconButton(
               iconPath: AppIcons.add,
               iconColor: context.appTheme.onBackground,
