@@ -20,7 +20,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
   /// # Only year, month, day
   ///
   /// ## WARNING: These DateTimes do not reflect the correct day to write transaction.
-  /// ## Use [Recurrence.getRecurrencePatternInMonth] instead.
+  /// ## Use [Recurrence.getPlannedTransactionsInMonth] instead.
   final List<DateTime> patterns;
 
   /// # Only year, month, day
@@ -38,7 +38,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
   /// **Value**: the DateTime that this transaction should be repeated on.
   /// This DateTime maybe different from the transaction's DateTime in case
   /// of user customization. This value is used to compare with the [TransactionData.dateTime] values
-  /// returns from [Recurrence.getRecurrencePatternInMonth] function.
+  /// returns from [Recurrence.getPlannedTransactionsInMonth] function.
   final Map<String, DateTime> addedOn;
 
   final List<DateTime> skippedOn;
@@ -46,7 +46,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
   /// This function evaluates the [patterns] and returns [TransactionData] objects
   /// which has its [TransactionData.dateTime] correctly aligned with the [patterns] in the
   /// current month.
-  List<TransactionData> getRecurrencePatternInMonth(BuildContext context, DateTime dateTime) {
+  List<TransactionData> getPlannedTransactionsInMonth(BuildContext context, DateTime dateTime) {
     final targetMonthRange = dateTime.monthRange;
     if (targetMonthRange.end.isBefore(startOn)) {
       return [];

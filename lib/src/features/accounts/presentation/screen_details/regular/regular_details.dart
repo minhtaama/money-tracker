@@ -82,6 +82,8 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           DayCard(
             dateTime: transactionsInDay[0].dateTime,
             transactions: transactionsInDay.reversed.toList(),
+            //TODO: add planned transactions
+            plannedTransactions: [],
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
           ),

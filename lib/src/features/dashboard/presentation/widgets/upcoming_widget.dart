@@ -16,18 +16,21 @@ class UpcomingWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recRepo = ref.watch(recurrenceRepositoryRealmProvider);
-    final map = recRepo.getAllRecurrenceTransactionInMonth(context, DateTime.now());
+    final list = recRepo.getRecurrences();
+
+    final today = DateTime.now();
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 300),
       child: SingleChildScrollView(
         child: Column(
           children: [
-            for (MapEntry<TransactionData, List<DateTime>> entry in map.entries)
+            for (Recurrence rec in list)
               _tile(
                 context,
-                model: entry.key,
-                repeatOn: entry.value,
+                model: rec.transactionData,
+                repeatOn:
+                    rec.getPlannedTransactionsInMonth(context, today).map((e) => e.dateTime!).toList(),
               )
           ],
         ),
@@ -35,7 +38,8 @@ class UpcomingWidget extends ConsumerWidget {
     );
   }
 
-  Widget _tile(BuildContext context, {required TransactionData model, required List<DateTime> repeatOn}) {
+  Widget _tile(BuildContext context,
+      {required TransactionData model, required List<DateTime> repeatOn}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(

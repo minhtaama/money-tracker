@@ -16,7 +16,7 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   final Category? _category;
 
   @override
-  Category get category => _category != null ? _category! : DeletedCategory();
+  Category get category => _category ?? DeletedCategory();
 
   @override
   final CategoryTag? categoryTag;
@@ -60,7 +60,7 @@ class CreditPayment extends BaseCreditTransaction implements ITransferable {
   @override
   AccountInfo get transferAccount {
     if (_transferAccount != null) {
-      return _transferAccount!;
+      return _transferAccount;
     }
 
     if (isAdjustToAPRChange) {

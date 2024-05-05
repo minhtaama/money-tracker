@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
+import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
@@ -16,6 +17,7 @@ import '../../../common_widgets/rounded_icon_button.dart';
 import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
+import '../../recurrence/domain/recurrence.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -27,6 +29,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+  late final recurrenceRepository = ref.read(recurrenceRepositoryRealmProvider);
   late final persistentController = ref.read(persistentControllerProvider.notifier);
 
   late final PageController _pageController = PageController(initialPage: _initialPageIndex);
@@ -83,6 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   List<Widget> _buildTransactionWidgetList(
     List<BaseTransaction> transactionList,
+    List<TransactionData> plannedTransactions,
     DateTime dayBeginOfMonth,
     DateTime dayEndOfMonth,
   ) {
@@ -91,12 +95,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
       final transactionsInDay =
           transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final plannedTransactionsInDay =
+          plannedTransactions.where((transaction) => transaction.dateTime?.day == day).toList();
 
-      if (transactionsInDay.isNotEmpty) {
+      if (transactionsInDay.isNotEmpty || plannedTransactionsInDay.isNotEmpty) {
         dayCards.add(
           DayCard(
-            dateTime: transactionsInDay[0].dateTime,
+            dateTime: dayBeginOfMonth.copyWith(day: day),
             transactions: transactionsInDay.reversed.toList(),
+            plannedTransactions: plannedTransactionsInDay.reversed.toList(),
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
           ),
@@ -166,13 +173,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         List<BaseTransaction> transactionList =
             transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<TransactionData> plannedTxnsList =
+            recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
           transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });
 
-        return _buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth);
+        return _buildTransactionWidgetList(
+            transactionList, plannedTxnsList, dayBeginOfMonth, dayEndOfMonth);
       },
     );
   }

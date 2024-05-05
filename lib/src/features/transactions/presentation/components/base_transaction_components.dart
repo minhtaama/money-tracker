@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
+import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
-import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import 'package:realm/realm.dart';
 import 'dart:math' as math;
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
@@ -29,8 +27,7 @@ class TxnHomeCategoryIcon extends StatelessWidget {
         if (transaction is Income && (transaction as Income).isInitialTransaction) {
           return AppColors.greyBgr(context);
         }
-        return (transaction as IBaseTransactionWithCategory).category?.backgroundColor ??
-            DeletedCategory().backgroundColor;
+        return (transaction as IBaseTransactionWithCategory).category.backgroundColor;
       }
 
       return AppColors.greyBgr(context);
@@ -45,9 +42,8 @@ class TxnHomeCategoryIcon extends StatelessWidget {
           );
         }
         return SvgIcon(
-          (transaction as IBaseTransactionWithCategory).category?.iconPath ?? DeletedCategory().iconPath,
-          color: (transaction as IBaseTransactionWithCategory).category?.iconColor ??
-              DeletedCategory().iconColor,
+          (transaction as IBaseTransactionWithCategory).category.iconPath,
+          color: (transaction as IBaseTransactionWithCategory).category.iconColor,
         );
       }
 
@@ -151,10 +147,7 @@ class TxnCategoryIcon extends StatelessWidget {
     if (transaction is Income && _isInitial(transaction)) {
       return AppIcons.add;
     }
-    if (transaction.category != null) {
-      return transaction.category!.iconPath;
-    }
-    return AppIcons.defaultIcon;
+    return transaction.category.iconPath;
   }
 
   @override
@@ -177,10 +170,7 @@ class TxnCategoryName extends StatelessWidget {
     if (transaction is Income && _isInitial(transaction)) {
       return 'Initial Balance';
     }
-    if (transaction.category != null) {
-      return transaction.category!.name;
-    }
-    return 'No Category';
+    return transaction.category.name;
   }
 
   @override
@@ -348,29 +338,38 @@ class TxnAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = [
-      Text(
-        CalService.formatCurrency(context,
-            showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
-        softWrap: false,
-        overflow: TextOverflow.fade,
-        style: kHeader3TextStyle.copyWith(
-            color: color ?? _color(context, transaction), fontSize: fontSize ?? 13),
+    return MoneyAmount(
+      amount: showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount,
+      style: kHeader3TextStyle.copyWith(
+        color: color ?? _color(context, transaction),
+        fontSize: fontSize ?? 13,
       ),
-      Gap.w2,
-      Text(
-        context.appSettings.currency.symbol,
-        style: kNormalTextStyle.copyWith(
-            color: color ?? _color(context, transaction), fontSize: fontSize ?? 12),
-      ),
-    ];
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: context.appSettings.currencyType == CurrencyType.symbolAfter
-          ? children
-          : children.reversed.toList(),
     );
+
+    //
+    // final List<Widget> children = [
+    //   Text(
+    //     CalService.formatCurrency(context,
+    //         showPaymentAmount ? (transaction as CreditSpending).paymentAmount! : transaction.amount),
+    //     softWrap: false,
+    //     overflow: TextOverflow.fade,
+    //     style: kHeader3TextStyle.copyWith(
+    //         color: color ?? _color(context, transaction), fontSize: fontSize ?? 13),
+    //   ),
+    //   Gap.w2,
+    //   Text(
+    //     context.appSettings.currency.symbol,
+    //     style: kNormalTextStyle.copyWith(
+    //         color: color ?? _color(context, transaction), fontSize: fontSize ?? 12),
+    //   ),
+    // ];
+    //
+    // return Row(
+    //   mainAxisAlignment: MainAxisAlignment.end,
+    //   children: context.appSettings.currencyType == CurrencyType.symbolAfter
+    //       ? children
+    //       : children.reversed.toList(),
+    // );
   }
 }
 

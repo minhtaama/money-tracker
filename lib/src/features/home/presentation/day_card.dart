@@ -6,19 +6,25 @@ import 'package:money_tracker_app/src/features/transactions/presentation/compone
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import '../../recurrence/domain/recurrence.dart';
 import '../../transactions/domain/transaction_base.dart';
+import '../../transactions/presentation/components/home_planned_transactions_list.dart';
 
 class DayCard extends StatelessWidget {
   const DayCard({
     super.key,
     required this.dateTime,
     required this.transactions,
+    required this.plannedTransactions,
     this.onTransactionTap,
+    this.onPlannedTransactionTap,
   });
 
   final DateTime dateTime;
   final List<BaseTransaction> transactions;
+  final List<TransactionData> plannedTransactions;
   final Function(BaseTransaction)? onTransactionTap;
+  final Function(TransactionData)? onPlannedTransactionTap;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
@@ -45,7 +51,7 @@ class DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final today = DateTime.now().onlyYearMonthDay;
+    //final today = DateTime.now().onlyYearMonthDay;
 
     return CardItem(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -108,6 +114,11 @@ class DayCard extends StatelessWidget {
             transactions: transactions,
             currencyCode: context.appSettings.currency.code,
             onTransactionTap: onTransactionTap,
+          ),
+          HomePlannedTransactionsList(
+            plannedTransactions: plannedTransactions,
+            currencyCode: context.appSettings.currency.code,
+            onPlannedTransactionTap: onPlannedTransactionTap,
           ),
         ],
       ),
