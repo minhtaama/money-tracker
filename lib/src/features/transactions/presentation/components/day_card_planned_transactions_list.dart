@@ -14,16 +14,14 @@ import '../../../recurrence/domain/recurrence.dart';
 import '../../domain/transaction_base.dart';
 import 'base_transaction_components.dart';
 
-class HomePlannedTransactionsList extends StatelessWidget {
-  const HomePlannedTransactionsList({
+class DayCardPlannedTransactionsList extends StatelessWidget {
+  const DayCardPlannedTransactionsList({
     super.key,
     required this.plannedTransactions,
-    required this.currencyCode,
     this.onPlannedTransactionTap,
   });
 
   final List<TransactionData> plannedTransactions;
-  final String currencyCode;
   final void Function(TransactionData)? onPlannedTransactionTap;
 
   @override
@@ -66,6 +64,7 @@ class HomePlannedTransactionsList extends StatelessWidget {
                     Gap.w16,
                     MoneyAmount(
                       amount: transaction.amount,
+                      noAnimation: true,
                       style: kHeader3TextStyle.copyWith(
                         color: transaction.type == TransactionType.expense
                             ? context.appTheme.negative

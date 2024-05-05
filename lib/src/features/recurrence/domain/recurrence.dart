@@ -100,9 +100,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       final selectedWeekDay = patterns.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
-        for (DateTime date = range.start;
-            !date.isAfter(range.end);
-            date = date.add(const Duration(days: 1))) {
+        for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
             targetDates.add(date);
           }

@@ -12,19 +12,15 @@ import '../../../recurrence/domain/recurrence.dart';
 import '../../domain/transaction_base.dart';
 import 'base_transaction_components.dart';
 
-class HomeTransactionsList extends StatelessWidget {
-  const HomeTransactionsList({
+class DayCardTransactionsList extends StatelessWidget {
+  const DayCardTransactionsList({
     super.key,
     required this.transactions,
-    required this.currencyCode,
     this.onTransactionTap,
-    this.onPlannedTransactionTap,
   });
 
   final List<BaseTransaction> transactions;
-  final String currencyCode;
   final void Function(BaseTransaction)? onTransactionTap;
-  final void Function(TransactionData)? onPlannedTransactionTap;
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +46,11 @@ class HomeTransactionsList extends StatelessWidget {
                       child: switch (transaction) {
                         Transfer() => _TransferDetails(
                             transaction: transaction,
-                            currencyCode: currencyCode,
                           ),
                         IBaseTransactionWithCategory() => _WithCategoryDetails(
                             transaction: transaction,
-                            currencyCode: currencyCode,
                           ),
-                        CreditPayment() =>
-                          _PaymentDetails(transaction: transaction, currencyCode: currencyCode),
+                        CreditPayment() => _PaymentDetails(transaction: transaction),
                         CreditCheckpoint() => Gap.noGap,
                         //TODO: styling checkpoint
                       },
@@ -90,10 +83,9 @@ class HomeTransactionsList extends StatelessWidget {
 }
 
 class _WithCategoryDetails extends StatelessWidget {
-  const _WithCategoryDetails({required this.transaction, required this.currencyCode});
+  const _WithCategoryDetails({required this.transaction});
 
   final BaseTransaction transaction;
-  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +100,9 @@ class _WithCategoryDetails extends StatelessWidget {
 }
 
 class _TransferDetails extends StatelessWidget {
-  const _TransferDetails({required this.transaction, required this.currencyCode});
+  const _TransferDetails({required this.transaction});
 
   final Transfer transaction;
-  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +111,7 @@ class _TransferDetails extends StatelessWidget {
       children: [
         Text(
           'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -132,10 +122,9 @@ class _TransferDetails extends StatelessWidget {
 }
 
 class _PaymentDetails extends StatelessWidget {
-  const _PaymentDetails({required this.transaction, required this.currencyCode});
+  const _PaymentDetails({required this.transaction});
 
   final CreditPayment transaction;
-  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -144,8 +133,7 @@ class _PaymentDetails extends StatelessWidget {
       children: [
         Text(
           'Payment to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -156,8 +144,7 @@ class _PaymentDetails extends StatelessWidget {
             SvgIcon(
               AppIcons.credit,
               size: 14,
-              color: context.appTheme.onBackground
-                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
+              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
             ),
           ],
         ),
