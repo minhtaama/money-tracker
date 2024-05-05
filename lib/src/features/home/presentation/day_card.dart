@@ -15,16 +15,12 @@ class DayCard extends StatelessWidget {
     super.key,
     required this.dateTime,
     required this.transactions,
-    required this.plannedTransactions,
     this.onTransactionTap,
-    this.onPlannedTransactionTap,
   });
 
   final DateTime dateTime;
   final List<BaseTransaction> transactions;
-  final List<TransactionData> plannedTransactions;
   final Function(BaseTransaction)? onTransactionTap;
-  final Function(TransactionData)? onPlannedTransactionTap;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
@@ -112,10 +108,6 @@ class DayCard extends StatelessWidget {
           DayCardTransactionsList(
             transactions: transactions,
             onTransactionTap: onTransactionTap,
-          ),
-          DayCardPlannedTransactionsList(
-            plannedTransactions: plannedTransactions,
-            onPlannedTransactionTap: onPlannedTransactionTap,
           ),
         ],
       ),

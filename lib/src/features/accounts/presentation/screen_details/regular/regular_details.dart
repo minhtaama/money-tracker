@@ -10,7 +10,6 @@ import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import '../../../../../common_widgets/custom_page/custom_tab_bar.dart';
@@ -74,16 +73,13 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
           DayCard(
             dateTime: transactionsInDay[0].dateTime,
             transactions: transactionsInDay.reversed.toList(),
-            //TODO: add planned transactions
-            plannedTransactions: [],
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
           ),
@@ -151,10 +147,8 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor:
-              widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedRegularAccountTab(
-              account: widget.regularAccount, displayDate: _currentDisplayDate),
+          backgroundColor: widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedRegularAccountTab(account: widget.regularAccount, displayDate: _currentDisplayDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -169,12 +163,12 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-          List<BaseTransaction> transactionList = transactionRepository.getTransactionsOfAccount(
-              widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+          List<BaseTransaction> transactionList =
+              transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
 
           ref.listen(transactionsChangesStreamProvider, (_, __) {
-            transactionList = transactionRepository.getTransactionsOfAccount(
-                widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+            transactionList =
+                transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
             setState(() {});
           });
 

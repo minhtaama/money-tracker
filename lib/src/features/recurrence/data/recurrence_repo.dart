@@ -17,8 +17,7 @@ class RecurrenceRepositoryRealmDb {
     return realm.all<RecurrenceDb>().changes;
   }
 
-  List<RecurrenceDb> _realmResults() =>
-      realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
+  List<RecurrenceDb> _realmResults() => realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
 
   List<Recurrence> getRecurrences() {
     List<RecurrenceDb> list = realm.all<RecurrenceDb>().query('TRUEPREDICATE SORT(order ASC)').toList();
@@ -95,7 +94,9 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     return Recurrence.fromDatabase(newRecurrence)!;
   }
 
-  /// The [TransactionData] in key do not contain DateTime value
+  /// This function evaluates the [patterns] and returns [TransactionData] objects
+  /// which has its [TransactionData.dateTime] correctly aligned with the [patterns] in the
+  /// current month (and only contains year, month and day values) of each recurrence.
   List<TransactionData> getPlannedTransactionsInMonth(BuildContext context, DateTime dateTime) {
     final results = <TransactionData>[];
 

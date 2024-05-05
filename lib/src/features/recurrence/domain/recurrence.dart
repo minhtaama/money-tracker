@@ -45,7 +45,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   /// This function evaluates the [patterns] and returns [TransactionData] objects
   /// which has its [TransactionData.dateTime] correctly aligned with the [patterns] in the
-  /// current month.
+  /// current month (and only contains year, month and day values).
   List<TransactionData> getPlannedTransactionsInMonth(BuildContext context, DateTime dateTime) {
     final targetMonthRange = dateTime.monthRange;
     if (targetMonthRange.end.isBefore(startOn)) {
@@ -122,7 +122,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       targetDates.removeWhere((element) => element.isAfter(endOn!));
     }
 
-    return targetDates.map((e) => transactionData.withDateTime(e)).toList();
+    return targetDates.map((e) => transactionData.withDateTime(e.onlyYearMonthDay)).toList();
   }
 
   static Recurrence? fromDatabase(RecurrenceDb? db) {

@@ -65,8 +65,7 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
   String startDate = recurrence.startOn.isSameDayAs(DateTime.now())
       ? context.loc.today.toLowerCase()
       : recurrence.startOn.toShortDate(context);
-  String endDate =
-      recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
+  String endDate = recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
 
   return context.loc.quoteRecurrence3(
     everyN,
@@ -78,10 +77,11 @@ String recurrenceExpression(BuildContext context, Recurrence recurrence) {
 }
 
 class TransactionDataTile extends ConsumerWidget {
-  const TransactionDataTile({super.key, required this.model, this.withoutIconColor = false});
+  const TransactionDataTile({super.key, required this.model, this.withoutIconColor = false, this.smaller = false});
 
   final TransactionData model;
   final bool withoutIconColor;
+  final bool smaller;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -98,6 +98,7 @@ class TransactionDataTile extends ConsumerWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,12 +106,19 @@ class TransactionDataTile extends ConsumerWidget {
             _CategoryIcon(
               model: model,
               withoutIconColor: withoutIconColor,
+              smaller: smaller,
             ),
             withoutIconColor ? Gap.w4 : Gap.w8,
             Expanded(
               child: switch (model.type) {
-                TransactionType.transfer => _TransferDetails(model: model),
-                _ => _WithCategoryDetails(model: model),
+                TransactionType.transfer => _TransferDetails(
+                    model: model,
+                    smaller: smaller,
+                  ),
+                _ => _WithCategoryDetails(
+                    model: model,
+                    smaller: smaller,
+                  ),
               },
             ),
             Gap.w16,
@@ -122,32 +130,43 @@ class TransactionDataTile extends ConsumerWidget {
                   noAnimation: true,
                   style: kHeader2TextStyle.copyWith(
                     color: color,
-                    fontSize: 13,
+                    fontSize: smaller ? 11 : 13,
                   ),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _AccountName(model: model),
+                    _AccountName(
+                      model: model,
+                      smaller: smaller,
+                    ),
                     Gap.w4,
-                    _AccountIcon(model: model),
+                    _AccountIcon(
+                      model: model,
+                      smaller: smaller,
+                    ),
                   ],
                 ),
               ],
             ),
           ],
         ),
-        _Note(model: model),
+        smaller ? Gap.noGap : _Note(model: model),
       ],
     );
   }
 }
 
 class _CategoryIcon extends StatelessWidget {
-  const _CategoryIcon({required this.model, required this.withoutIconColor});
+  const _CategoryIcon({
+    required this.model,
+    required this.withoutIconColor,
+    required this.smaller,
+  });
 
   final TransactionData model;
   final bool withoutIconColor;
+  final bool smaller;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +179,7 @@ class _CategoryIcon extends StatelessWidget {
         return SvgIcon(
           AppIcons.transfer,
           color: context.appTheme.onBackground,
+          size: smaller ? 20 : 25,
         );
       }
 
@@ -168,12 +188,13 @@ class _CategoryIcon extends StatelessWidget {
         color: withoutIconColor
             ? context.appTheme.onBackground
             : model.category?.iconColor ?? context.appTheme.onBackground,
+        size: smaller ? 20 : 25,
       );
     }
 
     return Container(
-      height: 28,
-      width: 28,
+      height: smaller ? 20 : 28,
+      width: smaller ? 20 : 28,
       padding: EdgeInsets.all(withoutIconColor ? 2.5 : 4),
       decoration: BoxDecoration(
         color: withoutIconColor ? Colors.transparent : color(),
@@ -185,9 +206,10 @@ class _CategoryIcon extends StatelessWidget {
 }
 
 class _AccountIcon extends ConsumerWidget {
-  const _AccountIcon({required this.model});
+  const _AccountIcon({required this.model, required this.smaller});
 
   final TransactionData model;
+  final bool smaller;
 
   String _iconPath(WidgetRef ref) {
     return model.account?.iconPath ?? AppIcons.defaultIcon;
@@ -199,7 +221,7 @@ class _AccountIcon extends ConsumerWidget {
       offset: const Offset(0, -1.5),
       child: SvgIcon(
         _iconPath(ref),
-        size: 14,
+        size: smaller ? 12 : 14,
         color: context.appTheme.onBackground.withOpacity(0.65),
       ),
     );
@@ -207,10 +229,11 @@ class _AccountIcon extends ConsumerWidget {
 }
 
 class _AccountName extends ConsumerWidget {
-  const _AccountName({required this.model, this.destination = false});
+  const _AccountName({required this.model, this.destination = false, required this.smaller});
 
   final TransactionData model;
   final bool destination;
+  final bool smaller;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -221,10 +244,9 @@ class _AccountName extends ConsumerWidget {
     return Text(
       name(),
       style: kHeader4TextStyle.copyWith(
-        color: context.appTheme.onBackground.withOpacity(destination
-            ? (model.toAccount != null ? 0.65 : 0.25)
-            : (model.account != null ? 0.65 : 0.25)),
-        fontSize: 11,
+        color: context.appTheme.onBackground
+            .withOpacity(destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
+        fontSize: smaller ? 9 : 11,
       ),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -244,8 +266,7 @@ class _Note extends StatelessWidget {
             margin: const EdgeInsets.only(left: 15.5, top: 8),
             padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              border: Border(
-                  left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
             child: Transform.translate(
               offset: const Offset(0, -1),
@@ -266,9 +287,10 @@ class _Note extends StatelessWidget {
 }
 
 class _CategoryName extends StatelessWidget {
-  const _CategoryName({required this.model});
+  const _CategoryName({required this.model, required this.smaller});
 
   final TransactionData model;
+  final bool smaller;
 
   String get _name {
     if (model.category != null) {
@@ -282,7 +304,7 @@ class _CategoryName extends StatelessWidget {
     return Text(
       _name,
       style: kHeader3TextStyle.copyWith(
-        fontSize: 13,
+        fontSize: smaller ? 11 : 13,
         color: context.appTheme.onBackground.withOpacity(model.category == null ? 0.25 : 1),
       ),
       softWrap: false,
@@ -317,26 +339,29 @@ class _CategoryTag extends StatelessWidget {
 }
 
 class _WithCategoryDetails extends StatelessWidget {
-  const _WithCategoryDetails({required this.model});
+  const _WithCategoryDetails({required this.model, required this.smaller});
 
   final TransactionData model;
+  final bool smaller;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _CategoryName(model: model),
-        _CategoryTag(model: model),
+        _CategoryName(model: model, smaller: smaller),
+        smaller ? Gap.noGap : _CategoryTag(model: model),
       ],
     );
   }
 }
 
 class _TransferDetails extends StatelessWidget {
-  const _TransferDetails({required this.model});
+  const _TransferDetails({required this.model, required this.smaller});
 
   final TransactionData model;
+  final bool smaller;
 
   @override
   Widget build(BuildContext context) {
@@ -345,14 +370,14 @@ class _TransferDetails extends StatelessWidget {
       children: [
         Text(
           'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
         _AccountName(
           model: model,
           destination: true,
+          smaller: smaller,
         ),
       ],
     );

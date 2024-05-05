@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/features/home/presentation/planned_transactions_card.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
@@ -28,9 +29,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
-  late final recurrenceRepository = ref.read(recurrenceRepositoryRealmProvider);
-  late final persistentController = ref.read(persistentControllerProvider.notifier);
+  late final _transactionRepository = ref.read(transactionRepositoryRealmProvider);
+  late final _recurrenceRepository = ref.read(recurrenceRepositoryRealmProvider);
+  late final _persistentController = ref.read(persistentControllerProvider.notifier);
 
   late final PageController _pageController = PageController(initialPage: _initialPageIndex);
   late final PageController _carouselController =
@@ -84,9 +85,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  List<Widget> _buildTransactionWidgetList(
+  List<Widget> _buildDayCards(
     List<BaseTransaction> transactionList,
-    List<TransactionData> plannedTransactions,
     DateTime dayBeginOfMonth,
     DateTime dayEndOfMonth,
   ) {
@@ -94,15 +94,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
       final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
-      final plannedTransactionsInDay =
-          plannedTransactions.where((transaction) => transaction.dateTime?.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
           DayCard(
             dateTime: dayBeginOfMonth.copyWith(day: day),
             transactions: transactionsInDay.reversed.toList(),
-            plannedTransactions: plannedTransactionsInDay.reversed.toList(),
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
           ),
@@ -141,7 +138,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
-            persistentController.set(showAmount: showTotalBalance);
+            _persistentController.set(showAmount: showTotalBalance);
           },
         ),
       ),
@@ -153,7 +150,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
-            persistentController.set(showAmount: showTotalBalance);
+            _persistentController.set(showAmount: showTotalBalance);
           },
         ),
       ),
@@ -170,16 +167,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
-        List<TransactionData> plannedTxnsList =
-            recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
+        List<BaseTransaction> transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
-          transactionList = transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+          transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
           setState(() {});
         });
 
-        return _buildTransactionWidgetList(transactionList, plannedTxnsList, dayBeginOfMonth, dayEndOfMonth);
+        return [
+          PlannedTransactionsCard(dateTime: dayBeginOfMonth),
+          ..._buildDayCards(transactionList, dayBeginOfMonth, dayEndOfMonth)
+        ];
       },
     );
   }
