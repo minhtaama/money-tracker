@@ -3,25 +3,37 @@ import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:realm/realm.dart';
 import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
 
 class Recurrence extends BaseModel<RecurrenceDb> {
-  final RepeatEvery type;
+  final RepeatEvery _type;
 
   /// # Interval
-  /// means `targetDate` = `startDate` * nth * [interval].
+  /// means `targetDate` = `startDate` * nth * [_interval].
   ///
   /// Similar to "every X days/weeks/months/years".
-  final int interval;
+  final int _interval;
 
   /// # Only year, month, day
   ///
   /// ## WARNING: These DateTimes do not reflect the correct day to write transaction.
-  /// ## Use [Recurrence.getPlannedTransactionsInMonth] instead.
-  final List<DateTime> patterns;
+  /// ## Use [Recurrence.getAllPlannedTransactionsInMonth] instead.
+  final List<DateTime> _patterns;
+
+  /// **Key**: ObjectID's hexString of the linked/written transaction.
+  ///
+  /// **Value**: the DateTime that this transaction should be repeated on.
+  /// This DateTime maybe different from the transaction's DateTime in case
+  /// of user customization. This value is used to compare with the [TransactionData.dateTime] values
+  /// returns from [Recurrence.getAllPlannedTransactionsInMonth] function.
+  final Map<String, DateTime> _addedOn;
+
+  final List<DateTime> _skippedOn;
 
   /// # Only year, month, day
   final DateTime startOn;
@@ -31,28 +43,20 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   final bool autoCreateTransaction;
 
+  /// This [transactionData.dateTime] and [transactionData.state] is `null`
   final TransactionData transactionData;
 
-  /// **Key**: ObjectID's hexString of the linked/written transaction.
-  ///
-  /// **Value**: the DateTime that this transaction should be repeated on.
-  /// This DateTime maybe different from the transaction's DateTime in case
-  /// of user customization. This value is used to compare with the [TransactionData.dateTime] values
-  /// returns from [Recurrence.getPlannedTransactionsInMonth] function.
-  final Map<String, DateTime> addedOn;
-
-  final List<DateTime> skippedOn;
-
-  /// This function evaluates the [patterns] and returns [TransactionData] objects
-  /// which has its [TransactionData.dateTime] correctly aligned with the [patterns] in the
-  /// current month (and only contains year, month and day values).
-  List<TransactionData> getPlannedTransactionsInMonth(BuildContext context, DateTime dateTime) {
+  /// This function evaluates the [_patterns] and returns [TransactionData] objects
+  /// which has its [TransactionData.dateTime] correctly aligned with the [_patterns] in the
+  /// current month (and only contains year, month and day values). [TransactionData.state] values from this
+  /// function is not null and reflect the state of planned transactions.
+  List<TransactionData> getAllPlannedTransactionsInMonth(BuildContext context, DateTime dateTime) {
     final targetMonthRange = dateTime.monthRange;
     if (targetMonthRange.end.isBefore(startOn)) {
       return [];
     }
 
-    final startAnchorDate = switch (type) {
+    final startAnchorDate = switch (_type) {
       RepeatEvery.xDay => startOn,
       RepeatEvery.xWeek => startOn.weekRange(context).start,
       RepeatEvery.xMonth => startOn.monthRange.start,
@@ -61,7 +65,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
     // Get anchorRange of current month
 
-    final List<DateTimeRange> targetAnchorRanges = switch (type) {
+    final List<DateTimeRange> targetAnchorRanges = switch (_type) {
       RepeatEvery.xDay => <DateTimeRange>[
           for (DateTime date = targetMonthRange.start;
               !date.isAfter(targetMonthRange.end);
@@ -79,7 +83,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     final List<DateTimeRange> toRemove = [];
 
     for (DateTimeRange range in targetAnchorRanges) {
-      if (range.start.getDaysDifferent(startAnchorDate) % interval != 0) {
+      if (range.start.getDaysDifferent(startAnchorDate) % _interval != 0) {
         toRemove.add(range);
       }
     }
@@ -91,29 +95,31 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
     List<DateTime> targetDates = [];
 
-    if (type == RepeatEvery.xDay) {
+    if (_type == RepeatEvery.xDay) {
       // Because targetAnchorRanges contains dayRange (from 0:0:0 to 23:59:59 of same day)
-      targetDates = targetAnchorRanges.map((e) => e.start).toList();
+      targetDates = targetAnchorRanges.map((e) => e.start.onlyYearMonthDay).toList();
     }
 
-    if (type == RepeatEvery.xWeek) {
-      final selectedWeekDay = patterns.map((e) => e.weekday);
+    if (_type == RepeatEvery.xWeek) {
+      final selectedWeekDay = _patterns.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
         for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
-            targetDates.add(date);
+            targetDates.add(date.onlyYearMonthDay);
           }
         }
       }
     }
 
-    if (type == RepeatEvery.xMonth) {
-      targetDates = patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month)).toList();
+    if (_type == RepeatEvery.xMonth) {
+      targetDates =
+          _patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay).toList();
     }
 
-    if (type == RepeatEvery.xYear) {
-      targetDates = patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month)).toList();
+    if (_type == RepeatEvery.xYear) {
+      targetDates =
+          _patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay).toList();
     }
 
     targetDates.removeWhere((element) => !element.isAfter(startOn));
@@ -122,7 +128,90 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       targetDates.removeWhere((element) => element.isAfter(endOn!));
     }
 
-    return targetDates.map((e) => transactionData.withDateTime(e.onlyYearMonthDay)).toList();
+    final today = DateTime.now().copyWith(day: 19).onlyYearMonthDay;
+
+    return targetDates.map((targetDate) {
+      PlannedState state = PlannedState.upcoming;
+
+      if (_addedOn.values.contains(targetDate)) {
+        state = PlannedState.added;
+      } else if (_skippedOn.contains(targetDate)) {
+        state = PlannedState.skipped;
+      } else if (targetDate.isBefore(today)) {
+        state = PlannedState.overdue;
+      } else if (targetDate.isSameDayAs(today)) {
+        state = PlannedState.today;
+      }
+
+      return transactionData.withDateTimeAndState(
+        dateTime: targetDate.onlyYearMonthDay,
+        state: state,
+      );
+    }).toList();
+  }
+
+  /// The expression of how this recurrence is repeated
+  String expression(BuildContext context) {
+    String everyN;
+    String repeatPattern;
+
+    switch (_type) {
+      case RepeatEvery.xDay:
+        everyN = context.loc.everyNDay(_interval);
+        repeatPattern = '';
+        break;
+
+      case RepeatEvery.xWeek:
+        final sort = List<DateTime>.from(_patterns)..sort((a, b) => a.weekday - b.weekday);
+        final list = sort
+            .map(
+              (date) => date.weekdayToString(
+                context,
+                short: _patterns.length <= 2 ? false : true,
+              ),
+            )
+            .toList();
+
+        everyN = context.loc.everyNWeek(_interval);
+        repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(', '));
+        break;
+
+      case RepeatEvery.xMonth:
+        final sort = List<DateTime>.from(_patterns)..sort((a, b) => a.day - b.day);
+        final list = sort
+            .map(
+              (date) => date.dayToString(context),
+            )
+            .toList();
+
+        everyN = context.loc.everyNMonth(_interval);
+        repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(', '));
+        break;
+
+      case RepeatEvery.xYear:
+        final sort = List<DateTime>.from(_patterns)..sort((a, b) => a.compareTo(b));
+        final list = sort
+            .map(
+              (date) => date.toShortDate(context, noYear: true),
+            )
+            .toList();
+
+        everyN = context.loc.everyNYear(_interval);
+        repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(', '));
+        break;
+    }
+
+    String startDate =
+        startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : startOn.toShortDate(context);
+    String endDate = endOn != null ? context.loc.untilEndDate(endOn!.toShortDate(context)) : '';
+
+    return context.loc.quoteRecurrence3(
+      everyN,
+      repeatPattern,
+      startOn.isSameDayAs(DateTime.now()).toString(),
+      startDate,
+      endDate,
+    );
   }
 
   static Recurrence? fromDatabase(RecurrenceDb? db) {
@@ -146,16 +235,20 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   const Recurrence._(
     super.databaseObject, {
-    required this.type,
-    required this.interval,
-    required this.patterns,
+    required RepeatEvery type,
+    required int interval,
+    required List<DateTime> patterns,
     required this.startOn,
     this.endOn,
     required this.autoCreateTransaction,
     required this.transactionData,
-    required this.addedOn,
-    required this.skippedOn,
-  });
+    required Map<String, DateTime> addedOn,
+    required List<DateTime> skippedOn,
+  })  : _type = type,
+        _skippedOn = skippedOn,
+        _addedOn = addedOn,
+        _interval = interval,
+        _patterns = patterns;
 }
 
 @immutable
@@ -176,6 +269,10 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
 
   final CategoryTag? categoryTag;
 
+  final PlannedState? state;
+
+  Recurrence get recurrence => Recurrence.fromDatabase(databaseObject.parent as RecurrenceDb)!;
+
   const TransactionData._(
     super._databaseObject,
     this.type,
@@ -186,6 +283,7 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
     this.category,
     this.categoryTag, {
     this.dateTime,
+    this.state,
   });
 
   static TransactionData fromDatabase(TransactionDataDb dataDb) {
@@ -202,7 +300,7 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
     );
   }
 
-  TransactionData withDateTime(DateTime dateTime) {
+  TransactionData withDateTimeAndState({required DateTime dateTime, required PlannedState state}) {
     return TransactionData._(
       databaseObject,
       type,
@@ -213,6 +311,7 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
       category,
       categoryTag,
       dateTime: dateTime,
+      state: state,
     );
   }
 
@@ -220,4 +319,12 @@ class TransactionData extends BaseEmbeddedModel<TransactionDataDb> {
   String toString() {
     return 'TransactionData{type: ${type.name}, dateTime: $dateTime, amount: $amount, note: $note, account: ${account?.name}, toAccount: ${toAccount?.name}, category: ${category?.name}, categoryTag: ${categoryTag?.name}}';
   }
+}
+
+enum PlannedState {
+  upcoming,
+  today,
+  added,
+  skipped,
+  overdue,
 }

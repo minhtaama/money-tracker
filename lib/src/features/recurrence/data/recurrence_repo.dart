@@ -94,8 +94,8 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     return Recurrence.fromDatabase(newRecurrence)!;
   }
 
-  /// This function evaluates the [patterns] and returns [TransactionData] objects
-  /// which has its [TransactionData.dateTime] correctly aligned with the [patterns] in the
+  /// This function evaluates the [_patterns] and returns [TransactionData] objects
+  /// which has its [TransactionData.dateTime] correctly aligned with the [_patterns] in the
   /// current month (and only contains year, month and day values) of each recurrence.
   List<TransactionData> getPlannedTransactionsInMonth(BuildContext context, DateTime dateTime) {
     final results = <TransactionData>[];
@@ -103,7 +103,7 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     final allRecurrences = getRecurrences();
 
     for (Recurrence recurrence in allRecurrences) {
-      results.addAll(recurrence.getPlannedTransactionsInMonth(context, dateTime));
+      results.addAll(recurrence.getAllPlannedTransactionsInMonth(context, dateTime));
       results.sort(
         (a, b) => a.dateTime!.compareTo(b.dateTime!),
       );

@@ -29,8 +29,7 @@ class UpcomingWidget extends ConsumerWidget {
               _tile(
                 context,
                 model: rec.transactionData,
-                repeatOn:
-                    rec.getPlannedTransactionsInMonth(context, today).map((e) => e.dateTime!).toList(),
+                repeatOn: rec.getAllPlannedTransactionsInMonth(context, today).map((e) => e.dateTime!).toList(),
               )
           ],
         ),
@@ -38,8 +37,7 @@ class UpcomingWidget extends ConsumerWidget {
     );
   }
 
-  Widget _tile(BuildContext context,
-      {required TransactionData model, required List<DateTime> repeatOn}) {
+  Widget _tile(BuildContext context, {required TransactionData model, required List<DateTime> repeatOn}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(

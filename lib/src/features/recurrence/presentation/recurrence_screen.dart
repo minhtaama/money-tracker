@@ -100,7 +100,7 @@ class _RecurrenceScreenTileState extends ConsumerState<_RecurrenceScreenTile> {
             child: Padding(
               padding: const EdgeInsets.only(top: 6.0, bottom: 12.0),
               child: Text(
-                recurrenceExpression(context, widget.re),
+                widget.re.expression(context),
                 style: kHeader4TextStyle.copyWith(
                   color: context.appTheme.onBackground,
                   fontSize: 13,

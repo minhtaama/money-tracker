@@ -12,70 +12,6 @@ import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
 
-String recurrenceExpression(BuildContext context, Recurrence recurrence) {
-  String everyN;
-  String repeatPattern;
-
-  switch (recurrence.type) {
-    case RepeatEvery.xDay:
-      everyN = context.loc.everyNDay(recurrence.interval);
-      repeatPattern = '';
-      break;
-
-    case RepeatEvery.xWeek:
-      final sort = List<DateTime>.from(recurrence.patterns)..sort((a, b) => a.weekday - b.weekday);
-      final list = sort
-          .map(
-            (date) => date.weekdayToString(
-              context,
-              short: recurrence.patterns.length <= 2 ? false : true,
-            ),
-          )
-          .toList();
-
-      everyN = context.loc.everyNWeek(recurrence.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(', '));
-      break;
-
-    case RepeatEvery.xMonth:
-      final sort = List<DateTime>.from(recurrence.patterns)..sort((a, b) => a.day - b.day);
-      final list = sort
-          .map(
-            (date) => date.dayToString(context),
-          )
-          .toList();
-
-      everyN = context.loc.everyNMonth(recurrence.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(', '));
-      break;
-
-    case RepeatEvery.xYear:
-      final sort = List<DateTime>.from(recurrence.patterns)..sort((a, b) => a.compareTo(b));
-      final list = sort
-          .map(
-            (date) => date.toShortDate(context, noYear: true),
-          )
-          .toList();
-
-      everyN = context.loc.everyNYear(recurrence.interval);
-      repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(', '));
-      break;
-  }
-
-  String startDate = recurrence.startOn.isSameDayAs(DateTime.now())
-      ? context.loc.today.toLowerCase()
-      : recurrence.startOn.toShortDate(context);
-  String endDate = recurrence.endOn != null ? context.loc.untilEndDate(recurrence.endOn!.toShortDate(context)) : '';
-
-  return context.loc.quoteRecurrence3(
-    everyN,
-    repeatPattern,
-    recurrence.startOn.isSameDayAs(DateTime.now()).toString(),
-    startDate,
-    endDate,
-  );
-}
-
 class TransactionDataTile extends ConsumerWidget {
   const TransactionDataTile({super.key, required this.model, this.withoutIconColor = false, this.smaller = false});
 
@@ -350,6 +286,14 @@ class _WithCategoryDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        smaller
+            ? Text(
+                '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 9),
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              )
+            : Gap.noGap,
         _CategoryName(model: model, smaller: smaller),
         smaller ? Gap.noGap : _CategoryTag(model: model),
       ],

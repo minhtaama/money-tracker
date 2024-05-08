@@ -1,16 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../../theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
 import '../../recurrence/domain/recurrence.dart';
 import '../../recurrence/presentation/transaction_data_tile.dart';
 
+//TODO: Change to modal view
 class PlannedTransactionsCard extends ConsumerWidget {
   const PlannedTransactionsCard({
     super.key,
@@ -25,14 +29,12 @@ class PlannedTransactionsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recRepo = ref.watch(recurrenceRepositoryRealmProvider);
     final plannedTxns = recRepo.getPlannedTransactionsInMonth(context, dateTime);
-    final today = DateTime.now().onlyYearMonthDay;
 
-    return CardItem(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      constraints: const BoxConstraints(maxHeight: 300),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: _buildDays(context, plannedTxns),
       ),
     );
@@ -41,123 +43,142 @@ class PlannedTransactionsCard extends ConsumerWidget {
   List<Widget> _buildDays(BuildContext context, List<TransactionData> plannedTransactions) {
     final result = <Widget>[];
 
-    for (int i = dateTime.daysInMonth; i >= 1; i--) {
-      final date = dateTime.copyWith(day: i).onlyYearMonthDay;
-      final txnsInDate = plannedTransactions.where((txn) => txn.dateTime!.isSameDayAs(date)).toList();
-      if (txnsInDate.isNotEmpty) {
-        result.add(_Day(dateTime: date, transactionData: txnsInDate));
-      }
+    final upcomingTxns = plannedTransactions.where((e) => e.state == PlannedState.upcoming).toList().reversed;
+
+    result.add(
+      TextHeader(
+        'Upcoming transactions'.hardcoded,
+        fontSize: 12,
+      ),
+    );
+
+    for (TransactionData txn in upcomingTxns) {
+      result.add(_Tile(model: txn));
+    }
+
+    final todayTxns = plannedTransactions.where((e) => e.state == PlannedState.today).toList().reversed;
+
+    result.add(
+      TextHeader(
+        context.loc.today,
+        fontSize: 12,
+      ),
+    );
+
+    for (TransactionData txn in todayTxns) {
+      result.add(_Tile(model: txn));
+    }
+
+    final overdueTxns = plannedTransactions.where((e) => e.state == PlannedState.overdue).toList().reversed;
+
+    result.add(
+      TextHeader(
+        'Overdue'.hardcoded,
+        fontSize: 12,
+      ),
+    );
+
+    for (TransactionData txn in overdueTxns) {
+      result.add(_Tile(model: txn));
     }
 
     return result;
   }
 }
 
-class _Day extends StatelessWidget {
-  const _Day({super.key, required this.dateTime, required this.transactionData});
+class _Tile extends StatefulWidget {
+  const _Tile({super.key, required this.model});
 
-  final DateTime dateTime;
-  final List<TransactionData> transactionData;
+  final TransactionData model;
+
+  @override
+  State<_Tile> createState() => _TileState();
+}
+
+class _TileState extends State<_Tile> {
+  bool _showButtons = false;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _DateTime(dateTime: dateTime),
-        Gap.w8,
-        Expanded(
-          child: Column(
-            children: transactionData.map((e) => _transactionData(context, e)).toList(),
-          ),
-        )
-      ],
-    );
-  }
+    final color = widget.model.type == TransactionType.income
+        ? context.appTheme.positive
+        : widget.model.type == TransactionType.expense
+            ? context.appTheme.negative
+            : context.appTheme.onBackground;
 
-  Widget _transactionData(BuildContext context, TransactionData model) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: CardItem(
-        margin: EdgeInsets.zero,
-        padding: EdgeInsets.zero,
-        border: Border.all(
-          color: (model.type == TransactionType.income
-                  ? context.appTheme.positive
-                  : model.type == TransactionType.expense
-                      ? context.appTheme.negative
-                      : context.appTheme.onBackground)
-              .withOpacity(0.65),
-        ),
-        color: (model.type == TransactionType.income
-                ? context.appTheme.positive
-                : model.type == TransactionType.expense
-                    ? context.appTheme.negative
-                    : context.appTheme.onBackground)
-            .withOpacity(0.075),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          child: TransactionDataTile(
-            model: model,
-            withoutIconColor: true,
-            smaller: true,
+    return TapRegion(
+      onTapOutside: (_) => setState(() {
+        _showButtons = false;
+      }),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: CardItem(
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.zero,
+          border: Border.all(
+            color: color.withOpacity(widget.model.state == PlannedState.today ? 0.65 : 0),
+          ),
+          color: color.withOpacity(0.1),
+          child: CustomInkWell(
+            inkColor: color,
+            onTap: () => setState(() {
+              _showButtons = !_showButtons;
+            }),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+              child: Column(
+                children: [
+                  TransactionDataTile(
+                    model: widget.model,
+                    withoutIconColor: true,
+                    smaller: true,
+                  ),
+                  HideableContainer(
+                      hide: !_showButtons,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Expanded(
+                              child: IconWithTextButton(
+                                iconPath: AppIcons.add,
+                                backgroundColor: color,
+                                color: context.appTheme.onNegative,
+                                label: 'Add'.hardcoded,
+                                labelSize: 12,
+                                iconSize: 14,
+                                width: 1,
+                                height: 30,
+                                onTap: () {},
+                              ),
+                            ),
+                            Gap.w24,
+                            Expanded(
+                              child: IconWithTextButton(
+                                iconPath: AppIcons.turn,
+                                backgroundColor: Colors.transparent,
+                                color: color,
+                                label: 'Skip'.hardcoded,
+                                border: Border.all(
+                                  color: color,
+                                ),
+                                labelSize: 12,
+                                iconSize: 14,
+                                width: 1,
+                                height: 30,
+                                onTap: () {},
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
-  }
-}
-
-class _DateTime extends StatelessWidget {
-  const _DateTime({this.dateTime, this.backgroundColor, this.color, this.noMonth = true});
-
-  final DateTime? dateTime;
-  final bool noMonth;
-  final Color? backgroundColor;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return dateTime != null
-        ? Container(
-            decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.greyBorder(context),
-              borderRadius: BorderRadius.circular(8),
-              // border: dateTime!.onlyYearMonthDay.isAtSameMomentAs(DateTime.now().onlyYearMonthDay)
-              //     ? Border.all()
-              //     : null
-            ),
-            width: 26,
-            constraints: const BoxConstraints(minHeight: 18),
-            padding: const EdgeInsets.all(3),
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    dateTime!.day.toString(),
-                    style: kHeader2TextStyle.copyWith(
-                        color: color ?? context.appTheme.onBackground, fontSize: 12, height: 1),
-                  ),
-                  noMonth
-                      ? Gap.noGap
-                      : Text(
-                          dateTime!.monthToString(context, short: true),
-                          style: kHeader3TextStyle.copyWith(
-                              color: color ?? context.appTheme.onBackground, fontSize: 7, height: 1),
-                        ),
-                ],
-              ),
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.only(left: 7.5, right: 8.5),
-            child: Container(
-              decoration: BoxDecoration(
-                color: backgroundColor ?? AppColors.greyBorder(context),
-                borderRadius: BorderRadius.circular(1000),
-              ),
-              height: 10,
-              width: 10,
-            ),
-          );
   }
 }
