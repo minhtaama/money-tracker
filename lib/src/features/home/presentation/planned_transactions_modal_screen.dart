@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart'
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
@@ -14,29 +15,25 @@ import '../../../utils/enums.dart';
 import '../../recurrence/domain/recurrence.dart';
 import '../../recurrence/presentation/transaction_data_tile.dart';
 
-//TODO: Change to modal view
-class PlannedTransactionsCard extends ConsumerWidget {
-  const PlannedTransactionsCard({
-    super.key,
-    required this.dateTime,
-    this.onPlannedTransactionTap,
-  });
+class PlannedTransactionsModalScreen extends ConsumerWidget {
+  const PlannedTransactionsModalScreen(this.controller, this.isScrollable, {super.key, required this.dateTime});
 
+  final ScrollController controller;
+  final bool isScrollable;
   final DateTime dateTime;
-  final Function(TransactionData)? onPlannedTransactionTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recRepo = ref.watch(recurrenceRepositoryRealmProvider);
     final plannedTxns = recRepo.getPlannedTransactionsInMonth(context, dateTime);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: _buildDays(context, plannedTxns),
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Planned transactions'.hardcoded,
+        secondaryTitle: dateTime.toLongDate(context),
       ),
+      body: _buildDays(context, plannedTxns),
+      footer: Gap.noGap,
     );
   }
 
@@ -131,7 +128,7 @@ class _TileState extends State<_Tile> {
                   TransactionDataTile(
                     model: widget.model,
                     withoutIconColor: true,
-                    smaller: true,
+                    showDateTime: true,
                   ),
                   HideableContainer(
                       hide: !_showButtons,

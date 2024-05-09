@@ -295,8 +295,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
-                                  width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -312,8 +311,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(
-                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),
@@ -393,9 +391,12 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
             width: double.infinity,
             color: bgColor,
             elevation: context.appTheme.isDarkTheme ? 30 : 5,
-            padding: const EdgeInsets.only(top: 16, bottom: 16),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: widget.toolBar,
+            child: SizedBox(
+              height: widget.toolBarHeight,
+              child: widget.toolBar,
+            ),
           )
         : Gap.noGap;
   }

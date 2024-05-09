@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
+import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/day_card_transactions_list.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import '../../recurrence/domain/recurrence.dart';
 import '../../transactions/domain/transaction_base.dart';
 import '../../transactions/presentation/components/day_card_planned_transactions_list.dart';
 
@@ -16,11 +16,15 @@ class DayCard extends StatelessWidget {
     required this.dateTime,
     required this.transactions,
     this.onTransactionTap,
+    required this.plannedTransactions,
+    this.onPlannedTransactionTap,
   });
 
   final DateTime dateTime;
   final List<BaseTransaction> transactions;
+  final List<TransactionData> plannedTransactions;
   final Function(BaseTransaction)? onTransactionTap;
+  final Function(TransactionData)? onPlannedTransactionTap;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
@@ -108,6 +112,10 @@ class DayCard extends StatelessWidget {
           DayCardTransactionsList(
             transactions: transactions,
             onTransactionTap: onTransactionTap,
+          ),
+          DayCardPlannedTransactionsList(
+            plannedTransactions: plannedTransactions,
+            onPlannedTransactionTap: onPlannedTransactionTap,
           ),
         ],
       ),

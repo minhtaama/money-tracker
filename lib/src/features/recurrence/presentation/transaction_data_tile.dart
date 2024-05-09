@@ -13,11 +13,20 @@ import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
 
 class TransactionDataTile extends ConsumerWidget {
-  const TransactionDataTile({super.key, required this.model, this.withoutIconColor = false, this.smaller = false});
+  const TransactionDataTile({
+    super.key,
+    required this.model,
+    this.withoutIconColor = false,
+    this.smaller = false,
+    this.showState = false,
+    this.showDateTime = false,
+  });
 
   final TransactionData model;
   final bool withoutIconColor;
   final bool smaller;
+  final bool showState;
+  final bool showDateTime;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,20 +63,27 @@ class TransactionDataTile extends ConsumerWidget {
                 _ => _WithCategoryDetails(
                     model: model,
                     smaller: smaller,
+                    showState: showState,
+                    showDateTime: showDateTime,
                   ),
               },
             ),
-            Gap.w16,
+            Gap.w8,
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 MoneyAmount(
                   amount: model.amount,
                   noAnimation: true,
-                  style: kHeader2TextStyle.copyWith(
-                    color: color,
-                    fontSize: smaller ? 11 : 13,
-                  ),
+                  style: smaller
+                      ? kHeader4TextStyle.copyWith(
+                          color: color,
+                          fontSize: 11,
+                        )
+                      : kHeader2TextStyle.copyWith(
+                          color: color,
+                          fontSize: 13,
+                        ),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -115,7 +131,7 @@ class _CategoryIcon extends StatelessWidget {
         return SvgIcon(
           AppIcons.transfer,
           color: context.appTheme.onBackground,
-          size: smaller ? 20 : 25,
+          size: 25,
         );
       }
 
@@ -124,13 +140,13 @@ class _CategoryIcon extends StatelessWidget {
         color: withoutIconColor
             ? context.appTheme.onBackground
             : model.category?.iconColor ?? context.appTheme.onBackground,
-        size: smaller ? 20 : 25,
+        size: 25,
       );
     }
 
     return Container(
-      height: smaller ? 20 : 28,
-      width: smaller ? 20 : 28,
+      height: smaller ? 24 : 28,
+      width: smaller ? 24 : 28,
       padding: EdgeInsets.all(withoutIconColor ? 2.5 : 4),
       decoration: BoxDecoration(
         color: withoutIconColor ? Colors.transparent : color(),
@@ -275,20 +291,35 @@ class _CategoryTag extends StatelessWidget {
 }
 
 class _WithCategoryDetails extends StatelessWidget {
-  const _WithCategoryDetails({required this.model, required this.smaller});
+  const _WithCategoryDetails(
+      {required this.model, required this.smaller, required this.showDateTime, required this.showState});
 
   final TransactionData model;
   final bool smaller;
+  final bool showState;
+  final bool showDateTime;
 
   @override
   Widget build(BuildContext context) {
+    final state = model.state != null
+        ? switch (model.state!) {
+            PlannedState.upcoming => 'Upcoming'.hardcoded,
+            PlannedState.today => 'Planned today'.hardcoded,
+            PlannedState.added => 'Added'.hardcoded,
+            PlannedState.skipped => 'Skipped'.hardcoded,
+            PlannedState.overdue => 'Overdue'.hardcoded,
+          }
+        : '';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        smaller
+        showDateTime || showState
             ? Text(
-                '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
+                showState
+                    ? state
+                    : '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
                 style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 9),
                 softWrap: false,
                 overflow: TextOverflow.fade,

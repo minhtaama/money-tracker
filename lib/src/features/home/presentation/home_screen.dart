@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/features/home/presentation/planned_transactions_card.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
@@ -87,6 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   List<Widget> _buildDayCards(
     List<BaseTransaction> transactionList,
+    List<TransactionData> plannedTransactions,
     DateTime dayBeginOfMonth,
     DateTime dayEndOfMonth,
   ) {
@@ -94,12 +94,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
       final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final plannedTxnsInDay = plannedTransactions
+          .where(
+            (plannedTxn) =>
+                (plannedTxn.state == PlannedState.today || plannedTxn.state == PlannedState.overdue) &&
+                plannedTxn.dateTime!.day == day,
+          )
+          .toList();
 
-      if (transactionsInDay.isNotEmpty) {
+      if (transactionsInDay.isNotEmpty || plannedTxnsInDay.isNotEmpty) {
         dayCards.add(
           DayCard(
             dateTime: dayBeginOfMonth.copyWith(day: day),
             transactions: transactionsInDay.reversed.toList(),
+            plannedTransactions: plannedTxnsInDay.reversed.toList(),
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
           ),
@@ -162,22 +170,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onTapLeft: _previousPage,
         onTapRight: _nextPage,
         onDateTap: () => _animatedToPage(_initialPageIndex),
+        onRecurrenceTap: () => context.push(RoutePath.plannedTransactions, extra: _currentDisplayDate),
       ),
       itemBuilder: (context, ref, pageIndex) {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
         List<BaseTransaction> transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<TransactionData> plannedTransactions =
+            _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
           transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+          plannedTransactions = _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
           setState(() {});
         });
 
-        return [
-          PlannedTransactionsCard(dateTime: dayBeginOfMonth),
-          ..._buildDayCards(transactionList, dayBeginOfMonth, dayEndOfMonth)
-        ];
+        return _buildDayCards(transactionList, plannedTransactions, dayBeginOfMonth, dayEndOfMonth);
       },
     );
   }
@@ -189,12 +198,14 @@ class _DateSelector extends StatelessWidget {
     this.onTapLeft,
     this.onTapRight,
     this.onDateTap,
+    this.onRecurrenceTap,
   });
 
   final DateTime displayDate;
   final VoidCallback? onTapLeft;
   final VoidCallback? onTapRight;
   final VoidCallback? onDateTap;
+  final VoidCallback? onRecurrenceTap;
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +283,17 @@ class _DateSelector extends StatelessWidget {
             ),
           ),
           RoundedIconButton(
+            iconPath: AppIcons.recurrence,
+            iconColor: context.appTheme.onBackground,
+            backgroundColor: Colors.transparent,
+            onTap: onRecurrenceTap,
+            size: 33,
+            iconPadding: 5,
+          ),
+          Gap.w8,
+          Gap.verticalDivider(context, indent: 10),
+          Gap.w8,
+          RoundedIconButton(
             iconPath: AppIcons.arrowLeft,
             iconColor: context.appTheme.onBackground,
             backgroundColor: Colors.transparent,
@@ -279,7 +301,7 @@ class _DateSelector extends StatelessWidget {
             size: 30,
             iconPadding: 5,
           ),
-          Gap.w24,
+          Gap.w16,
           RoundedIconButton(
             iconPath: AppIcons.arrowRight,
             iconColor: context.appTheme.onBackground,

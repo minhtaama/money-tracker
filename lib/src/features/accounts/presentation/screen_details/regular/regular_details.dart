@@ -82,6 +82,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
             transactions: transactionsInDay.reversed.toList(),
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
+            plannedTransactions: [],
           ),
         );
       }
@@ -279,7 +280,7 @@ class _DateSelector extends StatelessWidget {
             size: 30,
             iconPadding: 5,
           ),
-          Gap.w24,
+          Gap.w16,
           RoundedIconButton(
             iconPath: AppIcons.arrowRight,
             iconColor: context.appTheme.onBackground,

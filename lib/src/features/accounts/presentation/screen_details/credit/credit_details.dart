@@ -299,7 +299,7 @@ class _StatementSelector extends StatelessWidget {
           size: 34,
           iconPadding: 5,
         ),
-        Gap.w24,
+        Gap.w16,
         RoundedIconButton(
           iconPath: AppIcons.arrowRight,
           iconColor: context.appTheme.onBackground,

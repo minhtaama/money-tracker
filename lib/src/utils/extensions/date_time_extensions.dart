@@ -95,10 +95,10 @@ extension DateTimeExtensions on DateTime {
     String sMonth = monthToString(context);
 
     return switch (type) {
-      LongDateType.dmy => '$sDay $sMonth, $sYear',
-      LongDateType.mdy => '$sMonth $sDay, $sYear',
-      LongDateType.ydm => '$sYear, $sDay $sMonth',
-      LongDateType.ymd => '$sYear, $sMonth $sDay',
+      LongDateType.dmy => '$sDay${noDay ? '' : ' '}$sMonth, $sYear',
+      LongDateType.mdy => '$sMonth${noDay ? '' : ' '}$sDay, $sYear',
+      LongDateType.ydm => '$sYear,${noDay ? '' : ' '}$sDay $sMonth',
+      LongDateType.ymd => '$sYear, $sMonth${noDay ? '' : ' '}$sDay',
     };
   }
 
