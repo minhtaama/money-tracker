@@ -3,7 +3,9 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
+import '../../../../common_widgets/help_button.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
@@ -55,11 +57,24 @@ class DayCardTransactionsList extends StatelessWidget {
                         //TODO: styling checkpoint
                       },
                     ),
-                    Gap.w16,
+                    Gap.w8,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        TxnAmount(transaction: transaction),
+                        Row(
+                          children: [
+                            transaction is BaseRegularTransaction && transaction.recurrence != null
+                                ? HelpButton(
+                                    text: 'Recurrence transaction'.hardcoded,
+                                    size: 15,
+                                    yOffset: 1,
+                                    iconPath: AppIcons.switchIcon,
+                                  )
+                                : Gap.noGap,
+                            Gap.w4,
+                            TxnAmount(transaction: transaction),
+                          ],
+                        ),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
