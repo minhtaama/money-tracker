@@ -128,7 +128,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       targetDates.removeWhere((element) => element.isAfter(endOn!));
     }
 
-    final today = DateTime.now().copyWith(day: 19).onlyYearMonthDay;
+    final today = DateTime.now().onlyYearMonthDay;
 
     return targetDates.map((targetDate) {
       PlannedState state = PlannedState.upcoming;

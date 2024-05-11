@@ -194,19 +194,6 @@ class _DashboardMenu2 extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: RoundedIconButton(
-                onTap: () => context.go(RoutePath.recurrence),
-                label: context.loc.recurrence,
-                size: 50,
-                iconPath: AppIcons.switchIcon,
-                iconColor: context.appTheme.onBackground,
-                reactImmediately: false,
-              ),
-            ),
-          ),
         ],
       ),
     );

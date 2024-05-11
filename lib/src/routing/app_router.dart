@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/features/category/presentation/categories_
 import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
 import 'package:money_tracker_app/src/features/recurrence/presentation/planned_transactions_modal_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
-import 'package:money_tracker_app/src/features/recurrence/presentation/recurrence_screen.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/select_currency_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/related_budget.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_payment_modal_screen.dart';
@@ -51,7 +50,6 @@ class RoutePath {
   static const String accountScreen = '/dashboard/accounts/accountScreen';
   static const String addAccount = '/dashboard/accounts/addAccount';
   static const String budgets = '/dashboard/budgets';
-  static const String recurrence = '/dashboard/recurrence';
   static const String addBudget = '/dashboard/budgets/addBudget';
   static const String transaction = '/transaction';
   static const String editDashboard = '/editDashboard';
@@ -129,11 +127,6 @@ List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
         path: RoutePath.categories,
         iconData: AppIcons.categories,
         text: context.loc.categories,
-      ),
-      NavigationRailItem(
-        path: RoutePath.recurrence,
-        iconData: AppIcons.switchIcon,
-        text: context.loc.recurrence,
       ),
     ];
 
@@ -318,14 +311,6 @@ final goRouter = GoRouter(
                       ),
                     ),
                   ],
-                ),
-                GoRoute(
-                  path: 'recurrence',
-                  parentNavigatorKey: _railNavKey,
-                  pageBuilder: (context, state) => CustomAppPage(
-                    key: state.pageKey,
-                    child: const RecurrenceScreen(),
-                  ),
                 ),
               ],
             ),
