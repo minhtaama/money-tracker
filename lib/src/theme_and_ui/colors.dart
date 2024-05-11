@@ -193,7 +193,7 @@ class AppColors {
   static const greyConst = Color(0x80666666);
 
   static Color grey(BuildContext context) =>
-      context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.5) : AppColors.white.addDark(0.5);
+      context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.75) : AppColors.white.addDark(0.75);
   static Color greyBorder(BuildContext context) =>
       context.appTheme.isDarkTheme ? AppColors.black.addWhite(0.21) : AppColors.white.addDark(0.21);
   static Color greyBgr(BuildContext context) =>

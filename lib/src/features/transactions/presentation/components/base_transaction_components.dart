@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
@@ -64,15 +65,40 @@ class TxnHomeCategoryIcon extends StatelessWidget {
       return null;
     }
 
-    return Container(
-      height: size ?? 32,
-      width: size ?? 32,
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: color(),
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: child(),
+    Widget recurrenceIcon() {
+      return transaction is BaseRegularTransaction && (transaction as BaseRegularTransaction).recurrence != null
+          ? CardItem(
+              margin: EdgeInsets.zero,
+              padding: const EdgeInsets.all(2.5),
+              color: AppColors.grey(context),
+              elevation: context.appTheme.isDarkTheme ? 20 : 5,
+              borderRadius: BorderRadius.circular(1000),
+              child: SvgIcon(
+                AppIcons.switchIcon,
+                color: context.appTheme.background0,
+                size: 14,
+              ),
+            )
+          : Gap.noGap;
+    }
+
+    return Stack(
+      children: [
+        Container(
+          height: size ?? 32,
+          width: size ?? 32,
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: color(),
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: child(),
+        ),
+        Transform.translate(
+          offset: const Offset(18, -5),
+          child: recurrenceIcon(),
+        ),
+      ],
     );
   }
 }
