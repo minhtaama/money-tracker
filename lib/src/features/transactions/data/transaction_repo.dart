@@ -524,6 +524,11 @@ extension EditTransaction on TransactionRepositoryRealmDb {
 
     realm.write(() {
       _updateBalanceAtDateTime(transaction.dateTime, deleteAmount);
+
+      if (transaction is BaseRegularTransaction) {
+        transaction.recurrence?.databaseObject.addedOn.remove(transaction.databaseObject.id.hexString);
+      }
+
       realm.delete<TransactionDb>(transaction.databaseObject);
     });
   }

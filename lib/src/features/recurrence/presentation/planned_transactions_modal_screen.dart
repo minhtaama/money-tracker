@@ -45,30 +45,6 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
   }
 
   List<Widget> _buildDays(BuildContext context, WidgetRef ref, List<TransactionData> plannedTransactions) {
-    Widget swipeTile(TransactionData txn) => AnimatedSwipeTile(
-          buttons: [
-            RoundedIconButton(
-              iconPath: AppIcons.delete,
-              size: 38,
-              iconPadding: 6,
-              elevation: 18,
-              backgroundColor: context.appTheme.negative,
-              iconColor: context.appTheme.onNegative,
-              onTap: () => showConfirmModal(
-                context: context,
-                label: 'Delete this transaction?'.hardcoded,
-                subLabel: 'All related transactions will be deleted, too.'.hardcoded,
-                onConfirm: () {
-                  final repo = ref.read(recurrenceRepositoryRealmProvider);
-                  repo.delete(txn.recurrence);
-                },
-              ),
-            ),
-            Gap.w12,
-          ],
-          child: _Tile(model: txn),
-        );
-
     final result = <Widget>[];
 
     final upcomingTxns = plannedTransactions.where((e) => e.state == PlannedState.upcoming).toList().reversed;
@@ -81,7 +57,9 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
     );
 
     for (TransactionData txn in upcomingTxns) {
-      result.add(swipeTile(txn));
+      result.add(
+        _Tile(key: ValueKey(txn.dateTime), model: txn),
+      );
     }
 
     final todayTxns = plannedTransactions.where((e) => e.state == PlannedState.today).toList().reversed;
@@ -94,7 +72,9 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
     );
 
     for (TransactionData txn in todayTxns) {
-      result.add(swipeTile(txn));
+      result.add(
+        _Tile(key: ValueKey(txn.dateTime), model: txn),
+      );
     }
 
     final overdueTxns = plannedTransactions.where((e) => e.state == PlannedState.overdue).toList().reversed;
@@ -107,23 +87,40 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
     );
 
     for (TransactionData txn in overdueTxns) {
-      result.add(swipeTile(txn));
+      result.add(
+        _Tile(key: ValueKey(txn.dateTime), model: txn),
+      );
+    }
+
+    final skippedTxns = plannedTransactions.where((e) => e.state == PlannedState.skipped).toList().reversed;
+
+    result.add(
+      TextHeader(
+        'Skipped'.hardcoded,
+        fontSize: 12,
+      ),
+    );
+
+    for (TransactionData txn in skippedTxns) {
+      result.add(
+        _Tile(key: ValueKey(txn.dateTime), model: txn),
+      );
     }
 
     return result;
   }
 }
 
-class _Tile extends StatefulWidget {
+class _Tile extends ConsumerStatefulWidget {
   const _Tile({super.key, required this.model});
 
   final TransactionData model;
 
   @override
-  State<_Tile> createState() => _TileState();
+  ConsumerState<_Tile> createState() => _TileState();
 }
 
-class _TileState extends State<_Tile> {
+class _TileState extends ConsumerState<_Tile> {
   bool _showButtons = false;
 
   @override
@@ -135,84 +132,130 @@ class _TileState extends State<_Tile> {
       onTapOutside: (_) => setState(() {
         _showButtons = false;
       }),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: CardItem(
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.zero,
-          border: Border.all(
-            color: color.withOpacity(widget.model.state == PlannedState.today ? 0.65 : 0),
+      child: AnimatedSwipeTile(
+        buttons: [
+          RoundedIconButton(
+            iconPath: AppIcons.delete,
+            size: 38,
+            iconPadding: 6,
+            elevation: 18,
+            backgroundColor: context.appTheme.negative,
+            iconColor: context.appTheme.onNegative,
+            onTap: () => showConfirmModal(
+              context: context,
+              label: 'Delete this transaction?'.hardcoded,
+              subLabel: 'All related transactions will be deleted, too.'.hardcoded,
+              onConfirm: () {
+                final repo = ref.read(recurrenceRepositoryRealmProvider);
+                repo.delete(widget.model.recurrence);
+              },
+            ),
           ),
-          color: color.withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.2),
-          child: CustomInkWell(
-            inkColor: color,
-            onTap: () => setState(() {
-              _showButtons = !_showButtons;
-            }),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-              child: Column(
-                children: [
-                  TransactionDataTile(
-                    model: widget.model,
-                    withoutIconColor: true,
-                    showDateTime: true,
-                  ),
-                  HideableContainer(
-                      hide: !_showButtons,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                widget.model.recurrence.expression(context),
-                                style: kHeader4TextStyle.copyWith(
-                                  color: context.appTheme.onBackground,
-                                  fontSize: 12,
+          Gap.w12,
+        ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: CardItem(
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
+            border: Border.all(
+              color: color.withOpacity(widget.model.state == PlannedState.today ? 0.65 : 0),
+            ),
+            color: color.withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.2),
+            child: CustomInkWell(
+              inkColor: color,
+              onTap: () => setState(() {
+                _showButtons = !_showButtons;
+              }),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                child: Column(
+                  children: [
+                    TransactionDataTile(
+                      model: widget.model,
+                      withoutIconColor: true,
+                      showDateTime: true,
+                    ),
+                    HideableContainer(
+                        hide: !_showButtons,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  widget.model.recurrence.expression(context),
+                                  style: kHeader4TextStyle.copyWith(
+                                    color: context.appTheme.onBackground,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Expanded(
-                                  child: IconWithTextButton(
-                                    iconPath: AppIcons.add,
-                                    backgroundColor: color,
-                                    color: onColor,
-                                    label: 'Add'.hardcoded,
-                                    labelSize: 12,
-                                    iconSize: 14,
-                                    width: 1,
-                                    height: 30,
-                                    onTap: () {},
-                                  ),
-                                ),
-                                Gap.w24,
-                                Expanded(
-                                  child: IconWithTextButton(
-                                    iconPath: AppIcons.turn,
-                                    backgroundColor: Colors.transparent,
-                                    color: context.appTheme.onBackground,
-                                    label: 'Skip'.hardcoded,
-                                    border: Border.all(
+                              widget.model.state != PlannedState.skipped
+                                  ? Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Expanded(
+                                          child: IconWithTextButton(
+                                            iconPath: AppIcons.add,
+                                            backgroundColor: color,
+                                            color: onColor,
+                                            label: 'Add'.hardcoded,
+                                            labelSize: 12,
+                                            iconSize: 14,
+                                            width: 1,
+                                            height: 30,
+                                            onTap: () {
+                                              final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                              recRepo.addTransaction(ref, widget.model);
+                                            },
+                                          ),
+                                        ),
+                                        Gap.w24,
+                                        Expanded(
+                                          child: IconWithTextButton(
+                                            iconPath: AppIcons.turn,
+                                            backgroundColor: Colors.transparent,
+                                            color: context.appTheme.onBackground,
+                                            label: 'Skip'.hardcoded,
+                                            border: Border.all(
+                                              color: context.appTheme.onBackground,
+                                            ),
+                                            labelSize: 12,
+                                            iconSize: 14,
+                                            width: 1,
+                                            height: 30,
+                                            onTap: () {
+                                              final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                              recRepo.addSkipped(widget.model);
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : IconWithTextButton(
+                                      iconPath: AppIcons.turn,
+                                      backgroundColor: Colors.transparent,
                                       color: context.appTheme.onBackground,
+                                      label: 'Un-skip'.hardcoded,
+                                      border: Border.all(
+                                        color: context.appTheme.onBackground,
+                                      ),
+                                      labelSize: 12,
+                                      iconSize: 14,
+                                      width: double.infinity,
+                                      height: 30,
+                                      onTap: () {
+                                        final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                        recRepo.removeSkipped(widget.model);
+                                      },
                                     ),
-                                    labelSize: 12,
-                                    iconSize: 14,
-                                    width: 1,
-                                    height: 30,
-                                    onTap: () {},
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )),
-                ],
+                            ],
+                          ),
+                        )),
+                  ],
+                ),
               ),
             ),
           ),

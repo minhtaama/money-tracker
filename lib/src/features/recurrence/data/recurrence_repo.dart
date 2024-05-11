@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
+import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
+import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:realm/realm.dart';
@@ -112,15 +115,72 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
     return results;
   }
 
-  void addSkippedDateTime(DateTime dateTime, Recurrence recurrence) {
+  void addTransaction(WidgetRef ref, TransactionData transactionData) {
+    if (transactionData.dateTime == null) {
+      throw StateError('TransactionData.dateTime is null');
+    }
+
+    final transactionRepo = ref.read(transactionRepositoryRealmProvider);
+
+    BaseRegularTransaction transaction = switch (transactionData.type) {
+      TransactionType.expense => transactionRepo.writeNewExpense(
+          dateTime: transactionData.dateTime!,
+          amount: transactionData.amount!,
+          category: transactionData.category!,
+          tag: transactionData.categoryTag,
+          account: transactionData.account!.toAccount() as RegularAccount,
+          note: transactionData.note,
+          recurrence: transactionData.recurrence,
+        ),
+      TransactionType.income => transactionRepo.writeNewIncome(
+          dateTime: transactionData.dateTime!,
+          amount: transactionData.amount!,
+          category: transactionData.category!,
+          tag: transactionData.categoryTag,
+          account: transactionData.account!.toAccount() as RegularAccount,
+          note: transactionData.note,
+          recurrence: transactionData.recurrence,
+        ),
+      TransactionType.transfer => transactionRepo.writeNewTransfer(
+          dateTime: transactionData.dateTime!,
+          amount: transactionData.amount!,
+          account: transactionData.account!.toAccount() as RegularAccount,
+          toAccount: transactionData.toAccount!.toAccount() as RegularAccount,
+          note: transactionData.note,
+          recurrence: transactionData.recurrence,
+          fee: null,
+          isChargeOnDestinationAccount: null,
+        ),
+      TransactionType.creditSpending ||
+      TransactionType.creditPayment ||
+      TransactionType.creditCheckpoint ||
+      TransactionType.installmentToPay =>
+        throw StateError('Wrong transaction type'),
+    };
+
     realm.write(() {
-      recurrence.databaseObject.skippedOn.add(dateTime);
+      transactionData.recurrence.databaseObject.addedOn[transaction.databaseObject.id.hexString] =
+          transactionData.dateTime!;
     });
   }
 
-  void removeSkippedDateTime(DateTime dateTime, Recurrence recurrence) {
+  void addSkipped(TransactionData transactionData) {
+    if (transactionData.dateTime == null) {
+      throw StateError('TransactionData.dateTime is null');
+    }
+
     realm.write(() {
-      recurrence.databaseObject.skippedOn.remove(dateTime);
+      transactionData.recurrence.databaseObject.skippedOn.add(transactionData.dateTime!);
+    });
+  }
+
+  void removeSkipped(TransactionData transactionData) {
+    if (transactionData.dateTime == null) {
+      throw StateError('TransactionData.dateTime is null');
+    }
+
+    realm.write(() {
+      transactionData.recurrence.databaseObject.skippedOn.remove(transactionData.dateTime!);
     });
   }
 
