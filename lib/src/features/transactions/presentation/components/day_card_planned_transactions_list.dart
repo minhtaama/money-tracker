@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -53,81 +54,81 @@ class _TileState extends State<_Tile> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.model.type == TransactionType.income
-        ? context.appTheme.positive
-        : widget.model.type == TransactionType.expense
-            ? context.appTheme.negative
-            : context.appTheme.onBackground;
+    // final color = widget.model.type == TransactionType.income
+    //     ? context.appTheme.positive
+    //     : widget.model.type == TransactionType.expense
+    //         ? context.appTheme.negative
+    //         : context.appTheme.onBackground;
+
+    final color = widget.model.category?.backgroundColor ?? AppColors.greyBgr(context);
+    final onColor = widget.model.category?.iconColor ?? context.appTheme.onBackground;
 
     return TapRegion(
       onTapOutside: (_) => setState(() {
         _showButtons = false;
       }),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: CardItem(
-          borderRadius: BorderRadius.circular(12),
-          // margin: EdgeInsets.zero,
-          padding: EdgeInsets.zero,
-          color: color.withOpacity(0.1),
-          child: CustomInkWell(
-            inkColor: color,
-            onTap: () => setState(() {
-              _showButtons = !_showButtons;
-            }),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-              child: Column(
-                children: [
-                  TransactionDataTile(
-                    model: widget.model,
-                    withoutIconColor: true,
-                    smaller: true,
-                    showState: true,
-                  ),
-                  HideableContainer(
-                    hide: !_showButtons,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 12.0, bottom: 5.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Expanded(
-                            child: IconWithTextButton(
-                              iconPath: AppIcons.add,
-                              backgroundColor: color,
-                              color: context.appTheme.onNegative,
-                              label: 'Add'.hardcoded,
-                              labelSize: 12,
-                              iconSize: 14,
-                              width: 1,
-                              height: 30,
-                              onTap: () {},
-                            ),
+      child: CardItem(
+        borderRadius: BorderRadius.circular(12),
+        // margin: EdgeInsets.zero,
+        padding: EdgeInsets.zero,
+        color: color.withOpacity(_showButtons ? 0.1 : 0.0),
+        child: CustomInkWell(
+          inkColor: color,
+          onTap: () => setState(() {
+            _showButtons = !_showButtons;
+          }),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+            child: Column(
+              children: [
+                TransactionDataTile(
+                  model: widget.model,
+                  smaller: true,
+                  withoutIconColor: true,
+                  showState: true,
+                ),
+                HideableContainer(
+                  hide: !_showButtons,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 12.0, bottom: 5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(
+                          child: IconWithTextButton(
+                            iconPath: AppIcons.add,
+                            backgroundColor: color,
+                            color: onColor,
+                            label: 'Add'.hardcoded,
+                            labelSize: 12,
+                            iconSize: 14,
+                            width: 1,
+                            height: 30,
+                            onTap: () {},
                           ),
-                          Gap.w24,
-                          Expanded(
-                            child: IconWithTextButton(
-                              iconPath: AppIcons.turn,
-                              backgroundColor: Colors.transparent,
-                              color: color,
-                              label: 'Skip'.hardcoded,
-                              border: Border.all(
-                                color: color,
-                              ),
-                              labelSize: 12,
-                              iconSize: 14,
-                              width: 1,
-                              height: 30,
-                              onTap: () {},
+                        ),
+                        Gap.w24,
+                        Expanded(
+                          child: IconWithTextButton(
+                            iconPath: AppIcons.turn,
+                            backgroundColor: Colors.transparent,
+                            color: context.appTheme.onBackground,
+                            label: 'Skip'.hardcoded,
+                            border: Border.all(
+                              color: context.appTheme.onBackground,
                             ),
+                            labelSize: 12,
+                            iconSize: 14,
+                            width: 1,
+                            height: 30,
+                            onTap: () {},
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

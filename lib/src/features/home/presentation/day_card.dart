@@ -7,6 +7,7 @@ import 'package:money_tracker_app/src/features/transactions/presentation/compone
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../transactions/domain/transaction_base.dart';
 import '../../transactions/presentation/components/day_card_planned_transactions_list.dart';
 
@@ -108,11 +109,30 @@ class DayCard extends StatelessWidget {
               ],
             ),
           ),
-          Gap.divider(context, indent: 10),
+          transactions.isNotEmpty ? Gap.divider(context, indent: 10) : Gap.noGap,
           DayCardTransactionsList(
             transactions: transactions,
             onTransactionTap: onTransactionTap,
           ),
+          plannedTransactions.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 12.0, top: 4),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Planned Transactions:'.hardcoded,
+                        style: kHeader4TextStyle.copyWith(
+                          color: context.appTheme.onBackground.withOpacity(0.65),
+                          fontSize: 12,
+                        ),
+                      ),
+                      Expanded(
+                        child: Gap.divider(context, indent: 10),
+                      )
+                    ],
+                  ),
+                )
+              : Gap.noGap,
           DayCardPlannedTransactionsList(
             plannedTransactions: plannedTransactions,
             onPlannedTransactionTap: onPlannedTransactionTap,

@@ -116,8 +116,7 @@ class _ModalContentState extends State<ModalContent> {
   Widget build(BuildContext context) {
     // final color =
     //     context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
-    final padding =
-        (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
+    final padding = (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -134,7 +133,7 @@ class _ModalContentState extends State<ModalContent> {
                   child: Form(
                     key: widget.formKey,
                     child: CustomSection(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       onReorder: widget.onReorder,
                       isWrapByCard: false,
                       sectionsClipping: false,
@@ -257,8 +256,7 @@ class TextHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: kHeader2TextStyle.copyWith(
-          fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
+      style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
     );
   }
 }
@@ -271,8 +269,7 @@ class _AnimatedFading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final color = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return IgnorePointer(
       child: AnimatedContainer(

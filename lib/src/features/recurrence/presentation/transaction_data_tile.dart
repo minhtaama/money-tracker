@@ -41,69 +41,62 @@ class TransactionDataTile extends ConsumerWidget {
         AppColors.grey(context),
     };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        _CategoryIcon(
+          model: model,
+          withoutIconColor: withoutIconColor,
+          smaller: smaller,
+        ),
+        withoutIconColor ? Gap.w4 : Gap.w8,
+        Expanded(
+          child: switch (model.type) {
+            TransactionType.transfer => _TransferDetails(
+                model: model,
+                smaller: smaller,
+              ),
+            _ => _WithCategoryDetails(
+                model: model,
+                smaller: smaller,
+                showState: showState,
+                showDateTime: showDateTime,
+              ),
+          },
+        ),
+        Gap.w8,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            _CategoryIcon(
-              model: model,
-              withoutIconColor: withoutIconColor,
-              smaller: smaller,
+            MoneyAmount(
+              amount: model.amount,
+              noAnimation: true,
+              style: smaller
+                  ? kHeader3TextStyle.copyWith(
+                      color: color.withOpacity(0.65),
+                      fontSize: 11,
+                    )
+                  : kHeader2TextStyle.copyWith(
+                      color: color,
+                      fontSize: 13,
+                    ),
             ),
-            withoutIconColor ? Gap.w4 : Gap.w8,
-            Expanded(
-              child: switch (model.type) {
-                TransactionType.transfer => _TransferDetails(
-                    model: model,
-                    smaller: smaller,
-                  ),
-                _ => _WithCategoryDetails(
-                    model: model,
-                    smaller: smaller,
-                    showState: showState,
-                    showDateTime: showDateTime,
-                  ),
-              },
-            ),
-            Gap.w8,
-            Column(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                MoneyAmount(
-                  amount: model.amount,
-                  noAnimation: true,
-                  style: smaller
-                      ? kHeader4TextStyle.copyWith(
-                          color: color,
-                          fontSize: 11,
-                        )
-                      : kHeader2TextStyle.copyWith(
-                          color: color,
-                          fontSize: 13,
-                        ),
+                _AccountName(
+                  model: model,
+                  smaller: smaller,
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _AccountName(
-                      model: model,
-                      smaller: smaller,
-                    ),
-                    Gap.w4,
-                    _AccountIcon(
-                      model: model,
-                      smaller: smaller,
-                    ),
-                  ],
+                Gap.w4,
+                _AccountIcon(
+                  model: model,
+                  smaller: smaller,
                 ),
               ],
             ),
           ],
         ),
-        smaller ? Gap.noGap : _Note(model: model),
       ],
     );
   }
@@ -206,38 +199,6 @@ class _AccountName extends ConsumerWidget {
   }
 }
 
-class _Note extends StatelessWidget {
-  const _Note({required this.model});
-
-  final TransactionData model;
-
-  @override
-  Widget build(BuildContext context) {
-    return model.note != null && model.note!.isNotEmpty
-        ? Container(
-            margin: const EdgeInsets.only(left: 15.5, top: 8),
-            padding: const EdgeInsets.only(left: 8),
-            decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
-            ),
-            child: Transform.translate(
-              offset: const Offset(0, -1),
-              child: Text(
-                model.note!,
-                style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.65),
-                  fontSize: 12,
-                ),
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
-                maxLines: 2,
-              ),
-            ),
-          )
-        : Gap.noGap;
-  }
-}
-
 class _CategoryName extends StatelessWidget {
   const _CategoryName({required this.model, required this.smaller});
 
@@ -270,23 +231,27 @@ class _CategoryTag extends StatelessWidget {
 
   final TransactionData model;
 
-  String? get _categoryTag {
-    return model.categoryTag?.name;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return _categoryTag != null
-        ? Text(
-            _categoryTag!,
+    String categoryTag = model.categoryTag?.name ?? '';
+
+    String note = model.note != null ? 'Note: ${model.note}' : '';
+
+    bool hasBoth = model.categoryTag != null && model.note != null;
+    bool notBoth = model.categoryTag == null && model.note == null;
+
+    return notBoth
+        ? Gap.noGap
+        : Text(
+            '$categoryTag${hasBoth ? ' / ' : ''}$note',
             style: kHeader3TextStyle.copyWith(
               fontSize: 12,
               color: context.appTheme.onBackground.withOpacity(0.65),
             ),
-            softWrap: false,
-            overflow: TextOverflow.fade,
-          )
-        : Gap.noGap;
+            softWrap: true,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          );
   }
 }
 
@@ -304,7 +269,7 @@ class _WithCategoryDetails extends StatelessWidget {
     final state = model.state != null
         ? switch (model.state!) {
             PlannedState.upcoming => 'Upcoming'.hardcoded,
-            PlannedState.today => 'Planned today'.hardcoded,
+            PlannedState.today => 'Today'.hardcoded,
             PlannedState.added => 'Added'.hardcoded,
             PlannedState.skipped => 'Skipped'.hardcoded,
             PlannedState.overdue => 'Overdue'.hardcoded,
@@ -320,7 +285,7 @@ class _WithCategoryDetails extends StatelessWidget {
                 showState
                     ? state
                     : '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
-                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 9),
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 10),
                 softWrap: false,
                 overflow: TextOverflow.fade,
               )

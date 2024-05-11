@@ -9,7 +9,7 @@ import 'package:money_tracker_app/src/features/budget/presentation/budgets_list_
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/categories_list_screen.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
-import 'package:money_tracker_app/src/features/home/presentation/planned_transactions_modal_screen.dart';
+import 'package:money_tracker_app/src/features/recurrence/presentation/planned_transactions_modal_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
 import 'package:money_tracker_app/src/features/recurrence/presentation/recurrence_screen.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/select_currency_screen.dart';
