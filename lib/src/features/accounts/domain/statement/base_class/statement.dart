@@ -386,10 +386,13 @@ extension StatementGetters on Statement {
     );
   }
 
+  /// This is different from [transactions.installmentsToPay] as it included all transaction
+  /// registered as installment-payment but start from next statement
+  /// in current statement billing cycle, whether user want to kill this transaction.
   List<Installment> get onGoingInstallment {
     final first = transactions.inBillingCycle
         .whereType<CreditSpending>()
-        .where((e) => e.hasInstallment)
+        .where((e) => e.hasInstallment && e.paymentStartFromNextStatement)
         .map<Installment>((e) => Installment(e, e.monthsToPay!));
 
     return first.followedBy(transactions.installmentsToPay).toList();
