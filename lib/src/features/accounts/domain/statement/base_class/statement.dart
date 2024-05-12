@@ -241,8 +241,6 @@ extension StatementGetters on Statement {
   /// Calculate total installment to pay in this statement
   ///
   /// Included in [endPoint.spentToPay], [balance]
-  ///
-  ///TODO: modify the can pay in current statement
   double get installmentsToPay {
     if (checkpoint != null) {
       return 0;
@@ -277,6 +275,9 @@ extension StatementGetters on Statement {
         .map((instm) => instm.txn)
         .toList();
 
+    // This is installments of transactions in this statement that allows to pay in
+    // the same statement. Obviously, you can only pay AFTER the CreditSpending, which is
+    // AFTER the txn.dateTime
     final installmentsOfThisStatementTransactions = transactions.installmentsToPay
         .where(
           (instm) =>

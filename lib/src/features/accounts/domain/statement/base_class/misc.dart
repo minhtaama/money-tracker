@@ -24,6 +24,14 @@ class Checkpoint {
 @immutable
 class Installment {
   final CreditSpending txn;
+
+  /// This is not equal the [txn.monthsToPay] at the first
+  /// payment month.
+  ///
+  /// **[monthsLeft] (at-first-payment-month) == [txn.monthsToPay!] - 1**
+  ///
+  /// **[monthsLeft] (at-last-payment-month) == 0**
+  ///
   final int monthsLeft;
 
   double get unpaidAmount => txn.paymentAmount! * monthsLeft;

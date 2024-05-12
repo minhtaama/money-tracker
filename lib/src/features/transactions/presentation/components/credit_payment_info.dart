@@ -108,15 +108,17 @@ class _ListState extends State<_List> {
 
   void buildInstallmentsOfCurrentTransaction(List<Widget> list, BaseCreditTransaction txn, Statement statement) {
     if (txn is CreditSpending && !txn.paymentStartFromNextStatement && txn.hasInstallment) {
-      final installment = statement.transactions.installmentsToPay.firstWhere((inst) => inst.txn == txn);
+      try {
+        final installment = statement.transactions.installmentsToPay.firstWhere((inst) => inst.txn == txn);
 
-      if (installment.monthsLeft == txn.monthsToPay! - 1) {
-        list.add(
-          _InstallmentToPayTransaction(
-            transaction: txn,
-          ),
-        );
-      }
+        if (installment.monthsLeft == txn.monthsToPay! - 1) {
+          list.add(
+            _InstallmentToPayTransaction(
+              transaction: txn,
+            ),
+          );
+        }
+      } catch (_) {}
     }
   }
 
