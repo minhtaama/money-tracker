@@ -47,6 +47,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             account: _stateRead.creditAccount!,
             monthsToPay: _stateRead.installmentPeriod,
             paymentAmount: _stateRead.installmentAmount,
+            paymentStartFromNextStatement: _stateRead.paymentStartFromNextStatement,
           );
       context.pop();
     }
@@ -146,6 +147,14 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                     focusColor: context.appTheme.secondary1,
                     hintText: ''),
               ),
+              Gap.h12,
+              CustomCheckbox(
+                label: 'Start payment in next statement',
+                initialValue: stateWatch.paymentStartFromNextStatement ?? true,
+                onChanged: (value) {
+                  _stateController.changePaymentStartFromNextStatement(value);
+                },
+              ),
             ],
           ),
         ),
@@ -177,8 +186,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   AccountFormSelector(
                     accountType: AccountType.credit,
                     validator: (_) => _creditAccountValidator(),
-                    onChangedAccount: (newAccount) =>
-                        _stateController.changeCreditAccount(newAccount as CreditAccount),
+                    onChangedAccount: (newAccount) => _stateController.changeCreditAccount(newAccount as CreditAccount),
                   ),
                   Gap.h16,
                   const TextHeader('Expense category:'),

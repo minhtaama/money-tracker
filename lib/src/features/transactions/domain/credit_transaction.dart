@@ -25,6 +25,8 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
 
   final double? paymentAmount;
 
+  final bool paymentStartFromNextStatement;
+
   bool get hasInstallment => monthsToPay != null;
 
   const CreditSpending._(
@@ -37,6 +39,7 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
     this.categoryTag, {
     required this.monthsToPay,
     required this.paymentAmount,
+    required this.paymentStartFromNextStatement,
   });
 
   @override
@@ -47,9 +50,7 @@ class CreditSpending extends BaseCreditTransaction implements IBaseTransactionWi
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CreditSpending &&
-          runtimeType == other.runtimeType &&
-          databaseObject.id == other.databaseObject.id;
+      other is CreditSpending && runtimeType == other.runtimeType && databaseObject.id == other.databaseObject.id;
 
   @override
   int get hashCode => databaseObject.id.hashCode;

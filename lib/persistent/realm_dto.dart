@@ -170,6 +170,8 @@ class _CreditInstallmentDetailsDb {
   int? monthsToPay;
 
   double? paymentAmount;
+
+  bool paymentStartFromNextStatement = true;
 }
 
 @RealmModel(ObjectType.embeddedObject)

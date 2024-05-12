@@ -751,14 +751,23 @@ SchemaProperty('chargeOnDestination', RealmPropertyType.bool),
 SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
 }
 class CreditInstallmentDetailsDb extends _CreditInstallmentDetailsDb with RealmEntity, RealmObjectBase, EmbeddedObject {
+static var _defaultsSet = false;
+
 CreditInstallmentDetailsDb(
 {
 int? monthsToPay,
 double? paymentAmount,
+bool paymentStartFromNextStatement = true,
 }
 ) {
+if (!_defaultsSet) {
+  _defaultsSet = RealmObjectBase.setDefaults<CreditInstallmentDetailsDb>({
+'paymentStartFromNextStatement': true,
+  });
+}
 RealmObjectBase.set(this, 'monthsToPay', monthsToPay);
 RealmObjectBase.set(this, 'paymentAmount', paymentAmount);
+RealmObjectBase.set(this, 'paymentStartFromNextStatement', paymentStartFromNextStatement);
 }
 
 CreditInstallmentDetailsDb._();
@@ -774,6 +783,11 @@ double? get paymentAmount => RealmObjectBase.get<double>(this, 'paymentAmount') 
 set paymentAmount(double? value) => RealmObjectBase.set(this, 'paymentAmount', value);
 
 @override
+bool get paymentStartFromNextStatement => RealmObjectBase.get<bool>(this, 'paymentStartFromNextStatement') as bool;
+@override
+set paymentStartFromNextStatement(bool value) => RealmObjectBase.set(this, 'paymentStartFromNextStatement', value);
+
+@override
 Stream<RealmObjectChanges<CreditInstallmentDetailsDb>> get changes => RealmObjectBase.getChanges<CreditInstallmentDetailsDb>(this);
 
 @override
@@ -786,6 +800,7 @@ EJsonValue toEJson() {
 return <String, dynamic>{
 'monthsToPay': monthsToPay.toEJson(),
 'paymentAmount': paymentAmount.toEJson(),
+'paymentStartFromNextStatement': paymentStartFromNextStatement.toEJson(),
 };
 }
 static EJsonValue _toEJson(CreditInstallmentDetailsDb value) => value.toEJson();
@@ -794,9 +809,11 @@ return switch (ejson) {
 {
 'monthsToPay': EJsonValue monthsToPay,
 'paymentAmount': EJsonValue paymentAmount,
+'paymentStartFromNextStatement': EJsonValue paymentStartFromNextStatement,
 } => CreditInstallmentDetailsDb(
 monthsToPay: fromEJson(monthsToPay),
 paymentAmount: fromEJson(paymentAmount),
+paymentStartFromNextStatement: fromEJson(paymentStartFromNextStatement),
 ),
 _ => raiseInvalidEJson(ejson),
 };
@@ -807,6 +824,7 @@ register(_toEJson, _fromEJson);
 return SchemaObject(ObjectType.embeddedObject, CreditInstallmentDetailsDb, 'CreditInstallmentDetailsDb', [
 SchemaProperty('monthsToPay', RealmPropertyType.int, optional: true),
 SchemaProperty('paymentAmount', RealmPropertyType.double, optional: true),
+SchemaProperty('paymentStartFromNextStatement', RealmPropertyType.bool),
 ]);
 }();
 

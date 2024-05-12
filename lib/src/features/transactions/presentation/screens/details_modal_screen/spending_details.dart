@@ -99,18 +99,21 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
         ),
         Gap.h12,
         _InstallmentOfSpendingDetails(
-            isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
-            isEdited: _isInstallmentEdited(stateWatch),
-            installmentController: _installmentPaymentController,
-            transaction: _transaction,
-            initialValues: [
-              _transaction.hasInstallment,
-              _transaction.paymentAmount,
-              _transaction.monthsToPay,
-            ],
-            onToggle: _onToggleHasInstallment,
-            onFormattedInstallmentOutput: _changeInstallmentAmount,
-            onMonthOutput: _changeInstallmentPeriod),
+          isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
+          isEdited: _isInstallmentEdited(stateWatch),
+          installmentController: _installmentPaymentController,
+          transaction: _transaction,
+          initialValues: [
+            _transaction.hasInstallment,
+            _transaction.paymentAmount,
+            _transaction.monthsToPay,
+            _transaction.paymentStartFromNextStatement,
+          ],
+          onToggle: _onToggleHasInstallment,
+          onFormattedInstallmentOutput: _changeInstallmentAmount,
+          onMonthOutput: _changeInstallmentPeriod,
+          onChangePaymentStartFromNextStatement: _changePaymentStartFromNextStatement,
+        ),
         Gap.h8,
         Gap.divider(context, indent: 6),
         Gap.h8,
@@ -179,6 +182,10 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
   void _changeInstallmentPeriod(String value) {
     _stateController.changeInstallmentPeriod(int.tryParse(value), initialTransaction: _transaction);
     _changeInstallmentControllerText();
+  }
+
+  void _changePaymentStartFromNextStatement(bool value) {
+    _stateController.changePaymentStartFromNextStatement(value);
   }
 
   void _changeInstallmentControllerText() =>

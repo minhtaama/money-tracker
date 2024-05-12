@@ -19,6 +19,7 @@ class CreditSpendingFormState {
   final bool? hasInstallment;
   final int? installmentPeriod;
   final double? installmentAmount;
+  final bool? paymentStartFromNextStatement;
 
   String? installmentAmountString(BuildContext context) {
     if (installmentAmount != null) {
@@ -39,6 +40,7 @@ class CreditSpendingFormState {
     this.hasInstallment,
     this.installmentPeriod,
     this.installmentAmount,
+    this.paymentStartFromNextStatement,
   });
 
   CreditSpendingFormState copyWith({
@@ -51,6 +53,7 @@ class CreditSpendingFormState {
     int? Function()? installmentPeriod,
     double? Function()? installmentAmount,
     bool? Function()? hasInstallment,
+    bool? Function()? paymentStartFromNextStatement,
   }) {
     return CreditSpendingFormState._(
       dateTime: dateTime != null ? dateTime() : this.dateTime,
@@ -62,6 +65,8 @@ class CreditSpendingFormState {
       installmentPeriod: installmentPeriod != null ? installmentPeriod() : this.installmentPeriod,
       installmentAmount: installmentAmount != null ? installmentAmount() : this.installmentAmount,
       hasInstallment: hasInstallment != null ? hasInstallment() : this.hasInstallment,
+      paymentStartFromNextStatement:
+          paymentStartFromNextStatement != null ? paymentStartFromNextStatement() : this.paymentStartFromNextStatement,
     );
   }
 }
@@ -80,6 +85,7 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     state = state.copyWith(
       installmentPeriod: () => null,
       installmentAmount: () => null,
+      paymentStartFromNextStatement: () => null,
     );
   }
 
@@ -95,6 +101,7 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
         creditAccount: () => null,
         installmentPeriod: () => null,
         installmentAmount: () => null,
+        paymentStartFromNextStatement: () => null,
       ),
     );
   }
@@ -152,6 +159,10 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
 
   void changeInstallmentAmount(String value) {
     state = state.copyWith(installmentAmount: () => CalService.formatToDouble(value));
+  }
+
+  void changePaymentStartFromNextStatement(bool value) {
+    state = state.copyWith(paymentStartFromNextStatement: () => value);
   }
 
   void changeNote(String note) {

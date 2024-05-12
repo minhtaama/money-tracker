@@ -263,10 +263,12 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
     required String? note,
     required int? monthsToPay,
     required double? paymentAmount,
+    required bool? paymentStartFromNextStatement,
   }) {
     final creditInstallmentDb = CreditInstallmentDetailsDb(
       monthsToPay: monthsToPay,
       paymentAmount: paymentAmount?.roundTo2DP(),
+      paymentStartFromNextStatement: paymentStartFromNextStatement ?? true,
     );
 
     final newTransaction = TransactionDb(
@@ -450,6 +452,8 @@ extension EditTransaction on TransactionRepositoryRealmDb {
         txnDb.creditInstallmentDetails = CreditInstallmentDetailsDb(
           monthsToPay: state.installmentPeriod ?? transaction.monthsToPay,
           paymentAmount: state.installmentAmount?.roundTo2DP() ?? transaction.paymentAmount,
+          paymentStartFromNextStatement:
+              state.paymentStartFromNextStatement ?? transaction.paymentStartFromNextStatement,
         );
       } else if (!state.hasInstallment!) {
         txnDb.creditInstallmentDetails = null;

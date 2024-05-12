@@ -101,6 +101,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           //payments: payments,
           monthsToPay: txn.creditInstallmentDetails?.monthsToPay,
           paymentAmount: txn.creditInstallmentDetails?.paymentAmount,
+          paymentStartFromNextStatement: txn.creditInstallmentDetails?.paymentStartFromNextStatement ?? true,
         );
 
       case TransactionType.creditPayment:
