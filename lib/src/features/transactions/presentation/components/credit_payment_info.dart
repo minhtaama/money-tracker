@@ -83,21 +83,45 @@ class _ListState extends State<_List> {
   final _key = GlobalKey();
   double _height = 0;
 
-  List<_InstallmentToPayTransaction> buildInstallmentTransactionTile(BuildContext context) {
-    if (txnsInstallment.isEmpty) {
+  List<_InstallmentToPayTransaction> buildInstallmentTransactionTile() {
+    if (widget.statement == null || widget.chosenDateTime == null) {
       return <_InstallmentToPayTransaction>[];
     }
+
     final list = <_InstallmentToPayTransaction>[];
-    for (int i = 0; i < txnsInstallment.length; i++) {
-      list.add(_InstallmentToPayTransaction(
-        transaction: txnsInstallment[i],
-      ));
-    }
+
+    list.addAll(
+      widget.statement!.transactions.installmentsToPay.where((instm) {
+        if (instm.txn.paymentStartFromNextStatement) {
+          return instm.monthsLeft <= instm.txn.monthsToPay! - 1;
+        } else {
+          return instm.monthsLeft <= instm.txn.monthsToPay! - 2;
+        }
+      }).map(
+        (instm) => _InstallmentToPayTransaction(
+          transaction: instm.txn,
+        ),
+      ),
+    );
     return list;
   }
 
-  List<_Transaction> buildTransactionBeforeTile(BuildContext context, List<BaseCreditTransaction> transactions) {
-    final list = <_Transaction>[];
+  void buildInstallmentsOfCurrentTransaction(List<Widget> list, BaseCreditTransaction txn, Statement statement) {
+    if (txn is CreditSpending && !txn.paymentStartFromNextStatement && txn.hasInstallment) {
+      final installment = statement.transactions.installmentsToPay.firstWhere((inst) => inst.txn == txn);
+
+      if (installment.monthsLeft == txn.monthsToPay! - 1) {
+        list.add(
+          _InstallmentToPayTransaction(
+            transaction: txn,
+          ),
+        );
+      }
+    }
+  }
+
+  List<Widget> buildTransactionBeforeTile(BuildContext context, List<BaseCreditTransaction> transactions) {
+    final list = <Widget>[];
 
     DateTime temp = Calendar.minDate;
 
@@ -107,34 +131,51 @@ class _ListState extends State<_List> {
       if (txnDateTime.isAtSameMomentAs(widget.statement!.date.start) ||
           txnDateTime.isAtSameMomentAs(nextStatementDateTime)) {
         list.add(_Transaction(
-            statement: widget.statement!, transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
+          statement: widget.statement!,
+          transaction: transactions[i],
+          dateTime: null,
+          onDateTap: widget.onDateTap,
+        ));
+        buildInstallmentsOfCurrentTransaction(list, txn, widget.statement!);
       } else if (!txnDateTime.isAtSameMomentAs(temp)) {
         temp = txnDateTime;
         list.add(_Transaction(
-            statement: widget.statement!, transaction: transactions[i], dateTime: temp, onDateTap: widget.onDateTap));
+          statement: widget.statement!,
+          transaction: transactions[i],
+          dateTime: temp,
+          onDateTap: widget.onDateTap,
+        ));
+        buildInstallmentsOfCurrentTransaction(list, txn, widget.statement!);
       } else {
         list.add(_Transaction(
-            statement: widget.statement!, transaction: transactions[i], dateTime: null, onDateTap: widget.onDateTap));
+          statement: widget.statement!,
+          transaction: transactions[i],
+          dateTime: null,
+          onDateTap: widget.onDateTap,
+        ));
+        buildInstallmentsOfCurrentTransaction(list, txn, widget.statement!);
       }
     }
     return list;
   }
 
-  List<_Transaction> buildTodayTransactionTile(BuildContext context, List<BaseCreditTransaction> transactions,
+  List<Widget> buildTodayTransactionTile(BuildContext context, List<BaseCreditTransaction> transactions,
       {bool showList = true, bool showTitle = true, String fullPaymentAmount = ''}) {
     if (!showList) {
-      return <_Transaction>[];
+      return <Widget>[];
     }
 
-    final list = <_Transaction>[];
+    final list = <Widget>[];
 
     if (showTitle) {
-      list.add(_Transaction(
-        statement: widget.statement!,
-        dateTime: widget.chosenDateTime,
-        isSelectedDay: true,
-        fullPaymentAmount: fullPaymentAmount,
-      ));
+      list.add(
+        _Transaction(
+          statement: widget.statement!,
+          dateTime: widget.chosenDateTime,
+          isSelectedDay: true,
+          fullPaymentAmount: fullPaymentAmount,
+        ),
+      );
     }
 
     for (int i = 0; i < transactions.length; i++) {
@@ -145,6 +186,7 @@ class _ListState extends State<_List> {
         onDateTap: widget.onDateTap,
         isSelectedDay: true,
       ));
+      buildInstallmentsOfCurrentTransaction(list, transactions[i], widget.statement!);
     }
     return list;
   }
@@ -215,7 +257,7 @@ class _ListState extends State<_List> {
                                         h2: 'End of last grace period'.hardcoded,
                                       )
                                     : Gap.noGap,
-                                ...buildInstallmentTransactionTile(context),
+                                ...buildInstallmentTransactionTile(),
                                 ...buildTransactionBeforeTile(context, txnsInBillingCycleAfterPreviousDueDate),
                                 widget.chosenDateTime == null || !widget.chosenDateTime!.isBefore(nextStatementDateTime)
                                     ? _Header(
@@ -715,13 +757,6 @@ class _DateTime extends StatelessWidget {
 }
 
 extension _ListGetters on State<_List> {
-  List<CreditSpending> get txnsInstallment {
-    if (widget.statement == null || widget.chosenDateTime == null) {
-      return <CreditSpending>[];
-    }
-    return widget.statement!.transactions.installmentsToPay.map((e) => e.txn).toList();
-  }
-
   List<BaseCreditTransaction> get txnsInBillingCycleBeforePreviousDueDate {
     if (widget.statement == null) {
       return <BaseCreditTransaction>[];
