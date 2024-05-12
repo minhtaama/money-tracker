@@ -47,6 +47,7 @@ part 'payment_details.dart';
 part 'spending_details.dart';
 part 'installment_details.dart';
 part 'regular_details.dart';
+part 'checkpoint_details.dart';
 
 class TransactionDetailsModalScreen extends ConsumerWidget {
   const TransactionDetailsModalScreen(
@@ -82,7 +83,8 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
             : _SpendingDetails(screenType, controller, isScrollable, transaction: transaction as CreditSpending),
         CreditPayment() =>
           _PaymentDetails(screenType, controller, isScrollable, transaction: transaction as CreditPayment),
-        CreditCheckpoint() => const Placeholder(),
+        CreditCheckpoint() =>
+          _CheckpointDetails(screenType, controller, isScrollable, transaction: transaction as CreditCheckpoint),
       };
     } catch (e) {
       return IconWithText(
