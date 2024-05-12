@@ -48,10 +48,17 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
   Widget _empty(BuildContext context) {
     return CardItem(
       color: Colors.transparent,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      height: 50,
       width: double.infinity,
-      border: Border.all(color: AppColors.greyBorder(context)),
-      child: IconWithText(
-        iconPath: AppIcons.statementCheckpoint,
+      border: Border.all(
+        color: AppColors.greyBorder(context),
+      ),
+      child: Center(
+        child: Text(
+          'No transactions'.hardcoded,
+          style: kNormalTextStyle.copyWith(color: AppColors.grey(context)),
+        ),
       ),
     );
   }
@@ -229,7 +236,7 @@ class _TileState extends ConsumerState<_Tile> {
                     children: [
                       TransactionDataTile(
                         model: widget.model,
-                        withoutIconColor: true,
+                        withoutIconColor: false,
                         showDateTime: true,
                       ),
                       HideableContainer(

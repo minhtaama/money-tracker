@@ -42,27 +42,37 @@ class TransactionDataTile extends ConsumerWidget {
     };
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _CategoryIcon(
-          model: model,
-          withoutIconColor: withoutIconColor,
-          smaller: smaller,
+        Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: _CategoryIcon(
+            model: model,
+            withoutIconColor: withoutIconColor,
+            smaller: smaller,
+          ),
         ),
         withoutIconColor ? Gap.w4 : Gap.w8,
         Expanded(
-          child: switch (model.type) {
-            TransactionType.transfer => _TransferDetails(
-                model: model,
-                smaller: smaller,
-              ),
-            _ => _WithCategoryDetails(
-                model: model,
-                smaller: smaller,
-                showState: showState,
-                showDateTime: showDateTime,
-              ),
-          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              switch (model.type) {
+                TransactionType.transfer => _TransferDetails(
+                    model: model,
+                    smaller: smaller,
+                    showDateTime: showDateTime,
+                  ),
+                _ => _WithCategoryDetails(
+                    model: model,
+                    smaller: smaller,
+                    showState: showState,
+                    showDateTime: showDateTime,
+                  ),
+              },
+              smaller ? Gap.noGap : _CategoryTag(model: model),
+            ],
+          ),
         ),
         Gap.w8,
         Column(
@@ -188,11 +198,16 @@ class _AccountName extends ConsumerWidget {
 
     return Text(
       name(),
-      style: kHeader4TextStyle.copyWith(
-        color: context.appTheme.onBackground
-            .withOpacity(destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
-        fontSize: smaller ? 9 : 11,
-      ),
+      style: destination
+          ? kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(model.toAccount != null ? 1 : 0.25),
+              fontSize: 13,
+            )
+          : kHeader4TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(
+                  destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
+              fontSize: smaller ? 9 : 12,
+            ),
       softWrap: false,
       overflow: TextOverflow.fade,
     );
@@ -245,7 +260,7 @@ class _CategoryTag extends StatelessWidget {
         : Text(
             '$categoryTag${hasBoth ? ' / ' : ''}$note',
             style: kHeader3TextStyle.copyWith(
-              fontSize: 12,
+              fontSize: 11,
               color: context.appTheme.onBackground.withOpacity(0.65),
             ),
             softWrap: true,
@@ -285,39 +300,43 @@ class _WithCategoryDetails extends StatelessWidget {
                 showState
                     ? state
                     : '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
-                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 10),
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                 softWrap: false,
                 overflow: TextOverflow.fade,
               )
             : Gap.noGap,
         _CategoryName(model: model, smaller: smaller),
-        smaller ? Gap.noGap : _CategoryTag(model: model),
       ],
     );
   }
 }
 
 class _TransferDetails extends StatelessWidget {
-  const _TransferDetails({required this.model, required this.smaller});
+  const _TransferDetails({required this.model, required this.smaller, required this.showDateTime});
 
   final TransactionData model;
   final bool smaller;
+  final bool showDateTime;
 
   @override
   Widget build(BuildContext context) {
+    String dateTime = showDateTime
+        ? '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)} - '
+        : '';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          '${dateTime}Transfer to:'.hardcoded,
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
         _AccountName(
           model: model,
           destination: true,
-          smaller: smaller,
+          smaller: false,
         ),
       ],
     );
