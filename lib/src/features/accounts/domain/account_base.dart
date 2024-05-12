@@ -219,14 +219,17 @@ extension CreditAccountExtension on Account {
     required List<BaseCreditTransaction> accountTransactionsList,
     required StatementType statementType,
   }) {
+    // 1. Create list and map to mutate before the while...loop begins.
     final statementsList = <Statement>[];
 
     final installmentCountsMapToMutate = <CreditSpending, int>{};
 
+    // 2. The initial startDate
     DateTime startDate = earliestStatementDate;
 
-    // Loop each startDate to create statement
+    // 3. Loop each startDate to create statement
     while (!startDate.isAfter(latestStatementDate) || installmentCountsMapToMutate.isNotEmpty) {
+      // 3.1. For each while...loop, calculate dates and get previousStatement
       final endDate = startDate.copyWith(month: startDate.month + 1, day: startDate.day - 1).onlyYearMonthDay;
 
       final dueDate = statementDay >= paymentDueDay
@@ -243,17 +246,35 @@ extension CreditAccountExtension on Account {
 
       Checkpoint? checkpoint;
 
-      // TODO: Modify this as "User can choose when to start payment
-      //  This thing here is used as a temp list to not add installment-to-pay in the same
-      //  statement with the spending-registered-with-installment
+      // 3.2. For each while...loop, loop through `accountTransactionsList` to find CreditSpending that has
+      // installment and allow to start payment from this statement.
+      for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
+        final txn = accountTransactionsList[i];
+
+        if (txn.dateTime.isBefore(startDate)) {
+          continue;
+        }
+
+        if (txn.dateTime.isAfter(endDate.copyWith(day: endDate.day + 1))) {
+          break;
+        }
+
+        if (txn is CreditSpending && txn.hasInstallment && !txn.paymentStartFromNextStatement) {
+          installmentCountsMapToMutate[txn] = txn.monthsToPay!;
+        }
+      }
+
+      // 3.3. For each while...loop, this thing here is used as a temp list to not add installment-to-pay
+      // in the same statement with the spending-registered-with-installment
       final installmentsToAddToStatement = <Installment>[
         for (final entry in installmentCountsMapToMutate.entries) Installment(entry.key, entry.value)
       ];
 
+      // 3.4. For each while...loop, Create a list.
       final txnsInGracePeriod = <BaseCreditTransaction>[];
       final txnsInBillingCycle = <BaseCreditTransaction>[];
 
-      // Loop each transaction to add to statement
+      // 3.5. For each while...loop, loop each transaction to add to statement
       for (int i = 0; i <= accountTransactionsList.length - 1; i++) {
         final txn = accountTransactionsList[i];
 
@@ -287,13 +308,14 @@ extension CreditAccountExtension on Account {
         }
 
         // TODO: should let user choose when to start
-        if (txn is CreditSpending && txn.hasInstallment) {
+        if (txn is CreditSpending && txn.hasInstallment && txn.paymentStartFromNextStatement) {
           installmentCountsMapToMutate[txn] = txn.monthsToPay!;
         }
 
         txnsInBillingCycle.add(txn);
       }
 
+      // 3.6. For each while...loop, Create statement after the loop in 3.4 is done.
       Statement statement = Statement.create(
         statementType,
         previousStatement: previousStatement,
@@ -307,8 +329,10 @@ extension CreditAccountExtension on Account {
         txnsInGracePeriod: txnsInGracePeriod,
       );
 
+      // 3.7. For each while...loop, add statement to list create in 1.
       statementsList.add(statement);
 
+      // 3.8. For each while...loop, update `installmentCountsMapToMutate`
       installmentCountsMapToMutate.updateAll((txn, counts) => counts - 1);
 
       installmentCountsMapToMutate.removeWhere((txn, counts) => counts < 0);
@@ -316,6 +340,7 @@ extension CreditAccountExtension on Account {
       startDate = startDate.copyWith(month: startDate.month + 1);
     }
 
+    // 4. Return the statement list
     return statementsList;
   }
 
