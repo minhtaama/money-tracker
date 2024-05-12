@@ -25,7 +25,7 @@ enum DashboardWidgetType {
       DashboardWidgetType.monthlyExpense => AppIcons.reports,
       DashboardWidgetType.monthlyIncome => AppIcons.reports,
       DashboardWidgetType.budgets => AppIcons.budgets,
-      DashboardWidgetType.upcomingTransactions => AppIcons.switchIcon,
+      DashboardWidgetType.upcomingTransactions => AppIcons.recurrence,
     };
   }
 

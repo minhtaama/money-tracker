@@ -3,6 +3,7 @@ import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
@@ -154,14 +155,16 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
         toolBarHeight: 50,
-        toolBar: _StatementSelector(
+        toolBar: CustomPageToolBar(
           isToday: _currentPageIndex == _initialPageIndex,
-          dateDisplay: _displayStatementDate.toShortDate(context),
+          displayDate: _displayStatementDate,
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
-          onTapGoToCurrentDate: () {
+          onDateTap: () {
             _animatedToPage(_initialPageIndex);
           },
+          topTitle: 'Statement date'.hardcoded,
+          title: _displayStatementDate.toShortDate(context),
         ),
         itemBuilder: (context, ref, pageIndex) {
           final currentDateTime =

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/components/extended_tab.dart';
@@ -154,11 +155,13 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
         onPageChanged: _onPageChange,
-        toolBar: _DateSelector(
+        toolBar: CustomPageToolBar(
           displayDate: _currentDisplayDate,
           onTapLeft: _previousPage,
           onTapRight: _nextPage,
           onDateTap: () => _animatedToPage(_initialPageIndex),
+          topTitle: _currentDisplayDate.year.toString(),
+          title: _currentDisplayDate.monthToString(context),
         ),
         itemBuilder: (context, ref, pageIndex) {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
@@ -175,122 +178,6 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
 
           return _buildTransactionWidgetList(transactionList, dayBeginOfMonth, dayEndOfMonth);
         },
-      ),
-    );
-  }
-}
-
-class _DateSelector extends StatelessWidget {
-  const _DateSelector({
-    required this.displayDate,
-    this.onTapLeft,
-    this.onTapRight,
-    this.onDateTap,
-  });
-
-  final DateTime displayDate;
-  final VoidCallback? onTapLeft;
-  final VoidCallback? onTapRight;
-  final VoidCallback? onDateTap;
-
-  @override
-  Widget build(BuildContext context) {
-    bool today = displayDate.onlyYearMonth.isAtSameMomentAs(DateTime.now().onlyYearMonth);
-
-    return Center(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Gap.w24,
-          Expanded(
-            child: GestureDetector(
-              onTap: onDateTap,
-              child: SizedBox(
-                width: 200,
-                child: AnimatedSwitcher(
-                  duration: k150msDuration,
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: Tween<double>(
-                        begin: 0,
-                        end: 1,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  child: Row(
-                    key: ValueKey(displayDate.toLongDate(context, noDay: true)),
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 0),
-                            child: Text(
-                              displayDate.year.toString(),
-                              style: kHeader3TextStyle.copyWith(
-                                color: context.appTheme.onBackground.withOpacity(0.9),
-                                fontSize: 13,
-                                letterSpacing: 0.5,
-                                height: 0.99,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                displayDate.monthToString(context),
-                                style: kHeader1TextStyle.copyWith(
-                                  color: context.appTheme.onBackground.withOpacity(0.9),
-                                  fontSize: 22,
-                                  letterSpacing: 0.6,
-                                  height: 1.2,
-                                ),
-                              ),
-                              Gap.w8,
-                              !today
-                                  ? Transform.translate(
-                                      offset: const Offset(0, 2),
-                                      child: SvgIcon(
-                                        AppIcons.turn,
-                                        color: context.appTheme.onBackground,
-                                        size: 20,
-                                      ),
-                                    )
-                                  : Gap.noGap,
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Spacer(),
-          RoundedIconButton(
-            iconPath: AppIcons.arrowLeft,
-            iconColor: context.appTheme.onBackground,
-            onTap: onTapLeft,
-            backgroundColor: Colors.transparent,
-            size: 30,
-            iconPadding: 5,
-          ),
-          Gap.w16,
-          RoundedIconButton(
-            iconPath: AppIcons.arrowRight,
-            iconColor: context.appTheme.onBackground,
-            onTap: onTapRight,
-            backgroundColor: Colors.transparent,
-            size: 30,
-            iconPadding: 5,
-          ),
-          Gap.w16,
-        ],
       ),
     );
   }
