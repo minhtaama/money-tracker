@@ -156,8 +156,9 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                             ? CalService.formatNumberInGroup((initialValues[1] as double).toString())
                             : ''),
                   ),
+                  Gap.h8,
                   CustomCheckbox(
-                    label: 'Start payment in next statement',
+                    label: 'Payment start from next statement',
                     initialValue: (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
                     onChanged: onChangePaymentStartFromNextStatement,
                   ),

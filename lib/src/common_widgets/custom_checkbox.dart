@@ -55,6 +55,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
               child: IntrinsicWidth(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Checkbox(
                       activeColor: context.appTheme.secondary1,
@@ -76,26 +77,29 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                       },
                     ),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _value = !_value;
-                            widget.onChanged(_value);
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                widget.label,
-                                style: widget.labelStyle ??
-                                    kHeader3TextStyle.copyWith(
-                                        fontSize: 15, color: context.appTheme.onBackground.withOpacity(0.6)),
+                      child: Transform.translate(
+                        offset: Offset(0, widget.optionalWidget != null ? 9 : 3),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _value = !_value;
+                              widget.onChanged(_value);
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.label,
+                                  style: widget.labelStyle ??
+                                      kHeader3TextStyle.copyWith(
+                                          fontSize: 15, color: context.appTheme.onBackground.withOpacity(0.6)),
+                                ),
                               ),
-                            ),
-                            Gap.w8,
-                            widget.labelSuffix ?? Gap.noGap
-                          ],
+                              Gap.w8,
+                              widget.labelSuffix ?? Gap.noGap
+                            ],
+                          ),
                         ),
                       ),
                     ),

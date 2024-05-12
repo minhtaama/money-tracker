@@ -260,7 +260,7 @@ extension CreditAccountExtension on Account {
         }
 
         if (txn is CreditSpending && txn.hasInstallment && !txn.paymentStartFromNextStatement) {
-          installmentCountsMapToMutate[txn] = txn.monthsToPay!;
+          installmentCountsMapToMutate[txn] = txn.monthsToPay! - 1;
         }
       }
 
