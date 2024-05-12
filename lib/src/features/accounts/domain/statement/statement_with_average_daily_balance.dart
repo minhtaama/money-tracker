@@ -178,7 +178,7 @@ class StatementWithAverageDailyBalance extends Statement {
     } else {
       x = startPoint.remainingToPay +
           carry.interest +
-          installmentsToPay +
+          installmentsToPayAt(dateTime) +
           spentInBillingCycleBeforeDateTimeExcludeInstallments +
           spentInGracePeriodBeforeDateTimeExcludeInstallments -
           _rawPaid.inGracePeriod -

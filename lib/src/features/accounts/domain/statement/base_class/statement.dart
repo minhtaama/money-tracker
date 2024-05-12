@@ -238,8 +238,9 @@ extension StatementGetters on Statement {
       );
 
   /// ## Installments to pay.
+  /// Calculate total installment to pay in this statement
   ///
-  /// Included in [endPoint.spentToPay], [balance] and [balanceToPayAt]
+  /// Included in [endPoint.spentToPay], [balance]
   ///
   ///TODO: modify the can pay in current statement
   double get installmentsToPay {
@@ -252,6 +253,48 @@ extension StatementGetters on Statement {
     for (CreditSpending txn in installmentTransactions) {
       amount += txn.paymentAmount!;
     }
+    return amount;
+  }
+
+  /// ## Installments to pay.
+  /// Calculate total installment at a specific dateTime.
+  /// Need this because some [CreditSpending] is allow to pay for installment in
+  /// the same statement.
+  ///
+  /// Included in [balanceToPayAt]
+  ///
+  double installmentsToPayAt(DateTime dateTime) {
+    double amount = 0;
+
+    final installmentFromPreviousStatementTransactions = transactions.installmentsToPay
+        .where((instm) {
+          if (instm.txn.paymentStartFromNextStatement) {
+            return instm.monthsLeft <= instm.txn.monthsToPay! - 1;
+          } else {
+            return instm.monthsLeft <= instm.txn.monthsToPay! - 2;
+          }
+        })
+        .map((instm) => instm.txn)
+        .toList();
+
+    final installmentsOfThisStatementTransactions = transactions.installmentsToPay
+        .where(
+          (instm) =>
+              !instm.txn.paymentStartFromNextStatement &&
+              instm.monthsLeft == instm.txn.monthsToPay! - 1 &&
+              instm.txn.dateTime.isBefore(dateTime),
+        )
+        .map((instm) => instm.txn)
+        .toList();
+
+    for (CreditSpending txn in installmentFromPreviousStatementTransactions) {
+      amount += txn.paymentAmount!;
+    }
+
+    for (CreditSpending txn in installmentsOfThisStatementTransactions) {
+      amount += txn.paymentAmount!;
+    }
+
     return amount;
   }
 
