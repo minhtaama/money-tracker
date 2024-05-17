@@ -25,8 +25,7 @@ import '../../../../selectors/presentation/forms.dart';
 import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
-      {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -40,8 +39,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -75,6 +73,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           type: _recurrenceForm!.type!,
           interval: _recurrenceForm!.interval,
           patterns: _recurrenceForm!.patterns,
+          startOn: _recurrenceForm!.startOn,
           endOn: _recurrenceForm!.endOn,
           autoCreateTransaction: _recurrenceForm!.autoCreateTransaction,
           transactionType: widget.transactionType,
@@ -227,9 +226,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Expanded(
               child: CalculatorInput(
                 hintText: 'Amount',
-                initialValue: stateWatch.amount != null
-                    ? CalService.formatCurrency(context, stateWatch.amount!)
-                    : null,
+                initialValue: stateWatch.amount != null ? CalService.formatCurrency(context, stateWatch.amount!) : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -299,9 +296,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
-                              ? stateWatch.account
-                              : null,
+                          otherSelectedAccount:
+                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
                         ),
                 ],
               ),
