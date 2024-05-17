@@ -121,12 +121,10 @@ class _TransactionListState extends State<_TransactionList> {
           txnDateTime.isAtSameMomentAs(_today)) {
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
         _addInstallmentsOfCurrentTransaction(list, txn, statement);
-        //TODO: HERE
       } else {
         tempDate = txnDateTime;
         list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
         _addInstallmentsOfCurrentTransaction(list, txn, statement);
-        //TODO: HERE
       }
 
       if (i == statement.transactions.inBillingCycle.length - 1 && triggerAddPreviousDueDateHeader) {

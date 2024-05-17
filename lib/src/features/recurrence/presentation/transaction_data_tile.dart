@@ -70,7 +70,7 @@ class TransactionDataTile extends ConsumerWidget {
                     showDateTime: showDateTime,
                   ),
               },
-              smaller ? Gap.noGap : _CategoryTag(model: model),
+              smaller ? Gap.noGap : _CategoryTagAndNote(model: model),
             ],
           ),
         ),
@@ -241,8 +241,8 @@ class _CategoryName extends StatelessWidget {
   }
 }
 
-class _CategoryTag extends StatelessWidget {
-  const _CategoryTag({required this.model});
+class _CategoryTagAndNote extends StatelessWidget {
+  const _CategoryTagAndNote({required this.model});
 
   final TransactionData model;
 
@@ -257,15 +257,30 @@ class _CategoryTag extends StatelessWidget {
 
     return notBoth
         ? Gap.noGap
-        : Text(
-            '$categoryTag${hasBoth ? ' / ' : ''}$note',
-            style: kHeader3TextStyle.copyWith(
-              fontSize: 11,
-              color: context.appTheme.onBackground.withOpacity(0.65),
-            ),
-            softWrap: true,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              model.categoryTag != null
+                  ? Transform.translate(
+                      offset: const Offset(0, 1),
+                      child: SvgIcon(
+                        AppIcons.arrowBendDown,
+                        size: 15,
+                        color: context.appTheme.onBackground.withOpacity(0.65),
+                      ),
+                    )
+                  : Gap.noGap,
+              Text(
+                '$categoryTag${hasBoth ? ' / ' : ''}$note',
+                style: kHeader3TextStyle.copyWith(
+                  fontSize: 11,
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                ),
+                softWrap: true,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           );
   }
 }

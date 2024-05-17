@@ -1,3 +1,4 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -180,7 +181,7 @@ class TxnCategoryName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       _name,
-      style: kHeader3TextStyle.copyWith(
+      style: kHeader2TextStyle.copyWith(
         fontSize: fontSize ?? 13,
         color: context.appTheme.onBackground,
       ),
@@ -216,14 +217,14 @@ class TxnCategoryTag extends StatelessWidget {
                 child: SvgIcon(
                   AppIcons.arrowBendDown,
                   size: 15,
-                  color: context.appTheme.onBackground.withOpacity(0.65),
+                  color: context.appTheme.onBackground,
                 ),
               ),
               Text(
                 _categoryTag!,
                 style: kHeader3TextStyle.copyWith(
                   fontSize: fontSize ?? 12,
-                  color: context.appTheme.onBackground.withOpacity(0.65),
+                  color: context.appTheme.onBackground,
                 ),
                 softWrap: false,
                 overflow: TextOverflow.fade,
@@ -328,7 +329,7 @@ class TxnToAccountName extends ConsumerWidget {
 
     return Text(
       name(),
-      style: kHeader3TextStyle.copyWith(
+      style: kHeader2TextStyle.copyWith(
           color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
           fontSize: 12),
       softWrap: false,
@@ -398,18 +399,24 @@ class TxnNote extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
-            child: Transform.translate(
-              offset: const Offset(0, -1),
-              child: Text(
-                transaction.note!,
-                style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.65),
-                  fontSize: 12,
-                ),
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
-                maxLines: 2,
+            child: EasyRichText(
+              'Note: ${transaction.note!}',
+              defaultStyle: kHeader4TextStyle.copyWith(
+                color: context.appTheme.onBackground.withOpacity(0.65),
+                fontSize: 12,
               ),
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+              maxLines: 2,
+              patternList: [
+                EasyRichTextPattern(
+                  targetString: 'Note:',
+                  style: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           )
         : Gap.noGap;
