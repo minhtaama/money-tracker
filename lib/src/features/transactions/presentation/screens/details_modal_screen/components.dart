@@ -385,9 +385,22 @@ class _CategoryCard extends StatelessWidget {
                         style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
                       ),
                       categoryTag != null && categoryTag != CategoryTag.noTag
-                          ? Text(
-                              '# ${categoryTag!.name}',
-                              style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
+                          ? Row(
+                              children: [
+                                Transform.translate(
+                                  offset: const Offset(0, 1),
+                                  child: SvgIcon(
+                                    AppIcons.arrowBendDown,
+                                    size: 20,
+                                    color: context.appTheme.onBackground,
+                                  ),
+                                ),
+                                Gap.w4,
+                                Text(
+                                  categoryTag!.name,
+                                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
+                                ),
+                              ],
                             )
                           : const SizedBox(),
                     ],

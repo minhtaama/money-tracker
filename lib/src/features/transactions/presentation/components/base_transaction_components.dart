@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
@@ -199,9 +200,7 @@ class TxnCategoryTag extends StatelessWidget {
     final txn = transaction;
     switch (txn) {
       case IBaseTransactionWithCategory():
-        return (txn as IBaseTransactionWithCategory).categoryTag != null
-            ? '# ${(txn as IBaseTransactionWithCategory).categoryTag!.name}'
-            : null;
+        return (txn as IBaseTransactionWithCategory).categoryTag?.name;
       case Transfer() || CreditPayment() || CreditCheckpoint():
         return null;
     }
@@ -210,14 +209,26 @@ class TxnCategoryTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _categoryTag != null
-        ? Text(
-            _categoryTag!,
-            style: kHeader3TextStyle.copyWith(
-              fontSize: fontSize ?? 12,
-              color: context.appTheme.onBackground.withOpacity(0.65),
-            ),
-            softWrap: false,
-            overflow: TextOverflow.fade,
+        ? Row(
+            children: [
+              Transform.translate(
+                offset: const Offset(0, 1),
+                child: SvgIcon(
+                  AppIcons.arrowBendDown,
+                  size: 15,
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                ),
+              ),
+              Text(
+                _categoryTag!,
+                style: kHeader3TextStyle.copyWith(
+                  fontSize: fontSize ?? 12,
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                ),
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+            ],
           )
         : Gap.noGap;
   }

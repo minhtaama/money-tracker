@@ -35,6 +35,7 @@ class AppIcons {
   static String get eyeSlash => 'assets/svg/app/hide.svg';
   static String get arrowLeft => 'assets/svg/app/arrow-left.svg';
   static String get arrowRight => 'assets/svg/app/arrow-right.svg';
+  static String get arrowBendDown => 'assets/svg/app/arrow-bend-down.svg';
   static String get filter => 'assets/svg/app/no-filter.svg';
   static String get filterTick => 'assets/svg/app/filter.svg';
   static String get settings => 'assets/svg/app/setting.svg';
