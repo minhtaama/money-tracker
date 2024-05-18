@@ -181,7 +181,7 @@ class _TileState extends ConsumerState<_Tile> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.model.category?.backgroundColor ?? AppColors.greyBgr(context);
+    final color = widget.model.category?.backgroundColor ?? AppColors.grey(context);
     final onColor = widget.model.category?.iconColor ?? context.appTheme.onBackground;
 
     return HideableContainer(

@@ -43,7 +43,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
   final bool autoCreateTransaction;
 
-  /// This [transactionData.dateTime] and [transactionData.state] is `null`
+  /// This [transactionData.statement] and [transactionData.state] is `null`
   final TransactionData transactionData;
 
   /// This function evaluates the [_patterns] and returns [TransactionData] objects

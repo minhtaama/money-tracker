@@ -39,14 +39,11 @@ class DashboardScreen extends StatelessWidget {
   Widget _getChild(BuildContext context, DashboardWidgetType type) {
     return switch (type) {
       DashboardWidgetType.menu => context.isBigScreen ? Gap.noGap : const _DashboardMenu2(),
-      DashboardWidgetType.weeklyReport => const DashboardWidget(title: 'Weekly Report', child: WeeklyBarChartWidget()),
-      DashboardWidgetType.monthlyExpense =>
-        const DashboardWidget(title: 'Monthly Expense', child: ExpensePieChartWidget()),
-      DashboardWidgetType.monthlyIncome =>
-        const DashboardWidget(title: 'Monthly Income', child: IncomePieChartWidget()),
-      DashboardWidgetType.budgets => const DashboardWidget(title: 'Current Budgets', child: BudgetsWidget()),
-      DashboardWidgetType.upcomingTransactions =>
-        const DashboardWidget(title: 'Upcoming Transactions', child: UpcomingWidget()),
+      DashboardWidgetType.weeklyReport => WeeklyBarChartWidget(),
+      DashboardWidgetType.monthlyExpense => ExpensePieChartWidget(),
+      DashboardWidgetType.monthlyIncome => IncomePieChartWidget(),
+      DashboardWidgetType.budgets => BudgetsWidget(),
+      DashboardWidgetType.upcomingTransactions => UpcomingWidget(),
     };
   }
 

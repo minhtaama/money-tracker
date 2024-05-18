@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/application/custom_pie_chart_services.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_pie_chart.dart';
+import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -75,59 +76,62 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
           .toList();
     }
 
-    return SizedBox(
-      height: 160,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: CustomPieChart(
-              values: map,
-              center: SvgIcon(
-                AppIcons.download,
-                color: context.appTheme.positive.withOpacity(0.65),
-                size: 25,
+    return DashboardWidget(
+      title: 'Monthly income'.hardcoded,
+      child: SizedBox(
+        height: 160,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: CustomPieChart(
+                values: map,
+                center: SvgIcon(
+                  AppIcons.download,
+                  color: context.appTheme.positive.withOpacity(0.65),
+                  size: 25,
+                ),
+                onChartTap: (index) {
+                  setState(() {
+                    _touchedIndex = index;
+                  });
+                },
               ),
-              onChartTap: (index) {
-                setState(() {
-                  _touchedIndex = index;
-                });
-              },
             ),
-          ),
-          Gap.w16,
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...labels(_touchedIndex),
-                  const Spacer(),
-                  AnimatedOpacity(
-                    opacity: _touchedIndex == -1 ? 1 : 0,
-                    duration: k250msDuration,
-                    child: Text(
-                      'TOTAL:',
-                      style: kHeader1TextStyle.copyWith(
-                          fontSize: 10, color: context.appTheme.onBackground.withOpacity(0.65)),
+            Gap.w16,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...labels(_touchedIndex),
+                    const Spacer(),
+                    AnimatedOpacity(
+                      opacity: _touchedIndex == -1 ? 1 : 0,
+                      duration: k250msDuration,
+                      child: Text(
+                        'TOTAL:',
+                        style: kHeader1TextStyle.copyWith(
+                            fontSize: 10, color: context.appTheme.onBackground.withOpacity(0.65)),
+                      ),
                     ),
-                  ),
-                  MoneyAmount(
-                    amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
-                    style: kHeader1TextStyle.copyWith(
-                        color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
-                    symbolStyle: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.positive.withOpacity(0.8), fontSize: 20),
-                    overflow: TextOverflow.fade,
-                    maxLines: 1,
-                  ),
-                  Gap.h8,
-                ],
+                    MoneyAmount(
+                      amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
+                      style:
+                          kHeader1TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
+                      symbolStyle:
+                          kHeader3TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 20),
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                    ),
+                    Gap.h8,
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

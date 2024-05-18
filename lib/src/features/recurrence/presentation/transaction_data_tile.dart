@@ -42,7 +42,8 @@ class TransactionDataTile extends ConsumerWidget {
     };
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment:
+          model.note != null || model.categoryTag != null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 4.0),
