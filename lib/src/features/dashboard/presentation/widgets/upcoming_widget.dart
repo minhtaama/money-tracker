@@ -31,7 +31,8 @@ class UpcomingWidget extends ConsumerWidget {
 
     final creditAccountList = accountRepo.getList(AccountType.credit).whereType<CreditAccount>();
 
-    final recList = recRepo.getRecurrences();
+    final recList =
+        recRepo.getRecurrences().where((rec) => rec.getAllPlannedTransactionsInMonth(context, today).isNotEmpty);
 
     return DashboardWidget(
       title: 'Upcoming'.hardcoded,
@@ -167,7 +168,7 @@ class UpcomingWidget extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Payment for credit account:'.hardcoded,
+                            'Payment for:'.hardcoded,
                             style: kHeader3TextStyle.copyWith(
                               fontSize: 11,
                               color: context.appTheme.onBackground.withOpacity(0.65),
