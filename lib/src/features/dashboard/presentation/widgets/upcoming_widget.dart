@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/statement/base_class/statement.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
-import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
