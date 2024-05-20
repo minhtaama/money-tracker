@@ -35,7 +35,6 @@ class UpcomingWidget extends ConsumerWidget {
 
     return DashboardWidget(
       title: 'Upcoming'.hardcoded,
-      emptyTitle: 'No credit accounts or planned transactions'.hardcoded,
       isEmpty: creditAccountList.isEmpty && recList.isEmpty,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 300),

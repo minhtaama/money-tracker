@@ -1,10 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../../common_widgets/svg_icon.dart';
+import '../../../theme_and_ui/colors.dart';
 
 class CustomPieChart extends StatefulWidget {
   const CustomPieChart({
@@ -78,7 +80,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                   BoxShadow(
                     color: context.appTheme.background0.withOpacity(0.55),
                     blurRadius: 3,
-                  ),
+                  )
                 ],
               ),
               child: FittedBox(
@@ -124,7 +126,9 @@ class _CustomPieChartState extends State<CustomPieChart> {
                         //   _touchedIndex = -1;
                         //   return;
                         // }
-                        if (event.isInterestedForInteractions && pieTouchResponse != null && event is FlTapDownEvent) {
+                        if (event.isInterestedForInteractions &&
+                            pieTouchResponse != null &&
+                            event is FlTapDownEvent) {
                           if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
                             _touchedIndex = -1;
                           } else {
