@@ -25,7 +25,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   final List<DateTime> _selectedDateTimes = [];
 
   _ReportType _type = _ReportType.month;
-  CalendarDatePicker2Type _calendarType = CalendarDatePicker2Type.range;
 
   @override
   Widget build(BuildContext context) {
