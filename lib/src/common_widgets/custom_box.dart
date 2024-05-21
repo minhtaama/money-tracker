@@ -29,7 +29,7 @@ class CustomBox extends StatelessWidget {
       margin: hide ? EdgeInsets.zero : margin ?? EdgeInsets.zero,
       padding: hide ? EdgeInsets.zero : padding ?? const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color ?? (context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1),
+        color: color ?? Colors.transparent,
         border: Border.all(
           color: context.appTheme.onBackground.withOpacity(hide ? 0.0 : 0.3),
         ),

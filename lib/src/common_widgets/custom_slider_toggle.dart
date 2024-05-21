@@ -45,8 +45,9 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _rootSizedBoxWidth = _rootSizedBoxKey.currentContext!.size!.width;
-      setState(() {});
+      setState(() {
+        _rootSizedBoxWidth = _rootSizedBoxKey.currentContext!.size!.width;
+      });
     });
     currentValueIndex = widget.initialValueIndex;
   }
@@ -54,68 +55,79 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
   @override
   Widget build(BuildContext context) {
     double togglePosition = currentValueIndex / (widget.values.length - 1);
-    return SizedBox(
-      key: _rootSizedBoxKey,
-      height: widget.height,
-      width: double.infinity,
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              color: AppColors.greyBgr(context),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: AnimatedSlide(
-              duration: k150msDuration,
-              curve: Curves.fastOutSlowIn,
-              offset: Offset(togglePosition, 0),
-              child: SizedBox(
-                height: widget.height,
-                width: _rootSizedBoxWidth / widget.values.length,
-                child: CardItem(
-                  margin: EdgeInsets.zero,
-                  elevation: 1.5,
-                  isGradient: true,
+    return NotificationListener<SizeChangedLayoutNotification>(
+      onNotification: (notification) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          setState(() {
+            _rootSizedBoxWidth = _rootSizedBoxKey.currentContext!.size!.width;
+          });
+        });
+        return true;
+      },
+      child: SizeChangedLayoutNotifier(
+        child: SizedBox(
+          key: _rootSizedBoxKey,
+          height: widget.height,
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  color: widget.toggleColor ?? context.appTheme.accent1,
+                  color: AppColors.greyBgr(context),
                 ),
               ),
-            ),
-          ),
-          Row(
-            children: List.generate(
-                widget.values.length,
-                (index) => Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          setState(() {
-                            currentValueIndex = index;
-                            widget.onTap(widget.values[currentValueIndex]);
-                          });
-                        },
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: AnimatedDefaultTextStyle(
-                            duration: k150msDuration,
-                            curve: Curves.fastOutSlowIn,
-                            style: kHeader2TextStyle.copyWith(
-                              fontSize: widget.fontSize ?? 16,
-                              fontFamily: 'WixMadeforDisplay',
-                              color: currentValueIndex == index
-                                  ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
-                                  : widget.labelsOnBackgroundColor ?? context.appTheme.onBackground,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: AnimatedSlide(
+                  duration: k150msDuration,
+                  curve: Curves.fastOutSlowIn,
+                  offset: Offset(togglePosition, 0),
+                  child: SizedBox(
+                    height: widget.height,
+                    width: _rootSizedBoxWidth / widget.values.length,
+                    child: CardItem(
+                      margin: EdgeInsets.zero,
+                      elevation: 1.5,
+                      isGradient: true,
+                      borderRadius: BorderRadius.circular(100),
+                      color: widget.toggleColor ?? context.appTheme.accent1,
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                children: List.generate(
+                    widget.values.length,
+                    (index) => Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              setState(() {
+                                currentValueIndex = index;
+                                widget.onTap(widget.values[currentValueIndex]);
+                              });
+                            },
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: AnimatedDefaultTextStyle(
+                                duration: k150msDuration,
+                                curve: Curves.fastOutSlowIn,
+                                style: kHeader2TextStyle.copyWith(
+                                  fontSize: widget.fontSize ?? 16,
+                                  fontFamily: 'WixMadeforDisplay',
+                                  color: currentValueIndex == index
+                                      ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
+                                      : widget.labelsOnBackgroundColor ?? context.appTheme.onBackground,
+                                ),
+                                child: Text(widget.labels[index]),
+                              ),
                             ),
-                            child: Text(widget.labels[index]),
                           ),
-                        ),
-                      ),
-                    )),
-          )
-        ],
+                        )),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

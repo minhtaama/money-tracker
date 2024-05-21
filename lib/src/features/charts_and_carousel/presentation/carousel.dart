@@ -45,22 +45,6 @@ class _TextCarouselState extends State<TextCarousel> {
   late int _currentPageIndex = widget.controller.initialPage;
   late double _betweenButtonsGap = 0;
 
-  Widget _defaultTransitionBuilder(Widget child, Animation<double> animation) {
-    return FadeTransition(
-      opacity: Tween<double>(
-        begin: 0,
-        end: 1,
-      ).animate(animation),
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.5),
-          end: const Offset(0, 0),
-        ).animate(animation),
-        child: child,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
