@@ -11,12 +11,14 @@ import 'package:money_tracker_app/src/features/category/presentation/categories_
 import 'package:money_tracker_app/src/features/dashboard/presentation/dashboard_edit_modal_screen.dart';
 import 'package:money_tracker_app/src/features/recurrence/presentation/planned_transactions_modal_screen.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/select_icon_screen.dart';
+import 'package:money_tracker_app/src/features/reports/presentation/reports_screen.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/select_currency_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/related_budget.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_credit_payment_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/add_model_screen/add_regular_txn_modal_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/screens/details_modal_screen/transaction_details_modal_screen.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../common_widgets/custom_navigation_bar/bottom_app_bar/custom_bottom_app_bar.dart';
 import '../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import '../common_widgets/custom_navigation_bar/navigation_rail/custom_navigation_rail.dart';
@@ -51,6 +53,7 @@ class RoutePath {
   static const String addAccount = '/dashboard/accounts/addAccount';
   static const String budgets = '/dashboard/budgets';
   static const String addBudget = '/dashboard/budgets/addBudget';
+  static const String reports = '/dashboard/reports';
   static const String transaction = '/transaction';
   static const String editDashboard = '/editDashboard';
   static const String plannedTransactions = '/plannedTransactions';
@@ -127,6 +130,11 @@ List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
         path: RoutePath.categories,
         iconData: AppIcons.categories,
         text: context.loc.categories,
+      ),
+      NavigationRailItem(
+        path: RoutePath.reports,
+        iconData: AppIcons.reports,
+        text: 'Reports'.hardcoded,
       ),
     ];
 
@@ -310,6 +318,29 @@ final goRouter = GoRouter(
                         builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'reports',
+                  parentNavigatorKey: _railNavKey,
+                  pageBuilder: (context, state) => CustomAppPage(
+                    key: state.pageKey,
+                    child: const ReportsScreen(),
+                  ),
+                  routes: const [
+                    // GoRoute(
+                    //   path: 'budgetScreen',
+                    //   parentNavigatorKey: _rootNavKey,
+                    //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
+                    // ),
+                    // GoRoute(
+                    //   path: 'addBudget',
+                    //   parentNavigatorKey: _railNavKey,
+                    //   pageBuilder: (context, state) => CustomAppModalPage(
+                    //     key: state.pageKey,
+                    //     builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],

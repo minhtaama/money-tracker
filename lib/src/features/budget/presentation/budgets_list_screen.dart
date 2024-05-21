@@ -53,32 +53,29 @@ class BudgetsListScreen extends ConsumerWidget {
             ];
     }
 
-    return Scaffold(
-      backgroundColor: context.appTheme.background1,
-      body: CustomPage(
-        smallTabBar: SmallTabBar(
-          child: PageHeading(
-            isTopLevelOfNavigationRail: true,
-            title: 'Budgets',
-            trailing: RoundedIconButton(
-              iconPath: AppIcons.add,
-              iconColor: context.appTheme.onBackground,
-              backgroundColor: context.appTheme.background0,
-              onTap: () => context.push(RoutePath.addBudget),
-            ),
+    return CustomPage(
+      smallTabBar: SmallTabBar(
+        child: PageHeading(
+          isTopLevelOfNavigationRail: true,
+          title: 'Budgets',
+          trailing: RoundedIconButton(
+            iconPath: AppIcons.add,
+            iconColor: context.appTheme.onBackground,
+            backgroundColor: context.appTheme.background0,
+            onTap: () => context.push(RoutePath.addBudget),
           ),
         ),
-        children: [
-          CustomSection(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            isWrapByCard: false,
-            onReorder: (oldIndex, newIndex) {
-              budgetRepo.reorder(oldIndex, newIndex);
-            },
-            sections: buildBudgetTiles(context, CategoryType.income),
-          ),
-        ],
       ),
+      children: [
+        CustomSection(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          isWrapByCard: false,
+          onReorder: (oldIndex, newIndex) {
+            budgetRepo.reorder(oldIndex, newIndex);
+          },
+          sections: buildBudgetTiles(context, CategoryType.income),
+        ),
+      ],
     );
   }
 }
@@ -91,8 +88,7 @@ class _BudgetTile extends StatelessWidget {
   List<Widget> _assignedModels() {
     return switch (model) {
       AccountBudget() => (model as AccountBudget).accounts.map((e) => _AssignedModel(model: e)).toList(),
-      CategoryBudget() =>
-        (model as CategoryBudget).categories.map((e) => _AssignedModel(model: e)).toList(),
+      CategoryBudget() => (model as CategoryBudget).categories.map((e) => _AssignedModel(model: e)).toList(),
     };
   }
 
@@ -132,8 +128,7 @@ class _BudgetTile extends StatelessWidget {
           Gap.h4,
           Text(
             'Budget:'.hardcoded,
-            style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
           ),
           Gap.h4,
           Row(
@@ -158,8 +153,7 @@ class _BudgetTile extends StatelessWidget {
           Gap.h8,
           Text(
             model is AccountBudget ? 'Assigned accounts:'.hardcoded : 'Assigned categories:'.hardcoded,
-            style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
           ),
           Gap.h8,
           Wrap(

@@ -64,42 +64,39 @@ class CategoriesListScreen extends ConsumerWidget {
             ];
     }
 
-    return Scaffold(
-      backgroundColor: context.appTheme.background1,
-      body: CustomPage(
-        smallTabBar: SmallTabBar(
-          child: PageHeading(
-            isTopLevelOfNavigationRail: true,
-            title: 'Categories',
-            trailing: RoundedIconButton(
-              iconPath: AppIcons.add,
-              iconColor: context.appTheme.onBackground,
-              backgroundColor: context.appTheme.background0,
-              onTap: () => context.push(RoutePath.addCategory),
-            ),
+    return CustomPage(
+      smallTabBar: SmallTabBar(
+        child: PageHeading(
+          isTopLevelOfNavigationRail: true,
+          title: 'Categories',
+          trailing: RoundedIconButton(
+            iconPath: AppIcons.add,
+            iconColor: context.appTheme.onBackground,
+            backgroundColor: context.appTheme.background0,
+            onTap: () => context.push(RoutePath.addCategory),
           ),
         ),
-        children: [
-          CustomSection(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            isWrapByCard: false,
-            title: 'Income',
-            onReorder: (oldIndex, newIndex) {
-              categoryRepository.reorder(CategoryType.income, oldIndex, newIndex);
-            },
-            sections: buildCategoryTiles(context, CategoryType.income),
-          ),
-          CustomSection(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            isWrapByCard: false,
-            title: 'Expense',
-            onReorder: (oldIndex, newIndex) {
-              categoryRepository.reorder(CategoryType.expense, oldIndex, newIndex);
-            },
-            sections: buildCategoryTiles(context, CategoryType.expense),
-          )
-        ],
       ),
+      children: [
+        CustomSection(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          isWrapByCard: false,
+          title: 'Income',
+          onReorder: (oldIndex, newIndex) {
+            categoryRepository.reorder(CategoryType.income, oldIndex, newIndex);
+          },
+          sections: buildCategoryTiles(context, CategoryType.income),
+        ),
+        CustomSection(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          isWrapByCard: false,
+          title: 'Expense',
+          onReorder: (oldIndex, newIndex) {
+            categoryRepository.reorder(CategoryType.expense, oldIndex, newIndex);
+          },
+          sections: buildCategoryTiles(context, CategoryType.expense),
+        )
+      ],
     );
   }
 }

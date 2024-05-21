@@ -4,13 +4,11 @@ import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/budgets_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/expense_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/income_pie_chart_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/upcoming_widget.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/widgets/weekly_bar_chart_widget.dart';
-import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -51,14 +49,15 @@ class DashboardScreen extends StatelessWidget {
     return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
-            title: context.loc.dashboard,
-            secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
-            isTopLevelOfNavigationRail: true,
-            trailing: RoundedIconButton(
-              iconPath: AppIcons.settings,
-              iconColor: context.appTheme.onBackground,
-              onTap: () => context.go(RoutePath.settings),
-            )),
+          title: context.loc.dashboard,
+          secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
+          isTopLevelOfNavigationRail: true,
+          trailing: RoundedIconButton(
+            iconPath: AppIcons.settings,
+            iconColor: context.appTheme.onBackground,
+            onTap: () => context.go(RoutePath.settings),
+          ),
+        ),
       ),
       children: order.map<Widget>((type) {
         if (hiddenWidgets.contains(type)) {
@@ -149,7 +148,6 @@ class _DashboardMenu2 extends StatelessWidget {
                 size: 50,
                 iconPath: AppIcons.accounts,
                 iconColor: context.appTheme.onBackground,
-                reactImmediately: false,
               ),
             ),
           ),
@@ -162,7 +160,6 @@ class _DashboardMenu2 extends StatelessWidget {
                 size: 50,
                 iconPath: AppIcons.categories,
                 iconColor: context.appTheme.onBackground,
-                reactImmediately: false,
               ),
             ),
           ),
@@ -175,7 +172,6 @@ class _DashboardMenu2 extends StatelessWidget {
                 size: 50,
                 iconPath: AppIcons.budgets,
                 iconColor: context.appTheme.onBackground,
-                reactImmediately: false,
               ),
             ),
           ),
@@ -187,7 +183,18 @@ class _DashboardMenu2 extends StatelessWidget {
                 size: 50,
                 iconPath: AppIcons.savings,
                 iconColor: context.appTheme.onBackground,
-                reactImmediately: false,
+              ),
+            ),
+          ),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: RoundedIconButton(
+                onTap: () => context.go(RoutePath.reports),
+                label: 'Report'.hardcoded,
+                size: 50,
+                iconPath: AppIcons.reports,
+                iconColor: context.appTheme.onBackground,
               ),
             ),
           ),

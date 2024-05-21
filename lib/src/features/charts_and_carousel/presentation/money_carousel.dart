@@ -217,7 +217,7 @@ class _CarouselContentState extends State<_CarouselContent> {
       return '';
     }
 
-    return '${context.appSettings.currency.symbol}';
+    return context.appSettings.currency.symbol;
   }
 
   @override

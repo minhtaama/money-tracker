@@ -57,6 +57,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
     return SizedBox(
       key: _rootSizedBoxKey,
       height: widget.height,
+      width: double.infinity,
       child: Stack(
         children: [
           Container(

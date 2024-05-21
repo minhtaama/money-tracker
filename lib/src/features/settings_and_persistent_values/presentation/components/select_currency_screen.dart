@@ -24,58 +24,55 @@ class SelectCurrencyScreen extends ConsumerWidget {
       ..remove(currentCurrency)
       ..insert(0, currentCurrency);
 
-    return Scaffold(
-      backgroundColor: context.appTheme.background1,
-      body: CustomPage(
-        smallTabBar: const SmallTabBar(
-          child: PageHeading(
-            title: 'Set Currency',
-          ),
+    return CustomPage(
+      smallTabBar: const SmallTabBar(
+        child: PageHeading(
+          title: 'Set Currency',
         ),
-        children: [
-          CustomSection(
-            isWrapByCard: true,
-            sections: List.generate(
-                currencyList.length,
-                (index) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3.0),
-                      child: CustomTile(
-                        title: currencyList[index].code,
-                        secondaryTitle: currencyList[index].name,
-                        trailing: CardItem(
-                          margin: EdgeInsets.zero,
-                          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
-                          width: 50,
+      ),
+      children: [
+        CustomSection(
+          isWrapByCard: true,
+          sections: List.generate(
+              currencyList.length,
+              (index) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3.0),
+                    child: CustomTile(
+                      title: currencyList[index].code,
+                      secondaryTitle: currencyList[index].name,
+                      trailing: CardItem(
+                        margin: EdgeInsets.zero,
+                        padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+                        width: 50,
+                        color: context.appSettings.currency == currencyList[index]
+                            ? context.appTheme.primary
+                            : Colors.transparent,
+                        border: Border.all(
                           color: context.appSettings.currency == currencyList[index]
                               ? context.appTheme.primary
-                              : Colors.transparent,
-                          border: Border.all(
-                            color: context.appSettings.currency == currencyList[index]
-                                ? context.appTheme.primary
-                                : context.appTheme.onBackground,
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              currencyList[index].symbol,
-                              style: kHeader1TextStyle.copyWith(
-                                  color: context.appSettings.currency == currencyList[index]
-                                      ? context.appTheme.onPrimary
-                                      : context.appTheme.onBackground,
-                                  fontSize: 15),
-                            ),
+                              : context.appTheme.onBackground,
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            currencyList[index].symbol,
+                            style: kHeader1TextStyle.copyWith(
+                                color: context.appSettings.currency == currencyList[index]
+                                    ? context.appTheme.onPrimary
+                                    : context.appTheme.onBackground,
+                                fontSize: 15),
                           ),
                         ),
-                        onTap: () {
-                          final settingController = ref.read(settingsControllerProvider.notifier);
-                          settingController.set(currency: currencyList[index]);
-                          context.pop();
-                        },
                       ),
-                    )),
-          ),
-        ],
-      ),
+                      onTap: () {
+                        final settingController = ref.read(settingsControllerProvider.notifier);
+                        settingController.set(currency: currencyList[index]);
+                        context.pop();
+                      },
+                    ),
+                  )),
+        ),
+      ],
     );
   }
 }

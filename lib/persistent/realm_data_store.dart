@@ -28,6 +28,8 @@ class RealmDataStore {
         BalanceAtDateTimeDb.schema,
       ],
       initialDataCallback: _initialDataCallback,
+
+      // TODO: Change to false on Release
       shouldDeleteIfMigrationNeeded: true,
     );
 
@@ -40,6 +42,8 @@ class RealmDataStore {
     }
 
     _realm = Realm(_config);
+
+    _syncAppAndDatabaseDashboardOrder(_realm);
   }
 
   void _initialDataCallback(Realm realm) {
@@ -55,6 +59,32 @@ class RealmDataStore {
 
     realm.add(CategoryDb(ObjectId(), 0, 'Food and Beverage', 8, 'Food', 4, order: 0));
     realm.add(CategoryDb(ObjectId(), 1, 'Salary', 8, 'Business', 13, order: 1));
+  }
+
+  void _syncAppAndDatabaseDashboardOrder(Realm realm) {
+    realm.write(() {
+      final databasePersistent = realm.find<PersistentValuesDb>(0);
+
+      final appDashboardValues = DashboardWidgetType.values.map((e) => e.databaseValue);
+
+      if (databasePersistent != null && databasePersistent.dashboardOrder.length != appDashboardValues.length) {
+        for (int value in appDashboardValues) {
+          if (!databasePersistent.dashboardOrder.contains(value)) {
+            databasePersistent.dashboardOrder.add(value);
+          }
+        }
+
+        final toRemoveDatabaseValues = <int>[];
+        for (int databaseValue in databasePersistent.dashboardOrder) {
+          if (!appDashboardValues.contains(databaseValue)) {
+            toRemoveDatabaseValues.add(databaseValue);
+          }
+        }
+
+        databasePersistent.dashboardOrder.removeWhere((val) => toRemoveDatabaseValues.contains(val));
+        databasePersistent.hiddenDashboardWidgets.removeWhere((val) => toRemoveDatabaseValues.contains(val));
+      }
+    });
   }
 }
 

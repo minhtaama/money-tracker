@@ -164,17 +164,20 @@ class _DateSelectorState extends State<DateSelector> {
 }
 
 class CustomCalendar extends StatefulWidget {
-  const CustomCalendar(
-      {super.key,
-      required this.onValueChanged,
-      this.displayedMonthDate,
-      required this.value,
-      this.selectableDayPredicate});
+  const CustomCalendar({
+    super.key,
+    required this.onValueChanged,
+    this.displayedMonthDate,
+    required this.value,
+    this.selectableDayPredicate,
+    this.calendarType = CalendarDatePicker2Type.multi,
+  });
 
   final void Function(List<DateTime?>) onValueChanged;
   final List<DateTime> value;
   final DateTime? displayedMonthDate;
   final bool Function(DateTime)? selectableDayPredicate;
+  final CalendarDatePicker2Type calendarType;
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -191,7 +194,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       child: CalendarDatePicker2(
         config: _customConfig(
           context,
-          calendarType: CalendarDatePicker2Type.multi,
+          calendarType: widget.calendarType,
           dayBuilder: _dayBuilderRegular,
           selectableDayPredicate: widget.selectableDayPredicate,
         ),

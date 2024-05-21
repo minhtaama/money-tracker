@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
@@ -91,40 +92,39 @@ class _CustomNavigationRailState extends ConsumerState<CustomNavigationRail> {
       );
     });
 
-    return Theme(
-      data: ThemeData(useMaterial3: false),
-      child: HideableContainer(
-        hide: !widget.isShow,
-        axis: Axis.horizontal,
-        child: Container(
-          height: double.infinity,
-          decoration: BoxDecoration(
-            color: context.appTheme.background1,
-            border: Border(
-              right: BorderSide(color: context.appTheme.background2, width: 1.5),
-            ),
+    return HideableContainer(
+      hide: !widget.isShow,
+      axis: Axis.horizontal,
+      child: Container(
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: context.appTheme.background1,
+          border: Border(
+            right: BorderSide(color: context.appTheme.background2, width: 1.5),
           ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: Gap.statusBarHeight(context) + 10,
-              ),
-              SingleChildScrollView(
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: Gap.statusBarHeight(context) + 10,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: topButtons,
                 ),
               ),
-              const Spacer(),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: bottomButtons,
-              ),
-              Gap.h12,
-            ],
-          ),
+            ),
+            Gap.h12,
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: bottomButtons,
+            ),
+            Gap.h12,
+          ],
         ),
       ),
     );
