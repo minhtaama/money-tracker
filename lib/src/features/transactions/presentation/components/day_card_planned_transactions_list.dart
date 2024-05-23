@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
@@ -10,14 +7,10 @@ import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../common_widgets/hideable_container.dart';
 import '../../../../common_widgets/icon_with_text_button.dart';
-import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
-import '../../../accounts/domain/account_base.dart';
 import '../../../recurrence/domain/recurrence.dart';
 import '../../../recurrence/presentation/transaction_data_tile.dart';
-import '../../domain/transaction_base.dart';
-import 'base_transaction_components.dart';
 
 class DayCardPlannedTransactionsList extends StatelessWidget {
   const DayCardPlannedTransactionsList({

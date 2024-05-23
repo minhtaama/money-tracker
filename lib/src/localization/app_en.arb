@@ -37,13 +37,13 @@
 
   "@_____________________ [ GENERAL DATE TIME ] ___________________": {},
 
-  "mon": "Mon",
-  "tue": "Tue",
-  "wed": "Wed",
-  "thu": "Thu",
-  "fri": "Fri",
-  "sat": "Sat",
-  "sun": "Sun",
+  "mon": "M",
+  "tue": "T",
+  "wed": "W",
+  "thu": "T",
+  "fri": "F",
+  "sat": "S",
+  "sun": "S",
 
   "monday": "Monday",
   "tuesday": "Tuesday",

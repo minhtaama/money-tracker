@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
@@ -11,6 +12,7 @@ import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.d
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
@@ -18,6 +20,7 @@ import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
 import '../../../common_widgets/svg_icon.dart';
+import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../recurrence/domain/recurrence.dart';
@@ -120,15 +123,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (dayCards.isEmpty) {
       return [
-        Gap.h16,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: IconWithText(
-            header: context.loc.quoteHomepage(dayBeginOfMonth.monthToString(context)),
-            headerSize: 14,
-            iconPath: AppIcons.budgets,
-            forceIconOnTop: true,
-          ),
+        Gap.h32,
+        _RandomIllustrator(
+          dayBeginOfMonth.month,
+          text: context.loc.quoteHomepage(dayBeginOfMonth.monthToString(context)),
         ),
         Gap.h48,
       ];
@@ -200,6 +198,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         return _buildDayCards(transactionList, plannedTransactions, dayBeginOfMonth, dayEndOfMonth);
       },
+    );
+  }
+}
+
+class _RandomIllustrator extends StatelessWidget {
+  const _RandomIllustrator(this.seed, {super.key, required this.text});
+
+  final int seed;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final images = [
+      AppIcons.undrawCart,
+      AppIcons.undrawCoffee,
+      AppIcons.undrawCreditCard,
+      AppIcons.undrawShopping,
+      AppIcons.undrawShopping2,
+      AppIcons.undrawSofa,
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          SvgPicture.asset(
+            images[seed % images.length],
+            colorFilter: ColorFilter.mode(
+                context.appTheme.primary
+                    .lerpWithOnBg(context, context.appTheme.isDarkTheme ? 0.5 : 0)
+                    .withOpacity(context.appTheme.isDarkTheme ? 0.3 : 0.15),
+                BlendMode.srcATop),
+            fit: BoxFit.contain,
+            height: 110,
+            width: 110,
+          ),
+          Gap.h24,
+          Text(
+            text,
+            style: kHeader2TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
     );
   }
 }

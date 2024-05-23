@@ -119,7 +119,7 @@ class _SettingTileDropDownState<T> extends State<SettingTileDropDown<T>> {
             icon: Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: SvgIcon(
-                AppIcons.switchIcon,
+                AppIcons.arrowRight,
                 size: 16,
                 color: context.appTheme.isDarkTheme ? context.appTheme.onAccent : context.appTheme.onBackground,
               ),

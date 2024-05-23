@@ -2,12 +2,9 @@ import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/help_button.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'dart:math' as math;
@@ -53,7 +50,7 @@ class TxnHomeCategoryIcon extends StatelessWidget {
 
       if (transaction is Transfer) {
         return SvgIcon(
-          AppIcons.transfer,
+          AppIcons.switchIcon,
           color: context.appTheme.onBackground,
         );
       }

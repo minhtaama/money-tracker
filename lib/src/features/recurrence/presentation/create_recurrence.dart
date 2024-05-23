@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
@@ -33,7 +34,6 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
           .map(
             (date) => date.weekdayToString(
               context,
-              short: form.patterns.length <= 2 ? false : true,
             ),
           )
           .toList();
@@ -67,9 +67,8 @@ String _recurrenceExpression(BuildContext context, RecurrenceForm form) {
       break;
   }
 
-  String startDate = form.startOn.isSameDayAs(DateTime.now())
-      ? context.loc.today.toLowerCase()
-      : form.startOn.toShortDate(context);
+  String startDate =
+      form.startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : form.startOn.toShortDate(context);
   String endDate = form.endOn != null ? context.loc.untilEndDate(form.endOn!.toShortDate(context)) : '';
 
   return form.type == null
@@ -118,8 +117,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       color: context.appTheme.primary.withOpacity(_recurrenceForm == null ? 0 : 1),
-      border: Border.all(
-          color: context.appTheme.onBackground.withOpacity(_recurrenceForm == null ? 0.4 : 0)),
+      border: Border.all(color: context.appTheme.onBackground.withOpacity(_recurrenceForm == null ? 0.4 : 0)),
       width: double.infinity,
       child: CustomInkWell(
         inkColor: _recurrenceForm == null ? context.appTheme.onBackground : context.appTheme.onPrimary,
@@ -161,9 +159,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
               Gap.w8,
               Expanded(
                 child: Text(
-                  _recurrenceForm == null
-                      ? context.loc.doNotRepeat
-                      : _recurrenceExpression(context, _recurrenceForm!),
+                  _recurrenceForm == null ? context.loc.doNotRepeat : _recurrenceExpression(context, _recurrenceForm!),
                   style: kHeader3TextStyle.copyWith(
                       color: _recurrenceForm == null
                           ? context.appTheme.onBackground.withOpacity(0.4)
@@ -410,7 +406,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                     ? context.appTheme.negative
                     : context.appTheme.onBackground;
 
-            return Flexible(
+            return Expanded(
               child: CardItem(
                 color: bgColor,
                 borderRadius: BorderRadius.circular(8),
@@ -418,10 +414,11 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                   color: context.appTheme.primary.withOpacity(date.isSameDayAs(DateTime.now()) ? 1 : 0),
                 ),
                 padding: EdgeInsets.zero,
-                margin: EdgeInsets.zero,
+                margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                 child: CustomInkWell(
                   inkColor: context.appTheme.primary,
                   onTap: () {
+                    HapticFeedback.vibrate();
                     if (_form.patterns.contains(date)) {
                       setState(() {
                         _form.patterns.remove(date);
@@ -433,10 +430,12 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
                     }
                   },
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    child: Text(
-                      date.weekdayToString(context, short: true).toUpperCase(),
-                      style: kHeader2TextStyle.copyWith(color: fgColor, fontSize: 13),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                    child: Center(
+                      child: Text(
+                        date.weekdayToString(context, short: true).toUpperCase(),
+                        style: kHeader2TextStyle.copyWith(color: fgColor, fontSize: 13),
+                      ),
                     ),
                   ),
                 ),
@@ -472,6 +471,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
           child: CustomInkWell(
             inkColor: context.appTheme.primary,
             onTap: () {
+              HapticFeedback.vibrate();
               if (_form.patterns.contains(date)) {
                 setState(() {
                   _form.patterns.remove(date);
@@ -510,8 +510,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       margin: const EdgeInsets.symmetric(vertical: 2),
       padding: const EdgeInsets.symmetric(vertical: 2),
       color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.08 : 0),
-      border: Border.all(
-          color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.5 : 0)),
+      border: Border.all(color: context.appTheme.primary.withOpacity(_form.type == repeat || alwaysShow ? 0.5 : 0)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: children,
@@ -576,8 +575,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
   }
 
   bool _isBigButtonDisabled() {
-    return (_form.patterns.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) ||
-        _form.interval <= 0;
+    return (_form.patterns.isEmpty && _form.type != null && _form.type != RepeatEvery.xDay) || _form.interval <= 0;
   }
 }
 

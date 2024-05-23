@@ -71,6 +71,15 @@ class AppIcons {
   static String get heartFill => 'assets/svg/app/heart-fill.svg';
   static String get recurrence => 'assets/svg/app/recurrence.svg';
 
+  // #969696
+  static String get undrawCoffee => 'assets/svg/app/undraw/undraw-coffee.svg';
+  static String get undrawCart => 'assets/svg/app/undraw/undraw-cart.svg';
+  static String get undrawSavings => 'assets/svg/app/undraw/undraw-savings.svg';
+  static String get undrawCreditCard => 'assets/svg/app/undraw/undraw-credit-card.svg';
+  static String get undrawShopping => 'assets/svg/app/undraw/undraw-shopping.svg';
+  static String get undrawShopping2 => 'assets/svg/app/undraw/undraw-shopping2.svg';
+  static String get undrawSofa => 'assets/svg/app/undraw/undraw-sofa.svg';
+
   static String get defaultIcon => 'assets/svg/app/default.svg';
 
   /// Call this function in `main()` method, before `runApp()`
