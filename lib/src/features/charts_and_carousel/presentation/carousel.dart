@@ -214,6 +214,7 @@ class _CarouselContentState extends State<_CarouselContent> {
                         right: widget.isActive ? 0 : 30,
                       ),
                       child: FittedBox(
+                        fit: BoxFit.fitWidth,
                         child: Text(
                           widget.subText!,
                           style: kNormalTextStyle.copyWith(

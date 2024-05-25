@@ -18,6 +18,7 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../common_widgets/icon_with_text.dart';
+import '../../../common_widgets/illustration.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
 import '../../../common_widgets/svg_icon.dart';
 import '../../../theme_and_ui/colors.dart';
@@ -125,7 +126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (dayCards.isEmpty) {
       return [
         Gap.h32,
-        _RandomIllustrator(
+        RandomIllustration(
           dayBeginOfMonth.month,
           text: context.loc.quoteHomepage(dayBeginOfMonth.monthToString(context)),
         ),
@@ -207,50 +208,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         return _buildDayCards(transactionList, plannedTransactions, dayBeginOfMonth, dayEndOfMonth);
       },
-    );
-  }
-}
-
-class _RandomIllustrator extends StatelessWidget {
-  const _RandomIllustrator(this.seed, {super.key, required this.text});
-
-  final int seed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final images = [
-      AppIcons.undrawCart,
-      AppIcons.undrawCoffee,
-      AppIcons.undrawCreditCard,
-      AppIcons.undrawShopping,
-      AppIcons.undrawShopping2,
-      AppIcons.undrawSofa,
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          SvgPicture.asset(
-            images[seed % images.length],
-            colorFilter: ColorFilter.mode(
-                context.appTheme.primary
-                    .lerpWithOnBg(context, context.appTheme.isDarkTheme ? 0.25 : 0)
-                    .withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
-                BlendMode.srcATop),
-            fit: BoxFit.contain,
-            height: 110,
-            width: 110,
-          ),
-          Gap.h24,
-          Text(
-            text,
-            style: kHeader2TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
-            textAlign: TextAlign.center,
-          )
-        ],
-      ),
     );
   }
 }

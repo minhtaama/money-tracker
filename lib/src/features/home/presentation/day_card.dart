@@ -52,7 +52,7 @@ class DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final today = DateTime.now().onlyYearMonthDay;
+    final today = DateTime.now().onlyYearMonthDay;
 
     return CardItem(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -66,13 +66,26 @@ class DayCard extends StatelessWidget {
             child: Row(
               children: [
                 Gap.w4,
-                Text(
-                  NumberFormat('00').format(dateTime.day),
-                  style: kHeader1TextStyle.copyWith(
-                    fontSize: 23,
-                    color: context.appTheme.onBackground,
+                CardItem(
+                  margin: EdgeInsets.zero,
+                  padding: dateTime.isSameDayAs(today)
+                      ? const EdgeInsets.symmetric(horizontal: 6, vertical: 6)
+                      : EdgeInsets.zero,
+                  border: Border.all(
+                    color: context.appTheme.onBackground
+                        .withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
                   ),
-                  textAlign: TextAlign.left,
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.transparent,
+                  child: Text(
+                    NumberFormat('00').format(dateTime.day),
+                    style: kHeader1TextStyle.copyWith(
+                      fontSize: dateTime.isSameDayAs(today) ? 19 : 23,
+                      color: context.appTheme.onBackground,
+                      height: 0.99,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
                 ),
                 Gap.w8,
                 Column(
@@ -90,7 +103,8 @@ class DayCard extends StatelessWidget {
                     ),
                     Text(
                       dateTime.toLongDate(context, noDay: true),
-                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
+                      style:
+                          kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -119,16 +133,18 @@ class DayCard extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 12.0, top: 4),
                   child: Row(
                     children: [
+                      Expanded(
+                        child: Gap.divider(context, indent: 0),
+                      ),
+                      Gap.w8,
                       Text(
-                        'Planned Transactions:'.hardcoded,
+                        'Planned Transactions'.hardcoded,
                         style: kHeader4TextStyle.copyWith(
                           color: context.appTheme.onBackground.withOpacity(0.65),
                           fontSize: 12,
                         ),
                       ),
-                      Expanded(
-                        child: Gap.divider(context, indent: 10),
-                      )
+                      Gap.w12,
                     ],
                   ),
                 )

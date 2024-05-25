@@ -16,6 +16,7 @@ import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custo
 import '../../../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../../../common_widgets/custom_page/custom_page.dart';
 import '../../../../../common_widgets/icon_with_text.dart';
+import '../../../../../common_widgets/illustration.dart';
 import '../../../../../common_widgets/page_heading.dart';
 import '../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../theme_and_ui/colors.dart';
@@ -74,7 +75,8 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -91,15 +93,10 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
 
     if (dayCards.isEmpty) {
       return [
-        Gap.h16,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: IconWithText(
-            header: context.loc.quoteRegularAccountScreen(dayBeginOfMonth.monthToString(context)),
-            headerSize: 14,
-            iconPath: AppIcons.budgets,
-            forceIconOnTop: true,
-          ),
+        Gap.h32,
+        RandomIllustration(
+          dayBeginOfMonth.month,
+          text: context.loc.quoteHomepage(dayBeginOfMonth.monthToString(context)),
         ),
         Gap.h48,
       ];
@@ -149,8 +146,10 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
-          backgroundColor: widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-          child: ExtendedRegularAccountTab(account: widget.regularAccount, displayDate: _currentDisplayDate),
+          backgroundColor:
+              widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          child: ExtendedRegularAccountTab(
+              account: widget.regularAccount, displayDate: _currentDisplayDate),
         ),
         onDragLeft: _previousPage,
         onDragRight: _nextPage,
@@ -167,12 +166,12 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-          List<BaseTransaction> transactionList =
-              transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+          List<BaseTransaction> transactionList = transactionRepository.getTransactionsOfAccount(
+              widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
 
           ref.listen(transactionsChangesStreamProvider, (_, __) {
-            transactionList =
-                transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+            transactionList = transactionRepository.getTransactionsOfAccount(
+                widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
             setState(() {});
           });
 

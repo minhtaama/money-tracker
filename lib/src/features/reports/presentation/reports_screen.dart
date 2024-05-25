@@ -12,7 +12,6 @@ import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/carousel.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -45,6 +44,21 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       ),
       children: [
         _dateSelector(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _selectedDateTimes.first.toLongDate(context),
+              style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+            ),
+            _selectedDateTimes.length > 1
+                ? Text(
+                    ' - ${_selectedDateTimes.last.toLongDate(context)}',
+                    style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+                  )
+                : Gap.noGap,
+          ],
+        ),
       ],
     );
   }
@@ -87,7 +101,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       labels: ['Monthly'.hardcoded, 'Custom range'.hardcoded],
                       onTap: (type) => setState(() {
                         _type = type;
-                        _selectedDateTimes = [_selectedDateTimes.first];
                       }),
                     ),
                   ),
@@ -97,39 +110,21 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             AnimatedCrossFade(
               duration: k350msDuration,
               sizeCurve: Curves.easeOut,
-              crossFadeState: _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              crossFadeState:
+                  _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               firstChild: _MonthCarousel(
                 key: _monthCarouselKey,
-                onMonthChange: (dateTime) => setState(() {
-                  _selectedDateTimes = [dateTime];
+                onMonthChange: (dateTimeList) => setState(() {
+                  _selectedDateTimes = dateTimeList;
                 }),
               ),
-              secondChild: Column(
-                children: [
-                  CustomCalendar(
-                    onValueChanged: (list) => setState(() {
-                      _selectedDateTimes = list.whereType<DateTime>().toSet().toList();
-                    }),
-                    displayedMonthDate: _selectedDateTimes.last,
-                    value: _selectedDateTimes,
-                    calendarType: CalendarDatePicker2Type.range,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _selectedDateTimes.first.toLongDate(context),
-                        style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-                      ),
-                      _selectedDateTimes.length > 1
-                          ? Text(
-                              ' - ${_selectedDateTimes.last.toLongDate(context)}',
-                              style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-                            )
-                          : Gap.noGap,
-                    ],
-                  ),
-                ],
+              secondChild: CustomCalendar(
+                onValueChanged: (list) => setState(() {
+                  _selectedDateTimes = list.whereType<DateTime>().toSet().toList();
+                }),
+                displayedMonthDate: _selectedDateTimes.last,
+                value: _selectedDateTimes,
+                calendarType: CalendarDatePicker2Type.range,
               ),
             ),
           ],
@@ -137,15 +132,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       );
 }
 
-////////////////
-
 class _MonthCarousel extends StatefulWidget {
   const _MonthCarousel({
     super.key,
     required this.onMonthChange,
   });
 
-  final void Function(DateTime dateTime) onMonthChange;
+  final void Function(List<DateTime> dateTime) onMonthChange;
 
   @override
   State<_MonthCarousel> createState() => _MonthCarouselState();
@@ -164,7 +157,8 @@ class _MonthCarouselState extends State<_MonthCarousel> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.onMonthChange(_currentDisplayDate);
+      final range = _currentDisplayDate.monthRange;
+      widget.onMonthChange([range.start, range.end]);
     });
 
     super.initState();
@@ -172,11 +166,13 @@ class _MonthCarouselState extends State<_MonthCarousel> {
 
   void _onPageChange(int value) {
     _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
-    widget.onMonthChange(_currentDisplayDate);
+    final range = _currentDisplayDate.monthRange;
+    widget.onMonthChange([range.start, range.end]);
   }
 
   void _animateToToday() {
-    _carouselController.animateToPage(_initialPageIndex, duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.animateToPage(_initialPageIndex,
+        duration: k250msDuration, curve: Curves.easeOut);
   }
 
   @override
@@ -196,8 +192,6 @@ class _MonthCarouselState extends State<_MonthCarousel> {
     );
   }
 }
-
-////////////////////
 
 enum _ReportType {
   month,
