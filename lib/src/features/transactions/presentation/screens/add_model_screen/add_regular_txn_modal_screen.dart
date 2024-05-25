@@ -25,7 +25,8 @@ import '../../../../selectors/presentation/forms.dart';
 import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
+      {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -39,7 +40,10 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
 
@@ -68,6 +72,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
       Recurrence? recurrence;
 
+      // If recurrence is not null, then don't add transaction right away
+
       if (_recurrenceForm != null) {
         recurrence = recurrenceRepo.writeNew(
           type: _recurrenceForm!.type!,
@@ -79,52 +85,52 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           transactionType: widget.transactionType,
           transactionForm: _stateRead,
         );
-      }
+      } else {
+        switch (widget.transactionType) {
+          case TransactionType.expense:
+            transactionRepo.writeNewExpense(
+              dateTime: _stateRead.dateTime!,
+              amount: _stateRead.amount!,
+              category: _stateRead.category!,
+              tag: _stateRead.tag,
+              account: _stateRead.account!,
+              note: _stateRead.note,
+              recurrence: recurrence,
+            );
+            break;
 
-      switch (widget.transactionType) {
-        case TransactionType.expense:
-          transactionRepo.writeNewExpense(
-            dateTime: _stateRead.dateTime!,
-            amount: _stateRead.amount!,
-            category: _stateRead.category!,
-            tag: _stateRead.tag,
-            account: _stateRead.account!,
-            note: _stateRead.note,
-            recurrence: recurrence,
-          );
-          break;
+          case TransactionType.income:
+            transactionRepo.writeNewIncome(
+              dateTime: _stateRead.dateTime!,
+              amount: _stateRead.amount!,
+              category: _stateRead.category!,
+              tag: _stateRead.tag,
+              account: _stateRead.account!,
+              note: _stateRead.note,
+              recurrence: recurrence,
+            );
+            break;
 
-        case TransactionType.income:
-          transactionRepo.writeNewIncome(
-            dateTime: _stateRead.dateTime!,
-            amount: _stateRead.amount!,
-            category: _stateRead.category!,
-            tag: _stateRead.tag,
-            account: _stateRead.account!,
-            note: _stateRead.note,
-            recurrence: recurrence,
-          );
-          break;
+          case TransactionType.transfer:
+            // TODO: add transfer fee logic
+            transactionRepo.writeNewTransfer(
+              dateTime: _stateRead.dateTime!,
+              amount: _stateRead.amount!,
+              account: _stateRead.account!,
+              toAccount: _stateRead.toAccount!,
+              note: _stateRead.note,
+              fee: null,
+              isChargeOnDestinationAccount: null,
+              recurrence: recurrence,
+            );
+            break;
 
-        case TransactionType.transfer:
-          // TODO: add transfer fee logic
-          transactionRepo.writeNewTransfer(
-            dateTime: _stateRead.dateTime!,
-            amount: _stateRead.amount!,
-            account: _stateRead.account!,
-            toAccount: _stateRead.toAccount!,
-            note: _stateRead.note,
-            fee: null,
-            isChargeOnDestinationAccount: null,
-            recurrence: recurrence,
-          );
-          break;
-
-        case TransactionType.creditSpending ||
-              TransactionType.creditPayment ||
-              TransactionType.creditCheckpoint ||
-              TransactionType.installmentToPay:
-          throw StateError('Wrong TransactionType when submitting a regular transaction');
+          case TransactionType.creditSpending ||
+                TransactionType.creditPayment ||
+                TransactionType.creditCheckpoint ||
+                TransactionType.installmentToPay:
+            throw StateError('Wrong TransactionType when submitting a regular transaction');
+        }
       }
 
       context.pop();
@@ -226,7 +232,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Expanded(
               child: CalculatorInput(
                 hintText: 'Amount',
-                initialValue: stateWatch.amount != null ? CalService.formatCurrency(context, stateWatch.amount!) : null,
+                initialValue: stateWatch.amount != null
+                    ? CalService.formatCurrency(context, stateWatch.amount!)
+                    : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -296,8 +304,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount:
-                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
+                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
+                              ? stateWatch.account
+                              : null,
                         ),
                 ],
               ),

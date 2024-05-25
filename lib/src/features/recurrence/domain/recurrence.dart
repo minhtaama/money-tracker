@@ -95,6 +95,10 @@ class Recurrence extends BaseModel<RecurrenceDb> {
 
     List<DateTime> targetDates = [];
 
+    if (targetAnchorRanges.isEmpty) {
+      return [];
+    }
+
     if (_type == RepeatEvery.xDay) {
       // Because targetAnchorRanges contains dayRange (from 0:0:0 to 23:59:59 of same day)
       targetDates = targetAnchorRanges.map((e) => e.start.onlyYearMonthDay).toList();
@@ -104,7 +108,9 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       final selectedWeekDay = _patterns.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
-        for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
+        for (DateTime date = range.start;
+            !date.isAfter(range.end);
+            date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
             targetDates.add(date.onlyYearMonthDay);
           }
@@ -113,16 +119,22 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     }
 
     if (_type == RepeatEvery.xMonth) {
-      targetDates =
-          _patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay).toList();
+      targetDates = _patterns
+          .map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay)
+          .toList();
     }
 
     if (_type == RepeatEvery.xYear) {
-      targetDates =
-          _patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay).toList();
+      targetDates = _patterns
+          .map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay)
+          .toList();
     }
 
-    targetDates.removeWhere((element) => !element.isAfter(startOn));
+    // Remove targetDates before startOn, after endOn and not in same month with reference dateTime.
+
+    targetDates.removeWhere(
+      (element) => element.isBefore(startOn) || !element.isSameMonthAs(dateTime),
+    );
 
     if (endOn != null) {
       targetDates.removeWhere((element) => element.isAfter(endOn!));
@@ -201,8 +213,10 @@ class Recurrence extends BaseModel<RecurrenceDb> {
         break;
     }
 
-    String startDate =
-        startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : startOn.toShortDate(context);
+    String startDate = startOn.isSameDayAs(DateTime.now())
+        ? context.loc.today.toLowerCase()
+        : startOn.toShortDate(context);
+
     String endDate = endOn != null ? context.loc.untilEndDate(endOn!.toShortDate(context)) : '';
 
     return context.loc.quoteRecurrence3(

@@ -106,7 +106,8 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
       backgroundColor: context.appTheme.accent2,
       onTap: () => showCustomModal(
         context: context,
-        builder: (controller, isScrollable) => AddTemplateTransactionModalScreen(controller, isScrollable),
+        builder: (controller, isScrollable) =>
+            AddTemplateTransactionModalScreen(controller, isScrollable),
       ),
     );
 
@@ -292,7 +293,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddAccountModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddAccountModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -315,7 +317,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -380,7 +383,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller, isScrollable) => AddCreditSpendingModalScreen(controller, isScrollable),
+            builder: (controller, isScrollable) =>
+                AddCreditSpendingModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(
@@ -441,7 +445,3 @@ final goRouter = GoRouter(
     ),
   ],
 );
-
-////////// FOR [showCustomModal] function //////////
-
-////////////////////// SCROLLABLE CHECKER ////////////////////////

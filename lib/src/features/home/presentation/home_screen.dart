@@ -99,7 +99,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
       final plannedTxnsInDay = plannedTransactions
           .where(
             (plannedTxn) =>
@@ -186,14 +187,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList =
+            _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
         List<TransactionData> plannedTransactions =
             _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
 
         ref.listen(transactionsChangesStreamProvider, (_, __) {
-          transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
-          plannedTransactions = _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
-          setState(() {});
+          setState(() {
+            transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+          });
+        });
+
+        ref.listen(recurrenceChangesStreamProvider, (_, __) {
+          setState(() {
+            plannedTransactions =
+                _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
+          });
         });
 
         return _buildDayCards(transactionList, plannedTransactions, dayBeginOfMonth, dayEndOfMonth);
@@ -227,8 +236,8 @@ class _RandomIllustrator extends StatelessWidget {
             images[seed % images.length],
             colorFilter: ColorFilter.mode(
                 context.appTheme.primary
-                    .lerpWithOnBg(context, context.appTheme.isDarkTheme ? 0.5 : 0)
-                    .withOpacity(context.appTheme.isDarkTheme ? 0.3 : 0.15),
+                    .lerpWithOnBg(context, context.appTheme.isDarkTheme ? 0.25 : 0)
+                    .withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
                 BlendMode.srcATop),
             fit: BoxFit.contain,
             height: 110,
