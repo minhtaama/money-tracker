@@ -33,11 +33,9 @@ class PieChartServices {
     for (int i = 0; i < txnsList.length; i++) {
       final txn = txnsList[i];
       if (map.containsKey(txn.category)) {
-        map[txn.category!] = map[txn.category!]! + txn.amount;
-      } else if (txn.category == null) {
-        map[DeletedCategory()] = txn.amount;
+        map[txn.category] = map[txn.category]! + txn.amount;
       } else {
-        map[txn.category!] = txn.amount;
+        map[txn.category] = txn.amount;
       }
     }
 
@@ -68,11 +66,11 @@ class PieChartServices {
     for (int i = 0; i < txnsList.length; i++) {
       final txn = txnsList[i];
       if (map.containsKey(txn.category)) {
-        map[txn.category!] = map[txn.category!]! + txn.amount;
+        map[txn.category] = map[txn.category]! + txn.amount;
       } else if (txn.isInitialTransaction) {
         map[Category.initialIncome(context)] = txn.amount;
       } else {
-        map[txn.category!] = txn.amount;
+        map[txn.category] = txn.amount;
       }
     }
 

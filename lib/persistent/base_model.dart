@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:realm/realm.dart';
 
 @immutable
@@ -54,4 +58,15 @@ abstract class BaseModelWithIcon<T extends IRealmObjectWithID> extends BaseModel
       iconColor.hashCode ^
       backgroundColor.hashCode ^
       iconPath.hashCode;
+}
+
+class GeneralOtherModel extends BaseModelWithIcon {
+  GeneralOtherModel(BuildContext context)
+      : super(
+          CategoryDb(ObjectId(), 0, '', 0, '', 0),
+          name: 'Other'.hardcoded,
+          iconColor: AppColors.greyBgr(context),
+          backgroundColor: context.appTheme.onBackground,
+          iconPath: AppIcons.categories,
+        );
 }
