@@ -31,9 +31,9 @@ class RandomIllustration extends StatelessWidget {
           SvgPicture.asset(
             images[seed % images.length],
             colorFilter: ColorFilter.mode(
-                context.appTheme.primary
-                    .lerpWithOnBg(context, context.appTheme.isDarkTheme ? 0.25 : 0)
-                    .withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
+                context.appTheme.accent2
+                    .lerpWithBg(context, context.appTheme.isDarkTheme ? 0.45 : 0)
+                    .withOpacity(context.appTheme.isDarkTheme ? 0.35 : 0.15),
                 BlendMode.srcATop),
             fit: BoxFit.contain,
             height: 110,
@@ -51,36 +51,26 @@ class RandomIllustration extends StatelessWidget {
   }
 }
 
-class Illustration extends StatelessWidget {
-  const Illustration(this.svgPath, {super.key, required this.text});
+class BackgroundIllustration extends StatelessWidget {
+  const BackgroundIllustration(this.svgPath, {super.key, this.size = 110});
 
   final String svgPath;
-  final String text;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          SvgPicture.asset(
-            svgPath,
-            colorFilter: ColorFilter.mode(
-                context.appTheme.primary
-                    .lerpWithOnBg(context, context.appTheme.isDarkTheme ? 0.25 : 0)
-                    .withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
-                BlendMode.srcATop),
-            fit: BoxFit.contain,
-            height: 110,
-            width: 110,
-          ),
-          Gap.h24,
-          Text(
-            text,
-            style: kHeader2TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
-            textAlign: TextAlign.center,
-          )
-        ],
+      child: SvgPicture.asset(
+        svgPath,
+        colorFilter: ColorFilter.mode(
+            context.appTheme.accent2
+                .lerpWithBg(context, context.appTheme.isDarkTheme ? 0.5 : 0)
+                .withOpacity(context.appTheme.isDarkTheme ? 0.35 : 0.15),
+            BlendMode.srcATop),
+        fit: BoxFit.contain,
+        height: size,
+        width: size,
       ),
     );
   }

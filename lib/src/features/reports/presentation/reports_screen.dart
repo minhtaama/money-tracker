@@ -3,11 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/illustration.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/carousel.dart';
@@ -18,6 +20,8 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../utils/constants.dart';
+
+part 'components.dart';
 
 class ReportsScreen extends ConsumerStatefulWidget {
   const ReportsScreen({super.key});
@@ -44,20 +48,37 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       ),
       children: [
         _dateSelector(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _selectedDateTimes.first.toLongDate(context),
-              style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-            ),
-            _selectedDateTimes.length > 1
-                ? Text(
-                    ' - ${_selectedDateTimes.last.toLongDate(context)}',
-                    style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-                  )
-                : Gap.noGap,
-          ],
+        _dateDisplay(),
+        Gap.h24,
+        _ReportWrapper(
+          svgPath: AppIcons.undrawShopping,
+          title: 'Categories',
+          illustrationSize: 145,
+          illustrationOffset: -5,
+          child: SizedBox(
+            height: 300,
+            width: double.infinity,
+          ),
+        ),
+        Gap.h24,
+        _ReportWrapper(
+          svgPath: AppIcons.undrawCreditCard,
+          title: 'Credit Accounts',
+          child: SizedBox(
+            height: 300,
+            width: double.infinity,
+          ),
+        ),
+        Gap.h24,
+        _ReportWrapper(
+          svgPath: AppIcons.undrawShopping2,
+          title: 'Tags',
+          illustrationSize: 125,
+          illustrationOffset: 0,
+          child: SizedBox(
+            height: 300,
+            width: double.infinity,
+          ),
         ),
       ],
     );
@@ -110,8 +131,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             AnimatedCrossFade(
               duration: k350msDuration,
               sizeCurve: Curves.easeOut,
-              crossFadeState:
-                  _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              crossFadeState: _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               firstChild: _MonthCarousel(
                 key: _monthCarouselKey,
                 onMonthChange: (dateTimeList) => setState(() {
@@ -129,6 +149,22 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             ),
           ],
         ),
+      );
+
+  Widget _dateDisplay() => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            _selectedDateTimes.first.toLongDate(context),
+            style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+          ),
+          _selectedDateTimes.length > 1
+              ? Text(
+                  ' - ${_selectedDateTimes.last.toLongDate(context)}',
+                  style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
+                )
+              : Gap.noGap,
+        ],
       );
 }
 
@@ -171,8 +207,7 @@ class _MonthCarouselState extends State<_MonthCarousel> {
   }
 
   void _animateToToday() {
-    _carouselController.animateToPage(_initialPageIndex,
-        duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.animateToPage(_initialPageIndex, duration: k250msDuration, curve: Curves.easeOut);
   }
 
   @override
