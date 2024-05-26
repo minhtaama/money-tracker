@@ -19,6 +19,7 @@ class DayCard extends StatelessWidget {
     this.onTransactionTap,
     required this.plannedTransactions,
     this.onPlannedTransactionTap,
+    this.margin,
   });
 
   final DateTime dateTime;
@@ -26,6 +27,8 @@ class DayCard extends StatelessWidget {
   final List<TransactionData> plannedTransactions;
   final Function(BaseTransaction)? onTransactionTap;
   final Function(TransactionData)? onPlannedTransactionTap;
+
+  final EdgeInsets? margin;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
@@ -55,7 +58,7 @@ class DayCard extends StatelessWidget {
     final today = DateTime.now().onlyYearMonthDay;
 
     return CardItem(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      margin: margin ?? const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
       child: Column(
         mainAxisSize: MainAxisSize.max,
@@ -72,8 +75,7 @@ class DayCard extends StatelessWidget {
                       ? const EdgeInsets.symmetric(horizontal: 6, vertical: 6)
                       : EdgeInsets.zero,
                   border: Border.all(
-                    color: context.appTheme.onBackground
-                        .withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
+                    color: context.appTheme.onBackground.withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
                   ),
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.transparent,
@@ -103,8 +105,7 @@ class DayCard extends StatelessWidget {
                     ),
                     Text(
                       dateTime.toLongDate(context, noDay: true),
-                      style:
-                          kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
+                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
                       textAlign: TextAlign.left,
                     ),
                   ],

@@ -1,7 +1,9 @@
 part of 'reports_screen.dart';
 
-class _ReportWrapper extends StatelessWidget {
-  const _ReportWrapper(
+///////////////////////////
+
+class ReportWrapper extends StatelessWidget {
+  const ReportWrapper(
       {super.key,
       required this.svgPath,
       required this.title,
@@ -50,12 +52,72 @@ class _ReportWrapper extends StatelessWidget {
             ),
             CardItem(
               margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               color: context.appTheme.background0,
               child: child,
             )
           ],
         )
       ],
+    );
+  }
+}
+
+class TransactionsModalScreen extends StatelessWidget {
+  const TransactionsModalScreen(
+    this.controller,
+    this.isScrollable, {
+    super.key,
+    required this.transactions,
+    required this.dayBeginOfMonth,
+    required this.dayEndOfMonth,
+  });
+
+  final ScrollController controller;
+
+  final bool isScrollable;
+
+  final List<BaseTransaction> transactions;
+  final DateTime dayBeginOfMonth;
+  final DateTime dayEndOfMonth;
+
+  List<Widget> _buildDayCards(
+    BuildContext context,
+    List<BaseTransaction> transactionList,
+    DateTime dayBeginOfMonth,
+    DateTime dayEndOfMonth,
+  ) {
+    final List<DayCard> dayCards = [];
+
+    for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+
+      if (transactionsInDay.isNotEmpty) {
+        dayCards.add(
+          DayCard(
+            dateTime: dayBeginOfMonth.copyWith(day: day),
+            transactions: transactionsInDay.reversed.toList(),
+            plannedTransactions: const [],
+            onTransactionTap: (transaction) =>
+                context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
+            margin: EdgeInsets.zero,
+          ),
+        );
+      }
+    }
+
+    return dayCards;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Transactions'.hardcoded,
+      ),
+      body: _buildDayCards(context, transactions, dayBeginOfMonth, dayEndOfMonth),
+      bodyMargin: EdgeInsets.zero,
+      footer: Gap.noGap,
     );
   }
 }

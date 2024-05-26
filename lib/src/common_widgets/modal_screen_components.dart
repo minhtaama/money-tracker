@@ -84,6 +84,7 @@ class ModalContent extends StatefulWidget {
     required this.header,
     required this.body,
     required this.footer,
+    this.bodyMargin,
   });
 
   final ScrollController? controller;
@@ -93,6 +94,8 @@ class ModalContent extends StatefulWidget {
   final Widget header;
   final List<Widget> body;
   final Widget footer;
+
+  final EdgeInsets? bodyMargin;
 
   @override
   State<ModalContent> createState() => _ModalContentState();
@@ -138,6 +141,7 @@ class _ModalContentState extends State<ModalContent> {
                       isWrapByCard: false,
                       sectionsClipping: false,
                       sections: widget.body,
+                      margin: widget.bodyMargin,
                     ),
                   ),
                 ),

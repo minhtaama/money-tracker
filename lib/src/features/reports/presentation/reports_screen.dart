@@ -3,13 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/illustration.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/carousel.dart';
@@ -19,7 +22,11 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../routing/app_router.dart';
 import '../../../utils/constants.dart';
+import '../../home/presentation/day_card.dart';
+import '../../transactions/domain/transaction_base.dart';
+import 'categories_report_widget.dart';
 
 part 'components.dart';
 
@@ -50,35 +57,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         _dateSelector(),
         _dateDisplay(),
         Gap.h24,
-        _ReportWrapper(
-          svgPath: AppIcons.undrawShopping,
-          title: 'Categories',
-          illustrationSize: 145,
-          illustrationOffset: -5,
-          child: SizedBox(
-            height: 300,
-            width: double.infinity,
-          ),
-        ),
-        Gap.h24,
-        _ReportWrapper(
-          svgPath: AppIcons.undrawCreditCard,
-          title: 'Credit Accounts',
-          child: SizedBox(
-            height: 300,
-            width: double.infinity,
-          ),
-        ),
-        Gap.h24,
-        _ReportWrapper(
-          svgPath: AppIcons.undrawShopping2,
-          title: 'Tags',
-          illustrationSize: 125,
-          illustrationOffset: 0,
-          child: SizedBox(
-            height: 300,
-            width: double.infinity,
-          ),
+        CategoryReport(
+          dateTimes: _selectedDateTimes,
         ),
       ],
     );

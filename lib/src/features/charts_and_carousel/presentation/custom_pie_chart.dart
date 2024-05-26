@@ -13,13 +13,11 @@ class CustomPieChart<T extends BaseModelWithIcon> extends StatefulWidget {
   const CustomPieChart({
     super.key,
     required this.values,
-    required this.othersDisplay,
     this.onChartTap,
     this.center,
   });
 
   final List<MapEntry<T, double>> values;
-  final T othersDisplay;
   final Function(int)? onChartTap;
   final Widget? center;
 
@@ -33,6 +31,20 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
   double _opacity = 0;
 
   int _touchedIndex = -1;
+
+  late List<MapEntry<T, double>> _dataList = widget.values;
+
+  @override
+  void didUpdateWidget(covariant CustomPieChart<T> oldWidget) {
+    if (widget.values != oldWidget.values) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          _dataList = widget.values;
+        });
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   void didChangeDependencies() {
@@ -49,25 +61,29 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
   }
 
   List<PieChartSectionData> getData(int touchedIndex, BuildContext context) {
-    final dataList = widget.values;
-
-    if (dataList.isEmpty) {
+    if (_dataList.isEmpty) {
       return [
         PieChartSectionData(
           value: 1,
           color: context.appTheme.onBackground.withOpacity(0.08),
           showTitle: false,
-          radius: 33,
+          radius: 28,
+        ),
+        PieChartSectionData(
+          value: 1,
+          color: context.appTheme.onBackground.withOpacity(0.08),
+          showTitle: false,
+          radius: 28,
         ),
       ];
     }
 
-    return dataList
+    return _dataList
         .map(
           (e) => PieChartSectionData(
             value: e.value,
             color: e.key.backgroundColor.withOpacity(
-              touchedIndex == -1 || dataList.indexOf(e) == touchedIndex
+              touchedIndex == -1 || _dataList.indexOf(e) == touchedIndex
                   ? context.appTheme.isDarkTheme
                       ? 0.8
                       : 0.9
@@ -81,7 +97,7 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
             badgeWidget: AnimatedOpacity(
               duration: k150msDuration,
               curve: Curves.easeOut,
-              opacity: touchedIndex == -1 || dataList.indexOf(e) == touchedIndex ? 1 : 0,
+              opacity: touchedIndex == -1 || _dataList.indexOf(e) == touchedIndex ? 1 : 0,
               child: Container(
                 height: 28,
                 width: 28,
@@ -138,9 +154,10 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
                     sections: getData(_touchedIndex, context),
                     sectionsSpace: 2,
                     startDegreeOffset: _startDegreeOffset,
+                    centerSpaceColor: Colors.transparent,
                     pieTouchData: PieTouchData(
                       touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
-                        if (widget.values.isNotEmpty) {
+                        if (widget.values.isNotEmpty && widget.onChartTap != null) {
                           setState(() {
                             // if (!event.isInterestedForInteractions ||
                             //     pieTouchResponse == null ||

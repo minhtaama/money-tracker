@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
@@ -59,9 +60,11 @@ class TransactionRepositoryRealmDb {
   }
 
   List<BaseTransaction> getTransactions(DateTime lower, DateTime upper) {
-    List<TransactionDb> list = realm
-        .all<TransactionDb>()
-        .query('dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [lower, upper]).toList();
+    final range = DateTimeRange(
+        start: lower.copyWith(hour: 0, minute: 0, second: 1), end: upper.copyWith(hour: 23, minute: 59, second: 59));
+
+    List<TransactionDb> list = realm.all<TransactionDb>().query(
+        'dateTime >= \$0 AND dateTime <= \$1 AND TRUEPREDICATE SORT(dateTime ASC)', [range.start, range.end]).toList();
     return list.map((txn) => BaseTransaction.fromDatabase(txn)).toList();
   }
 

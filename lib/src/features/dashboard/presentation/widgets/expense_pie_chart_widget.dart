@@ -25,8 +25,8 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
   @override
   Widget build(BuildContext context) {
     final pieServices = ref.watch(customPieChartServicesProvider);
-    final list = pieServices.getMonthlyExpenseData(DateTime.now());
-    final totalAmount = pieServices.getMonthlyExpenseAmount(DateTime.now());
+    final list = pieServices.getExpenseData(DateTime.now());
+    final totalAmount = pieServices.getExpenseAmount(DateTime.now());
 
     List<Widget> labels(int index) {
       if (list.isEmpty) {
@@ -86,7 +86,6 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
             Expanded(
               child: CustomPieChart<Category>(
                 values: list,
-                othersDisplay: OthersCategory(),
                 center: SvgIcon(
                   AppIcons.upload,
                   color: context.appTheme.negative.withOpacity(0.65),

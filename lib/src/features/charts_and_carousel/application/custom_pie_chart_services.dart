@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
@@ -10,11 +11,18 @@ class PieChartServices {
 
   final TransactionRepositoryRealmDb transactionRepo;
 
-  double getMonthlyExpenseAmount(DateTime dateTime) {
-    final txnsList = transactionRepo
-        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
-        .whereType<Expense>()
-        .toList();
+  /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
+  /// Else, returns date from `dateTime` to `dateTime2`
+  double getExpenseAmount(DateTime dateTime, [DateTime? dateTime2]) {
+    final range = dateTime2 == null
+        ? DateTimeRange(
+            start: dateTime.copyWith(day: 1, hour: 0, minute: 0, second: 1),
+            end: dateTime.copyWith(month: dateTime.month + 1, day: 0, hour: 23, minute: 59, second: 59))
+        : DateTimeRange(
+            start: dateTime.copyWith(hour: 0, minute: 0, second: 1),
+            end: dateTime2.copyWith(hour: 23, minute: 59, second: 59));
+
+    final txnsList = transactionRepo.getTransactions(range.start, range.end).whereType<Expense>().toList();
 
     if (txnsList.isEmpty) {
       return 0;
@@ -23,11 +31,19 @@ class PieChartServices {
     return txnsList.map((e) => e.amount).reduce((value, element) => value + element);
   }
 
-  List<MapEntry<Category, double>> getMonthlyExpenseData(DateTime dateTime) {
-    final txnsList = transactionRepo
-        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
-        .whereType<Expense>()
-        .toList();
+  /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
+  /// Else, returns date from `dateTime` to `dateTime2`
+  List<MapEntry<Category, double>> getExpenseData(DateTime dateTime, [DateTime? dateTime2]) {
+    final range = dateTime2 == null
+        ? DateTimeRange(
+            start: dateTime.copyWith(day: 1, hour: 0, minute: 0, second: 1),
+            end: dateTime.copyWith(month: dateTime.month + 1, day: 0, hour: 23, minute: 59, second: 59))
+        : DateTimeRange(
+            start: dateTime.copyWith(hour: 0, minute: 0, second: 1),
+            end: dateTime2.copyWith(hour: 23, minute: 59, second: 59));
+
+    final txnsList = transactionRepo.getTransactions(range.start, range.end).whereType<Expense>().toList();
+
     final map = <Category, double>{};
 
     for (int i = 0; i < txnsList.length; i++) {
@@ -42,11 +58,18 @@ class PieChartServices {
     return _modifyDataList(map, OthersCategory());
   }
 
-  double getMonthlyIncomeAmount(DateTime dateTime) {
-    final txnsList = transactionRepo
-        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
-        .whereType<Income>()
-        .toList();
+  /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
+  /// Else, returns date from `dateTime` to `dateTime2`
+  double getIncomeAmount(DateTime dateTime, [DateTime? dateTime2]) {
+    final range = dateTime2 == null
+        ? DateTimeRange(
+            start: dateTime.copyWith(day: 1, hour: 0, minute: 0, second: 1),
+            end: dateTime.copyWith(month: dateTime.month + 1, day: 0, hour: 23, minute: 59, second: 59))
+        : DateTimeRange(
+            start: dateTime.copyWith(hour: 0, minute: 0, second: 1),
+            end: dateTime2.copyWith(hour: 23, minute: 59, second: 59));
+
+    final txnsList = transactionRepo.getTransactions(range.start, range.end).whereType<Income>().toList();
 
     if (txnsList.isEmpty) {
       return 0;
@@ -55,11 +78,18 @@ class PieChartServices {
     return txnsList.map((e) => e.amount).reduce((value, element) => value + element);
   }
 
-  List<MapEntry<Category, double>> getMonthlyIncomeData(DateTime dateTime, BuildContext context) {
-    final txnsList = transactionRepo
-        .getTransactions(dateTime.copyWith(day: 1), dateTime.copyWith(month: dateTime.month + 1, day: 0))
-        .whereType<Income>()
-        .toList();
+  /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
+  /// Else, returns date from `dateTime` to `dateTime2`
+  List<MapEntry<Category, double>> getIncomeData(DateTime dateTime, BuildContext context, [DateTime? dateTime2]) {
+    final range = dateTime2 == null
+        ? DateTimeRange(
+            start: dateTime.copyWith(day: 1, hour: 0, minute: 0, second: 1),
+            end: dateTime.copyWith(month: dateTime.month + 1, day: 0, hour: 23, minute: 59, second: 59))
+        : DateTimeRange(
+            start: dateTime.copyWith(hour: 0, minute: 0, second: 1),
+            end: dateTime2.copyWith(hour: 23, minute: 59, second: 59));
+
+    final txnsList = transactionRepo.getTransactions(range.start, range.end).whereType<Income>().toList();
 
     final map = <Category, double>{};
 
