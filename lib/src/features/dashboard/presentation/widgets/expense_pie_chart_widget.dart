@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/application/custom_pie_chart_services.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_pie_chart.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
@@ -24,8 +25,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
   @override
   Widget build(BuildContext context) {
     final pieServices = ref.watch(customPieChartServicesProvider);
-    final map = pieServices.getMonthlyExpenseData(DateTime.now());
-    final list = map.entries.toList();
+    final list = pieServices.getMonthlyExpenseData(DateTime.now());
     final totalAmount = pieServices.getMonthlyExpenseAmount(DateTime.now());
 
     List<Widget> labels(int index) {
@@ -84,8 +84,9 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: CustomPieChart(
-                values: map,
+              child: CustomPieChart<Category>(
+                values: list,
+                othersDisplay: OthersCategory(),
                 center: SvgIcon(
                   AppIcons.upload,
                   color: context.appTheme.negative.withOpacity(0.65),
@@ -105,8 +106,13 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ...labels(_touchedIndex),
-                    const Spacer(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: labels(_touchedIndex),
+                        ),
+                      ),
+                    ),
                     AnimatedOpacity(
                       opacity: _touchedIndex == -1 ? 1 : 0,
                       duration: k250msDuration,

@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
@@ -36,11 +38,11 @@ class CustomPageToolBar extends StatelessWidget {
     return Center(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Gap.w24,
-          Expanded(
+          context.isBigScreen ? Gap.w12 : Gap.w24,
+          Flexible(
             flex: 3,
             child: GestureDetector(
               onTap: onDateTap,
@@ -108,34 +110,37 @@ class CustomPageToolBar extends StatelessWidget {
             ),
           ),
           optionalButton != null
-              ? Expanded(
+              ? Flexible(
                   flex: 2,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      optionalButton!,
+                      Expanded(child: optionalButton!),
                       Gap.verticalDivider(context, indent: 10),
-                      RoundedIconButton(
-                        iconPath: AppIcons.arrowLeft,
-                        iconColor: context.appTheme.onBackground,
-                        backgroundColor: Colors.transparent,
-                        onTap: onTapLeft,
-                        size: 30,
-                        iconPadding: 5,
+                      Expanded(
+                        child: RoundedIconButton(
+                          iconPath: AppIcons.arrowLeft,
+                          iconColor: context.appTheme.onBackground,
+                          backgroundColor: Colors.transparent,
+                          onTap: onTapLeft,
+                          size: 30,
+                          iconPadding: 5,
+                        ),
                       ),
-                      Gap.w4,
-                      RoundedIconButton(
-                        iconPath: AppIcons.arrowRight,
-                        iconColor: context.appTheme.onBackground,
-                        backgroundColor: Colors.transparent,
-                        onTap: onTapRight,
-                        size: 30,
-                        iconPadding: 5,
+                      Expanded(
+                        child: RoundedIconButton(
+                          iconPath: AppIcons.arrowRight,
+                          iconColor: context.appTheme.onBackground,
+                          backgroundColor: Colors.transparent,
+                          onTap: onTapRight,
+                          size: 30,
+                          iconPadding: 5,
+                        ),
                       ),
                     ],
                   ),
                 )
-              : Expanded(
+              : Flexible(
                   flex: 1,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -160,7 +165,7 @@ class CustomPageToolBar extends StatelessWidget {
                     ],
                   ),
                 ),
-          Gap.w8,
+          context.isBigScreen ? Gap.noGap : Gap.w8,
         ],
       ),
     );

@@ -62,3 +62,16 @@ class DeletedCategory extends Category {
           isNotExistInDatabase: true,
         );
 }
+
+class OthersCategory extends Category {
+  OthersCategory()
+      : super._(
+          CategoryDb(ObjectId(), 0, '', 0, '', 0),
+          type: CategoryType.income,
+          name: 'Others'.hardcoded,
+          iconColor: AppColors.black,
+          backgroundColor: Colors.grey[300]!,
+          iconPath: AppIcons.categories,
+          isNotExistInDatabase: true,
+        );
+}

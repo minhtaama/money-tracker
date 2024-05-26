@@ -29,10 +29,7 @@ abstract class BaseEmbeddedModel<T extends EmbeddedObject> {
 @immutable
 abstract class BaseModelWithIcon<T extends IRealmObjectWithID> extends BaseModel<T> {
   const BaseModelWithIcon(super._databaseObject,
-      {required this.name,
-      required this.iconColor,
-      required this.backgroundColor,
-      required this.iconPath});
+      {required this.name, required this.iconColor, required this.backgroundColor, required this.iconPath});
 
   final String name;
   final Color iconColor;
@@ -58,15 +55,4 @@ abstract class BaseModelWithIcon<T extends IRealmObjectWithID> extends BaseModel
       iconColor.hashCode ^
       backgroundColor.hashCode ^
       iconPath.hashCode;
-}
-
-class GeneralOtherModel extends BaseModelWithIcon {
-  GeneralOtherModel(BuildContext context)
-      : super(
-          CategoryDb(ObjectId(), 0, '', 0, '', 0),
-          name: 'Other'.hardcoded,
-          iconColor: AppColors.greyBgr(context),
-          backgroundColor: context.appTheme.onBackground,
-          iconPath: AppIcons.categories,
-        );
 }

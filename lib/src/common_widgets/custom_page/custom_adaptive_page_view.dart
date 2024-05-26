@@ -246,6 +246,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
       _fadeDividerController.reverse(from: 1);
       _isShowSmallTabBarDivider = false;
     }
+    HapticFeedback.vibrate();
     widget.onPageChanged?.call(index);
   }
 

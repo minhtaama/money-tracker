@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/application/custom_pie_chart_services.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_pie_chart.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
@@ -24,8 +25,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
   @override
   Widget build(BuildContext context) {
     final pieServices = ref.watch(customPieChartServicesProvider);
-    final map = pieServices.getMonthlyIncomeData(DateTime.now(), context);
-    final list = map.entries.toList();
+    final list = pieServices.getMonthlyIncomeData(DateTime.now(), context);
     final totalAmount = pieServices.getMonthlyIncomeAmount(DateTime.now());
 
     List<Widget> labels(int index) {
@@ -84,8 +84,9 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: CustomPieChart(
-                values: map,
+              child: CustomPieChart<Category>(
+                values: list,
+                othersDisplay: OthersCategory(),
                 center: SvgIcon(
                   AppIcons.download,
                   color: context.appTheme.positive.withOpacity(0.65),
@@ -105,8 +106,13 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ...labels(_touchedIndex),
-                    const Spacer(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: labels(_touchedIndex),
+                        ),
+                      ),
+                    ),
                     AnimatedOpacity(
                       opacity: _touchedIndex == -1 ? 1 : 0,
                       duration: k250msDuration,
@@ -119,9 +125,9 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
                     MoneyAmount(
                       amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
                       style:
-                          kHeader1TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 23),
+                          kHeader1TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 23),
                       symbolStyle:
-                          kHeader3TextStyle.copyWith(color: context.appTheme.positive.withOpacity(0.8), fontSize: 20),
+                          kHeader3TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 20),
                       overflow: TextOverflow.fade,
                       maxLines: 1,
                     ),

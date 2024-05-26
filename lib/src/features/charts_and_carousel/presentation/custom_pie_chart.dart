@@ -1,28 +1,33 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
+import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../../../common_widgets/svg_icon.dart';
+import '../../../theme_and_ui/colors.dart';
 
-class CustomPieChart extends StatefulWidget {
+class CustomPieChart<T extends BaseModelWithIcon> extends StatefulWidget {
   const CustomPieChart({
     super.key,
     required this.values,
+    required this.othersDisplay,
     this.onChartTap,
     this.center,
   });
 
-  final Map<BaseModelWithIcon, double> values;
+  final List<MapEntry<T, double>> values;
+  final T othersDisplay;
   final Function(int)? onChartTap;
   final Widget? center;
 
   @override
-  State<CustomPieChart> createState() => _CustomPieChartState();
+  State<CustomPieChart<T>> createState() => _CustomPieChartState<T>();
 }
 
-class _CustomPieChartState extends State<CustomPieChart> {
+class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieChart<T>> {
   double _startDegreeOffset = -90;
   double _scale = 0.3;
   double _opacity = 0;
@@ -44,7 +49,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
   }
 
   List<PieChartSectionData> getData(int touchedIndex, BuildContext context) {
-    final dataList = widget.values.entries.toList()..sort((a, b) => (b.value - a.value).toInt());
+    final dataList = widget.values;
 
     if (dataList.isEmpty) {
       return [
@@ -57,61 +62,46 @@ class _CustomPieChartState extends State<CustomPieChart> {
       ];
     }
 
-    if (dataList.length - 1 >= 5) {
-      final sumAll = dataList.map((e) => e.value).reduce((value, element) => value + element);
-      double sumOfSmallest = 0;
-      int i = dataList.length - 1;
-      while (i >= 3) {
-        final entry = dataList[i];
-
-        sumOfSmallest += entry.value;
-
-        if (sumOfSmallest >= sumAll * 0.15) {
-          break;
-        }
-
-        i--;
-      }
-
-      if (i < dataList.length - 1) {
-        final others = dataList.sublist(i, dataList.length).reduce(
-            (value, element) => MapEntry(GeneralOtherModel(context), value.value + element.value));
-
-        dataList.replaceRange(i, dataList.length, [others]);
-      }
-
-      //TODO: Don't know if this works
-    }
-
     return dataList
         .map(
           (e) => PieChartSectionData(
             value: e.value,
-            color: e.key.backgroundColor.withOpacity(0.8),
+            color: e.key.backgroundColor.withOpacity(
+              touchedIndex == -1 || dataList.indexOf(e) == touchedIndex
+                  ? context.appTheme.isDarkTheme
+                      ? 0.8
+                      : 0.9
+                  : context.appTheme.isDarkTheme
+                      ? 0.15
+                      : 0.35,
+            ),
             showTitle: false,
-            badgePositionPercentageOffset: 1,
-            radius: dataList.indexOf(e) == touchedIndex ? 41 : 33,
-            badgeWidget: AnimatedContainer(
-              duration: k350msDuration,
-              curve: Curves.fastOutSlowIn,
-              height: dataList.indexOf(e) == touchedIndex ? 35 : 28,
-              width: dataList.indexOf(e) == touchedIndex ? 35 : 28,
-              padding: EdgeInsets.all(dataList.indexOf(e) == touchedIndex ? 6 : 5),
-              decoration: BoxDecoration(
-                color: e.key.backgroundColor,
-                borderRadius: BorderRadius.circular(1000),
-                boxShadow: [
-                  BoxShadow(
-                    color: context.appTheme.background0.withOpacity(0.55),
-                    blurRadius: 3,
-                  )
-                ],
-              ),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: SvgIcon(
-                  e.key.iconPath,
-                  color: e.key.iconColor,
+            badgePositionPercentageOffset: 0.8,
+            radius: 28,
+            badgeWidget: AnimatedOpacity(
+              duration: k150msDuration,
+              curve: Curves.easeOut,
+              opacity: touchedIndex == -1 || dataList.indexOf(e) == touchedIndex ? 1 : 0,
+              child: Container(
+                height: 28,
+                width: 28,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: e.key.backgroundColor,
+                  borderRadius: BorderRadius.circular(1000),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.black.withOpacity(0.55),
+                      blurRadius: 3,
+                    )
+                  ],
+                ),
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: SvgIcon(
+                    e.key.iconPath,
+                    color: e.key.iconColor,
+                  ),
                 ),
               ),
             ),
@@ -122,53 +112,63 @@ class _CustomPieChartState extends State<CustomPieChart> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedScale(
-      duration: k350msDuration,
-      curve: Curves.fastOutSlowIn,
-      scale: _scale,
-      child: AnimatedOpacity(
-        opacity: _opacity,
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: AnimatedScale(
         duration: k350msDuration,
         curve: Curves.fastOutSlowIn,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            widget.center ?? Gap.noGap,
-            PieChart(
-              PieChartData(
-                sections: getData(_touchedIndex, context),
-                sectionsSpace: 2,
-                startDegreeOffset: _startDegreeOffset,
-                centerSpaceRadius: 35,
-                pieTouchData: PieTouchData(
-                  touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
-                    if (widget.values.entries.isNotEmpty) {
-                      setState(() {
-                        // if (!event.isInterestedForInteractions ||
-                        //     pieTouchResponse == null ||
-                        //     pieTouchResponse.touchedSection == null) {
-                        //   _touchedIndex = -1;
-                        //   return;
-                        // }
-                        if (event.isInterestedForInteractions &&
-                            pieTouchResponse != null &&
-                            event is FlTapDownEvent) {
-                          if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
-                            _touchedIndex = -1;
-                          } else {
-                            _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
-                          }
-                          widget.onChartTap?.call(_touchedIndex);
+        scale: _scale,
+        child: AnimatedOpacity(
+          opacity: _opacity,
+          duration: k350msDuration,
+          curve: Curves.fastOutSlowIn,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              widget.center ?? Gap.noGap,
+              TapRegion(
+                onTapOutside: (_) {
+                  setState(() {
+                    _touchedIndex = -1;
+                  });
+                  widget.onChartTap?.call(_touchedIndex);
+                },
+                child: PieChart(
+                  PieChartData(
+                    sections: getData(_touchedIndex, context),
+                    sectionsSpace: 2,
+                    startDegreeOffset: _startDegreeOffset,
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
+                        if (widget.values.isNotEmpty) {
+                          setState(() {
+                            // if (!event.isInterestedForInteractions ||
+                            //     pieTouchResponse == null ||
+                            //     pieTouchResponse.touchedSection == null) {
+                            //   _touchedIndex = -1;
+                            //   return;
+                            // }
+                            if (event.isInterestedForInteractions &&
+                                pieTouchResponse != null &&
+                                event is FlTapDownEvent) {
+                              if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
+                                _touchedIndex = -1;
+                              } else {
+                                _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                              }
+                              widget.onChartTap?.call(_touchedIndex);
+                            }
+                          });
                         }
-                      });
-                    }
-                  },
+                      },
+                    ),
+                  ),
+                  swapAnimationDuration: k350msDuration,
+                  swapAnimationCurve: Curves.fastOutSlowIn,
                 ),
               ),
-              swapAnimationDuration: k350msDuration,
-              swapAnimationCurve: Curves.fastOutSlowIn,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
