@@ -19,34 +19,15 @@ class BarChartServices {
 
     final txnsList = transactionRepo.getTransactions(range.start, range.end).toList();
 
+    print(txnsList);
+
     double maxTemp = double.minPositive;
     final List<({int index, double spending, double income})> listTemp = [];
 
     final weekDays = <int>[1, 2, 3, 4, 5, 6, 7];
 
-    final offset = switch (context.appSettings.firstDayOfWeek) {
-      FirstDayOfWeek.monday => 0,
-      FirstDayOfWeek.sunday => -1,
-      FirstDayOfWeek.saturday => -2,
-      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
-          0 => -1, //Sun
-          1 => 0, //Mon
-          2 => -6, //Tue
-          3 => -5, //Wed
-          4 => -4, //Thu
-          5 => -3, //Fri
-          6 => -2, //Sat
-          _ => throw StateError('Wrong index of first day of week'),
-        },
-    };
+    reorderFirstDayOfWeek(context, weekDays);
 
-    if (offset != 0) {
-      weekDays
-        ..removeRange(weekDays.length + offset, weekDays.length)
-        ..insertAll(0, weekDays.sublist(weekDays.length + offset, weekDays.length));
-    }
-
-    // From Monday to Sunday
     for (int i = 0; i <= weekDays.length - 1; i++) {
       final weekDay = weekDays[i];
       final txnsInWeekday = List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.weekday == weekDay);
@@ -76,6 +57,35 @@ class BarChartServices {
           yIncome: (e.income / maxTemp).clamp(0.01, 1),
         )
     };
+  }
+
+  /// Call this function to re-order `weekDays` list to database's `firstDayOfWeek`
+  ///
+  /// The original list must have Monday as index 0.
+  void reorderFirstDayOfWeek(BuildContext context, List weekDays) {
+    final offset = switch (context.appSettings.firstDayOfWeek) {
+      FirstDayOfWeek.monday => 0,
+      FirstDayOfWeek.sunday => -1,
+      FirstDayOfWeek.saturday => -2,
+      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
+          0 => -1, //Sun
+          1 => 0, //Mon
+          2 => -6, //Tue
+          3 => -5, //Wed
+          4 => -4, //Thu
+          5 => -3, //Fri
+          6 => -2, //Sat
+          _ => throw StateError('Wrong index of first day of week'),
+        },
+    };
+
+    if (offset != 0) {
+      final subList = weekDays.sublist(weekDays.length + offset, weekDays.length);
+
+      weekDays
+        ..removeRange(weekDays.length + offset, weekDays.length)
+        ..insertAll(0, subList);
+    }
   }
 }
 

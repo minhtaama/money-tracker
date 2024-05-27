@@ -10,9 +10,11 @@ class CustomBarChart extends StatefulWidget {
   const CustomBarChart({
     super.key,
     required this.values,
+    required this.titles,
   });
 
   final Map<int, ({double spending, double income, double ySpending, double yIncome})> values;
+  final List<String> titles;
 
   @override
   State<CustomBarChart> createState() => _CustomBarChartState();
@@ -155,41 +157,8 @@ class _CustomBarChartState extends State<CustomBarChart> {
   }
 
   Widget bottomTitles(BuildContext context, double value, TitleMeta meta) {
-    final weekDays = <String>[
-      context.loc.mon,
-      context.loc.tue,
-      context.loc.wed,
-      context.loc.thu,
-      context.loc.fri,
-      context.loc.sat,
-      context.loc.sun
-    ];
-
-    final offset = switch (context.appSettings.firstDayOfWeek) {
-      FirstDayOfWeek.monday => 0,
-      FirstDayOfWeek.sunday => -1,
-      FirstDayOfWeek.saturday => -2,
-      FirstDayOfWeek.localeDefault => switch (MaterialLocalizations.of(context).firstDayOfWeekIndex) {
-          0 => -1, //Sun
-          1 => 0, //Mon
-          2 => -6, //Tue
-          3 => -5, //Wed
-          4 => -4, //Thu
-          5 => -3, //Fri
-          6 => -2, //Sat
-          _ => throw StateError('Wrong index of first day of week'),
-        },
-    };
-
-    final titles = List.from(weekDays);
-    if (offset != 0) {
-      titles
-        ..removeRange(weekDays.length + offset, weekDays.length)
-        ..insertAll(0, weekDays.sublist(weekDays.length + offset, weekDays.length));
-    }
-
     final Widget text = Text(
-      titles[value.toInt()],
+      widget.titles[value.toInt()],
       style: kHeader4TextStyle.copyWith(color: AppColors.grey(context), fontSize: 12),
     );
 
