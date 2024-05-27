@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/features/charts_and_carousel/application/c
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_bar_chart.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 class WeeklyBarChartWidget extends ConsumerStatefulWidget {
@@ -18,20 +19,12 @@ class _ExpensePieChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+
     final barServices = ref.watch(customBarChartServicesProvider);
-    final map = barServices.getWeeklyReportData(context, DateTime.now());
+    final map = barServices.getWeeklyReportData(context, today);
 
-    final weekDays = <String>[
-      context.loc.mon,
-      context.loc.tue,
-      context.loc.wed,
-      context.loc.thu,
-      context.loc.fri,
-      context.loc.sat,
-      context.loc.sun
-    ];
-
-    barServices.reorderFirstDayOfWeek(context, weekDays);
+    final weekDays = today.weekRange(context).toList();
 
     return DashboardWidget(
       title: 'Weekly report'.hardcoded,
@@ -39,7 +32,8 @@ class _ExpensePieChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
         height: 160,
         child: CustomBarChart(
           values: map,
-          titles: weekDays,
+          titleDateTimes: weekDays,
+          titleBuilder: (dateTime) => dateTime.weekdayToString(context, short: true),
         ),
       ),
     );

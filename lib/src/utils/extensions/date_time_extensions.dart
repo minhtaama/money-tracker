@@ -187,6 +187,7 @@ extension DateTimeExtensions on DateTime {
     return DateTimeRange(start: begin, end: end);
   }
 
+  /// Only year, month, day
   DateTimeRange weekRange(BuildContext context) {
     final userFirstDay = context.appSettings.firstDayOfWeek;
 
@@ -247,4 +248,10 @@ extension DateTimeExtensions on DateTime {
 
     return DateTimeRange(start: dayBeginOfYear, end: dayEndOfYear);
   }
+}
+
+extension DateTimeRangeToDateTimeList on DateTimeRange {
+  List<DateTime> toList() => [
+        for (DateTime date = start; !date.isAfter(end); date = date.add(const Duration(days: 1))) date,
+      ];
 }

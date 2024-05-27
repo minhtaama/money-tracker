@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
 import '../../../theme_and_ui/colors.dart';
 import '../../../utils/enums.dart';
@@ -10,11 +11,14 @@ class CustomBarChart extends StatefulWidget {
   const CustomBarChart({
     super.key,
     required this.values,
-    required this.titles,
+    required this.titleDateTimes,
+    required this.titleBuilder,
   });
 
   final Map<int, ({double spending, double income, double ySpending, double yIncome})> values;
-  final List<String> titles;
+  final List<DateTime> titleDateTimes;
+
+  final String Function(DateTime) titleBuilder;
 
   @override
   State<CustomBarChart> createState() => _CustomBarChartState();
@@ -32,6 +36,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
   };
 
   final double _barRodWidth = 14;
+
   int _touchedGroupIndex = -1;
 
   @override
@@ -124,7 +129,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) => bottomTitles(context, value, meta),
-                reservedSize: 24,
+                reservedSize: 30,
               ),
             ),
           ),
@@ -157,9 +162,24 @@ class _CustomBarChartState extends State<CustomBarChart> {
   }
 
   Widget bottomTitles(BuildContext context, double value, TitleMeta meta) {
-    final Widget text = Text(
-      widget.titles[value.toInt()],
-      style: kHeader4TextStyle.copyWith(color: AppColors.grey(context), fontSize: 12),
+    final dateTime = widget.titleDateTimes[value.toInt()];
+
+    final Widget text = Container(
+      padding: const EdgeInsets.all(3),
+      decoration: dateTime.isSameDayAs(DateTime.now())
+          ? BoxDecoration(
+              border: Border.all(color: dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context)),
+              borderRadius: BorderRadius.circular(5),
+            )
+          : null,
+      child: Text(
+        widget.titleBuilder(dateTime),
+        style: kHeader4TextStyle.copyWith(
+          color: dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context),
+          fontSize: 12,
+          height: 1,
+        ),
+      ),
     );
 
     return SideTitleWidget(
