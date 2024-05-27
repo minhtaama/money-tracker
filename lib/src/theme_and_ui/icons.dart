@@ -79,6 +79,7 @@ class AppIcons {
   static String get undrawShopping => 'assets/svg/app/undraw/undraw-shopping.svg';
   static String get undrawShopping2 => 'assets/svg/app/undraw/undraw-shopping2.svg';
   static String get undrawSofa => 'assets/svg/app/undraw/undraw-sofa.svg';
+  static String get undrawChart => 'assets/svg/app/undraw/undraw-chart.svg';
 
   static String get defaultIcon => 'assets/svg/app/default.svg';
 

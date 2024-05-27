@@ -65,9 +65,9 @@ class _ReportWrapperState extends State<ReportWrapper> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   SizedBox(
-                    width: widget.illustrationOffset + widget.illustrationSize + 14,
+                    width: widget.illustrationOffset + widget.illustrationSize + 70,
                   ),
-                  Expanded(
+                  Flexible(
                     child: Text(
                       widget.title,
                       style: kHeader1TextStyle.copyWith(
@@ -92,14 +92,14 @@ class _ReportWrapperState extends State<ReportWrapper> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               color: context.appTheme.background0,
-              height: widget.collapsable
+              height: widget.collapsable && widget.childHeight! > 250
                   ? _isCollapsed
-                      ? 300
+                      ? 200
                       : widget.childHeight != null
                           ? widget.childHeight! + 16
                           : null
                   : widget.childHeight,
-              child: widget.collapsable
+              child: widget.collapsable && widget.childHeight! > 250
                   ? Stack(
                       children: [
                         SingleChildScrollView(

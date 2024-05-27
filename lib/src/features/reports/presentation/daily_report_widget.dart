@@ -30,11 +30,11 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
     final days = range.toList();
 
     return ReportWrapper(
-      svgPath: AppIcons.undrawCreditCard,
-      title: 'Daily report'.hardcoded,
+      svgPath: AppIcons.undrawChart,
+      title: 'Daily Report'.hardcoded,
       collapsable: true,
-      illustrationSize: 160,
-      illustrationOffset: -30,
+      illustrationSize: 130,
+      illustrationOffset: 0,
       childHeight: days.length * 30 + 20,
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, left: 5.0, right: 5.0),
