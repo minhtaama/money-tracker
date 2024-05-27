@@ -36,11 +36,9 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
 
   @override
   void didUpdateWidget(covariant CustomPieChart<T> oldWidget) {
-    if (widget.values != oldWidget.values) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {
-          _dataList = widget.values;
-        });
+    if (widget.values != oldWidget.values && mounted) {
+      setState(() {
+        _dataList = widget.values;
       });
     }
     super.didUpdateWidget(oldWidget);

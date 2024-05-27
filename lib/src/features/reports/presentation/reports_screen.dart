@@ -2,6 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
@@ -16,6 +17,7 @@ import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dar
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/carousel.dart';
+import 'package:money_tracker_app/src/features/reports/presentation/daily_report_widget.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -39,9 +41,9 @@ class ReportsScreen extends ConsumerStatefulWidget {
 
 class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   final _monthCarouselKey = GlobalKey<_MonthCarouselState>();
-  final _today = DateTime.now().onlyYearMonthDay;
+  final _todayMonth = DateTime.now().onlyYearMonthDay.monthRange;
 
-  late List<DateTime> _selectedDateTimes = [_today];
+  late List<DateTime> _selectedDateTimes = [_todayMonth.start, _todayMonth.end];
   _ReportType _type = _ReportType.month;
 
   @override
@@ -57,7 +59,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         _dateSelector(),
         _dateDisplay(),
         Gap.h24,
+        DailyReportWidget(
+          key: const ValueKey('DailyReport'),
+          dateTimes: _selectedDateTimes,
+        ),
+        Gap.h24,
         CategoryReport(
+          key: const ValueKey('CategoryReport'),
           dateTimes: _selectedDateTimes,
         ),
       ],
@@ -65,6 +73,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   }
 
   Widget _dateSelector() => CustomBox(
+        key: const ValueKey('_dateSelector'),
         padding: const EdgeInsets.symmetric(vertical: 8),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
@@ -78,7 +87,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   HideableContainer(
-                    hide: _type != _ReportType.month || _selectedDateTimes.first.isSameMonthAs(_today),
+                    hide: _type != _ReportType.month || _selectedDateTimes.first.isSameMonthAs(_todayMonth.start),
                     axis: Axis.horizontal,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 6.0),
@@ -98,6 +107,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                     child: CustomSliderToggle<_ReportType>(
                       values: const [_ReportType.month, _ReportType.range],
                       height: 35,
+                      initialValueIndex: [_ReportType.month, _ReportType.range].indexOf(_type),
                       fontSize: 14,
                       labels: ['Monthly'.hardcoded, 'Custom range'.hardcoded],
                       onTap: (type) => setState(() {
@@ -132,6 +142,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       );
 
   Widget _dateDisplay() => Row(
+        key: const ValueKey('_dateDisplay'),
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
@@ -169,16 +180,6 @@ class _MonthCarouselState extends State<_MonthCarousel> {
       PageController(initialPage: _initialPageIndex, viewportFraction: kMoneyCarouselViewFraction - 0.2);
 
   late DateTime _currentDisplayDate = _today;
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final range = _currentDisplayDate.monthRange;
-      widget.onMonthChange([range.start, range.end]);
-    });
-
-    super.initState();
-  }
 
   void _onPageChange(int value) {
     _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));

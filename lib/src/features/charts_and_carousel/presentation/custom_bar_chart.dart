@@ -15,6 +15,11 @@ class CustomBarChart extends StatefulWidget {
     required this.titleDateTimes,
     required this.titleBuilder,
     this.horizontalChart = false,
+    this.titleAngle = 0,
+    this.titleReservedSize = 30,
+    this.titleSize = 12,
+    this.titleOffset = Offset.zero,
+    this.barRodWidth = 14,
   });
 
   /// Must have same entry length with [titleDateTimes] length
@@ -27,24 +32,36 @@ class CustomBarChart extends StatefulWidget {
 
   final bool horizontalChart;
 
+  final double titleAngle;
+
+  final double titleReservedSize;
+
+  final double titleSize;
+
+  final Offset titleOffset;
+
+  final double barRodWidth;
+
   @override
   State<CustomBarChart> createState() => _CustomBarChartState();
 }
 
 class _CustomBarChartState extends State<CustomBarChart> {
-  Map<int, ({double spending, double income, double ySpending, double yIncome})> _values = {
-    0: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
-    1: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
-    2: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
-    3: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
-    4: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
-    5: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
-    6: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01),
+  late Map<int, ({double spending, double income, double ySpending, double yIncome})> _values = {
+    for (var item in widget.values.entries) item.key: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01)
   };
 
-  final double _barRodWidth = 14;
-
   int _touchedGroupIndex = -1;
+
+  @override
+  void didUpdateWidget(covariant CustomBarChart oldWidget) {
+    if (widget.values != oldWidget.values) {
+      setState(() {
+        _values = widget.values;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   void didChangeDependencies() {
@@ -66,13 +83,13 @@ class _CustomBarChartState extends State<CustomBarChart> {
                 BarChartRodData(
                   toY: e.value.ySpending,
                   color: context.appTheme.negative,
-                  width: _barRodWidth,
+                  width: widget.barRodWidth,
                   borderRadius: BorderRadius.circular(0),
                 ),
                 BarChartRodData(
                   toY: e.value.yIncome,
                   color: context.appTheme.positive,
-                  width: _barRodWidth,
+                  width: widget.barRodWidth,
                   borderRadius: BorderRadius.circular(0),
                 ),
               ],
@@ -138,7 +155,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) => bottomTitles(context, value, meta),
-                reservedSize: 30,
+                reservedSize: widget.titleReservedSize,
               ),
             ),
           ),
@@ -174,28 +191,32 @@ class _CustomBarChartState extends State<CustomBarChart> {
     final dateTime = widget.titleDateTimes[value.toInt()];
 
     final Widget text = Container(
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.only(bottom: 2),
       decoration: dateTime.isSameDayAs(DateTime.now())
           ? BoxDecoration(
-              border: Border.all(color: dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context)),
-              borderRadius: BorderRadius.circular(5),
+              border: Border(
+                  bottom:
+                      BorderSide(color: dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context))),
             )
           : null,
       child: Text(
         widget.titleBuilder(dateTime),
         style: kHeader4TextStyle.copyWith(
           color: dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context),
-          fontSize: 12,
+          fontSize: widget.titleSize,
           height: 1,
         ),
       ),
     );
 
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      angle: widget.horizontalChart ? (3 * math.pi / 2) : 0,
-      space: 8, //margin top
-      child: text,
+    return Transform.translate(
+      offset: widget.titleOffset,
+      child: SideTitleWidget(
+        axisSide: meta.axisSide,
+        angle: (widget.horizontalChart ? (3 * math.pi / 2) : 0) + widget.titleAngle,
+        space: 8,
+        child: text,
+      ),
     );
   }
 }

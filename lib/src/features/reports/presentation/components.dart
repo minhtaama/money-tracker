@@ -2,22 +2,36 @@ part of 'reports_screen.dart';
 
 ///////////////////////////
 
-class ReportWrapper extends StatelessWidget {
-  const ReportWrapper(
-      {super.key,
-      required this.svgPath,
-      required this.title,
-      required this.child,
-      this.illustrationSize = 135,
-      this.illustrationOffset = 8});
+class ReportWrapper extends StatefulWidget {
+  const ReportWrapper({
+    super.key,
+    required this.svgPath,
+    required this.title,
+    required this.child,
+    this.illustrationSize = 135,
+    this.illustrationOffset = 8,
+    this.childHeight,
+    this.collapsable = false,
+  }) : assert(collapsable && childHeight != null || !collapsable);
 
   final String svgPath;
   final String title;
   final Widget child;
 
+  final double? childHeight;
+
   final double illustrationSize;
 
   final double illustrationOffset;
+
+  final bool collapsable;
+
+  @override
+  State<ReportWrapper> createState() => _ReportWrapperState();
+}
+
+class _ReportWrapperState extends State<ReportWrapper> {
+  bool _isCollapsed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +43,12 @@ class ReportWrapper extends StatelessWidget {
           padding: const EdgeInsets.only(left: 16),
           child: ClipRect(
             child: Transform.translate(
-              offset: Offset(illustrationOffset, 0),
+              offset: Offset(widget.illustrationOffset, 0),
               child: Opacity(
                 opacity: 0.9,
                 child: BackgroundIllustration(
-                  svgPath,
-                  size: illustrationSize,
+                  widget.svgPath,
+                  size: widget.illustrationSize,
                 ),
               ),
             ),
@@ -51,11 +65,11 @@ class ReportWrapper extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   SizedBox(
-                    width: illustrationOffset + illustrationSize + 14,
+                    width: widget.illustrationOffset + widget.illustrationSize + 14,
                   ),
                   Expanded(
                     child: Text(
-                      title,
+                      widget.title,
                       style: kHeader1TextStyle.copyWith(
                         color: titleColor,
                         shadows: [
@@ -78,7 +92,46 @@ class ReportWrapper extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               color: context.appTheme.background0,
-              child: child,
+              height: widget.collapsable
+                  ? _isCollapsed
+                      ? 300
+                      : widget.childHeight != null
+                          ? widget.childHeight! + 16
+                          : null
+                  : widget.childHeight,
+              child: widget.collapsable
+                  ? Stack(
+                      children: [
+                        SingleChildScrollView(
+                          reverse: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: widget.childHeight,
+                            child: widget.child,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: RotatedBox(
+                              quarterTurns: _isCollapsed ? 1 : -1,
+                              child: RoundedIconButton(
+                                iconPath: AppIcons.arrowRight,
+                                backgroundColor: context.appTheme.primary,
+                                iconColor: context.appTheme.onPrimary,
+                                size: 32,
+                                iconPadding: 5,
+                                onTap: () => setState(() {
+                                  _isCollapsed = !_isCollapsed;
+                                }),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : widget.child,
             )
           ],
         )

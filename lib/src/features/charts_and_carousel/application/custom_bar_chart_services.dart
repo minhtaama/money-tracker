@@ -19,8 +19,6 @@ class BarChartServices {
 
     final txnsList = transactionRepo.getTransactions(range.start, range.end).toList();
 
-    print(txnsList);
-
     double maxTemp = double.minPositive;
     final List<({int index, double spending, double income})> listTemp = [];
 
@@ -36,6 +34,47 @@ class BarChartServices {
       double income = 0;
 
       for (BaseTransaction txn in txnsInWeekday) {
+        if (txn is Income) {
+          income += txn.amount;
+        }
+        if (txn is Expense) {
+          spending += txn.amount;
+        }
+      }
+
+      maxTemp = math.max(maxTemp, math.max(income, spending));
+      listTemp.add((index: i, spending: spending, income: income));
+    }
+
+    return {
+      for (var e in listTemp)
+        e.index: (
+          spending: e.spending,
+          income: e.income,
+          ySpending: (e.spending / maxTemp).clamp(0.01, 1),
+          yIncome: (e.income / maxTemp).clamp(0.01, 1),
+        )
+    };
+  }
+
+  /// Key runs from 0 (first day of week) to 6 (last day of week)
+  Map<int, ({double spending, double income, double ySpending, double yIncome})> getReportData(DateTimeRange range) {
+    final txnsList = transactionRepo.getTransactions(range.start, range.end).toList();
+
+    double maxTemp = double.minPositive;
+
+    final List<({int index, double spending, double income})> listTemp = [];
+
+    final dates = range.toList();
+
+    for (int i = 0; i <= dates.length - 1; i++) {
+      final date = dates[i];
+      final txnsInDate = List<BaseTransaction>.from(txnsList).where((txn) => txn.dateTime.isSameDayAs(date));
+
+      double spending = 0;
+      double income = 0;
+
+      for (BaseTransaction txn in txnsInDate) {
         if (txn is Income) {
           income += txn.amount;
         }
