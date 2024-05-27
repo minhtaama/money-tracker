@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/day_card_transactions_list.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -19,7 +20,7 @@ class DayCard extends StatelessWidget {
     this.onTransactionTap,
     required this.plannedTransactions,
     this.onPlannedTransactionTap,
-    this.margin,
+    this.forModal = false,
   });
 
   final DateTime dateTime;
@@ -28,7 +29,7 @@ class DayCard extends StatelessWidget {
   final Function(BaseTransaction)? onTransactionTap;
   final Function(TransactionData)? onPlannedTransactionTap;
 
-  final EdgeInsets? margin;
+  final bool forModal;
 
   double get _calculateCashFlow {
     double cashFlow = 0;
@@ -58,8 +59,9 @@ class DayCard extends StatelessWidget {
     final today = DateTime.now().onlyYearMonthDay;
 
     return CardItem(
-      margin: margin ?? const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 14, vertical: forModal ? 4 : 6),
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+      border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,

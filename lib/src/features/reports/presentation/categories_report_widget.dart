@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/reports/presentation/reports_scre
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../common_widgets/custom_inkwell.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
@@ -41,9 +42,9 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
 
     return ReportWrapper(
       svgPath: AppIcons.undrawShopping2,
-      title: 'Categories',
-      illustrationSize: 135,
-      illustrationOffset: 0,
+      title: 'Expense & Income'.hardcoded,
+      illustrationSize: 160,
+      illustrationOffset: -30,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

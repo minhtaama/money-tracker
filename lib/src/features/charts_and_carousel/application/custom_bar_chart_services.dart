@@ -42,7 +42,7 @@ class BarChartServices {
 
     if (offset != 0) {
       weekDays
-        ..removeAt(weekDays.length + offset)
+        ..removeRange(weekDays.length + offset, weekDays.length)
         ..insertAll(0, weekDays.sublist(weekDays.length + offset, weekDays.length));
     }
 

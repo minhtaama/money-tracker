@@ -25,31 +25,55 @@ class ReportWrapper extends StatelessWidget {
 
     return Stack(
       children: [
-        Transform.translate(
-          offset: Offset(illustrationOffset, 0),
-          child: Opacity(
-            opacity: 0.9,
-            child: BackgroundIllustration(
-              svgPath,
-              size: illustrationSize,
+        Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: ClipRect(
+            child: Transform.translate(
+              offset: Offset(illustrationOffset, 0),
+              child: Opacity(
+                opacity: 0.9,
+                child: BackgroundIllustration(
+                  svgPath,
+                  size: illustrationSize,
+                ),
+              ),
             ),
           ),
         ),
         Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 36.0, top: 60.0, bottom: 8.0),
-              child: Text(
-                title,
-                style: kHeader1TextStyle.copyWith(color: titleColor, shadows: [
-                  Shadow(
-                    color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 1),
-                    blurRadius: context.appTheme.isDarkTheme ? 20 : 2,
+            SizedBox(
+              height: 100,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: illustrationOffset + illustrationSize + 14,
                   ),
-                ]),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: kHeader1TextStyle.copyWith(
+                        color: titleColor,
+                        shadows: [
+                          Shadow(
+                            color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 1),
+                            blurRadius: context.appTheme.isDarkTheme ? 20 : 2,
+                          ),
+                        ],
+                        height: 1.1,
+                      ),
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                  Gap.w24,
+                ],
               ),
             ),
+            Gap.h12,
             CardItem(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -100,7 +124,7 @@ class TransactionsModalScreen extends StatelessWidget {
             plannedTransactions: const [],
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
-            margin: EdgeInsets.zero,
+            forModal: true,
           ),
         );
       }

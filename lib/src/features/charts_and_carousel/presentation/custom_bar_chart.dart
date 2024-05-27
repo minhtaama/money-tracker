@@ -184,7 +184,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
     final titles = List.from(weekDays);
     if (offset != 0) {
       titles
-        ..removeAt(weekDays.length + offset)
+        ..removeRange(weekDays.length + offset, weekDays.length)
         ..insertAll(0, weekDays.sublist(weekDays.length + offset, weekDays.length));
     }
 
