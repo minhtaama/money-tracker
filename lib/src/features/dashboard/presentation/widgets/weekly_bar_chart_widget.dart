@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/application/custom_bar_chart_services.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/custom_bar_chart.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
-import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
@@ -29,7 +28,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
     return DashboardWidget(
       title: 'Weekly report'.hardcoded,
       child: SizedBox(
-        height: 160,
+        height: 180,
         child: CustomBarChart(
           values: map,
           titleDateTimes: weekDays,

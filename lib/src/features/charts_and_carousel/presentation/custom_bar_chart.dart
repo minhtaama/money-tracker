@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -5,7 +7,6 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 
 import '../../../theme_and_ui/colors.dart';
-import '../../../utils/enums.dart';
 
 class CustomBarChart extends StatefulWidget {
   const CustomBarChart({
@@ -13,12 +14,18 @@ class CustomBarChart extends StatefulWidget {
     required this.values,
     required this.titleDateTimes,
     required this.titleBuilder,
+    this.horizontalChart = false,
   });
 
+  /// Must have same entry length with [titleDateTimes] length
   final Map<int, ({double spending, double income, double ySpending, double yIncome})> values;
+
+  /// Must have same length with [values.entries]
   final List<DateTime> titleDateTimes;
 
   final String Function(DateTime) titleBuilder;
+
+  final bool horizontalChart;
 
   @override
   State<CustomBarChart> createState() => _CustomBarChartState();
@@ -75,8 +82,10 @@ class _CustomBarChartState extends State<CustomBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+    assert(widget.values.entries.length == widget.titleDateTimes.length);
+
+    return RotatedBox(
+      quarterTurns: widget.horizontalChart ? 1 : 0,
       child: BarChart(
         BarChartData(
           maxY: 1.02,
@@ -184,6 +193,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
+      angle: widget.horizontalChart ? (3 * math.pi / 2) : 0,
       space: 8, //margin top
       child: text,
     );
