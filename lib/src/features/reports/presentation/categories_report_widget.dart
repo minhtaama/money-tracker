@@ -41,10 +41,7 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
     final totalIncome = pieServices.getIncomeAmount(widget.dateTimes.first, widget.dateTimes.last);
 
     return ReportWrapper(
-      svgPath: AppIcons.undrawShopping2,
       title: 'Expense & Income'.hardcoded,
-      illustrationSize: 110,
-      illustrationOffset: -20,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

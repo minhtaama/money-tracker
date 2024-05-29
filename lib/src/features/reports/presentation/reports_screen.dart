@@ -1,4 +1,5 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,6 +49,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomPage(
+      onTapInsideChildren: (_) {
+        if (!_hideDateSelector) {
+          setState(() {
+            _hideDateSelector = true;
+          });
+        }
+      },
       smallTabBar: SmallTabBar(
         optional: HideableContainer(
           hide: _hideDateSelector,
@@ -69,7 +77,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         ),
       ),
       children: [
-        Gap.h32,
         CategoryReport(
           key: const ValueKey('CategoryReport'),
           dateTimes: _selectedDateTimes,

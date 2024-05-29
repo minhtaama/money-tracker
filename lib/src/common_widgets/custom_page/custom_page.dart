@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -17,9 +18,12 @@ class CustomPage extends ConsumerStatefulWidget {
     super.key,
     required this.smallTabBar,
     this.children = const [],
+    this.onTapInsideChildren,
   });
   final SmallTabBar smallTabBar;
   final List<Widget> children;
+
+  final void Function(PointerDownEvent)? onTapInsideChildren;
 
   @override
   ConsumerState<CustomPage> createState() => _CustomPageState();
@@ -68,15 +72,18 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
       backgroundColor: context.appTheme.background1,
       body: Stack(
         children: [
-          _CustomListView(
-            smallTabBar: widget.smallTabBar,
-            onOffsetChange: (value) => _onOffsetChange(value),
-            children: [
-              ...widget.children,
-              SizedBox(
-                height: MediaQuery.of(context).padding.bottom + 32,
-              )
-            ],
+          TapRegion(
+            onTapInside: widget.onTapInsideChildren,
+            child: _CustomListView(
+              smallTabBar: widget.smallTabBar,
+              onOffsetChange: (value) => _onOffsetChange(value),
+              children: [
+                ...widget.children,
+                SizedBox(
+                  height: MediaQuery.of(context).padding.bottom + 32,
+                )
+              ],
+            ),
           ),
           AnimatedBuilder(
               animation: _fadeAnimation,

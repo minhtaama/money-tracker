@@ -59,7 +59,7 @@ class DayCard extends StatelessWidget {
     final today = DateTime.now().onlyYearMonthDay;
 
     return CardItem(
-      margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 14, vertical: forModal ? 4 : 6),
+      margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 8, vertical: forModal ? 4 : 6),
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
       border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
       child: Column(
