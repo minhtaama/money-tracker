@@ -46,26 +46,40 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   late List<DateTime> _selectedDateTimes = [_todayMonth.start, _todayMonth.end];
   _ReportType _type = _ReportType.month;
 
+  bool _hideDateSelector = true;
+
   @override
   Widget build(BuildContext context) {
     return CustomPage(
       smallTabBar: SmallTabBar(
+        optional: HideableContainer(
+          hide: _hideDateSelector,
+          child: _dateSelector(),
+        ),
         child: PageHeading(
           title: 'Reports'.hardcoded,
           isTopLevelOfNavigationRail: true,
+          trailing: RotatedBox(
+            quarterTurns: _hideDateSelector ? 1 : -1,
+            child: RoundedIconButton(
+              iconPath: AppIcons.arrowRight,
+              onTap: () => setState(() {
+                _hideDateSelector = !_hideDateSelector;
+              }),
+            ),
+          ),
+          secondaryTitle: _date(),
         ),
       ),
       children: [
-        _dateSelector(),
-        _dateDisplay(),
-        Gap.h24,
-        DailyReportWidget(
-          key: const ValueKey('DailyReport'),
-          dateTimes: _selectedDateTimes,
-        ),
         Gap.h24,
         CategoryReport(
           key: const ValueKey('CategoryReport'),
+          dateTimes: _selectedDateTimes,
+        ),
+        Gap.h24,
+        DailyReportWidget(
+          key: const ValueKey('DailyReport'),
           dateTimes: _selectedDateTimes,
         ),
       ],
@@ -76,6 +90,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         key: const ValueKey('_dateSelector'),
         padding: const EdgeInsets.symmetric(vertical: 8),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        color: context.appTheme.background1,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -141,22 +156,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         ),
       );
 
-  Widget _dateDisplay() => Row(
-        key: const ValueKey('_dateDisplay'),
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            _selectedDateTimes.first.toLongDate(context),
-            style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-          ),
-          _selectedDateTimes.length > 1
-              ? Text(
-                  ' - ${_selectedDateTimes.last.toLongDate(context)}',
-                  style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-                )
-              : Gap.noGap,
-        ],
-      );
+  String _date() =>
+      '${_selectedDateTimes.first.toLongDate(context)}${_selectedDateTimes.length > 1 ? ' - ${_selectedDateTimes.last.toLongDate(context)}' : ''}';
 }
 
 class _MonthCarousel extends StatefulWidget {
