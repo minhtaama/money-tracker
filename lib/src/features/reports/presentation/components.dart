@@ -58,7 +58,7 @@ class _ReportWrapperState extends State<ReportWrapper> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: 100,
+              height: 80,
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.end,

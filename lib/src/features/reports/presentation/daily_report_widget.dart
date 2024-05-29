@@ -33,7 +33,7 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
       svgPath: AppIcons.undrawChart,
       title: 'Daily Report'.hardcoded,
       collapsable: true,
-      illustrationSize: 130,
+      illustrationSize: 100,
       illustrationOffset: 0,
       childHeight: days.length * 30 + 20,
       child: Padding(

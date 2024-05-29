@@ -43,8 +43,8 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
     return ReportWrapper(
       svgPath: AppIcons.undrawShopping2,
       title: 'Expense & Income'.hardcoded,
-      illustrationSize: 160,
-      illustrationOffset: -30,
+      illustrationSize: 110,
+      illustrationOffset: -20,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

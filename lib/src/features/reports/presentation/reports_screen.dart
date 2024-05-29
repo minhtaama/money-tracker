@@ -1,13 +1,10 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
@@ -72,12 +69,12 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         ),
       ),
       children: [
-        Gap.h24,
+        Gap.h32,
         CategoryReport(
           key: const ValueKey('CategoryReport'),
           dateTimes: _selectedDateTimes,
         ),
-        Gap.h24,
+        Gap.h32,
         DailyReportWidget(
           key: const ValueKey('DailyReport'),
           dateTimes: _selectedDateTimes,
