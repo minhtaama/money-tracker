@@ -5,7 +5,6 @@ import 'package:money_tracker_app/src/features/accounts/presentation/screen_deta
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../../common_widgets/modal_and_dialog.dart';
 import '../../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../charts_and_carousel/application/custom_line_chart_services.dart';

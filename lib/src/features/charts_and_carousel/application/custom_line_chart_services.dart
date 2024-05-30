@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/statement/base_class/statement.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -505,6 +506,153 @@ class LineChartServices {
       ),
     );
   }
+
+  CLCData getReportRegularCLCData(RegularAccount regularAccount, DateTime lower, DateTime upper) {
+    final range = DateTimeRange(
+      start: lower.onlyYearMonthDay,
+      end: upper.copyWith(hour: 23, minute: 59, second: 59),
+    );
+
+    final today = DateTime.now();
+
+    final days = range.toList();
+
+    ////////////////////// find initial amount ////////////////////////////////////////
+    final txnMaxIndex = regularAccount.transactionsList.length - 1;
+    final txnTransferMaxIndex = regularAccount.transferTransactionsList.length - 1;
+
+    double initialAmount = 0;
+
+    for (int i = 0; i <= txnMaxIndex; i++) {
+      final preTxn = regularAccount.transactionsList[i];
+      if (preTxn.dateTime.isBefore(range.start)) {
+        if (preTxn is Expense || preTxn is Transfer) {
+          initialAmount -= preTxn.amount;
+          continue;
+        }
+
+        initialAmount += preTxn.amount;
+        continue;
+      }
+
+      break;
+    }
+
+    final transferTxnList = regularAccount.transferTransactionsList;
+
+    for (int i = 0; i <= txnTransferMaxIndex; i++) {
+      final preTxn = transferTxnList[i];
+      if ((preTxn as BaseTransaction).dateTime.isBefore(range.start)) {
+        if (preTxn is CreditPayment) {
+          initialAmount -= preTxn.amount;
+          continue;
+        }
+
+        if (preTxn is Transfer) {
+          initialAmount += preTxn.amount;
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    Map<DateTime, double> result = {for (DateTime day in days) day: initialAmount};
+
+    void updateAmount(DateTime day, BaseTransaction txn) {
+      result.updateAll((key, value) {
+        if (!key.isBefore(day)) {
+          if (txn is CreditPayment || txn is Expense) {
+            return value -= txn.amount;
+          }
+
+          if (txn is Transfer) {
+            if (txn.account.id == regularAccount.id) {
+              return value -= txn.amount;
+            }
+            if (txn.transferAccount.id == regularAccount.id) {
+              return value += txn.amount;
+            }
+          }
+
+          return value += txn.amount;
+        }
+
+        return value;
+      });
+    }
+
+    final txns = transactionRepo.getTransactionsOfAccount(regularAccount, range.start, range.end);
+
+    if (txns.isNotEmpty) {
+      for (int i = 0; i <= txns.length - 1; i++) {
+        final txn = txns[i];
+        final tDay = txn.dateTime.onlyYearMonthDay;
+
+        if (tDay.isSameDayAs(days[0])) {
+          updateAmount(days[0], txn);
+        }
+
+        for (int j = 1; j <= days.length - 1; j++) {
+          if (tDay.isAfter(days[j - 1]) && !tDay.isAfter(days[j])) {
+            updateAmount(days[j], txn);
+            break;
+          }
+        }
+      }
+    }
+
+    double max = double.negativeInfinity;
+    double min = 0;
+
+    for (var entry in result.entries) {
+      if (entry.value > max) {
+        max = entry.value;
+      }
+      if (entry.value < min) {
+        min = entry.value;
+      }
+    }
+
+    final minAbs = min.abs();
+
+    final maxFromMin = max == min
+        ? 0
+        : max < 0 && min < 0
+            ? min.abs() - max.abs()
+            : max + minAbs;
+
+    double getY(double amount) {
+      if (maxFromMin == 0) {
+        return 0.0;
+      }
+      if (amount == 0) {
+        return minAbs / maxFromMin;
+      }
+      if (amount > 0) {
+        return (amount + minAbs) / maxFromMin;
+      } else {
+        return (minAbs - amount.abs()) / maxFromMin;
+      }
+    }
+
+    return CLCData(
+      maxAmount: max,
+      minAmount: min,
+      spots: List<CLCSpot>.from(
+        result.entries.map(
+          (e) => CLCSpot(
+            days.indexOf(e.key).toDouble() + 1,
+            getY(e.value),
+            amount: e.value,
+            isToday: e.key.isSameDayAs(today) && today.isSameMonthAs(lower),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 @immutable
@@ -516,6 +664,11 @@ class CLCData {
   final double minAmount;
 
   const CLCData({required this.spots, required this.maxAmount, required this.minAmount});
+
+  @override
+  String toString() {
+    return 'CLCData{spots: $spots, maxAmount: $maxAmount, minAmount: $minAmount}';
+  }
 }
 
 class CLCDataForCredit extends CLCData {

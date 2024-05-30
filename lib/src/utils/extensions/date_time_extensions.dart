@@ -251,7 +251,8 @@ extension DateTimeExtensions on DateTime {
 }
 
 extension DateTimeRangeToDateTimeList on DateTimeRange {
+  /// Only year, month, day
   List<DateTime> toList() => [
-        for (DateTime date = start; !date.isAfter(end); date = date.add(const Duration(days: 1))) date,
+        for (DateTime date = start; !date.isAfter(end); date = date.add(const Duration(days: 1))) date.onlyYearMonthDay,
       ];
 }

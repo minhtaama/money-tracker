@@ -15,6 +15,7 @@ import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dar
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/carousel.dart';
+import 'package:money_tracker_app/src/features/reports/presentation/account_report_widget.dart';
 import 'package:money_tracker_app/src/features/reports/presentation/daily_report_widget.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -86,6 +87,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           key: const ValueKey('DailyReport'),
           dateTimes: _selectedDateTimes,
         ),
+        Gap.h32,
+        AccountsReportWidget(dateTimes: _selectedDateTimes),
       ],
     );
   }

@@ -78,6 +78,7 @@ class _ReportWrapperState extends State<ReportWrapper> {
         CardItem(
           margin: const EdgeInsets.symmetric(horizontal: 8),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          clip: false,
           color: context.appTheme.background0,
           height: widget.collapsable && widget.childHeight! > 250
               ? _isCollapsed
