@@ -1,15 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import '../../transactions/data/transaction_repo.dart';
 import '../../transactions/domain/transaction_base.dart';
 
 class PieChartServices {
-  PieChartServices(this.transactionRepo);
+  PieChartServices(this.transactionRepo, this.accountRepo);
 
   final TransactionRepositoryRealmDb transactionRepo;
+
+  final AccountRepositoryRealmDb accountRepo;
 
   /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
   /// Else, returns date from `dateTime` to `dateTime2`
@@ -144,7 +148,8 @@ class PieChartServices {
 final customPieChartServicesProvider = Provider<PieChartServices>(
   (ref) {
     final repo = ref.watch(transactionRepositoryRealmProvider);
+    final accRepo = ref.watch(accountRepositoryProvider);
 
-    return PieChartServices(repo);
+    return PieChartServices(repo, accRepo);
   },
 );

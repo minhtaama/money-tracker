@@ -124,11 +124,11 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                   ),
                   Expanded(
                     child: CustomSliderToggle<_ReportType>(
-                      values: const [_ReportType.month, _ReportType.range],
+                      values: const [_ReportType.month, _ReportType.week],
                       height: 35,
-                      initialValueIndex: [_ReportType.month, _ReportType.range].indexOf(_type),
+                      initialValueIndex: [_ReportType.month, _ReportType.week].indexOf(_type),
                       fontSize: 14,
-                      labels: ['Monthly'.hardcoded, 'Custom range'.hardcoded],
+                      labels: ['Monthly'.hardcoded, 'Weekly'.hardcoded],
                       onTap: (type) => setState(() {
                         _type = type;
                       }),
@@ -149,7 +149,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               ),
               secondChild: CustomCalendar(
                 onValueChanged: (list) => setState(() {
-                  _selectedDateTimes = list.whereType<DateTime>().toSet().toList();
+                  final weekRange = list.first!.weekRange(context);
+                  _selectedDateTimes = [weekRange.start, weekRange.end];
                 }),
                 displayedMonthDate: _selectedDateTimes.last,
                 value: _selectedDateTimes,
@@ -216,5 +217,5 @@ class _MonthCarouselState extends State<_MonthCarousel> {
 
 enum _ReportType {
   month,
-  range,
+  week,
 }

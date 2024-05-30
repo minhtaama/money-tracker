@@ -155,7 +155,7 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
   int? firstDayOfWeek,
   double? controlsHeight,
   bool Function(DateTime)? selectableDayPredicate,
-  Widget? Function(
+  Widget? Function(BuildContext context,
           {BoxDecoration? decoration,
           bool? isCurrentYear,
           bool? isDisabled,
@@ -174,51 +174,69 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
   })? dayBuilder,
 }) {
   return CalendarDatePicker2WithActionButtonsConfig(
-      calendarType: calendarType,
-      firstDate: firstDate,
-      lastDate: lastDate,
-      firstDayOfWeek: context.appSettings.firstDayOfWeek.databaseValue,
-      selectableDayPredicate: selectableDayPredicate,
-      selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary,
-      selectedRangeHighlightColor: context.appTheme.isDarkTheme
-          ? context.appTheme.secondary1.withOpacity(0.5)
-          : context.appTheme.primary.withOpacity(0.5),
-      controlsTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
-      dayTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
-      lastMonthIcon: SvgIcon(
-        AppIcons.arrowLeft,
-        color: context.appTheme.onBackground,
-      ),
-      nextMonthIcon: SvgIcon(
-        AppIcons.arrowRight,
-        color: context.appTheme.onBackground,
-      ),
-      weekdayLabelTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
-      selectedDayTextStyle: kNormalTextStyle.copyWith(
-          color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
-      selectedYearTextStyle: kNormalTextStyle.copyWith(
-          color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
-      yearTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
-      cancelButtonTextStyle: kHeader2TextStyle.copyWith(
-          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
-      okButtonTextStyle: kHeader2TextStyle.copyWith(
-          fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
-      yearBuilder: yearBuilder,
-      dayBuilder: (
-              {required DateTime date,
-              BoxDecoration? decoration,
-              bool? isDisabled,
-              bool? isSelected,
-              bool? isToday,
-              TextStyle? textStyle}) =>
-          dayBuilder != null
-              ? dayBuilder(context,
-                  date: date,
-                  decoration: decoration,
-                  isDisabled: isDisabled,
-                  isSelected: isSelected,
-                  isToday: isToday,
-                  textStyle: textStyle)
-              : null,
-      controlsHeight: controlsHeight ?? 40);
+    calendarType: calendarType,
+    firstDate: firstDate,
+    lastDate: lastDate,
+    firstDayOfWeek: context.appSettings.firstDayOfWeek.databaseValue,
+    selectableDayPredicate: selectableDayPredicate,
+    selectedDayHighlightColor: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary,
+    selectedRangeHighlightColor: context.appTheme.isDarkTheme
+        ? context.appTheme.secondary1.withOpacity(0.5)
+        : context.appTheme.primary.withOpacity(0.5),
+    controlsTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+    dayTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+    lastMonthIcon: SvgIcon(
+      AppIcons.arrowLeft,
+      color: context.appTheme.onBackground,
+    ),
+    nextMonthIcon: SvgIcon(
+      AppIcons.arrowRight,
+      color: context.appTheme.onBackground,
+    ),
+    weekdayLabelTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+    selectedDayTextStyle: kNormalTextStyle.copyWith(
+        color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
+    selectedYearTextStyle: kNormalTextStyle.copyWith(
+        color: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary),
+    yearTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+    cancelButtonTextStyle: kHeader2TextStyle.copyWith(
+        fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
+    okButtonTextStyle: kHeader2TextStyle.copyWith(
+        fontSize: 15, color: context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.primary),
+    disableMonthPicker: true,
+    rangeBidirectional: true,
+    yearBuilder: (
+            {BoxDecoration? decoration,
+            bool? isCurrentYear,
+            bool? isDisabled,
+            bool? isSelected,
+            TextStyle? textStyle,
+            required int year}) =>
+        yearBuilder != null
+            ? yearBuilder(context,
+                year: year,
+                decoration: decoration,
+                isDisabled: isDisabled,
+                isSelected: isSelected,
+                isCurrentYear: isCurrentYear,
+                textStyle: textStyle)
+            : null,
+    dayBuilder: (
+            {required DateTime date,
+            BoxDecoration? decoration,
+            bool? isDisabled,
+            bool? isSelected,
+            bool? isToday,
+            TextStyle? textStyle}) =>
+        dayBuilder != null
+            ? dayBuilder(context,
+                date: date,
+                decoration: decoration,
+                isDisabled: isDisabled,
+                isSelected: isSelected,
+                isToday: isToday,
+                textStyle: textStyle)
+            : null,
+    controlsHeight: controlsHeight ?? 40,
+  );
 }
