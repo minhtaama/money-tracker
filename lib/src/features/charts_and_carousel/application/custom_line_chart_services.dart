@@ -507,7 +507,7 @@ class LineChartServices {
     );
   }
 
-  CLCData getReportRegularCLCData(RegularAccount regularAccount, DateTime lower, DateTime upper) {
+  CLCData2 getRegularCLCDataByRange(RegularAccount regularAccount, DateTime lower, DateTime upper) {
     final range = DateTimeRange(
       start: lower.onlyYearMonthDay,
       end: upper.copyWith(hour: 23, minute: 59, second: 59),
@@ -638,7 +638,9 @@ class LineChartServices {
       }
     }
 
-    return CLCData(
+    return CLCData2(
+      range: range,
+      accountInfo: regularAccount.toAccountInfo(),
       maxAmount: max,
       minAmount: min,
       spots: List<CLCSpot>.from(
@@ -648,6 +650,7 @@ class LineChartServices {
             getY(e.value),
             amount: e.value,
             isToday: e.key.isSameDayAs(today) && today.isSameMonthAs(lower),
+            dateTime: e.key,
           ),
         ),
       ),
@@ -669,6 +672,20 @@ class CLCData {
   String toString() {
     return 'CLCData{spots: $spots, maxAmount: $maxAmount, minAmount: $minAmount}';
   }
+}
+
+class CLCData2 extends CLCData {
+  final DateTimeRange range;
+
+  final AccountInfo accountInfo;
+
+  const CLCData2({
+    required super.spots,
+    required super.maxAmount,
+    required super.minAmount,
+    required this.range,
+    required this.accountInfo,
+  });
 }
 
 class CLCDataForCredit extends CLCData {

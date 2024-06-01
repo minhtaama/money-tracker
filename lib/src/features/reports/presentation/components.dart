@@ -62,7 +62,7 @@ class _ReportWrapperState extends State<ReportWrapper> {
                     color: titleColor,
                     shadows: [
                       Shadow(
-                        color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 1),
+                        color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 0),
                         blurRadius: context.appTheme.isDarkTheme ? 20 : 2,
                       ),
                     ],

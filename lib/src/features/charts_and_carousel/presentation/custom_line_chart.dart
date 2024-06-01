@@ -1,5 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/charts_and_carousel/application/custom_line_chart_services.dart';
@@ -514,58 +519,25 @@ class CustomLineChart extends StatelessWidget {
   }
 }
 
-class CustomReportLineChart extends StatelessWidget {
-  const CustomReportLineChart({
+class CustomLineChart2 extends StatelessWidget {
+  const CustomLineChart2({
     super.key,
-    required this.currentMonth,
     required this.data,
-    this.offsetLabelUp = 0,
-    this.extraLineY,
-    this.extraLineText,
     this.isForCredit = false,
-    this.color,
-    this.todayDotColor,
   });
 
-  /// To determine value in x-axis (days in month)
-  final DateTime currentMonth;
-
-  final CLCData data;
-
-  /// Offset chart but keep the bottom title at the same spot
-  final double offsetLabelUp;
-
-  final double? extraLineY;
-
-  final String? extraLineText;
+  final CLCData2 data;
 
   final bool isForCredit;
-
-  final Color? color;
-
-  final Color? todayDotColor;
-
-  _CustomLineType get _customLineType {
-    final today = DateTime.now();
-    final hasToday = data.spots.indexWhere((spot) => spot.isToday);
-
-    if (hasToday >= 0) {
-      return _CustomLineType.solidToDashed;
-    }
-
-    if (currentMonth.isInMonthAfter(today)) {
-      return _CustomLineType.dashed;
-    }
-
-    return _CustomLineType.solid;
-  }
 
   @override
   Widget build(BuildContext context) {
     const maxY = 1.025;
-    final minY = 0 - (offsetLabelUp * 1.4) / 100;
+    const minY = 0.0;
 
     final spots = data.spots;
+    final dateTimes = data.range.toList();
+    final color = data.accountInfo.backgroundColor;
 
     final todayIndex = spots.indexWhere((e) => e.isToday);
     final hasToday = todayIndex != -1;
@@ -573,108 +545,18 @@ class CustomReportLineChart extends StatelessWidget {
     final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
     final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
 
-    // 0.2 is added for step chart to display correctly
-    final todayPercent = hasToday && _customLineType == _CustomLineType.solidToDashed
-        ? (spots[todayIndex].x - spots[0].x + 0.2) / (spots[spots.length - 1].x - spots[0].x)
-        : 0.0;
-
-    final optionalLineGradient = LinearGradient(
-      colors: [color ?? context.appTheme.accent1, color?.withOpacity(0) ?? context.appTheme.accent1.withOpacity(0)],
-      stops: [todayPercent, todayPercent + 0.00000001],
-    );
-
-    Gradient mainBelowLineGradient() {
-      bool isDashed = _customLineType == _CustomLineType.dashed;
-      bool isDarkTheme = context.appTheme.isDarkTheme;
-      double opaTop = todayDotColor != null
-          ? 0.25
-          : isDarkTheme
-              ? (isDashed ? 0.25 : 0.35)
-              : (isDashed ? 0.05 : 0.15);
-      double opaBottom = todayDotColor != null
-          ? 0.1
-          : isDarkTheme
-              ? 0.15
-              : 0;
-
-      return LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          color?.withOpacity(opaTop) ?? context.appTheme.accent1.withOpacity(opaTop),
-          color?.withOpacity(opaBottom) ?? context.appTheme.accent1.withOpacity(opaBottom),
-        ],
-        stops: const [0, 0.6],
-      );
-    }
-
-    Alignment extraLineLabelAlignment() {
-      if (extraLineY == null) {
-        return Alignment.topRight;
-      }
-
-      bool isLeft = false;
-
-      double avgYBegin = 0;
-      double avgYEnd = 0;
-
-      for (int i = 0; i <= spots.length / 2; i++) {
-        avgYBegin += spots[i].y;
-      }
-      for (int i = spots.length - 1; i >= spots.length / 2; i--) {
-        avgYEnd += spots[i].y;
-      }
-
-      avgYBegin = (avgYBegin / (spots.length / 2)).clamp(0, 1);
-      avgYEnd = (avgYEnd / (spots.length / 2)).clamp(0, 1);
-
-      if (todayIndex >= spots.length / 2) {
-        isLeft = true;
-      }
-
-      if (isLeft) {
-        return avgYBegin > extraLineY! ? Alignment.bottomLeft : Alignment.topLeft;
-      } else {
-        return avgYEnd > extraLineY! ? Alignment.bottomRight : Alignment.topRight;
-      }
-    }
-
     final lineBarsData = [
-      // Main line.
-      // Always shows, has BelowBarData, default is dashed,
-      // will turns to solid if only type is `solid`.
       LineChartBarData(
         spots: spots,
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: _customLineType == _CustomLineType.solid ? 3 : 1.5,
-        dashArray: [12, _customLineType == _CustomLineType.solid ? 0 : 8],
-        shadow: context.appTheme.isDarkTheme
-            ? Shadow(
-                color: context.appTheme.accent1,
-                blurRadius: 50,
-              )
-            : const Shadow(color: Colors.transparent),
-        color: color ?? context.appTheme.accent1,
+        barWidth: 2,
+        color: color,
         belowBarData: BarAreaData(
           show: true,
-          gradient: mainBelowLineGradient(),
+          color: color.withOpacity(0.1),
         ),
-        dotData: const FlDotData(show: false),
-        isStepLineChart: isForCredit,
-        lineChartStepData: const LineChartStepData(stepDirection: 0),
-      ),
-
-      // Optional solid line, as `barIndex == 1` and do not have BelowBarData
-      // Only shows (logic by gradient) if there are both solid and dashed line.
-      LineChartBarData(
-        spots: spots,
-        isCurved: true,
-        isStrokeCapRound: false,
-        preventCurveOverShooting: true,
-        barWidth: 3,
-        gradient: optionalLineGradient,
         dotData: FlDotData(
           show: true,
           checkToShowDot: (spot, barData) {
@@ -684,28 +566,17 @@ class CustomReportLineChart extends StatelessWidget {
           },
           getDotPainter: (spot, percent, bar, index) {
             if (hasToday && index == todayIndex) {
-              bool boxUnderDot = false;
-              if (index >= (spots.length - 1) - 3) {
-                if (spots[index].y > spots[index - 1].y) {
-                  boxUnderDot = true;
-                }
-              } else {
-                if (spots[index + 1].y > spots[index].y) {
-                  boxUnderDot = true;
-                }
-              }
-
               return FlDotTodayPainter(
                 context,
-                color: color ?? context.appTheme.accent1,
-                dotColor: todayDotColor ??
-                    (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0),
-                boxUnderDot: boxUnderDot,
+                color: color,
+                dotStrokeWidth: 2,
+                dotRadius: 2,
+                dotColor: context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0,
               );
             }
             return FlDotCirclePainter(
-              radius: 4,
-              color: color ?? context.appTheme.accent1,
+              radius: 2,
+              color: color,
               strokeColor: Colors.transparent,
             );
           },
@@ -716,30 +587,52 @@ class CustomReportLineChart extends StatelessWidget {
     ];
 
     Widget bottomTitleWidgets(double value, TitleMeta meta) {
-      final today = DateTime.now();
+      final dtLength = dateTimes.length;
+      final bottomLabels = [
+        dateTimes[0],
+        dateTimes[dtLength ~/ 4],
+        dateTimes[dtLength ~/ 2],
+        dateTimes[dtLength ~/ 4 * 3],
+        dateTimes[dtLength - 1],
+      ];
 
-      bool isToday = value == today.day && currentMonth.isSameMonthAs(today);
+      bool isShowTitle = dateTimes.length > 20 ? bottomLabels.contains(dateTimes[value.toInt() - 1]) : true;
 
-      final bottomLabels = currentMonth.daysInMonth == 31 || currentMonth.daysInMonth == 30
-          ? [1, 8, 15, 23, currentMonth.daysInMonth]
-          : [1, 7, 14, 21, currentMonth.daysInMonth];
+      return isShowTitle
+          ? SideTitleWidget(
+              axisSide: AxisSide.bottom,
+              space: 8,
+              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, distanceFromEdge: -3),
+              child: Text(
+                dateTimes[value.toInt() - 1].toShortDate(context, noYear: true),
+                style: kNormalTextStyle.copyWith(fontSize: 10, color: context.appTheme.onBackground),
+              ),
+            )
+          : Gap.noGap;
+    }
 
-      bool isShowTitle = bottomLabels.contains(value.toInt());
+    Widget sideTitleWidgets(double value, TitleMeta meta) {
+      final sideLabels = [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1,
+      ];
 
-      final textStyle = isToday
-          ? kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground)
-          : kNormalTextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+      bool isShowTitle = sideLabels.contains(value.roundTo2DP());
 
       return isShowTitle
           ? Transform.translate(
-              offset: Offset(0, -(6 + offsetLabelUp)),
+              offset: const Offset(0, -15),
               child: SideTitleWidget(
-                axisSide: AxisSide.bottom,
+                axisSide: AxisSide.left,
                 space: 0,
-                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
-                child: Text(
-                  value.toInt().toString(),
-                  style: textStyle,
+                angle: math.pi * 1 / 5,
+                child: MoneyAmount(
+                  amount: data.maxAmount * value + data.minAmount * (1 - value),
+                  style: kNormalTextStyle.copyWith(fontSize: 8.5, color: context.appTheme.onBackground),
+                  noAnimation: true,
                 ),
               ),
             )
@@ -763,30 +656,27 @@ class CustomReportLineChart extends StatelessWidget {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.center;
 
-      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground);
 
       return isShowTitle
-          ? Transform.translate(
-              offset: Offset(0, -(6 + offsetLabelUp)),
-              child: SideTitleWidget(
-                axisSide: AxisSide.bottom,
-                space: 0,
-                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
-                child: FittedBox(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: crossAlignment,
-                    children: [
-                      SvgIcon(
-                        icon,
-                        color: color ?? context.appTheme.onBackground,
-                      ),
-                      Text(
-                        spot.dateTime!.toShortDate(context, noYear: true),
-                        style: textStyle,
-                      ),
-                    ],
-                  ),
+          ? SideTitleWidget(
+              axisSide: AxisSide.bottom,
+              space: 0,
+              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+              child: FittedBox(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: crossAlignment,
+                  children: [
+                    SvgIcon(
+                      icon,
+                      color: color,
+                    ),
+                    Text(
+                      spot.dateTime!.toShortDate(context, noYear: true),
+                      style: textStyle,
+                    ),
+                  ],
                 ),
               ),
             )
@@ -795,7 +685,7 @@ class CustomReportLineChart extends StatelessWidget {
 
     List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
       List<LineTooltipItem?> items = [];
-      final lum = color?.computeLuminance();
+      final lum = color.computeLuminance();
 
       // loop through EACH touchedSpot of a bar
       for (int i = 0; i < touchedSpots.length; i++) {
@@ -809,8 +699,7 @@ class CustomReportLineChart extends StatelessWidget {
 
         final spot = spots[touchedSpot.spotIndex];
         final symbol = context.appSettings.currency.symbol;
-        final dateTime = spot.dateTime?.toShortDate(context, noYear: true) ??
-            currentMonth.copyWith(day: touchedSpot.x.toInt()).toShortDate(context, noYear: true);
+        final dateTime = spot.dateTime?.toShortDate(context, noYear: true);
 
         final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
 
@@ -851,11 +740,7 @@ class CustomReportLineChart extends StatelessWidget {
         items.add(LineTooltipItem(
           line1,
           kHeader2TextStyle.copyWith(
-            color: lum == null
-                ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
-                : lum > 0.5
-                    ? AppColors.black
-                    : AppColors.white,
+            color: lum > 0.5 ? AppColors.black : AppColors.white,
             fontSize: isForCredit ? 11 : 13,
           ),
           textAlign: isForCredit ? TextAlign.left : TextAlign.right,
@@ -863,33 +748,21 @@ class CustomReportLineChart extends StatelessWidget {
             TextSpan(
               text: line2(),
               style: kHeader2TextStyle.copyWith(
-                color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
-                    : lum > 0.5
-                        ? AppColors.black
-                        : AppColors.white,
+                color: lum > 0.5 ? AppColors.black : AppColors.white,
                 fontSize: 11,
               ),
             ),
             TextSpan(
               text: line3,
               style: kHeader3TextStyle.copyWith(
-                color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
-                    : lum > 0.5
-                        ? AppColors.black
-                        : AppColors.white,
+                color: lum > 0.5 ? AppColors.black : AppColors.white,
                 fontSize: 11,
               ),
             ),
             TextSpan(
               text: line4,
               style: kHeader3TextStyle.copyWith(
-                color: lum == null
-                    ? (context.appTheme.isDarkTheme ? context.appTheme.onBackground : context.appTheme.onSecondary)
-                    : lum > 0.5
-                        ? AppColors.black
-                        : AppColors.white,
+                color: lum > 0.5 ? AppColors.black : AppColors.white,
                 fontSize: 11,
               ),
             ),
@@ -902,15 +775,16 @@ class CustomReportLineChart extends StatelessWidget {
 
     List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
       return spotIndex.map((int index) {
-        bool isOptionalBar = barData.belowBarData.show == false;
-
-        const flLine = FlLine(color: Colors.transparent);
+        final flLine = FlLine(
+          color: color.addDark(0.1),
+          strokeWidth: 1,
+        );
 
         final dotData = FlDotData(
           getDotPainter: (spot, percent, bar, index) {
             return FlDotCirclePainter(
-              radius: isOptionalBar ? 0 : 5,
-              color: color?.addDark(0.1) ?? context.appTheme.accent1.addDark(0.1),
+              radius: 4,
+              color: color.addDark(0.1),
               strokeColor: Colors.transparent,
             );
           },
@@ -928,11 +802,7 @@ class CustomReportLineChart extends StatelessWidget {
         maxContentWidth: 500,
         tooltipHorizontalAlignment: FLHorizontalAlignment.center,
         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        getTooltipColor: (_) =>
-            color?.withOpacity(0.5) ??
-            (context.appTheme.isDarkTheme
-                ? context.appTheme.background0.withOpacity(0.5)
-                : context.appTheme.secondary2.withOpacity(0.5)),
+        getTooltipColor: (_) => color,
         getTooltipItems: lineTooltipItem,
       ),
       getTouchedSpotIndicator: touchedIndicators,
@@ -942,71 +812,99 @@ class CustomReportLineChart extends StatelessWidget {
       show: true,
       rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      leftTitles: AxisTitles(
+        drawBelowEverything: true,
+        sideTitles: SideTitles(
+          showTitles: true,
+          interval: 0.25,
+          reservedSize: 55,
+          getTitlesWidget: sideTitleWidgets,
+        ),
+      ),
       bottomTitles: AxisTitles(
         drawBelowEverything: false,
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: isForCredit ? 30 : 14,
+          reservedSize: isForCredit ? 30 : 20,
           interval: 1,
           getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : bottomTitleWidgets,
         ),
       ),
     );
 
-    final extraLinesData = ExtraLinesData(
-      horizontalLines: extraLineY != null
-          ? [
-              HorizontalLine(
-                y: extraLineY!,
-                strokeWidth: 0.7,
-                dashArray: [12, 8],
-                label: HorizontalLineLabel(
-                  show: true,
-                  style: kHeader3TextStyle.copyWith(
-                    fontSize: 11,
-                    color: extraLineY != null
-                        ? color?.withOpacity(0.2) ??
-                            (context.appTheme.isDarkTheme
-                                ? context.appTheme.onBackground.withOpacity(0.2)
-                                : context.appTheme.onSecondary.withOpacity(0.2))
-                        : color?.withOpacity(0) ??
-                            (context.appTheme.isDarkTheme
-                                ? context.appTheme.onBackground.withOpacity(0)
-                                : context.appTheme.onSecondary.withOpacity(0)),
-                  ),
-                  alignment: extraLineLabelAlignment(),
-                  labelResolver: (_) => extraLineText ?? '',
-                ),
-                color: extraLineY != null
-                    ? color?.withOpacity(0.1) ??
-                        (context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground.withOpacity(0.1)
-                            : context.appTheme.onSecondary.withOpacity(0.1))
-                    : color?.withOpacity(0) ??
-                        (context.appTheme.isDarkTheme
-                            ? context.appTheme.onBackground.withOpacity(0)
-                            : context.appTheme.onSecondary.withOpacity(0)),
-              ),
-            ]
-          : [],
-    );
+    ExtraLinesData extraLinesData() {
+      final ys = <double>[0.25, 0.5, 0.75, 1];
+      return ExtraLinesData(
+        extraLinesOnTop: false,
+        horizontalLines: [
+          for (double y in ys)
+            HorizontalLine(
+              y: y,
+              strokeWidth: 1,
+              strokeCap: StrokeCap.round,
+              dashArray: [5, 7],
+              color: context.appTheme.onBackground.withOpacity(0.15),
+            ),
+        ],
+      );
+    }
 
-    return Transform.translate(
-      offset: Offset(0, isForCredit ? 30 : 14),
-      child: LineChart(
-        LineChartData(
-          maxY: maxY,
-          minY: minY,
-          gridData: const FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          titlesData: titlesData,
-          lineTouchData: lineTouchData,
-          lineBarsData: lineBarsData,
-          extraLinesData: extraLinesData,
-        ),
-        duration: k550msDuration,
-        curve: Curves.easeInOut,
+    return Padding(
+      padding: const EdgeInsets.only(right: 10.0, top: 6.0, bottom: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SvgIcon(
+                data.accountInfo.iconPath,
+                color: context.appTheme.onBackground,
+                size: 20,
+              ),
+              Gap.w4,
+              Flexible(
+                child: Text(
+                  data.accountInfo.name,
+                  style: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Gap.w2,
+            ],
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: LineChart(
+                LineChartData(
+                  maxY: maxY,
+                  minY: minY,
+                  gridData: const FlGridData(show: false),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border(
+                      left: BorderSide(
+                        color: context.appTheme.onBackground.withOpacity(0.2),
+                      ),
+                      bottom: BorderSide(
+                        color: context.appTheme.onBackground.withOpacity(0.2),
+                      ),
+                    ),
+                  ),
+                  titlesData: titlesData,
+                  lineTouchData: lineTouchData,
+                  lineBarsData: lineBarsData,
+                  extraLinesData: extraLinesData(),
+                ),
+                duration: k550msDuration,
+                curve: Curves.easeInOut,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

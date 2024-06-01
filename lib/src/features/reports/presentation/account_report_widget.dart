@@ -41,7 +41,7 @@ class _AssetReportWidgetState extends ConsumerState<AccountsReportWidget> {
     final dataList = accountRepo
         .getList(AccountType.regular)
         .whereType<RegularAccount>()
-        .map((account) => chartServices.getReportRegularCLCData(
+        .map((account) => chartServices.getRegularCLCDataByRange(
               account,
               widget.dateTimes.first,
               widget.dateTimes.last,
@@ -55,9 +55,8 @@ class _AssetReportWidgetState extends ConsumerState<AccountsReportWidget> {
         children: dataList
             .map(
               (clcData) => SizedBox(
-                height: 200,
-                child: CustomReportLineChart(
-                  currentMonth: widget.dateTimes.first,
+                height: 210,
+                child: CustomLineChart2(
                   data: clcData,
                 ),
               ),
