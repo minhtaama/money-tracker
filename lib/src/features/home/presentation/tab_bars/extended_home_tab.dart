@@ -142,11 +142,11 @@ class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHom
   Widget build(BuildContext context) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getHomeScreenCLCData(_type, widget.displayDate);
+    CLCData data = chartServices.getCLCDataForHomeScreen(_type, widget.displayDate);
     double avg = chartServices.getAverageAssets();
 
     ref.listen(transactionsChangesStreamProvider, (previous, next) {
-      data = chartServices.getHomeScreenCLCData(_type, widget.displayDate);
+      data = chartServices.getCLCDataForHomeScreen(_type, widget.displayDate);
       avg = chartServices.getAverageAssets();
     });
 
@@ -223,12 +223,12 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
     final chartServices = ref.watch(customLineChartServicesProvider);
     final txnServices = ref.read(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getHomeScreenCLCData(LineChartDataType.totalAssets, widget.displayDate);
+    CLCData data = chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
     double avg = chartServices.getAverageAssets();
     double amount = txnServices.getTotalAssets(widget.displayDate);
 
     ref.listen(transactionsChangesStreamProvider, (previous, next) {
-      data = chartServices.getHomeScreenCLCData(LineChartDataType.totalAssets, widget.displayDate);
+      data = chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
       avg = chartServices.getAverageAssets();
     });
 

@@ -537,6 +537,8 @@ class CustomLineChart2 extends StatelessWidget {
     const minY = 0.0;
 
     final spots = data.spots;
+    final subSpots = data.subSpots;
+
     final dateTimes = data.range.toList();
     final color = data.accountInfo.backgroundColor;
 
@@ -586,6 +588,22 @@ class CustomLineChart2 extends StatelessWidget {
         lineChartStepData: const LineChartStepData(stepDirection: 0),
       ),
     ];
+
+    if (subSpots != null) {
+      lineBarsData.insert(
+        0,
+        LineChartBarData(
+          spots: subSpots,
+          isCurved: true,
+          isStrokeCapRound: false,
+          preventCurveOverShooting: true,
+          barWidth: 2,
+          color: context.appTheme.negative.withOpacity(0.5),
+          belowBarData: BarAreaData(show: false),
+          dotData: const FlDotData(show: false),
+        ),
+      );
+    }
 
     Widget bottomTitleWidgets(double value, TitleMeta meta) {
       final dtLength = dateTimes.length;

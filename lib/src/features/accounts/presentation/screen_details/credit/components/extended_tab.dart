@@ -27,10 +27,10 @@ class ExtendedCreditAccountTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getCreditCLCData(account, displayDate);
+    CLCData data = chartServices.getCLCDataOfCreditAsset(account, displayDate);
 
     ref.listen(transactionsChangesStreamProvider, (_, __) {
-      data = chartServices.getCreditCLCData(account, displayDate);
+      data = chartServices.getCLCDataOfCreditAsset(account, displayDate);
     });
 
     final extraLineY = (data as CLCDataForCredit).extraLineY;

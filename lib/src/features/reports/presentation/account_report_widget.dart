@@ -41,7 +41,7 @@ class _AssetReportWidgetState extends ConsumerState<AccountsReportWidget> {
     final dataList = accountRepo
         .getList(AccountType.regular)
         .whereType<RegularAccount>()
-        .map((account) => chartServices.getRegularCLCDataByRange(
+        .map((account) => chartServices.getCLCDataForReportScreenOnRegularAccount(
               account,
               widget.dateTimes.first,
               widget.dateTimes.last,

@@ -5,6 +5,7 @@ import 'package:money_tracker_app/src/features/accounts/presentation/screen_deta
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../../../common_widgets/modal_and_dialog.dart';
 import '../../../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../../charts_and_carousel/application/custom_line_chart_services.dart';
@@ -24,11 +25,12 @@ class ExtendedRegularAccountTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chartServices = ref.watch(customLineChartServicesProvider);
+    final range = displayDate.monthRange;
 
-    CLCData data = chartServices.getRegularCLCData(account, displayDate);
+    CLCData data = chartServices.getCLCDataOfRegularAsset(account, range.start, range.end);
 
     ref.listen(transactionsChangesStreamProvider, (_, __) {
-      data = chartServices.getRegularCLCData(account, displayDate);
+      data = chartServices.getCLCDataOfRegularAsset(account, range.start, range.end);
     });
 
     if (context.isBigScreen) {
