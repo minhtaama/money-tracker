@@ -217,47 +217,11 @@ class LineChartServices {
 
     final days = [for (int i = 1; i <= displayDate.daysInMonth; i++) i];
 
-    ////////////////////// find initial amount ////////////////////////////////////////
-    final txnMaxIndex = regularAccount.transactionsList.length - 1;
-    final txnTransferMaxIndex = regularAccount.transferTransactionsList.length - 1;
-
-    double initialAmount = 0;
-
-    for (int i = 0; i <= txnMaxIndex; i++) {
-      final preTxn = regularAccount.transactionsList[i];
-      if (preTxn.dateTime.isBefore(dayBeginOfMonth)) {
-        if (preTxn is Expense || preTxn is Transfer) {
-          initialAmount -= preTxn.amount;
-          continue;
-        }
-
-        initialAmount += preTxn.amount;
-        continue;
-      }
-
-      break;
-    }
-
-    final transferTxnList = regularAccount.transferTransactionsList;
-
-    for (int i = 0; i <= txnTransferMaxIndex; i++) {
-      final preTxn = transferTxnList[i];
-      if ((preTxn as BaseTransaction).dateTime.isBefore(dayBeginOfMonth)) {
-        if (preTxn is CreditPayment) {
-          initialAmount -= preTxn.amount;
-          continue;
-        }
-
-        if (preTxn is Transfer) {
-          initialAmount += preTxn.amount;
-          continue;
-        }
-      }
-
-      break;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
+    final initialAmount = _findInitialAmount(
+      dayBegin: dayBeginOfMonth,
+      transactionsList: regularAccount.transactionsList,
+      transferTransactionsList: regularAccount.transferTransactionsList,
+    );
 
     Map<int, double> result = {for (int day in days) day: initialAmount};
 
@@ -517,47 +481,11 @@ class LineChartServices {
 
     final days = range.toList();
 
-    ////////////////////// find initial amount ////////////////////////////////////////
-    final txnMaxIndex = regularAccount.transactionsList.length - 1;
-    final txnTransferMaxIndex = regularAccount.transferTransactionsList.length - 1;
-
-    double initialAmount = 0;
-
-    for (int i = 0; i <= txnMaxIndex; i++) {
-      final preTxn = regularAccount.transactionsList[i];
-      if (preTxn.dateTime.isBefore(range.start)) {
-        if (preTxn is Expense || preTxn is Transfer) {
-          initialAmount -= preTxn.amount;
-          continue;
-        }
-
-        initialAmount += preTxn.amount;
-        continue;
-      }
-
-      break;
-    }
-
-    final transferTxnList = regularAccount.transferTransactionsList;
-
-    for (int i = 0; i <= txnTransferMaxIndex; i++) {
-      final preTxn = transferTxnList[i];
-      if ((preTxn as BaseTransaction).dateTime.isBefore(range.start)) {
-        if (preTxn is CreditPayment) {
-          initialAmount -= preTxn.amount;
-          continue;
-        }
-
-        if (preTxn is Transfer) {
-          initialAmount += preTxn.amount;
-          continue;
-        }
-      }
-
-      break;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
+    final initialAmount = _findInitialAmount(
+      dayBegin: range.start,
+      transactionsList: regularAccount.transactionsList,
+      transferTransactionsList: regularAccount.transferTransactionsList,
+    );
 
     Map<DateTime, double> result = {for (DateTime day in days) day: initialAmount};
 
@@ -655,6 +583,56 @@ class LineChartServices {
         ),
       ),
     );
+  }
+
+  /// Find initial amount to calculate the first spot in the chart
+  double _findInitialAmount({
+    required DateTime dayBegin,
+    required List<BaseRegularTransaction> transactionsList,
+    List<ITransferable>? transferTransactionsList,
+  }) {
+    double initialAmount = 0;
+
+    final txnMaxIndex = transactionsList.length - 1;
+
+    for (int i = 0; i <= txnMaxIndex; i++) {
+      final preTxn = transactionsList[i];
+      if (preTxn.dateTime.isBefore(dayBegin.onlyYearMonthDay)) {
+        if (preTxn is Expense || preTxn is Transfer) {
+          initialAmount -= preTxn.amount;
+          continue;
+        }
+
+        initialAmount += preTxn.amount;
+        continue;
+      }
+
+      break;
+    }
+
+    if (transferTransactionsList != null) {
+      final txnTransferMaxIndex = transferTransactionsList.length - 1;
+      final transferTxnList = transferTransactionsList;
+
+      for (int i = 0; i <= txnTransferMaxIndex; i++) {
+        final preTxn = transferTxnList[i];
+        if ((preTxn as BaseTransaction).dateTime.isBefore(dayBegin.onlyYearMonthDay)) {
+          if (preTxn is CreditPayment) {
+            initialAmount -= preTxn.amount;
+            continue;
+          }
+
+          if (preTxn is Transfer) {
+            initialAmount += preTxn.amount;
+            continue;
+          }
+        }
+
+        break;
+      }
+    }
+
+    return initialAmount;
   }
 }
 

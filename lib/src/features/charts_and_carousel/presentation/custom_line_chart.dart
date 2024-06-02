@@ -1,9 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
@@ -523,10 +521,13 @@ class CustomLineChart2 extends StatelessWidget {
   const CustomLineChart2({
     super.key,
     required this.data,
+    this.onChartTap,
     this.isForCredit = false,
   });
 
   final CLCData2 data;
+
+  final void Function(double x)? onChartTap;
 
   final bool isForCredit;
 
@@ -620,6 +621,17 @@ class CustomLineChart2 extends StatelessWidget {
         1,
       ];
 
+      double amount() {
+        if (data.maxAmount == data.minAmount) {
+          if (data.maxAmount == 0) {
+            return 500 * value;
+          }
+          return data.maxAmount + data.maxAmount * value;
+        }
+
+        return data.maxAmount * value + data.minAmount * (1 - value);
+      }
+
       bool isShowTitle = sideLabels.contains(value.roundTo2DP());
 
       return isShowTitle
@@ -630,7 +642,7 @@ class CustomLineChart2 extends StatelessWidget {
                 space: 0,
                 angle: math.pi * 1 / 5,
                 child: MoneyAmount(
-                  amount: data.maxAmount * value + data.minAmount * (1 - value),
+                  amount: amount(),
                   style: kNormalTextStyle.copyWith(fontSize: 8.5, color: context.appTheme.onBackground),
                   noAnimation: true,
                 ),
