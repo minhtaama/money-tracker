@@ -23,6 +23,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../common_widgets/modified_animated_cross_fade.dart';
 import '../../../routing/app_router.dart';
 import '../../../utils/constants.dart';
 import '../../home/presentation/day_card.dart';
@@ -78,12 +79,12 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         ),
       ),
       children: [
-        AccountsReportWidget(dateTimes: _selectedDateTimes),
-        Gap.h32,
         CategoryReport(
           key: const ValueKey('CategoryReport'),
           dateTimes: _selectedDateTimes,
         ),
+        Gap.h32,
+        AccountsReportWidget(dateTimes: _selectedDateTimes),
         Gap.h32,
         DailyReportWidget(
           key: const ValueKey('DailyReport'),

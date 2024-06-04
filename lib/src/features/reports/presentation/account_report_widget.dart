@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
@@ -33,31 +35,109 @@ class AccountsReportWidget extends ConsumerStatefulWidget {
 class _AssetReportWidgetState extends ConsumerState<AccountsReportWidget> {
   // int _touchedIndexExpense = -1;
 
+  Widget _accountLabel(RegularAccount account) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 15,
+          width: 15,
+          decoration: BoxDecoration(
+            color: account.backgroundColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        Gap.w4,
+        Text(
+          account.name,
+          style: kHeader4TextStyle.copyWith(
+            color: context.appTheme.onBackground,
+            fontSize: 12,
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final accountRepo = ref.watch(accountRepositoryProvider);
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    final dataList = accountRepo
-        .getList(AccountType.regular)
-        .whereType<RegularAccount>()
-        .map((account) => chartServices.getCLCDataForReportScreenOnRegularAccount(
-              account,
-              widget.dateTimes.first,
-              widget.dateTimes.last,
-            ))
-        .toList();
+    final accountList = accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
 
-    return ReportWrapper(
+    return ReportWrapperSwitcher(
       title: 'Assets'.hardcoded,
-      child: Column(
+      firstChild: SizedBox(
+        height: 230,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, 12),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0, left: 60),
+                child: Wrap(
+                  runSpacing: 4,
+                  spacing: 8,
+                  children: accountList.map((e) => _accountLabel(e)).toList(),
+                ),
+              ),
+            ),
+            Expanded(
+              child: CustomLineChart2(
+                data: chartServices.getCLCDataForReportScreenOnRegularAccount(
+                  accountList,
+                  widget.dateTimes.first,
+                  widget.dateTimes.last,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      secondChild: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: dataList
+        children: accountList
             .map(
-              (clcData) => SizedBox(
-                height: 210,
-                child: CustomLineChart2(
-                  data: clcData,
+              (account) => SizedBox(
+                height: 230,
+                child: Column(
+                  children: [
+                    Transform.translate(
+                      offset: const Offset(0, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SvgIcon(
+                            account.iconPath,
+                            color: context.appTheme.onBackground,
+                            size: 20,
+                          ),
+                          Gap.w4,
+                          Flexible(
+                            child: Text(
+                              account.name,
+                              style: kHeader3TextStyle.copyWith(
+                                color: context.appTheme.onBackground,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          Gap.w8,
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: CustomLineChart2(
+                        data: chartServices.getCLCDataForReportScreenOnRegularAccount(
+                          [account],
+                          widget.dateTimes.first,
+                          widget.dateTimes.last,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )

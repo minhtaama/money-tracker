@@ -522,87 +522,73 @@ class CustomLineChart2 extends StatelessWidget {
     super.key,
     required this.data,
     this.onChartTap,
-    this.isForCredit = false,
   });
 
   final CLCData2 data;
 
   final void Function(double x)? onChartTap;
 
-  final bool isForCredit;
-
   @override
   Widget build(BuildContext context) {
     const maxY = 1.025;
     const minY = 0.0;
 
-    final spots = data.spots;
-    final subSpots = data.subSpots;
-
     final dateTimes = data.range.toList();
-    final color = data.accountInfo.backgroundColor;
 
-    final todayIndex = spots.indexWhere((e) => e.isToday);
+    final todayIndex = data.lines[0].spots.indexWhere((e) => e.isToday);
+
     final hasToday = todayIndex != -1;
 
-    final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
-    final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
-
-    final lineBarsData = [
-      LineChartBarData(
-        spots: spots,
-        isCurved: true,
-        isStrokeCapRound: false,
-        preventCurveOverShooting: true,
-        barWidth: 2,
-        color: color,
-        belowBarData: BarAreaData(
-          show: true,
-          color: color.withOpacity(0.1),
-        ),
-        dotData: FlDotData(
-          show: true,
-          checkToShowDot: (spot, barData) {
-            return hasToday && barData.spots.indexOf(spot) == todayIndex ||
-                isForCredit && barData.spots.indexOf(spot) == statementDayIndex ||
-                isForCredit && barData.spots.indexOf(spot) == previousDueDayIndex;
-          },
-          getDotPainter: (spot, percent, bar, index) {
-            if (hasToday && index == todayIndex) {
-              return FlDotTodayPainter(
-                context,
-                color: color,
-                dotStrokeWidth: 2,
-                dotRadius: 2,
-                dotColor: context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0,
-              );
-            }
-            return FlDotCirclePainter(
-              radius: 2,
-              color: color,
-              strokeColor: Colors.transparent,
-            );
-          },
-        ),
-        isStepLineChart: isForCredit,
-        lineChartStepData: const LineChartStepData(stepDirection: 0),
-      ),
-    ];
-
-    if (subSpots != null) {
-      lineBarsData.insert(
-        0,
-        LineChartBarData(
-          spots: subSpots,
-          isCurved: true,
-          isStrokeCapRound: false,
-          preventCurveOverShooting: true,
-          barWidth: 2,
-          color: context.appTheme.negative.withOpacity(0.5),
-          belowBarData: BarAreaData(show: false),
-          dotData: const FlDotData(show: false),
-        ),
-      );
+    List<LineChartBarData> lineBarsData() {
+      return [
+        for (CLCData2Line lineData in data.lines)
+          LineChartBarData(
+            spots: lineData.spots,
+            isCurved: true,
+            isStrokeCapRound: false,
+            preventCurveOverShooting: true,
+            barWidth: 2,
+            color: lineData.accountInfo.backgroundColor,
+            belowBarData: BarAreaData(
+              show: true,
+              color: lineData.accountInfo.backgroundColor.withOpacity(0.1),
+              gradient: data.lines.length > 1
+                  ? LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        lineData.accountInfo.backgroundColor.withOpacity(0.1),
+                        lineData.accountInfo.backgroundColor.withOpacity(0),
+                      ],
+                      stops: const [0, 1],
+                    )
+                  : null,
+            ),
+            dotData: FlDotData(
+              show: true,
+              checkToShowDot: (spot, barData) {
+                return hasToday && barData.spots.indexOf(spot) == todayIndex;
+              },
+              getDotPainter: (spot, percent, bar, index) {
+                if (hasToday && index == todayIndex) {
+                  return FlDotTodayPainter(
+                    context,
+                    color: lineData.accountInfo.backgroundColor,
+                    dotStrokeWidth: 2,
+                    dotRadius: 2,
+                    dotColor:
+                        context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0,
+                  );
+                }
+                return FlDotCirclePainter(
+                  radius: 2,
+                  color: lineData.accountInfo.backgroundColor,
+                  strokeColor: Colors.transparent,
+                );
+              },
+            ),
+          )
+      ];
     }
 
     Widget bottomTitleWidgets(double value, TitleMeta meta) {
@@ -669,135 +655,76 @@ class CustomLineChart2 extends StatelessWidget {
           : Gap.noGap;
     }
 
-    Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
-      final spot = spots.firstWhere((spot) => spot.x == value,
-          orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
-
-      final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
-
-      final icon = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[1] ||
-              spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]
-          ? AppIcons.handCoin
-          : AppIcons.budgets;
-
-      final crossAlignment = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[0]
-          ? CrossAxisAlignment.start
-          : spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.center;
-
-      final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground);
-
-      return isShowTitle
-          ? SideTitleWidget(
-              axisSide: AxisSide.bottom,
-              space: 0,
-              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
-              child: FittedBox(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: crossAlignment,
-                  children: [
-                    SvgIcon(
-                      icon,
-                      color: color,
-                    ),
-                    Text(
-                      spot.dateTime!.toShortDate(context, noYear: true),
-                      style: textStyle,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Gap.noGap;
-    }
-
     List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
       List<LineTooltipItem?> items = [];
-      final lum = color.computeLuminance();
 
       // loop through EACH touchedSpot of a bar
       for (int i = 0; i < touchedSpots.length; i++) {
+        final lineData = data.lines[i];
+
         final touchedSpot = touchedSpots[i];
 
-        // if touchedSpot is of optional bar (the second one in the list)
-        if (touchedSpot.barIndex == 1) {
-          items.add(null);
-          continue;
-        }
+        final spot = lineData.spots[touchedSpot.spotIndex];
 
-        final spot = spots[touchedSpot.spotIndex];
         final symbol = context.appSettings.currency.symbol;
+
         final dateTime = spot.dateTime?.toShortDate(context, noYear: true);
 
-        final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
+        final line1 = '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
 
-        String line2() {
-          if (isForCredit) {
-            if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[0]) {
-              return 'Billing cycle start\n(Previous statement date)\n'.hardcoded;
-            }
-            if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[1]) {
-              return 'Previous due date\n'.hardcoded;
-            }
-            if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[2]) {
-              return 'Statement date\n'.hardcoded;
-            }
-            if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]) {
-              return 'Due date\n'.hardcoded;
-            }
-            if (spot.dateTime!.isAfter((data as CLCDataForCredit).dateTimesToShow[2])) {
-              return 'In grace period\n(Next statement billing cycle)\n'.hardcoded;
-            }
-            if (spot.dateTime!.isBefore((data as CLCDataForCredit).dateTimesToShow[1])) {
-              return 'In billing cycle\n(Previous grace period)\n'.hardcoded;
-            }
-            if (spot.dateTime!.isAfter((data as CLCDataForCredit).dateTimesToShow[1])) {
-              return 'In billing cycle\n'.hardcoded;
-            }
-          }
-
-          return '';
-        }
-
-        final line3 = isForCredit
-            ? 'Oustd. Bal: $symbol${CalService.formatCurrency(context, (data as CLCDataForCredit).maxAmount - spot.amount)}\n'
-            : dateTime;
-
-        final line4 = isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
-
-        items.add(LineTooltipItem(
-          line1,
-          kHeader2TextStyle.copyWith(
-            color: lum > 0.5 ? AppColors.black : AppColors.white,
-            fontSize: isForCredit ? 11 : 13,
+        items.add(
+          LineTooltipItem(
+            line1,
+            kHeader2TextStyle.copyWith(
+              color: lineData.accountInfo.backgroundColor,
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.right,
+            children: touchedSpots.length == 1
+                ? [
+                    TextSpan(
+                      text: dateTime,
+                      style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.onBackground,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ]
+                : i == touchedSpots.length - 1
+                    ? [
+                        TextSpan(
+                          text: '${lineData.accountInfo.name}\n',
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 10,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '\n',
+                          style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 6,
+                          ),
+                        ),
+                        TextSpan(
+                          text: dateTime,
+                          style: kHeader2TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ]
+                    : [
+                        TextSpan(
+                          text: lineData.accountInfo.name,
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
           ),
-          textAlign: isForCredit ? TextAlign.left : TextAlign.right,
-          children: [
-            TextSpan(
-              text: line2(),
-              style: kHeader2TextStyle.copyWith(
-                color: lum > 0.5 ? AppColors.black : AppColors.white,
-                fontSize: 11,
-              ),
-            ),
-            TextSpan(
-              text: line3,
-              style: kHeader3TextStyle.copyWith(
-                color: lum > 0.5 ? AppColors.black : AppColors.white,
-                fontSize: 11,
-              ),
-            ),
-            TextSpan(
-              text: line4,
-              style: kHeader3TextStyle.copyWith(
-                color: lum > 0.5 ? AppColors.black : AppColors.white,
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ));
+        );
       }
 
       return items;
@@ -806,7 +733,7 @@ class CustomLineChart2 extends StatelessWidget {
     List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
       return spotIndex.map((int index) {
         final flLine = FlLine(
-          color: color.addDark(0.1),
+          color: barData.color,
           strokeWidth: 1,
         );
 
@@ -814,7 +741,7 @@ class CustomLineChart2 extends StatelessWidget {
           getDotPainter: (spot, percent, bar, index) {
             return FlDotCirclePainter(
               radius: 4,
-              color: color.addDark(0.1),
+              color: barData.color ?? context.appTheme.onBackground,
               strokeColor: Colors.transparent,
             );
           },
@@ -830,9 +757,9 @@ class CustomLineChart2 extends StatelessWidget {
         fitInsideHorizontally: true,
         tooltipRoundedRadius: 12,
         maxContentWidth: 500,
-        tooltipHorizontalAlignment: FLHorizontalAlignment.center,
+        tooltipHorizontalAlignment: FLHorizontalAlignment.right,
         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        getTooltipColor: (_) => color,
+        getTooltipColor: (barSpot) => AppColors.greyBgr(context),
         getTooltipItems: lineTooltipItem,
       ),
       getTouchedSpotIndicator: touchedIndicators,
@@ -855,9 +782,9 @@ class CustomLineChart2 extends StatelessWidget {
         drawBelowEverything: false,
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: isForCredit ? 30 : 20,
+          reservedSize: 20,
           interval: 1,
-          getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : bottomTitleWidgets,
+          getTitlesWidget: bottomTitleWidgets,
         ),
       ),
     );
@@ -880,61 +807,30 @@ class CustomLineChart2 extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(right: 10.0, top: 6.0, bottom: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SvgIcon(
-                data.accountInfo.iconPath,
-                color: context.appTheme.onBackground,
-                size: 20,
+      padding: const EdgeInsets.only(right: 8.0, top: 23.0, bottom: 4.0),
+      child: LineChart(
+        LineChartData(
+          maxY: maxY,
+          minY: minY,
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(
+            show: true,
+            border: Border(
+              left: BorderSide(
+                color: context.appTheme.onBackground.withOpacity(0.2),
               ),
-              Gap.w4,
-              Flexible(
-                child: Text(
-                  data.accountInfo.name,
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              Gap.w2,
-            ],
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: LineChart(
-                LineChartData(
-                  maxY: maxY,
-                  minY: minY,
-                  gridData: const FlGridData(show: false),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border(
-                      left: BorderSide(
-                        color: context.appTheme.onBackground.withOpacity(0.2),
-                      ),
-                      bottom: BorderSide(
-                        color: context.appTheme.onBackground.withOpacity(0.2),
-                      ),
-                    ),
-                  ),
-                  titlesData: titlesData,
-                  lineTouchData: lineTouchData,
-                  lineBarsData: lineBarsData,
-                  extraLinesData: extraLinesData(),
-                ),
-                duration: k550msDuration,
-                curve: Curves.easeInOut,
+              bottom: BorderSide(
+                color: context.appTheme.onBackground.withOpacity(0.2),
               ),
             ),
           ),
-        ],
+          titlesData: titlesData,
+          lineTouchData: lineTouchData,
+          lineBarsData: lineBarsData(),
+          extraLinesData: extraLinesData(),
+        ),
+        duration: k550msDuration,
+        curve: Curves.easeInOut,
       ),
     );
   }
@@ -1087,3 +983,426 @@ class FlDotTodayPainter extends FlDotPainter {
   // TODO: implement mainColor
   Color get mainColor => color;
 }
+
+// class CustomLineChart2 extends StatelessWidget {
+//   const CustomLineChart2({
+//     super.key,
+//     required this.data,
+//     this.onChartTap,
+//     this.isForCredit = false,
+//   });
+//
+//   final CLCData2 data;
+//
+//   final void Function(double x)? onChartTap;
+//
+//   final bool isForCredit;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     const maxY = 1.025;
+//     const minY = 0.0;
+//
+//     final spots = data.spots;
+//     final subSpots = data.subSpots;
+//
+//     final dateTimes = data.range.toList();
+//     final color = data.accountInfo.backgroundColor;
+//
+//     final todayIndex = spots.indexWhere((e) => e.isToday);
+//     final hasToday = todayIndex != -1;
+//
+//     final statementDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isStatementDay) : -1;
+//     final previousDueDayIndex = isForCredit ? spots.indexWhere((e) => (e as CLCSpotForCredit).isPreviousDueDay) : -1;
+//
+//     final lineBarsData = [
+//       LineChartBarData(
+//         spots: spots,
+//         isCurved: true,
+//         isStrokeCapRound: false,
+//         preventCurveOverShooting: true,
+//         barWidth: 2,
+//         color: color,
+//         belowBarData: BarAreaData(
+//           show: true,
+//           color: color.withOpacity(0.1),
+//         ),
+//         dotData: FlDotData(
+//           show: true,
+//           checkToShowDot: (spot, barData) {
+//             return hasToday && barData.spots.indexOf(spot) == todayIndex ||
+//                 isForCredit && barData.spots.indexOf(spot) == statementDayIndex ||
+//                 isForCredit && barData.spots.indexOf(spot) == previousDueDayIndex;
+//           },
+//           getDotPainter: (spot, percent, bar, index) {
+//             if (hasToday && index == todayIndex) {
+//               return FlDotTodayPainter(
+//                 context,
+//                 color: color,
+//                 dotStrokeWidth: 2,
+//                 dotRadius: 2,
+//                 dotColor: context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0,
+//               );
+//             }
+//             return FlDotCirclePainter(
+//               radius: 2,
+//               color: color,
+//               strokeColor: Colors.transparent,
+//             );
+//           },
+//         ),
+//         isStepLineChart: isForCredit,
+//         lineChartStepData: const LineChartStepData(stepDirection: 0),
+//       ),
+//     ];
+//
+//     if (subSpots != null) {
+//       lineBarsData.insert(
+//         0,
+//         LineChartBarData(
+//           spots: subSpots,
+//           isCurved: true,
+//           isStrokeCapRound: false,
+//           preventCurveOverShooting: true,
+//           barWidth: 2,
+//           color: context.appTheme.negative.withOpacity(0.5),
+//           belowBarData: BarAreaData(show: false),
+//           dotData: const FlDotData(show: false),
+//         ),
+//       );
+//     }
+//
+//     Widget bottomTitleWidgets(double value, TitleMeta meta) {
+//       final dtLength = dateTimes.length;
+//       final bottomLabels = [
+//         dateTimes[0],
+//         dateTimes[dtLength ~/ 4],
+//         dateTimes[dtLength ~/ 2],
+//         dateTimes[dtLength ~/ 4 * 3],
+//         dateTimes[dtLength - 1],
+//       ];
+//
+//       bool isShowTitle = dateTimes.length > 20 ? bottomLabels.contains(dateTimes[value.toInt() - 1]) : true;
+//
+//       return isShowTitle
+//           ? SideTitleWidget(
+//         axisSide: AxisSide.bottom,
+//         space: 8,
+//         fitInside: SideTitleFitInsideData.fromTitleMeta(meta, distanceFromEdge: -3),
+//         child: Text(
+//           dateTimes[value.toInt() - 1].toShortDate(context, noYear: true),
+//           style: kNormalTextStyle.copyWith(fontSize: 10, color: context.appTheme.onBackground),
+//         ),
+//       )
+//           : Gap.noGap;
+//     }
+//
+//     Widget sideTitleWidgets(double value, TitleMeta meta) {
+//       final sideLabels = [
+//         0,
+//         0.25,
+//         0.5,
+//         0.75,
+//         1,
+//       ];
+//
+//       double amount() {
+//         if (data.maxAmount == data.minAmount) {
+//           if (data.maxAmount == 0) {
+//             return 500 * value;
+//           }
+//           return data.maxAmount + data.maxAmount * value;
+//         }
+//
+//         return data.maxAmount * value + data.minAmount * (1 - value);
+//       }
+//
+//       bool isShowTitle = sideLabels.contains(value.roundTo2DP());
+//
+//       return isShowTitle
+//           ? Transform.translate(
+//         offset: const Offset(0, -15),
+//         child: SideTitleWidget(
+//           axisSide: AxisSide.left,
+//           space: 0,
+//           angle: math.pi * 1 / 5,
+//           child: MoneyAmount(
+//             amount: amount(),
+//             style: kNormalTextStyle.copyWith(fontSize: 8.5, color: context.appTheme.onBackground),
+//             noAnimation: true,
+//           ),
+//         ),
+//       )
+//           : Gap.noGap;
+//     }
+//
+//     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
+//       final spot = spots.firstWhere((spot) => spot.x == value,
+//           orElse: () => CLCSpotForCredit(0, 0, amount: 0, isStatementDay: false, isPreviousDueDay: false));
+//
+//       final isShowTitle = (data as CLCDataForCredit).dateTimesToShow.contains(spot.dateTime);
+//
+//       final icon = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[1] ||
+//           spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]
+//           ? AppIcons.handCoin
+//           : AppIcons.budgets;
+//
+//       final crossAlignment = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[0]
+//           ? CrossAxisAlignment.start
+//           : spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]
+//           ? CrossAxisAlignment.end
+//           : CrossAxisAlignment.center;
+//
+//       final textStyle = kHeader2TextStyle.copyWith(fontSize: 12, color: context.appTheme.onBackground);
+//
+//       return isShowTitle
+//           ? SideTitleWidget(
+//         axisSide: AxisSide.bottom,
+//         space: 0,
+//         fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+//         child: FittedBox(
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: crossAlignment,
+//             children: [
+//               SvgIcon(
+//                 icon,
+//                 color: color,
+//               ),
+//               Text(
+//                 spot.dateTime!.toShortDate(context, noYear: true),
+//                 style: textStyle,
+//               ),
+//             ],
+//           ),
+//         ),
+//       )
+//           : Gap.noGap;
+//     }
+//
+//     List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
+//       List<LineTooltipItem?> items = [];
+//       final lum = color.computeLuminance();
+//
+//       // loop through EACH touchedSpot of a bar
+//       for (int i = 0; i < touchedSpots.length; i++) {
+//         final touchedSpot = touchedSpots[i];
+//
+//         // if touchedSpot is of optional bar (the second one in the list)
+//         if (touchedSpot.barIndex == 1) {
+//           items.add(null);
+//           continue;
+//         }
+//
+//         final spot = spots[touchedSpot.spotIndex];
+//         final symbol = context.appSettings.currency.symbol;
+//         final dateTime = spot.dateTime?.toShortDate(context, noYear: true);
+//
+//         final line1 = isForCredit ? '$dateTime\n' : '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
+//
+//         String line2() {
+//           if (isForCredit) {
+//             if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[0]) {
+//               return 'Billing cycle start\n(Previous statement date)\n'.hardcoded;
+//             }
+//             if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[1]) {
+//               return 'Previous due date\n'.hardcoded;
+//             }
+//             if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[2]) {
+//               return 'Statement date\n'.hardcoded;
+//             }
+//             if (spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]) {
+//               return 'Due date\n'.hardcoded;
+//             }
+//             if (spot.dateTime!.isAfter((data as CLCDataForCredit).dateTimesToShow[2])) {
+//               return 'In grace period\n(Next statement billing cycle)\n'.hardcoded;
+//             }
+//             if (spot.dateTime!.isBefore((data as CLCDataForCredit).dateTimesToShow[1])) {
+//               return 'In billing cycle\n(Previous grace period)\n'.hardcoded;
+//             }
+//             if (spot.dateTime!.isAfter((data as CLCDataForCredit).dateTimesToShow[1])) {
+//               return 'In billing cycle\n'.hardcoded;
+//             }
+//           }
+//
+//           return '';
+//         }
+//
+//         final line3 = isForCredit
+//             ? 'Oustd. Bal: $symbol${CalService.formatCurrency(context, (data as CLCDataForCredit).maxAmount - spot.amount)}\n'
+//             : dateTime;
+//
+//         final line4 = isForCredit ? 'Credit left: $symbol${CalService.formatCurrency(context, spot.amount)}' : '';
+//
+//         items.add(LineTooltipItem(
+//           line1,
+//           kHeader2TextStyle.copyWith(
+//             color: lum > 0.5 ? AppColors.black : AppColors.white,
+//             fontSize: isForCredit ? 11 : 13,
+//           ),
+//           textAlign: isForCredit ? TextAlign.left : TextAlign.right,
+//           children: [
+//             TextSpan(
+//               text: line2(),
+//               style: kHeader2TextStyle.copyWith(
+//                 color: lum > 0.5 ? AppColors.black : AppColors.white,
+//                 fontSize: 11,
+//               ),
+//             ),
+//             TextSpan(
+//               text: line3,
+//               style: kHeader3TextStyle.copyWith(
+//                 color: lum > 0.5 ? AppColors.black : AppColors.white,
+//                 fontSize: 11,
+//               ),
+//             ),
+//             TextSpan(
+//               text: line4,
+//               style: kHeader3TextStyle.copyWith(
+//                 color: lum > 0.5 ? AppColors.black : AppColors.white,
+//                 fontSize: 11,
+//               ),
+//             ),
+//           ],
+//         ));
+//       }
+//
+//       return items;
+//     }
+//
+//     List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
+//       return spotIndex.map((int index) {
+//         final flLine = FlLine(
+//           color: color.addDark(0.1),
+//           strokeWidth: 1,
+//         );
+//
+//         final dotData = FlDotData(
+//           getDotPainter: (spot, percent, bar, index) {
+//             return FlDotCirclePainter(
+//               radius: 4,
+//               color: color.addDark(0.1),
+//               strokeColor: Colors.transparent,
+//             );
+//           },
+//         );
+//
+//         return TouchedSpotIndicatorData(flLine, dotData);
+//       }).toList();
+//     }
+//
+//     final lineTouchData = LineTouchData(
+//       touchSpotThreshold: 50,
+//       touchTooltipData: LineTouchTooltipData(
+//         fitInsideHorizontally: true,
+//         tooltipRoundedRadius: 12,
+//         maxContentWidth: 500,
+//         tooltipHorizontalAlignment: FLHorizontalAlignment.center,
+//         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//         getTooltipColor: (_) => color,
+//         getTooltipItems: lineTooltipItem,
+//       ),
+//       getTouchedSpotIndicator: touchedIndicators,
+//     );
+//
+//     final titlesData = FlTitlesData(
+//       show: true,
+//       rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+//       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+//       leftTitles: AxisTitles(
+//         drawBelowEverything: true,
+//         sideTitles: SideTitles(
+//           showTitles: true,
+//           interval: 0.25,
+//           reservedSize: 55,
+//           getTitlesWidget: sideTitleWidgets,
+//         ),
+//       ),
+//       bottomTitles: AxisTitles(
+//         drawBelowEverything: false,
+//         sideTitles: SideTitles(
+//           showTitles: true,
+//           reservedSize: isForCredit ? 30 : 20,
+//           interval: 1,
+//           getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : bottomTitleWidgets,
+//         ),
+//       ),
+//     );
+//
+//     ExtraLinesData extraLinesData() {
+//       final ys = <double>[0.25, 0.5, 0.75, 1];
+//       return ExtraLinesData(
+//         extraLinesOnTop: false,
+//         horizontalLines: [
+//           for (double y in ys)
+//             HorizontalLine(
+//               y: y,
+//               strokeWidth: 1,
+//               strokeCap: StrokeCap.round,
+//               dashArray: [5, 7],
+//               color: context.appTheme.onBackground.withOpacity(0.15),
+//             ),
+//         ],
+//       );
+//     }
+//
+//     return Padding(
+//       padding: const EdgeInsets.only(right: 10.0, top: 6.0, bottom: 8.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.end,
+//             children: [
+//               SvgIcon(
+//                 data.accountInfo.iconPath,
+//                 color: context.appTheme.onBackground,
+//                 size: 20,
+//               ),
+//               Gap.w4,
+//               Flexible(
+//                 child: Text(
+//                   data.accountInfo.name,
+//                   style: kHeader3TextStyle.copyWith(
+//                     color: context.appTheme.onBackground,
+//                     fontSize: 14,
+//                   ),
+//                 ),
+//               ),
+//               Gap.w2,
+//             ],
+//           ),
+//           Expanded(
+//             child: Padding(
+//               padding: const EdgeInsets.only(top: 10.0),
+//               child: LineChart(
+//                 LineChartData(
+//                   maxY: maxY,
+//                   minY: minY,
+//                   gridData: const FlGridData(show: false),
+//                   borderData: FlBorderData(
+//                     show: true,
+//                     border: Border(
+//                       left: BorderSide(
+//                         color: context.appTheme.onBackground.withOpacity(0.2),
+//                       ),
+//                       bottom: BorderSide(
+//                         color: context.appTheme.onBackground.withOpacity(0.2),
+//                       ),
+//                     ),
+//                   ),
+//                   titlesData: titlesData,
+//                   lineTouchData: lineTouchData,
+//                   lineBarsData: lineBarsData,
+//                   extraLinesData: extraLinesData(),
+//                 ),
+//                 duration: k550msDuration,
+//                 curve: Curves.easeInOut,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

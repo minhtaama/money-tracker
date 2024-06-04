@@ -426,7 +426,8 @@ class LineChartServices {
     );
   }
 
-  CLCData2 getCLCDataForReportScreenOnRegularAccount(RegularAccount regularAccount, DateTime lower, DateTime upper) {
+  CLCData2 getCLCDataForReportScreenOnRegularAccount(
+      List<RegularAccount> regularAccounts, DateTime lower, DateTime upper) {
     final range = DateTimeRange(
       start: lower.onlyYearMonthDay,
       end: upper.copyWith(hour: 23, minute: 59, second: 59),
@@ -436,78 +437,71 @@ class LineChartServices {
 
     final days = range.toList();
 
-    final initialAmount = _findInitialAmount(
-      dayBegin: range.start,
-      transactionsList: regularAccount.transactionsList,
-      transferTransactionsList: regularAccount.transferTransactionsList,
-    );
+    final List<Map<DateTime, double>> mapList = <Map<DateTime, double>>[];
 
-    final txns = transactionRepo.getTransactionsOfAccount(regularAccount, range.start, range.end);
+    for (int i = 0; i < regularAccounts.length; i++) {
+      final account = regularAccounts[i];
 
-    final totalAsset = _getValueInEachDateMap(
-      range,
-      initialAmount,
-      txns: txns,
-      updateAmountLogic: (txn, value) {
-        if (txn is CreditPayment || txn is Expense) {
-          return value - txn.amount;
-        }
+      final txns = transactionRepo.getTransactionsOfAccount(account, range.start, range.end);
 
-        if (txn is Transfer) {
-          if (txn.account.id == regularAccount.id) {
+      final initialAmount = _findInitialAmount(
+        dayBegin: range.start,
+        transactionsList: account.transactionsList,
+        transferTransactionsList: account.transferTransactionsList,
+      );
+
+      final map = _getValueInEachDateMap(
+        range,
+        initialAmount,
+        txns: txns,
+        updateAmountLogic: (txn, value) {
+          if (txn is CreditPayment || txn is Expense) {
             return value - txn.amount;
           }
-          if (txn.transferAccount.id == regularAccount.id) {
-            return value + txn.amount;
+
+          if (txn is Transfer) {
+            if (txn.account.id == account.id) {
+              return value - txn.amount;
+            }
+            if (txn.transferAccount.id == account.id) {
+              return value + txn.amount;
+            }
           }
-        }
 
-        return value + txn.amount;
-      },
-    );
-
-    final expense = _getValueInEachDateMap(
-      range,
-      0.0,
-      txns: txns,
-      updateAmountLogic: (txn, value) {
-        if (txn is Expense) {
           return value + txn.amount;
-        }
+        },
+      );
+      mapList.add(map);
+    }
 
-        return value;
-      },
-    );
+    final clamp = _getMaxMin(mapList);
 
-    final clamp = _getMaxMin([totalAsset, expense]);
+    final List<CLCData2Line> lines = [];
+
+    for (int i = 0; i < regularAccounts.length; i++) {
+      lines.add(
+        CLCData2Line(
+          regularAccounts[i].toAccountInfo(),
+          List<CLCSpot>.from(
+            mapList[i].entries.map(
+                  (e) => CLCSpot(
+                    days.indexOf(e.key).toDouble() + 1,
+                    _getY(e.value, clamp.minAbs, clamp.maxFromMin),
+                    amount: e.value,
+                    isToday: e.key.isSameDayAs(today) && today.isSameMonthAs(lower),
+                    dateTime: e.key,
+                  ),
+                ),
+          ),
+        ),
+      );
+    }
 
     return CLCData2(
       range: range,
-      accountInfo: regularAccount.toAccountInfo(),
       maxAmount: clamp.max,
       minAmount: clamp.min,
-      spots: List<CLCSpot>.from(
-        totalAsset.entries.map(
-          (e) => CLCSpot(
-            days.indexOf(e.key).toDouble() + 1,
-            _getY(e.value, clamp.minAbs, clamp.maxFromMin),
-            amount: e.value,
-            isToday: e.key.isSameDayAs(today) && today.isSameMonthAs(lower),
-            dateTime: e.key,
-          ),
-        ),
-      ),
-      subSpots: List<CLCSpot>.from(
-        expense.entries.map(
-          (e) => CLCSpot(
-            days.indexOf(e.key).toDouble() + 1,
-            _getY(e.value, clamp.minAbs, clamp.maxFromMin),
-            amount: e.value,
-            isToday: e.key.isSameDayAs(today) && today.isSameMonthAs(lower),
-            dateTime: e.key,
-          ),
-        ),
-      ),
+      lines: lines,
     );
   }
 }
@@ -687,21 +681,25 @@ class CLCData {
   }
 }
 
-class CLCData2 extends CLCData {
+class CLCData2 {
   final DateTimeRange range;
 
-  final AccountInfo accountInfo;
+  final double maxAmount;
+  final double minAmount;
 
-  final List<CLCSpot>? subSpots;
+  final List<CLCData2Line> lines;
 
   const CLCData2({
-    required super.spots,
-    required super.maxAmount,
-    required super.minAmount,
+    required this.maxAmount,
+    required this.minAmount,
     required this.range,
-    required this.accountInfo,
-    this.subSpots,
+    required this.lines,
   });
+
+  @override
+  String toString() {
+    return 'CLCData2{range: $range, maxAmount: $maxAmount, minAmount: $minAmount, lines: $lines}';
+  }
 }
 
 class CLCDataForCredit extends CLCData {
@@ -758,6 +756,13 @@ class CLCSpotForCredit extends CLCSpot {
 
   final bool isStatementDay;
   final bool isPreviousDueDay;
+}
+
+class CLCData2Line {
+  final List<CLCSpot> spots;
+  final AccountInfo accountInfo;
+
+  CLCData2Line(this.accountInfo, this.spots);
 }
 
 /////////////////// PROVIDERS //////////////////////////

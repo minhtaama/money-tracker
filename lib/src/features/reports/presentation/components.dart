@@ -33,10 +33,25 @@ class _ReportWrapperState extends State<ReportWrapper> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 8.0, right: 16.0),
+          padding: const EdgeInsets.only(top: 8.0, right: 16.0, left: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: kHeader2TextStyle.copyWith(
+                    color: titleColor,
+                    shadows: [
+                      Shadow(
+                        color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 0),
+                        blurRadius: context.appTheme.isDarkTheme ? 20 : 2,
+                      ),
+                    ],
+                    height: 1.1,
+                  ),
+                ),
+              ),
               widget.collapsable && widget.childHeight! > 250
                   ? Padding(
                       padding: const EdgeInsets.only(left: 16.0),
@@ -55,22 +70,6 @@ class _ReportWrapperState extends State<ReportWrapper> {
                       ),
                     )
                   : Gap.noGap,
-              Expanded(
-                child: Text(
-                  widget.title,
-                  style: kHeader2TextStyle.copyWith(
-                    color: titleColor,
-                    shadows: [
-                      Shadow(
-                        color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 0),
-                        blurRadius: context.appTheme.isDarkTheme ? 20 : 2,
-                      ),
-                    ],
-                    height: 1.1,
-                  ),
-                  textDirection: TextDirection.rtl,
-                ),
-              ),
             ],
           ),
         ),
@@ -98,6 +97,86 @@ class _ReportWrapperState extends State<ReportWrapper> {
                 )
               : widget.child,
         )
+      ],
+    );
+  }
+}
+
+class ReportWrapperSwitcher extends StatefulWidget {
+  const ReportWrapperSwitcher({
+    super.key,
+    required this.title,
+    required this.firstChild,
+    required this.secondChild,
+  });
+
+  final String title;
+  final Widget firstChild;
+  final Widget secondChild;
+
+  @override
+  State<ReportWrapperSwitcher> createState() => _ReportWrapperSwitcherState();
+}
+
+class _ReportWrapperSwitcherState extends State<ReportWrapperSwitcher> {
+  bool _showFirstChild = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleColor = context.appTheme.accent2;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: kHeader2TextStyle.copyWith(
+                    color: titleColor,
+                    shadows: [
+                      Shadow(
+                        color: titleColor.withOpacity(context.appTheme.isDarkTheme ? 0.5 : 0),
+                        blurRadius: context.appTheme.isDarkTheme ? 20 : 2,
+                      ),
+                    ],
+                    height: 1.1,
+                  ),
+                ),
+              ),
+              RotatedBox(
+                quarterTurns: _showFirstChild ? 1 : -1,
+                child: RoundedIconButton(
+                  iconPath: AppIcons.arrowRight,
+                  backgroundColor: context.appTheme.primary,
+                  iconColor: context.appTheme.onPrimary,
+                  size: 28,
+                  iconPadding: 4,
+                  onTap: () => setState(() {
+                    _showFirstChild = !_showFirstChild;
+                  }),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Gap.h12,
+        CardItem(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            clip: false,
+            color: context.appTheme.background0,
+            child: ModifiedAnimatedCrossFade(
+              duration: k350msDuration,
+              sizeCurve: Curves.easeInOut,
+              firstChild: widget.firstChild,
+              secondChild: widget.secondChild,
+              crossFadeState: _showFirstChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            ))
       ],
     );
   }
