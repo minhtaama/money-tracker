@@ -187,25 +187,11 @@ class CustomLineChart extends StatelessWidget {
           },
           getDotPainter: (spot, percent, bar, index) {
             if (hasToday && index == todayIndex) {
-              bool boxUnderDot = false;
-              if (index >= (spots.length - 1) - 3) {
-                if (spots[index].y > spots[index - 1].y) {
-                  boxUnderDot = true;
-                }
-              } else {
-                if (spots[index + 1].y > spots[index].y) {
-                  boxUnderDot = true;
-                }
-              }
-
-              //TODO: add some more when index + 2 is higher...
-
               return FlDotTodayPainter(
                 context,
                 color: color ?? context.appTheme.accent1,
                 dotColor: todayDotColor ??
                     (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0),
-                boxUnderDot: boxUnderDot,
               );
             }
             return FlDotCirclePainter(
@@ -517,31 +503,41 @@ class CustomLineChart extends StatelessWidget {
   }
 }
 
-class CustomLineChart2 extends StatelessWidget {
+class CustomLineChart2 extends StatefulWidget {
   const CustomLineChart2({
     super.key,
     required this.data,
+    this.handleBuiltInTouches = true,
     this.onChartTap,
   });
 
   final CLCData2 data;
 
-  final void Function(double x)? onChartTap;
+  final bool handleBuiltInTouches;
+
+  final void Function(int index)? onChartTap;
+
+  @override
+  State<CustomLineChart2> createState() => _CustomLineChart2State();
+}
+
+class _CustomLineChart2State extends State<CustomLineChart2> {
+  int _touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
     const maxY = 1.025;
     const minY = 0.0;
 
-    final dateTimes = data.range.toList();
+    final dateTimes = widget.data.range.toList();
 
-    final todayIndex = data.lines[0].spots.indexWhere((e) => e.isToday);
+    final todayIndex = widget.data.lines[0].spots.indexWhere((e) => e.isToday);
 
     final hasToday = todayIndex != -1;
 
     List<LineChartBarData> lineBarsData() {
       return [
-        for (CLCData2Line lineData in data.lines)
+        for (CLCData2Line lineData in widget.data.lines)
           LineChartBarData(
             spots: lineData.spots,
             isCurved: true,
@@ -552,7 +548,7 @@ class CustomLineChart2 extends StatelessWidget {
             belowBarData: BarAreaData(
               show: true,
               color: lineData.accountInfo.backgroundColor.withOpacity(0.1),
-              gradient: data.lines.length > 1
+              gradient: widget.data.lines.length > 1
                   ? LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -587,6 +583,7 @@ class CustomLineChart2 extends StatelessWidget {
                 );
               },
             ),
+            showingIndicators: [_touchedIndex],
           )
       ];
     }
@@ -626,14 +623,14 @@ class CustomLineChart2 extends StatelessWidget {
       ];
 
       double amount() {
-        if (data.maxAmount == data.minAmount) {
-          if (data.maxAmount == 0) {
+        if (widget.data.maxAmount == widget.data.minAmount) {
+          if (widget.data.maxAmount == 0) {
             return 500 * value;
           }
-          return data.maxAmount + data.maxAmount * value;
+          return widget.data.maxAmount + widget.data.maxAmount * value;
         }
 
-        return data.maxAmount * value + data.minAmount * (1 - value);
+        return widget.data.maxAmount * value + widget.data.minAmount * (1 - value);
       }
 
       bool isShowTitle = sideLabels.contains(value.roundTo2DP());
@@ -660,7 +657,7 @@ class CustomLineChart2 extends StatelessWidget {
 
       // loop through EACH touchedSpot of a bar
       for (int i = 0; i < touchedSpots.length; i++) {
-        final lineData = data.lines[i];
+        final lineData = widget.data.lines[i];
 
         final touchedSpot = touchedSpots[i];
 
@@ -763,6 +760,34 @@ class CustomLineChart2 extends StatelessWidget {
         getTooltipItems: lineTooltipItem,
       ),
       getTouchedSpotIndicator: touchedIndicators,
+      handleBuiltInTouches: widget.handleBuiltInTouches,
+      touchCallback: (event, response) {
+        if (event.isInterestedForInteractions && response != null) {
+          if (event is FlTapDownEvent) {
+            if (response.lineBarSpots![0].spotIndex == _touchedIndex) {
+              setState(() {
+                _touchedIndex = -1;
+              });
+
+              widget.onChartTap?.call(_touchedIndex);
+            } else {
+              setState(() {
+                _touchedIndex = response.lineBarSpots![0].spotIndex;
+              });
+
+              widget.onChartTap?.call(_touchedIndex);
+            }
+          }
+
+          if (event is FlPanUpdateEvent) {
+            setState(() {
+              _touchedIndex = response.lineBarSpots![0].spotIndex;
+            });
+
+            widget.onChartTap?.call(_touchedIndex);
+          }
+        }
+      },
     );
 
     final titlesData = FlTitlesData(
@@ -843,12 +868,8 @@ class FlDotTodayPainter extends FlDotPainter {
     this.context, {
     required this.color,
     this.dotRadius = 4.0,
-    this.cornerRadius = 6.0,
     this.dotColor,
     this.dotStrokeWidth = 2.5,
-    this.textPadding = const EdgeInsets.all(4),
-    this.boxUnderDot = false,
-    this.boxAtLeft = false,
   });
 
   BuildContext context;
@@ -862,16 +883,6 @@ class FlDotTodayPainter extends FlDotPainter {
 
   /// The stroke width to use for the circle
   double dotStrokeWidth;
-
-  EdgeInsets textPadding;
-
-  double cornerRadius;
-
-  bool boxUnderDot;
-
-  bool boxAtLeft;
-
-  double get _colorLum => color.computeLuminance();
 
   void _drawDot(Canvas canvas, FlSpot spot, Offset offsetInCanvas) {
     if (dotStrokeWidth != 0.0) {

@@ -157,12 +157,6 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
                       touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
                         if (widget.values.isNotEmpty && widget.onChartTap != null) {
                           setState(() {
-                            // if (!event.isInterestedForInteractions ||
-                            //     pieTouchResponse == null ||
-                            //     pieTouchResponse.touchedSection == null) {
-                            //   _touchedIndex = -1;
-                            //   return;
-                            // }
                             if (event.isInterestedForInteractions &&
                                 pieTouchResponse != null &&
                                 event is FlTapDownEvent) {
