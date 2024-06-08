@@ -524,262 +524,194 @@ class CustomLineChart2 extends StatefulWidget {
 class _CustomLineChart2State extends State<CustomLineChart2> {
   int _touchedIndex = -1;
 
+  late List<DateTime> dateTimes = widget.data.range.toList();
+
   @override
-  Widget build(BuildContext context) {
-    const maxY = 1.025;
-    const minY = 0.0;
+  void didUpdateWidget(covariant CustomLineChart2 oldWidget) {
+    setState(() {
+      dateTimes = widget.data.range.toList();
+    });
+    super.didUpdateWidget(oldWidget);
+  }
 
-    final dateTimes = widget.data.range.toList();
+  final maxY = 1.025;
+  final minY = 0.0;
 
-    final todayIndex = widget.data.lines[0].spots.indexWhere((e) => e.isToday);
+  late final todayIndex = widget.data.lines[0].spots.indexWhere((e) => e.isToday);
 
-    final hasToday = todayIndex != -1;
+  late final hasToday = todayIndex != -1;
 
-    List<LineChartBarData> lineBarsData() {
-      return [
-        for (CLCData2Line lineData in widget.data.lines)
-          LineChartBarData(
-            spots: lineData.spots,
-            isCurved: true,
-            isStrokeCapRound: false,
-            preventCurveOverShooting: true,
-            barWidth: 2,
-            color: lineData.accountInfo.backgroundColor,
-            belowBarData: BarAreaData(
-              show: true,
-              color: lineData.accountInfo.backgroundColor.withOpacity(0.1),
-              gradient: widget.data.lines.length > 1
-                  ? LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        lineData.accountInfo.backgroundColor.withOpacity(0.1),
-                        lineData.accountInfo.backgroundColor.withOpacity(0),
-                      ],
-                      stops: const [0, 1],
-                    )
-                  : null,
-            ),
-            dotData: FlDotData(
-              show: true,
-              checkToShowDot: (spot, barData) {
-                return hasToday && barData.spots.indexOf(spot) == todayIndex;
-              },
-              getDotPainter: (spot, percent, bar, index) {
-                if (hasToday && index == todayIndex) {
-                  return FlDotTodayPainter(
-                    context,
-                    color: lineData.accountInfo.backgroundColor,
-                    dotStrokeWidth: 2,
-                    dotRadius: 2,
-                    dotColor:
-                        context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0,
-                  );
-                }
-                return FlDotCirclePainter(
-                  radius: 2,
-                  color: lineData.accountInfo.backgroundColor,
-                  strokeColor: Colors.transparent,
-                );
-              },
-            ),
-            showingIndicators: [_touchedIndex],
-          )
-      ];
-    }
-
-    Widget bottomTitleWidgets(double value, TitleMeta meta) {
-      final dtLength = dateTimes.length;
-      final bottomLabels = [
-        dateTimes[0],
-        dateTimes[dtLength ~/ 4],
-        dateTimes[dtLength ~/ 2],
-        dateTimes[dtLength ~/ 4 * 3],
-        dateTimes[dtLength - 1],
-      ];
-
-      bool isShowTitle = dateTimes.length > 20 ? bottomLabels.contains(dateTimes[value.toInt() - 1]) : true;
-
-      return isShowTitle
-          ? SideTitleWidget(
-              axisSide: AxisSide.bottom,
-              space: 8,
-              fitInside: SideTitleFitInsideData.fromTitleMeta(meta, distanceFromEdge: -3),
-              child: Text(
-                dateTimes[value.toInt() - 1].toShortDate(context, noYear: true),
-                style: kNormalTextStyle.copyWith(fontSize: 10, color: context.appTheme.onBackground),
-              ),
-            )
-          : Gap.noGap;
-    }
-
-    Widget sideTitleWidgets(double value, TitleMeta meta) {
-      final sideLabels = [
-        0,
-        0.25,
-        0.5,
-        0.75,
-        1,
-      ];
-
-      double amount() {
-        if (widget.data.maxAmount == widget.data.minAmount) {
-          if (widget.data.maxAmount == 0) {
-            return 500 * value;
-          }
-          return widget.data.maxAmount + widget.data.maxAmount * value;
-        }
-
-        return widget.data.maxAmount * value + widget.data.minAmount * (1 - value);
-      }
-
-      bool isShowTitle = sideLabels.contains(value.roundTo2DP());
-
-      return isShowTitle
-          ? Transform.translate(
-              offset: const Offset(0, -15),
-              child: SideTitleWidget(
-                axisSide: AxisSide.left,
-                space: 0,
-                angle: math.pi * 1 / 5,
-                child: MoneyAmount(
-                  amount: amount(),
-                  style: kNormalTextStyle.copyWith(fontSize: 8.5, color: context.appTheme.onBackground),
-                  noAnimation: true,
-                ),
-              ),
-            )
-          : Gap.noGap;
-    }
-
-    List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
-      List<LineTooltipItem?> items = [];
-
-      // loop through EACH touchedSpot of a bar
-      for (int i = 0; i < touchedSpots.length; i++) {
-        final lineData = widget.data.lines[i];
-
-        final touchedSpot = touchedSpots[i];
-
-        final spot = lineData.spots[touchedSpot.spotIndex];
-
-        final symbol = context.appSettings.currency.symbol;
-
-        final dateTime = spot.dateTime?.toShortDate(context, noYear: true);
-
-        final line1 = '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
-
-        items.add(
-          LineTooltipItem(
-            line1,
-            kHeader2TextStyle.copyWith(
-              color: lineData.accountInfo.backgroundColor,
-              fontSize: 13,
-            ),
-            textAlign: TextAlign.right,
-            children: touchedSpots.length == 1
-                ? [
-                    TextSpan(
-                      text: dateTime,
-                      style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.onBackground,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ]
-                : i == touchedSpots.length - 1
-                    ? [
-                        TextSpan(
-                          text: '${lineData.accountInfo.name}\n',
-                          style: kHeader3TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 10,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '\n',
-                          style: kHeader2TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 6,
-                          ),
-                        ),
-                        TextSpan(
-                          text: dateTime,
-                          style: kHeader2TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ]
-                    : [
-                        TextSpan(
-                          text: lineData.accountInfo.name,
-                          style: kHeader3TextStyle.copyWith(
-                            color: context.appTheme.onBackground,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
+  List<LineChartBarData> lineBarsData() {
+    return [
+      for (CLCData2Line lineData in widget.data.lines)
+        LineChartBarData(
+          spots: lineData.spots,
+          isCurved: true,
+          isStrokeCapRound: false,
+          preventCurveOverShooting: true,
+          barWidth: 2,
+          color: lineData.accountInfo.backgroundColor,
+          belowBarData: BarAreaData(
+            show: true,
+            color: lineData.accountInfo.backgroundColor.withOpacity(0.1),
+            gradient: widget.data.lines.length > 1
+                ? LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      lineData.accountInfo.backgroundColor.withOpacity(0.1),
+                      lineData.accountInfo.backgroundColor.withOpacity(0),
+                    ],
+                    stops: const [0, 1],
+                  )
+                : null,
           ),
-        );
-      }
+          dotData: FlDotData(
+            show: true,
+            checkToShowDot: (spot, barData) {
+              return hasToday && barData.spots.indexOf(spot) == todayIndex;
+            },
+            getDotPainter: (spot, percent, bar, index) {
+              if (hasToday && index == todayIndex) {
+                return FlDotTodayPainter(
+                  context,
+                  color: lineData.accountInfo.backgroundColor,
+                  dotStrokeWidth: 2,
+                  dotRadius: 2,
+                  dotColor: context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0,
+                );
+              }
+              return FlDotCirclePainter(
+                radius: 2,
+                color: lineData.accountInfo.backgroundColor,
+                strokeColor: Colors.transparent,
+              );
+            },
+          ),
+          showingIndicators: [_touchedIndex],
+        )
+    ];
+  }
 
-      return items;
+  List<LineTooltipItem?> lineTooltipItem(List<LineBarSpot> touchedSpots) {
+    List<LineTooltipItem?> items = [];
+
+    // loop through EACH touchedSpot of a bar
+    for (int i = 0; i < touchedSpots.length; i++) {
+      final lineData = widget.data.lines[i];
+
+      final touchedSpot = touchedSpots[i];
+
+      final spot = lineData.spots[touchedSpot.spotIndex];
+
+      final symbol = context.appSettings.currency.symbol;
+
+      final dateTime = spot.dateTime?.toShortDate(context, noYear: true);
+
+      final line1 = '$symbol${CalService.formatCurrency(context, spot.amount)} \n';
+
+      items.add(
+        LineTooltipItem(
+          line1,
+          kHeader2TextStyle.copyWith(
+            color: lineData.accountInfo.backgroundColor,
+            fontSize: 13,
+          ),
+          textAlign: TextAlign.right,
+          children: touchedSpots.length == 1
+              ? [
+                  TextSpan(
+                    text: dateTime,
+                    style: kHeader2TextStyle.copyWith(
+                      color: context.appTheme.onBackground,
+                      fontSize: 13,
+                    ),
+                  ),
+                ]
+              : i == touchedSpots.length - 1
+                  ? [
+                      TextSpan(
+                        text: '${lineData.accountInfo.name}\n',
+                        style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 10,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '\n',
+                        style: kHeader2TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 6,
+                        ),
+                      ),
+                      TextSpan(
+                        text: dateTime,
+                        style: kHeader2TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ]
+                  : [
+                      TextSpan(
+                        text: lineData.accountInfo.name,
+                        style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+        ),
+      );
     }
 
-    List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
-      return spotIndex.map((int index) {
-        final flLine = FlLine(
-          color: barData.color,
-          strokeWidth: 1,
-        );
+    return items;
+  }
 
-        final dotData = FlDotData(
-          getDotPainter: (spot, percent, bar, index) {
-            return FlDotCirclePainter(
-              radius: 4,
-              color: barData.color ?? context.appTheme.onBackground,
-              strokeColor: Colors.transparent,
-            );
-          },
-        );
+  List<TouchedSpotIndicatorData?> touchedIndicators(LineChartBarData barData, List<int> spotIndex) {
+    return spotIndex.map((int index) {
+      final flLine = FlLine(
+        color: barData.color,
+        strokeWidth: 1,
+      );
 
-        return TouchedSpotIndicatorData(flLine, dotData);
-      }).toList();
-    }
+      final dotData = FlDotData(
+        getDotPainter: (spot, percent, bar, index) {
+          return FlDotCirclePainter(
+            radius: 4,
+            color: barData.color ?? context.appTheme.onBackground,
+            strokeColor: Colors.transparent,
+          );
+        },
+      );
 
-    final lineTouchData = LineTouchData(
-      touchSpotThreshold: 50,
-      touchTooltipData: LineTouchTooltipData(
-        fitInsideHorizontally: true,
-        tooltipRoundedRadius: 12,
-        maxContentWidth: 500,
-        tooltipHorizontalAlignment: FLHorizontalAlignment.right,
-        tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        getTooltipColor: (barSpot) => AppColors.greyBgr(context),
-        getTooltipItems: lineTooltipItem,
-      ),
-      getTouchedSpotIndicator: touchedIndicators,
-      handleBuiltInTouches: widget.handleBuiltInTouches,
-      touchCallback: (event, response) {
-        if (event.isInterestedForInteractions && response != null) {
-          if (event is FlTapDownEvent) {
-            if (response.lineBarSpots![0].spotIndex == _touchedIndex) {
-              setState(() {
-                _touchedIndex = -1;
-              });
+      return TouchedSpotIndicatorData(flLine, dotData);
+    }).toList();
+  }
 
-              widget.onChartTap?.call(_touchedIndex);
-            } else {
-              setState(() {
-                _touchedIndex = response.lineBarSpots![0].spotIndex;
-              });
+  late final lineTouchData = LineTouchData(
+    touchSpotThreshold: 50,
+    touchTooltipData: LineTouchTooltipData(
+      fitInsideHorizontally: true,
+      tooltipRoundedRadius: 12,
+      maxContentWidth: 500,
+      tooltipHorizontalAlignment: FLHorizontalAlignment.right,
+      tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      getTooltipColor: (barSpot) => AppColors.greyBgr(context),
+      getTooltipItems: lineTooltipItem,
+    ),
+    getTouchedSpotIndicator: touchedIndicators,
+    handleBuiltInTouches: widget.handleBuiltInTouches,
+    touchCallback: (event, response) {
+      if (event.isInterestedForInteractions && response != null) {
+        if (event is FlTapDownEvent) {
+          if (response.lineBarSpots![0].spotIndex == _touchedIndex) {
+            setState(() {
+              _touchedIndex = -1;
+            });
 
-              widget.onChartTap?.call(_touchedIndex);
-            }
-          }
-
-          if (event is FlPanUpdateEvent) {
+            widget.onChartTap?.call(_touchedIndex);
+          } else {
             setState(() {
               _touchedIndex = response.lineBarSpots![0].spotIndex;
             });
@@ -787,50 +719,125 @@ class _CustomLineChart2State extends State<CustomLineChart2> {
             widget.onChartTap?.call(_touchedIndex);
           }
         }
-      },
-    );
 
-    final titlesData = FlTitlesData(
-      show: true,
-      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      leftTitles: AxisTitles(
-        drawBelowEverything: true,
-        sideTitles: SideTitles(
-          showTitles: true,
-          interval: 0.25,
-          reservedSize: 55,
-          getTitlesWidget: sideTitleWidgets,
-        ),
-      ),
-      bottomTitles: AxisTitles(
-        drawBelowEverything: false,
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 20,
-          interval: 1,
-          getTitlesWidget: bottomTitleWidgets,
-        ),
-      ),
-    );
+        if (event is FlPanUpdateEvent) {
+          setState(() {
+            _touchedIndex = response.lineBarSpots![0].spotIndex;
+          });
 
-    ExtraLinesData extraLinesData() {
-      final ys = <double>[0.25, 0.5, 0.75, 1];
-      return ExtraLinesData(
-        extraLinesOnTop: false,
-        horizontalLines: [
-          for (double y in ys)
-            HorizontalLine(
-              y: y,
-              strokeWidth: 1,
-              strokeCap: StrokeCap.round,
-              dashArray: [5, 7],
-              color: context.appTheme.onBackground.withOpacity(0.15),
+          widget.onChartTap?.call(_touchedIndex);
+        }
+      }
+    },
+  );
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    final dtLength = dateTimes.length;
+    final bottomLabels = [
+      dateTimes[0],
+      dateTimes[dtLength ~/ 4],
+      dateTimes[dtLength ~/ 2],
+      dateTimes[dtLength ~/ 4 * 3],
+      dateTimes[dtLength - 1],
+    ];
+
+    bool isShowTitle = dateTimes.length > 20 ? bottomLabels.contains(dateTimes[value.toInt() - 1]) : true;
+
+    return isShowTitle
+        ? SideTitleWidget(
+            axisSide: AxisSide.bottom,
+            space: 8,
+            fitInside: SideTitleFitInsideData.fromTitleMeta(meta, distanceFromEdge: -3),
+            child: Text(
+              dateTimes[value.toInt() - 1].toShortDate(context, noYear: true),
+              style: kNormalTextStyle.copyWith(fontSize: 10, color: context.appTheme.onBackground),
             ),
-        ],
-      );
+          )
+        : Gap.noGap;
+  }
+
+  Widget sideTitleWidgets(double value, TitleMeta meta) {
+    final sideLabels = [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1,
+    ];
+
+    double amount() {
+      if (widget.data.maxAmount == widget.data.minAmount) {
+        if (widget.data.maxAmount == 0) {
+          return 500 * value;
+        }
+        return widget.data.maxAmount + widget.data.maxAmount * value;
+      }
+
+      return widget.data.maxAmount * value + widget.data.minAmount * (1 - value);
     }
 
+    bool isShowTitle = sideLabels.contains(value.roundTo2DP());
+
+    return isShowTitle
+        ? Transform.translate(
+            offset: const Offset(0, -15),
+            child: SideTitleWidget(
+              axisSide: AxisSide.left,
+              space: 0,
+              angle: math.pi * 1 / 5,
+              child: MoneyAmount(
+                amount: amount(),
+                style: kNormalTextStyle.copyWith(fontSize: 8.5, color: context.appTheme.onBackground),
+                noAnimation: true,
+              ),
+            ),
+          )
+        : Gap.noGap;
+  }
+
+  late final titlesData = FlTitlesData(
+    show: true,
+    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    leftTitles: AxisTitles(
+      drawBelowEverything: true,
+      sideTitles: SideTitles(
+        showTitles: true,
+        interval: 0.25,
+        reservedSize: 55,
+        getTitlesWidget: sideTitleWidgets,
+      ),
+    ),
+    bottomTitles: AxisTitles(
+      drawBelowEverything: false,
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 20,
+        interval: 1,
+        getTitlesWidget: bottomTitleWidgets,
+      ),
+    ),
+  );
+
+  ExtraLinesData extraLinesData() {
+    final ys = <double>[0.25, 0.5, 0.75, 1];
+    return ExtraLinesData(
+      extraLinesOnTop: false,
+      horizontalLines: [
+        for (double y in ys)
+          HorizontalLine(
+            y: y,
+            strokeWidth: 1,
+            strokeCap: StrokeCap.round,
+            dashArray: [5, 7],
+            color: context.appTheme.onBackground.withOpacity(0.15),
+          ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0, top: 23.0, bottom: 4.0),
       child: LineChart(
