@@ -524,22 +524,24 @@ class CustomLineChart2 extends StatefulWidget {
 class _CustomLineChart2State extends State<CustomLineChart2> {
   int _touchedIndex = -1;
 
-  late List<DateTime> dateTimes = widget.data.range.toList();
+  late List<DateTime> _dateTimes = widget.data.range.toList();
+
+  late int _todayIndex = widget.data.lines[0].spots.indexWhere((e) => e.isToday);
+
+  late bool _hasToday = _todayIndex != -1;
 
   @override
   void didUpdateWidget(covariant CustomLineChart2 oldWidget) {
     setState(() {
-      dateTimes = widget.data.range.toList();
+      _dateTimes = widget.data.range.toList();
+      _todayIndex = widget.data.lines[0].spots.indexWhere((e) => e.isToday);
+      _hasToday = _todayIndex != -1;
     });
     super.didUpdateWidget(oldWidget);
   }
 
   final maxY = 1.025;
   final minY = 0.0;
-
-  late final todayIndex = widget.data.lines[0].spots.indexWhere((e) => e.isToday);
-
-  late final hasToday = todayIndex != -1;
 
   List<LineChartBarData> lineBarsData() {
     return [
@@ -569,10 +571,10 @@ class _CustomLineChart2State extends State<CustomLineChart2> {
           dotData: FlDotData(
             show: true,
             checkToShowDot: (spot, barData) {
-              return hasToday && barData.spots.indexOf(spot) == todayIndex;
+              return _hasToday && barData.spots.indexOf(spot) == _todayIndex;
             },
             getDotPainter: (spot, percent, bar, index) {
-              if (hasToday && index == todayIndex) {
+              if (_hasToday && index == _todayIndex) {
                 return FlDotTodayPainter(
                   context,
                   color: lineData.accountInfo.backgroundColor,
@@ -732,16 +734,16 @@ class _CustomLineChart2State extends State<CustomLineChart2> {
   );
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    final dtLength = dateTimes.length;
+    final dtLength = _dateTimes.length;
     final bottomLabels = [
-      dateTimes[0],
-      dateTimes[dtLength ~/ 4],
-      dateTimes[dtLength ~/ 2],
-      dateTimes[dtLength ~/ 4 * 3],
-      dateTimes[dtLength - 1],
+      _dateTimes[0],
+      _dateTimes[dtLength ~/ 4],
+      _dateTimes[dtLength ~/ 2],
+      _dateTimes[dtLength ~/ 4 * 3],
+      _dateTimes[dtLength - 1],
     ];
 
-    bool isShowTitle = dateTimes.length > 20 ? bottomLabels.contains(dateTimes[value.toInt() - 1]) : true;
+    bool isShowTitle = _dateTimes.length > 20 ? bottomLabels.contains(_dateTimes[value.toInt() - 1]) : true;
 
     return isShowTitle
         ? SideTitleWidget(
@@ -749,7 +751,7 @@ class _CustomLineChart2State extends State<CustomLineChart2> {
             space: 8,
             fitInside: SideTitleFitInsideData.fromTitleMeta(meta, distanceFromEdge: -3),
             child: Text(
-              dateTimes[value.toInt() - 1].toShortDate(context, noYear: true),
+              _dateTimes[value.toInt() - 1].toShortDate(context, noYear: true),
               style: kNormalTextStyle.copyWith(fontSize: 10, color: context.appTheme.onBackground),
             ),
           )

@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/
 import 'package:money_tracker_app/src/features/reports/presentation/reports_screen.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_inkwell.dart';
 import '../../../common_widgets/money_amount.dart';
@@ -102,7 +103,20 @@ class _TotalViewState extends ConsumerState<_TotalView> {
       return result;
     }
 
-    result.add(Gap.h12);
+    result.addAll([
+      Gap.h24,
+      Padding(
+        padding: const EdgeInsets.only(left: 14.0),
+        child: Text(
+          data.lines[0].spots[index].dateTime!.toLongDate(context),
+          style: kHeader4TextStyle.copyWith(
+            color: context.appTheme.onBackground.withOpacity(0.65),
+            fontSize: 14,
+          ),
+        ),
+      ),
+      Gap.divider(context, indent: 10),
+    ]);
 
     for (CLCData2Line line in data.lines) {
       final account = line.accountInfo;
@@ -157,14 +171,13 @@ class _TotalViewState extends ConsumerState<_TotalView> {
       );
     }
 
-    // Gap.divider(context, indent: 6),
-
     return result;
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           height: 230,

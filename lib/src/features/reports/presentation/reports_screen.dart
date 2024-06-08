@@ -80,7 +80,10 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       ),
       children: [
         Gap.h12,
-        AccountsReportWidget(dateTimes: _selectedDateTimes),
+        AccountsReportWidget(
+          key: const ValueKey('AccountsReport'),
+          dateTimes: _selectedDateTimes,
+        ),
         Gap.h32,
         CategoryReport(
           key: const ValueKey('CategoryReport'),
