@@ -42,6 +42,32 @@ class _TotalView extends ConsumerStatefulWidget {
 class _TotalViewState extends ConsumerState<_TotalView> {
   int _touchedIndex = -1;
 
+  late final accountRepo = ref.read(accountRepositoryProvider);
+  late final chartServices = ref.read(customLineChartServicesProvider);
+
+  late List<RegularAccount> _accountList =
+      accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
+
+  late CLCData2 _data = chartServices.getCLCDataForReportScreenOnRegularAccount(
+    _accountList,
+    widget.dateTimes.first,
+    widget.dateTimes.last,
+  );
+
+  @override
+  void didUpdateWidget(covariant _TotalView oldWidget) {
+    setState(() {
+      _accountList = accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
+
+      _data = chartServices.getCLCDataForReportScreenOnRegularAccount(
+        _accountList,
+        widget.dateTimes.first,
+        widget.dateTimes.last,
+      );
+    });
+    super.didUpdateWidget(oldWidget);
+  }
+
   Widget _accountLabel(RegularAccount account) {
     return Padding(
       padding: const EdgeInsets.only(top: 2.0),
@@ -138,17 +164,6 @@ class _TotalViewState extends ConsumerState<_TotalView> {
 
   @override
   Widget build(BuildContext context) {
-    final accountRepo = ref.watch(accountRepositoryProvider);
-    final chartServices = ref.watch(customLineChartServicesProvider);
-
-    final accountList = accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
-
-    final data = chartServices.getCLCDataForReportScreenOnRegularAccount(
-      accountList,
-      widget.dateTimes.first,
-      widget.dateTimes.last,
-    );
-
     return Column(
       children: [
         SizedBox(
@@ -163,13 +178,13 @@ class _TotalViewState extends ConsumerState<_TotalView> {
                   child: Wrap(
                     runSpacing: 4,
                     spacing: 8,
-                    children: accountList.map((e) => _accountLabel(e)).toList(),
+                    children: _accountList.map((e) => _accountLabel(e)).toList(),
                   ),
                 ),
               ),
               Expanded(
                 child: CustomLineChart2(
-                  data: data,
+                  data: _data,
                   handleBuiltInTouches: false,
                   onChartTap: (index) {
                     setState(() {
@@ -181,7 +196,7 @@ class _TotalViewState extends ConsumerState<_TotalView> {
             ],
           ),
         ),
-        ..._labels(data, _touchedIndex, onTap: (_) {}),
+        ..._labels(_data, _touchedIndex, onTap: (_) {}),
       ],
     );
   }

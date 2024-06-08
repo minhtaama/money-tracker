@@ -720,7 +720,7 @@ class _CustomLineChart2State extends State<CustomLineChart2> {
           }
         }
 
-        if (event is FlPanUpdateEvent) {
+        if (event is FlPanUpdateEvent || event is FlLongPressMoveUpdate) {
           setState(() {
             _touchedIndex = response.lineBarSpots![0].spotIndex;
           });
