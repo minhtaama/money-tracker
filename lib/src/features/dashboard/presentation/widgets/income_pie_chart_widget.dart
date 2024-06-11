@@ -25,7 +25,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
   @override
   Widget build(BuildContext context) {
     final pieServices = ref.watch(customPieChartServicesProvider);
-    final list = pieServices.getIncomeData(DateTime.now(), context);
+    final list = pieServices.getIncomeData(context, dateTime: DateTime.now());
     final totalAmount = pieServices.getIncomeAmount(DateTime.now());
 
     List<Widget> labels(int index) {

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
@@ -26,22 +27,89 @@ class CategoryReport extends ConsumerStatefulWidget {
 }
 
 class _CategoryReportState extends ConsumerState<CategoryReport> {
-  // int _touchedIndexExpense = -1;
-  //
-  // int _touchedIndexIncome = -1;
+  late final _pieServices = ref.read(customPieChartServicesProvider);
+
+  late List<MapEntry<Category, double>> _pieExpenseData = _pieServices.getExpenseData(
+    dateTime: widget.dateTimes.first,
+    dateTime2: widget.dateTimes.last,
+  );
+
+  late List<MapEntry<Category, double>> _pieIncomeData = _pieServices.getIncomeData(
+    context,
+    dateTime: widget.dateTimes.first,
+    dateTime2: widget.dateTimes.last,
+  );
+
+  late List<MapEntry<Category, double>> _listExpenseData = _pieServices.getExpenseData(
+    dateTime: widget.dateTimes.first,
+    dateTime2: widget.dateTimes.last,
+    useOther: false,
+  );
+
+  late List<MapEntry<Category, double>> _listIncomeData = _pieServices.getIncomeData(
+    context,
+    dateTime: widget.dateTimes.first,
+    dateTime2: widget.dateTimes.last,
+    useOther: false,
+  );
+
+  late double _totalExpense = _pieServices.getExpenseAmount(
+    widget.dateTimes.first,
+    widget.dateTimes.last,
+  );
+  late double _totalIncome = _pieServices.getIncomeAmount(
+    widget.dateTimes.first,
+    widget.dateTimes.last,
+  );
+
+  @override
+  void didUpdateWidget(covariant CategoryReport oldWidget) {
+    if (widget.dateTimes != oldWidget.dateTimes) {
+      setState(() {
+        _pieExpenseData = _pieServices.getExpenseData(
+          dateTime: widget.dateTimes.first,
+          dateTime2: widget.dateTimes.last,
+        );
+        _pieIncomeData = _pieServices.getIncomeData(
+          context,
+          dateTime: widget.dateTimes.first,
+          dateTime2: widget.dateTimes.last,
+        );
+        _listExpenseData = _pieServices.getExpenseData(
+          dateTime: widget.dateTimes.first,
+          dateTime2: widget.dateTimes.last,
+          useOther: false,
+        );
+        _listIncomeData = _pieServices.getIncomeData(
+          context,
+          dateTime: widget.dateTimes.first,
+          dateTime2: widget.dateTimes.last,
+          useOther: false,
+        );
+        _totalExpense = _pieServices.getExpenseAmount(
+          widget.dateTimes.first,
+          widget.dateTimes.last,
+        );
+        _totalIncome = _pieServices.getIncomeAmount(
+          widget.dateTimes.first,
+          widget.dateTimes.last,
+        );
+
+        _touchedIndexExpense = -1;
+        _touchedIndexIncome = -1;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  int _touchedIndexExpense = -1;
+
+  int _touchedIndexIncome = -1;
 
   @override
   Widget build(BuildContext context) {
-    final pieServices = ref.watch(customPieChartServicesProvider);
-
-    final listExpense = pieServices.getExpenseData(widget.dateTimes.first, widget.dateTimes.last);
-    final totalExpense = pieServices.getExpenseAmount(widget.dateTimes.first, widget.dateTimes.last);
-
-    final listIncome = pieServices.getIncomeData(widget.dateTimes.first, context, widget.dateTimes.last);
-    final totalIncome = pieServices.getIncomeAmount(widget.dateTimes.first, widget.dateTimes.last);
-
     return ReportWrapper(
-      title: 'Expense & Income'.hardcoded,
+      title: 'Categories'.hardcoded,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -52,25 +120,53 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
               children: [
                 Expanded(
                   child: _pieChart(
-                    listExpense,
+                    _pieExpenseData,
                     isExpense: true,
+                    touchedIndex: _touchedIndexExpense,
+                    onChartTap: (index) {
+                      if (_touchedIndexExpense == index || index == -1) {
+                        setState(() {
+                          _touchedIndexExpense = -1;
+                          _touchedIndexIncome = -1;
+                        });
+                      } else {
+                        setState(() {
+                          _touchedIndexIncome = -2;
+                          _touchedIndexExpense = index;
+                        });
+                      }
+                    },
                   ),
                 ),
                 Gap.w24,
                 Expanded(
                   child: _pieChart(
-                    listIncome,
+                    _pieIncomeData,
                     isExpense: false,
+                    touchedIndex: _touchedIndexIncome,
+                    onChartTap: (index) {
+                      if (_touchedIndexIncome == index || index == -1) {
+                        setState(() {
+                          _touchedIndexExpense = -1;
+                          _touchedIndexIncome = -1;
+                        });
+                      } else {
+                        setState(() {
+                          _touchedIndexExpense = -2;
+                          _touchedIndexIncome = index;
+                        });
+                      }
+                    },
                   ),
                 ),
               ],
             ),
             Gap.h12,
             ..._labels(
-              listExpense,
-              listIncome,
-              totalExpense,
-              totalIncome,
+              _listExpenseData,
+              _listIncomeData,
+              _totalExpense,
+              _totalIncome,
               onTap: (category) {
                 showCustomModal(
                   context: context,
@@ -100,10 +196,14 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
     );
   }
 
-  List<Widget> _labels(List<MapEntry<Category, double>> expenseList, List<MapEntry<Category, double>> incomeList,
-      double totalExpense, double totalIncome,
-      {required void Function(Category) onTap}) {
-    Widget label(MapEntry<Category, double> e) => CustomInkWell(
+  List<Widget> _labels(
+    List<MapEntry<Category, double>> expenseList,
+    List<MapEntry<Category, double>> incomeList,
+    double totalExpense,
+    double totalIncome, {
+    required void Function(Category) onTap,
+  }) {
+    Widget label(MapEntry<Category, double> e, {required bool Function() isTouched}) => CustomInkWell(
           onTap: () => onTap(e.key),
           inkColor: context.appTheme.onBackground,
           borderRadius: BorderRadius.circular(8),
@@ -122,11 +222,16 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
                 ),
                 Gap.w4,
                 Expanded(
-                  child: Text(
-                    e.key.name,
+                  child: AnimatedDefaultTextStyle(
+                    duration: k250msDuration,
                     style: kHeader4TextStyle.copyWith(
                       color: context.appTheme.onBackground,
                       fontSize: 14,
+                      fontFamily: 'WixMadeforDisplay',
+                      fontWeight: isTouched() ? FontWeight.w800 : null,
+                    ),
+                    child: Text(
+                      e.key.name,
                     ),
                   ),
                 ),
@@ -176,9 +281,55 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
 
     final result = <Widget>[];
 
-    final expenseLabels = expenseList.map((e) => label(e)).toList();
+    final expenseLabels = expenseList
+        .map((e) => label(
+              e,
+              isTouched: () {
+                final touchedIndex = _touchedIndexExpense;
 
-    final incomeLabels = incomeList.map((e) => label(e)).toList();
+                if (touchedIndex < 0) {
+                  return false;
+                }
+
+                final elIndex = expenseList.indexOf(e);
+                final listLength = _listExpenseData.length;
+                final pieLength = _pieExpenseData.length;
+
+                if (listLength > pieLength) {
+                  if (touchedIndex >= pieLength - 1 && elIndex >= pieLength - 1) {
+                    return true;
+                  }
+                }
+
+                return elIndex == touchedIndex;
+              },
+            ))
+        .toList();
+
+    final incomeLabels = incomeList
+        .map((e) => label(
+              e,
+              isTouched: () {
+                final touchedIndex = _touchedIndexIncome;
+
+                if (touchedIndex < 0) {
+                  return false;
+                }
+
+                final elIndex = incomeList.indexOf(e);
+                final listLength = _listIncomeData.length;
+                final pieLength = _pieIncomeData.length;
+
+                if (listLength > pieLength) {
+                  if (touchedIndex >= pieLength - 1 && elIndex >= pieLength - 1) {
+                    return true;
+                  }
+                }
+
+                return elIndex == touchedIndex;
+              },
+            ))
+        .toList();
 
     if (expenseLabels.isNotEmpty) {
       result.addAll([
@@ -203,7 +354,8 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
     return result;
   }
 
-  Widget _pieChart(List<MapEntry<Category, double>> list, {required bool isExpense, void Function(int)? onChartTap}) {
+  Widget _pieChart(List<MapEntry<Category, double>> list,
+      {required bool isExpense, int? touchedIndex, void Function(int)? onChartTap}) {
     return SizedBox(
       height: 150,
       child: CustomPieChart<Category>(
@@ -215,6 +367,7 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
           size: 25,
         ),
         onChartTap: onChartTap,
+        touchedIndex: touchedIndex,
       ),
     );
   }

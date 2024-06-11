@@ -37,7 +37,11 @@ class PieChartServices {
 
   /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
   /// Else, returns date from `dateTime` to `dateTime2`
-  List<MapEntry<Category, double>> getExpenseData(DateTime dateTime, [DateTime? dateTime2]) {
+  List<MapEntry<Category, double>> getExpenseData({
+    required DateTime dateTime,
+    DateTime? dateTime2,
+    bool useOther = true,
+  }) {
     final range = dateTime2 == null
         ? DateTimeRange(
             start: dateTime.copyWith(day: 1, hour: 0, minute: 0, second: 1),
@@ -59,7 +63,7 @@ class PieChartServices {
       }
     }
 
-    return _modifyDataList(map, OthersCategory());
+    return useOther ? _modifyDataList(map, OthersCategory()) : map.entries.toList();
   }
 
   /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
@@ -84,7 +88,12 @@ class PieChartServices {
 
   /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
   /// Else, returns date from `dateTime` to `dateTime2`
-  List<MapEntry<Category, double>> getIncomeData(DateTime dateTime, BuildContext context, [DateTime? dateTime2]) {
+  List<MapEntry<Category, double>> getIncomeData(
+    BuildContext context, {
+    required DateTime dateTime,
+    DateTime? dateTime2,
+    bool useOther = true,
+  }) {
     final range = dateTime2 == null
         ? DateTimeRange(
             start: dateTime.copyWith(day: 1, hour: 0, minute: 0, second: 1),
@@ -96,19 +105,20 @@ class PieChartServices {
     final txnsList = transactionRepo.getTransactions(range.start, range.end).whereType<Income>().toList();
 
     final map = <Category, double>{};
+    final initialIncome = Category.initialIncome(context);
 
     for (int i = 0; i < txnsList.length; i++) {
       final txn = txnsList[i];
       if (map.containsKey(txn.category)) {
         map[txn.category] = map[txn.category]! + txn.amount;
       } else if (txn.isInitialTransaction) {
-        map[Category.initialIncome(context)] = txn.amount;
+        map[initialIncome] = (map[initialIncome] ?? 0) + txn.amount;
       } else {
         map[txn.category] = txn.amount;
       }
     }
 
-    return _modifyDataList(map, OthersCategory());
+    return useOther ? _modifyDataList(map, OthersCategory()) : map.entries.toList();
   }
 
   /// To sort the data from largest to smallest value, and group smallest to `others` category

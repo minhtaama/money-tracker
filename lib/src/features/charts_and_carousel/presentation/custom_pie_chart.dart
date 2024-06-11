@@ -15,11 +15,17 @@ class CustomPieChart<T extends BaseModelWithIcon> extends StatefulWidget {
     required this.values,
     this.onChartTap,
     this.center,
+    this.touchedIndex,
   });
 
   final List<MapEntry<T, double>> values;
   final Function(int)? onChartTap;
   final Widget? center;
+
+  /// -2 means low opacity all
+  ///
+  /// If this property is specified, will disable the default pie touch setting
+  final int? touchedIndex;
 
   @override
   State<CustomPieChart<T>> createState() => _CustomPieChartState<T>();
@@ -30,7 +36,7 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
   double _scale = 0.3;
   double _opacity = 0;
 
-  int _touchedIndex = -1;
+  late int _touchedIndex = widget.touchedIndex ?? -1;
 
   late List<MapEntry<T, double>> _dataList = widget.values;
 
@@ -41,6 +47,13 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
         _dataList = widget.values;
       });
     }
+
+    if (widget.touchedIndex != oldWidget.touchedIndex && widget.touchedIndex != null) {
+      setState(() {
+        _touchedIndex = widget.touchedIndex!;
+      });
+    }
+
     super.didUpdateWidget(oldWidget);
   }
 
@@ -140,41 +153,37 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
             alignment: Alignment.center,
             children: [
               widget.center ?? Gap.noGap,
-              TapRegion(
-                onTapOutside: (_) {
-                  setState(() {
-                    _touchedIndex = -1;
-                  });
-                  widget.onChartTap?.call(_touchedIndex);
-                },
-                child: PieChart(
-                  PieChartData(
-                    sections: getData(_touchedIndex, context),
-                    sectionsSpace: 2,
-                    startDegreeOffset: _startDegreeOffset,
-                    centerSpaceColor: Colors.transparent,
-                    pieTouchData: PieTouchData(
-                      touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
-                        if (widget.values.isNotEmpty && widget.onChartTap != null) {
-                          setState(() {
-                            if (event.isInterestedForInteractions &&
-                                pieTouchResponse != null &&
-                                event is FlTapDownEvent) {
-                              if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
+              PieChart(
+                PieChartData(
+                  sections: getData(_touchedIndex, context),
+                  sectionsSpace: 2,
+                  startDegreeOffset: _startDegreeOffset,
+                  centerSpaceColor: Colors.transparent,
+                  pieTouchData: PieTouchData(
+                    touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
+                      if (widget.values.isNotEmpty && widget.onChartTap != null) {
+                        if (event.isInterestedForInteractions && pieTouchResponse != null && event is FlTapDownEvent) {
+                          if (widget.touchedIndex == null) {
+                            if (pieTouchResponse.touchedSection!.touchedSectionIndex == _touchedIndex) {
+                              setState(() {
                                 _touchedIndex = -1;
-                              } else {
+                              });
+                            } else {
+                              setState(() {
                                 _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
-                              }
-                              widget.onChartTap?.call(_touchedIndex);
+                              });
                             }
-                          });
+                            widget.onChartTap?.call(_touchedIndex);
+                          } else {
+                            widget.onChartTap?.call(pieTouchResponse.touchedSection!.touchedSectionIndex);
+                          }
                         }
-                      },
-                    ),
+                      }
+                    },
                   ),
-                  swapAnimationDuration: k350msDuration,
-                  swapAnimationCurve: Curves.fastOutSlowIn,
                 ),
+                swapAnimationDuration: k350msDuration,
+                swapAnimationCurve: Curves.fastOutSlowIn,
               ),
             ],
           ),
