@@ -94,14 +94,12 @@ class _CustomPieChartState<T extends BaseModelWithIcon> extends State<CustomPieC
           (e) => PieChartSectionData(
             value: e.value,
             color: e.key.backgroundColor.withOpacity(
-              touchedIndex == -1 || _dataList.indexOf(e) == touchedIndex
-                  ? context.appTheme.isDarkTheme
-                      ? 0.8
-                      : 0.9
-                  : context.appTheme.isDarkTheme
-                      ? 0.15
-                      : 0.35,
+              touchedIndex == -1 || _dataList.indexOf(e) == touchedIndex ? 1 : 0.0,
             ),
+            borderSide: BorderSide(
+                color: e.key.backgroundColor.withOpacity(
+              touchedIndex == -1 || _dataList.indexOf(e) == touchedIndex ? 1 : 0.5,
+            )),
             showTitle: false,
             badgePositionPercentageOffset: 0.8,
             radius: 28,
