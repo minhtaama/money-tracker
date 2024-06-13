@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -51,7 +52,22 @@ class _CustomBarChartState extends State<CustomBarChart> {
     for (var item in widget.values.entries) item.key: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01)
   };
 
+  final _chartKey = GlobalKey();
+  double _chartWidth = 1;
+  double _groupWidth = 1;
+
   int _touchedGroupIndex = -1;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _chartWidth = _chartKey.currentContext!.size!.width;
+        _groupWidth = _chartWidth / widget.values.entries.length;
+      });
+    });
+    super.initState();
+  }
 
   @override
   void didUpdateWidget(covariant CustomBarChart oldWidget) {
@@ -73,7 +89,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
     super.didChangeDependencies();
   }
 
-  List<BarChartGroupData> buildBarGroups() {
+  List<BarChartGroupData> _buildBarGroups() {
     final list = _values.entries;
     return list
         .map((e) => BarChartGroupData(
@@ -85,105 +101,130 @@ class _CustomBarChartState extends State<CustomBarChart> {
                   color: context.appTheme.negative,
                   width: widget.barRodWidth,
                   borderRadius: BorderRadius.circular(0),
+                  backDrawRodData: BackgroundBarChartRodData(fromY: 0, toY: 1, color: Colors.transparent),
                 ),
                 BarChartRodData(
                   toY: e.value.yIncome,
                   color: context.appTheme.positive,
                   width: widget.barRodWidth,
                   borderRadius: BorderRadius.circular(0),
+                  backDrawRodData: BackgroundBarChartRodData(fromY: 0, toY: 1, color: Colors.transparent),
                 ),
               ],
             ))
         .toList();
   }
 
+  // BarTooltipItem? barTooltipItem(
+  //   BarChartGroupData group,
+  //   int groupIndex,
+  //   BarChartRodData rod,
+  //   int rodIndex,
+  // ) {
+  //   final mapValue = _values.entries.toList()[groupIndex];
+  //   final value = rodIndex == 0 ? mapValue.value.spending : mapValue.value.income;
+  //
+  //   final color = rod.gradient?.colors.first ?? rod.color;
+  //   final textStyle = TextStyle(
+  //     color: color,
+  //     fontWeight: FontWeight.bold,
+  //     fontSize: 14,
+  //   );
+  //   return BarTooltipItem(CalService.formatCurrency(context, value), textStyle);
+  // }
+
+  void _touchCallback(FlTouchEvent event, BarTouchResponse? response) {
+    if (event is FlTapDownEvent) {
+      if (response == null || response.spot == null) {
+        setState(() {
+          _touchedGroupIndex = -1;
+        });
+        print(_touchedGroupIndex);
+        return;
+      }
+    }
+
+    if (event is FlPanUpdateEvent || event is FlLongPressMoveUpdate || event is FlTapDownEvent) {
+      if (response != null && response.spot != null) {
+        if (response.spot?.touchedBarGroupIndex != _touchedGroupIndex) {
+          setState(() {
+            _touchedGroupIndex = response.spot!.touchedBarGroupIndex;
+          });
+          print(_touchedGroupIndex);
+          return;
+        }
+      }
+    }
+  }
+
+  double _tooltipOffset() => _groupWidth * (_touchedGroupIndex) + _groupWidth / 2;
+
   @override
   Widget build(BuildContext context) {
     assert(widget.values.entries.length == widget.titleDateTimes.length);
 
-    return RotatedBox(
-      quarterTurns: widget.horizontalChart ? 1 : 0,
-      child: BarChart(
-        BarChartData(
-          maxY: 1.02,
-          barGroups: buildBarGroups(),
-          barTouchData: BarTouchData(
-            touchTooltipData: BarTouchTooltipData(
-              getTooltipColor: (_) => Colors.grey,
-              getTooltipItem: (a, b, c, d) => null,
-            ),
-            touchCallback: (FlTouchEvent event, response) {
-              // if (response == null || response.spot == null) {
-              //   setState(() {
-              //     _touchedGroupIndex = -1;
-              //     showingBarGroups = List.of(rawBarGroups);
-              //   });
-              //   return;
-              // }
-              //
-              // _touchedGroupIndex = response.spot!.touchedBarGroupIndex;
-              //
-              // setState(() {
-              //   if (!event.isInterestedForInteractions) {
-              //     _touchedGroupIndex = -1;
-              //     showingBarGroups = List.of(rawBarGroups);
-              //     return;
-              //   }
-              //   showingBarGroups = List.of(rawBarGroups);
-              //   if (_touchedGroupIndex != -1) {
-              //     var sum = 0.0;
-              //     for (final rod in showingBarGroups[_touchedGroupIndex].barRods) {
-              //       sum += rod.toY;
-              //     }
-              //     final avg = sum / showingBarGroups[_touchedGroupIndex].barRods.length;
-              //
-              //     showingBarGroups[_touchedGroupIndex] = showingBarGroups[_touchedGroupIndex].copyWith(
-              //       barRods: showingBarGroups[_touchedGroupIndex].barRods.map((rod) {
-              //         return rod.copyWith(toY: avg, color: AppColors.white);
-              //       }).toList(),
-              //     );
-              //   }
-              // });
-            },
-          ),
-          titlesData: FlTitlesData(
-            show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) => bottomTitles(context, value, meta),
-                reservedSize: widget.titleReservedSize,
-              ),
-            ),
-          ),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          gridData: FlGridData(
-            show: true,
-            horizontalInterval: 1 / 3,
-            drawVerticalLine: false,
-            getDrawingHorizontalLine: (double value) {
-              final color = context.appTheme.onBackground.withOpacity(0.2);
-              return FlLine(
-                strokeWidth: 1,
-                dashArray: [4, 4],
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [color.withOpacity(0), color, color, color.withOpacity(0)],
-                  stops: const [0.03, 0.07, 0.93, 0.97],
-                ),
-              );
-            },
+    return Stack(
+      children: [
+        Positioned(
+          top: widget.horizontalChart ? _tooltipOffset() : 0,
+          left: widget.horizontalChart ? 0 : _tooltipOffset(),
+          child: Container(
+            width: 2,
+            height: 50,
+            color: Colors.green,
           ),
         ),
-        swapAnimationDuration: k550msDuration,
-        swapAnimationCurve: Curves.fastOutSlowIn,
-      ),
+        RotatedBox(
+          quarterTurns: widget.horizontalChart ? 1 : 0,
+          child: BarChart(
+            key: _chartKey,
+            BarChartData(
+              maxY: 1.02,
+              alignment: BarChartAlignment.spaceAround,
+              barGroups: _buildBarGroups(),
+              barTouchData: BarTouchData(
+                allowTouchBarBackDraw: true,
+                handleBuiltInTouches: false,
+                touchCallback: _touchCallback,
+              ),
+              titlesData: FlTitlesData(
+                show: true,
+                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) => bottomTitles(context, value, meta),
+                    reservedSize: widget.titleReservedSize,
+                  ),
+                ),
+              ),
+              borderData: FlBorderData(show: false),
+              gridData: FlGridData(
+                show: true,
+                horizontalInterval: 1 / 3,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (double value) {
+                  final color = context.appTheme.onBackground.withOpacity(0.2);
+                  return FlLine(
+                    strokeWidth: 1,
+                    dashArray: [4, 4],
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [color.withOpacity(0), color, color, color.withOpacity(0)],
+                      stops: const [0.03, 0.07, 0.93, 0.97],
+                    ),
+                  );
+                },
+              ),
+            ),
+            swapAnimationDuration: k550msDuration,
+            swapAnimationCurve: Curves.fastOutSlowIn,
+          ),
+        ),
+      ],
     );
   }
 

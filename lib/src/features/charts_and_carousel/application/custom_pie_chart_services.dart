@@ -63,7 +63,8 @@ class PieChartServices {
       }
     }
 
-    return useOther ? _modifyDataList(map, OthersCategory()) : map.entries.toList();
+    return useOther ? _modifyDataList(map, OthersCategory()) : map.entries.toList()
+      ..sort((a, b) => (b.value - a.value).toInt());
   }
 
   /// If `dateTime2` is null, then returns data of whole `dateTime`'s month
@@ -118,7 +119,8 @@ class PieChartServices {
       }
     }
 
-    return useOther ? _modifyDataList(map, OthersCategory()) : map.entries.toList();
+    return useOther ? _modifyDataList(map, OthersCategory()) : map.entries.toList()
+      ..sort((a, b) => (b.value - a.value).toInt());
   }
 
   /// To sort the data from largest to smallest value, and group smallest to `others` category
