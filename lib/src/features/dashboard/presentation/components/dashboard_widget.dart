@@ -27,6 +27,7 @@ class DashboardWidget extends StatelessWidget {
       onTap: onTap,
       child: CardItem(
         color: isEmpty ? Colors.transparent : context.appTheme.background0,
+        clip: false,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: context.appTheme.onBackground.withOpacity(isEmpty ? 0.3 : 0), width: 2),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
