@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -21,6 +22,8 @@ class CustomBarChart extends StatefulWidget {
     this.titleSize = 12,
     this.titleOffset = Offset.zero,
     this.barRodWidth = 14,
+    this.tooltipBuilder,
+    this.onChartTap,
   });
 
   /// Must have same entry length with [titleDateTimes] length
@@ -43,27 +46,39 @@ class CustomBarChart extends StatefulWidget {
 
   final double barRodWidth;
 
+  final Widget Function(int index)? tooltipBuilder;
+
+  final void Function(int index)? onChartTap;
+
   @override
   State<CustomBarChart> createState() => _CustomBarChartState();
 }
 
 class _CustomBarChartState extends State<CustomBarChart> {
+  final _touchThreshold = 20.0;
+
   late Map<int, ({double spending, double income, double ySpending, double yIncome})> _values = {
     for (var item in widget.values.entries) item.key: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01)
   };
 
   final _chartKey = GlobalKey();
+  final _toolTipKey = GlobalKey();
   double _chartWidth = 1;
-  double _groupWidth = 1;
+  double _chartHeight = 1;
+  double _toolTipWidth = 1;
 
   int _touchedGroupIndex = -1;
+  Offset _tooltipLocalPosition = const Offset(0, 0);
+
+  Duration _duration = k1msDuration;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
         _chartWidth = _chartKey.currentContext!.size!.width;
-        _groupWidth = _chartWidth / widget.values.entries.length;
+        _chartHeight = _chartKey.currentContext!.size!.height;
+        _toolTipWidth = _toolTipKey.currentContext!.size!.width;
       });
     });
     super.initState();
@@ -74,6 +89,15 @@ class _CustomBarChartState extends State<CustomBarChart> {
     if (widget.values != oldWidget.values) {
       setState(() {
         _values = widget.values;
+        _touchedGroupIndex = -1;
+      });
+    }
+
+    if (widget.tooltipBuilder != oldWidget.tooltipBuilder) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          _toolTipWidth = _toolTipKey.currentContext!.size!.width;
+        });
       });
     }
     super.didUpdateWidget(oldWidget);
@@ -115,65 +139,58 @@ class _CustomBarChartState extends State<CustomBarChart> {
         .toList();
   }
 
-  // BarTooltipItem? barTooltipItem(
-  //   BarChartGroupData group,
-  //   int groupIndex,
-  //   BarChartRodData rod,
-  //   int rodIndex,
-  // ) {
-  //   final mapValue = _values.entries.toList()[groupIndex];
-  //   final value = rodIndex == 0 ? mapValue.value.spending : mapValue.value.income;
-  //
-  //   final color = rod.gradient?.colors.first ?? rod.color;
-  //   final textStyle = TextStyle(
-  //     color: color,
-  //     fontWeight: FontWeight.bold,
-  //     fontSize: 14,
-  //   );
-  //   return BarTooltipItem(CalService.formatCurrency(context, value), textStyle);
-  // }
-
   void _touchCallback(FlTouchEvent event, BarTouchResponse? response) {
-    if (event is FlTapDownEvent) {
-      if (response == null || response.spot == null) {
-        setState(() {
-          _touchedGroupIndex = -1;
-        });
-        print(_touchedGroupIndex);
-        return;
-      }
-    }
+    if (response != null && response.spot != null) {
+      if (event is FlTapDownEvent) {
+        bool isTouchInThreshold = (_tooltipLocalPosition.dx - event.localPosition.dx).abs() < _touchThreshold &&
+            (_tooltipLocalPosition.dy - event.localPosition.dy).abs() < _touchThreshold;
 
-    if (event is FlPanUpdateEvent || event is FlLongPressMoveUpdate || event is FlTapDownEvent) {
-      if (response != null && response.spot != null) {
-        if (response.spot?.touchedBarGroupIndex != _touchedGroupIndex) {
+        if (isTouchInThreshold) {
           setState(() {
-            _touchedGroupIndex = response.spot!.touchedBarGroupIndex;
+            _touchedGroupIndex = -1;
+            _tooltipLocalPosition = const Offset(0, 0);
           });
-          print(_touchedGroupIndex);
           return;
         }
       }
+
+      if (response.spot!.touchedBarGroupIndex != -1 &&
+          (event is FlTapDownEvent || event is FlLongPressMoveUpdate || event is FlPanUpdateEvent)) {
+        setState(() {
+          if (event is FlTapDownEvent && _touchedGroupIndex != -1) {
+            _duration = k250msDuration;
+          } else {
+            _duration = Duration.zero;
+          }
+          _touchedGroupIndex = response.spot!.touchedBarGroupIndex;
+          _tooltipLocalPosition = event.localPosition!;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            setState(() {
+              _toolTipWidth = _toolTipKey.currentContext!.size!.width;
+            });
+          });
+        });
+        return;
+      }
     }
   }
-
-  double _tooltipOffset() => _groupWidth * (_touchedGroupIndex) + _groupWidth / 2;
 
   @override
   Widget build(BuildContext context) {
     assert(widget.values.entries.length == widget.titleDateTimes.length);
 
+    final double topTooltipPos = widget.horizontalChart ? _tooltipLocalPosition.dx : _tooltipLocalPosition.dy;
+    final double leftTooltipPos =
+        widget.horizontalChart ? _chartHeight - _tooltipLocalPosition.dy : _tooltipLocalPosition.dx;
+
+    final double horizontalTooltipOverflow = widget.horizontalChart
+        ? (leftTooltipPos + _toolTipWidth - _chartHeight).clamp(0, double.infinity)
+        : (leftTooltipPos + _toolTipWidth - _chartWidth).clamp(0, double.infinity);
+
     return Stack(
+      fit: StackFit.passthrough,
+      clipBehavior: Clip.none,
       children: [
-        Positioned(
-          top: widget.horizontalChart ? _tooltipOffset() : 0,
-          left: widget.horizontalChart ? 0 : _tooltipOffset(),
-          child: Container(
-            width: 2,
-            height: 50,
-            color: Colors.green,
-          ),
-        ),
         RotatedBox(
           quarterTurns: widget.horizontalChart ? 1 : 0,
           child: BarChart(
@@ -222,6 +239,19 @@ class _CustomBarChartState extends State<CustomBarChart> {
             ),
             swapAnimationDuration: k550msDuration,
             swapAnimationCurve: Curves.fastOutSlowIn,
+          ),
+        ),
+        AnimatedPositioned(
+          duration: _duration,
+          curve: Curves.fastOutSlowIn,
+          top: topTooltipPos,
+          left: leftTooltipPos - horizontalTooltipOverflow,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: Gap.screenWidth(context) - 150, maxHeight: 300),
+            child: SizedBox(
+              key: _toolTipKey,
+              child: _touchedGroupIndex != -1 ? widget.tooltipBuilder?.call(_touchedGroupIndex) : null,
+            ),
           ),
         ),
       ],

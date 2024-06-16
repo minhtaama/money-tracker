@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/features/reports/presentation/reports_screen.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'dart:math' as math;
@@ -45,6 +50,66 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
           titleAngle: math.pi / 4,
           titleSize: 10,
           titleOffset: const Offset(-10, 5),
+          tooltipBuilder: (index) {
+            final value = map.entries.toList()[index].value;
+            final dateTime = days[index];
+
+            return Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.appTheme.primary,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dateTime.toLongDate(context),
+                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 12),
+                  ),
+                  Gap.h4,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.loc.expense,
+                              style: kHeader3TextStyle.copyWith(
+                                  color: context.appTheme.onPrimary.withOpacity(0.65), fontSize: 12),
+                            ),
+                            MoneyAmount(
+                              amount: value.spending,
+                              style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.loc.income,
+                              style: kHeader3TextStyle.copyWith(
+                                  color: context.appTheme.onPrimary.withOpacity(0.65), fontSize: 12),
+                            ),
+                            MoneyAmount(
+                              amount: value.income,
+                              style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
