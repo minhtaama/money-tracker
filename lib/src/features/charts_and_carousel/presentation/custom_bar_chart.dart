@@ -182,10 +182,13 @@ class _CustomBarChartState extends State<CustomBarChart> {
           } else {
             _duration = Duration.zero;
           }
-          _touchedGroupIndex = response.spot!.touchedBarGroupIndex;
-          _tooltipLocalPosition = event.localPosition!;
 
-          _updateTooltipSize();
+          if (_touchedGroupIndex != response.spot!.touchedBarGroupIndex) {
+            _touchedGroupIndex = response.spot!.touchedBarGroupIndex;
+            _updateTooltipSize();
+          }
+
+          _tooltipLocalPosition = event.localPosition!;
         });
         return;
       }
@@ -272,7 +275,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
               top: topTooltipPos - 20,
               left: math.max(0, leftTooltipPos - horizontalTooltipOverflow),
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: (_chartWidth - 150).clamp(0, double.infinity), maxHeight: 300),
+                constraints: BoxConstraints(maxWidth: (_chartWidth - 100).clamp(0, double.infinity), maxHeight: 300),
                 child: SizedBox(
                   key: _toolTipKey,
                   child: _touchedGroupIndex != -1 ? widget.tooltipBuilder?.call(_touchedGroupIndex) : null,
