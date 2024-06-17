@@ -54,59 +54,61 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
             final value = map.entries.toList()[index].value;
             final dateTime = days[index];
 
-            return Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: context.appTheme.primary,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    dateTime.toLongDate(context),
-                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 12),
-                  ),
-                  Gap.h4,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.loc.expense,
-                              style: kHeader3TextStyle.copyWith(
-                                  color: context.appTheme.onPrimary.withOpacity(0.65), fontSize: 12),
-                            ),
-                            MoneyAmount(
-                              amount: value.spending,
-                              style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
-                            ),
-                          ],
+            return IgnorePointer(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: context.appTheme.primary.withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dateTime.toLongDate(context),
+                      style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 12),
+                    ),
+                    Gap.h4,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                context.loc.expense,
+                                style: kHeader3TextStyle.copyWith(
+                                    color: context.appTheme.onPrimary.withOpacity(0.65), fontSize: 12),
+                              ),
+                              MoneyAmount(
+                                amount: value.spending,
+                                style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.loc.income,
-                              style: kHeader3TextStyle.copyWith(
-                                  color: context.appTheme.onPrimary.withOpacity(0.65), fontSize: 12),
-                            ),
-                            MoneyAmount(
-                              amount: value.income,
-                              style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
-                            ),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                context.loc.income,
+                                style: kHeader3TextStyle.copyWith(
+                                    color: context.appTheme.onPrimary.withOpacity(0.65), fontSize: 12),
+                              ),
+                              MoneyAmount(
+                                amount: value.income,
+                                style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
             );
           },
