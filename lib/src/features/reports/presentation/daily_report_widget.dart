@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/features/reports/presentation/reports_screen.dart';
@@ -10,7 +9,6 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'dart:math' as math;
 
-import '../../../theme_and_ui/icons.dart';
 import '../../charts_and_carousel/application/custom_bar_chart_services.dart';
 import '../../charts_and_carousel/presentation/custom_bar_chart.dart';
 

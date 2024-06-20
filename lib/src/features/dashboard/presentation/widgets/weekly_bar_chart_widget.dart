@@ -14,10 +14,10 @@ class WeeklyBarChartWidget extends ConsumerStatefulWidget {
   const WeeklyBarChartWidget({super.key});
 
   @override
-  ConsumerState<WeeklyBarChartWidget> createState() => _ExpensePieChartWidgetState();
+  ConsumerState<WeeklyBarChartWidget> createState() => _WeeklyBarChartWidgetState();
 }
 
-class _ExpensePieChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
+class _WeeklyBarChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
   int _touchedIndex = -1;
 
   @override
