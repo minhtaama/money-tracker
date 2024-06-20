@@ -4,7 +4,6 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/regular_details.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../domain/account_base.dart';
 import 'screen_details/credit/credit_details.dart';
