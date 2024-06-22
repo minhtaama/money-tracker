@@ -15,12 +15,13 @@ class AccountRepositoryRealmDb {
   final Realm realm;
   final ProviderRef ref;
 
-  RealmResults<AccountDb> _realmResults(AccountType? type) {
+  RealmResults<AccountDb> _realmResults(List<AccountType>? type) {
     if (type == null) {
       return realm.all<AccountDb>().query('TRUEPREDICATE SORT(order ASC)');
     }
 
-    return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [type.databaseValue]);
+    // return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [type.databaseValue]);
+    return realm.all<AccountDb>().query('type IN \$0 SORT(order ASC)', [type.map((e) => e.databaseValue)]);
   }
 
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
@@ -36,11 +37,11 @@ class AccountRepositoryRealmDb {
     throw StateError('transaction id is not found');
   }
 
-  List<Account> getList(AccountType? type) {
+  List<Account> getList(List<AccountType>? type) {
     return _realmResults(type).map((accountDb) => Account.fromDatabase(accountDb)!).toList();
   }
 
-  List<AccountInfo> getListInfo(AccountType? type) {
+  List<AccountInfo> getListInfo(List<AccountType>? type) {
     return _realmResults(type).map((accountDb) => Account.fromDatabaseInfoOnly(accountDb)!).toList();
   }
 
@@ -115,21 +116,17 @@ class AccountRepositoryRealmDb {
         StatementType.payOnlyInGracePeriod => 1,
       };
 
-      creditDetailsDb =
-          CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
+      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
     }
 
-    final newAccount = AccountDb(
-        ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
+    final newAccount = AccountDb(ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
         order: order, creditDetails: creditDetailsDb);
 
     realm.write(() {
       realm.add(newAccount);
 
       if (type == AccountType.regular) {
-        ref
-            .read(transactionRepositoryRealmProvider)
-            .addInitialBalance(balance: balance, newAccount: newAccount);
+        ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: balance, newAccount: newAccount);
       }
     });
   }
@@ -188,9 +185,8 @@ class AccountRepositoryRealmDb {
   void delete(Account account) {
     realm.write(() {
       if (account is CreditAccount) {
-        final txnsDbToDelete = account.transactionsList
-            .where((txn) => txn is! CreditPayment)
-            .map((txn) => txn.databaseObject);
+        final txnsDbToDelete =
+            account.transactionsList.where((txn) => txn is! CreditPayment).map((txn) => txn.databaseObject);
         realm.deleteMany<TransactionDb>(txnsDbToDelete);
       }
       realm.delete<AccountDb>(account.databaseObject);
@@ -198,7 +194,7 @@ class AccountRepositoryRealmDb {
   }
 
   /// The list must be the same list displayed in the widget (with the same sort order)
-  void reorder(AccountType? type, int oldIndex, int newIndex) {
+  void reorder(List<AccountType>? type, int oldIndex, int newIndex) {
     final list = _realmResults(type).toList();
 
     final item = list.removeAt(oldIndex);

@@ -47,7 +47,7 @@ class _TotalViewState extends ConsumerState<_TotalView> {
   late final chartServices = ref.read(customLineChartServicesProvider);
 
   late List<RegularAccount> _accountList =
-      accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
+      accountRepo.getList([AccountType.regular]).whereType<RegularAccount>().toList();
 
   late CLCData2 _data = chartServices.getCLCDataForReportScreenOnRegularAccount(
     _accountList,
@@ -58,7 +58,7 @@ class _TotalViewState extends ConsumerState<_TotalView> {
   @override
   void didUpdateWidget(covariant _TotalView oldWidget) {
     setState(() {
-      _accountList = accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
+      _accountList = accountRepo.getList([AccountType.regular]).whereType<RegularAccount>().toList();
 
       _data = chartServices.getCLCDataForReportScreenOnRegularAccount(
         _accountList,
@@ -230,7 +230,7 @@ class _SeparateViewState extends ConsumerState<_SeparateView> {
     final accountRepo = ref.watch(accountRepositoryProvider);
     final chartServices = ref.watch(customLineChartServicesProvider);
 
-    final accountList = accountRepo.getList(AccountType.regular).whereType<RegularAccount>().toList();
+    final accountList = accountRepo.getList([AccountType.regular]).whereType<RegularAccount>().toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

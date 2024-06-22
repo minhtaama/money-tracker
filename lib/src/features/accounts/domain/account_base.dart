@@ -15,6 +15,7 @@ import 'statement/base_class/statement.dart';
 
 part 'regular_account.dart';
 part 'credit_account.dart';
+part 'saving_account.dart';
 
 abstract class BaseAccount extends BaseModelWithIcon<AccountDb> {
   const BaseAccount(
@@ -157,6 +158,28 @@ sealed class Account extends BaseAccount {
     );
   }
 
+  static SavingAccount _savingAccountFromDatabase(AccountDb accountDb) {
+    final List<Transfer> transactionsList = accountDb.transactions
+        .query('TRUEPREDICATE SORT(dateTime ASC)')
+        .map<Transfer>((txn) => BaseTransaction.fromDatabase(txn) as Transfer)
+        .toList(growable: false);
+
+    final List<Transfer> transferOutList = accountDb.transferTransactions
+        .query('TRUEPREDICATE SORT(dateTime ASC)')
+        .map<Transfer>((txn) => BaseTransaction.fromDatabase(txn) as Transfer)
+        .toList();
+
+    return SavingAccount._(
+      accountDb,
+      name: accountDb.name,
+      iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+      backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+      iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
+      transactionsList: transactionsList,
+      transferOutList: transferOutList,
+    );
+  }
+
   static Account? fromDatabase(AccountDb? accountDb) {
     if (accountDb == null) {
       return null;
@@ -167,6 +190,7 @@ sealed class Account extends BaseAccount {
     return switch (type) {
       AccountType.regular => _regularAccountFromDatabase(accountDb),
       AccountType.credit => _creditAccountFromDatabase(accountDb),
+      AccountType.saving => _savingAccountFromDatabase(accountDb),
     };
   }
 
@@ -196,6 +220,13 @@ sealed class Account extends BaseAccount {
           statementDay: accountDb.creditDetails!.statementDay,
           paymentDueDay: accountDb.creditDetails!.paymentDueDay,
           statementType: StatementType.fromDatabaseValue(accountDb.creditDetails!.statementType),
+        ),
+      AccountType.saving => SavingAccountInfo._(
+          accountDb,
+          name: accountDb.name,
+          iconColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][1],
+          backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
+          iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
         ),
     };
   }

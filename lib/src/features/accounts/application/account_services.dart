@@ -14,7 +14,7 @@ class CreditAccountServices {
     if (includeCreditAccount) {
       accountList = accountRepo.getList(null);
     } else {
-      accountList = accountRepo.getList(AccountType.regular);
+      accountList = accountRepo.getList([AccountType.regular]);
     }
     for (Account account in accountList) {
       totalBalance += account.availableAmount;

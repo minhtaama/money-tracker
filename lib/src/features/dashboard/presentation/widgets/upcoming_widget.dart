@@ -28,7 +28,7 @@ class UpcomingWidget extends ConsumerWidget {
 
     final today = DateTime.now();
 
-    final creditAccountList = accountRepo.getList(AccountType.credit).whereType<CreditAccount>();
+    final creditAccountList = accountRepo.getList([AccountType.credit]).whereType<CreditAccount>();
 
     final recList =
         recRepo.getRecurrences().where((rec) => rec.getAllPlannedTransactionsInMonth(context, today).isNotEmpty);

@@ -34,6 +34,7 @@ class AccountScreen extends ConsumerWidget {
       return switch (account) {
         CreditAccount() => CreditScreenDetails(creditAccount: account as CreditAccount),
         RegularAccount() => RegularScreenDetails(regularAccount: account as RegularAccount),
+        SavingAccount() => Placeholder(),
       };
     } catch (e) {
       return IconWithText(

@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
@@ -23,10 +24,10 @@ class AccountsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final accountRepository = ref.watch(accountRepositoryProvider);
 
-    List<Account> accountList = accountRepository.getList(null);
+    List<Account> accountList = accountRepository.getList([AccountType.regular, AccountType.credit]);
 
     ref.watch(accountsChangesProvider).whenData((_) {
-      accountList = accountRepository.getList(null);
+      accountList = accountRepository.getList([AccountType.regular, AccountType.credit]);
     });
 
     List<Widget> buildAccountCards(BuildContext context) {
@@ -66,7 +67,8 @@ class AccountsListScreen extends ConsumerWidget {
           CustomSection(
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            onReorder: (oldIndex, newIndex) => accountRepository.reorder(null, oldIndex, newIndex),
+            onReorder: (oldIndex, newIndex) =>
+                accountRepository.reorder([AccountType.regular, AccountType.credit], oldIndex, newIndex),
             sections: buildAccountCards(context),
           ),
         ],

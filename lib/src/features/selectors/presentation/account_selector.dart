@@ -62,9 +62,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: _currentAccount != null ? _currentAccount!.iconPath : AppIcons.add,
       backgroundColor: _currentAccount != null ? _currentAccount!.backgroundColor : Colors.transparent,
-      color: _currentAccount != null
-          ? _currentAccount!.iconColor
-          : context.appTheme.onBackground.withOpacity(0.4),
+      color: _currentAccount != null ? _currentAccount!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
       height: null,
       width: null,
       border: _currentAccount != null
@@ -73,7 +71,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
               color: context.appTheme.onBackground.withOpacity(0.4),
             ),
       onTap: () async {
-        List<Account> accountList = ref.read(accountRepositoryProvider).getList(widget.accountType);
+        List<Account> accountList = ref.read(accountRepositoryProvider).getList([widget.accountType]);
 
         final returnedValue = await showCustomModal<Account>(
           context: context,
@@ -93,13 +91,11 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                       children: List.generate(accountList.length, (index) {
                         final account = accountList[index];
                         return IgnorePointer(
-                          ignoring: widget.otherSelectedAccount?.databaseObject.id ==
-                              account.databaseObject.id,
+                          ignoring: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
                           child: IconWithTextButton(
                             iconPath: account.iconPath,
                             label: account.name,
-                            isDisabled: widget.otherSelectedAccount?.databaseObject.id ==
-                                account.databaseObject.id,
+                            isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
                             labelSize: 18,
                             borderRadius: BorderRadius.circular(16),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -108,10 +104,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                                   ? account.backgroundColor
                                   : context.appTheme.onBackground.withOpacity(0.4),
                             ),
-                            backgroundColor:
-                                _currentAccount?.databaseObject.id == account.databaseObject.id
-                                    ? account.backgroundColor
-                                    : Colors.transparent,
+                            backgroundColor: _currentAccount?.databaseObject.id == account.databaseObject.id
+                                ? account.backgroundColor
+                                : Colors.transparent,
                             color: _currentAccount?.databaseObject.id == account.databaseObject.id
                                 ? account.iconColor
                                 : context.appTheme.onBackground,
@@ -147,8 +142,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (_currentAccount != null &&
-                _currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (_currentAccount != null && _currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               _currentAccount = null;
               widget.onChangedAccount(_currentAccount);
             } else {

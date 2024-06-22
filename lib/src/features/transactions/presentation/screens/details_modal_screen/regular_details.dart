@@ -1,8 +1,7 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _RegularDetails extends ConsumerStatefulWidget {
-  const _RegularDetails(this.screenType, this.controller, this.isScrollable,
-      {required this.transaction});
+  const _RegularDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
 
   final BaseRegularTransaction transaction;
   final TransactionScreenType screenType;
@@ -98,9 +97,8 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
               child: Column(
                 children: [
                   _AccountCard(
-                    isEditMode: (_transaction is Income && (_transaction as Income).isInitialTransaction)
-                        ? false
-                        : _isEditMode,
+                    isEditMode:
+                        (_transaction is Income && (_transaction as Income).isInitialTransaction) ? false : _isEditMode,
                     isEdited: _isAccountEdited(stateWatch),
                     account: stateWatch.account ?? _transaction.account,
                     onEditModeTap: _changeAccount,
@@ -113,10 +111,8 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
                           : _CategoryCard(
                               isEditMode: _isEditMode,
                               isEdited: _isCategoryEdited(stateWatch),
-                              category: stateWatch.category ??
-                                  (_transaction as IBaseTransactionWithCategory).category,
-                              categoryTag: stateWatch.tag ??
-                                  (_transaction as IBaseTransactionWithCategory).categoryTag,
+                              category: stateWatch.category ?? (_transaction as IBaseTransactionWithCategory).category,
+                              categoryTag: stateWatch.tag ?? (_transaction as IBaseTransactionWithCategory).categoryTag,
                               onEditModeTap: _changeCategory,
                             ),
                     Transfer() => _AccountCard(
@@ -150,15 +146,14 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
 
   String get _title {
     return switch (_transaction) {
-      Income() =>
-        (_transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
+      Income() => (_transaction as Income).isInitialTransaction ? 'Initial Balance'.hardcoded : 'Income'.hardcoded,
       Expense() => 'Expense'.hardcoded,
       Transfer() => 'Transfer'.hardcoded,
     };
   }
 
   void _changeAccount() async {
-    List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
+    List<Account> accountList = ref.read(accountRepositoryProvider).getList([AccountType.regular]);
 
     final returnedValue = await showCustomModal<Account>(
       context: context,
@@ -181,7 +176,7 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   }
 
   void _changeToAccount() async {
-    List<Account> accountList = ref.read(accountRepositoryProvider).getList(AccountType.regular);
+    List<Account> accountList = ref.read(accountRepositoryProvider).getList([AccountType.regular]);
 
     final returnedValue = await showCustomModal<Account>(
       context: context,
@@ -260,8 +255,7 @@ extension _RegularDetailsStateMethod on _RegularDetailsState {
   bool _isDateTimeEdited(RegularTransactionFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(RegularTransactionFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(RegularTransactionFormState state) => state.note != null && state.note != _transaction.note;
 
   bool _submit() {
     final isTransfer = _transaction is Transfer;

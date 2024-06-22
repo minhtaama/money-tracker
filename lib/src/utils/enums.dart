@@ -51,7 +51,8 @@ enum CategoryType {
 
 enum AccountType {
   regular(0),
-  credit(1);
+  credit(1),
+  saving(2);
 
   final int databaseValue;
 
