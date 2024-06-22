@@ -94,45 +94,116 @@ class AccountRepositoryRealmDb {
     txnRepo.removeEmptyAdjustToAPRChanges();
   }
 
-  void writeNew(
-    double balance, {
-    required AccountType type,
+  void writeNewCreditAccount(
+    double creditLimit, {
     required String iconCategory,
     required int iconIndex,
     required String name,
     required int colorIndex,
-    required int? statementDay,
-    required int? paymentDueDay,
-    required double? apr,
-    required StatementType? statementType,
+    required int statementDay,
+    required int paymentDueDay,
+    required double apr,
+    required StatementType statementType,
   }) async {
-    CreditDetailsDb? creditDetailsDb;
-
     final order = getList(null).length;
 
-    if (type == AccountType.credit) {
-      final statementTypeDb = switch (statementType!) {
-        StatementType.withAverageDailyBalance => 0,
-        StatementType.payOnlyInGracePeriod => 1,
-      };
+    final statementTypeDb = switch (statementType) {
+      StatementType.withAverageDailyBalance => 0,
+      StatementType.payOnlyInGracePeriod => 1,
+    };
 
-      creditDetailsDb = CreditDetailsDb(balance, statementDay!, paymentDueDay!, statementTypeDb, apr: apr!);
-    }
+    final creditDetailsDb = CreditDetailsDb(creditLimit, statementDay, paymentDueDay, statementTypeDb, apr: apr);
 
-    final newAccount = AccountDb(ObjectId(), type.databaseValue, name, colorIndex, iconCategory, iconIndex,
-        order: order, creditDetails: creditDetailsDb);
+    final newAccount = AccountDb(
+      ObjectId(),
+      AccountType.credit.databaseValue,
+      name,
+      colorIndex,
+      iconCategory,
+      iconIndex,
+      order: order,
+      creditDetails: creditDetailsDb,
+    );
+
+    realm.write(() {
+      realm.add(newAccount);
+    });
+  }
+
+  void writeNewRegularAccount(
+    double initialBalance, {
+    required String iconCategory,
+    required int iconIndex,
+    required String name,
+    required int colorIndex,
+  }) async {
+    final order = getList(null).length;
+
+    final newAccount = AccountDb(
+      ObjectId(),
+      AccountType.regular.databaseValue,
+      name,
+      colorIndex,
+      iconCategory,
+      iconIndex,
+      order: order,
+    );
 
     realm.write(() {
       realm.add(newAccount);
 
-      if (type == AccountType.regular) {
-        ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: balance, newAccount: newAccount);
-      }
+      ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: initialBalance, newAccount: newAccount);
+    });
+  }
+
+  void writeNewSavingAccount(
+    double target, {
+    required String iconCategory,
+    required int iconIndex,
+    required String name,
+    required int colorIndex,
+  }) async {
+    final order = getList(null).length;
+
+    final newAccount = AccountDb(
+      ObjectId(),
+      AccountType.saving.databaseValue,
+      name,
+      colorIndex,
+      iconCategory,
+      iconIndex,
+      order: order,
+    );
+
+    realm.write(() {
+      realm.add(newAccount);
+
+      // This initial balance will serve as the target saving amount. Access through a property of [SavingAccount]
+      ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: target, newAccount: newAccount);
     });
   }
 
   void editRegularAccount(
     RegularAccount currentAccount, {
+    required String name,
+    required String iconCategory,
+    required int iconIndex,
+    required int colorIndex,
+  }) async {
+    // Update current account value
+    final accountDb = currentAccount.databaseObject;
+
+    realm.write(() {
+      accountDb
+        ..iconCategory = iconCategory
+        ..iconIndex = iconIndex
+        ..name = name
+        ..colorIndex = colorIndex;
+    });
+  }
+
+  void editSavingAccount(
+    SavingAccount currentAccount, {
     required String name,
     required String iconCategory,
     required int iconIndex,
@@ -189,6 +260,7 @@ class AccountRepositoryRealmDb {
             account.transactionsList.where((txn) => txn is! CreditPayment).map((txn) => txn.databaseObject);
         realm.deleteMany<TransactionDb>(txnsDbToDelete);
       }
+
       realm.delete<AccountDb>(account.databaseObject);
     });
   }

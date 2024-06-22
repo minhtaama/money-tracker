@@ -53,18 +53,30 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       // By validating, the _formatToDouble(calculatorOutput) must not null
       final accountRepository = ref.read(accountRepositoryProvider);
 
-      accountRepository.writeNew(
-        CalService.formatToDouble(calculatorOutput)!,
-        type: accountType,
-        iconCategory: iconCategory,
-        iconIndex: iconIndex,
-        name: accountName,
-        colorIndex: colorIndex,
-        statementDay: statementDay,
-        paymentDueDay: paymentDueDay,
-        statementType: statementType,
-        apr: CalService.formatToDouble(apr),
-      );
+      if (accountType == AccountType.regular) {
+        accountRepository.writeNewRegularAccount(
+          CalService.formatToDouble(calculatorOutput)!,
+          iconCategory: iconCategory,
+          iconIndex: iconIndex,
+          name: accountName,
+          colorIndex: colorIndex,
+        );
+      }
+
+      if (accountType == AccountType.credit) {
+        accountRepository.writeNewCreditAccount(
+          CalService.formatToDouble(calculatorOutput)!,
+          iconCategory: iconCategory,
+          iconIndex: iconIndex,
+          name: accountName,
+          colorIndex: colorIndex,
+          statementDay: statementDay,
+          paymentDueDay: paymentDueDay,
+          statementType: statementType,
+          apr: CalService.formatToDouble(apr)!,
+        );
+      }
+
       context.pop();
     }
   }

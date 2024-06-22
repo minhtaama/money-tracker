@@ -176,7 +176,7 @@ sealed class Account extends BaseAccount {
       backgroundColor: AppColors.allColorsUserCanPick[accountDb.colorIndex][0],
       iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
       transactionsList: transactionsList,
-      transferOutList: transferOutList,
+      transferInList: transferOutList,
     );
   }
 
@@ -409,7 +409,7 @@ extension CreditAccountExtension on Account {
 
 extension AccountGettersExtension on Account {
   double get availableAmount {
-    if (this is RegularAccount) {
+    if (this is RegularAccount || this is SavingAccount) {
       double balance = 0;
 
       for (int i = 0; i <= transactionsList.length - 1; i++) {
@@ -425,7 +425,9 @@ extension AccountGettersExtension on Account {
         }
       }
 
-      final transferTxnsList = (this as RegularAccount).transferTransactionsList;
+      final transferTxnsList = this is RegularAccount
+          ? (this as RegularAccount).transferTransactionsList
+          : (this as SavingAccount).transferInList;
 
       for (int i = 0; i <= transferTxnsList.length - 1; i++) {
         final txn = transferTxnsList[i];
@@ -453,6 +455,6 @@ extension AccountGettersExtension on Account {
       }
     }
 
-    throw StateError('Can only call this method in RegularAccount and CreditAccount');
+    throw StateError('Can only call this method in RegularAccount and CreditAccount.');
   }
 }

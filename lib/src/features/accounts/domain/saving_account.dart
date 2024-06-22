@@ -23,11 +23,11 @@ class SavingAccountInfo extends AccountInfo {
 
 @immutable
 class SavingAccount extends Account {
-  /// Transfer into this saving account
+  /// Transfer out of this saving account
   @override
   final List<Transfer> transactionsList;
 
-  final List<Transfer> transferOutList;
+  final List<Transfer> transferInList;
 
   const SavingAccount._(
     super.databaseObject, {
@@ -36,7 +36,7 @@ class SavingAccount extends Account {
     required super.backgroundColor,
     required super.iconPath,
     required this.transactionsList,
-    required this.transferOutList,
+    required this.transferInList,
   });
 
   AccountInfo toAccountInfo() {
