@@ -62,6 +62,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
         CustomSliderToggle<BudgetType>(
           values: const [BudgetType.forCategory, BudgetType.forAccount],
           labels: const ['For Categories', 'For Accounts'],
+          iconPaths: [AppIcons.categories, AppIcons.accounts],
           initialValueIndex: widget.budget is AccountBudget ? 1 : 0,
           fontSize: 14,
           onTap: (type) {

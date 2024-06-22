@@ -18,6 +18,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../theme_and_ui/icons.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../../common_widgets/modal_screen_components.dart';
 
@@ -88,11 +89,11 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
 
     String suffix = 'th';
 
-    if (dateTime.day.toString().endsWith('1')) {
+    if (dateTime.day.toString() == '1') {
       suffix = 'st';
-    } else if (dateTime.day.toString().endsWith('2')) {
+    } else if (dateTime.day.toString() == '2') {
       suffix = 'nd';
-    } else if (dateTime.day.toString().endsWith('3')) {
+    } else if (dateTime.day.toString() == '3') {
       suffix = 'rd';
     }
 
@@ -109,13 +110,29 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         title: 'Add Account'.hardcoded,
       ),
       body: [
+        CustomSliderToggle<AccountType>(
+          values: const [AccountType.regular, AccountType.credit, AccountType.saving],
+          iconPaths: [AppIcons.coins, AppIcons.credit, AppIcons.savings],
+          labels: const ['Regular', 'Credit', 'Saving'],
+          height: 42,
+          onTap: (type) {
+            setState(() {
+              accountType = type;
+            });
+          },
+        ),
+        Gap.h24,
         Row(
           children: [
             const CurrencyIcon(),
             Gap.w16,
             Expanded(
               child: CalculatorInput(
-                hintText: accountType == AccountType.regular ? 'Initial Balance' : 'Credit limit',
+                hintText: accountType == AccountType.regular
+                    ? 'Initial Balance'
+                    : accountType == AccountType.credit
+                        ? 'Credit limit'
+                        : 'Saving target',
                 focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
                 validator: (_) {
                   if (CalService.formatToDouble(calculatorOutput) == null) {
@@ -129,17 +146,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
               ),
             ),
           ],
-        ),
-        Gap.h16,
-        CustomSliderToggle<AccountType>(
-          values: const [AccountType.regular, AccountType.credit],
-          labels: const ['Regular', 'Credit'],
-          height: 42,
-          onTap: (type) {
-            setState(() {
-              accountType = type;
-            });
-          },
         ),
         Gap.h16,
         Row(
@@ -160,21 +166,27 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                 maxLines: 1,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Account name must not empty';
+                    return accountType == AccountType.saving
+                        ? 'Target name must not empty'
+                        : 'Account name must not empty';
                   }
                   return null;
                 },
-                hintText: 'Account Name',
+                hintText: accountType == AccountType.saving ? 'Target name' : 'Account name',
                 onChanged: (value) {
                   setState(() {
                     accountName = value;
                   });
                 },
+                style: kHeader3TextStyle.copyWith(
+                  color: context.appTheme.onBackground,
+                  fontSize: 16,
+                ),
               ),
             ),
           ],
         ),
-        Gap.h16,
+        Gap.h12,
         ColorSelectListView(
           onColorTap: (index) {
             setState(() {

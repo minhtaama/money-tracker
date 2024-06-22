@@ -12,6 +12,8 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../theme_and_ui/icons.dart';
+
 class AddCategoryModalScreen extends ConsumerStatefulWidget {
   const AddCategoryModalScreen({super.key, this.initialType});
 
@@ -39,6 +41,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
         CustomSliderToggle<CategoryType>(
           values: const [CategoryType.income, CategoryType.expense],
           labels: const ['Income', 'Expense'],
+          iconPaths: [AppIcons.income, AppIcons.expense],
           initialValueIndex: categoryType == CategoryType.expense ? 1 : 0,
           onTap: (type) {
             categoryType = type;

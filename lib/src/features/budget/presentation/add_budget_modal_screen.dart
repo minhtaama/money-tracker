@@ -59,6 +59,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
         CustomSliderToggle<BudgetType>(
           values: const [BudgetType.forCategory, BudgetType.forAccount],
           labels: const ['For Categories', 'For Accounts'],
+          iconPaths: [AppIcons.categories, AppIcons.accounts],
           initialValueIndex: 1,
           fontSize: 14,
           onTap: (type) {

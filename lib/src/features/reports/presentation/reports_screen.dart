@@ -134,6 +134,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       values: const [_ReportType.month, _ReportType.week],
                       height: 35,
                       initialValueIndex: [_ReportType.month, _ReportType.week].indexOf(_type),
+                      iconPaths: [AppIcons.turn, AppIcons.turn],
                       fontSize: 14,
                       labels: ['Monthly'.hardcoded, 'Weekly'.hardcoded],
                       onTap: (type) => setState(() {

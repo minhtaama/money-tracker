@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -11,23 +13,27 @@ class CustomSliderToggle<T> extends StatefulWidget {
   /// which contains the values that can be returned by `onTap` function
   /// The `labels` argument list must has the same length with the `values`,
   /// which display the name of each value.
-  const CustomSliderToggle(
-      {super.key,
-      this.toggleColor,
-      required this.values,
-      required this.labels,
-      this.height = 45,
-      this.fontSize,
-      this.initialValueIndex = 0,
-      required this.onTap,
-      this.labelsOnToggleColor,
-      this.labelsOnBackgroundColor});
+  const CustomSliderToggle({
+    super.key,
+    this.toggleColor,
+    required this.values,
+    required this.iconPaths,
+    required this.labels,
+    this.height = 45,
+    this.fontSize,
+    this.initialValueIndex = 0,
+    required this.onTap,
+    this.onToggleColor,
+    this.onBackgroundColor,
+  });
+
   final Color? toggleColor;
-  final Color? labelsOnToggleColor;
-  final Color? labelsOnBackgroundColor;
+  final Color? onToggleColor;
+  final Color? onBackgroundColor;
   final int initialValueIndex;
   final List<T> values;
   final List<String> labels;
+  final List<String> iconPaths;
   final double height;
   final ValueChanged<T> onTap;
   final double? fontSize;
@@ -54,7 +60,6 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
 
   @override
   Widget build(BuildContext context) {
-    double togglePosition = currentValueIndex / (widget.values.length - 1);
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (notification) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -73,7 +78,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  color: AppColors.greyBgr(context),
+                  color: context.appTheme.onBackground.withOpacity(0.065),
                 ),
               ),
               Align(
@@ -81,7 +86,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                 child: AnimatedSlide(
                   duration: k150msDuration,
                   curve: Curves.fastOutSlowIn,
-                  offset: Offset(togglePosition, 0),
+                  offset: Offset(currentValueIndex.toDouble(), 0),
                   child: SizedBox(
                     height: widget.height,
                     width: _rootSizedBoxWidth / widget.values.length,
@@ -107,20 +112,37 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                                 widget.onTap(widget.values[currentValueIndex]);
                               });
                             },
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: AnimatedDefaultTextStyle(
-                                duration: k150msDuration,
-                                curve: Curves.fastOutSlowIn,
-                                style: kHeader2TextStyle.copyWith(
-                                  fontSize: widget.fontSize ?? 16,
-                                  fontFamily: 'WixMadeforDisplay',
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgIcon(
+                                  widget.iconPaths[index],
                                   color: currentValueIndex == index
-                                      ? widget.labelsOnToggleColor ?? context.appTheme.onAccent
-                                      : widget.labelsOnBackgroundColor ?? context.appTheme.onBackground,
+                                      ? widget.onToggleColor ?? context.appTheme.onAccent
+                                      : widget.onBackgroundColor ?? context.appTheme.onBackground,
+                                  size: 20,
                                 ),
-                                child: Text(widget.labels[index]),
-                              ),
+                                HideableContainer(
+                                  hide: currentValueIndex != index,
+                                  axis: Axis.horizontal,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        widget.labels[index],
+                                        style: kHeader3TextStyle.copyWith(
+                                          fontSize: widget.fontSize ?? 14,
+                                          color: currentValueIndex == index
+                                              ? widget.onToggleColor ?? context.appTheme.onAccent
+                                              : widget.onBackgroundColor ?? context.appTheme.onBackground,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         )),

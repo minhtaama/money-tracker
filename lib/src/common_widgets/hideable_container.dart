@@ -3,8 +3,7 @@ import 'package:flutter/scheduler.dart';
 import '../utils/constants.dart';
 
 class HideableContainer extends StatefulWidget {
-  const HideableContainer(
-      {super.key, required this.hide, this.axis = Axis.vertical, required this.child});
+  const HideableContainer({super.key, required this.hide, this.axis = Axis.vertical, required this.child});
   final bool hide;
   final Axis axis;
   final Widget child;
@@ -55,7 +54,6 @@ class _HideableContainerState extends State<HideableContainer> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    return SizeTransition(
-        axisAlignment: 1.0, sizeFactor: animation, axis: widget.axis, child: widget.child);
+    return SizeTransition(axisAlignment: 1.0, sizeFactor: animation, axis: widget.axis, child: widget.child);
   }
 }
