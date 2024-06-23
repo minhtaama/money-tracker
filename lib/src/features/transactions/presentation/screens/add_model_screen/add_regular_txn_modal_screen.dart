@@ -265,7 +265,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.regular,
-                    withSavingAccount: true,
+                    withSavingAccount: widget.transactionType == TransactionType.transfer,
                     validator: (_) => _sendingAccountValidator(),
                     initialValue: stateWatch.account,
                     onChangedAccount: (newAccount) {
@@ -290,7 +290,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                         )
                       : AccountFormSelector(
                           accountType: AccountType.regular,
-                          withSavingAccount: true,
+                          withSavingAccount: widget.transactionType == TransactionType.transfer,
                           validator: (_) => _toAccountAndAccountValidator(),
                           initialValue: widget.transactionType != TransactionType.transfer
                               ? stateWatch.account
