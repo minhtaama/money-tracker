@@ -1,0 +1,15 @@
+# dart run icons_launcher:create
+
+icons_launcher:
+  image_path: "assets/images/app_icon.png"
+  platforms:
+    android:
+      enable: true
+      image_path: "assets/images/app_icon.png"
+      notification_image: "assets/images/app_icon.png"
+      # adaptive_background_color: '#ffffff'
+      adaptive_background_image: "assets/images/app_icon_background.png"
+      adaptive_foreground_image: "assets/images/app_icon.png"
+    ios:
+      enable: true
+      image_path: "assets/images/app_icon_rect.png"
