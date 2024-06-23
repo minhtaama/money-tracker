@@ -177,6 +177,8 @@ sealed class Account extends BaseAccount {
       iconPath: AppIcons.fromCategoryAndIndex(accountDb.iconCategory, accountDb.iconIndex),
       transactionsList: transactionsList,
       transferInList: transferOutList,
+      targetDate: accountDb.savingDetails!.targetDate,
+      targetAmount: accountDb.savingDetails!.targetAmount,
     );
   }
 

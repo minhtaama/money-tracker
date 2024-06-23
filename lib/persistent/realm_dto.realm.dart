@@ -18,6 +18,7 @@ int iconIndex,
 {
 int? order,
 CreditDetailsDb? creditDetails,
+SavingDetailsDb? savingDetails,
 }
 ) {
 RealmObjectBase.set(this, 'id', id);
@@ -28,6 +29,7 @@ RealmObjectBase.set(this, 'iconCategory', iconCategory);
 RealmObjectBase.set(this, 'iconIndex', iconIndex);
 RealmObjectBase.set(this, 'order', order);
 RealmObjectBase.set(this, 'creditDetails', creditDetails);
+RealmObjectBase.set(this, 'savingDetails', savingDetails);
 }
 
 AccountDb._();
@@ -73,6 +75,11 @@ CreditDetailsDb? get creditDetails => RealmObjectBase.get<CreditDetailsDb>(this,
 set creditDetails(covariant CreditDetailsDb? value) => RealmObjectBase.set(this, 'creditDetails', value);
 
 @override
+SavingDetailsDb? get savingDetails => RealmObjectBase.get<SavingDetailsDb>(this, 'savingDetails') as SavingDetailsDb?;
+@override
+set savingDetails(covariant SavingDetailsDb? value) => RealmObjectBase.set(this, 'savingDetails', value);
+
+@override
 RealmResults<TransactionDb> get transactions {
 if (!isManaged) { throw RealmError('Using backlinks is only possible for managed objects.'); }
 return RealmObjectBase.get<TransactionDb>(this, 'transactions') as RealmResults<TransactionDb>;}
@@ -105,6 +112,7 @@ return <String, dynamic>{
 'iconIndex': iconIndex.toEJson(),
 'order': order.toEJson(),
 'creditDetails': creditDetails.toEJson(),
+'savingDetails': savingDetails.toEJson(),
 };
 }
 static EJsonValue _toEJson(AccountDb value) => value.toEJson();
@@ -119,6 +127,7 @@ return switch (ejson) {
 'iconIndex': EJsonValue iconIndex,
 'order': EJsonValue order,
 'creditDetails': EJsonValue creditDetails,
+'savingDetails': EJsonValue savingDetails,
 } => AccountDb(
 fromEJson(id),
 fromEJson(type),
@@ -128,6 +137,7 @@ fromEJson(iconCategory),
 fromEJson(iconIndex),
 order: fromEJson(order),
 creditDetails: fromEJson(creditDetails),
+savingDetails: fromEJson(savingDetails),
 ),
 _ => raiseInvalidEJson(ejson),
 };
@@ -144,6 +154,7 @@ SchemaProperty('iconCategory', RealmPropertyType.string),
 SchemaProperty('iconIndex', RealmPropertyType.int),
 SchemaProperty('order', RealmPropertyType.int, optional: true),
 SchemaProperty('creditDetails', RealmPropertyType.object, optional: true,linkTarget: 'CreditDetailsDb'),
+SchemaProperty('savingDetails', RealmPropertyType.object, optional: true,linkTarget: 'SavingDetailsDb'),
 SchemaProperty('transactions', RealmPropertyType.linkingObjects, linkOriginProperty: 'account',collectionType: RealmCollectionType.list,linkTarget: 'TransactionDb'),
 SchemaProperty('transferTransactions', RealmPropertyType.linkingObjects, linkOriginProperty: 'transferAccount',collectionType: RealmCollectionType.list,linkTarget: 'TransactionDb'),
 ]);
@@ -249,6 +260,69 @@ SchemaProperty('apr', RealmPropertyType.double),
 SchemaProperty('statementDay', RealmPropertyType.int),
 SchemaProperty('paymentDueDay', RealmPropertyType.int),
 SchemaProperty('statementType', RealmPropertyType.int),
+]);
+}();
+
+@override
+SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
+}
+class SavingDetailsDb extends _SavingDetailsDb with RealmEntity, RealmObjectBase, EmbeddedObject {
+SavingDetailsDb(
+double targetAmount,
+{
+DateTime? targetDate,
+}
+) {
+RealmObjectBase.set(this, 'targetAmount', targetAmount);
+RealmObjectBase.set(this, 'targetDate', targetDate);
+}
+
+SavingDetailsDb._();
+
+@override
+double get targetAmount => RealmObjectBase.get<double>(this, 'targetAmount') as double;
+@override
+set targetAmount(double value) => RealmObjectBase.set(this, 'targetAmount', value);
+
+@override
+DateTime? get targetDate => RealmObjectBase.get<DateTime>(this, 'targetDate') as DateTime?;
+@override
+set targetDate(DateTime? value) => RealmObjectBase.set(this, 'targetDate', value);
+
+@override
+Stream<RealmObjectChanges<SavingDetailsDb>> get changes => RealmObjectBase.getChanges<SavingDetailsDb>(this);
+
+@override
+Stream<RealmObjectChanges<SavingDetailsDb>> changesFor([List<String>? keyPaths]) => RealmObjectBase.getChangesFor<SavingDetailsDb>(this, keyPaths);
+
+@override
+SavingDetailsDb freeze() => RealmObjectBase.freezeObject<SavingDetailsDb>(this);
+
+EJsonValue toEJson() {
+return <String, dynamic>{
+'targetAmount': targetAmount.toEJson(),
+'targetDate': targetDate.toEJson(),
+};
+}
+static EJsonValue _toEJson(SavingDetailsDb value) => value.toEJson();
+static SavingDetailsDb _fromEJson(EJsonValue ejson) {
+return switch (ejson) {
+{
+'targetAmount': EJsonValue targetAmount,
+'targetDate': EJsonValue targetDate,
+} => SavingDetailsDb(
+fromEJson(targetAmount),
+targetDate: fromEJson(targetDate),
+),
+_ => raiseInvalidEJson(ejson),
+};
+}
+static final schema = () {
+RealmObjectBase.registerFactory(SavingDetailsDb._);
+register(_toEJson, _fromEJson);
+return SchemaObject(ObjectType.embeddedObject, SavingDetailsDb, 'SavingDetailsDb', [
+SchemaProperty('targetAmount', RealmPropertyType.double),
+SchemaProperty('targetDate', RealmPropertyType.timestamp, optional: true),
 ]);
 }();
 

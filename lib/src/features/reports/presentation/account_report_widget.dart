@@ -10,9 +10,12 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_inkwell.dart';
+import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/money_amount.dart';
 import '../../../common_widgets/svg_icon.dart';
+import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../charts_and_carousel/application/custom_line_chart_services.dart';
 
@@ -176,6 +179,17 @@ class _TotalViewState extends ConsumerState<_TotalView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_accountList.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: IconWithText(
+          header: 'No accounts',
+          iconPath: AppIcons.accounts,
+          iconSize: 30,
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -231,6 +245,17 @@ class _SeparateViewState extends ConsumerState<_SeparateView> {
     final chartServices = ref.watch(customLineChartServicesProvider);
 
     final accountList = accountRepo.getList([AccountType.regular]).whereType<RegularAccount>().toList();
+
+    if (accountList.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: IconWithText(
+          header: 'No accounts',
+          iconPath: AppIcons.accounts,
+          iconSize: 30,
+        ),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

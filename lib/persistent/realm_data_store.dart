@@ -23,6 +23,7 @@ class RealmDataStore {
         TransferFeeDb.schema,
         CreditInstallmentDetailsDb.schema,
         CreditPaymentDetailsDb.schema,
+        SavingDetailsDb.schema,
         SettingsDb.schema,
         PersistentValuesDb.schema,
         BalanceAtDateTimeDb.schema,

@@ -1,16 +1,22 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/illustration.dart';
+import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../theme_and_ui/colors.dart';
@@ -25,9 +31,12 @@ class AccountsListScreen extends ConsumerWidget {
     final accountRepository = ref.watch(accountRepositoryProvider);
 
     List<Account> accountList = accountRepository.getList([AccountType.regular, AccountType.credit]);
+    List<SavingAccount> savingList =
+        accountRepository.getList([AccountType.saving]).whereType<SavingAccount>().toList();
 
     ref.watch(accountsChangesProvider).whenData((_) {
       accountList = accountRepository.getList([AccountType.regular, AccountType.credit]);
+      savingList = accountRepository.getList([AccountType.saving]).whereType<SavingAccount>().toList();
     });
 
     List<Widget> buildAccountCards(BuildContext context) {
@@ -40,9 +49,37 @@ class AccountsListScreen extends ConsumerWidget {
               },
             )
           : [
+              Gap.h24,
+              BackgroundIllustration(
+                AppIcons.undrawChart,
+              ),
+              Gap.h16,
               Text(
-                'Nothing in here.\nPlease add a new account',
-                style: kHeader2TextStyle.copyWith(color: AppColors.grey(context)),
+                'Nothing in here. Please add a new account',
+                style: kHeader3TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
+                textAlign: TextAlign.center,
+              )
+            ];
+    }
+
+    List<Widget> buildSavingCards(BuildContext context) {
+      return savingList.isNotEmpty
+          ? List.generate(
+              savingList.length,
+              (index) {
+                SavingAccount model = savingList[index];
+                return _SavingTile(model: model);
+              },
+            )
+          : [
+              Gap.h24,
+              BackgroundIllustration(
+                AppIcons.undrawSavings,
+              ),
+              Gap.h16,
+              Text(
+                'No saving accounts',
+                style: kHeader3TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
                 textAlign: TextAlign.center,
               )
             ];
@@ -64,12 +101,20 @@ class AccountsListScreen extends ConsumerWidget {
           ),
         ),
         children: [
+          Gap.h8,
           CustomSection(
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             onReorder: (oldIndex, newIndex) =>
                 accountRepository.reorder([AccountType.regular, AccountType.credit], oldIndex, newIndex),
             sections: buildAccountCards(context),
+          ),
+          CustomSection(
+            title: 'Savings',
+            isWrapByCard: false,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            onReorder: (oldIndex, newIndex) => accountRepository.reorder([AccountType.saving], oldIndex, newIndex),
+            sections: buildSavingCards(context),
           ),
         ],
       ),
@@ -192,18 +237,120 @@ class _CreditDetails extends StatelessWidget {
           style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
         ),
         Gap.h8,
-        _TxnCreditBar(color: model.backgroundColor, percentage: model.availableAmount / model.creditLimit),
+        _Bar(color: model.backgroundColor, percentage: model.availableAmount / model.creditLimit),
         Gap.h8,
       ],
     );
   }
 }
 
-class _TxnCreditBar extends StatelessWidget {
-  const _TxnCreditBar({required this.color, required this.percentage});
+class _SavingTile extends StatelessWidget {
+  const _SavingTile({required this.model});
+
+  final SavingAccount model;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: GestureDetector(
+        onTap: () => context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
+        child: CardItem(
+          margin: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          color: model.backgroundColor.lerpWithBg(context, 0.2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Transform.translate(
+                    offset: const Offset(-5, 0),
+                    child: SvgIcon(
+                      model.iconPath,
+                      color: model.iconColor,
+                      size: 60,
+                    ),
+                  ),
+                  Gap.w4,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.name,
+                          style: kHeader2TextStyle.copyWith(color: model.iconColor, fontSize: 20),
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          maxLines: 2,
+                        ),
+                        Text(
+                          model.targetDate?.toLongDate(context) ?? '',
+                          style: kHeader4TextStyle.copyWith(color: model.iconColor, fontSize: 13),
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              _SavingDetails(model: model),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SavingDetails extends StatelessWidget {
+  const _SavingDetails({required this.model});
+
+  final SavingAccount model;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Gap.h8,
+        _Bar(
+          color: model.backgroundColor,
+          backgroundColor: context.appTheme.background0,
+          percentage: model.availableAmount / model.targetAmount,
+        ),
+        Gap.h2,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            MoneyAmount(
+              amount: model.availableAmount,
+              style: kHeader4TextStyle.copyWith(color: model.iconColor, fontSize: 12),
+              overflow: TextOverflow.fade,
+              noAnimation: true,
+            ),
+            MoneyAmount(
+              amount: model.targetAmount,
+              style: kHeader4TextStyle.copyWith(color: model.iconColor, fontSize: 12),
+              overflow: TextOverflow.fade,
+              noAnimation: true,
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class _Bar extends StatelessWidget {
+  const _Bar({required this.color, required this.percentage, this.backgroundColor});
 
   final double percentage;
   final Color color;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +364,7 @@ class _TxnCreditBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: AppColors.greyBgr(context),
         gradient: LinearGradient(
-          colors: [color, AppColors.greyBgr(context)],
+          colors: [color, backgroundColor ?? AppColors.greyBgr(context)],
           stops: [percentage, percentage],
         ),
       ),

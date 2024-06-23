@@ -157,15 +157,18 @@ class AccountRepositoryRealmDb {
   }
 
   void writeNewSavingAccount(
-    double target, {
+    double targetAmount, {
     required String iconCategory,
     required int iconIndex,
     required String name,
     required int colorIndex,
+    required DateTime? targetDate,
   }) async {
     final order = getList(null).length;
 
-    final newAccount = AccountDb(
+    final savingDetails = SavingDetailsDb(targetAmount, targetDate: targetDate);
+
+    final newSaving = AccountDb(
       ObjectId(),
       AccountType.saving.databaseValue,
       name,
@@ -173,13 +176,11 @@ class AccountRepositoryRealmDb {
       iconCategory,
       iconIndex,
       order: order,
+      savingDetails: savingDetails,
     );
 
     realm.write(() {
-      realm.add(newAccount);
-
-      // This initial balance will serve as the target saving amount. Access through a property of [SavingAccount]
-      ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: target, newAccount: newAccount);
+      realm.add(newSaving);
     });
   }
 
@@ -208,6 +209,8 @@ class AccountRepositoryRealmDb {
     required String iconCategory,
     required int iconIndex,
     required int colorIndex,
+    required double? targetAmount,
+    required DateTime? Function()? targetDate,
   }) async {
     // Update current account value
     final accountDb = currentAccount.databaseObject;
@@ -219,6 +222,14 @@ class AccountRepositoryRealmDb {
         ..name = name
         ..colorIndex = colorIndex;
     });
+
+    if (targetAmount != null) {
+      accountDb.savingDetails!.targetAmount = targetAmount;
+    }
+
+    if (targetDate != null) {
+      accountDb.savingDetails!.targetDate = targetDate();
+    }
   }
 
   void editCreditAccount(

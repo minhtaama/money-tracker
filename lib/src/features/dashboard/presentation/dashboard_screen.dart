@@ -179,17 +179,6 @@ class _DashboardMenu2 extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
-                label: context.loc.savings,
-                size: 50,
-                iconPath: AppIcons.savings,
-                iconColor: context.appTheme.onBackground,
-              ),
-            ),
-          ),
-          Expanded(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: RoundedIconButton(
                 onTap: () => context.go(RoutePath.reports),
                 label: 'Report'.hardcoded,
                 size: 50,

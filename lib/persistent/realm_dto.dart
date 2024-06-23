@@ -43,17 +43,21 @@ class _AccountDb implements IRealmObjectWithID, _IColorAndIcon, _IOrderable {
   /// All transactions made from this account.
   /// If type is [AccountType.credit], then this property will only carry [TransactionType.creditSpending] and [TransactionType.creditPayment]
   /// If type is [AccountType.regular], then this property will only carry [TransactionType.expense], [TransactionType.income] and [TransactionType.transfer]
+  /// If type is [AccountType.saving], then this property will only carry [TransactionType.transfer] (which is transfer out)
   @Backlink(#account)
   late Iterable<_TransactionDb> transactions;
 
   /// Transactions that transfer-to/away-to-pay-from this account (need for calculating total money).
-  /// If type [AccountType.regular], only carry type [TransactionType.transfer]
+  /// If type [AccountType.regular] or [AccountType.saving], only carry type [TransactionType.transfer]
   /// If type [AccountType.credit], only carry type [TransactionType.creditPayment]
   @Backlink(#transferAccount)
   late Iterable<_TransactionDb> transferTransactions;
 
   /// Must specify this property if type is [AccountType.credit]
   late _CreditDetailsDb? creditDetails;
+
+  /// Must specify this property if type is [AccountType.saving]
+  late _SavingDetailsDb? savingDetails;
 }
 
 @RealmModel(ObjectType.embeddedObject)
@@ -67,6 +71,13 @@ class _CreditDetailsDb {
   late int paymentDueDay;
 
   late int statementType;
+}
+
+@RealmModel(ObjectType.embeddedObject)
+class _SavingDetailsDb {
+  late double targetAmount;
+
+  late DateTime? targetDate;
 }
 
 /////////////////////////////////////// CATEGORY ////////////////////////////////////

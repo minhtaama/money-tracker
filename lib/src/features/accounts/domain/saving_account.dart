@@ -29,6 +29,10 @@ class SavingAccount extends Account {
 
   final List<Transfer> transferInList;
 
+  final DateTime? targetDate;
+
+  final double targetAmount;
+
   const SavingAccount._(
     super.databaseObject, {
     required super.name,
@@ -37,6 +41,8 @@ class SavingAccount extends Account {
     required super.iconPath,
     required this.transactionsList,
     required this.transferInList,
+    required this.targetDate,
+    required this.targetAmount,
   });
 
   AccountInfo toAccountInfo() {
