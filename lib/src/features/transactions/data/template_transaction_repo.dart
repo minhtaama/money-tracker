@@ -61,8 +61,8 @@ extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
     required double? amount,
     required Category? category,
     required CategoryTag? tag,
-    required RegularAccount? account,
-    required RegularAccount? toAccount,
+    required Account? account,
+    required Account? toAccount,
     required String? note,
     required double? fee,
     required bool? isChargeOnDestinationAccount,
@@ -83,6 +83,7 @@ extension ModifyTempTransaction on TemplateTransactionRepositoryRealmDb {
       category: category?.databaseObject,
       categoryTag: tag?.databaseObject,
       account: account?.databaseObject,
+      transferAccount: toAccount?.databaseObject,
       order: order,
     );
 
@@ -109,8 +110,7 @@ final tempTransactionRepositoryRealmProvider = Provider<TemplateTransactionRepos
   },
 );
 
-final tempTransactionsChangesStreamProvider =
-    StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
+final tempTransactionsChangesStreamProvider = StreamProvider.autoDispose<RealmResultsChanges<TemplateTransactionDb>>(
   (ref) {
     final transactionRepo = ref.watch(tempTransactionRepositoryRealmProvider);
     return transactionRepo._watchListChanges();

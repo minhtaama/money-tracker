@@ -73,7 +73,7 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
   @override
   AccountInfo get transferAccount => _transferAccount ?? DeletedAccount();
 
-  final RegularAccountInfo? _transferAccount;
+  final AccountInfo? _transferAccount;
   final Fee? fee;
 
   const Transfer._(
@@ -83,7 +83,7 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
     super.note,
     super.account,
     super.recurrence, {
-    required RegularAccountInfo? transferAccount,
+    required AccountInfo? transferAccount,
     required this.fee,
   }) : _transferAccount = transferAccount;
 }

@@ -15,8 +15,8 @@ class RegularTransactionFormState {
   final String? note;
   final CategoryTag? tag;
   final Category? category;
-  final RegularAccount? account;
-  final RegularAccount? toAccount;
+  final Account? account;
+  final Account? toAccount;
 
   factory RegularTransactionFormState.initial(TransactionType? type) {
     if (type != null) {
@@ -29,12 +29,7 @@ class RegularTransactionFormState {
   }
 
   bool isAllNull() {
-    return amount == null &&
-        note == null &&
-        tag == null &&
-        category == null &&
-        account == null &&
-        toAccount == null;
+    return amount == null && note == null && tag == null && category == null && account == null && toAccount == null;
   }
 
   RegularTransactionFormState._({
@@ -53,8 +48,8 @@ class RegularTransactionFormState {
     String? Function()? note,
     CategoryTag? Function()? tag,
     Category? Function()? category,
-    RegularAccount? Function()? account,
-    RegularAccount? Function()? toAccount,
+    Account? Function()? account,
+    Account? Function()? toAccount,
   }) {
     return RegularTransactionFormState._(
       dateTime: dateTime != null ? dateTime() : this.dateTime,
@@ -101,8 +96,8 @@ class RegularTransactionFormController
       note: () => template.note,
       tag: () => template.categoryTag,
       category: () => template.category,
-      account: () => template.account?.toAccount() as RegularAccount?,
-      toAccount: () => template.toAccount?.toAccount() as RegularAccount?,
+      account: () => template.account?.toAccount(),
+      toAccount: () => template.toAccount?.toAccount(),
     );
   }
 
@@ -123,11 +118,11 @@ class RegularTransactionFormController
     state = state.copyWith(tag: () => tag);
   }
 
-  void changeAccount(RegularAccount? account) {
+  void changeAccount(Account? account) {
     state = state.copyWith(account: () => account);
   }
 
-  void changeToAccount(RegularAccount? toAccount) {
+  void changeToAccount(Account? toAccount) {
     state = state.copyWith(toAccount: () => toAccount);
   }
 
@@ -137,7 +132,8 @@ class RegularTransactionFormController
 }
 
 /// Set arg to `null` if edit mode (initial state has properties all `null`)
-final regularTransactionFormNotifierProvider = AutoDisposeNotifierProviderFamily<
-    RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(() {
+final regularTransactionFormNotifierProvider =
+    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(
+        () {
   return RegularTransactionFormController();
 });

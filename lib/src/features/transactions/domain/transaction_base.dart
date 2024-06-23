@@ -85,7 +85,7 @@ sealed class BaseTransaction extends BaseModel<TransactionDb> {
           txn.note,
           Account.fromDatabaseInfoOnly(txn.account),
           Recurrence.fromDatabase(txn.recurrence),
-          transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as RegularAccountInfo?,
+          transferAccount: Account.fromDatabaseInfoOnly(txn.transferAccount) as AccountInfo?,
           fee: Fee._fromDatabase(txn),
         );
 

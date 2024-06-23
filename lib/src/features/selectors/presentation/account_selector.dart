@@ -21,12 +21,14 @@ class AccountSelector extends ConsumerStatefulWidget {
     this.initialValue,
     required this.onChangedAccount,
     this.otherSelectedAccount,
+    required this.withSavingAccount,
   });
 
   final ValueChanged<Account?> onChangedAccount;
   final AccountType accountType;
   final Account? initialValue;
   final Account? otherSelectedAccount;
+  final bool withSavingAccount;
 
   @override
   ConsumerState<AccountSelector> createState() => _AccountSelectorState();
@@ -73,56 +75,40 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       onTap: () async {
         List<Account> accountList = ref.read(accountRepositoryProvider).getList([widget.accountType]);
 
+        List<SavingAccount>? savingList = widget.withSavingAccount
+            ? ref.read(accountRepositoryProvider).getList([AccountType.saving]).whereType<SavingAccount>().toList()
+            : null;
+
         final returnedValue = await showCustomModal<Account>(
           context: context,
-          child: accountList.isNotEmpty
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ModalHeader(
-                      withBackButton: false,
-                      title: 'Choose Account'.hardcoded,
-                    ),
-                    Gap.h16,
+          builder: (controller, isScrollable) => ModalContent(
+            header: ModalHeader(
+              title: 'Choose Account'.hardcoded,
+            ),
+            body: accountList.isNotEmpty
+                ? [
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
                       children: List.generate(accountList.length, (index) {
                         final account = accountList[index];
-                        return IgnorePointer(
-                          ignoring: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
-                          child: IconWithTextButton(
-                            iconPath: account.iconPath,
-                            label: account.name,
-                            isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
-                            labelSize: 18,
-                            borderRadius: BorderRadius.circular(16),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            border: Border.all(
-                              color: _currentAccount?.databaseObject.id == account.databaseObject.id
-                                  ? account.backgroundColor
-                                  : context.appTheme.onBackground.withOpacity(0.4),
-                            ),
-                            backgroundColor: _currentAccount?.databaseObject.id == account.databaseObject.id
-                                ? account.backgroundColor
-                                : Colors.transparent,
-                            color: _currentAccount?.databaseObject.id == account.databaseObject.id
-                                ? account.iconColor
-                                : context.appTheme.onBackground,
-                            onTap: () => context.pop<Account>(account),
-                            height: null,
-                            width: null,
-                          ),
-                        );
+                        return _accountButton(account);
                       }),
                     ),
+                    savingList != null ? Text('a') : Gap.noGap,
+                    savingList != null
+                        ? Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: List.generate(savingList.length, (index) {
+                              final account = savingList[index];
+                              return _accountButton(account);
+                            }),
+                          )
+                        : Gap.noGap,
                     context.isBigScreen ? Gap.noGap : Gap.h32,
-                  ],
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+                  ]
+                : [
                     Gap.h8,
                     IconWithText(
                       header:
@@ -137,7 +123,8 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                     ),
                     Gap.h48,
                   ],
-                ),
+            footer: Gap.noGap,
+          ),
         );
 
         setState(() {
@@ -154,4 +141,30 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       },
     );
   }
+
+  Widget _accountButton(Account account) => IgnorePointer(
+        ignoring: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
+        child: IconWithTextButton(
+          iconPath: account.iconPath,
+          label: account.name,
+          isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
+          labelSize: 18,
+          borderRadius: BorderRadius.circular(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          border: Border.all(
+            color: _currentAccount?.databaseObject.id == account.databaseObject.id
+                ? account.backgroundColor
+                : context.appTheme.onBackground.withOpacity(0.4),
+          ),
+          backgroundColor: _currentAccount?.databaseObject.id == account.databaseObject.id
+              ? account.backgroundColor
+              : Colors.transparent,
+          color: _currentAccount?.databaseObject.id == account.databaseObject.id
+              ? account.iconColor
+              : context.appTheme.onBackground,
+          onTap: () => context.pop<Account>(account),
+          height: null,
+          width: null,
+        ),
+      );
 }

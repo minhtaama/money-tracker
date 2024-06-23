@@ -44,8 +44,4 @@ class SavingAccount extends Account {
     required this.targetDate,
     required this.targetAmount,
   });
-
-  AccountInfo toAccountInfo() {
-    return Account.fromDatabaseInfoOnly(databaseObject)!;
-  }
 }

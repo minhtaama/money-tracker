@@ -233,6 +233,10 @@ sealed class Account extends BaseAccount {
     };
   }
 
+  AccountInfo toAccountInfo() {
+    return Account.fromDatabaseInfoOnly(databaseObject)!;
+  }
+
   const Account(
     super._isarObject, {
     required super.name,

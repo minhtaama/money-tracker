@@ -54,6 +54,7 @@ class AccountFormSelector extends FormField<Account> {
     required AccountType accountType,
     required ValueChanged<Account?> onChangedAccount,
     Account? otherSelectedAccount,
+    bool withSavingAccount = false,
     super.onSaved,
     super.validator,
     super.initialValue,
@@ -63,13 +64,15 @@ class AccountFormSelector extends FormField<Account> {
             alignment: Alignment.center,
             children: [
               AccountSelector(
-                  accountType: accountType,
-                  initialValue: initialValue,
-                  otherSelectedAccount: otherSelectedAccount,
-                  onChangedAccount: (newAccount) {
-                    state.didChange(newAccount);
-                    onChangedAccount(newAccount);
-                  }),
+                accountType: accountType,
+                initialValue: initialValue,
+                otherSelectedAccount: otherSelectedAccount,
+                withSavingAccount: withSavingAccount,
+                onChangedAccount: (newAccount) {
+                  state.didChange(newAccount);
+                  onChangedAccount(newAccount);
+                },
+              ),
               AnimatedOpacity(
                 opacity: state.errorText != null ? 1 : 0,
                 duration: k250msDuration,

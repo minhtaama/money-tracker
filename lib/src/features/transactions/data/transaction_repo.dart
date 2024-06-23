@@ -226,8 +226,8 @@ extension WriteTransaction on TransactionRepositoryRealmDb {
   Transfer writeNewTransfer({
     required DateTime dateTime,
     required double amount,
-    required RegularAccount account,
-    required RegularAccount toAccount,
+    required Account account,
+    required Account toAccount,
     required String? note,
     required double? fee,
     required bool? isChargeOnDestinationAccount,

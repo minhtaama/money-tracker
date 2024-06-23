@@ -25,8 +25,7 @@ import '../../../../selectors/presentation/forms.dart';
 import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
-      {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -41,8 +40,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
 
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
@@ -93,7 +91,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
               amount: _stateRead.amount!,
               category: _stateRead.category!,
               tag: _stateRead.tag,
-              account: _stateRead.account!,
+              account: _stateRead.account! as RegularAccount,
               note: _stateRead.note,
               recurrence: recurrence,
             );
@@ -105,7 +103,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
               amount: _stateRead.amount!,
               category: _stateRead.category!,
               tag: _stateRead.tag,
-              account: _stateRead.account!,
+              account: _stateRead.account! as RegularAccount,
               note: _stateRead.note,
               recurrence: recurrence,
             );
@@ -232,9 +230,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Expanded(
               child: CalculatorInput(
                 hintText: 'Amount',
-                initialValue: stateWatch.amount != null
-                    ? CalService.formatCurrency(context, stateWatch.amount!)
-                    : null,
+                initialValue: stateWatch.amount != null ? CalService.formatCurrency(context, stateWatch.amount!) : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -269,13 +265,15 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.regular,
+                    withSavingAccount: true,
                     validator: (_) => _sendingAccountValidator(),
                     initialValue: stateWatch.account,
                     onChangedAccount: (newAccount) {
-                      _stateController.changeAccount(newAccount as RegularAccount);
+                      _stateController.changeAccount(newAccount);
                       _checkIfIsTemplate();
                     },
-                    otherSelectedAccount: stateWatch.account,
+                    otherSelectedAccount:
+                        widget.transactionType == TransactionType.transfer ? stateWatch.toAccount : null,
                   ),
                   Gap.h16,
                   TextHeader(widget.transactionType != TransactionType.transfer ? 'Category:' : 'To:'),
@@ -292,21 +290,21 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                         )
                       : AccountFormSelector(
                           accountType: AccountType.regular,
+                          withSavingAccount: true,
                           validator: (_) => _toAccountAndAccountValidator(),
                           initialValue: widget.transactionType != TransactionType.transfer
                               ? stateWatch.account
                               : stateWatch.toAccount,
                           onChangedAccount: (newAccount) {
                             if (widget.transactionType != TransactionType.transfer) {
-                              _stateController.changeAccount(newAccount as RegularAccount?);
+                              _stateController.changeAccount(newAccount);
                             } else {
-                              _stateController.changeToAccount(newAccount as RegularAccount?);
+                              _stateController.changeToAccount(newAccount);
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
-                              ? stateWatch.account
-                              : null,
+                          otherSelectedAccount:
+                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
                         ),
                 ],
               ),
