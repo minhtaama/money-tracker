@@ -145,8 +145,8 @@ extension ModifyRecurrenceData on RecurrenceRepositoryRealmDb {
       TransactionType.transfer => transactionRepo.writeNewTransfer(
           dateTime: transactionData.dateTime!,
           amount: transactionData.amount!,
-          account: transactionData.account!.toAccount() as RegularAccount,
-          toAccount: transactionData.toAccount!.toAccount() as RegularAccount,
+          account: transactionData.account!.toAccount(),
+          toAccount: transactionData.toAccount!.toAccount(),
           note: transactionData.note,
           recurrence: transactionData.recurrence,
           fee: null,

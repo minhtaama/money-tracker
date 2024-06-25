@@ -76,6 +76,10 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
   final AccountInfo? _transferAccount;
   final Fee? fee;
 
+  bool get isToSavingAccount => _transferAccount?.toAccount() is SavingAccount;
+
+  bool get isFromSavingAccount => _account?.toAccount() is SavingAccount;
+
   const Transfer._(
     super._isarObject,
     super.dateTime,

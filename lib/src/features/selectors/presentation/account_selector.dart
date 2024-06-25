@@ -59,6 +59,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
   Widget build(BuildContext context) {
     return IconWithTextButton(
       label: _currentAccount != null ? _currentAccount!.name : 'Add Account',
+      subLabel: _currentAccount is SavingAccount ? context.loc.savings : null,
       labelSize: 15,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -95,7 +96,27 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                         return _accountButton(account);
                       }),
                     ),
-                    savingList != null ? Text('a') : Gap.noGap,
+                    savingList != null
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 24.0, bottom: 16.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  context.loc.savings,
+                                  style: kHeader3TextStyle.copyWith(
+                                    color: context.appTheme.onBackground.withOpacity(0.65),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Gap.w4,
+                                Expanded(
+                                  child: Gap.divider(context, indent: 6),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Gap.noGap,
                     savingList != null
                         ? Wrap(
                             spacing: 10,

@@ -50,7 +50,9 @@ class TxnHomeCategoryIcon extends StatelessWidget {
 
       if (transaction is Transfer) {
         return SvgIcon(
-          AppIcons.switchIcon,
+          (transaction as Transfer).isFromSavingAccount || (transaction as Transfer).isToSavingAccount
+              ? AppIcons.savings
+              : AppIcons.switchIcon,
           color: context.appTheme.onBackground,
         );
       }

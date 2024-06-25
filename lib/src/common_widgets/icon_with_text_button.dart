@@ -11,6 +11,7 @@ class IconWithTextButton extends StatelessWidget {
     super.key,
     required this.iconPath,
     this.label,
+    this.subLabel,
     this.labelSize,
     required this.backgroundColor,
     this.height = 55,
@@ -28,6 +29,7 @@ class IconWithTextButton extends StatelessWidget {
   final String iconPath;
   final double? iconSize;
   final String? label;
+  final String? subLabel;
   final double? labelSize;
   final Color backgroundColor;
   final Color? color;
@@ -65,22 +67,14 @@ class IconWithTextButton extends StatelessWidget {
                 color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
                 size: iconSize ?? 28,
               ),
+              label != null ? Gap.w8 : Gap.noGap,
               width != null
                   ? label == null
                       ? Gap.noGap
                       : Expanded(
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(
-                              label!,
-                              style: kHeader2TextStyle.copyWith(
-                                color: isDisabled
-                                    ? context.appTheme.onBackground
-                                    : color ?? context.appTheme.onAccent,
-                                fontSize: labelSize,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
+                            child: _texts(context),
                           ),
                         )
                   : label == null
@@ -90,16 +84,7 @@ class IconWithTextButton extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 4.0),
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
-                              child: Text(
-                                label!,
-                                style: kHeader2TextStyle.copyWith(
-                                  color: isDisabled
-                                      ? context.appTheme.onBackground
-                                      : color ?? context.appTheme.onAccent,
-                                  fontSize: labelSize,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: _texts(context),
                             ),
                           ),
                         ),
@@ -107,6 +92,33 @@ class IconWithTextButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _texts(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label!,
+          style: kHeader2TextStyle.copyWith(
+            color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+            fontSize: labelSize,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        subLabel != null
+            ? Text(
+                subLabel!,
+                style: kHeader3TextStyle.copyWith(
+                  color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                  fontSize: 11,
+                ),
+                textAlign: TextAlign.center,
+              )
+            : Gap.noGap,
+      ],
     );
   }
 }

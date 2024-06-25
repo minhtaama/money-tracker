@@ -3,14 +3,12 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../common_widgets/help_button.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
 import '../../../accounts/domain/account_base.dart';
-import '../../../recurrence/domain/recurrence.dart';
 import '../../domain/transaction_base.dart';
 import 'base_transaction_components.dart';
 
@@ -125,7 +123,11 @@ class _TransferDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Transfer to:'.hardcoded,
+          transaction.isToSavingAccount
+              ? 'Add saving to:'.hardcoded
+              : transaction.isFromSavingAccount
+                  ? 'Transfer from saving to:'.hardcoded
+                  : 'Transfer to:'.hardcoded,
           style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
