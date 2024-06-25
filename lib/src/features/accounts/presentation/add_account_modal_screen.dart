@@ -126,7 +126,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       body: [
         CustomSliderToggle<AccountType>(
           values: const [AccountType.regular, AccountType.credit, AccountType.saving],
-          iconPaths: [AppIcons.coins, AppIcons.credit, AppIcons.savings],
+          iconPaths: [AppIcons.walletLight, AppIcons.creditLight, AppIcons.savingsLight],
           labels: const ['Regular', 'Credit', 'Saving'],
           height: 42,
           onTap: (type) {

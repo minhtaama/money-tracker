@@ -150,7 +150,7 @@ class _CreateRecurrenceWidgetState extends ConsumerState<CreateRecurrenceWidget>
             mainAxisSize: MainAxisSize.max,
             children: [
               SvgIcon(
-                AppIcons.switchIcon,
+                AppIcons.switchTwoTone,
                 color: _recurrenceForm == null
                     ? context.appTheme.onBackground.withOpacity(0.4)
                     : context.appTheme.onPrimary,
@@ -337,7 +337,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
       footer: ModalFooter(
         isBigButtonDisabled: _isBigButtonDisabled(),
         bigButtonLabel: context.loc.done,
-        bigButtonIcon: AppIcons.done,
+        bigButtonIcon: AppIcons.doneLight,
         onBigButtonTap: () {
           if (!_isBigButtonDisabled()) {
             context.pop(_form);
@@ -526,7 +526,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
           child: Row(
             children: [
               SvgIcon(
-                AppIcons.edit,
+                AppIcons.editBulk,
                 color: context.appTheme.onBackground,
                 size: 17,
               ),
@@ -551,7 +551,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
             child: Row(
               children: [
                 SvgIcon(
-                  AppIcons.sadFace,
+                  AppIcons.sadFaceBulk,
                   color: context.appTheme.negative,
                   size: 17,
                 ),

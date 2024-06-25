@@ -66,7 +66,7 @@ class DayCardTransactionsList extends StatelessWidget {
                                     text: 'Recurrence transaction'.hardcoded,
                                     size: 15,
                                     yOffset: 1,
-                                    iconPath: AppIcons.switchIcon,
+                                    iconPath: AppIcons.switchTwoTone,
                                   )
                                 : Gap.noGap,
                             Gap.w4,
@@ -159,7 +159,7 @@ class _PaymentDetails extends StatelessWidget {
             TxnToAccountName(transaction: transaction),
             Gap.w4,
             SvgIcon(
-              AppIcons.credit,
+              AppIcons.creditLight,
               size: 14,
               color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
             ),

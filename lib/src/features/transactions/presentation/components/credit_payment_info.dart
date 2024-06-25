@@ -301,7 +301,7 @@ class _ListState extends State<_List> {
                             )
                           : IconWithText(
                               key: _key,
-                              iconPath: AppIcons.done,
+                              iconPath: AppIcons.doneLight,
                               header: 'No transactions before this time'.hardcoded,
                             ),
                     ],
@@ -568,7 +568,7 @@ class _Payment extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SvgIcon(
-          AppIcons.receiptCheck,
+          AppIcons.receiptCheckBulk,
           color: context.appTheme.positive,
           size: 20,
         ),
@@ -598,7 +598,7 @@ class _Checkpoint extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SvgIcon(
-          AppIcons.statementCheckpoint,
+          AppIcons.statementCheckpointBulk,
           color: context.appTheme.onBackground,
           size: 20,
         ),
@@ -856,7 +856,7 @@ class _CheckpointArrow extends StatelessWidget {
       alignment: Alignment.centerRight,
       children: [
         SvgIcon(
-          AppIcons.arrowRight,
+          AppIcons.arrowRightLight,
           color: context.appTheme.onBackground,
           size: 20,
         ),

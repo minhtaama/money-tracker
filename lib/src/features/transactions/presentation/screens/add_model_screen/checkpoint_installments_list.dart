@@ -112,7 +112,7 @@ class _ListState extends State<_List> {
             children: _installmentsList.isEmpty
                 ? [
                     IconWithText(
-                      iconPath: AppIcons.done,
+                      iconPath: AppIcons.doneLight,
                       header: 'No ongoing installments at selected date',
                     )
                   ]
@@ -287,7 +287,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
               ),
               Gap.w8,
               RoundedIconButton(
-                iconPath: AppIcons.done,
+                iconPath: AppIcons.doneLight,
                 iconColor: _isDone ? context.appTheme.onPrimary : context.appTheme.onBackground,
                 backgroundColor: _isDone ? context.appTheme.primary : AppColors.greyBgr(context),
                 size: 27,

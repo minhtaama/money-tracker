@@ -89,7 +89,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<IncomePieChartWidget> {
               child: CustomPieChart<Category>(
                 values: list,
                 center: SvgIcon(
-                  AppIcons.download,
+                  AppIcons.downloadLight,
                   color: context.appTheme.positive.withOpacity(0.65),
                   size: 25,
                 ),

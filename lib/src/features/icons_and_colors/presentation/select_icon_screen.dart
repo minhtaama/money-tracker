@@ -38,7 +38,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
       backgroundColor: context.appTheme.background1,
       floatingActionButton: IconWithTextButton(
         height: 60,
-        iconPath: AppIcons.done,
+        iconPath: AppIcons.doneLight,
         label: 'Choose',
         backgroundColor: context.appTheme.accent1,
         color: context.appTheme.onAccent,

@@ -62,7 +62,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
         CustomSliderToggle<BudgetType>(
           values: const [BudgetType.forCategory, BudgetType.forAccount],
           labels: const ['For Categories', 'For Accounts'],
-          iconPaths: [AppIcons.categories, AppIcons.accounts],
+          iconPaths: [AppIcons.categoriesBulk, AppIcons.accountsBulk],
           initialValueIndex: widget.budget is AccountBudget ? 1 : 0,
           fontSize: 14,
           onTap: (type) {
@@ -75,7 +75,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
         Row(
           children: [
             RoundedIconButton(
-              iconPath: AppIcons.budgets,
+              iconPath: AppIcons.budgetsBulk,
               iconColor: context.appTheme.onBackground,
               backgroundColor: AppColors.greyBgr(context),
               size: 50,
@@ -229,8 +229,8 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,
-        smallButtonIcon: AppIcons.delete,
-        bigButtonIcon: AppIcons.edit,
+        smallButtonIcon: AppIcons.deleteBulk,
+        bigButtonIcon: AppIcons.editBulk,
         bigButtonLabel: 'Done'.hardcoded,
         onSmallButtonTap: () {
           showConfirmModal(
@@ -306,7 +306,7 @@ class _AccountSelectorState<T extends BaseModelWithIcon> extends ConsumerState<_
         ? IconWithText(
             header: 'No items'.hardcoded,
             headerSize: 14,
-            iconPath: AppIcons.sadFace,
+            iconPath: AppIcons.sadFaceBulk,
           )
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),

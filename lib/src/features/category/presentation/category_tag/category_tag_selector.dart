@@ -203,7 +203,7 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
                 ),
                 Flexible(
                   child: RoundedIconButton(
-                    iconPath: AppIcons.close,
+                    iconPath: AppIcons.closeLight,
                     iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
                     backgroundColor: Colors.transparent,
                     size: 35,
@@ -341,7 +341,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
         prefixIcon: Padding(
           padding: const EdgeInsets.only(left: 12.0, right: 8, bottom: 2),
           child: SvgIcon(
-            AppIcons.add,
+            AppIcons.addLight,
             color: context.appTheme.onBackground.withOpacity(widget.category == null ? 0.2 : 0.5),
           ),
         ),

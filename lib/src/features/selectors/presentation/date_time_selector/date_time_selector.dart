@@ -75,8 +75,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-              child:
-                  widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             calendarPicker(),
@@ -103,8 +102,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
               : Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-                    child: widget.contentBuilder
-                        ?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+                    child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
                   ),
                 ),
         ],
@@ -140,7 +138,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
       );
 
   Widget button() => IconWithTextButton(
-        iconPath: _selectedDay != null ? AppIcons.done : AppIcons.back,
+        iconPath: _selectedDay != null ? AppIcons.doneLight : AppIcons.backLight,
         label: _selectedDay != null ? context.loc.select : context.loc.back,
         height: 30,
         width: 100,
@@ -155,7 +153,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
       );
 
   Widget returnNullButton() => IconWithTextButton(
-        iconPath: AppIcons.close,
+        iconPath: AppIcons.closeLight,
         label: 'Clear date'.hardcoded,
         height: 30,
         width: 100,

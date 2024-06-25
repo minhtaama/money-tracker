@@ -97,7 +97,7 @@ class CustomPageToolBar extends StatelessWidget {
                             : Transform.translate(
                                 offset: const Offset(0, 2),
                                 child: SvgIcon(
-                                  AppIcons.turn,
+                                  AppIcons.turnTwoTone,
                                   color: context.appTheme.onBackground,
                                   size: 20,
                                 ),
@@ -119,7 +119,7 @@ class CustomPageToolBar extends StatelessWidget {
                       Gap.verticalDivider(context, indent: 10),
                       Expanded(
                         child: RoundedIconButton(
-                          iconPath: AppIcons.arrowLeft,
+                          iconPath: AppIcons.arrowLeftLight,
                           iconColor: context.appTheme.onBackground,
                           backgroundColor: Colors.transparent,
                           onTap: onTapLeft,
@@ -129,7 +129,7 @@ class CustomPageToolBar extends StatelessWidget {
                       ),
                       Expanded(
                         child: RoundedIconButton(
-                          iconPath: AppIcons.arrowRight,
+                          iconPath: AppIcons.arrowRightLight,
                           iconColor: context.appTheme.onBackground,
                           backgroundColor: Colors.transparent,
                           onTap: onTapRight,
@@ -146,7 +146,7 @@ class CustomPageToolBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       RoundedIconButton(
-                        iconPath: AppIcons.arrowLeft,
+                        iconPath: AppIcons.arrowLeftLight,
                         iconColor: context.appTheme.onBackground,
                         backgroundColor: Colors.transparent,
                         onTap: onTapLeft,
@@ -155,7 +155,7 @@ class CustomPageToolBar extends StatelessWidget {
                       ),
                       Gap.w8,
                       RoundedIconButton(
-                        iconPath: AppIcons.arrowRight,
+                        iconPath: AppIcons.arrowRightLight,
                         iconColor: context.appTheme.onBackground,
                         backgroundColor: Colors.transparent,
                         onTap: onTapRight,

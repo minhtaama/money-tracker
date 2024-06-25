@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/illustration.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
@@ -45,11 +46,11 @@ class BudgetsListScreen extends ConsumerWidget {
               },
             )
           : [
-              Text(
-                'No budget',
-                style: kHeader2TextStyle.copyWith(color: AppColors.grey(context)),
-                textAlign: TextAlign.center,
-              )
+              Gap.h16,
+              EmptyIllustration(
+                AppIcons.budgetsBulk,
+                'No budget available',
+              ),
             ];
     }
 
@@ -59,7 +60,7 @@ class BudgetsListScreen extends ConsumerWidget {
           isTopLevelOfNavigationRail: true,
           title: 'Budgets',
           trailing: RoundedIconButton(
-            iconPath: AppIcons.add,
+            iconPath: AppIcons.addLight,
             iconColor: context.appTheme.onBackground,
             backgroundColor: context.appTheme.background0,
             onTap: () => context.push(RoutePath.addBudget),
@@ -111,7 +112,7 @@ class _BudgetTile extends StatelessWidget {
                 ),
               ),
               RoundedIconButton(
-                iconPath: AppIcons.edit,
+                iconPath: AppIcons.editBulk,
                 size: 32,
                 iconPadding: 6,
                 onTap: () {

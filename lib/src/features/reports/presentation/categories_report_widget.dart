@@ -362,7 +362,7 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
         key: ValueKey(list.toString()),
         values: list,
         center: SvgIcon(
-          isExpense ? AppIcons.upload : AppIcons.download,
+          isExpense ? AppIcons.uploadLight : AppIcons.downloadLight,
           color: isExpense ? context.appTheme.negative.withOpacity(0.65) : context.appTheme.positive.withOpacity(0.65),
           size: 25,
         ),

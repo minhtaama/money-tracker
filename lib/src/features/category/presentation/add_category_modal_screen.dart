@@ -41,7 +41,7 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
         CustomSliderToggle<CategoryType>(
           values: const [CategoryType.income, CategoryType.expense],
           labels: const ['Income', 'Expense'],
-          iconPaths: [AppIcons.income, AppIcons.expense],
+          iconPaths: [AppIcons.downloadLight, AppIcons.uploadLight],
           initialValueIndex: categoryType == CategoryType.expense ? 1 : 0,
           onTap: (type) {
             categoryType = type;

@@ -133,7 +133,7 @@ class _CategoryIcon extends StatelessWidget {
     Widget? child() {
       if (model.type == TransactionType.transfer) {
         return SvgIcon(
-          AppIcons.switchIcon,
+          AppIcons.switchTwoTone,
           color: context.appTheme.onBackground,
           size: 25,
         );
@@ -265,7 +265,7 @@ class _CategoryTagAndNote extends StatelessWidget {
                   ? Transform.translate(
                       offset: const Offset(0, 1),
                       child: SvgIcon(
-                        AppIcons.arrowBendDown,
+                        AppIcons.arrowBendDownLight,
                         size: 15,
                         color: context.appTheme.onBackground.withOpacity(0.65),
                       ),

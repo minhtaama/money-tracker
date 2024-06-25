@@ -116,21 +116,21 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
         iconColor: widget.creditAccount.iconColor,
         roundedButtonItems: [
           FABItem(
-            icon: AppIcons.receiptDollar,
+            icon: AppIcons.receiptDollarBulk,
             label: context.loc.creditSpending,
             color: context.appTheme.onNegative,
             backgroundColor: context.appTheme.negative,
             onTap: () => context.push(RoutePath.addCreditSpending),
           ),
           FABItem(
-            icon: AppIcons.fykFace,
+            icon: AppIcons.fykFaceBulk,
             label: 'Placeholder'.hardcoded,
             color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
             onTap: () {},
           ),
           FABItem(
-            icon: AppIcons.handCoin,
+            icon: AppIcons.handCoinTwoTone,
             label: context.loc.creditPayment,
             color: context.appTheme.onPositive,
             backgroundColor: context.appTheme.positive,
@@ -195,7 +195,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
                 ]
               : [
                   IconWithText(
-                    iconPath: AppIcons.done,
+                    iconPath: AppIcons.doneLight,
                     onTap: () => showCustomModal(
                       context: context,
                       child: AddCreditCheckpointModalScreen(

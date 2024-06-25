@@ -50,7 +50,6 @@ flutter:
     - assets/images/
     - assets/svg/activity/
     - assets/svg/app/
-    - assets/svg/app/undraw/
     - assets/svg/building/
     - assets/svg/business/
     - assets/svg/emoji/

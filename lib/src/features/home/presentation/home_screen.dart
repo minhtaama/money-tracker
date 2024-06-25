@@ -100,8 +100,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
       final plannedTxnsInDay = plannedTransactions
           .where(
             (plannedTxn) =>
@@ -176,7 +175,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         topTitle: _currentDisplayDate.year.toString(),
         title: _currentDisplayDate.monthToString(context),
         optionalButton: RoundedIconButton(
-          iconPath: AppIcons.recurrence,
+          iconPath: AppIcons.recurrenceBulk,
           iconColor: context.appTheme.onBackground,
           backgroundColor: Colors.transparent,
           onTap: () => context.push(RoutePath.plannedTransactions, extra: _currentDisplayDate),
@@ -188,8 +187,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList =
-            _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
         List<TransactionData> plannedTransactions =
             _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
 
@@ -201,8 +199,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         ref.listen(recurrenceChangesStreamProvider, (_, __) {
           setState(() {
-            plannedTransactions =
-                _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
+            plannedTransactions = _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
           });
         });
 

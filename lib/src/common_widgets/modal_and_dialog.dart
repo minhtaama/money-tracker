@@ -25,7 +25,7 @@ Future<void> showErrorDialog(BuildContext context, String text, {bool enable = t
     return showCustomDialog(
       context: context,
       child: IconWithText(
-        iconPath: AppIcons.sadFace,
+        iconPath: AppIcons.sadFaceBulk,
         color: context.appTheme.onBackground,
         header: text,
       ),
@@ -75,7 +75,7 @@ Future<T?> showConfirmModal<T>({
             children: [
               Expanded(
                 child: IconWithTextButton(
-                  iconPath: AppIcons.back,
+                  iconPath: AppIcons.backLight,
                   labelSize: 18,
                   label: context.loc.goBack,
                   color: context.appTheme.onBackground,
@@ -85,7 +85,7 @@ Future<T?> showConfirmModal<T>({
               ),
               Gap.w24,
               RoundedIconButton(
-                iconPath: confirmIcon ?? AppIcons.delete,
+                iconPath: confirmIcon ?? AppIcons.deleteBulk,
                 iconColor: context.appTheme.onNegative,
                 backgroundColor: context.appTheme.negative,
                 onTap: () {

@@ -33,7 +33,7 @@ class ModalHeader extends StatelessWidget {
         children: [
           ModalRoute.of(context)!.canPop && withBackButton
               ? RoundedIconButton(
-                  iconPath: AppIcons.back,
+                  iconPath: AppIcons.backLight,
                   backgroundColor: Colors.transparent,
                   iconColor: context.appTheme.onBackground,
                   onTap: () => context.pop(),
@@ -203,7 +203,7 @@ class ModalFooter extends StatelessWidget {
             ? Expanded(child: optional!)
             : (smallButtonIcon != null
                 ? RoundedIconButton(
-                    iconPath: smallButtonIcon ?? AppIcons.back,
+                    iconPath: smallButtonIcon ?? AppIcons.backLight,
                     backgroundColor: context.appTheme.negative.withOpacity(0.85),
                     iconColor: context.appTheme.onNegative,
                     iconPadding: 10,
@@ -212,7 +212,7 @@ class ModalFooter extends StatelessWidget {
                 : Gap.noGap),
         optional != null ? Gap.noGap : const Spacer(),
         IconWithTextButton(
-          iconPath: bigButtonIcon ?? AppIcons.add,
+          iconPath: bigButtonIcon ?? AppIcons.addLight,
           label: bigButtonLabel ?? 'Add',
           backgroundColor: context.appTheme.accent1,
           isDisabled: isBigButtonDisabled,

@@ -127,7 +127,7 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
             ),
           ),
           child: RoundedIconButton(
-            iconPath: AppIcons.add,
+            iconPath: AppIcons.addLight,
             iconColor: widget.iconColor ?? context.appTheme.onAccent,
             backgroundColor: widget.color ?? context.appTheme.accent2,
             size: 55,
@@ -366,7 +366,7 @@ class _MainButtons extends AnimatedWidget {
     Widget child() => Transform.scale(
           scale: _progress.isDismissed ? (0.8 + 0.2 * _progress.value) : 1,
           child: RoundedIconButton(
-            iconPath: mainItem?.icon ?? AppIcons.add,
+            iconPath: mainItem?.icon ?? AppIcons.addLight,
             iconColor: mainItem?.color ?? iconColor ?? context.appTheme.onAccent,
             backgroundColor: mainItem?.backgroundColor ?? color ?? context.appTheme.accent2,
             iconPadding: 48.0 - (36.0 * _progress.value),

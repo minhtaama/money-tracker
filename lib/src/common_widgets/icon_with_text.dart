@@ -43,7 +43,7 @@ class IconWithText extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SvgIcon(
-                      iconPath ?? AppIcons.minus,
+                      iconPath ?? AppIcons.minusLight,
                       size: iconSize ?? 40,
                       color: color ?? AppColors.grey(context),
                     ),
@@ -65,7 +65,7 @@ class IconWithText extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     SvgIcon(
-                      iconPath ?? AppIcons.minus,
+                      iconPath ?? AppIcons.minusLight,
                       size: iconSize ?? 40,
                       color: color ?? AppColors.grey(context),
                     ),

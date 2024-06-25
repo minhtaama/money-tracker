@@ -6,6 +6,8 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../theme_and_ui/colors.dart';
 import '../theme_and_ui/icons.dart';
 import '../utils/constants.dart';
+import 'card_item.dart';
+import 'icon_with_text.dart';
 
 class RandomIllustration extends StatelessWidget {
   const RandomIllustration(this.seed, {super.key, required this.text});
@@ -16,12 +18,12 @@ class RandomIllustration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final images = [
-      AppIcons.undrawCart,
-      AppIcons.undrawCoffee,
-      AppIcons.undrawCreditCard,
-      AppIcons.undrawShopping,
-      AppIcons.undrawShopping2,
-      AppIcons.undrawSofa,
+      AppIcons.alienTwoTone,
+      AppIcons.starTwoTone,
+      AppIcons.deliveryTwoTone,
+      AppIcons.heartBreakTwoTone,
+      AppIcons.cartTwoTone,
+      AppIcons.bagsTwoTone,
     ];
 
     return Padding(
@@ -31,13 +33,10 @@ class RandomIllustration extends StatelessWidget {
           SvgPicture.asset(
             images[seed % images.length],
             colorFilter: ColorFilter.mode(
-                context.appTheme.accent2
-                    .lerpWithBg(context, context.appTheme.isDarkTheme ? 0.45 : 0)
-                    .withOpacity(context.appTheme.isDarkTheme ? 0.35 : 0.15),
-                BlendMode.srcATop),
+                context.appTheme.accent2.withOpacity(context.appTheme.isDarkTheme ? 0.35 : 0.55), BlendMode.srcATop),
             fit: BoxFit.contain,
-            height: 110,
-            width: 110,
+            height: 55,
+            width: 55,
           ),
           Gap.h24,
           Text(
@@ -51,27 +50,26 @@ class RandomIllustration extends StatelessWidget {
   }
 }
 
-class BackgroundIllustration extends StatelessWidget {
-  const BackgroundIllustration(this.svgPath, {super.key, this.size = 110});
+class EmptyIllustration extends StatelessWidget {
+  const EmptyIllustration(this.svgPath, this.text, {super.key, this.verticalPadding = 32});
 
   final String svgPath;
-  final double size;
+  final String text;
+  final double verticalPadding;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SvgPicture.asset(
-        svgPath,
-        colorFilter: ColorFilter.mode(
-            context.appTheme.accent2
-                .lerpWithBg(context, context.appTheme.isDarkTheme ? 0.5 : 0)
-                .withOpacity(context.appTheme.isDarkTheme ? 0.35 : 0.15),
-            BlendMode.srcATop),
-        fit: BoxFit.contain,
-        height: size,
-        width: size,
-      ),
-    );
+    return CardItem(
+        color: Colors.transparent,
+        clip: false,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.appTheme.onBackground.withOpacity(0.3), width: 2),
+        padding: EdgeInsets.symmetric(horizontal: 0, vertical: verticalPadding),
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+        child: IconWithText(
+          header: text,
+          iconPath: svgPath,
+          iconSize: 30,
+        ));
   }
 }

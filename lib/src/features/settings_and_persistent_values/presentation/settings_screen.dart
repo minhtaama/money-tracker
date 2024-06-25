@@ -79,7 +79,7 @@ class SettingsScreen extends ConsumerWidget {
               secondaryTitle: currentSettings.currency.name,
               secondaryTitleOverflow: true,
               leading: SvgIcon(
-                AppIcons.coins,
+                AppIcons.coinsBulk,
                 color: context.appTheme.onBackground,
               ),
               trailing: Row(
@@ -90,7 +90,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   Gap.w4,
                   SvgIcon(
-                    AppIcons.arrowRight,
+                    AppIcons.arrowRightLight,
                     color: context.appTheme.onBackground,
                     size: 17,
                   ),

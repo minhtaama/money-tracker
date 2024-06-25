@@ -89,7 +89,7 @@ class _TileState extends State<_Tile> {
                       children: [
                         Expanded(
                           child: IconWithTextButton(
-                            iconPath: AppIcons.add,
+                            iconPath: AppIcons.addLight,
                             backgroundColor: color,
                             color: onColor,
                             label: 'Add'.hardcoded,
@@ -103,7 +103,7 @@ class _TileState extends State<_Tile> {
                         Gap.w24,
                         Expanded(
                           child: IconWithTextButton(
-                            iconPath: AppIcons.turn,
+                            iconPath: AppIcons.turnTwoTone,
                             backgroundColor: Colors.transparent,
                             color: context.appTheme.onBackground,
                             label: 'Skip'.hardcoded,

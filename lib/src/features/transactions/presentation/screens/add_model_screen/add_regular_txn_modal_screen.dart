@@ -209,7 +209,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         title: _title,
         secondaryTitle: _secondaryTitle,
         trailing: RoundedIconButton(
-          iconPath: _isTemplate ? AppIcons.heartFill : AppIcons.heartOutline,
+          iconPath: _isTemplate ? AppIcons.heartBulk : AppIcons.heartLight,
           withBorder: false,
           backgroundColor: Colors.transparent,
           iconColor: stateWatch.isAllNull() ? AppColors.grey(context) : context.appTheme.primary,

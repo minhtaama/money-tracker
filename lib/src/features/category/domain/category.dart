@@ -20,7 +20,7 @@ class Category extends BaseModelWithIcon<CategoryDb> {
       name: 'Initial Income',
       iconColor: context.appTheme.onPositive,
       backgroundColor: context.appTheme.positive,
-      iconPath: AppIcons.add,
+      iconPath: AppIcons.addLight,
     );
   }
 
@@ -58,7 +58,7 @@ class DeletedCategory extends Category {
           name: 'Deleted category'.hardcoded,
           iconColor: AppColors.black,
           backgroundColor: Colors.grey[300]!,
-          iconPath: AppIcons.delete,
+          iconPath: AppIcons.deleteBulk,
           isNotExistInDatabase: true,
         );
 }
@@ -71,7 +71,7 @@ class OthersCategory extends Category {
           name: 'Others'.hardcoded,
           iconColor: AppColors.black,
           backgroundColor: Colors.grey[300]!,
-          iconPath: AppIcons.categories,
+          iconPath: AppIcons.categoriesBulk,
           isNotExistInDatabase: true,
         );
 }

@@ -245,8 +245,8 @@ class CustomLineChart extends StatelessWidget {
 
       final icon = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[1] ||
               spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[3]
-          ? AppIcons.handCoin
-          : AppIcons.budgets;
+          ? AppIcons.handCoinTwoTone
+          : AppIcons.budgetsBulk;
 
       final crossAlignment = spot.dateTime == (data as CLCDataForCredit).dateTimesToShow[0]
           ? CrossAxisAlignment.start

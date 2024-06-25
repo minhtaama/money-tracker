@@ -64,21 +64,21 @@ final _bottomNavKey = GlobalKey<NavigatorState>();
 
 List<FABItem> _fabRoundedButtonItems(BuildContext context) => [
       FABItem(
-        icon: AppIcons.income,
+        icon: AppIcons.incomeLight,
         label: context.loc.income,
         color: context.appTheme.onPositive,
         backgroundColor: context.appTheme.positive,
         onTap: () => context.push(RoutePath.addIncome),
       ),
       FABItem(
-        icon: AppIcons.transfer,
+        icon: AppIcons.transferLight,
         label: context.loc.transfer,
         color: context.appTheme.onBackground,
         backgroundColor: AppColors.grey(context),
         onTap: () => context.push(RoutePath.addTransfer),
       ),
       FABItem(
-        icon: AppIcons.expense,
+        icon: AppIcons.expenseLight,
         label: context.loc.expense,
         color: context.appTheme.onNegative,
         backgroundColor: context.appTheme.negative,
@@ -88,53 +88,52 @@ List<FABItem> _fabRoundedButtonItems(BuildContext context) => [
 
 List<FABItem> _fabListItems(BuildContext context) => [
       FABItem(
-        icon: AppIcons.receiptDollar,
+        icon: AppIcons.receiptDollarBulk,
         label: context.loc.creditSpending,
         onTap: () => context.push(RoutePath.addCreditSpending),
       ),
       FABItem(
-        icon: AppIcons.handCoin,
+        icon: AppIcons.handCoinTwoTone,
         label: context.loc.creditPayment,
         onTap: () => context.push(RoutePath.addCreditPayment),
       ),
     ];
 
 FABItem _fabMainItem(BuildContext context) => FABItem(
-      icon: AppIcons.heartOutline,
+      icon: AppIcons.heartLight,
       label: '',
       color: context.appTheme.onAccent,
       backgroundColor: context.appTheme.accent2,
       onTap: () => showCustomModal(
         context: context,
-        builder: (controller, isScrollable) =>
-            AddTemplateTransactionModalScreen(controller, isScrollable),
+        builder: (controller, isScrollable) => AddTemplateTransactionModalScreen(controller, isScrollable),
       ),
     );
 
 List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.dashboardOrHomeInBigScreen,
-        iconData: AppIcons.home,
+        iconData: AppIcons.homeBulk,
         text: context.loc.home,
       ),
       NavigationRailItem(
         path: RoutePath.budgets,
-        iconData: AppIcons.budgets,
+        iconData: AppIcons.budgetsBulk,
         text: context.loc.budgets,
       ),
       NavigationRailItem(
         path: RoutePath.accounts,
-        iconData: AppIcons.accounts,
+        iconData: AppIcons.accountsBulk,
         text: context.loc.accounts,
       ),
       NavigationRailItem(
         path: RoutePath.categories,
-        iconData: AppIcons.categories,
+        iconData: AppIcons.categoriesBulk,
         text: context.loc.categories,
       ),
       NavigationRailItem(
         path: RoutePath.reports,
-        iconData: AppIcons.reports,
+        iconData: AppIcons.reportsBulk,
         text: 'Reports'.hardcoded,
       ),
     ];
@@ -142,7 +141,7 @@ List<NavigationRailItem> _navRailTopItems(BuildContext context) => [
 List<NavigationRailItem> _navRailBottomItems(BuildContext context) => [
       NavigationRailItem(
         path: RoutePath.settings,
-        iconData: AppIcons.settings,
+        iconData: AppIcons.settingsBulk,
         text: context.loc.settings,
       ),
     ];
@@ -150,12 +149,12 @@ List<NavigationRailItem> _navRailBottomItems(BuildContext context) => [
 List<BottomAppBarItem> _bottomTabItems(BuildContext context) => [
       BottomAppBarItem(
         path: RoutePath.home,
-        iconData: AppIcons.home,
+        iconData: AppIcons.homeBulk,
         text: context.loc.home,
       ),
       BottomAppBarItem(
         path: RoutePath.dashboardOrHomeInBigScreen,
-        iconData: AppIcons.summary,
+        iconData: AppIcons.summaryBulk,
         text: context.loc.dashboard,
       ),
     ];
@@ -293,8 +292,7 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) =>
-                            AddAccountModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) => AddAccountModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -317,8 +315,7 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) =>
-                            AddBudgetModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -383,8 +380,7 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller, isScrollable) =>
-                AddCreditSpendingModalScreen(controller, isScrollable),
+            builder: (controller, isScrollable) => AddCreditSpendingModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(

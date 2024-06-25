@@ -48,7 +48,7 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
             )
           : [
               IconWithText(
-                iconPath: AppIcons.heartOutline,
+                iconPath: AppIcons.heartLight,
                 forceIconOnTop: true,
                 header: 'Empty'.hardcoded,
               ),
@@ -94,7 +94,7 @@ class _TemplateTransactionTile extends ConsumerWidget {
         child: AnimatedSwipeTile(
           buttons: [
             RoundedIconButton(
-              iconPath: AppIcons.delete,
+              iconPath: AppIcons.deleteBulk,
               size: 35,
               iconPadding: 6,
               elevation: 18,
@@ -197,7 +197,7 @@ class _CategoryIcon extends StatelessWidget {
     Widget? child() {
       if (model.type == TransactionType.transfer) {
         return SvgIcon(
-          AppIcons.transfer,
+          AppIcons.transferLight,
           color: context.appTheme.onBackground,
         );
       }

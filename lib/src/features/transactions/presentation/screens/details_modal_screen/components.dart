@@ -19,13 +19,13 @@ class _Amount extends ConsumerWidget {
 
   String get _iconPath {
     return switch (transactionType) {
-      TransactionType.income => AppIcons.income,
-      TransactionType.expense => AppIcons.expense,
-      TransactionType.transfer => AppIcons.transfer,
-      TransactionType.creditSpending => AppIcons.receiptDollar,
-      TransactionType.creditPayment => AppIcons.handCoin,
-      TransactionType.creditCheckpoint => AppIcons.receiptEdit,
-      TransactionType.installmentToPay => AppIcons.installment,
+      TransactionType.income => AppIcons.incomeLight,
+      TransactionType.expense => AppIcons.expenseLight,
+      TransactionType.transfer => AppIcons.transferLight,
+      TransactionType.creditSpending => AppIcons.receiptDollarBulk,
+      TransactionType.creditPayment => AppIcons.handCoinTwoTone,
+      TransactionType.creditCheckpoint => AppIcons.receiptEditLight,
+      TransactionType.installmentToPay => AppIcons.installmentTwoTone,
     };
   }
 
@@ -172,7 +172,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
               children: [
                 Gap.w12,
                 RoundedIconButton(
-                  iconPath: transaction.hasInstallment ? AppIcons.installment : AppIcons.handCoin,
+                  iconPath: transaction.hasInstallment ? AppIcons.installmentTwoTone : AppIcons.handCoinTwoTone,
                   backgroundColor: Colors.transparent,
                   iconColor: context.appTheme.negative,
                   iconPadding: 0,
@@ -390,7 +390,7 @@ class _CategoryCard extends StatelessWidget {
                                 Transform.translate(
                                   offset: const Offset(0, 1),
                                   child: SvgIcon(
-                                    AppIcons.arrowBendDown,
+                                    AppIcons.arrowBendDownLight,
                                     size: 20,
                                     color: context.appTheme.onBackground,
                                   ),
@@ -535,7 +535,7 @@ class _NeumorphicEditWrap extends StatelessWidget {
             curve: Curves.easeOut,
             duration: k250msDuration,
             child: RoundedIconButton(
-              iconPath: AppIcons.edit,
+              iconPath: AppIcons.editBulk,
               iconColor: isEdited ? context.appTheme.onNegative : context.appTheme.onAccent,
               backgroundColor: isEdited ? context.appTheme.negative : context.appTheme.accent2,
               size: 20,
@@ -668,7 +668,7 @@ class _EditButton extends StatelessWidget {
               opacity: isEditMode ? 0 : 1,
               child: FittedBox(
                 child: SvgIcon(
-                  AppIcons.edit,
+                  AppIcons.editBulk,
                   color: context.appTheme.onBackground,
                 ),
               ),
@@ -684,7 +684,7 @@ class _EditButton extends StatelessWidget {
                     children: [
                       FittedBox(
                         child: SvgIcon(
-                          AppIcons.edit,
+                          AppIcons.editBulk,
                           color: context.appTheme.onBackground,
                         ),
                       ),
@@ -746,7 +746,7 @@ class _DeleteButton extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: FittedBox(
               child: SvgIcon(
-                AppIcons.delete,
+                AppIcons.deleteBulk,
                 color: context.appTheme.onBackground.withOpacity(isDisable ? 0.3 : 1),
               ),
             ),
@@ -827,7 +827,7 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
               IconWithText(
                 header: 'No data'.hardcoded,
                 headerSize: 14,
-                iconPath: AppIcons.accounts,
+                iconPath: AppIcons.accountsBulk,
               ),
               withBottomGap ? Gap.h48 : Gap.noGap,
             ],
@@ -905,7 +905,7 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,
-        bigButtonIcon: AppIcons.done,
+        bigButtonIcon: AppIcons.doneLight,
         bigButtonLabel: context.loc.done,
         onBigButtonTap: () => context.pop<List<dynamic>>([_selectedCategory, _selectedTag]),
       ),

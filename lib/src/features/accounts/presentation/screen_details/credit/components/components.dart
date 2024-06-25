@@ -101,7 +101,7 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 isClosedStatement
                     ? IconWithText(
-                        iconPath: AppIcons.done,
+                        iconPath: AppIcons.doneLight,
                         iconSize: 30,
                         header: context.loc.quoteCreditAccountComponent1,
                         text: context.loc.quoteCreditAccountComponent1_1,
@@ -147,7 +147,7 @@ class _SummaryCard extends StatelessWidget {
           : Column(
               children: [
                 IconWithText(
-                  iconPath: AppIcons.statementCheckpoint,
+                  iconPath: AppIcons.statementCheckpointBulk,
                   iconSize: 30,
                   header: context.loc.quoteCreditAccountComponent2,
                   text: context.loc.quoteCreditAccountComponent2_1,
@@ -250,7 +250,7 @@ class _Header extends StatelessWidget {
                                 ? Padding(
                                     padding: const EdgeInsets.only(right: 1.0),
                                     child: SvgIcon(
-                                      AppIcons.add,
+                                      AppIcons.addLight,
                                       color: color ?? AppColors.grey(context),
                                       size: 15,
                                     ),
@@ -384,7 +384,7 @@ class _InstallmentToPayTransaction extends StatelessWidget {
                                       Transform.translate(
                                         offset: const Offset(0, 1),
                                         child: SvgIcon(
-                                          AppIcons.arrowBendDown,
+                                          AppIcons.arrowBendDownLight,
                                           size: 15,
                                           color: context.appTheme.onBackground.withOpacity(0.65),
                                         ),
@@ -491,7 +491,7 @@ class _Spending extends StatelessWidget {
                         Transform.translate(
                           offset: const Offset(0, 1),
                           child: SvgIcon(
-                            AppIcons.arrowBendDown,
+                            AppIcons.arrowBendDownLight,
                             size: 15,
                             color: context.appTheme.onBackground.withOpacity(0.65),
                           ),
@@ -527,7 +527,7 @@ class _Payment extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SvgIcon(
-          AppIcons.receiptCheck,
+          AppIcons.receiptCheckBulk,
           color: context.appTheme.positive,
           size: 20,
         ),
@@ -557,7 +557,7 @@ class _Checkpoint extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SvgIcon(
-          AppIcons.statementCheckpoint,
+          AppIcons.statementCheckpointBulk,
           color: context.appTheme.onBackground,
           size: 20,
         ),
@@ -675,7 +675,7 @@ class _CheckpointArrow extends StatelessWidget {
       alignment: Alignment.centerRight,
       children: [
         SvgIcon(
-          AppIcons.arrowRight,
+          AppIcons.arrowRightLight,
           color: context.appTheme.onBackground,
           size: 20,
         ),

@@ -74,7 +74,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
         sections: [
           HelpBox(
             isShow: true,
-            iconPath: AppIcons.fykFace,
+            iconPath: AppIcons.fykFaceBulk,
             header: 'For your knowledge'.hardcoded,
             text: 'Add [transactions has installment payment going through this checkpoint] first, if any.'.hardcoded,
           ),

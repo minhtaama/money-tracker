@@ -184,7 +184,7 @@ class _TotalViewState extends ConsumerState<_TotalView> {
         padding: const EdgeInsets.all(16.0),
         child: IconWithText(
           header: 'No accounts',
-          iconPath: AppIcons.accounts,
+          iconPath: AppIcons.accountsBulk,
           iconSize: 30,
         ),
       );
@@ -251,7 +251,7 @@ class _SeparateViewState extends ConsumerState<_SeparateView> {
         padding: const EdgeInsets.all(16.0),
         child: IconWithText(
           header: 'No accounts',
-          iconPath: AppIcons.accounts,
+          iconPath: AppIcons.accountsBulk,
           iconSize: 30,
         ),
       );

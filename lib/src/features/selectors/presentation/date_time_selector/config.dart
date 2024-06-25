@@ -38,19 +38,19 @@ class _DayBuilder {
       children: [
         isStatementDay
             ? hasCheckpoint
-                ? icon(AppIcons.statementCheckpoint)
-                : icon(AppIcons.budgets)
+                ? icon(AppIcons.statementCheckpointBulk)
+                : icon(AppIcons.budgetsBulk)
             : Gap.noGap,
-        isDueDay ? icon(AppIcons.handCoin) : Gap.noGap,
+        isDueDay ? icon(AppIcons.handCoinTwoTone) : Gap.noGap,
         hasSpending
             ? icon(
-                AppIcons.receiptDollar,
+                AppIcons.receiptDollarBulk,
                 color: context.appTheme.negative.withOpacity(canAddTransaction ? 1 : 0.33),
               )
             : Gap.noGap,
         hasPayment
             ? icon(
-                AppIcons.receiptCheck,
+                AppIcons.receiptCheckBulk,
                 color: context.appTheme.positive.withOpacity(canAddTransaction ? 1 : 0.33),
               )
             : Gap.noGap,
@@ -186,11 +186,11 @@ CalendarDatePicker2WithActionButtonsConfig _customConfig(
     controlsTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
     dayTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
     lastMonthIcon: SvgIcon(
-      AppIcons.arrowLeft,
+      AppIcons.arrowLeftLight,
       color: context.appTheme.onBackground,
     ),
     nextMonthIcon: SvgIcon(
-      AppIcons.arrowRight,
+      AppIcons.arrowRightLight,
       color: context.appTheme.onBackground,
     ),
     weekdayLabelTextStyle: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),

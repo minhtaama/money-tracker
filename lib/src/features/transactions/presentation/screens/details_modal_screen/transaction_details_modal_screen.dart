@@ -88,7 +88,7 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
       };
     } catch (e) {
       return IconWithText(
-        iconPath: AppIcons.delete,
+        iconPath: AppIcons.deleteBulk,
         text: 'Transaction deleted!'.hardcoded,
       );
     }

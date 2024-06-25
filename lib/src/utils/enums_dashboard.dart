@@ -20,12 +20,12 @@ enum DashboardWidgetType {
 
   String get iconPath {
     return switch (this) {
-      DashboardWidgetType.menu => AppIcons.categories,
-      DashboardWidgetType.weeklyReport => AppIcons.receiptDollar,
-      DashboardWidgetType.monthlyExpense => AppIcons.reports,
-      DashboardWidgetType.monthlyIncome => AppIcons.reports,
-      DashboardWidgetType.budgets => AppIcons.budgets,
-      DashboardWidgetType.upcomingTransactions => AppIcons.recurrence,
+      DashboardWidgetType.menu => AppIcons.categoriesBulk,
+      DashboardWidgetType.weeklyReport => AppIcons.receiptDollarBulk,
+      DashboardWidgetType.monthlyExpense => AppIcons.reportsBulk,
+      DashboardWidgetType.monthlyIncome => AppIcons.reportsBulk,
+      DashboardWidgetType.budgets => AppIcons.budgetsBulk,
+      DashboardWidgetType.upcomingTransactions => AppIcons.recurrenceBulk,
     };
   }
 

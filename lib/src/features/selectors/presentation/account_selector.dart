@@ -63,7 +63,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       labelSize: 15,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      iconPath: _currentAccount != null ? _currentAccount!.iconPath : AppIcons.add,
+      iconPath: _currentAccount != null ? _currentAccount!.iconPath : AppIcons.addLight,
       backgroundColor: _currentAccount != null ? _currentAccount!.backgroundColor : Colors.transparent,
       color: _currentAccount != null ? _currentAccount!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
       height: null,
@@ -136,7 +136,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                           'No${widget.accountType == AccountType.credit ? ' credit' : ''} account.\n Tap here to create a first one'
                               .hardcoded,
                       headerSize: 14,
-                      iconPath: AppIcons.accounts,
+                      iconPath: AppIcons.accountsBulk,
                       onTap: () {
                         context.pop();
                         context.push(RoutePath.addAccount);

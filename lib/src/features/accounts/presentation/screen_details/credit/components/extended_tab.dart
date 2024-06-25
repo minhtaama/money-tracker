@@ -91,7 +91,7 @@ class _Header extends StatelessWidget {
             onTap: () => context.pop(),
             backgroundColor: Colors.transparent,
             iconColor: account.iconColor,
-            iconPath: AppIcons.back,
+            iconPath: AppIcons.backLight,
           ),
           Gap.w8,
           Expanded(
@@ -124,7 +124,7 @@ class _Header extends StatelessWidget {
             ),
             backgroundColor: Colors.transparent,
             iconColor: account.iconColor,
-            iconPath: AppIcons.edit,
+            iconPath: AppIcons.editBulk,
           ),
         ],
       ),

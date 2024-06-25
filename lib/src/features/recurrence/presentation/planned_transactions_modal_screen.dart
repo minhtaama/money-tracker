@@ -146,7 +146,7 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
       return [
         Gap.h8,
         IconWithText(
-          iconPath: AppIcons.recurrence,
+          iconPath: AppIcons.recurrenceBulk,
           text: 'No planned transactions this month'.hardcoded,
         )
       ];
@@ -193,7 +193,7 @@ class _TileState extends ConsumerState<_Tile> {
         child: AnimatedSwipeTile(
           buttons: [
             RoundedIconButton(
-              iconPath: AppIcons.delete,
+              iconPath: AppIcons.deleteBulk,
               size: 38,
               iconPadding: 6,
               elevation: 18,
@@ -261,7 +261,7 @@ class _TileState extends ConsumerState<_Tile> {
                                         children: [
                                           Expanded(
                                             child: IconWithTextButton(
-                                              iconPath: AppIcons.add,
+                                              iconPath: AppIcons.addLight,
                                               backgroundColor: color,
                                               color: onColor,
                                               label: 'Add'.hardcoded,
@@ -283,7 +283,7 @@ class _TileState extends ConsumerState<_Tile> {
                                           Gap.w24,
                                           Expanded(
                                             child: IconWithTextButton(
-                                              iconPath: AppIcons.turn,
+                                              iconPath: AppIcons.turnTwoTone,
                                               backgroundColor: Colors.transparent,
                                               color: context.appTheme.onBackground,
                                               label: 'Skip'.hardcoded,
@@ -308,7 +308,7 @@ class _TileState extends ConsumerState<_Tile> {
                                         ],
                                       )
                                     : IconWithTextButton(
-                                        iconPath: AppIcons.turn,
+                                        iconPath: AppIcons.turnTwoTone,
                                         backgroundColor: Colors.transparent,
                                         color: context.appTheme.onBackground,
                                         label: 'Un-skip'.hardcoded,

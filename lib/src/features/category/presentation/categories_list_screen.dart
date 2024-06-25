@@ -13,8 +13,10 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
+import '../../../common_widgets/illustration.dart';
 import 'category_list_tile.dart';
 import 'edit_category_modal_screen.dart';
 
@@ -56,11 +58,11 @@ class CategoriesListScreen extends ConsumerWidget {
               },
             )
           : [
-              Text(
-                'Nothing in here.\nPlease add a new category',
-                style: kHeader2TextStyle.copyWith(color: AppColors.grey(context)),
-                textAlign: TextAlign.center,
-              )
+              EmptyIllustration(
+                AppIcons.deliveryTwoTone,
+                'No categories available'.hardcoded,
+                verticalPadding: 12,
+              ),
             ];
     }
 
@@ -70,7 +72,7 @@ class CategoriesListScreen extends ConsumerWidget {
           isTopLevelOfNavigationRail: true,
           title: 'Categories',
           trailing: RoundedIconButton(
-            iconPath: AppIcons.add,
+            iconPath: AppIcons.addLight,
             iconColor: context.appTheme.onBackground,
             backgroundColor: context.appTheme.background0,
             onTap: () => context.push(RoutePath.addCategory),

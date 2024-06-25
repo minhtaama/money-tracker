@@ -32,7 +32,7 @@ class BackspaceKey extends StatelessWidget {
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: SvgIcon(
-            AppIcons.backspace,
+            AppIcons.backspaceLight,
             color: context.appTheme.onNegative,
             size: 30,
           ),

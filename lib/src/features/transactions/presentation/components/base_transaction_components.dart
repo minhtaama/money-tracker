@@ -38,7 +38,7 @@ class TxnHomeCategoryIcon extends StatelessWidget {
       if (transaction is IBaseTransactionWithCategory) {
         if (transaction is Income && (transaction as Income).isInitialTransaction) {
           return SvgIcon(
-            AppIcons.add,
+            AppIcons.addLight,
             color: context.appTheme.onBackground,
           );
         }
@@ -50,16 +50,18 @@ class TxnHomeCategoryIcon extends StatelessWidget {
 
       if (transaction is Transfer) {
         return SvgIcon(
-          (transaction as Transfer).isFromSavingAccount || (transaction as Transfer).isToSavingAccount
-              ? AppIcons.savings
-              : AppIcons.switchIcon,
+          (transaction as Transfer).isToSavingAccount
+              ? AppIcons.savingsLight
+              : (transaction as Transfer).isFromSavingAccount
+                  ? AppIcons.savingsEmptyLight
+                  : AppIcons.switchTwoTone,
           color: context.appTheme.onBackground,
         );
       }
 
       if (transaction is CreditPayment) {
         return SvgIcon(
-          AppIcons.handCoin,
+          AppIcons.handCoinTwoTone,
           color: context.appTheme.onBackground,
         );
       }
@@ -95,7 +97,7 @@ class TxnInstallmentIcon extends StatelessWidget {
       text:
           'This transaction has been registered for installment payments, so you won\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.'
               .hardcoded,
-      iconPath: AppIcons.installment,
+      iconPath: AppIcons.installmentTwoTone,
       size: size,
     );
   }
@@ -133,7 +135,7 @@ class TxnAdjustmentIcon extends StatelessWidget {
                 'Adjust amount: ${transaction.adjustment > 0 ? '+' : '-'} ${CalService.formatCurrency(context, transaction.adjustment, isAbs: true)} ${context.appSettings.currency.code}'
                     .hardcoded,
             text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
-            iconPath: AppIcons.edit,
+            iconPath: AppIcons.editBulk,
             size: size,
           )
         : Gap.noGap;
@@ -148,7 +150,7 @@ class TxnCategoryIcon extends StatelessWidget {
 
   String get _iconPath {
     if (transaction is Income && _isInitial(transaction)) {
-      return AppIcons.add;
+      return AppIcons.addLight;
     }
     return transaction.category.iconPath;
   }
@@ -214,7 +216,7 @@ class TxnCategoryTag extends StatelessWidget {
               Transform.translate(
                 offset: const Offset(0, 1),
                 child: SvgIcon(
-                  AppIcons.arrowBendDown,
+                  AppIcons.arrowBendDownLight,
                   size: 15,
                   color: context.appTheme.onBackground,
                 ),
@@ -250,10 +252,10 @@ class TxnAccountIcon extends ConsumerWidget {
     }
 
     return switch (transaction) {
-      Income() => AppIcons.download,
-      Expense() => AppIcons.upload,
-      CreditPayment() => AppIcons.upload,
-      CreditSpending() => AppIcons.credit,
+      Income() => AppIcons.downloadLight,
+      Expense() => AppIcons.uploadLight,
+      CreditPayment() => AppIcons.uploadLight,
+      CreditSpending() => AppIcons.creditLight,
       Transfer() || CreditCheckpoint() => throw StateError('No Icon'),
     };
   }

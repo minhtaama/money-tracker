@@ -61,7 +61,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
                 padding: const EdgeInsets.all(4.0),
                 child: IconWithText(
                   forceIconOnTop: true,
-                  iconPath: AppIcons.budgets,
+                  iconPath: AppIcons.budgetsBulk,
                   header: 'Related budget will be shown here'.hardcoded,
                   text: 'Tap to hide'.hardcoded,
                   onTap: () => setState(() {
@@ -86,7 +86,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
                       ),
                     ),
                     RoundedIconButton(
-                      iconPath: AppIcons.close,
+                      iconPath: AppIcons.closeLight,
                       size: 23,
                       iconPadding: 3,
                       backgroundColor: Colors.transparent,
@@ -113,7 +113,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SvgIcon(
-              AppIcons.budgets,
+              AppIcons.budgetsBulk,
               color: context.appTheme.onBackground,
               size: 18,
             ),

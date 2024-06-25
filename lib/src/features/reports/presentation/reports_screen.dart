@@ -68,7 +68,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           trailing: RotatedBox(
             quarterTurns: _hideDateSelector ? 1 : -1,
             child: RoundedIconButton(
-              iconPath: AppIcons.arrowRight,
+              iconPath: AppIcons.arrowRightLight,
               onTap: () => setState(() {
                 _hideDateSelector = !_hideDateSelector;
               }),
@@ -97,15 +97,14 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     );
   }
 
-  Widget _dateSelector() => CustomBox(
+  Widget _dateSelector() => Container(
         key: const ValueKey('_dateSelector'),
         padding: const EdgeInsets.symmetric(vertical: 8),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         color: context.appTheme.background1,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -118,7 +117,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 6.0),
                       child: RoundedIconButton(
-                        iconPath: AppIcons.turn,
+                        iconPath: AppIcons.turnTwoTone,
                         iconColor: context.appTheme.onPrimary,
                         backgroundColor: context.appTheme.primary.withOpacity(0.95),
                         size: 31,
@@ -134,7 +133,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       values: const [_ReportType.month, _ReportType.week],
                       height: 35,
                       initialValueIndex: [_ReportType.month, _ReportType.week].indexOf(_type),
-                      iconPaths: [AppIcons.turn, AppIcons.turn],
+                      iconPaths: [AppIcons.monthlyLight, AppIcons.weeklyLight],
                       fontSize: 14,
                       labels: ['Monthly'.hardcoded, 'Weekly'.hardcoded],
                       onTap: (type) => setState(() {

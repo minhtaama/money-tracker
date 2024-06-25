@@ -56,7 +56,7 @@ class CategoryListTile extends ConsumerWidget {
               ),
               Gap.w8,
               RoundedIconButton(
-                iconPath: AppIcons.edit,
+                iconPath: AppIcons.editBulk,
                 backgroundColor: Colors.transparent,
                 iconColor: context.appTheme.onBackground,
                 onTap: onMenuTap,

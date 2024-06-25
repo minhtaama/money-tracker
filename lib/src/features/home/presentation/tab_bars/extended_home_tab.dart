@@ -162,8 +162,8 @@ class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHom
         MoneyCarousel(
           controller: widget.carouselController,
           initialPageIndex: widget.initialPageIndex,
-          leftIconPath: AppIcons.switchIcon,
-          rightIconPath: widget.showNumber ? AppIcons.eyeSlash : AppIcons.eye,
+          leftIconPath: AppIcons.switchTwoTone,
+          rightIconPath: widget.showNumber ? AppIcons.eyeSlashBulk : AppIcons.eyeBulk,
           onTapRightIcon: widget.onEyeTap,
           onTapLeftIcon: _onTapSwitchType,
           showPrefixSign: _showPrefixSign,

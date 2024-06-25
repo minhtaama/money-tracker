@@ -71,7 +71,7 @@ class _HelpBoxState extends State<HelpBox> {
                   children: [
                     const Spacer(),
                     RoundedIconButton(
-                      iconPath: AppIcons.close,
+                      iconPath: AppIcons.closeLight,
                       iconColor: widget.color ?? context.appTheme.onNegative,
                       backgroundColor: Colors.transparent,
                       size: 35,

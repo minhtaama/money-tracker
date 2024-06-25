@@ -58,7 +58,7 @@ class _ReportWrapperState extends State<ReportWrapper> {
                       child: RotatedBox(
                         quarterTurns: _isCollapsed ? 1 : -1,
                         child: RoundedIconButton(
-                          iconPath: AppIcons.arrowRight,
+                          iconPath: AppIcons.arrowRightLight,
                           backgroundColor: context.appTheme.primary,
                           iconColor: context.appTheme.onPrimary,
                           size: 28,
@@ -151,7 +151,7 @@ class _ReportWrapperSwitcherState extends State<ReportWrapperSwitcher> {
               RotatedBox(
                 quarterTurns: _showFirstChild ? 1 : -1,
                 child: RoundedIconButton(
-                  iconPath: AppIcons.arrowRight,
+                  iconPath: AppIcons.arrowRightLight,
                   backgroundColor: context.appTheme.primary,
                   iconColor: context.appTheme.onPrimary,
                   size: 28,

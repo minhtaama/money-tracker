@@ -85,7 +85,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,
-        smallButtonIcon: AppIcons.delete,
+        smallButtonIcon: AppIcons.deleteBulk,
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,

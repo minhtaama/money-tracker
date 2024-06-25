@@ -35,7 +35,7 @@ class DashboardWidget extends StatelessWidget {
         child: isEmpty
             ? IconWithText(
                 header: emptyTitle,
-                iconPath: AppIcons.receiptEdit,
+                iconPath: AppIcons.receiptEditLight,
                 iconSize: 30,
               )
             : Column(

@@ -54,11 +54,9 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
       labelSize: 15,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      iconPath: _currentCategory != null ? _currentCategory!.iconPath : AppIcons.add,
+      iconPath: _currentCategory != null ? _currentCategory!.iconPath : AppIcons.addLight,
       backgroundColor: _currentCategory != null ? _currentCategory!.backgroundColor : Colors.transparent,
-      color: _currentCategory != null
-          ? _currentCategory!.iconColor
-          : context.appTheme.onBackground.withOpacity(0.4),
+      color: _currentCategory != null ? _currentCategory!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
       width: null,
       height: null,
       border: _currentCategory != null
@@ -73,8 +71,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
         } else if (widget.transactionType == TransactionType.expense) {
           categoryList = ref.read(categoryRepositoryRealmProvider).getList(CategoryType.expense);
         } else {
-          throw ErrorDescription(
-              'Category Selector should not be displayed with Transfer-type Transaction');
+          throw ErrorDescription('Category Selector should not be displayed with Transfer-type Transaction');
         }
 
         final returnedValue = await showCustomModal<Category>(
@@ -106,10 +103,9 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                                   ? category.backgroundColor
                                   : context.appTheme.onBackground.withOpacity(0.4),
                             ),
-                            backgroundColor:
-                                _currentCategory?.databaseObject.id == category.databaseObject.id
-                                    ? category.backgroundColor
-                                    : Colors.transparent,
+                            backgroundColor: _currentCategory?.databaseObject.id == category.databaseObject.id
+                                ? category.backgroundColor
+                                : Colors.transparent,
                             color: _currentCategory?.databaseObject.id == category.databaseObject.id
                                 ? category.iconColor
                                 : context.appTheme.onBackground,
@@ -119,7 +115,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                           );
                         }),
                         IconWithTextButton(
-                          iconPath: AppIcons.add,
+                          iconPath: AppIcons.addLight,
                           color: AppColors.grey(context),
                           backgroundColor: Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
@@ -158,7 +154,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                           'No ${widget.transactionType == TransactionType.income ? 'income' : 'expense'} category.\n Tap here to create a first one'
                               .hardcoded,
                       headerSize: 14,
-                      iconPath: AppIcons.accounts,
+                      iconPath: AppIcons.accountsBulk,
                       onTap: () async {
                         final categoryType = widget.transactionType == TransactionType.income
                             ? CategoryType.income
@@ -182,8 +178,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (_currentCategory != null &&
-                _currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (_currentCategory != null && _currentCategory!.databaseObject.id == returnedValue.databaseObject.id) {
               _currentCategory = null;
               widget.onChangedCategory(_currentCategory);
             } else {

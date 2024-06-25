@@ -17,6 +17,7 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../theme_and_ui/colors.dart';
@@ -50,15 +51,11 @@ class AccountsListScreen extends ConsumerWidget {
             )
           : [
               Gap.h24,
-              BackgroundIllustration(
-                AppIcons.undrawChart,
+              EmptyIllustration(
+                AppIcons.walletLight,
+                'No accounts available'.hardcoded,
               ),
               Gap.h16,
-              Text(
-                'Nothing in here. Please add a new account',
-                style: kHeader3TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
-                textAlign: TextAlign.center,
-              )
             ];
     }
 
@@ -73,15 +70,11 @@ class AccountsListScreen extends ConsumerWidget {
             )
           : [
               Gap.h24,
-              BackgroundIllustration(
-                AppIcons.undrawSavings,
+              EmptyIllustration(
+                AppIcons.savingsEmptyLight,
+                'No saving accounts'.hardcoded,
               ),
               Gap.h16,
-              Text(
-                'No saving accounts',
-                style: kHeader3TextStyle.copyWith(color: AppColors.grey(context), fontSize: 14),
-                textAlign: TextAlign.center,
-              )
             ];
     }
 
@@ -93,7 +86,7 @@ class AccountsListScreen extends ConsumerWidget {
             title: 'Accounts',
             isTopLevelOfNavigationRail: true,
             trailing: RoundedIconButton(
-              iconPath: AppIcons.add,
+              iconPath: AppIcons.addLight,
               iconColor: context.appTheme.onBackground,
               backgroundColor: context.appTheme.background0,
               onTap: () => context.push(RoutePath.addAccount),

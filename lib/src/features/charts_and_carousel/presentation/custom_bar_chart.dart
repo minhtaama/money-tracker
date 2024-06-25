@@ -301,7 +301,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
                           ],
                         ),
                         child: SvgIcon(
-                          AppIcons.add,
+                          AppIcons.addLight,
                           size: 20,
                           color: context.appTheme.accent2.lerpWithOnBg(context, 0.5),
                         ),

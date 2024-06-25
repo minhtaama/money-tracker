@@ -114,8 +114,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                       textAlign: TextAlign.end,
                       formattedResultOutput: (value) => calculatorOutput = value,
                       focusColor: context.appTheme.secondary1,
-                      hintText: CalService.formatNumberInGroup(
-                          widget.currentCreditAccount.creditLimit.toString())),
+                      hintText: CalService.formatNumberInGroup(widget.currentCreditAccount.creditLimit.toString())),
                 ),
               ),
               Gap.h12,
@@ -169,7 +168,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,
-        smallButtonIcon: AppIcons.delete,
+        smallButtonIcon: AppIcons.deleteBulk,
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,
@@ -183,8 +182,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                 onConfirm: () async {
                   context.go(RoutePath.accounts);
                   final accountRepo = ref.read(accountRepositoryProvider);
-                  await Future.delayed(
-                      k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
+                  await Future.delayed(k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
                 },
               );
             },

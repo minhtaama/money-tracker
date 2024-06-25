@@ -35,7 +35,7 @@ class PageHeading extends StatelessWidget {
             children: [
               canPop && ModalRoute.of(context)!.canPop
                   ? RoundedIconButton(
-                      iconPath: AppIcons.back,
+                      iconPath: AppIcons.backLight,
                       backgroundColor: Colors.transparent,
                       iconColor: context.appTheme.onBackground,
                       onTap: () => context.pop(),

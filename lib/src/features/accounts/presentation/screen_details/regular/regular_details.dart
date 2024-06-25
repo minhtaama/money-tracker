@@ -110,21 +110,21 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         iconColor: widget.regularAccount.iconColor,
         roundedButtonItems: [
           FABItem(
-            icon: AppIcons.income,
+            icon: AppIcons.incomeLight,
             label: context.loc.income,
             color: context.appTheme.onPositive,
             backgroundColor: context.appTheme.positive,
             onTap: () => context.push(RoutePath.addIncome),
           ),
           FABItem(
-            icon: AppIcons.transfer,
+            icon: AppIcons.transferLight,
             label: context.loc.transfer,
             color: context.appTheme.onBackground,
             backgroundColor: AppColors.grey(context),
             onTap: () => context.push(RoutePath.addTransfer),
           ),
           FABItem(
-            icon: AppIcons.expense,
+            icon: AppIcons.expenseLight,
             label: context.loc.expense,
             color: context.appTheme.onNegative,
             backgroundColor: context.appTheme.negative,

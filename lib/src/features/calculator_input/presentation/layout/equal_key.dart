@@ -63,7 +63,7 @@ class DoneKey extends StatelessWidget {
         borderRadius: BorderRadius.circular(1000),
         child: Center(
           child: SvgIcon(
-            AppIcons.done,
+            AppIcons.doneLight,
             color: context.appTheme.onAccent,
             size: 30,
           ),

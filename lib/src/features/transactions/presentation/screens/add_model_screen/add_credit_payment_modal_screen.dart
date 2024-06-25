@@ -189,7 +189,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                             suffix: Transform.translate(
                               offset: const Offset(0, 5),
                               child: SvgIcon(
-                                AppIcons.receiptCheck,
+                                AppIcons.receiptCheckBulk,
                                 size: 27,
                                 color: context.appTheme.onBackground,
                               ),
@@ -211,7 +211,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               Gap.h4,
               HelpBox(
                 isShow: _showHelpBox && _stateController.isPaymentTooHighThanBalance(context),
-                iconPath: AppIcons.sadFace,
+                iconPath: AppIcons.sadFaceBulk,
                 margin: const EdgeInsets.only(top: 8),
                 header: 'Too high than balance to pay!'.hardcoded,
                 text:
@@ -223,7 +223,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               ),
               HelpBox(
                 isShow: _showHelpBox && _stateController.isPaymentQuiteHighThanBalance(context),
-                iconPath: AppIcons.fykFace,
+                iconPath: AppIcons.fykFaceBulk,
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
@@ -237,7 +237,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               ),
               HelpBox(
                 isShow: _showHelpBox && _stateController.isPaymentCloseToBalance(context),
-                iconPath: AppIcons.fykFace,
+                iconPath: AppIcons.fykFaceBulk,
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
@@ -249,7 +249,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               ),
               HelpBox(
                 isShow: _showHelpBox && _stateController.isPaymentEqualBalance(context),
-                iconPath: AppIcons.fykFace,
+                iconPath: AppIcons.fykFaceBulk,
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
@@ -260,7 +260,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               ),
               HelpBox(
                 isShow: _showHelpBox && _stateController.isNoNeedPayment(context),
-                iconPath: AppIcons.fykFace,
+                iconPath: AppIcons.fykFaceBulk,
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
@@ -285,8 +285,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                       stateWatch.totalBalanceAmount.roundBySetting(context) -
                                               stateWatch.userPaymentAmount!.roundBySetting(context) >
                                           0
-                                  ? CalService.formatCurrency(context,
-                                      stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                  ? CalService.formatCurrency(
+                                      context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                   : '???',
                               textAlign: TextAlign.right,
                               controller: _remainingInputController,
