@@ -6,6 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart'
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -121,10 +122,13 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                         ? Wrap(
                             spacing: 10,
                             runSpacing: 10,
-                            children: List.generate(savingList.length, (index) {
-                              final account = savingList[index];
-                              return _accountButton(account);
-                            }),
+                            children: List.generate(
+                              savingList.length,
+                              (index) {
+                                final account = savingList[index];
+                                return _accountButton(account);
+                              },
+                            ),
                           )
                         : Gap.noGap,
                     context.isBigScreen ? Gap.noGap : Gap.h32,
@@ -137,9 +141,27 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                               .hardcoded,
                       headerSize: 14,
                       iconPath: AppIcons.accountsBulk,
-                      onTap: () {
-                        context.pop();
-                        context.push(RoutePath.addAccount);
+                      onTap: () async {
+                        final accountType = widget.accountType;
+
+                        final newAccount = await showCustomModal<Account>(
+                          context: context,
+                          builder: (controller, isScrollable) =>
+                              AddAccountModalScreen(controller, isScrollable, initialType: accountType),
+                        );
+
+                        final isSameType = (newAccount is RegularAccount && accountType == AccountType.regular) ||
+                            (newAccount is CreditAccount && accountType == AccountType.credit);
+
+                        print(isSameType);
+                        print(newAccount);
+                        print(accountType);
+
+                        if (context.mounted) {
+                          if (newAccount != null && isSameType) {
+                            context.pop<Account>(newAccount);
+                          }
+                        }
                       },
                     ),
                     Gap.h48,

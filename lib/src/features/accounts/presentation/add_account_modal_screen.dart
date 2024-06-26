@@ -22,12 +22,14 @@ import 'package:money_tracker_app/src/utils/extensions/string_double_extension.d
 import '../../../theme_and_ui/icons.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../../common_widgets/modal_screen_components.dart';
+import '../domain/account_base.dart';
 
 class AddAccountModalScreen extends ConsumerStatefulWidget {
-  const AddAccountModalScreen(this.controller, this.isScrollable, {super.key});
+  const AddAccountModalScreen(this.controller, this.isScrollable, {super.key, this.initialType});
 
   final ScrollController controller;
   final bool isScrollable;
+  final AccountType? initialType;
 
   @override
   ConsumerState<AddAccountModalScreen> createState() => _AddAccountModalScreenState();
@@ -41,7 +43,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
   int _iconIndex = 0;
   int _colorIndex = 0;
 
-  AccountType _accountType = AccountType.regular;
+  late AccountType _accountType = widget.initialType ?? AccountType.regular;
 
   String _calculatorOutput = '0';
 
@@ -57,18 +59,18 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       // By validating, the _formatToDouble(calculatorOutput) must not null
       final accountRepository = ref.read(accountRepositoryProvider);
 
+      Account account;
+
       if (_accountType == AccountType.regular) {
-        accountRepository.writeNewRegularAccount(
+        account = accountRepository.writeNewRegularAccount(
           CalService.formatToDouble(_calculatorOutput)!,
           iconCategory: _iconCategory,
           iconIndex: _iconIndex,
           name: _accountName,
           colorIndex: _colorIndex,
         );
-      }
-
-      if (_accountType == AccountType.credit) {
-        accountRepository.writeNewCreditAccount(
+      } else if (_accountType == AccountType.credit) {
+        account = accountRepository.writeNewCreditAccount(
           CalService.formatToDouble(_calculatorOutput)!,
           iconCategory: _iconCategory,
           iconIndex: _iconIndex,
@@ -79,10 +81,8 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           statementType: _statementType,
           apr: CalService.formatToDouble(_apr)!,
         );
-      }
-
-      if (_accountType == AccountType.saving) {
-        accountRepository.writeNewSavingAccount(
+      } else if (_accountType == AccountType.saving) {
+        account = accountRepository.writeNewSavingAccount(
           CalService.formatToDouble(_calculatorOutput)!,
           iconCategory: _iconCategory,
           iconIndex: _iconIndex,
@@ -90,9 +90,11 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           colorIndex: _colorIndex,
           targetDate: _targetSavingDate,
         );
+      } else {
+        throw StateError('_accountType is not available');
       }
 
-      context.pop();
+      context.pop(account);
     }
   }
 
@@ -125,6 +127,11 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       ),
       body: [
         CustomSliderToggle<AccountType>(
+          initialValueIndex: widget.initialType == AccountType.regular
+              ? 0
+              : widget.initialType == AccountType.credit
+                  ? 1
+                  : 0,
           values: const [AccountType.regular, AccountType.credit, AccountType.saving],
           iconPaths: [AppIcons.walletLight, AppIcons.creditLight, AppIcons.savingsLight],
           labels: const ['Regular', 'Credit', 'Saving'],

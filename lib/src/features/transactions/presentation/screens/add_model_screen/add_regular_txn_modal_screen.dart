@@ -59,7 +59,11 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
   String get _secondaryTitle {
     return widget.transactionType == TransactionType.transfer
-        ? 'Between regular accounts'.hardcoded
+        ? _stateRead.toAccount is SavingAccount
+            ? 'To saving account'.hardcoded
+            : _stateRead.account is SavingAccount
+                ? 'Out of saving account'.hardcoded
+                : 'Between regular accounts'.hardcoded
         : 'For regular accounts'.hardcoded;
   }
 

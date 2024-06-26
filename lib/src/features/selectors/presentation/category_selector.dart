@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/utils/extensions/string_double_extension.d
 import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
 import '../../../common_widgets/modal_screen_components.dart';
-import '../../../routing/app_router.dart';
 import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/enums.dart';
@@ -76,16 +75,12 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
 
         final returnedValue = await showCustomModal<Category>(
           context: context,
-          child: categoryList.isNotEmpty
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ModalHeader(
-                      withBackButton: false,
-                      title: 'Choose Category'.hardcoded,
-                    ),
-                    Gap.h16,
+          builder: (controller, isScrollable) => ModalContent(
+            header: ModalHeader(
+              title: 'Choose Category'.hardcoded,
+            ),
+            body: categoryList.isNotEmpty
+                ? [
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
@@ -133,7 +128,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                               context: context,
                               child: AddCategoryModalScreen(initialType: categoryType),
                             );
-                            if (mounted) {
+
+                            if (context.mounted) {
                               if (newCategory != null && newCategory.type == categoryType) {
                                 context.pop<Category>(newCategory);
                               }
@@ -143,11 +139,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                       ],
                     ),
                     context.isBigScreen ? Gap.noGap : Gap.h32,
-                  ],
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+                  ]
+                : [
                     Gap.h8,
                     IconWithText(
                       header:
@@ -164,7 +157,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                           context: context,
                           child: AddCategoryModalScreen(initialType: categoryType),
                         );
-                        if (mounted) {
+
+                        if (context.mounted) {
                           if (newCategory != null && newCategory.type == categoryType) {
                             context.pop<Category>(newCategory);
                           }
@@ -173,7 +167,8 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                     ),
                     Gap.h48,
                   ],
-                ),
+            footer: Gap.noGap,
+          ),
         );
 
         setState(() {

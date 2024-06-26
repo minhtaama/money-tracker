@@ -94,7 +94,7 @@ class AccountRepositoryRealmDb {
     txnRepo.removeEmptyAdjustToAPRChanges();
   }
 
-  void writeNewCreditAccount(
+  CreditAccount writeNewCreditAccount(
     double creditLimit, {
     required String iconCategory,
     required int iconIndex,
@@ -104,7 +104,7 @@ class AccountRepositoryRealmDb {
     required int paymentDueDay,
     required double apr,
     required StatementType statementType,
-  }) async {
+  }) {
     final order = getList(null).length;
 
     final statementTypeDb = switch (statementType) {
@@ -128,15 +128,17 @@ class AccountRepositoryRealmDb {
     realm.write(() {
       realm.add(newAccount);
     });
+
+    return Account.fromDatabase(newAccount) as CreditAccount;
   }
 
-  void writeNewRegularAccount(
+  RegularAccount writeNewRegularAccount(
     double initialBalance, {
     required String iconCategory,
     required int iconIndex,
     required String name,
     required int colorIndex,
-  }) async {
+  }) {
     final order = getList(null).length;
 
     final newAccount = AccountDb(
@@ -154,16 +156,18 @@ class AccountRepositoryRealmDb {
 
       ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: initialBalance, newAccount: newAccount);
     });
+
+    return Account.fromDatabase(newAccount) as RegularAccount;
   }
 
-  void writeNewSavingAccount(
+  SavingAccount writeNewSavingAccount(
     double targetAmount, {
     required String iconCategory,
     required int iconIndex,
     required String name,
     required int colorIndex,
     required DateTime? targetDate,
-  }) async {
+  }) {
     final order = getList(null).length;
 
     final savingDetails = SavingDetailsDb(targetAmount, targetDate: targetDate);
@@ -182,6 +186,8 @@ class AccountRepositoryRealmDb {
     realm.write(() {
       realm.add(newSaving);
     });
+
+    return Account.fromDatabase(newSaving) as SavingAccount;
   }
 
   void editRegularAccount(

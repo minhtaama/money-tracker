@@ -126,7 +126,7 @@ class _TransferDetails extends StatelessWidget {
           transaction.isToSavingAccount
               ? 'Add saving to:'.hardcoded
               : transaction.isFromSavingAccount
-                  ? 'Transfer from saving to:'.hardcoded
+                  ? 'Transfer saving to:'.hardcoded
                   : 'Transfer to:'.hardcoded,
           style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
