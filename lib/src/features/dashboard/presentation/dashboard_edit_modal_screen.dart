@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -19,35 +20,20 @@ class DashboardEditModalScreen extends ConsumerStatefulWidget {
 
 class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScreen> {
   late final List<DashboardWidgetType> _order = List.from(context.appPersistentValues.dashboardOrder);
-  late final List<DashboardWidgetType> _hiddenList =
-      List.from(context.appPersistentValues.hiddenDashboardWidgets);
+  late final List<DashboardWidgetType> _hiddenList = List.from(context.appPersistentValues.hiddenDashboardWidgets);
 
   void _updateDb() {
-    ref
-        .read(persistentControllerProvider.notifier)
-        .set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
+    ref.read(persistentControllerProvider.notifier).set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomSection(
-      title: 'Edit Dashboard'.hardcoded,
-      subTitle: Text(
-        'Re-order and choose which widget to display'.hardcoded,
-        style: kHeader4TextStyle.copyWith(
-          color: context.appTheme.onBackground,
-          fontSize: 13,
-        ),
+    return ModalContent(
+      header: ModalHeader(
+        title: 'Edit Dashboard'.hardcoded,
+        secondaryTitle: 'Re-order and choose which widget to display'.hardcoded,
       ),
-      isWrapByCard: false,
-      margin: EdgeInsets.zero,
-      holdToReorder: true,
-      onReorder: (oldIndex, newIndex) {
-        final item = _order.removeAt(oldIndex);
-        _order.insert(newIndex, item);
-        _updateDb();
-      },
-      sections: _order
+      body: _order
           .map((e) => CardItem(
                 margin: const EdgeInsets.symmetric(vertical: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -84,6 +70,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
                 ),
               ))
           .toList(),
+      footer: Gap.noGap,
     );
   }
 }

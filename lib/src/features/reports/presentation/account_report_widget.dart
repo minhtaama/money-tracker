@@ -63,6 +63,8 @@ class _TotalViewState extends ConsumerState<_TotalView> {
     setState(() {
       _accountList = accountRepo.getList([AccountType.regular]).whereType<RegularAccount>().toList();
 
+      _touchedIndex = -1;
+
       _data = chartServices.getCLCDataForReportScreenOnRegularAccount(
         _accountList,
         widget.dateTimes.first,
@@ -111,7 +113,7 @@ class _TotalViewState extends ConsumerState<_TotalView> {
       Padding(
         padding: const EdgeInsets.only(left: 14.0),
         child: Text(
-          data.lines[0].spots[index].dateTime!.toLongDate(context),
+          data.lines.first.spots[index].dateTime!.toLongDate(context),
           style: kHeader4TextStyle.copyWith(
             color: context.appTheme.onBackground.withOpacity(0.65),
             fontSize: 14,

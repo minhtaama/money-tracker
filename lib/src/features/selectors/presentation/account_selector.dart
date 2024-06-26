@@ -99,21 +99,22 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                     ),
                     savingList != null
                         ? Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 24.0, bottom: 16.0),
+                            padding: const EdgeInsets.only(left: 8.0, top: 16.0, bottom: 12.0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
+                                Expanded(
+                                  child: Gap.divider(context),
+                                ),
+                                Gap.w8,
                                 Text(
-                                  context.loc.savings,
+                                  'Saving accounts'.hardcoded,
                                   style: kHeader3TextStyle.copyWith(
                                     color: context.appTheme.onBackground.withOpacity(0.65),
                                     fontSize: 14,
                                   ),
                                 ),
                                 Gap.w4,
-                                Expanded(
-                                  child: Gap.divider(context, indent: 6),
-                                ),
                               ],
                             ),
                           )
