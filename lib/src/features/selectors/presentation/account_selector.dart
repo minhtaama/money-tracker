@@ -153,10 +153,6 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                         final isSameType = (newAccount is RegularAccount && accountType == AccountType.regular) ||
                             (newAccount is CreditAccount && accountType == AccountType.credit);
 
-                        print(isSameType);
-                        print(newAccount);
-                        print(accountType);
-
                         if (context.mounted) {
                           if (newAccount != null && isSameType) {
                             context.pop<Account>(newAccount);

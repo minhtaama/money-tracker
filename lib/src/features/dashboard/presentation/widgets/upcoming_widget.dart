@@ -88,7 +88,7 @@ class UpcomingWidget extends ConsumerWidget {
                       ? context.appTheme.positive
                       : model.type == TransactionType.expense
                           ? context.appTheme.negative
-                          : context.appTheme.onBackground)
+                          : context.appTheme.background0)
                   .withOpacity(0.075),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
