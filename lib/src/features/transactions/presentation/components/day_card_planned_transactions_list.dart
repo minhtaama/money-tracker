@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -9,6 +10,7 @@ import '../../../../common_widgets/hideable_container.dart';
 import '../../../../common_widgets/icon_with_text_button.dart';
 import '../../../../theme_and_ui/colors.dart';
 import '../../../../utils/constants.dart';
+import '../../../recurrence/data/recurrence_repo.dart';
 import '../../../recurrence/domain/recurrence.dart';
 import '../../../recurrence/presentation/transaction_data_tile.dart';
 
@@ -84,40 +86,58 @@ class _TileState extends State<_Tile> {
                   hide: !_showButtons,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 12.0, bottom: 5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                          child: IconWithTextButton(
-                            iconPath: AppIcons.addLight,
-                            backgroundColor: color,
-                            color: onColor,
-                            label: 'Add'.hardcoded,
-                            labelSize: 12,
-                            iconSize: 14,
-                            width: 1,
-                            height: 30,
-                            onTap: () {},
-                          ),
-                        ),
-                        Gap.w24,
-                        Expanded(
-                          child: IconWithTextButton(
-                            iconPath: AppIcons.turnTwoTone,
-                            backgroundColor: Colors.transparent,
-                            color: context.appTheme.onBackground,
-                            label: 'Skip'.hardcoded,
-                            border: Border.all(
-                              color: context.appTheme.onBackground,
+                    child: Consumer(
+                      builder: (BuildContext context, WidgetRef ref, Widget? child) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Expanded(
+                            child: IconWithTextButton(
+                              iconPath: AppIcons.addLight,
+                              backgroundColor: color,
+                              color: onColor,
+                              label: 'Add'.hardcoded,
+                              labelSize: 12,
+                              iconSize: 14,
+                              width: 1,
+                              height: 30,
+                              onTap: () {
+                                setState(() {
+                                  _showButtons = !_showButtons;
+                                });
+                                Future.delayed(k350msDuration, () {
+                                  final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                  recRepo.addTransaction(ref, widget.model);
+                                });
+                              },
                             ),
-                            labelSize: 12,
-                            iconSize: 14,
-                            width: 1,
-                            height: 30,
-                            onTap: () {},
                           ),
-                        ),
-                      ],
+                          Gap.w24,
+                          Expanded(
+                            child: IconWithTextButton(
+                              iconPath: AppIcons.turnTwoTone,
+                              backgroundColor: Colors.transparent,
+                              color: context.appTheme.onBackground,
+                              label: 'Skip'.hardcoded,
+                              border: Border.all(
+                                color: context.appTheme.onBackground,
+                              ),
+                              labelSize: 12,
+                              iconSize: 14,
+                              width: 1,
+                              height: 30,
+                              onTap: () {
+                                setState(() {
+                                  _showButtons = !_showButtons;
+                                });
+                                Future.delayed(k350msDuration, () {
+                                  final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                  recRepo.addSkipped(widget.model);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
