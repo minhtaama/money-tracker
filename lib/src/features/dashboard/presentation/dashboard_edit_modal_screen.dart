@@ -33,6 +33,11 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
         title: 'Edit Dashboard'.hardcoded,
         secondaryTitle: 'Re-order and choose which widget to display'.hardcoded,
       ),
+      onReorder: (oldIndex, newIndex) {
+        final item = _order.removeAt(oldIndex);
+        _order.insert(newIndex, item);
+        _updateDb();
+      },
       body: _order
           .map((e) => CardItem(
                 margin: const EdgeInsets.symmetric(vertical: 6),
@@ -71,6 +76,62 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
               ))
           .toList(),
       footer: Gap.noGap,
+    );
+
+    return CustomSection(
+      title: 'Edit Dashboard'.hardcoded,
+      subTitle: Text(
+        'Re-order and choose which widget to display'.hardcoded,
+        style: kHeader4TextStyle.copyWith(
+          color: context.appTheme.onBackground,
+          fontSize: 13,
+        ),
+      ),
+      isWrapByCard: false,
+      margin: EdgeInsets.zero,
+      holdToReorder: true,
+      onReorder: (oldIndex, newIndex) {
+        final item = _order.removeAt(oldIndex);
+        _order.insert(newIndex, item);
+        _updateDb();
+      },
+      sections: _order
+          .map((e) => CardItem(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                border: context.appTheme.isDarkTheme
+                    ? Border.all(color: context.appTheme.onBackground.withOpacity(0.15))
+                    : null,
+                child: Row(
+                  children: [
+                    SvgIcon(
+                      e.iconPath,
+                      color: context.appTheme.onBackground,
+                    ),
+                    Gap.w16,
+                    Text(
+                      e.name,
+                      style: kHeader2TextStyle.copyWith(
+                        color: context.appTheme.onBackground,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const Spacer(),
+                    _AnimatedToggle(
+                      initialValue: !_hiddenList.contains(e),
+                      onTap: (value) {
+                        if (!_hiddenList.contains(e)) {
+                          _hiddenList.add(e);
+                        } else {
+                          _hiddenList.remove(e);
+                        }
+                        Future.delayed(k150msDuration, _updateDb);
+                      },
+                    )
+                  ],
+                ),
+              ))
+          .toList(),
     );
   }
 }
