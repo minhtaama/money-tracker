@@ -89,7 +89,7 @@ class AccountsListScreen extends ConsumerWidget {
               iconPath: AppIcons.addLight,
               iconColor: context.appTheme.onBackground,
               backgroundColor: context.appTheme.background0,
-              onTap: () => context.push(RoutePath.addAccount),
+              onTap: () => context.go(RoutePath.addAccount),
             ),
           ),
         ),
@@ -127,7 +127,7 @@ class _AccountTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
-        onTap: () => context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
+        onTap: () => context.go(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
         child: CardItem(
           margin: EdgeInsets.zero,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -247,7 +247,7 @@ class _SavingTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
-        onTap: () => context.push(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
+        onTap: () => context.go(RoutePath.savingModalScreen, extra: model.databaseObject.id.hexString),
         child: CardItem(
           margin: EdgeInsets.zero,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

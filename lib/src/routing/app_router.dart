@@ -4,6 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaff
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/saving_modal_screen.dart';
 import 'package:money_tracker_app/src/features/budget/presentation/add_budget_modal_screen.dart';
 import 'package:money_tracker_app/src/features/budget/presentation/budgets_list_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
@@ -50,6 +51,7 @@ class RoutePath {
   static const String addCategory = '/dashboard/categories/addCategory';
   static const String accounts = '/dashboard/accounts';
   static const String accountScreen = '/dashboard/accounts/accountScreen';
+  static const String savingModalScreen = '/dashboard/accounts/savingModalScreen';
   static const String addAccount = '/dashboard/accounts/addAccount';
   static const String budgets = '/dashboard/budgets';
   static const String addBudget = '/dashboard/budgets/addBudget';
@@ -288,6 +290,15 @@ final goRouter = GoRouter(
                       ),
                     ),
                     GoRoute(
+                      path: 'savingModalScreen',
+                      parentNavigatorKey: _railNavKey,
+                      pageBuilder: (context, state) => CustomAppModalPage(
+                        key: state.pageKey,
+                        builder: (controller, isScrollable) =>
+                            SavingModalScreen(controller, isScrollable, objectIdHexString: state.extra as String),
+                      ),
+                    ),
+                    GoRoute(
                       path: 'addAccount',
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
@@ -327,21 +338,7 @@ final goRouter = GoRouter(
                     key: state.pageKey,
                     child: const ReportsScreen(),
                   ),
-                  routes: const [
-                    // GoRoute(
-                    //   path: 'budgetScreen',
-                    //   parentNavigatorKey: _rootNavKey,
-                    //   builder: (context, state) => AccountScreen(objectIdHexString: state.extra as String),
-                    // ),
-                    // GoRoute(
-                    //   path: 'addBudget',
-                    //   parentNavigatorKey: _railNavKey,
-                    //   pageBuilder: (context, state) => CustomAppModalPage(
-                    //     key: state.pageKey,
-                    //     builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
-                    //   ),
-                    // ),
-                  ],
+                  routes: const [],
                 ),
               ],
             ),

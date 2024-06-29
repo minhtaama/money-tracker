@@ -34,7 +34,7 @@ class AccountScreen extends ConsumerWidget {
       return switch (account) {
         CreditAccount() => CreditScreenDetails(creditAccount: account as CreditAccount),
         RegularAccount() => RegularScreenDetails(regularAccount: account as RegularAccount),
-        SavingAccount() => Placeholder(),
+        SavingAccount() => throw StateError('This screen is not for SavingAccount'),
       };
     } catch (e) {
       return IconWithText(
