@@ -131,7 +131,7 @@ class _TransactionsListState extends State<_TransactionsList> {
 
         setState(() {
           // translateY is padding of _Transaction widget, width of _DateTime widget and width of the line
-          _lineOffset = topOffset.translate(topRenderBox.size.height / 2, 16 + 25 / 2 - 1);
+          _lineOffset = topOffset.translate(topRenderBox.size.height / 2, 0);
 
           _lineHeight = bottomOffset.dy - topOffset.dy;
         });
@@ -154,7 +154,7 @@ class _TransactionsListState extends State<_TransactionsList> {
 
         setState(() {
           // translateY is padding of _Transaction widget, width of _DateTime widget and width of the line
-          _lineOffset = topOffset.translate(topRenderBox.size.height / 2, 16 + 25 / 2 - 1);
+          _lineOffset = topOffset.translate(topRenderBox.size.height / 2, 8 + 25 / 2);
 
           _lineHeight = bottomOffset.dy - topOffset.dy;
         });
@@ -213,7 +213,7 @@ class _Transaction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       child: CustomInkWell(
         inkColor: AppColors.grey(context),
         borderRadius: BorderRadius.circular(12),
