@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
@@ -53,12 +52,12 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        title: 'Add new budget'.hardcoded,
+        title: context.loc.addNewBudget,
       ),
       body: [
         CustomSliderToggle<BudgetType>(
           values: const [BudgetType.forCategory, BudgetType.forAccount],
-          labels: const ['For Categories', 'For Accounts'],
+          labels: [context.loc.forCategories, context.loc.forAccounts],
           iconPaths: [AppIcons.categoriesBulk, AppIcons.accountsBulk],
           initialValueIndex: 1,
           fontSize: 14,
@@ -81,9 +80,9 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
             Expanded(
               child: CustomTextFormField(
                 keyboardType: TextInputType.text,
-                validator: (_) => _name == '' ? 'Please input name'.hardcoded : null,
+                validator: (_) => _name == '' ? context.loc.pleaseInputName : null,
                 onChanged: (value) => _name = value,
-                hintText: 'Budget name'.hardcoded,
+                hintText: context.loc.budgetName,
                 focusColor: context.appTheme.accent1,
                 style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 16),
               ),
@@ -97,11 +96,11 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
             Gap.w16,
             Expanded(
               child: CalculatorInput(
-                hintText: 'Budget limit'.hardcoded,
+                hintText: context.loc.budgetLimit,
                 focusColor: context.appTheme.onBackground,
                 validator: (_) {
                   if (_amount <= 0) {
-                    return 'Invalid amount';
+                    return context.loc.invalidAmount;
                   }
                   return null;
                 },
@@ -134,7 +133,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   CustomRadio<BudgetPeriodType>(
-                    label: 'Daily'.hardcoded,
+                    label: context.loc.daily,
                     width: 135,
                     value: BudgetPeriodType.daily,
                     groupValue: _periodType,
@@ -143,7 +142,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                     }),
                   ),
                   CustomRadio<BudgetPeriodType>(
-                    label: 'Weekly'.hardcoded,
+                    label: context.loc.weekly,
                     width: 135,
                     value: BudgetPeriodType.weekly,
                     groupValue: _periodType,
@@ -157,7 +156,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   CustomRadio<BudgetPeriodType>(
-                    label: 'Monthly'.hardcoded,
+                    label: context.loc.monthly,
                     width: 135,
                     value: BudgetPeriodType.monthly,
                     groupValue: _periodType,
@@ -166,7 +165,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
                     }),
                   ),
                   CustomRadio<BudgetPeriodType>(
-                    label: 'Yearly'.hardcoded,
+                    label: context.loc.yearly,
                     width: 135,
                     value: BudgetPeriodType.yearly,
                     groupValue: _periodType,
@@ -188,7 +187,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                 child: Text(
-                  'Select categories registered with budget:'.hardcoded,
+                  context.loc.quoteBudget1,
                   style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                 ),
               ),
@@ -208,7 +207,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                 child: Text(
-                  'Select accounts registered with budget:'.hardcoded,
+                  context.loc.quoteBudget2,
                   style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
                 ),
               ),
@@ -281,7 +280,7 @@ class _AccountSelectorState<T extends BaseModelWithIcon> extends ConsumerState<_
   Widget build(BuildContext context) {
     return _items.isEmpty
         ? IconWithText(
-            header: 'No items'.hardcoded,
+            header: context.loc.noItems,
             headerSize: 14,
             iconPath: AppIcons.sadFaceBulk,
           )

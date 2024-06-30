@@ -50,7 +50,8 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
 
   final paymentDateTimes = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final spendingDateTimes = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-  final checkpointDateTimes = creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  final checkpointDateTimes =
+      creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
 
   final dateOfPaymentBefore = paymentDateTimes.lastWhere(
     (dt) => !dt.onlyYearMonthDay.isAfter(dbDateTime.onlyYearMonthDay),
@@ -65,12 +66,13 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
     final beforeLastCheckpoint = dateTime.isBefore(lastCheckpointDateTime);
     final inPreviousStatement = !dateTime.isAfter(previousDueDate);
     final inNextStatement = dateTime.isAfter(dueDate);
-    final notBetweenPayments = dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter);
+    final notBetweenPayments =
+        dateTime.isBefore(dateOfPaymentBefore) || !dateTime.isBefore(dateOfPaymentAfter);
 
     if (beforeLastCheckpoint) {
       showErrorDialog(
         context,
-        'You can only select day after [latest checkpoint]'.hardcoded,
+        context.loc.quoteCreditCalendarDialog4_1,
         enable: showDialog,
       );
 
@@ -80,7 +82,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
     if (inPreviousStatement || inNextStatement) {
       showErrorDialog(
         context,
-        'Oops! You can only select day in this statement'.hardcoded,
+        context.loc.quoteCreditCalendarDialog5_1,
         enable: showDialog,
       );
 
@@ -90,7 +92,7 @@ Future<DateTime?> showCreditSpendingDateTimeEditDialog(
     if (notBetweenPayments) {
       showErrorDialog(
         context,
-        'Oops! There is a payment between current date and selected date'.hardcoded,
+        context.loc.quoteCreditCalendarDialog8,
         enable: showDialog,
       );
 
@@ -180,7 +182,8 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
 
   final paymentDateTimes = creditAccount.paymentTransactions.map((e) => e.dateTime.onlyYearMonthDay);
   final spendingDateTimes = creditAccount.spendingTransactions.map((e) => e.dateTime.onlyYearMonthDay);
-  final checkpointDateTimes = creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
+  final checkpointDateTimes =
+      creditAccount.checkpointTransactions.map((e) => e.dateTime.onlyYearMonthDay);
 
   final dateOfSpendingBefore = spendingDateTimes.lastWhere(
     (dt) => !dt.onlyYearMonthDay.isAfter(dbDateTime.onlyYearMonthDay),
@@ -196,14 +199,15 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
     final beforeLastCheckpoint = dateTime.isBefore(lastCheckpointDateTime);
     final inPreviousStatement = !dateTime.isAfter(previousDueDate);
     final inNextStatement = dateTime.isAfter(dueDate);
-    final notBetweenSpendings = !dateTime.isAfter(dateOfSpendingBefore) || dateTime.isAfter(dateOfSpendingAfter);
+    final notBetweenSpendings =
+        !dateTime.isAfter(dateOfSpendingBefore) || dateTime.isAfter(dateOfSpendingAfter);
     final canPayOnlyInGracePeriod = creditAccount.statementType == StatementType.payOnlyInGracePeriod;
     final notInGracePeriod = dateTime.isBefore(statementDate);
 
     if (beforeLastCheckpoint) {
       showErrorDialog(
         context,
-        'You can only select day after [latest checkpoint]'.hardcoded,
+        context.loc.quoteCreditCalendarDialog4_1,
         enable: showDialog,
       );
 
@@ -213,7 +217,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
     if (inPreviousStatement || inNextStatement) {
       showErrorDialog(
         context,
-        'Oops! You can only select day in this statement'.hardcoded,
+        context.loc.quoteCreditCalendarDialog5_1,
         enable: showDialog,
       );
 
@@ -223,7 +227,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
     if (notBetweenSpendings) {
       showErrorDialog(
         context,
-        'Oops! There is a spending between current date and selected date'.hardcoded,
+        context.loc.quoteCreditCalendarDialog8_1,
         enable: showDialog,
       );
 
@@ -233,7 +237,7 @@ Future<List<dynamic>?> showCreditPaymentDateTimeEditDialog(
     if (notInGracePeriod && canPayOnlyInGracePeriod) {
       showErrorDialog(
         context,
-        'Oops! Can only pay in grace period (Account preference)'.hardcoded,
+        context.loc.quoteCreditCalendarDialog7,
         enable: showDialog,
       );
 

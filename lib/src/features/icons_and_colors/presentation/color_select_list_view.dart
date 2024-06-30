@@ -9,12 +9,12 @@ import '../../../utils/constants.dart';
 class ColorSelectListView extends StatefulWidget {
   /// This class `onColorTap` returns index of `List<Color>` in [AppColors.allColorsUserCanPick]
   const ColorSelectListView({
-    Key? key,
+    super.key,
     this.size = 75,
     this.spacing = 12,
     required this.onColorTap,
     this.initialColorIndex = 0,
-  }) : super(key: key);
+  });
   final ValueChanged<int> onColorTap;
   final double size;
   final double spacing;
@@ -41,7 +41,8 @@ class _ColorSelectListViewState extends State<ColorSelectListView> {
         scrollDirection: Axis.horizontal,
         itemCount: AppColors.allColorsUserCanPick.length,
         itemBuilder: (context, index) => Padding(
-          padding: EdgeInsets.only(right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
+          padding:
+              EdgeInsets.only(right: widget.spacing * 2, top: widget.spacing, bottom: widget.spacing),
           child: CircleColor(
               color: AppColors.allColorsUserCanPick[index][0],
               isSelected: currentColorIndex == index,
@@ -61,13 +62,12 @@ class _ColorSelectListViewState extends State<ColorSelectListView> {
 
 class CircleColor extends StatelessWidget {
   const CircleColor(
-      {Key? key,
+      {super.key,
       required this.color,
       required this.isSelected,
       required this.onTap,
       required this.size,
-      required this.index})
-      : super(key: key);
+      required this.index});
   final int index;
   final Color color;
   final double size;

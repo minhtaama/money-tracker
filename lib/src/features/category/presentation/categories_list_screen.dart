@@ -8,12 +8,9 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
-import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../common_widgets/illustration.dart';
@@ -60,7 +57,7 @@ class CategoriesListScreen extends ConsumerWidget {
           : [
               EmptyIllustration(
                 AppIcons.deliveryTwoTone,
-                'No categories available'.hardcoded,
+                context.loc.noCategoriesAvailable,
                 verticalPadding: 12,
               ),
             ];
@@ -83,7 +80,7 @@ class CategoriesListScreen extends ConsumerWidget {
         CustomSection(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           isWrapByCard: false,
-          title: 'Income',
+          title: context.loc.income,
           onReorder: (oldIndex, newIndex) {
             categoryRepository.reorder(CategoryType.income, oldIndex, newIndex);
           },
@@ -92,7 +89,7 @@ class CategoriesListScreen extends ConsumerWidget {
         CustomSection(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           isWrapByCard: false,
-          title: 'Expense',
+          title: context.loc.expense,
           onReorder: (oldIndex, newIndex) {
             categoryRepository.reorder(CategoryType.expense, oldIndex, newIndex);
           },

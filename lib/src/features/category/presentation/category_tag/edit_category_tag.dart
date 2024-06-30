@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
-import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -38,7 +37,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
     return ModalContent(
       formKey: _formKey,
       header: ModalHeader(
-        title: 'Edit Tag'.hardcoded,
+        title: context.loc.editTag,
       ),
       body: [
         CustomTextFormField(
@@ -58,7 +57,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
           ),
           validator: (value) {
             if (_tags.map((e) => e.name.toLowerCase()).contains(value?.toLowerCase())) {
-              return 'Already has same tag';
+              return context.loc.alreadyHasSameTag;
             }
             return null;
           },
@@ -72,7 +71,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,
-            label: 'Are you sure that you want to delete tag "${widget.tag.name}"?',
+            label: context.loc.areYouSureToDeleteTag(widget.tag.name),
             onConfirm: () {
               categoryRepo.deleteTag(widget.tag);
               context.pop();

@@ -7,10 +7,12 @@
   "dashboard": "Dashboard",
   "settings": "Settings",
   "accounts": "Accounts",
+  "savingAccounts": "Saving accounts",
   "categories": "Categories",
   "budgets": "Budgets",
   "savings": "Saving",
   "recurrence": "Recurrence",
+  "report": "Report",
 
   "account": "Account",
   "creditAccount": "Credit account",
@@ -24,8 +26,15 @@
   "expense": "Expense",
   "creditSpending": "Credit spending",
   "creditPayment": "Credit payment",
+  "plannedTransactions": "Planned transactions",
 
   "today": "Today",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+
+  "invalidAmount": "Invalid amount",
 
   "@___________________ [ GENERAL BUTTON TITLES ] ________________": {},
 
@@ -34,6 +43,7 @@
   "done": "Done",
   "select": "Select",
   "delete": "Delete",
+  "add": "Add",
 
   "@_____________________ [ GENERAL DATE TIME ] ___________________": {},
 
@@ -82,13 +92,12 @@
 
 
 
-  "@___________________________ [ ACCOUNT SCREEN ] _____________________________": {},
+  "@___________________________ [ ACCOUNT FEATURES ] _____________________________": {},
 
+  "deletedAccount": "Deleted account",
   "deleteAccountConfirm1": "1 more confirmation to delete this account",
   "deleteAccountConfirm2": "Last warning. The account will be deleted after this confirmation.",
 
-
-  "@______ [ Regular account screen ] ______": {},
 
   "quoteRegularAccountScreen": "This account does not have any transactions in {month}, Create a new one by tapping ''+'' button",
   "@quoteRegularAccountScreen": {
@@ -101,10 +110,8 @@
     }
   },
 
-  "@______ [ Regular account edit modal ] ______": {},
 
   "editRegularAccount": "Edit account",
-
   "areYouSureToDeleteRegularAccount1": "Are you sure that you want to delete account \"{accountName}\"",
   "@areYouSureToDeleteRegularAccount1": {
     "placeholders": {
@@ -118,25 +125,16 @@
 
 
 
-  "@______ [ Credit account screen ] ______": {},
-
   "noTransactionMadeBeforeThisDay": "No transactions has made before this day",
   "tapToAddBalanceCheckpoint": "Tap to add balance checkpoint",
-
-
-  "@______ [ Credit account edit modal ] ______": {},
-
   "editCreditAccount": "Edit credit account",
   "creditLimit": "Credit limit:",
   "accountAPR": "Account APR",
   "paymentAndInterestPreferences": "Payment & Interest preferences:",
-
   "annualPercentageRate": "Annual Percentage Rate",
   "annualPercentageRateExplanation": "A standardized measure to express the total cost of borrowing over a year, includes the interest rate and any associated fees.",
-
   "usingADB": "Using Average Daily Balance",
   "usingADBExplanation": "Can make payment in billing cycle, interest is calculated by ADB method",
-
   "paymentOnlyGracePeriod": "Payment only in grace period",
   "paymentOnlyGracePeriodExplanation": "Can not make payment in billing cycle, interest is calculated by other method.",
 
@@ -152,17 +150,11 @@
   "areYouSureToDeleteCreditAccount2": "Are you sure? All transactions (except payments to this account) will be deleted, too.",
 
 
-
-  "@______ [ CreditAccount/Components ] ______": {},
-
   "quoteCreditAccountComponent1": "This statement has been closed",
   "quoteCreditAccountComponent1_1": "Unable to modify",
-
   "quoteCreditAccountComponent2": "This statement has balance checkpoint",
   "quoteCreditAccountComponent2_1": "Used to modify the total balance or to remove any on-going installments at statement date",
-
   "quoteCreditAccountComponent3": "Because of carry-over balance, interest might be added in next statement even if pay-in-full",
-
   "quoteCreditAccountComponent4": "Pay-in-full before this day for interest-free",
 
   "payment": "Payment",
@@ -174,11 +166,25 @@
   "instLeft": "Inst. left:",
   "paymentRequired": "Payment required:",
 
+  "billingCycleStart": "Billing cycle start",
   "previousDueDate": "Previous due date",
   "endOfLastGrace": "End of last grace period",
   "statementDate": "Statement date",
-  "withAdjustmentCheckpoint": "With adjustment checkpoint",
+  "statementDateWithCheckpoint": "Statement date with checkpoint",
+  "beginOfGrace": "Begin of grace period",
   "paymentDueDate": "Payment due date",
+
+  "withAdjustmentCheckpoint": "With adjustment checkpoint",
+  "carry": "Carry",
+  "interest": "Interest",
+
+  "quotePayment1" : "Because of carry-over balance, interest might be added in next statement even if pay-in-full",
+  "quotePayment2" : "Pay-in-full before this day for interest-free",
+  "quotePayment3" : "For easier tracking, you can only pay for transactions happens before selected day",
+
+
+  "balanceToPayAtSelectedDay" : "Balance to pay at selected day:",
+  "estimatedBalanceToPayAtSelectedDay" : "Estimated balance to pay at selected day:",
 
   "daysLeftUntilStatementDate": "{count, plural, =0{Tomorrow is} =1{1 day left until} other{{count} days left until}} statement date",
   "@daysLeftUntilStatementDate": {
@@ -200,8 +206,92 @@
     }
   },
 
+  "@___________________________ [ BUDGET FEATURES ] _____________________________": {},
 
-  "@_________________________ [ SETTINGS SCREEN ] __________________": {},
+  "addNewBudget": "Add new budget",
+  "editBudget": "Edit budget",
+  "showBudgets": "Show budgets",
+  "forCategories": "For categories",
+  "forAccounts": "For accounts",
+  "pleaseInputName": "Please input name",
+  "budgetName": "Budget name",
+  "budgetLimit": "Budget limit",
+  "quoteBudget1": "Select categories registered with budget:",
+  "quoteBudget2": "Select accounts registered with budget:",
+  "noItems": "No items",
+  "assignedAccounts": "Assigned accounts",
+  "assignedCategories": "Assigned categories",
+  "noBudgetsAvailable": "No budgets available",
+  "relatedBudgetsWillBeShownHere": "Related budgets will be shown here",
+  "tapToHide": "Tap to hide",
+
+  "areYouSureToDeleteBudget": "Are you sure that you want to delete budget \"{accountName}\"?",
+  "@areYouSureToDeleteBudget": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "@___________________________ [ CATEGORY FEATURES ] _____________________________": {},
+
+  "addNewCategory": "Add new category",
+  "categoryName": "Category name",
+  "chooseCategoryFirst": "Choose a category first",
+  "addNewCategoryTag": "New category tag...",
+  "editCategory": "Edit category",
+  "editTag": "Edit tag",
+  "alreadyHasSameTag": "Already has same tag",
+  "noCategoriesAvailable": "No categories available",
+
+  "areYouSureToDeleteCategory": "Are you sure that you want to delete category \"{accountName}\"?",
+  "@areYouSureToDeleteCategory": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "areYouSureToDeleteTag": "Are you sure that you want to delete tag \"{accountName}\"?",
+  "@areYouSureToDeleteTag": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "@___________________________ [ DASHBOARD FEATURES ] _____________________________": {},
+
+  "editDashboard": "Edit Dashboard",
+  "quoteDashboard1": "Re-order and choose which widget to display",
+
+  "monthlyExpense": "Monthly expense",
+  "monthlyIncome": "Monthly income",
+  "noExpenseThisMonth": "No expense this month",
+  "noIncomeThisMonth": "No income this month",
+  "total": "Total",
+  "upcoming": "Upcoming",
+  "paymentFor": "Payment for:",
+  "weeklyReport": "Weekly Report",
+
+  "@_________________________ [ SELECTORS ] __________________": {},
+
+  "chooseIcon": "Choose icon",
+  "chooseAccount": "Choose account",
+  "chooseCreditAccountFirst": "Choose credit account first",
+  "chooseCategory": "Choose category",
+  "choose": "Choose",
+
+  "noCreditAccounts": "No credit accounts",
+  "noRegularAccounts": "No regular accounts",
+  "noIncomeCategories": "No income categories",
+  "noExpenseCategories": "No expense categories",
+  "tapHereToCreateFirstOne": "Tap here to create the first one",
+
+  "@_________________________ [ SETTINGS ] __________________": {},
 
   "on": "On",
   "off": "Off",
@@ -218,11 +308,12 @@
 
 
 
-  "@_________________________ [ HOME PAGE SCREEN ] _________________________": {},
+  "@_________________________ [ HOME PAGE ] _________________________": {},
+
+  "currentAssets": "Current assets",
 
   "quoteHomepage": "You don't have any transactions in {month}, Create a new one by tapping ''+'' button",
   "@quoteHomepage": {
-    "description": "Quote display in homescreen, when that month doesn't have any transaction",
     "placeholders": {
       "month": {
         "type": "String",
@@ -231,6 +322,100 @@
     }
   },
 
+  "cashflowIn": "Cashflow in {month}",
+  "@cashflowIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "expenseIn": "Expense in {month}",
+  "@expenseIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "incomeIn": "Income in {month}",
+  "@incomeIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "assetsLeftIn": "Assets left in {month}",
+  "@assetsLeftIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "expectedAssetsIn": "Expected assets in {month}",
+  "@expectedAssetsIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "@___________________________ [ REPORT FEATURES ] _____________________________": {},
+
+  "assets": "Assets",
+  "dailyReport": "Daily Report",
+
+  "@___________________________ [ TRANSACTIONS FEATURES ] _____________________________": {},
+
+  "transactions": "Transactions",
+  "upcomingTransactions": "Upcoming transactions",
+  "recurrenceTransactions": "Recurrence transactions",
+
+  "installmentPayment": "Installment payment",
+  "quoteInstallmentPayment": "This transaction has been registered for installment payments, so you won\\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.",
+
+  "adjustmentAmount": "Adjustment amount",
+  "quoteAdjustmentAmount": "This payment is adjusted to align with the actual credit balance",
+
+  "overdue": "Overdue",
+  "skip": "Skip",
+  "unSkip": "Un-skip",
+  "skipped": "Skipped",
+  "added": "Added",
+  "notSpecified": "Not specified",
+
+  "transferTo": "Transfer to:",
+  "addSavingTo": "Add saving to:",
+  "transferSavingTo": "Transfer saving to:",
+  "paymentFrom": "Payment from:",
+  "paymentTo": "Payment to:",
+  "checkpointAt": "Checkpoint at:",
+  "creditAccountToPay": "Credit account to pay:",
+
+  "addAdjustment": "Add adjustment",
+  "addCreditPayment": "Add payment",
+  "addCreditSpending": "Add spending",
+  "addIncome": "Add income",
+  "addExpense": "Add expense",
+  "addTransfer": "Add transfer",
+  "forCreditAccount": "For credit account",
+  "forRegularAccount": "For regular account",
+
+  "forYourKnowledge": "For your knowledge",
+  "quoteTransaction1": "Add [transactions has installment payment going through this checkpoint] first, if any.",
+  "quoteTransaction2": "Must higher than unpaid installments amount",
+
+  "noTransactions": "No transactions",
+  "noPlannedTransactionsThisMonth": "No planned transactions this month",
+  "deleteTransactionConfirm1": "Delete this transaction?",
+  "deleteTransactionConfirm2": "All related transactions will be deleted, too.",
 
 
   "@________________ [ TRANSACTION/CREATE_RECURRENCE_MODAL ] _______________": {},
@@ -378,7 +563,9 @@
 
 
 
-  "@_______________[ CREDIT DATETIME SELECTOR DIALOG ]____________": {},
+  "@_______________[ DATETIME SELECTOR DIALOG ]____________": {},
+
+  "clearDate" : "Clear date",
 
   "quoteCreditCalendarDialog1": "This credit account currently has no credit/BNPL transaction needed to pay",
   "@quoteCreditCalendarDialog1": {
@@ -400,8 +587,18 @@
     "description": "Show as error pop-up dialog when user select day"
   },
 
+  "quoteCreditCalendarDialog4_1": "You can only select day after [latest checkpoint]",
+  "@quoteCreditCalendarDialog4_1": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
   "quoteCreditCalendarDialog5": "Oops! You can only add transactions since [the statement contains the latest payment]",
   "@quoteCreditCalendarDialog5": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog5_1": "Oops! You can only select day in this statement",
+  "@quoteCreditCalendarDialog5_1": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
@@ -412,6 +609,16 @@
 
   "quoteCreditCalendarDialog7": "Oops! Can only pay in grace period (Account preference)",
   "@quoteCreditCalendarDialog7": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog8": "Oops! There is a payment between current date and selected date",
+  "@quoteCreditCalendarDialog8": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog8_1": "Oops! There is a spending between current date and selected date",
+  "@quoteCreditCalendarDialog8_1": {
     "description": "Show as error pop-up dialog when user select day"
   }
 }

@@ -4,7 +4,6 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
 import '../../../utils/constants.dart';
@@ -67,7 +66,8 @@ class CategoryListTile extends ConsumerWidget {
           tags.isNotEmpty ? Gap.h12 : Gap.noGap,
           Wrap(
             children: [
-              for (CategoryTag tag in tags) CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
+              for (CategoryTag tag in tags)
+                CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
             ],
           )
         ],

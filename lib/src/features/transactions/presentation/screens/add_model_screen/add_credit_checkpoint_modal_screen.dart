@@ -18,7 +18,8 @@ import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 
 class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {
-  const AddCreditCheckpointModalScreen({super.key, required this.creditAccount, this.statementDate, this.statement});
+  const AddCreditCheckpointModalScreen(
+      {super.key, required this.creditAccount, this.statementDate, this.statement});
 
   final Statement? statement;
   final DateTime? statementDate;
@@ -34,7 +35,8 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
   double _unpaidInstallmentsAmount = 0;
 
   ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
-  late final DateTime _dateTime = widget.statement?.date.statement ?? widget.statementDate!.onlyYearMonthDay;
+  late final DateTime _dateTime =
+      widget.statement?.date.statement ?? widget.statementDate!.onlyYearMonthDay;
 
   List<Installment> _finishedInstallments = [];
 
@@ -67,7 +69,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
     return Form(
       key: _formKey,
       child: CustomSection(
-        title: 'Add adjustment'.hardcoded,
+        title: context.loc.addAdjustment,
         crossAxisAlignment: CrossAxisAlignment.start,
         isWrapByCard: false,
         sectionsClipping: false,
@@ -75,12 +77,12 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
           HelpBox(
             isShow: true,
             iconPath: AppIcons.fykFaceBulk,
-            header: 'For your knowledge'.hardcoded,
-            text: 'Add [transactions has installment payment going through this checkpoint] first, if any.'.hardcoded,
+            header: context.loc.forYourKnowledge,
+            text: context.loc.quoteTransaction1,
           ),
           Gap.h8,
           Text(
-            'Checkpoint at:'.hardcoded,
+            context.loc.checkpointAt,
             style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
           ),
           Text(
@@ -89,7 +91,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
           ),
           Gap.h8,
           InlineTextFormField(
-            prefixText: 'Oustd. Balance:',
+            prefixText: context.loc.oustdBalance,
             suffixText: context.appSettings.currency.code,
             widget: CalculatorInput(
               fontSize: 18,
@@ -124,8 +126,9 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
 
   String? _oustdBalanceValidator() {
-    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount.roundBySetting(context)) {
-      return 'Must higher than unpaid installments amount'.hardcoded;
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! <
+        _unpaidInstallmentsAmount.roundBySetting(context)) {
+      return context.loc.quoteTransaction2;
     }
 
     return null;

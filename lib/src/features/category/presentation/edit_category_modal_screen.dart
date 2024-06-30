@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
-import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
-import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
@@ -45,7 +42,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
   Widget build(BuildContext context) {
     return ModalContent(
       header: ModalHeader(
-        title: 'Edit Category'.hardcoded,
+        title: context.loc.editCategory,
       ),
       body: [
         Row(
@@ -89,7 +86,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,
-            label: 'Are you sure that you want to delete "${widget.currentCategory.name}"?',
+            label: context.loc.areYouSureToDeleteCategory(widget.currentCategory.name),
             onConfirm: () {
               final categoryRepository = ref.read(categoryRepositoryRealmProvider);
               categoryRepository.delete(widget.currentCategory);

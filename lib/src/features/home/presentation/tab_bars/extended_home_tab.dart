@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 
-import '../../../../common_widgets/card_item.dart';
 import '../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../charts_and_carousel/presentation/money_carousel.dart';
@@ -53,7 +49,6 @@ class ExtendedHomeTab extends StatelessWidget {
 
 class _ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
   const _ExtendedHomeTabForScrollableSheet({
-    super.key,
     required this.carouselController,
     required this.initialPageIndex,
     required this.displayDate,
@@ -68,7 +63,8 @@ class _ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
   final VoidCallback onEyeTap;
 
   @override
-  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
+  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() =>
+      _ExtendedHomeTabForScrollableSheetState();
 }
 
 class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHomeTabForScrollableSheet> {
@@ -79,14 +75,14 @@ class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHom
     final displayDate = DateTime(Calendar.minDate.year, pageIndex);
 
     return switch (_type) {
-      LineChartDataType.cashflow => 'Cashflow in $month',
-      LineChartDataType.expense => 'Expense in $month',
-      LineChartDataType.income => 'Income in $month',
+      LineChartDataType.cashflow => context.loc.cashflowIn(month),
+      LineChartDataType.expense => context.loc.expenseIn(month),
+      LineChartDataType.income => context.loc.incomeIn(month),
       LineChartDataType.totalAssets => displayDate.isSameMonthAs(today)
-          ? 'Current assets'
+          ? context.loc.currentAssets
           : displayDate.isInMonthBefore(today)
-              ? 'Assets left in $month'
-              : 'Expected assets in $month',
+              ? context.loc.assetsLeftIn(month)
+              : context.loc.expectedAssetsIn(month),
     };
   }
 
@@ -143,16 +139,17 @@ class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHom
     final chartServices = ref.watch(customLineChartServicesProvider);
 
     CLCData data = chartServices.getCLCDataForHomeScreen(_type, widget.displayDate);
-    double avg = chartServices.getAverageAssets();
+    // double avg = chartServices.getAverageAssets();
 
     ref.listen(transactionsChangesStreamProvider, (previous, next) {
       data = chartServices.getCLCDataForHomeScreen(_type, widget.displayDate);
-      avg = chartServices.getAverageAssets();
+      // avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
-
-    final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
+    // final extraLineText =
+    //     'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    //
+    // final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -223,18 +220,20 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
     final chartServices = ref.watch(customLineChartServicesProvider);
     final txnServices = ref.read(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
-    double avg = chartServices.getAverageAssets();
+    CLCData data =
+        chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
+    // double avg = chartServices.getAverageAssets();
     double amount = txnServices.getTotalAssets(widget.displayDate);
 
     ref.listen(transactionsChangesStreamProvider, (previous, next) {
       data = chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
-      avg = chartServices.getAverageAssets();
+      // avg = chartServices.getAverageAssets();
     });
 
-    final extraLineText = 'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
-
-    final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
+    // final extraLineText =
+    //     'avg: ${context.appSettings.currency.symbol} ${CalService.formatCurrency(context, avg)}';
+    //
+    // final double extraLineY = data.maxAmount == 0 ? 0 : avg / data.maxAmount;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

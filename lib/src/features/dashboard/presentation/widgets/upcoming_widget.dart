@@ -30,11 +30,12 @@ class UpcomingWidget extends ConsumerWidget {
 
     final creditAccountList = accountRepo.getList([AccountType.credit]).whereType<CreditAccount>();
 
-    final recList =
-        recRepo.getRecurrences().where((rec) => rec.getAllPlannedTransactionsInMonth(context, today).isNotEmpty);
+    final recList = recRepo
+        .getRecurrences()
+        .where((rec) => rec.getAllPlannedTransactionsInMonth(context, today).isNotEmpty);
 
     return DashboardWidget(
-      title: 'Upcoming'.hardcoded,
+      title: context.loc.upcoming,
       isEmpty: creditAccountList.isEmpty && recList.isEmpty,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 300),
@@ -48,13 +49,18 @@ class UpcomingWidget extends ConsumerWidget {
                   currentDateTime: today,
                 ),
               creditAccountList.isNotEmpty && recList.isNotEmpty
-                  ? Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Gap.divider(context, indent: 20))
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Gap.divider(context, indent: 20))
                   : Gap.noGap,
               for (Recurrence rec in recList)
                 _tile(
                   context,
                   model: rec.transactionData,
-                  repeatOn: rec.getAllPlannedTransactionsInMonth(context, today).map((e) => e.dateTime!).toList(),
+                  repeatOn: rec
+                      .getAllPlannedTransactionsInMonth(context, today)
+                      .map((e) => e.dateTime!)
+                      .toList(),
                 )
             ],
           ),
@@ -63,7 +69,8 @@ class UpcomingWidget extends ConsumerWidget {
     );
   }
 
-  Widget _tile(BuildContext context, {required TransactionData model, required List<DateTime> repeatOn}) {
+  Widget _tile(BuildContext context,
+      {required TransactionData model, required List<DateTime> repeatOn}) {
     if (repeatOn.isEmpty) {
       return Gap.noGap;
     }
@@ -131,7 +138,8 @@ class UpcomingWidget extends ConsumerWidget {
     );
   }
 
-  Widget _creditPayment(BuildContext context, {required CreditAccount account, required DateTime currentDateTime}) {
+  Widget _creditPayment(BuildContext context,
+      {required CreditAccount account, required DateTime currentDateTime}) {
     final currentStatement = account.statementAt(currentDateTime, upperGapAtDueDate: true);
 
     if (currentStatement == null) {
@@ -167,7 +175,7 @@ class UpcomingWidget extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Payment for:'.hardcoded,
+                            context.loc.paymentFor,
                             style: kHeader3TextStyle.copyWith(
                               fontSize: 11,
                               color: context.appTheme.onBackground.withOpacity(0.65),

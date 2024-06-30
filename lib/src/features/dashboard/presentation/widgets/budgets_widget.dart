@@ -7,10 +7,8 @@ import 'package:money_tracker_app/src/features/budget/application/budget_service
 import 'package:money_tracker_app/src/features/budget/domain/budget.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/dashboard/presentation/components/dashboard_widget.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../utils/constants.dart';
 
 class BudgetsWidget extends ConsumerWidget {
@@ -50,8 +48,8 @@ class BudgetsWidget extends ConsumerWidget {
     final list = budgetService.getBudgetDetails(context, DateTime.now());
 
     return DashboardWidget(
-      title: 'Budgets'.hardcoded,
-      emptyTitle: 'No budgets available'.hardcoded,
+      title: context.loc.budgets,
+      emptyTitle: context.loc.noBudgetsAvailable,
       isEmpty: list.isEmpty,
       child: Column(
         children: list.map((e) {
@@ -76,7 +74,9 @@ class BudgetsWidget extends ConsumerWidget {
                 ),
               ),
               ProgressBar(
-                color: e.currentAmount / e.budget.amount < 0.8 ? context.appTheme.positive : context.appTheme.negative,
+                color: e.currentAmount / e.budget.amount < 0.8
+                    ? context.appTheme.positive
+                    : context.appTheme.negative,
                 percentage: (e.currentAmount / e.budget.amount).clamp(0, 1),
               ),
               Padding(

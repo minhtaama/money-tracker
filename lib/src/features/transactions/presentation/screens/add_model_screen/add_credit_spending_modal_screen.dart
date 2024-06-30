@@ -166,7 +166,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               child: CreditDateTimeFormSelector(
                 creditAccount: stateWatch.creditAccount,
                 isForPayment: false,
-                disableText: 'Choose credit account first'.hardcoded,
+                disableText: context.loc.chooseCreditAccountFirst,
                 initialDate: stateWatch.dateTime,
                 onChanged: (dateTime, statement) {
                   if (dateTime != null) {
@@ -186,7 +186,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   AccountFormSelector(
                     accountType: AccountType.credit,
                     validator: (_) => _creditAccountValidator(),
-                    onChangedAccount: (newAccount) => _stateController.changeCreditAccount(newAccount as CreditAccount),
+                    onChangedAccount: (newAccount) =>
+                        _stateController.changeCreditAccount(newAccount as CreditAccount),
                   ),
                   Gap.h16,
                   const TextHeader('Expense category:'),

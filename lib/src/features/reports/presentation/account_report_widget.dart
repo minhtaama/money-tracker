@@ -9,8 +9,6 @@ import 'package:money_tracker_app/src/features/reports/presentation/reports_scre
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
-import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_inkwell.dart';
 import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/money_amount.dart';
@@ -27,7 +25,7 @@ class AccountsReportWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ReportWrapperSwitcher(
-      title: 'Assets'.hardcoded,
+      title: context.loc.assets,
       firstChild: _TotalView(dateTimes),
       secondChild: _SeparateView(dateTimes),
     );
@@ -35,7 +33,7 @@ class AccountsReportWidget extends StatelessWidget {
 }
 
 class _TotalView extends ConsumerStatefulWidget {
-  const _TotalView(this.dateTimes, {super.key});
+  const _TotalView(this.dateTimes);
 
   final List<DateTime> dateTimes;
 
@@ -232,7 +230,7 @@ class _TotalViewState extends ConsumerState<_TotalView> {
 }
 
 class _SeparateView extends ConsumerStatefulWidget {
-  const _SeparateView(this.dateTimes, {super.key});
+  const _SeparateView(this.dateTimes);
 
   final List<DateTime> dateTimes;
 

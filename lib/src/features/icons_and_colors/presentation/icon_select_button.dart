@@ -9,13 +9,13 @@ class IconSelectButton extends StatefulWidget {
   /// This button will push to [SelectIconsScreen]. The returned value
   /// can be used as argument in `onTap` function.
   const IconSelectButton({
-    Key? key,
+    super.key,
     required this.backGroundColor,
     required this.iconColor,
     required this.onTap,
     this.initialIconCategory = '',
     this.initialIconIndex = 0,
-  }) : super(key: key);
+  });
   final Color backGroundColor;
   final Color iconColor;
   final String initialIconCategory;

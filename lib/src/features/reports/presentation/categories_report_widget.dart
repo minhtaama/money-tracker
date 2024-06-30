@@ -6,7 +6,6 @@ import 'package:money_tracker_app/src/features/reports/presentation/reports_scre
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../common_widgets/custom_inkwell.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
@@ -109,7 +108,7 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
   @override
   Widget build(BuildContext context) {
     return ReportWrapper(
-      title: 'Categories'.hardcoded,
+      title: context.loc.categories,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -363,7 +362,9 @@ class _CategoryReportState extends ConsumerState<CategoryReport> {
         values: list,
         center: SvgIcon(
           isExpense ? AppIcons.uploadLight : AppIcons.downloadLight,
-          color: isExpense ? context.appTheme.negative.withOpacity(0.65) : context.appTheme.positive.withOpacity(0.65),
+          color: isExpense
+              ? context.appTheme.negative.withOpacity(0.65)
+              : context.appTheme.positive.withOpacity(0.65),
           size: 25,
         ),
         onChartTap: onChartTap,

@@ -10,6 +10,7 @@ import 'package:money_tracker_app/src/features/icons_and_colors/presentation/ico
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../theme_and_ui/icons.dart';
@@ -36,11 +37,11 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
   Widget build(BuildContext context) {
     return ModalContent(
       formKey: _formKey,
-      header: ModalHeader(title: 'Add Category'.hardcoded),
+      header: ModalHeader(title: context.loc.addNewCategory),
       body: [
         CustomSliderToggle<CategoryType>(
           values: const [CategoryType.income, CategoryType.expense],
-          labels: const ['Income', 'Expense'],
+          labels: [context.loc.income, context.loc.expense],
           iconPaths: [AppIcons.downloadLight, AppIcons.uploadLight],
           initialValueIndex: categoryType == CategoryType.expense ? 1 : 0,
           onTap: (type) {
@@ -66,13 +67,13 @@ class _AddCategoryModalScreenState extends ConsumerState<AddCategoryModalScreen>
                 focusColor: AppColors.allColorsUserCanPick[colorIndex][0],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Account name must not empty';
+                    return context.loc.invalidAmount;
                   }
                   return null;
                 },
                 maxLines: 1,
                 onFieldSubmitted: (_) => _formKey.currentState!.validate(),
-                hintText: 'Category Name',
+                hintText: context.loc.categoryName,
                 onChanged: (value) {
                   setState(() {
                     categoryName = value;

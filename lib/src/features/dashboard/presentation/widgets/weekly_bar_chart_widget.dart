@@ -30,7 +30,7 @@ class _WeeklyBarChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
     final weekDays = today.weekRange(context).toList();
 
     return DashboardWidget(
-      title: 'Weekly report'.hardcoded,
+      title: context.loc.weeklyReport,
       child: SizedBox(
         height: 180,
         child: CustomBarChart(
@@ -71,7 +71,8 @@ class _WeeklyBarChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
                               ),
                               MoneyAmount(
                                 amount: value.spending,
-                                style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                                style: kHeader2TextStyle.copyWith(
+                                    color: context.appTheme.onPrimary, fontSize: 14),
                               ),
                             ],
                           ),
@@ -87,7 +88,8 @@ class _WeeklyBarChartWidgetState extends ConsumerState<WeeklyBarChartWidget> {
                               ),
                               MoneyAmount(
                                 amount: value.income,
-                                style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                                style: kHeader2TextStyle.copyWith(
+                                    color: context.appTheme.onPrimary, fontSize: 14),
                               ),
                             ],
                           ),

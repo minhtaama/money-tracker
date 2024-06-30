@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
@@ -36,7 +35,7 @@ class DayCardPlannedTransactionsList extends StatelessWidget {
 }
 
 class _Tile extends StatefulWidget {
-  const _Tile({super.key, required this.model});
+  const _Tile({required this.model});
 
   final TransactionData model;
 
@@ -95,7 +94,7 @@ class _TileState extends State<_Tile> {
                               iconPath: AppIcons.addLight,
                               backgroundColor: color,
                               color: onColor,
-                              label: 'Add'.hardcoded,
+                              label: context.loc.add,
                               labelSize: 12,
                               iconSize: 14,
                               width: 1,
@@ -117,7 +116,7 @@ class _TileState extends State<_Tile> {
                               iconPath: AppIcons.turnTwoTone,
                               backgroundColor: Colors.transparent,
                               color: context.appTheme.onBackground,
-                              label: 'Skip'.hardcoded,
+                              label: context.loc.skip,
                               border: Border.all(
                                 color: context.appTheme.onBackground,
                               ),

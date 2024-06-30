@@ -209,7 +209,8 @@ class TransactionsModalScreen extends StatelessWidget {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
 
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
@@ -232,7 +233,7 @@ class TransactionsModalScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ModalContent(
       header: ModalHeader(
-        title: 'Transactions'.hardcoded,
+        title: context.loc.transactions,
       ),
       body: _buildDayCards(context, transactions, dayBeginOfMonth, dayEndOfMonth),
       bodyMargin: EdgeInsets.zero,

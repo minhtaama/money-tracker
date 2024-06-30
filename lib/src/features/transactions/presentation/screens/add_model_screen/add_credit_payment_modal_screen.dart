@@ -102,8 +102,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        title: 'Add Payment',
-        secondaryTitle: 'For credit accounts'.hardcoded,
+        title: context.loc.addCreditPayment,
+        secondaryTitle: context.loc.forCreditAccount,
       ),
       footer: ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit),
       body: [
@@ -113,7 +113,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
             Expanded(
               child: CreditDateTimeFormSelector(
                 creditAccount: stateWatch.creditAccount,
-                disableText: 'Choose credit account first'.hardcoded,
+                disableText: context.loc.chooseCreditAccountFirst,
                 initialDate: stateWatch.dateTime,
                 isForPayment: true,
                 onChanged: _onDateTimeChange,
@@ -126,7 +126,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextHeader('Payment from:'.hardcoded),
+                  TextHeader(context.loc.paymentFrom),
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.regular,
@@ -134,7 +134,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                     onChangedAccount: _onRegularAccountChange,
                   ),
                   Gap.h8,
-                  const TextHeader('Credit account to pay:'),
+                  TextHeader(context.loc.creditAccountToPay),
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.credit,
@@ -285,8 +285,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                       stateWatch.totalBalanceAmount.roundBySetting(context) -
                                               stateWatch.userPaymentAmount!.roundBySetting(context) >
                                           0
-                                  ? CalService.formatCurrency(
-                                      context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                  ? CalService.formatCurrency(context,
+                                      stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                   : '???',
                               textAlign: TextAlign.right,
                               controller: _remainingInputController,

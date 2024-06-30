@@ -63,7 +63,7 @@ class DayCardTransactionsList extends StatelessWidget {
                           children: [
                             transaction is BaseRegularTransaction && transaction.recurrence != null
                                 ? HelpButton(
-                                    text: 'Recurrence transaction'.hardcoded,
+                                    text: context.loc.recurrenceTransactions,
                                     size: 15,
                                     yOffset: 1,
                                     iconPath: AppIcons.switchTwoTone,
@@ -124,11 +124,12 @@ class _TransferDetails extends StatelessWidget {
       children: [
         Text(
           transaction.isToSavingAccount
-              ? 'Add saving to:'.hardcoded
+              ? context.loc.addSavingTo
               : transaction.isFromSavingAccount
-                  ? 'Transfer saving to:'.hardcoded
-                  : 'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+                  ? context.loc.transferSavingTo
+                  : context.loc.transferTo,
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -149,8 +150,9 @@ class _PaymentDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Payment to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          context.loc.paymentTo,
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -161,7 +163,8 @@ class _PaymentDetails extends StatelessWidget {
             SvgIcon(
               AppIcons.creditLight,
               size: 14,
-              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
+              color: context.appTheme.onBackground
+                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
             ),
           ],
         ),

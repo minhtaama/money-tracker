@@ -32,7 +32,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
       if (list.isEmpty) {
         return [
           Text(
-            'No expense this month'.hardcoded,
+            context.loc.noExpenseThisMonth,
             style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65)),
           ),
         ];
@@ -77,7 +77,7 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
     }
 
     return DashboardWidget(
-      title: 'Monthly expense'.hardcoded,
+      title: context.loc.monthlyExpense,
       child: SizedBox(
         height: 160,
         child: Row(
@@ -116,17 +116,17 @@ class _ExpensePieChartWidgetState extends ConsumerState<ExpensePieChartWidget> {
                       opacity: _touchedIndex == -1 ? 1 : 0,
                       duration: k250msDuration,
                       child: Text(
-                        'TOTAL:',
+                        context.loc.total.toUpperCase(),
                         style: kHeader1TextStyle.copyWith(
                             fontSize: 10, color: context.appTheme.onBackground.withOpacity(0.65)),
                       ),
                     ),
                     MoneyAmount(
                       amount: _touchedIndex == -1 ? totalAmount : list[_touchedIndex].value,
-                      style:
-                          kHeader1TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 23),
-                      symbolStyle:
-                          kHeader3TextStyle.copyWith(color: context.appTheme.negative.withOpacity(0.8), fontSize: 20),
+                      style: kHeader1TextStyle.copyWith(
+                          color: context.appTheme.negative.withOpacity(0.8), fontSize: 23),
+                      symbolStyle: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.negative.withOpacity(0.8), fontSize: 20),
                       overflow: TextOverflow.fade,
                       maxLines: 1,
                     ),

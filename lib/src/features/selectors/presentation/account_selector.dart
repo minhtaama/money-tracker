@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
-import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
@@ -66,7 +65,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: _currentAccount != null ? _currentAccount!.iconPath : AppIcons.addLight,
       backgroundColor: _currentAccount != null ? _currentAccount!.backgroundColor : Colors.transparent,
-      color: _currentAccount != null ? _currentAccount!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
+      color: _currentAccount != null
+          ? _currentAccount!.iconColor
+          : context.appTheme.onBackground.withOpacity(0.4),
       height: null,
       width: null,
       border: _currentAccount != null
@@ -78,14 +79,18 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
         List<Account> accountList = ref.read(accountRepositoryProvider).getList([widget.accountType]);
 
         List<SavingAccount>? savingList = widget.withSavingAccount
-            ? ref.read(accountRepositoryProvider).getList([AccountType.saving]).whereType<SavingAccount>().toList()
+            ? ref
+                .read(accountRepositoryProvider)
+                .getList([AccountType.saving])
+                .whereType<SavingAccount>()
+                .toList()
             : null;
 
         final returnedValue = await showCustomModal<Account>(
           context: context,
           builder: (controller, isScrollable) => ModalContent(
             header: ModalHeader(
-              title: 'Choose Account'.hardcoded,
+              title: context.loc.chooseAccount,
             ),
             body: accountList.isNotEmpty
                 ? [
@@ -108,7 +113,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                                 ),
                                 Gap.w8,
                                 Text(
-                                  'Saving accounts'.hardcoded,
+                                  context.loc.savingAccounts,
                                   style: kHeader3TextStyle.copyWith(
                                     color: context.appTheme.onBackground.withOpacity(0.65),
                                     fontSize: 14,
@@ -138,8 +143,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                     Gap.h8,
                     IconWithText(
                       header:
-                          'No${widget.accountType == AccountType.credit ? ' credit' : ''} account.\n Tap here to create a first one'
-                              .hardcoded,
+                          '${widget.accountType == AccountType.credit ? context.loc.noCreditAccounts : context.loc.noRegularAccounts}.\n ${context.loc.tapHereToCreateFirstOne}',
                       headerSize: 14,
                       iconPath: AppIcons.accountsBulk,
                       onTap: () async {
@@ -151,8 +155,9 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                               AddAccountModalScreen(controller, isScrollable, initialType: accountType),
                         );
 
-                        final isSameType = (newAccount is RegularAccount && accountType == AccountType.regular) ||
-                            (newAccount is CreditAccount && accountType == AccountType.credit);
+                        final isSameType =
+                            (newAccount is RegularAccount && accountType == AccountType.regular) ||
+                                (newAccount is CreditAccount && accountType == AccountType.credit);
 
                         if (context.mounted) {
                           if (newAccount != null && isSameType) {
@@ -169,7 +174,8 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (_currentAccount != null && _currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (_currentAccount != null &&
+                _currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               _currentAccount = null;
               widget.onChangedAccount(_currentAccount);
             } else {

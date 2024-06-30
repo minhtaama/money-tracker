@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
-import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/budget/domain/budget.dart';
@@ -37,7 +36,8 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
   Widget build(BuildContext context) {
     assert(widget.transactionType == TransactionType.expense);
 
-    final regularTransactionFormState = ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
+    final regularTransactionFormState =
+        ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
 
     final list = ref
         .watch(budgetServicesProvider)
@@ -47,7 +47,8 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
         final budget = budgetDetail.budget;
         return switch (budget) {
           CategoryBudget() => budget.categories.contains(regularTransactionFormState.category),
-          AccountBudget() => budget.accounts.contains(regularTransactionFormState.account?.toAccountInfo()),
+          AccountBudget() =>
+            budget.accounts.contains(regularTransactionFormState.account?.toAccountInfo()),
         };
       },
     );
@@ -62,8 +63,8 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
                 child: IconWithText(
                   forceIconOnTop: true,
                   iconPath: AppIcons.budgetsBulk,
-                  header: 'Related budget will be shown here'.hardcoded,
-                  text: 'Tap to hide'.hardcoded,
+                  header: context.loc.relatedBudgetsWillBeShownHere,
+                  text: context.loc.tapToHide,
                   onTap: () => setState(() {
                     _showContent = false;
                   }),
@@ -119,7 +120,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
             ),
             Gap.w4,
             Text(
-              'Show Budgets'.hardcoded,
+              context.loc.showBudgets,
               style: kHeader2TextStyle.copyWith(
                 color: AppColors.grey(context),
                 fontSize: 10,
@@ -147,10 +148,12 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
     );
   }
 
-  Widget _budgetWidget(BuildContext context, BudgetDetail budgetDetail, RegularTransactionFormState formState) {
+  Widget _budgetWidget(
+      BuildContext context, BudgetDetail budgetDetail, RegularTransactionFormState formState) {
     final double percentage = (budgetDetail.currentAmount / budgetDetail.budget.amount).clamp(0, 1);
     final double secondaryPercentage =
-        ((budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount).clamp(0, 1);
+        ((budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount)
+            .clamp(0, 1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
@@ -210,9 +213,11 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
             ProgressBar(
               key: ValueKey(budgetDetail.budget.id),
               color: context.appTheme.primary,
-              secondaryColor: (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount < 0.8
-                  ? context.appTheme.positive
-                  : context.appTheme.negative,
+              secondaryColor:
+                  (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount <
+                          0.8
+                      ? context.appTheme.positive
+                      : context.appTheme.negative,
               percentage: percentage,
               secondaryPercentage: secondaryPercentage,
               height: 10,

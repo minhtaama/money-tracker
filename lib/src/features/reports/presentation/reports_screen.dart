@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
@@ -20,7 +19,6 @@ import 'package:money_tracker_app/src/features/selectors/presentation/date_time_
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../common_widgets/modified_animated_cross_fade.dart';
 import '../../../routing/app_router.dart';
@@ -63,7 +61,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           child: _dateSelector(),
         ),
         child: PageHeading(
-          title: 'Reports'.hardcoded,
+          title: context.loc.report,
           isTopLevelOfNavigationRail: true,
           trailing: RotatedBox(
             quarterTurns: _hideDateSelector ? 1 : -1,
@@ -112,7 +110,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   HideableContainer(
-                    hide: _type != _ReportType.month || _selectedDateTimes.first.isSameMonthAs(_todayMonth.start),
+                    hide: _type != _ReportType.month ||
+                        _selectedDateTimes.first.isSameMonthAs(_todayMonth.start),
                     axis: Axis.horizontal,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 6.0),
@@ -135,7 +134,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       initialValueIndex: [_ReportType.month, _ReportType.week].indexOf(_type),
                       iconPaths: [AppIcons.monthlyLight, AppIcons.weeklyLight],
                       fontSize: 14,
-                      labels: ['Monthly'.hardcoded, 'Weekly'.hardcoded],
+                      labels: [context.loc.monthly, context.loc.weekly],
                       onTap: (type) => setState(() {
                         _type = type;
                       }),
@@ -147,7 +146,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             AnimatedCrossFade(
               duration: k350msDuration,
               sizeCurve: Curves.easeOut,
-              crossFadeState: _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              crossFadeState:
+                  _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               firstChild: _MonthCarousel(
                 key: _monthCarouselKey,
                 onMonthChange: (dateTimeList) => setState(() {
@@ -201,7 +201,8 @@ class _MonthCarouselState extends State<_MonthCarousel> {
   }
 
   void _animateToToday() {
-    _carouselController.animateToPage(_initialPageIndex, duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.animateToPage(_initialPageIndex,
+        duration: k250msDuration, curve: Curves.easeOut);
   }
 
   @override

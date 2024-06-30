@@ -93,10 +93,8 @@ class TxnInstallmentIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HelpButton(
-      title: 'Installment Payment'.hardcoded,
-      text:
-          'This transaction has been registered for installment payments, so you won\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.'
-              .hardcoded,
+      title: context.loc.installmentPayment,
+      text: context.loc.quoteInstallmentPayment,
       iconPath: AppIcons.installmentTwoTone,
       size: size,
     );
@@ -132,9 +130,8 @@ class TxnAdjustmentIcon extends StatelessWidget {
     return _showIcon(context)
         ? HelpButton(
             title:
-                'Adjust amount: ${transaction.adjustment > 0 ? '+' : '-'} ${CalService.formatCurrency(context, transaction.adjustment, isAbs: true)} ${context.appSettings.currency.code}'
-                    .hardcoded,
-            text: 'This payment is adjusted to align with the actual credit balance'.hardcoded,
+                '${context.loc.adjustmentAmount}: ${transaction.adjustment > 0 ? '+' : '-'} ${CalService.formatCurrency(context, transaction.adjustment, isAbs: true)} ${context.appSettings.currency.code}',
+            text: context.loc.quoteAdjustmentAmount,
             iconPath: AppIcons.editBulk,
             size: size,
           )
@@ -269,7 +266,8 @@ class TxnAccountIcon extends ConsumerWidget {
             child: SvgIcon(
               _iconPath(ref),
               size: 14,
-              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
+              color: context.appTheme.onBackground
+                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
             ),
           );
   }
@@ -287,7 +285,7 @@ class TxnAccountName extends ConsumerWidget {
 
     String name() {
       if (deletedAccount) {
-        return 'Deleted account'.hardcoded;
+        return context.loc.deletedAccount;
       }
       if (transaction is CreditPayment) {
         return (transaction as CreditPayment).transferAccount.name;
@@ -319,7 +317,7 @@ class TxnToAccountName extends ConsumerWidget {
 
     String name() {
       if (deletedAccount) {
-        return 'Deleted account'.hardcoded;
+        return context.loc.deletedAccount;
       }
       if (transaction is CreditPayment) {
         return (transaction as CreditPayment).account.name;
@@ -331,7 +329,8 @@ class TxnToAccountName extends ConsumerWidget {
     return Text(
       name(),
       style: kHeader2TextStyle.copyWith(
-          color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
+          color: context.appTheme.onBackground
+              .withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
           fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -340,7 +339,8 @@ class TxnToAccountName extends ConsumerWidget {
 }
 
 class TxnAmount extends StatelessWidget {
-  const TxnAmount({super.key, required this.transaction, this.fontSize, this.color, this.showPaymentAmount = false})
+  const TxnAmount(
+      {super.key, required this.transaction, this.fontSize, this.color, this.showPaymentAmount = false})
       : assert(showPaymentAmount == true ? transaction is CreditSpending : true);
 
   final BaseTransaction transaction;
@@ -398,7 +398,8 @@ class TxnNote extends StatelessWidget {
             margin: const EdgeInsets.only(left: 15.5, top: 8),
             padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+              border: Border(
+                  left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
             child: EasyRichText(
               'Note: ${transaction.note!}',
@@ -426,7 +427,12 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key, this.height = 27, this.width = 14, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 0.65});
+      {super.key,
+      this.height = 27,
+      this.width = 14,
+      this.adjustY = 1,
+      this.strokeWidth = 1,
+      this.opacity = 0.65});
 
   final double height;
   final double adjustY;
@@ -441,7 +447,8 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity,
+              height: height, width: width, adjustY: adjustY),
         ),
       ),
     );

@@ -45,7 +45,8 @@ class DashboardScreen extends StatelessWidget {
     };
   }
 
-  Widget _smallScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+  Widget _smallScreen(
+      BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
@@ -69,7 +70,8 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _bigScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+  Widget _bigScreen(
+      BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar.empty(),
       children: [
@@ -180,7 +182,7 @@ class _DashboardMenu2 extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: RoundedIconButton(
                 onTap: () => context.go(RoutePath.reports),
-                label: 'Report'.hardcoded,
+                label: context.loc.report,
                 size: 50,
                 iconPath: AppIcons.reportsBulk,
                 iconColor: context.appTheme.onBackground,
@@ -219,7 +221,7 @@ class _EditButton extends StatelessWidget {
                   ),
                   Gap.w8,
                   Text(
-                    'Edit dashboard'.hardcoded,
+                    context.loc.editDashboard,
                     style: kNormalTextStyle.copyWith(
                       color: AppColors.grey(context),
                       fontSize: 13,

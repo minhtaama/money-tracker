@@ -39,7 +39,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
       floatingActionButton: IconWithTextButton(
         height: 60,
         iconPath: AppIcons.doneLight,
-        label: 'Choose',
+        label: context.loc.choose,
         backgroundColor: context.appTheme.accent1,
         color: context.appTheme.onAccent,
         // Returned value is here
@@ -47,9 +47,9 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomPage(
-        smallTabBar: const SmallTabBar(
+        smallTabBar: SmallTabBar(
           child: PageHeading(
-            title: 'Choose Icon',
+            title: context.loc.chooseIcon,
           ),
         ),
         children: List.generate(
@@ -65,7 +65,8 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
                     AppIcons.iconsWithCategories[keyList[keyIndex]]!.length,
                     (iconIndex) {
                       return CircleIcon(
-                        isSelected: currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
+                        isSelected:
+                            currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
                         onTap: (newIconCategory, newIconIndex) {
                           setState(
                             () {
@@ -91,8 +92,11 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
 
 class CircleIcon extends StatelessWidget {
   const CircleIcon(
-      {Key? key, required this.isSelected, required this.onTap, required this.iconCategory, required this.iconIndex})
-      : super(key: key);
+      {super.key,
+      required this.isSelected,
+      required this.onTap,
+      required this.iconCategory,
+      required this.iconIndex});
   final String iconCategory;
   final int iconIndex;
   final bool isSelected;

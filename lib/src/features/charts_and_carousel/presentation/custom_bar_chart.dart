@@ -4,7 +4,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
@@ -61,7 +60,8 @@ class _CustomBarChartState extends State<CustomBarChart> {
   final _touchThreshold = 20.0;
 
   late Map<int, ({double spending, double income, double ySpending, double yIncome})> _values = {
-    for (var item in widget.values.entries) item.key: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01)
+    for (var item in widget.values.entries)
+      item.key: (spending: 0, income: 0, ySpending: 0.01, yIncome: 0.01)
   };
 
   final _chartKey = GlobalKey();
@@ -116,8 +116,9 @@ class _CustomBarChartState extends State<CustomBarChart> {
 
   void _updateAllSize() => WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         setState(() {
-          _chartWidth =
-              widget.horizontalChart ? _chartKey.currentContext!.size!.height : _chartKey.currentContext!.size!.width;
+          _chartWidth = widget.horizontalChart
+              ? _chartKey.currentContext!.size!.height
+              : _chartKey.currentContext!.size!.width;
 
           _toolTipSize = _toolTipKey.currentContext!.size!;
         });
@@ -133,25 +134,31 @@ class _CustomBarChartState extends State<CustomBarChart> {
                 BarChartRodData(
                   toY: e.value.ySpending,
                   color: context.appTheme.negative,
-                  width: list.indexOf(e) == _touchedGroupIndex ? widget.barRodWidth * 1.65 : widget.barRodWidth,
+                  width: list.indexOf(e) == _touchedGroupIndex
+                      ? widget.barRodWidth * 1.65
+                      : widget.barRodWidth,
                   borderRadius: BorderRadius.circular(widget.barRodWidth / 5),
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,
                     fromY: 0,
                     toY: 1,
-                    color: context.appTheme.primary.withOpacity(list.indexOf(e) == _touchedGroupIndex ? 0.1 : 0.0),
+                    color: context.appTheme.primary
+                        .withOpacity(list.indexOf(e) == _touchedGroupIndex ? 0.1 : 0.0),
                   ),
                 ),
                 BarChartRodData(
                   toY: e.value.yIncome,
                   color: context.appTheme.positive,
-                  width: list.indexOf(e) == _touchedGroupIndex ? widget.barRodWidth * 1.65 : widget.barRodWidth,
+                  width: list.indexOf(e) == _touchedGroupIndex
+                      ? widget.barRodWidth * 1.65
+                      : widget.barRodWidth,
                   borderRadius: BorderRadius.circular(widget.barRodWidth / 5),
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,
                     fromY: 0,
                     toY: 1,
-                    color: context.appTheme.primary.withOpacity(list.indexOf(e) == _touchedGroupIndex ? 0.1 : 0.0),
+                    color: context.appTheme.primary
+                        .withOpacity(list.indexOf(e) == _touchedGroupIndex ? 0.1 : 0.0),
                   ),
                 ),
               ],
@@ -162,8 +169,9 @@ class _CustomBarChartState extends State<CustomBarChart> {
   void _touchCallback(FlTouchEvent event, BarTouchResponse? response) {
     if (response != null && response.spot != null) {
       if (event is FlTapDownEvent) {
-        bool isTouchInThreshold = (_tooltipLocalPosition.dx - event.localPosition.dx).abs() < _touchThreshold &&
-            (_tooltipLocalPosition.dy - event.localPosition.dy).abs() < _touchThreshold;
+        bool isTouchInThreshold =
+            (_tooltipLocalPosition.dx - event.localPosition.dx).abs() < _touchThreshold &&
+                (_tooltipLocalPosition.dy - event.localPosition.dy).abs() < _touchThreshold;
 
         if (isTouchInThreshold) {
           setState(() {
@@ -200,13 +208,15 @@ class _CustomBarChartState extends State<CustomBarChart> {
     assert(widget.values.entries.length == widget.titleDateTimes.length);
 
     final touchOffsetY = widget.horizontalChart ? _tooltipLocalPosition.dx : _tooltipLocalPosition.dy;
-    final touchOffsetX = widget.horizontalChart ? _chartWidth - _tooltipLocalPosition.dy : _tooltipLocalPosition.dx;
+    final touchOffsetX =
+        widget.horizontalChart ? _chartWidth - _tooltipLocalPosition.dy : _tooltipLocalPosition.dx;
 
     final double topTooltipPos = touchOffsetY - _toolTipSize.height;
 
     final double leftTooltipPos = touchOffsetX - _toolTipSize.width / 2;
 
-    final double horizontalTooltipOverflow = math.max(0, leftTooltipPos + _toolTipSize.width - _chartWidth);
+    final double horizontalTooltipOverflow =
+        math.max(0, leftTooltipPos + _toolTipSize.width - _chartWidth);
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (_) {
@@ -275,10 +285,12 @@ class _CustomBarChartState extends State<CustomBarChart> {
               top: topTooltipPos - 20,
               left: math.max(0, leftTooltipPos - horizontalTooltipOverflow),
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: (_chartWidth - 100).clamp(0, double.infinity), maxHeight: 300),
+                constraints: BoxConstraints(
+                    maxWidth: (_chartWidth - 100).clamp(0, double.infinity), maxHeight: 300),
                 child: SizedBox(
                   key: _toolTipKey,
-                  child: _touchedGroupIndex != -1 ? widget.tooltipBuilder?.call(_touchedGroupIndex) : null,
+                  child:
+                      _touchedGroupIndex != -1 ? widget.tooltipBuilder?.call(_touchedGroupIndex) : null,
                 ),
               ),
             ),
@@ -323,8 +335,9 @@ class _CustomBarChartState extends State<CustomBarChart> {
       decoration: dateTime.isSameDayAs(DateTime.now())
           ? BoxDecoration(
               border: Border(
-                  bottom:
-                      BorderSide(color: dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context))),
+                  bottom: BorderSide(
+                      color:
+                          dateTime.weekday == 7 ? context.appTheme.negative : AppColors.grey(context))),
             )
           : null,
       child: Text(

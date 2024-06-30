@@ -5,8 +5,6 @@ import 'package:money_tracker_app/src/features/accounts/application/account_serv
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../theme_and_ui/icons.dart';
-import '../../../../utils/constants.dart';
-import '../../../accounts/data/account_repo.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../../transactions/data/transaction_repo.dart';
 

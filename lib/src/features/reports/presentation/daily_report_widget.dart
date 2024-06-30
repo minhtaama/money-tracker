@@ -32,7 +32,7 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
     final days = range.toList();
 
     return ReportWrapper(
-      title: 'Daily Report'.hardcoded,
+      title: context.loc.dailyReport,
       collapsable: true,
       childHeight: days.length * 30 + 20,
       child: Padding(
@@ -81,7 +81,8 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
                               ),
                               MoneyAmount(
                                 amount: value.spending,
-                                style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                                style: kHeader2TextStyle.copyWith(
+                                    color: context.appTheme.onPrimary, fontSize: 14),
                               ),
                             ],
                           ),
@@ -97,7 +98,8 @@ class _DailyReportWidgetState extends ConsumerState<DailyReportWidget> {
                               ),
                               MoneyAmount(
                                 amount: value.income,
-                                style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary, fontSize: 14),
+                                style: kHeader2TextStyle.copyWith(
+                                    color: context.appTheme.onPrimary, fontSize: 14),
                               ),
                             ],
                           ),

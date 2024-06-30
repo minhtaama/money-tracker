@@ -61,7 +61,9 @@ class DayCard extends StatelessWidget {
     return CardItem(
       margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 8, vertical: forModal ? 4 : 6),
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-      border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+      border: forModal && context.appTheme.isDarkTheme
+          ? Border.all(color: AppColors.greyBorder(context))
+          : null,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -77,7 +79,8 @@ class DayCard extends StatelessWidget {
                       ? const EdgeInsets.symmetric(horizontal: 6, vertical: 6)
                       : EdgeInsets.zero,
                   border: Border.all(
-                    color: context.appTheme.onBackground.withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
+                    color: context.appTheme.onBackground
+                        .withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
                   ),
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.transparent,
@@ -107,7 +110,8 @@ class DayCard extends StatelessWidget {
                     ),
                     Text(
                       dateTime.toLongDate(context, noDay: true),
-                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
+                      style:
+                          kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -141,7 +145,7 @@ class DayCard extends StatelessWidget {
                       ),
                       Gap.w8,
                       Text(
-                        'Planned Transactions'.hardcoded,
+                        context.loc.plannedTransactions,
                         style: kHeader4TextStyle.copyWith(
                           color: context.appTheme.onBackground.withOpacity(0.65),
                           fontSize: 12,

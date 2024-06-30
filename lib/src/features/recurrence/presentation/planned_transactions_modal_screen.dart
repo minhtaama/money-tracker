@@ -20,7 +20,8 @@ import '../domain/recurrence.dart';
 import 'transaction_data_tile.dart';
 
 class PlannedTransactionsModalScreen extends ConsumerWidget {
-  const PlannedTransactionsModalScreen(this.controller, this.isScrollable, {super.key, required this.dateTime});
+  const PlannedTransactionsModalScreen(this.controller, this.isScrollable,
+      {super.key, required this.dateTime});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -37,7 +38,7 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
 
     return ModalContent(
       header: ModalHeader(
-        title: 'Planned transactions'.hardcoded,
+        title: context.loc.plannedTransactions,
         secondaryTitle: dateTime.toLongDate(context, noDay: true),
       ),
       body: _buildDays(context, ref, plannedTxns),
@@ -56,21 +57,23 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
       ),
       child: Center(
         child: Text(
-          'No transactions'.hardcoded,
+          context.loc.noTransactions,
           style: kNormalTextStyle.copyWith(color: AppColors.grey(context)),
         ),
       ),
     );
   }
 
-  List<Widget> _buildDays(BuildContext context, WidgetRef ref, List<TransactionData> plannedTransactions) {
+  List<Widget> _buildDays(
+      BuildContext context, WidgetRef ref, List<TransactionData> plannedTransactions) {
     final result = <Widget>[];
 
-    final upcomingTxns = plannedTransactions.where((e) => e.state == PlannedState.upcoming).toList().reversed;
+    final upcomingTxns =
+        plannedTransactions.where((e) => e.state == PlannedState.upcoming).toList().reversed;
 
     result.add(
       TextHeader(
-        'Upcoming transactions'.hardcoded,
+        context.loc.upcomingTransactions,
         fontSize: 12,
       ),
     );
@@ -104,11 +107,12 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
       );
     }
 
-    final overdueTxns = plannedTransactions.where((e) => e.state == PlannedState.overdue).toList().reversed;
+    final overdueTxns =
+        plannedTransactions.where((e) => e.state == PlannedState.overdue).toList().reversed;
 
     result.add(
       TextHeader(
-        'Overdue'.hardcoded,
+        context.loc.overdue,
         fontSize: 12,
       ),
     );
@@ -123,11 +127,12 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
       );
     }
 
-    final skippedTxns = plannedTransactions.where((e) => e.state == PlannedState.skipped).toList().reversed;
+    final skippedTxns =
+        plannedTransactions.where((e) => e.state == PlannedState.skipped).toList().reversed;
 
     result.add(
       TextHeader(
-        'Skipped'.hardcoded,
+        context.loc.skipped,
         fontSize: 12,
       ),
     );
@@ -147,7 +152,7 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
         Gap.h8,
         IconWithText(
           iconPath: AppIcons.recurrenceBulk,
-          text: 'No planned transactions this month'.hardcoded,
+          text: context.loc.noPlannedTransactionsThisMonth,
         )
       ];
     } else {
@@ -201,8 +206,8 @@ class _TileState extends ConsumerState<_Tile> {
               iconColor: context.appTheme.onNegative,
               onTap: () => showConfirmModal(
                 context: context,
-                label: 'Delete this transaction?'.hardcoded,
-                subLabel: 'All related transactions will be deleted, too.'.hardcoded,
+                label: context.loc.deleteTransactionConfirm1,
+                subLabel: context.loc.deleteTransactionConfirm2,
                 onConfirm: () {
                   setState(() {
                     _hide = !_hide;
@@ -264,7 +269,7 @@ class _TileState extends ConsumerState<_Tile> {
                                               iconPath: AppIcons.addLight,
                                               backgroundColor: color,
                                               color: onColor,
-                                              label: 'Add'.hardcoded,
+                                              label: context.loc.add,
                                               labelSize: 12,
                                               iconSize: 14,
                                               width: 1,
@@ -274,7 +279,8 @@ class _TileState extends ConsumerState<_Tile> {
                                                   _hide = !_hide;
                                                 });
                                                 Future.delayed(k350msDuration, () {
-                                                  final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                                  final recRepo =
+                                                      ref.read(recurrenceRepositoryRealmProvider);
                                                   recRepo.addTransaction(ref, widget.model);
                                                 });
                                               },
@@ -286,7 +292,7 @@ class _TileState extends ConsumerState<_Tile> {
                                               iconPath: AppIcons.turnTwoTone,
                                               backgroundColor: Colors.transparent,
                                               color: context.appTheme.onBackground,
-                                              label: 'Skip'.hardcoded,
+                                              label: context.loc.skip,
                                               border: Border.all(
                                                 color: context.appTheme.onBackground,
                                               ),
@@ -299,7 +305,8 @@ class _TileState extends ConsumerState<_Tile> {
                                                   _hide = !_hide;
                                                 });
                                                 Future.delayed(k350msDuration, () {
-                                                  final recRepo = ref.read(recurrenceRepositoryRealmProvider);
+                                                  final recRepo =
+                                                      ref.read(recurrenceRepositoryRealmProvider);
                                                   recRepo.addSkipped(widget.model);
                                                 });
                                               },
@@ -311,7 +318,7 @@ class _TileState extends ConsumerState<_Tile> {
                                         iconPath: AppIcons.turnTwoTone,
                                         backgroundColor: Colors.transparent,
                                         color: context.appTheme.onBackground,
-                                        label: 'Un-skip'.hardcoded,
+                                        label: context.loc.unSkip,
                                         border: Border.all(
                                           color: context.appTheme.onBackground,
                                         ),

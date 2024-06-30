@@ -42,8 +42,9 @@ class TransactionDataTile extends ConsumerWidget {
     };
 
     return Row(
-      crossAxisAlignment:
-          model.note != null || model.categoryTag != null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      crossAxisAlignment: model.note != null || model.categoryTag != null
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 4.0),
@@ -205,8 +206,9 @@ class _AccountName extends ConsumerWidget {
               fontSize: 13,
             )
           : kHeader4TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(
-                  destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
+              color: context.appTheme.onBackground.withOpacity(destination
+                  ? (model.toAccount != null ? 0.65 : 0.25)
+                  : (model.account != null ? 0.65 : 0.25)),
               fontSize: smaller ? 9 : 12,
             ),
       softWrap: false,
@@ -221,17 +223,17 @@ class _CategoryName extends StatelessWidget {
   final TransactionData model;
   final bool smaller;
 
-  String get _name {
+  String _name(BuildContext context) {
     if (model.category != null) {
       return model.category!.name;
     }
-    return 'Not specified'.hardcoded;
+    return context.loc.notSpecified;
   }
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      _name,
+      _name(context),
       style: kHeader3TextStyle.copyWith(
         fontSize: smaller ? 11 : 13,
         color: context.appTheme.onBackground.withOpacity(model.category == null ? 0.25 : 1),
@@ -299,11 +301,11 @@ class _WithCategoryDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = model.state != null
         ? switch (model.state!) {
-            PlannedState.upcoming => 'Upcoming'.hardcoded,
-            PlannedState.today => 'Today'.hardcoded,
-            PlannedState.added => 'Added'.hardcoded,
-            PlannedState.skipped => 'Skipped'.hardcoded,
-            PlannedState.overdue => 'Overdue'.hardcoded,
+            PlannedState.upcoming => context.loc.upcoming,
+            PlannedState.today => context.loc.today,
+            PlannedState.added => context.loc.added,
+            PlannedState.skipped => context.loc.skipped,
+            PlannedState.overdue => context.loc.overdue,
           }
         : '';
 
@@ -316,7 +318,8 @@ class _WithCategoryDetails extends StatelessWidget {
                 showState
                     ? state
                     : '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
-                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                style: kHeader3TextStyle.copyWith(
+                    color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                 softWrap: false,
                 overflow: TextOverflow.fade,
               )
@@ -344,8 +347,9 @@ class _TransferDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${dateTime}Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+          '$dateTime${context.loc.transferTo}:',
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
