@@ -1,4 +1,688 @@
 {
-  "appTitle": "money_tracker_app"
+  "appTitle": "money_tracker_app",
 
+  "@_________________________ [ GENERAL TITLES] __________________________": {},
+
+  "home": "Trang chủ",
+  "dashboard": "Bảng tin",
+  "settings": "Cài đặt",
+  "accounts": "Tài khoản",
+  "savingAccounts": "Tài khoản tiết kiệm",
+  "categories": "Danh mục",
+  "budgets": "Ngân sách",
+  "savings": "Khoản tiết kiệm",
+  "recurrence": "Lặp lại",
+  "report": "Báo cáo",
+
+  "account": "Tài khoản",
+  "creditAccount": "Tài khoản tín dụng",
+  "regularAccount": "Tài khoản thường",
+  "category": "Danh mục",
+  "budget": "Ngân sách",
+  "saving": "Khoản tiết kiệm",
+
+  "initialBalance": "Số dư ban đầu",
+  "income": "Thu nhập",
+  "transfer": "Chuyển khoản",
+  "expense": "Chi tiêu",
+  "creditSpending": "Chi tiêu tín dụng",
+  "creditPayment": "Thanh toán tín dụng",
+  "plannedTransactions": "Giao dịch theo kế hoạch",
+  "checkpoint": "Checkpoint",
+
+  "today": "Hôm nay",
+  "daily": "Hàng ngày",
+  "weekly": "Hàng tuần",
+  "monthly": "Hàng tháng",
+  "yearly": "Hàng năm",
+
+  "invalidAmount": "Dữ liệu không đúng",
+
+  "@___________________ [ GENERAL BUTTON TITLES ] ________________": {},
+
+  "goBack": "Không, quay lại",
+  "back": "Quay lại",
+  "done": "Xong",
+  "select": "Chọn",
+  "delete": "Xoá",
+  "add": "Thêm mới",
+
+  "@_____________________ [ GENERAL DATE TIME ] ___________________": {},
+
+  "mon": "T2",
+  "tue": "T3",
+  "wed": "T4",
+  "thu": "T5",
+  "fri": "T6",
+  "sat": "T7",
+  "sun": "CN",
+
+  "monday": "Thứ hai",
+  "tuesday": "Thứ ba",
+  "wednesday": "Thứ tư",
+  "thursday": "Thứ năm",
+  "friday": "Thứ sáu",
+  "saturday": "Thứ bảy",
+  "sunday": "Chủ nhật",
+  "localeDefault": "Mặc Định",
+
+  "jan": "Th1",
+  "feb": "Th2",
+  "mar": "Th3",
+  "apr": "Th4",
+  "may": "Th5",
+  "jun": "Th6",
+  "jul": "Th7",
+  "aug": "Th8",
+  "sep": "Th9",
+  "oct": "Th10",
+  "nov": "Th11",
+  "dec": "Th12",
+
+  "january": "tháng 1",
+  "february": "tháng 2",
+  "march": "tháng 3",
+  "april": "tháng 4",
+  "mayLong": "tháng 5",
+  "june": "tháng 6",
+  "july": "tháng 7",
+  "august": "tháng 8",
+  "september": "tháng 9",
+  "october": "tháng 10",
+  "november": "tháng 11",
+  "december": "tháng 12",
+
+
+
+  "@___________________________ [ ACCOUNT FEATURES ] _____________________________": {},
+
+  "deletedAccount": "Tài khoản đã xoá",
+  "deleteAccountConfirm1": "Xác nhận lần nữa để xoá tài khoản",
+  "deleteAccountConfirm2": "Cảnh báo lần cuối, tài khoản sẽ bị xoá sau lần xác nhận này.",
+
+
+  "quoteRegularAccountScreen": "Tài khoản này không có giao dịch nào trong {month}, Thêm mới bằng cách ấn nút ''+''",
+  "@quoteRegularAccountScreen": {
+    "description": "Quote display in regular account screen, when that month doesn't have any transaction",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+
+
+  "editRegularAccount": "Tuỳ chỉnh tài khoản",
+  "areYouSureToDeleteRegularAccount1": "Bạn có chắc chắn muốn xoá tài khoản \"{accountName}\"?",
+  "@areYouSureToDeleteRegularAccount1": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "areYouSureToDeleteRegularAccount2": "Các giao dịch liên quan tới tài khoản này sẽ hiển thị dưới dạng \"Tài khoản đã xoá\".",
+
+
+
+  "noTransactionMadeBeforeThisDay": "Không có giao dịch nào trước ngày này",
+  "tapToAddBalanceCheckpoint": "Ấn để thêm mới checkpoint",
+  "editCreditAccount": "Tuỳ chỉnh tài khoản tín dụng",
+  "creditLimit": "Hạn mức tín dụng:",
+  "accountAPR": "APR",
+  "paymentAndInterestPreferences": "Tuỳ chỉnh thanh toán & lãi suất:",
+  "annualPercentageRate": "Lãi suất thường niên",
+  "annualPercentageRateExplanation": "A standardized measure to express the total cost of borrowing over a year, includes the interest rate and any associated fees.",
+  "usingADB": "Sử dụng Average Daily Balance",
+  "usingADBExplanation": "Can make payment in billing cycle, interest is calculated by ADB method",
+  "paymentOnlyGracePeriod": "Chỉ thanh toán trong kỳ gia hạn",
+  "paymentOnlyGracePeriodExplanation": "Không thể thanh toán trong cùng kỳ chi tiêu.",
+
+  "areYouSureToDeleteCreditAccount1": "Bạn có chắc chắn muốn xoá tài khoản tín dụng \"{accountName}\"",
+  "@areYouSureToDeleteCreditAccount1": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "areYouSureToDeleteCreditAccount2": "Bạn chắc chắn chứ? Toàn bộ giao dịch (trừ các giao dịch thanh toán tín dụng) cũng sẽ bị xoá.",
+
+
+  "quoteCreditAccountComponent1": "Kỳ sao kê này đã kết thúc",
+  "quoteCreditAccountComponent1_1": "Không thể chỉnh sửa",
+  "quoteCreditAccountComponent2": "Kỳ sao kê này có checkpoint",
+  "quoteCreditAccountComponent2_1": "Dùng để chỉnh sửa dư nợ hiện tại hoặc kết thúc các giao dịch trả góp đang thực hiện tại ngày sao kê nhất định",
+  "quoteCreditAccountComponent3": "Do có dư nợ từ kỳ trước, có thể vẫn sẽ bị tính lãi tại kỳ sau dù cho kỳ này có thanh toán đủ hay không.",
+  "quoteCreditAccountComponent4": "Thanh toán đủ trước ngày này để được miễn lãi",
+
+  "payment": "Khoản chi tiêu",
+  "@payment": {
+    "description": "paid amount"
+  },
+
+  "oustdBalance": "Dư nợ còn lại:",
+  "instLeft": "Trả góp còn lại:",
+  "paymentRequired": "Cần phải thanh toán:",
+
+  "billingCycleStart": "Kỳ chi tiêu bắt đầu",
+  "previousDueDate": "Hạn thanh toán kỳ trước",
+  "endOfLastGrace": "Kết thúc kỳ gia hạn của kỳ trước",
+  "statementDate": "Ngày sao kê",
+  "statementDateWithCheckpoint": "Ngày sao kê có checkpoint",
+  "beginOfGrace": "Bắt đầu kỳ gia hạn",
+  "paymentDueDate": "Hạn thanh toán",
+
+  "withAdjustmentCheckpoint": "Cùng với checkpoint điều chỉnh",
+  "carry": "Nợ kỳ trước",
+  "interest": "Lãi suất",
+
+  "quotePayment1" : "Do có dư nợ từ kỳ trước, có thể vẫn sẽ bị tính lãi tại kỳ sau dù cho kỳ này có thanh toán đủ hay không.",
+  "quotePayment2" : "Thanh toán đủ trước ngày này để được miễn lãi",
+  "quotePayment3" : "Để dễ theo dõi, bạn chỉ có thể thanh toán cho các giao dịch xảy ra trước ngày đang chọn",
+
+
+  "balanceToPayAtSelectedDay" : "Dư nợ cần thanh toán tại ngày đang chọn:",
+  "estimatedBalanceToPayAtSelectedDay" : "Khoảng dư nợ cần thanh toán tại ngày đang chọn:",
+
+  "daysLeftUntilStatementDate": "{count, plural, =0{Mai là} =1{Còn 1 ngày cho đến} other{Còn {count} ngày cho đến}} ngày sao kê",
+  "@daysLeftUntilStatementDate": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "daysLeftUntilPaymentDueDate": "{count, plural, =0{Mai là} =1{Còn 1 ngày cho đến} other{Còn {count} ngày cho đến}} hạn thanh toán",
+  "@daysLeftUntilPaymentDueDate": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "@___________________________ [ BUDGET FEATURES ] _____________________________": {},
+
+  "addNewBudget": "Thêm mới ngân sách",
+  "editBudget": "Chỉnh sửa ngân sách",
+  "showBudgets": "Hiện ngân sách",
+  "forCategories": "Cho danh mục",
+  "forAccounts": "Cho tài khoản",
+  "pleaseInputName": "Hãy nhập tên",
+  "budgetName": "Tên ngân sách",
+  "budgetLimit": "Hạn mức",
+  "quoteBudget1": "Lựa chọn danh mục gắn với ngân sách:",
+  "quoteBudget2": "Lựa chọn tài khoản gắn với ngân sách:",
+  "noItems": "Không có gì cả!",
+  "assignedAccounts": "Các tài khoản thuộc ngân sách",
+  "assignedCategories": "Các danh mục thuộc ngân sách",
+  "noBudgetsAvailable": "Không có ngân sách nào có sẵn",
+  "relatedBudgetsWillBeShownHere": "Các ngân sách liên quan sẽ hiển thị tại đây",
+  "tapToHide": "Ấn để ẩn",
+
+  "areYouSureToDeleteBudget": "Bạn có chắc chắn muốn xoá ngân sách \"{accountName}\"?",
+  "@areYouSureToDeleteBudget": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "@___________________________ [ CATEGORY FEATURES ] _____________________________": {},
+
+  "addNewCategory": "Thêm mới danh mục",
+  "categoryName": "Tên danh mục",
+  "chooseCategoryFirst": "Hãy chọn danh mục trước",
+  "addNewCategoryTag": "Thêm tag danh mục...",
+  "editCategory": "Chỉnh sửa danh mục",
+  "editTag": "Chỉnh sửa tag",
+  "alreadyHasSameTag": "Đã có tag tương tự",
+  "noCategoriesAvailable": "Không có danh mục nào có sẵn",
+
+  "areYouSureToDeleteCategory": "Bạn có chắc chắn muốn xoá danh mục \"{accountName}\"?",
+  "@areYouSureToDeleteCategory": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "areYouSureToDeleteTag": "Bạn có chắc chắn muốn xoá tag \"{accountName}\"?",
+  "@areYouSureToDeleteTag": {
+    "placeholders": {
+      "accountName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "@___________________________ [ DASHBOARD FEATURES ] _____________________________": {},
+
+  "editDashboard": "Chỉnh sửa bảng tin",
+  "quoteDashboard1": "Đổi vị trí hoặc chọn widget nào muốn hiển thị",
+
+  "monthlyExpense": "Chi tiêu trong tháng",
+  "monthlyIncome": "Thu nhập trong tháng",
+  "noExpenseThisMonth": "Không có chi tiêu nào tháng này",
+  "noIncomeThisMonth": "Không có thu nhập trong tháng này",
+  "total": "Tổng",
+  "upcoming": "Sắp tới",
+  "paymentFor": "Thanh toán cho:",
+  "weeklyReport": "Báo cáo tuần",
+
+  "@_________________________ [ SELECTORS ] __________________": {},
+
+  "chooseIcon": "Lựa chọn icon",
+  "chooseAccount": "Lựa chọn tài khoản",
+  "chooseCreditAccountFirst": "Hãy chọn tài khoản tín dụng trước",
+  "chooseCategory": "Lựa chọn danh mục",
+  "chooseTag": "Lựa chọn tag",
+  "choose": "Chọn",
+
+  "noCreditAccounts": "Không có tài khoản tín dụng nào",
+  "noRegularAccounts": "Không có tài khoản nào",
+  "noIncomeCategories": "Không có danh mục thu nhập nào",
+  "noExpenseCategories": "Không có danh mục chi tiêu nào",
+  "tapHereToCreateFirstOne": "Ấn vào đây để tạo mới",
+
+  "@_________________________ [ SETTINGS ] __________________": {},
+
+  "on": "Bật",
+  "off": "Tắt",
+  "systemDefault": "Mặc định hệ thống",
+  "themeColor": "Màu sắc giao diện",
+  "useDarkMode": "Sử dụng chế độ ban đêm",
+  "setCurrency": "Cài đặt tiền tệ",
+  "currencyFormat": "Dạng hiển thị",
+  "withDecimalDigits": "Sử dụng hệ thập phân",
+  "language": "Ngôn ngữ",
+  "longDateFormat": "Dạng ngày dài",
+  "shortDateFormat": "Dạng ngày ngắn",
+  "firstDayOfWeek": "Ngày đầu tiên trong tuần",
+
+
+
+  "@_________________________ [ HOME PAGE ] _________________________": {},
+
+  "currentAssets": "Số dư hiện tại",
+
+  "quoteHomepage": "Không có giao dịch nào trong {month}, Tạo mới bằng cách ấn nút \"+\"",
+  "@quoteHomepage": {
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+
+  "cashflowIn": "Dòng tiền trong {month}",
+  "@cashflowIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "expenseIn": "Chi tiêu trong {month}",
+  "@expenseIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "incomeIn": "Thu nhập trong {month}",
+  "@incomeIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "assetsLeftIn": "Số dư cuối trong {month}",
+  "@assetsLeftIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "expectedAssetsIn": "Số dư dự tính trong {month}",
+  "@expectedAssetsIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "@___________________________ [ REPORT FEATURES ] _____________________________": {},
+
+  "assets": "Tổng tài sản",
+  "dailyReport": "Báo cáo hàng ngày",
+
+  "@___________________________ [ TRANSACTIONS FEATURES ] _____________________________": {},
+
+  "transactions": "Các giao dịch",
+  "upcomingTransactions": "Giao dịch sắp tới",
+  "recurrenceTransactions": "Giao dịch lặp lại",
+  "favoriteTransactions": "Giao dịch yêu thích",
+
+  "installmentPayment": "Thanh toán trả góp",
+  "quoteInstallmentPayment1": "Giao dịch này đã được đăng ký trả góp. Không cần phải thanh toán toàn bộ số chi trong kỳ tiếp theo mà chỉ cần thanh toán một phần hàng tháng.",
+  "quoteInstallmentPayment2": "For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \\'Spending Amount\\' (Because installment payment is a fixed amount, see more details in your banking contract).",
+
+  "installmentPaymentIn": "Trả góp trong {month} tháng",
+  "@installmentPaymentIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "payBeforeDueDate": "Thanh toán trước hạn cuối của kỳ sao kê",
+
+
+  "adjustmentAmount": "Điều chỉnh",
+  "quoteAdjustmentAmount": "Khoản thanh toán này đã được điều chỉnh cho khớp với dư nợ tín dụng thực tế",
+
+  "overdue": "Quá hạn",
+  "skip": "Bỏ qua",
+  "unSkip": "Huỷ bỏ qua",
+  "skipped": "Đã bỏ qua",
+  "added": "Đã thêm",
+  "notSpecified": "Không xác định",
+  "empty": "Trống",
+  "optional": "Phụ lục",
+  "holdToReorder": "Giữ để sắp xếp vị trí",
+
+  "spendingAmount": "Khoản chi tiêu",
+  "paymentAmount": "Khoản thanh toán",
+  "amount": "Khoản tiền",
+
+  "transferTo": "Chuyển khoản tới:",
+  "addSavingTo": "Thêm tiết kiệm tới:",
+  "transferSavingTo": "Chuyển tiết kiệm đến:",
+  "paymentFrom": "Thanh toán từ:",
+  "paymentTo": "Thanh toán cho:",
+  "checkpointAt": "Checkpoint tại:",
+  "creditAccountToPay": "Thanh toán cho TK tín dụng:",
+  "balAfterPayment": "Dư nợ sau thanh toán:",
+  "installmentPeriod": "Kỳ trả góp:",
+  "ongoingInstallments": "Giao dịch trả góp đang có:",
+  "totalUnpaidInstallmentBalance": "Số trả góp còn lại:",
+
+  "monthSLeft": "tháng nữa",
+
+  "expenseCategory": "Danh mục chi tiêu:",
+
+  "addAdjustment": "Thêm điều chỉnh",
+  "addCreditPayment": "Thêm thanh toán",
+  "addCreditSpending": "Thêm chi tiêu",
+  "addIncome": "Thêm thu nhập",
+  "addExpense": "Thêm chi tiêu",
+  "addTransfer": "Chuyển khoản",
+  "forCreditAccount": "Cho tài khoản tín dụng",
+  "forRegularAccount": "Cho tài khoản thường",
+  "betweenRegularAccount": "Giữa các tài khoản thường",
+  "toSavingAccount": "Đến tài khoản tiết kiệm",
+  "outOfSavingAccount": "Ra khỏi tài khoản tiết kiệm",
+
+  "fullPayment": "Thanh toán đủ",
+  "startPaymentInNextStatement": "Bắt đầu thanh toán từ kỳ sao kê sau",
+
+  "forYourKnowledge": "Lưu ý",
+  "quoteTransaction1": "Thêm mới [Các giao dịch chi tiêu có đăng ký trả góp] trước khi thêm checkpoint.",
+  "quoteTransaction2": "Phải lớn hơn khoản trả góp còn lại",
+
+  "noTransactions": "Không có giao dịch nào",
+  "noPlannedTransactionsThisMonth": "Không có giao dịch kế hoạch nào trong tháng",
+  "noOngoingInstallments": "Không có khoản trả góp đang hoạt động nào tại ngày đang chọn",
+  "deleteTransactionConfirm1": "Xoá giao dịch này?",
+  "deleteTransactionConfirm2": "Toàn bộ giao dịch có liên quan cũng sẽ bị xoá.",
+  "deleteTransactionConfirm3": "Xoá giao dịch yêu thích này?",
+
+  "quoteTransaction3": "Quá cao so với dư nợ cần thanh toán!",
+  "quoteTransaction3_1": "Có thể bạn còn các giao dịch chi tiêu trước ngày này chưa nhập? Nếu không phải là khoản thanh toán đủ, bạn cần phải nhập dư nợ còn lại sau thanh toán",
+  "quoteTransaction4": "Hơi cao so với dư nợ cần thanh toán",
+  "quoteTransaction4_1": "Có thể bạn còn các giao dịch chi tiêu trước ngày này chưa nhập? Nếu không phải là khoản thanh toán đủ, bạn cần phải nhập dư nợ còn lại sau thanh toán",
+  "quoteTransaction5": "Gần bằng với dư nợ cần thanh toán!",
+  "quoteTransaction5_1": "Đây có phải là khoản thanh toán đủ không? Nếu đúng, hãy tick vào \"Thanh toán đủ\" phía dưới.",
+  "quoteTransaction6": "Khớp với dư nợ cần thanh toán!",
+  "quoteTransaction7": "Không có dư nợ cần thanh toán",
+  "quoteTransaction8": "Phải bao gồm toàn bộ các chi phí",
+  "quoteTransaction9": "Không thể xoá vì đang có giao dịch thanh toán tín dụng xảy ra sau giao dịch này",
+  "quoteTransaction10": "Không thể xoá giao dịch thanh toán trong kỳ sao kê đã kết thúc.",
+  "quoteTransaction11": "Oops! Không thể chuyển tiền trong cùng tài khoản!",
+
+  "pleaseSelectADate": "Hãy chọn ngày",
+  "pleaseTickFullPayment": "Hãy tick vào thanh toán đủ",
+  "pleaseSpecifyAnAmount": "Hãy nhập một con số",
+  "mustSpecifyCreditAccount": "Phải nhập tài khoản tín dụng",
+  "mustSpecifyRegularAccount": "Phải nhập tài khoản",
+  "mustSpecifyDestinationAccount": "Phải nhập tài khoản đích",
+  "mustSpecifyForPayment": "Phải nhập tài khoản thanh toán",
+  "mustSpecifyCategory": "Phải nhập danh mục",
+  "noStatementFound": "Không tìm thấy kỳ sao kê nào gắn với ngày đang chọn",
+  "higherThanBalanceToPay": "Cao hơn dư nợ cần thanh toán",
+  "tooHigh": "Quá cao",
+
+  "@________________ [ TRANSACTION/CREATE_RECURRENCE_MODAL ] _______________": {},
+
+  "dayS": "ngày",
+  "weekS": "tuần",
+  "monthS": "tháng",
+  "yearS": "năm",
+  "forever": "Mãi mãi",
+  "selectRepeatCondition": "Lựa chọn điều kiện lặp",
+  "wrongInterval": "Sai khoảng thời gian",
+
+  "doNotRepeat": "Không lặp",
+  "@doNotRepeat": {
+    "description": "Name of no recurrence option"
+  },
+
+  "repeatEvery": "Lặp lại mỗi",
+  "@repeatEvery": {
+    "description": "Prefix of recurrence option"
+  },
+
+  "everyNDay": "{count, plural, =0{không ngày nào} =1{mọi ngày} other{mỗi {count} ngày}}",
+  "@everyNDay": {
+    "description": "every day, every 2 days",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "everyNWeek": "{count, plural, =0{không tuần nào} =1{mỗi tuần} other{mỗi {count} tuần}}",
+  "@everyNWeek": {
+    "description": "every week, every 2 weeks",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "everyNMonth": "{count, plural, =0{không tháng nào} =1{mỗi tháng} other{mỗi {count} tháng}}",
+  "@everyNMonth": {
+    "description": "every month, every 2 months",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "everyNYear": "{count, plural, =0{không năm nào} =1{mỗi năm} other{mỗi {count} năm}}",
+  "@everyNYear": {
+    "description": "every year, every 2 years",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
+  "repeatPattern": "{kind, select, xWeek{vào} xMonth{vào} xYear{vào} other{}} {pattern}",
+  "@repeatPattern": {
+    "description": "A message express repeat pattern",
+    "placeholders": {
+      "kind": {
+        "type": "String",
+        "description": "prefix to list. Kind is xWeek, xMonth or xYear"
+      },
+      "pattern": {
+        "type": "String",
+        "description": "list of days/dates that the transaction repeat"
+      }
+    }
+  },
+
+  "untilEndDate": "cho đến {endDate}",
+  "@untilEndDate": {
+    "description": "A message express end date of recurrence",
+    "placeholders": {
+      "endDate": {
+        "type": "String"
+      }
+    }
+  },
+
+  "quoteRecurrence1": "Giao dịch này không lặp lại",
+
+  "quoteRecurrence2": "Giao dịch này sẽ bắt đầu{isTodayStartDate, select, true{ ngay} other{ từ}} {startDate} và lặp lại {everyN} {repeatPattern} {endDate}",
+  "@quoteRecurrence2": {
+    "description": "Quote express the recurrence of transaction in future tense",
+    "example": "This transaction will repeat every 2 months on the 1st, 3rd, 25th until forever",
+    "placeholders": {
+      "everyN": {
+        "type": "String",
+        "description": "Use [everyN...] localization"
+      },
+      "repeatPattern": {
+        "type": "String",
+        "description": "Use [repeatPattern] localization"
+      },
+      "isTodayStartDate": {
+        "type": "String"
+      },
+      "startDate": {
+        "type": "String"
+      },
+      "endDate": {
+        "type": "String",
+        "description": "Use [untilEndDate] localization"
+      }
+    }
+  },
+
+  "quoteRecurrence3": "Giao dịch này bắt đầu{isTodayStartDate, select, true{ ngay} other{ từ}} {startDate} và lặp lại {everyN} {repeatPattern} {endDate}",
+  "@quoteRecurrence3": {
+    "description": "Quote express the recurrence of transaction in past tense",
+    "example": "This transaction repeats every 2 months on the 1st, 3rd, 25th until forever",
+    "placeholders": {
+      "everyN": {
+        "type": "String",
+        "description": "Use [everyN...] localization"
+      },
+      "repeatPattern": {
+        "type": "String",
+        "description": "Use [repeatPattern] localization"
+      },
+      "isTodayStartDate": {
+        "type": "String"
+      },
+      "startDate": {
+        "type": "String"
+      },
+      "endDate": {
+        "type": "String",
+        "description": "Use [untilEndDate] localization"
+      }
+    }
+  },
+
+
+
+  "@_______________[ DATETIME SELECTOR DIALOG ]____________": {},
+
+  "clearDate" : "Xoá ngày",
+
+  "quoteCreditCalendarDialog1": "This credit account currently has no credit/BNPL transaction needed to pay",
+  "@quoteCreditCalendarDialog1": {
+    "description": "Show in credit date time selector dialog"
+  },
+
+  "quoteCreditCalendarDialog2": "No transactions before this time",
+  "@quoteCreditCalendarDialog2": {
+    "description": "Show in credit date time selector dialog"
+  },
+
+  "quoteCreditCalendarDialog3": "Select a payment day.\n Spending transaction can be paid will be displayed here",
+  "@quoteCreditCalendarDialog3": {
+    "description": "Show in credit date time selector dialog when first display"
+  },
+
+  "quoteCreditCalendarDialog4": "You can only add transaction after [latest checkpoint]",
+  "@quoteCreditCalendarDialog4": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog4_1": "You can only select day after [latest checkpoint]",
+  "@quoteCreditCalendarDialog4_1": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog5": "Oops! You can only add transactions since [the statement contains the latest payment]",
+  "@quoteCreditCalendarDialog5": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog5_1": "Oops! You can only select day in this statement",
+  "@quoteCreditCalendarDialog5_1": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog6": "Oops! This is future statement!",
+  "@quoteCreditCalendarDialog6": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog7": "Oops! Can only pay in grace period (Account preference)",
+  "@quoteCreditCalendarDialog7": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog8": "Oops! There is a payment between current date and selected date",
+  "@quoteCreditCalendarDialog8": {
+    "description": "Show as error pop-up dialog when user select day"
+  },
+
+  "quoteCreditCalendarDialog8_1": "Oops! There is a spending between current date and selected date",
+  "@quoteCreditCalendarDialog8_1": {
+    "description": "Show as error pop-up dialog when user select day"
+  }
 }
