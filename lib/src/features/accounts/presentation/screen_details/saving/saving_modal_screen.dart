@@ -2,39 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_radio.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_slider_toggle.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
-import 'package:money_tracker_app/src/common_widgets/help_button.dart';
-import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
-import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
-import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
-import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
-import '../../../common_widgets/card_item.dart';
-import '../../../common_widgets/custom_inkwell.dart';
-import '../../../common_widgets/icon_with_text.dart';
-import '../../../routing/app_router.dart';
-import '../../../theme_and_ui/icons.dart';
-import '../../calculator_input/presentation/calculator_input.dart';
-import '../../../common_widgets/modal_screen_components.dart';
-import '../../transactions/data/transaction_repo.dart';
-import '../../transactions/domain/transaction_base.dart';
-import '../../transactions/presentation/components/base_transaction_components.dart';
-import '../domain/account_base.dart';
+import '../../../../../common_widgets/card_item.dart';
+import '../../../../../common_widgets/custom_inkwell.dart';
+import '../../../../../common_widgets/icon_with_text.dart';
+import '../../../../../routing/app_router.dart';
+import '../../../../../theme_and_ui/icons.dart';
+import '../../../../../common_widgets/modal_screen_components.dart';
+import '../../../../transactions/data/transaction_repo.dart';
+import '../../../../transactions/domain/transaction_base.dart';
+import '../../../../transactions/presentation/components/base_transaction_components.dart';
+import '../../../domain/account_base.dart';
 
 class SavingModalScreen extends ConsumerWidget {
-  const SavingModalScreen(this.controller, this.isScrollable, {super.key, required this.objectIdHexString});
+  const SavingModalScreen(this.controller, this.isScrollable,
+      {super.key, required this.objectIdHexString});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -199,7 +187,8 @@ class _TransactionsListState extends State<_TransactionsList> {
     );
   }
 
-  List<Widget> buildList(BuildContext context, List<Transfer> transactions, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(
+      BuildContext context, List<Transfer> transactions, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     for (int i = transactions.length - 1; i >= 0; i--) {
@@ -277,7 +266,9 @@ class _Transaction extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              transaction.isToSavingAccount ? 'Add from'.hardcoded : 'Remove to'.hardcoded,
+                              transaction.isToSavingAccount
+                                  ? 'Add from'.hardcoded
+                                  : 'Remove to'.hardcoded,
                               style: kHeader4TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.65),
                                 fontSize: 12,
@@ -301,7 +292,9 @@ class _Transaction extends StatelessWidget {
                       TxnAmount(
                         transaction: transaction,
                         fontSize: 15,
-                        color: transaction.isFromSavingAccount ? context.appTheme.negative : context.appTheme.positive,
+                        color: transaction.isFromSavingAccount
+                            ? context.appTheme.negative
+                            : context.appTheme.positive,
                       )
                     ],
                   ),

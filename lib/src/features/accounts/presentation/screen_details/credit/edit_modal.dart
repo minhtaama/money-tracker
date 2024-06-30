@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../common_widgets/custom_radio.dart';
 import '../../../../../common_widgets/help_button.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
@@ -114,7 +113,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                       textAlign: TextAlign.end,
                       formattedResultOutput: (value) => calculatorOutput = value,
                       focusColor: context.appTheme.secondary1,
-                      hintText: CalService.formatNumberInGroup(widget.currentCreditAccount.creditLimit.toString())),
+                      hintText: CalService.formatNumberInGroup(
+                          widget.currentCreditAccount.creditLimit.toString())),
                 ),
               ),
               Gap.h12,
@@ -182,7 +182,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
                 onConfirm: () async {
                   context.go(RoutePath.accounts);
                   final accountRepo = ref.read(accountRepositoryProvider);
-                  await Future.delayed(k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
+                  await Future.delayed(
+                      k550msDuration, () => accountRepo.delete(widget.currentCreditAccount));
                 },
               );
             },

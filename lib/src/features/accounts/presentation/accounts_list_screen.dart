@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/illustration.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/saving/edit_modal.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -55,7 +57,6 @@ class AccountsListScreen extends ConsumerWidget {
                 AppIcons.walletLight,
                 'No accounts available'.hardcoded,
               ),
-              Gap.h16,
             ];
     }
 
@@ -69,12 +70,10 @@ class AccountsListScreen extends ConsumerWidget {
               },
             )
           : [
-              Gap.h24,
               EmptyIllustration(
                 AppIcons.savingsEmptyLight,
                 'No saving accounts'.hardcoded,
               ),
-              Gap.h16,
             ];
     }
 
@@ -106,7 +105,8 @@ class AccountsListScreen extends ConsumerWidget {
             title: 'Savings',
             isWrapByCard: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            onReorder: (oldIndex, newIndex) => accountRepository.reorder([AccountType.saving], oldIndex, newIndex),
+            onReorder: (oldIndex, newIndex) =>
+                accountRepository.reorder([AccountType.saving], oldIndex, newIndex),
             sections: buildSavingCards(context),
           ),
         ],
@@ -157,7 +157,8 @@ class _AccountTile extends StatelessWidget {
                       ),
                       Text(
                         model is CreditAccount ? 'Credit account' : 'Regular Account',
-                        style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
+                        style: kNormalTextStyle.copyWith(
+                            color: context.appTheme.onBackground, fontSize: 13),
                       ),
                     ],
                   ),
@@ -288,6 +289,20 @@ class _SavingTile extends StatelessWidget {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: RoundedIconButton(
+                      iconPath: AppIcons.editBulk,
+                      backgroundColor: Colors.transparent,
+                      iconColor: model.iconColor,
+                      size: 30,
+                      iconPadding: 5,
+                      onTap: () => showCustomModal(
+                        context: context,
+                        child: EditSavingModalScreen(model),
+                      ),
+                    ),
+                  )
                 ],
               ),
               _SavingDetails(model: model),

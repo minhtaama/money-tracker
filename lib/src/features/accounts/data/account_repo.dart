@@ -21,7 +21,9 @@ class AccountRepositoryRealmDb {
     }
 
     // return realm.all<AccountDb>().query('type == \$0 SORT(order ASC)', [type.databaseValue]);
-    return realm.all<AccountDb>().query('type IN \$0 SORT(order ASC)', [type.map((e) => e.databaseValue)]);
+    return realm
+        .all<AccountDb>()
+        .query('type IN \$0 SORT(order ASC)', [type.map((e) => e.databaseValue)]);
   }
 
   Stream<RealmResultsChanges<AccountDb>> _watchListChanges() {
@@ -112,7 +114,8 @@ class AccountRepositoryRealmDb {
       StatementType.payOnlyInGracePeriod => 1,
     };
 
-    final creditDetailsDb = CreditDetailsDb(creditLimit, statementDay, paymentDueDay, statementTypeDb, apr: apr);
+    final creditDetailsDb =
+        CreditDetailsDb(creditLimit, statementDay, paymentDueDay, statementTypeDb, apr: apr);
 
     final newAccount = AccountDb(
       ObjectId(),
@@ -154,7 +157,9 @@ class AccountRepositoryRealmDb {
     realm.write(() {
       realm.add(newAccount);
 
-      ref.read(transactionRepositoryRealmProvider).addInitialBalance(balance: initialBalance, newAccount: newAccount);
+      ref
+          .read(transactionRepositoryRealmProvider)
+          .addInitialBalance(balance: initialBalance, newAccount: newAccount);
     });
 
     return Account.fromDatabase(newAccount) as RegularAccount;
@@ -227,15 +232,15 @@ class AccountRepositoryRealmDb {
         ..iconIndex = iconIndex
         ..name = name
         ..colorIndex = colorIndex;
+
+      if (targetAmount != null) {
+        accountDb.savingDetails!.targetAmount = targetAmount;
+      }
+
+      if (targetDate != null) {
+        accountDb.savingDetails!.targetDate = targetDate();
+      }
     });
-
-    if (targetAmount != null) {
-      accountDb.savingDetails!.targetAmount = targetAmount;
-    }
-
-    if (targetDate != null) {
-      accountDb.savingDetails!.targetDate = targetDate();
-    }
   }
 
   void editCreditAccount(
@@ -273,8 +278,9 @@ class AccountRepositoryRealmDb {
   void delete(Account account) {
     realm.write(() {
       if (account is CreditAccount) {
-        final txnsDbToDelete =
-            account.transactionsList.where((txn) => txn is! CreditPayment).map((txn) => txn.databaseObject);
+        final txnsDbToDelete = account.transactionsList
+            .where((txn) => txn is! CreditPayment)
+            .map((txn) => txn.databaseObject);
         realm.deleteMany<TransactionDb>(txnsDbToDelete);
       }
 

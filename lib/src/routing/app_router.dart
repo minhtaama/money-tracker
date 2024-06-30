@@ -4,7 +4,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaff
 import 'package:money_tracker_app/src/features/accounts/presentation/account_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/accounts_list_screen.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/add_account_modal_screen.dart';
-import 'package:money_tracker_app/src/features/accounts/presentation/saving_modal_screen.dart';
+import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/saving/saving_modal_screen.dart';
 import 'package:money_tracker_app/src/features/budget/presentation/add_budget_modal_screen.dart';
 import 'package:money_tracker_app/src/features/budget/presentation/budgets_list_screen.dart';
 import 'package:money_tracker_app/src/features/category/presentation/add_category_modal_screen.dart';
@@ -108,7 +108,8 @@ FABItem _fabMainItem(BuildContext context) => FABItem(
       backgroundColor: context.appTheme.accent2,
       onTap: () => showCustomModal(
         context: context,
-        builder: (controller, isScrollable) => AddTemplateTransactionModalScreen(controller, isScrollable),
+        builder: (controller, isScrollable) =>
+            AddTemplateTransactionModalScreen(controller, isScrollable),
       ),
     );
 
@@ -294,8 +295,9 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) =>
-                            SavingModalScreen(controller, isScrollable, objectIdHexString: state.extra as String),
+                        builder: (controller, isScrollable) => SavingModalScreen(
+                            controller, isScrollable,
+                            objectIdHexString: state.extra as String),
                       ),
                     ),
                     GoRoute(
@@ -303,7 +305,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddAccountModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddAccountModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -326,7 +329,8 @@ final goRouter = GoRouter(
                       parentNavigatorKey: _railNavKey,
                       pageBuilder: (context, state) => CustomAppModalPage(
                         key: state.pageKey,
-                        builder: (controller, isScrollable) => AddBudgetModalScreen(controller, isScrollable),
+                        builder: (controller, isScrollable) =>
+                            AddBudgetModalScreen(controller, isScrollable),
                       ),
                     ),
                   ],
@@ -377,7 +381,8 @@ final goRouter = GoRouter(
           parentNavigatorKey: _railNavKey,
           pageBuilder: (context, state) => CustomAppModalPage(
             key: state.pageKey,
-            builder: (controller, isScrollable) => AddCreditSpendingModalScreen(controller, isScrollable),
+            builder: (controller, isScrollable) =>
+                AddCreditSpendingModalScreen(controller, isScrollable),
           ),
         ),
         GoRoute(
