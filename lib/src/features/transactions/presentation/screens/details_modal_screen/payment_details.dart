@@ -1,7 +1,8 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _PaymentDetails extends ConsumerStatefulWidget {
-  const _PaymentDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
+  const _PaymentDetails(this.screenType, this.controller, this.isScrollable,
+      {required this.transaction});
 
   final CreditPayment transaction;
   final TransactionScreenType screenType;
@@ -20,7 +21,8 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late final _creditAccount = _transaction.account is DeletedAccount
       ? null
-      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
+      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject)
+          as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
 
@@ -44,7 +46,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        title: 'Credit Payment'.hardcoded,
+        title: context.loc.creditPayment,
         subTitle: _DateTime(
           isEditMode: _transaction.account is DeletedAccount ? false : _isEditMode,
           isEdited: _isDateTimeEdited(stateWatch),
@@ -76,7 +78,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
                   _DeleteButton(
                     isEditMode: _isEditMode,
                     isDisable: !_canDelete,
-                    disableText: 'Can not delete payment in the period has been recorded on the statement.'.hardcoded,
+                    disableText: context.loc.quoteTransaction10,
                     onConfirm: _delete,
                   )
                 ],
@@ -157,11 +159,11 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
       context: context,
       child: ModalContent(
         header: ModalHeader(
-          title: 'Edit Account'.hardcoded,
+          title: context.loc.editRegularAccount,
         ),
         body: [
           _ModelWithIconEditSelector(
-            title: 'Change Origin:',
+            title: context.loc.chooseAccount,
             selectedItem: _stateRead.fromRegularAccount ?? _transaction.transferAccount,
             list: accountList,
           ),
@@ -181,7 +183,8 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   bool _isDateTimeEdited(CreditPaymentFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditPaymentFormState state) =>
+      state.note != null && state.note != _transaction.note;
 
   bool _submit() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);

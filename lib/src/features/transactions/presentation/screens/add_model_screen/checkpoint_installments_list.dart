@@ -6,7 +6,6 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../../../common_widgets/custom_inkwell.dart';
 import '../../../../../routing/app_router.dart';
@@ -32,7 +31,7 @@ class CheckpointInstallmentsList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ongoing installments:',
+          context.loc.ongoingInstallments,
           style: kNormalTextStyle.copyWith(fontSize: 15, color: context.appTheme.onBackground),
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -113,7 +112,7 @@ class _ListState extends State<_List> {
                 ? [
                     IconWithText(
                       iconPath: AppIcons.doneLight,
-                      header: 'No ongoing installments at selected date',
+                      header: context.loc.noOngoingInstallments,
                     )
                   ]
                 : [
@@ -138,7 +137,7 @@ class _ListState extends State<_List> {
         Padding(
           padding: const EdgeInsets.only(left: 4.0),
           child: Text(
-            'Total unpaid installment balance:',
+            context.loc.totalUnpaidInstallmentBalance,
             style: kNormalTextStyle.copyWith(fontSize: 13, color: context.appTheme.onBackground),
             softWrap: false,
             overflow: TextOverflow.ellipsis,
@@ -278,7 +277,7 @@ class _InstallmentDetailsState extends State<_InstallmentDetails> with SingleTic
                             ],
                           ),
                           Text(
-                            '${widget.monthsLeft.toString()} months left',
+                            '${widget.monthsLeft.toString()} ${context.loc.monthSLeft}',
                             style: kHeader3TextStyle.copyWith(
                                 fontSize: 11, color: context.appTheme.onBackground.withOpacity(0.7)),
                             softWrap: false,

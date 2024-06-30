@@ -21,12 +21,14 @@
   "budget": "Budget",
   "saving": "Saving",
 
+  "initialBalance": "Initial balance",
   "income": "Income",
   "transfer": "Transfer",
   "expense": "Expense",
   "creditSpending": "Credit spending",
   "creditPayment": "Credit payment",
   "plannedTransactions": "Planned transactions",
+  "checkpoint": "Checkpoint",
 
   "today": "Today",
   "daily": "Daily",
@@ -283,6 +285,7 @@
   "chooseAccount": "Choose account",
   "chooseCreditAccountFirst": "Choose credit account first",
   "chooseCategory": "Choose category",
+  "chooseTag": "Choose tag",
   "choose": "Choose",
 
   "noCreditAccounts": "No credit accounts",
@@ -377,10 +380,23 @@
   "transactions": "Transactions",
   "upcomingTransactions": "Upcoming transactions",
   "recurrenceTransactions": "Recurrence transactions",
+  "favoriteTransactions": "Favorite transactions",
 
   "installmentPayment": "Installment payment",
   "quoteInstallmentPayment1": "This transaction has been registered for installment payments, so you won\\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.",
   "quoteInstallmentPayment2": "For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \\'Spending Amount\\' (Because installment payment is a fixed amount, see more details in your banking contract).",
+
+  "installmentPaymentIn": "Installment payment in {month} month(s)",
+  "@installmentPaymentIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "payBeforeDueDate": "Pay before due date",
+
 
   "adjustmentAmount": "Adjustment amount",
   "quoteAdjustmentAmount": "This payment is adjusted to align with the actual credit balance",
@@ -391,7 +407,9 @@
   "skipped": "Skipped",
   "added": "Added",
   "notSpecified": "Not specified",
+  "empty": "Empty",
   "optional": "Optional",
+  "holdToReorder": "Hold to reorder",
 
   "spendingAmount": "Spending amount",
   "paymentAmount": "Payment amount",
@@ -406,6 +424,10 @@
   "creditAccountToPay": "Credit account to pay:",
   "balAfterPayment": "Bal. after payment:",
   "installmentPeriod": "Installment period:",
+  "ongoingInstallments": "On-going installments:",
+  "totalUnpaidInstallmentBalance": "Total unpaid installment balance:",
+
+  "monthSLeft": "month(s) left",
 
   "expenseCategory": "Expense category:",
 
@@ -430,8 +452,10 @@
 
   "noTransactions": "No transactions",
   "noPlannedTransactionsThisMonth": "No planned transactions this month",
+  "noOngoingInstallments": "No ongoing installments at selected date",
   "deleteTransactionConfirm1": "Delete this transaction?",
   "deleteTransactionConfirm2": "All related transactions will be deleted, too.",
+  "deleteTransactionConfirm3": "Delete this favorite transaction?",
 
   "quoteTransaction3": "Too high than balance to pay!",
   "quoteTransaction3_1": "Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount",
@@ -442,6 +466,9 @@
   "quoteTransaction6": "Exact balance to pay!",
   "quoteTransaction7": "No balance left to pay",
   "quoteTransaction8": "All fees must be included",
+  "quoteTransaction9": "Can not delete because there are payment(s) after this transaction",
+  "quoteTransaction10": "Can not delete payment in the period has been recorded on the statement.",
+  "quoteTransaction11": "Oops! Can not transfer in same account!",
 
   "pleaseSelectADate": "Please select a date",
   "pleaseTickFullPayment": "Please tick as full payment",

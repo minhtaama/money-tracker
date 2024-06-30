@@ -49,7 +49,7 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
               IconWithText(
                 iconPath: AppIcons.heartLight,
                 forceIconOnTop: true,
-                header: 'Empty'.hardcoded,
+                header: context.loc.empty,
               ),
             ];
     }
@@ -58,8 +58,8 @@ class AddTemplateTransactionModalScreen extends ConsumerWidget {
       controller: controller,
       isScrollable: isScrollable,
       header: ModalHeader(
-        title: 'Favorite Transactions'.hardcoded,
-        secondaryTitle: 'Hold to re-order'.hardcoded,
+        title: context.loc.favoriteTransactions,
+        secondaryTitle: context.loc.holdToReorder,
       ),
       body: buildTemplateTiles(context),
       onReorder: templateRepository.reorder,
@@ -101,7 +101,7 @@ class _TemplateTransactionTile extends ConsumerWidget {
               iconColor: context.appTheme.onNegative,
               onTap: () => showConfirmModal(
                 context: context,
-                label: 'Delete this favorite transaction?'.hardcoded,
+                label: context.loc.deleteTransactionConfirm3,
                 onConfirm: () {
                   final tempRepo = ref.read(tempTransactionRepositoryRealmProvider);
                   tempRepo.delete(model);

@@ -130,20 +130,20 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
             offset: const Offset(0, -5),
             child: CustomCheckbox(
               initialValue: (initialValues[0] as bool),
-              label: 'Installment payment'.hardcoded,
+              label: context.loc.installmentPayment,
               onChanged: onToggle,
               optionalWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   InlineTextFormField(
-                    prefixText: 'Payment Period:'.hardcoded,
-                    suffixText: 'month(s)'.hardcoded,
+                    prefixText: context.loc.installmentPeriod,
+                    suffixText: context.loc.monthS,
                     onChanged: onMonthOutput,
                     hintText: initialValues[2] != null ? (initialValues[2] as int).toString() : '',
                   ),
                   Gap.h8,
                   InlineTextFormField(
-                    prefixText: 'Amount:'.hardcoded,
+                    prefixText: context.loc.amount,
                     suffixText: context.appSettings.currency.code,
                     widget: CalculatorInput(
                         controller: installmentController,
@@ -158,7 +158,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                   ),
                   Gap.h12,
                   CustomCheckbox(
-                    label: 'Payment start from next statement'.hardcoded,
+                    label: context.loc.startPaymentInNextStatement,
                     initialValue:
                         (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
                     onChanged: onChangePaymentStartFromNextStatement,
@@ -187,7 +187,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Installment payment in ${transaction.monthsToPay} months'.hardcoded,
+                            context.loc.installmentPaymentIn(transaction.monthsToPay.toString()),
                             style: kHeader3TextStyle.copyWith(
                                 color: context.appTheme.onBackground, fontSize: 14),
                           ),
@@ -215,7 +215,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                         ],
                       )
                     : Text(
-                        'Pay before due date'.hardcoded,
+                        context.loc.payBeforeDueDate,
                         style:
                             kHeader3TextStyle.copyWith(color: context.appTheme.negative, fontSize: 16),
                       ),
@@ -768,7 +768,7 @@ class _DeleteButton extends StatelessWidget {
               ? showErrorDialog(context, disableText)
               : showConfirmModal(
                   context: context,
-                  label: 'Delete this transaction?'.hardcoded,
+                  label: context.loc.deleteTransactionConfirm1,
                   confirmLabel: 'Yes, delete'.hardcoded,
                   onConfirm: onConfirm,
                 );
@@ -914,11 +914,11 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
   Widget build(BuildContext context) {
     return ModalContent(
       header: ModalHeader(
-        title: 'Edit Category'.hardcoded,
+        title: context.loc.editCategory,
       ),
       body: [
         _ModelWithIconEditSelector(
-          title: 'Change Category:'.hardcoded,
+          title: context.loc.chooseCategory,
           withBottomGap: false,
           list: _categoryList,
           selectedItem: _selectedCategory,
@@ -928,7 +928,7 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
           }),
         ),
         Gap.h16,
-        TextHeader('Change Tag:'.hardcoded),
+        TextHeader(context.loc.chooseTag),
         Gap.h16,
         CategoryTagSelector(
           category: _selectedCategory,

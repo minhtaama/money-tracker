@@ -1,7 +1,8 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _CheckpointDetails extends ConsumerStatefulWidget {
-  const _CheckpointDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
+  const _CheckpointDetails(this.screenType, this.controller, this.isScrollable,
+      {required this.transaction});
 
   final CreditCheckpoint transaction;
   final TransactionScreenType screenType;
@@ -34,7 +35,7 @@ class _CheckpointDetailsState extends ConsumerState<_CheckpointDetails> {
   Widget build(BuildContext context) {
     return ModalContent(
       header: ModalHeader(
-        title: 'Credit Spending'.hardcoded,
+        title: context.loc.checkpoint,
         subTitle: _DateTime(
           isEditMode: _isEditMode,
           isEdited: false,
@@ -64,7 +65,7 @@ class _CheckpointDetailsState extends ConsumerState<_CheckpointDetails> {
                   _DeleteButton(
                     isEditMode: _isEditMode,
                     isDisable: false,
-                    disableText: 'Can not delete because there are payment(s) after this transaction'.hardcoded,
+                    disableText: context.loc.quoteTransaction9,
                     onConfirm: () {
                       final transactionRepo = ref.read(transactionRepositoryRealmProvider);
                       transactionRepo.deleteTransaction(_transaction);
