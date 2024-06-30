@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/features/transactions/presentation/control
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
@@ -79,8 +78,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        title: 'Add Spending'.hardcoded,
-        secondaryTitle: 'For credit accounts'.hardcoded,
+        title: context.loc.addCreditSpending,
+        secondaryTitle: context.loc.forCreditAccount,
       ),
       footer: ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit),
       body: [
@@ -91,7 +90,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             Gap.w16,
             Expanded(
               child: CalculatorInput(
-                hintText: 'Spending Amount',
+                hintText: context.loc.spendingAmount,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calSpendingAmountValidator(),
                 formattedResultOutput: (value) {
@@ -102,19 +101,18 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             ),
             Gap.w16,
             HelpButton(
-              text: 'All fees must be included.'.hardcoded,
+              text: context.loc.quoteTransaction8,
               yOffset: 4,
             )
           ],
         ),
         Gap.h4,
         CustomCheckbox(
-          label: 'Installment payment'.hardcoded,
+          label: context.loc.installmentPayment,
           labelSuffix: HelpButton(
-              title: 'Installment payment'.hardcoded,
-              text:
-                  'For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \'Spending Amount\' (Because installment payment is a fixed amount, see more details in your banking contract).'
-                      .hardcoded),
+            title: context.loc.installmentPayment,
+            text: context.loc.quoteInstallmentPayment2,
+          ),
           onChanged: (value) {
             if (!value) {
               _stateController.changeInstallmentPeriod(null);
@@ -125,8 +123,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InlineTextFormField(
-                prefixText: 'Installment Period:',
-                suffixText: 'month(s)',
+                prefixText: context.loc.installmentPeriod,
+                suffixText: context.loc.monthS,
                 validator: (_) => stateWatch.installmentPeriod == null ? 'error' : null,
                 onChanged: (value) {
                   _stateController.changeInstallmentPeriod(int.tryParse(value));
@@ -135,7 +133,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               ),
               Gap.h8,
               InlineTextFormField(
-                prefixText: 'Payment amount:',
+                prefixText: '${context.loc.paymentAmount}:',
                 suffixText: context.appSettings.currency.code,
                 widget: CalculatorInput(
                     controller: _installmentPaymentController,
@@ -149,7 +147,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               ),
               Gap.h12,
               CustomCheckbox(
-                label: 'Start payment in next statement',
+                label: context.loc.startPaymentInNextStatement,
                 initialValue: stateWatch.paymentStartFromNextStatement ?? true,
                 onChanged: (value) {
                   _stateController.changePaymentStartFromNextStatement(value);
@@ -181,7 +179,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const TextHeader('Credit Account:'),
+                  TextHeader(context.loc.creditAccount),
                   Gap.h4,
                   AccountFormSelector(
                     accountType: AccountType.credit,
@@ -190,7 +188,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                         _stateController.changeCreditAccount(newAccount as CreditAccount),
                   ),
                   Gap.h16,
-                  const TextHeader('Expense category:'),
+                  TextHeader(context.loc.expenseCategory),
                   Gap.h4,
                   CategoryFormSelector(
                     transactionType: TransactionType.expense,
@@ -203,10 +201,10 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
           ],
         ),
         Gap.h16,
-        const Padding(
-            padding: EdgeInsets.only(left: 8.0),
+        Padding(
+            padding: const EdgeInsets.only(left: 8.0),
             child: TextHeader(
-              'OPTIONAL:',
+              context.loc.optional.toUpperCase(),
               fontSize: 11,
             )),
         Gap.h4,
@@ -239,32 +237,32 @@ extension _Validators on _AddCreditTransactionModalScreenState {
 
   String? _calSpendingAmountValidator() {
     if (_stateRead.amount == null || _stateRead.amount == 0) {
-      return 'Invalid amount';
+      return context.loc.invalidAmount;
     }
     return null;
   }
 
   String? _installmentPaymentValidator() {
     if (_stateRead.installmentAmount == null || _stateRead.installmentAmount == 0) {
-      return 'Invalid Amount';
+      return context.loc.invalidAmount;
     }
 
     if (_stateRead.installmentAmount! > _stateRead.amount!) {
-      return 'Too high';
+      return context.loc.tooHigh;
     }
     return null;
   }
 
   String? _categoryValidator() {
     if (_stateRead.category == null) {
-      return 'Must specify a category'.hardcoded;
+      return context.loc.mustSpecifyCategory;
     }
     return null;
   }
 
   String? _creditAccountValidator() {
     if (_stateRead.creditAccount == null) {
-      return 'Must specify for payment'.hardcoded;
+      return context.loc.mustSpecifyCreditAccount;
     }
     return null;
   }

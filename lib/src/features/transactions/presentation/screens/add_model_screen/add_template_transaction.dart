@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/animated_swipe_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
-import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -113,7 +112,8 @@ class _TemplateTransactionTile extends ConsumerWidget {
           child: CardItem(
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            border: context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+            border:
+                context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
             child: CustomInkWell(
               inkColor: AppColors.grey(context),
               onTap: () {
@@ -258,8 +258,9 @@ class _AccountName extends ConsumerWidget {
     return Text(
       name(),
       style: kHeader4TextStyle.copyWith(
-        color: context.appTheme.onBackground
-            .withOpacity(destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
+        color: context.appTheme.onBackground.withOpacity(destination
+            ? (model.toAccount != null ? 0.65 : 0.25)
+            : (model.account != null ? 0.65 : 0.25)),
         fontSize: 11,
       ),
       softWrap: false,
@@ -280,7 +281,8 @@ class _Note extends StatelessWidget {
             margin: const EdgeInsets.only(left: 15.5, top: 8),
             padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+              border: Border(
+                  left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
             child: Transform.translate(
               offset: const Offset(0, -1),
@@ -305,17 +307,17 @@ class _CategoryName extends StatelessWidget {
 
   final TemplateTransaction model;
 
-  String get _name {
+  String _name(BuildContext context) {
     if (model.category != null) {
       return model.category!.name;
     }
-    return 'Not specified'.hardcoded;
+    return context.loc.notSpecified;
   }
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      _name,
+      _name(context),
       style: kHeader3TextStyle.copyWith(
         fontSize: 13,
         color: context.appTheme.onBackground.withOpacity(model.category == null ? 0.25 : 1),
@@ -379,8 +381,9 @@ class _TransferDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Transfer to:'.hardcoded,
-          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          context.loc.transferTo,
+          style: kHeader3TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),

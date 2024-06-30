@@ -171,7 +171,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                     Padding(
                       padding: const EdgeInsets.only(left: 2.0),
                       child: Text(
-                        'Payment amount:',
+                        context.loc.paymentAmount,
                         style: kHeader3TextStyle.copyWith(
                           fontSize: 14,
                           color: context.appTheme.onBackground.withOpacity(0.8),
@@ -213,10 +213,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 isShow: _showHelpBox && _stateController.isPaymentTooHighThanBalance(context),
                 iconPath: AppIcons.sadFaceBulk,
                 margin: const EdgeInsets.only(top: 8),
-                header: 'Too high than balance to pay!'.hardcoded,
-                text:
-                    'Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount'
-                        .hardcoded,
+                header: context.loc.quoteTransaction3,
+                text: context.loc.quoteTransaction3_1,
                 onCloseTap: () => setState(() {
                   _showHelpBox = false;
                 }),
@@ -227,10 +225,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
-                header: 'Pay amount is quite higher'.hardcoded,
-                text:
-                    'Are there some hidden fee or some small transaction you forgot to add? If not a full payment, you must specify the balance after payment amount'
-                        .hardcoded,
+                header: context.loc.quoteTransaction4,
+                text: context.loc.quoteTransaction4_1,
                 onCloseTap: () => setState(() {
                   _showHelpBox = false;
                 }),
@@ -241,8 +237,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
-                header: 'Close to balance to pay!'.hardcoded,
-                text: 'Is this a full payment? If so, please tick "Full Payment" below!'.hardcoded,
+                header: context.loc.quoteTransaction5,
+                text: context.loc.quoteTransaction5_1,
                 onCloseTap: () => setState(() {
                   _showHelpBox = false;
                 }),
@@ -253,7 +249,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
-                header: 'Exact balance to pay!'.hardcoded,
+                header: context.loc.quoteTransaction6,
                 onCloseTap: () => setState(() {
                   _showHelpBox = false;
                 }),
@@ -264,7 +260,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                 margin: const EdgeInsets.only(top: 8),
                 backgroundColor: context.appTheme.positive,
                 color: context.appTheme.onPositive,
-                header: 'No balance left to pay!'.hardcoded,
+                header: context.loc.quoteTransaction7,
                 onCloseTap: () => setState(() {
                   _showHelpBox = false;
                 }),
@@ -272,12 +268,12 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
               !_stateController.isNoNeedPayment(context)
                   ? CustomCheckbox(
                       onChanged: _onToggleFullPaymentCheckbox,
-                      label: 'Full payment',
+                      label: context.loc.fullPayment,
                       showOptionalWidgetWhenValueIsFalse: true,
                       optionalWidget: Column(
                         children: [
                           InlineTextFormField(
-                            prefixText: 'Bal. after payment:'.hardcoded,
+                            prefixText: context.loc.balAfterPayment,
                             suffixText: context.appSettings.currency.code,
                             textSize: 14,
                             widget: CalculatorInput(
@@ -308,7 +304,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
-            'OPTIONAL:',
+            context.loc.optional.toUpperCase(),
             style: kHeader2TextStyle.copyWith(
               fontSize: 11,
               color: context.appTheme.onBackground.withOpacity(0.4),
@@ -343,34 +339,34 @@ extension _Validators on _AddCreditPaymentModalScreenState {
 
   String? _dateTimeValidator() {
     if (_stateRead.dateTime == null) {
-      return 'Please select a date';
+      return context.loc.pleaseSelectADate;
     }
     return null;
   }
 
   String? _paymentInputValidator(BuildContext context) {
     if (_stateRead.userPaymentAmount == null || _stateRead.userPaymentAmount == 0) {
-      return 'Invalid amount'.hardcoded;
+      return context.loc.invalidAmount;
     }
     if (_stateRead.statement == null) {
-      return 'No statement found in selected day'.hardcoded;
+      return context.loc.noStatementFound;
     }
     return null;
   }
 
   String? _remainingInputValidator(BuildContext context) {
     if (_stateRead.statement == null) {
-      return 'No statement found in selected day'.hardcoded;
+      return context.loc.noStatementFound;
     }
 
     if (_stateRead.userRemainingAmount != null &&
         _stateRead.userRemainingAmount!.roundBySetting(context) >
             _stateRead.totalBalanceAmount.roundBySetting(context)) {
-      return 'Higher than balance to pay'.hardcoded;
+      return context.loc.higherThanBalanceToPay;
     }
 
     if (_stateRead.userRemainingAmount != null && _stateRead.userRemainingAmount == 0) {
-      return 'Please tick as full payment'.hardcoded;
+      return context.loc.pleaseTickFullPayment;
     }
 
     // When user is not tick as full payment but not specify a remaining amount
@@ -378,7 +374,7 @@ extension _Validators on _AddCreditPaymentModalScreenState {
         _stateRead.userRemainingAmount == null &&
         _stateRead.userPaymentAmount != null &&
         _stateRead.totalBalanceAmount.roundBySetting(context) - _stateRead.userPaymentAmount! <= 0) {
-      return 'Please specify an amount'.hardcoded;
+      return context.loc.pleaseSpecifyAnAmount;
     }
 
     return null;
@@ -386,14 +382,14 @@ extension _Validators on _AddCreditPaymentModalScreenState {
 
   String? _creditAccountValidator() {
     if (_stateRead.creditAccount == null) {
-      return 'Must specify a credit account';
+      return context.loc.mustSpecifyCreditAccount;
     }
     return null;
   }
 
   String? _fromRegularAccountValidator() {
     if (_stateRead.fromRegularAccount == null) {
-      return 'Must be specify for payment';
+      return context.loc.mustSpecifyForPayment;
     }
     return null;
   }

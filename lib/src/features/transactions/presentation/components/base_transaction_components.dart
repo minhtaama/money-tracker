@@ -94,7 +94,7 @@ class TxnInstallmentIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return HelpButton(
       title: context.loc.installmentPayment,
-      text: context.loc.quoteInstallmentPayment,
+      text: context.loc.quoteInstallmentPayment1,
       iconPath: AppIcons.installmentTwoTone,
       size: size,
     );

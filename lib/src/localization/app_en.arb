@@ -379,7 +379,8 @@
   "recurrenceTransactions": "Recurrence transactions",
 
   "installmentPayment": "Installment payment",
-  "quoteInstallmentPayment": "This transaction has been registered for installment payments, so you won\\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.",
+  "quoteInstallmentPayment1": "This transaction has been registered for installment payments, so you won\\'t have to pay in this statement cycle; instead, you only need to settle the installment amount from next statement cycle.",
+  "quoteInstallmentPayment2": "For registered installment credit transactions. Note: All the principal amount, interest, and any installment conversion fee (if applicable) of this installment transactions must be INCLUDED in \\'Spending Amount\\' (Because installment payment is a fixed amount, see more details in your banking contract).",
 
   "adjustmentAmount": "Adjustment amount",
   "quoteAdjustmentAmount": "This payment is adjusted to align with the actual credit balance",
@@ -390,6 +391,11 @@
   "skipped": "Skipped",
   "added": "Added",
   "notSpecified": "Not specified",
+  "optional": "Optional",
+
+  "spendingAmount": "Spending amount",
+  "paymentAmount": "Payment amount",
+  "amount": "Amount",
 
   "transferTo": "Transfer to:",
   "addSavingTo": "Add saving to:",
@@ -398,6 +404,10 @@
   "paymentTo": "Payment to:",
   "checkpointAt": "Checkpoint at:",
   "creditAccountToPay": "Credit account to pay:",
+  "balAfterPayment": "Bal. after payment:",
+  "installmentPeriod": "Installment period:",
+
+  "expenseCategory": "Expense category:",
 
   "addAdjustment": "Add adjustment",
   "addCreditPayment": "Add payment",
@@ -407,6 +417,12 @@
   "addTransfer": "Add transfer",
   "forCreditAccount": "For credit account",
   "forRegularAccount": "For regular account",
+  "betweenRegularAccount": "Between regular account",
+  "toSavingAccount": "To saving account",
+  "outOfSavingAccount": "Out of saving account",
+
+  "fullPayment": "Full payment",
+  "startPaymentInNextStatement": "Start payment in next statement",
 
   "forYourKnowledge": "For your knowledge",
   "quoteTransaction1": "Add [transactions has installment payment going through this checkpoint] first, if any.",
@@ -417,6 +433,27 @@
   "deleteTransactionConfirm1": "Delete this transaction?",
   "deleteTransactionConfirm2": "All related transactions will be deleted, too.",
 
+  "quoteTransaction3": "Too high than balance to pay!",
+  "quoteTransaction3_1": "Maybe there are other spending transactions before this day? If not a full payment, you must specify the balance after payment amount",
+  "quoteTransaction4": "Pay amount is quite higher",
+  "quoteTransaction4_1": "Are there some hidden fee or some small transaction you forgot to add? If not a full payment, you must specify the balance after payment amount",
+  "quoteTransaction5": "Close to balance to pay!",
+  "quoteTransaction5_1": "Is this a full payment? If so, please tick \"Full Payment\" below!",
+  "quoteTransaction6": "Exact balance to pay!",
+  "quoteTransaction7": "No balance left to pay",
+  "quoteTransaction8": "All fees must be included",
+
+  "pleaseSelectADate": "Please select a date",
+  "pleaseTickFullPayment": "Please tick as full payment",
+  "pleaseSpecifyAnAmount": "Please specify an amount",
+  "mustSpecifyCreditAccount": "Must specify a credit account",
+  "mustSpecifyRegularAccount": "Must specify an account",
+  "mustSpecifyDestinationAccount": "Must specify a destination account",
+  "mustSpecifyForPayment": "Must be specify for payment",
+  "mustSpecifyCategory": "Must specify a category",
+  "noStatementFound": "No statement found in selected day",
+  "higherThanBalanceToPay": "Higher than balance to pay",
+  "tooHigh": "Too high",
 
   "@________________ [ TRANSACTION/CREATE_RECURRENCE_MODAL ] _______________": {},
 

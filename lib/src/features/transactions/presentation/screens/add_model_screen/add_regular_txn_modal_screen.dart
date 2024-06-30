@@ -17,7 +17,6 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/account_base.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
@@ -25,7 +24,8 @@ import '../../../../selectors/presentation/forms.dart';
 import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
+      {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -40,7 +40,8 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
 
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
@@ -51,20 +52,20 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 
   String get _title {
     return widget.transactionType == TransactionType.income
-        ? 'Add Income'.hardcoded
+        ? context.loc.addIncome
         : widget.transactionType == TransactionType.expense
-            ? 'Add Expense'.hardcoded
-            : 'Add Transfer'.hardcoded;
+            ? context.loc.addExpense
+            : context.loc.addTransfer;
   }
 
   String get _secondaryTitle {
     return widget.transactionType == TransactionType.transfer
         ? _stateRead.toAccount is SavingAccount
-            ? 'To saving account'.hardcoded
+            ? context.loc.toSavingAccount
             : _stateRead.account is SavingAccount
-                ? 'Out of saving account'.hardcoded
-                : 'Between regular accounts'.hardcoded
-        : 'For regular accounts'.hardcoded;
+                ? context.loc.outOfSavingAccount
+                : context.loc.betweenRegularAccount
+        : context.loc.forRegularAccount;
   }
 
   void _submit() {
@@ -233,8 +234,10 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Gap.w16,
             Expanded(
               child: CalculatorInput(
-                hintText: 'Amount',
-                initialValue: stateWatch.amount != null ? CalService.formatCurrency(context, stateWatch.amount!) : null,
+                hintText: context.loc.amount,
+                initialValue: stateWatch.amount != null
+                    ? CalService.formatCurrency(context, stateWatch.amount!)
+                    : null,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calculatorValidator(),
                 formattedResultOutput: (value) {
@@ -307,8 +310,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount:
-                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
+                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
+                              ? stateWatch.account
+                              : null,
                         ),
                 ],
               ),
@@ -372,31 +376,31 @@ extension _Validators on _AddTransactionModalScreenState {
 
   String? _calculatorValidator() {
     if (_stateRead.amount == null || _stateRead.amount == 0) {
-      return 'Invalid amount';
+      return context.loc.invalidAmount;
     }
     return null;
   }
 
   String? _categoryValidator() {
     if (_stateRead.category == null && widget.transactionType != TransactionType.transfer) {
-      return 'Must specify a category'.hardcoded;
+      return context.loc.mustSpecifyCategory;
     }
     return null;
   }
 
   String? _sendingAccountValidator() {
     if (_stateRead.account == null) {
-      return 'Must specify a sending account'.hardcoded;
+      return context.loc.mustSpecifyRegularAccount;
     }
     return null;
   }
 
   String? _toAccountAndAccountValidator() {
     if (widget.transactionType != TransactionType.transfer && _stateRead.account == null) {
-      return 'Must specify an account for payment'.hardcoded;
+      return context.loc.mustSpecifyForPayment;
     }
     if (widget.transactionType == TransactionType.transfer && _stateRead.toAccount == null) {
-      return 'Must specify a destination account'.hardcoded;
+      return context.loc.mustSpecifyDestinationAccount;
     }
     return null;
   }
