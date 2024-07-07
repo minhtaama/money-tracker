@@ -63,8 +63,7 @@ class _ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
   final VoidCallback onEyeTap;
 
   @override
-  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() =>
-      _ExtendedHomeTabForScrollableSheetState();
+  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
 }
 
 class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHomeTabForScrollableSheet> {
@@ -154,8 +153,7 @@ class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHom
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const _WelcomeText(),
-        Gap.h8,
+        Gap.h12,
         MoneyCarousel(
           controller: widget.carouselController,
           initialPageIndex: widget.initialPageIndex,
@@ -220,8 +218,7 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
     final chartServices = ref.watch(customLineChartServicesProvider);
     final txnServices = ref.read(customLineChartServicesProvider);
 
-    CLCData data =
-        chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
+    CLCData data = chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
     // double avg = chartServices.getAverageAssets();
     double amount = txnServices.getTotalAssets(widget.displayDate);
 

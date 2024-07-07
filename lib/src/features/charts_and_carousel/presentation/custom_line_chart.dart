@@ -151,7 +151,7 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: _customLineType == _CustomLineType.solid ? 3 : 1.5,
+        barWidth: _customLineType == _CustomLineType.solid ? 2 : 1.5,
         dashArray: [12, _customLineType == _CustomLineType.solid ? 0 : 8],
         shadow: context.appTheme.isDarkTheme
             ? Shadow(
@@ -159,7 +159,8 @@ class CustomLineChart extends StatelessWidget {
                 blurRadius: 50,
               )
             : const Shadow(color: Colors.transparent),
-        color: color ?? context.appTheme.accent1,
+        color: color?.withOpacity(_customLineType == _CustomLineType.solid ? 1 : 0.5) ??
+            context.appTheme.accent1.withOpacity(_customLineType == _CustomLineType.solid ? 1 : 0.5),
         belowBarData: BarAreaData(
           show: true,
           gradient: mainBelowLineGradient(),
@@ -176,7 +177,7 @@ class CustomLineChart extends StatelessWidget {
         isCurved: true,
         isStrokeCapRound: false,
         preventCurveOverShooting: true,
-        barWidth: 3,
+        barWidth: 2,
         gradient: optionalLineGradient,
         dotData: FlDotData(
           show: true,
@@ -206,35 +207,37 @@ class CustomLineChart extends StatelessWidget {
       ),
     ];
 
-    Widget bottomTitleWidgets(double value, TitleMeta meta) {
-      final today = DateTime.now();
+    Widget noBottomTitle(double value, TitleMeta meta) {
+      return Gap.noGap;
 
-      bool isToday = value == today.day && currentMonth.isSameMonthAs(today);
-
-      final bottomLabels = currentMonth.daysInMonth == 31 || currentMonth.daysInMonth == 30
-          ? [1, 8, 15, 23, currentMonth.daysInMonth]
-          : [1, 7, 14, 21, currentMonth.daysInMonth];
-
-      bool isShowTitle = bottomLabels.contains(value.toInt());
-
-      final textStyle = isToday
-          ? kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground)
-          : kNormalTextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
-
-      return isShowTitle
-          ? Transform.translate(
-              offset: Offset(0, -(6 + offsetLabelUp)),
-              child: SideTitleWidget(
-                axisSide: AxisSide.bottom,
-                space: 0,
-                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
-                child: Text(
-                  value.toInt().toString(),
-                  style: textStyle,
-                ),
-              ),
-            )
-          : Gap.noGap;
+      // final today = DateTime.now();
+      //
+      // bool isToday = value == today.day && currentMonth.isSameMonthAs(today);
+      //
+      // final bottomLabels = currentMonth.daysInMonth == 31 || currentMonth.daysInMonth == 30
+      //     ? [1, 8, 15, 23, currentMonth.daysInMonth]
+      //     : [1, 7, 14, 21, currentMonth.daysInMonth];
+      //
+      // bool isShowTitle = bottomLabels.contains(value.toInt());
+      //
+      // final textStyle = isToday
+      //     ? kHeader2TextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground)
+      //     : kNormalTextStyle.copyWith(fontSize: 12, color: color ?? context.appTheme.onBackground);
+      //
+      // return isShowTitle
+      //     ? Transform.translate(
+      //         offset: Offset(0, -(6 + offsetLabelUp)),
+      //         child: SideTitleWidget(
+      //           axisSide: AxisSide.bottom,
+      //           space: 0,
+      //           fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true),
+      //           child: Text(
+      //             value.toInt().toString(),
+      //             style: textStyle,
+      //           ),
+      //         ),
+      //       )
+      //     : Gap.noGap;
     }
 
     Widget bottomTitleWidgetsForCredit(double value, TitleMeta meta) {
@@ -440,7 +443,7 @@ class CustomLineChart extends StatelessWidget {
           showTitles: true,
           reservedSize: isForCredit ? 30 : 14,
           interval: 1,
-          getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : bottomTitleWidgets,
+          getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : noBottomTitle,
         ),
       ),
     );
@@ -484,7 +487,7 @@ class CustomLineChart extends StatelessWidget {
     );
 
     return Transform.translate(
-      offset: Offset(0, isForCredit ? 30 : 14),
+      offset: Offset(0, isForCredit ? 30 : 20),
       child: LineChart(
         LineChartData(
           maxY: maxY,

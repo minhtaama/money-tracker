@@ -55,7 +55,7 @@ class CardItem extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
         color: color ?? defaultBgColor,
-        borderRadius: borderRadius ?? BorderRadius.circular(16),
+        borderRadius: borderRadius ?? BorderRadius.circular(8),
         border: border,
         boxShadow: boxShadow ??
             (elevation == 0
@@ -81,7 +81,7 @@ class CardItem extends StatelessWidget {
       ),
       child: ClipRRect(
         clipBehavior: clip ? Clip.antiAliasWithSaveLayer : Clip.none,
-        borderRadius: borderRadius?.subtract(BorderRadius.circular(1)) ?? BorderRadius.circular(15),
+        borderRadius: borderRadius?.subtract(BorderRadius.circular(1)) ?? BorderRadius.circular(8),
         child: Padding(
           padding: padding,
           child: child,

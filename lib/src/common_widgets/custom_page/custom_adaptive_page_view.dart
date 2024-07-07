@@ -352,8 +352,8 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
       decoration: BoxDecoration(
         color: context.appTheme.background1,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(23),
-          topRight: Radius.circular(23),
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
         ),
         boxShadow: [
           BoxShadow(

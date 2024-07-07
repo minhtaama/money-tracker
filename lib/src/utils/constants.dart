@@ -29,7 +29,7 @@ const double kCustomToolBarHeight = 40;
 /// Value related to CustomTabBar and CustomTabPage
 const double kExtendedCustomTabBarHeight = 320;
 
-const double kMoneyCarouselViewFraction = 0.55;
+const double kMoneyCarouselViewFraction = 0.57;
 
 // Durations
 const Duration kNoDuration = Duration(milliseconds: 0);
