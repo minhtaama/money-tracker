@@ -62,16 +62,17 @@ class _TileState extends State<_Tile> {
         _showButtons = false;
       }),
       child: CardItem(
-        // margin: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
-        color: color.withOpacity(_showButtons ? 0.1 : 0.0),
+        borderRadius: BorderRadius.zero,
+        color: color.withOpacity(_showButtons ? 0.2 : 0),
         child: CustomInkWell(
           inkColor: color,
           onTap: () => setState(() {
             _showButtons = !_showButtons;
           }),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 14, bottom: 8),
             child: Column(
               children: [
                 TransactionDataTile(

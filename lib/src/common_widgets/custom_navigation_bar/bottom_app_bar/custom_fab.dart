@@ -294,6 +294,7 @@ class _ListButtons extends StatelessWidget {
           color: context.appTheme.onBackground.withOpacity(0.4),
           width: 1.5,
         ),
+        iconScaleUp: true,
       ),
     );
   }

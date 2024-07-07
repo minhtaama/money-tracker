@@ -65,7 +65,7 @@ class DayCard extends StatelessWidget {
         CardItem(
           margin: EdgeInsets.only(
               left: forModal ? 0 : 8, right: forModal ? 0 : 8, top: forModal ? 4 : 6, bottom: forModal ? 4 : 0),
-          //margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 8, vertical: forModal ? 4 : 6),
+          padding: const EdgeInsets.only(top: 6),
           border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
           borderRadius: BorderRadius.only(
             topRight: const Radius.circular(8),
@@ -156,7 +156,7 @@ class DayCard extends StatelessWidget {
                 children: [
                   CardItem(
                     margin: EdgeInsets.zero,
-                    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+                    padding: EdgeInsets.zero,
                     border: forModal && context.appTheme.isDarkTheme
                         ? Border.all(color: AppColors.greyBorder(context))
                         : null,

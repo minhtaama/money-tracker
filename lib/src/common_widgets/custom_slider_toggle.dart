@@ -77,7 +77,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius: BorderRadius.circular(8),
                   color: context.appTheme.onBackground.withOpacity(0.065),
                 ),
               ),
@@ -94,7 +94,7 @@ class _CustomSliderToggleState<T> extends State<CustomSliderToggle<T>> {
                       margin: EdgeInsets.zero,
                       elevation: 1.5,
                       isGradient: true,
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(7),
                       color: widget.toggleColor ?? context.appTheme.accent1,
                     ),
                   ),

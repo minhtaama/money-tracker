@@ -24,10 +24,12 @@ class IconWithTextButton extends StatelessWidget {
     this.color,
     this.inkColor,
     this.iconSize,
+    this.iconScaleUp = false,
   });
 
   final String iconPath;
   final double? iconSize;
+  final bool iconScaleUp;
   final String? label;
   final String? subLabel;
   final double? labelSize;
@@ -62,10 +64,17 @@ class IconWithTextButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SvgIcon(
-                iconPath,
-                color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
-                size: iconSize ?? 28,
+              Transform(
+                transform: !iconScaleUp
+                    ? Matrix4.identity()
+                    : (Matrix4.identity()
+                      ..scale(1.9)
+                      ..translate(-12.0, -3)),
+                child: SvgIcon(
+                  iconPath,
+                  color: isDisabled ? context.appTheme.onBackground : color ?? context.appTheme.onAccent,
+                  size: iconSize ?? 28,
+                ),
               ),
               label != null ? Gap.w8 : Gap.noGap,
               width != null

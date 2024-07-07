@@ -36,8 +36,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
   Widget build(BuildContext context) {
     assert(widget.transactionType == TransactionType.expense);
 
-    final regularTransactionFormState =
-        ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
+    final regularTransactionFormState = ref.watch(regularTransactionFormNotifierProvider(widget.transactionType));
 
     final list = ref
         .watch(budgetServicesProvider)
@@ -47,8 +46,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
         final budget = budgetDetail.budget;
         return switch (budget) {
           CategoryBudget() => budget.categories.contains(regularTransactionFormState.category),
-          AccountBudget() =>
-            budget.accounts.contains(regularTransactionFormState.account?.toAccountInfo()),
+          AccountBudget() => budget.accounts.contains(regularTransactionFormState.account?.toAccountInfo()),
         };
       },
     );
@@ -104,7 +102,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
 
     final button = CustomInkWell(
       inkColor: AppColors.grey(context),
-      borderRadius: BorderRadius.circular(13),
+      borderRadius: BorderRadius.circular(8),
       onTap: () => setState(() {
         _showContent = true;
       }),
@@ -135,7 +133,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
 
     return CardItem(
       color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
-      elevation: context.isBigScreen && !context.appTheme.isDarkTheme ? 4.5 : 20,
+      elevation: 2.5,
       margin: EdgeInsets.zero,
       padding: const EdgeInsets.all(6),
       child: AnimatedCrossFade(
@@ -148,12 +146,10 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
     );
   }
 
-  Widget _budgetWidget(
-      BuildContext context, BudgetDetail budgetDetail, RegularTransactionFormState formState) {
+  Widget _budgetWidget(BuildContext context, BudgetDetail budgetDetail, RegularTransactionFormState formState) {
     final double percentage = (budgetDetail.currentAmount / budgetDetail.budget.amount).clamp(0, 1);
     final double secondaryPercentage =
-        ((budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount)
-            .clamp(0, 1);
+        ((budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount).clamp(0, 1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
@@ -213,11 +209,9 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
             ProgressBar(
               key: ValueKey(budgetDetail.budget.id),
               color: context.appTheme.primary,
-              secondaryColor:
-                  (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount <
-                          0.8
-                      ? context.appTheme.positive
-                      : context.appTheme.negative,
+              secondaryColor: (budgetDetail.currentAmount + (formState.amount ?? 0)) / budgetDetail.budget.amount < 0.8
+                  ? context.appTheme.positive
+                  : context.appTheme.negative,
               percentage: percentage,
               secondaryPercentage: secondaryPercentage,
               height: 10,

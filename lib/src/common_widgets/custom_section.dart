@@ -107,7 +107,6 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
             ...?widget.subIcons,
           ],
         ),
-        widget.title != null ? Gap.h16 : Gap.noGap,
         CardItem(
           duration: const Duration(milliseconds: 200),
           curve: Curves.linear,

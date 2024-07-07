@@ -30,7 +30,6 @@ class DayCardTransactionsList extends StatelessWidget {
 
         return CustomInkWell(
           inkColor: AppColors.grey(context),
-          borderRadius: BorderRadius.circular(12),
           onTap: () => onTransactionTap?.call(transaction),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
@@ -128,8 +127,7 @@ class _TransferDetails extends StatelessWidget {
               : transaction.isFromSavingAccount
                   ? context.loc.transferSavingTo
                   : context.loc.transferTo,
-          style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -151,8 +149,7 @@ class _PaymentDetails extends StatelessWidget {
       children: [
         Text(
           context.loc.paymentTo,
-          style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 12),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
@@ -163,8 +160,7 @@ class _PaymentDetails extends StatelessWidget {
             SvgIcon(
               AppIcons.creditLight,
               size: 14,
-              color: context.appTheme.onBackground
-                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
+              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 1),
             ),
           ],
         ),
