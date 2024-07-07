@@ -19,7 +19,7 @@ class ColorPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,11 +47,7 @@ class ColorPicker extends StatelessWidget {
 
 class CircleColor extends StatelessWidget {
   const CircleColor(
-      {super.key,
-      required this.color,
-      required this.isSelected,
-      required this.onTap,
-      required this.index});
+      {super.key, required this.color, required this.isSelected, required this.onTap, required this.index});
   final int index;
   final Color color;
   final bool isSelected;

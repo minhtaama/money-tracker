@@ -51,7 +51,7 @@ class IconWithTextButton extends StatelessWidget {
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
       border: border,
-      borderRadius: borderRadius ?? BorderRadius.circular(1000),
+      borderRadius: borderRadius ?? BorderRadius.circular(8),
       elevation: 0,
       isGradient: true,
       child: CustomInkWell(

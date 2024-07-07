@@ -61,13 +61,10 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
       label: _currentAccount != null ? _currentAccount!.name : 'Add Account',
       subLabel: _currentAccount is SavingAccount ? context.loc.savings : null,
       labelSize: 15,
-      borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       iconPath: _currentAccount != null ? _currentAccount!.iconPath : AppIcons.addLight,
       backgroundColor: _currentAccount != null ? _currentAccount!.backgroundColor : Colors.transparent,
-      color: _currentAccount != null
-          ? _currentAccount!.iconColor
-          : context.appTheme.onBackground.withOpacity(0.4),
+      color: _currentAccount != null ? _currentAccount!.iconColor : context.appTheme.onBackground.withOpacity(0.4),
       height: null,
       width: null,
       border: _currentAccount != null
@@ -79,11 +76,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
         List<Account> accountList = ref.read(accountRepositoryProvider).getList([widget.accountType]);
 
         List<SavingAccount>? savingList = widget.withSavingAccount
-            ? ref
-                .read(accountRepositoryProvider)
-                .getList([AccountType.saving])
-                .whereType<SavingAccount>()
-                .toList()
+            ? ref.read(accountRepositoryProvider).getList([AccountType.saving]).whereType<SavingAccount>().toList()
             : null;
 
         final returnedValue = await showCustomModal<Account>(
@@ -155,9 +148,8 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
                               AddAccountModalScreen(controller, isScrollable, initialType: accountType),
                         );
 
-                        final isSameType =
-                            (newAccount is RegularAccount && accountType == AccountType.regular) ||
-                                (newAccount is CreditAccount && accountType == AccountType.credit);
+                        final isSameType = (newAccount is RegularAccount && accountType == AccountType.regular) ||
+                            (newAccount is CreditAccount && accountType == AccountType.credit);
 
                         if (context.mounted) {
                           if (newAccount != null && isSameType) {
@@ -174,8 +166,7 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
 
         setState(() {
           if (returnedValue != null) {
-            if (_currentAccount != null &&
-                _currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
+            if (_currentAccount != null && _currentAccount!.databaseObject.id == returnedValue.databaseObject.id) {
               _currentAccount = null;
               widget.onChangedAccount(_currentAccount);
             } else {
@@ -195,7 +186,6 @@ class _AccountSelectorState extends ConsumerState<AccountSelector> {
           label: account.name,
           isDisabled: widget.otherSelectedAccount?.databaseObject.id == account.databaseObject.id,
           labelSize: 18,
-          borderRadius: BorderRadius.circular(16),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           border: Border.all(
             color: _currentAccount?.databaseObject.id == account.databaseObject.id

@@ -62,7 +62,6 @@ class _TileState extends State<_Tile> {
         _showButtons = false;
       }),
       child: CardItem(
-        borderRadius: BorderRadius.circular(12),
         // margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
         color: color.withOpacity(_showButtons ? 0.1 : 0.0),

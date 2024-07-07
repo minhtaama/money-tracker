@@ -60,16 +60,16 @@ class EmptyIllustration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CardItem(
-        color: Colors.transparent,
-        clip: false,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.appTheme.onBackground.withOpacity(0.3), width: 2),
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: verticalPadding),
-        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
-        child: IconWithText(
-          header: text,
-          iconPath: svgPath,
-          iconSize: 30,
-        ));
+      color: Colors.transparent,
+      clip: false,
+      border: Border.all(color: context.appTheme.onBackground.withOpacity(0.3), width: 2),
+      padding: EdgeInsets.symmetric(horizontal: 0, vertical: verticalPadding),
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+      child: IconWithText(
+        header: text,
+        iconPath: svgPath,
+        iconSize: 30,
+      ),
+    );
   }
 }

@@ -47,7 +47,7 @@ class _DateTimeWidget extends StatelessWidget {
       height: 60,
       width: 75,
       padding: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(6),
       color: Colors.transparent,
       elevation: 0,
       child: Column(

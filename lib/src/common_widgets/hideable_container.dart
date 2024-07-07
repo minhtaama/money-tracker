@@ -3,9 +3,11 @@ import 'package:flutter/scheduler.dart';
 import '../utils/constants.dart';
 
 class HideableContainer extends StatefulWidget {
-  const HideableContainer({super.key, required this.hide, this.axis = Axis.vertical, required this.child});
+  const HideableContainer(
+      {super.key, required this.hide, this.axis = Axis.vertical, this.initialAnimation = true, required this.child});
   final bool hide;
   final Axis axis;
+  final bool initialAnimation;
   final Widget child;
 
   @override
@@ -20,7 +22,7 @@ class _HideableContainerState extends State<HideableContainer> with SingleTicker
   void initState() {
     super.initState();
     prepareAnimations();
-    _runHideCheck();
+    _runHideCheckInitial();
   }
 
   ///Setting up the animation
@@ -30,6 +32,22 @@ class _HideableContainerState extends State<HideableContainer> with SingleTicker
       parent: expandController,
       curve: Curves.fastOutSlowIn,
     );
+  }
+
+  void _runHideCheckInitial() {
+    if (!widget.hide) {
+      if (widget.initialAnimation) {
+        expandController.forward();
+      } else {
+        expandController.value = 1;
+      }
+    } else {
+      if (widget.initialAnimation) {
+        expandController.reverse();
+      } else {
+        expandController.value = 0;
+      }
+    }
   }
 
   void _runHideCheck() {

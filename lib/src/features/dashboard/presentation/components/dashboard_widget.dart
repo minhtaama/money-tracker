@@ -28,10 +28,7 @@ class DashboardWidget extends StatelessWidget {
       child: CardItem(
         color: isEmpty ? Colors.transparent : context.appTheme.background0,
         clip: false,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.appTheme.onBackground.withOpacity(isEmpty ? 0.3 : 0), width: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        border: Border.all(color: context.appTheme.onBackground.withOpacity(isEmpty ? 0.3 : 0), width: 1.5),
         child: isEmpty
             ? IconWithText(
                 header: emptyTitle,
@@ -41,13 +38,17 @@ class DashboardWidget extends StatelessWidget {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: kHeader3TextStyle.copyWith(
-                      color: context.appTheme.onBackground.withOpacity(0.65),
-                      fontSize: 14,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                    child: Text(
+                      title,
+                      style: kHeader3TextStyle.copyWith(
+                        color: context.appTheme.onBackground.withOpacity(0.65),
+                        fontSize: 14,
+                      ),
                     ),
                   ),
+                  Gap.divider(context),
                   Gap.h12,
                   child,
                 ],

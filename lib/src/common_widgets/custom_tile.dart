@@ -28,11 +28,10 @@ class CustomTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomInkWell(
-      borderRadius: BorderRadius.circular(12),
       inkColor: context.appTheme.onBackground.withOpacity(0.1),
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
         child: Row(
           children: [
             leading ?? const SizedBox(),

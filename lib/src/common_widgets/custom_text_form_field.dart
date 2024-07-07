@@ -132,8 +132,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         decoration: InputDecoration(
-          contentPadding:
-              widget.contentPadding ?? (widget.withOutlineBorder ? const EdgeInsets.all(12) : null),
+          contentPadding: widget.contentPadding ?? (widget.withOutlineBorder ? const EdgeInsets.all(12) : null),
           isDense: widget.contentPadding != null ? true : null,
           focusColor: context.appTheme.primary,
           prefixIcon: widget.prefixIcon,
@@ -142,7 +141,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           suffixIconConstraints: const BoxConstraints(minWidth: 0),
           focusedErrorBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: widget.focusColor, width: 2),
                 )
               : UnderlineInputBorder(
@@ -150,7 +149,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 ),
           errorBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: context.appTheme.negative, width: 1),
                 )
               : UnderlineInputBorder(
@@ -158,19 +157,17 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 ),
           enabledBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.4 : 0.2),
-                      width: 1),
+                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.4 : 0.2), width: 1),
                 )
               : UnderlineInputBorder(
                   borderSide: BorderSide(
-                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.4 : 0.2),
-                      width: 1),
+                      color: context.appTheme.onBackground.withOpacity(widget.enabled ? 0.4 : 0.2), width: 1),
                 ),
           focusedBorder: widget.withOutlineBorder
               ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: widget.focusColor, width: 2),
                 )
               : UnderlineInputBorder(

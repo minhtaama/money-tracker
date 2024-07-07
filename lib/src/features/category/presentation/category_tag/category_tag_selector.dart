@@ -46,8 +46,7 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
 
   late List<CategoryTag>? _tags = categoryRepo.getTagList(_currentCategory);
 
-  late CategoryTag? _chosenTag =
-      widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
+  late CategoryTag? _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
 
   late bool _showTextField = _tags == null || _tags!.isEmpty;
 
@@ -203,9 +202,7 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
                 Flexible(
                   child: RoundedIconButton(
                     iconPath: AppIcons.closeLight,
-                    iconColor: context.appTheme.isDarkTheme
-                        ? context.appTheme.onSecondary
-                        : context.appTheme.onPrimary,
+                    iconColor: context.appTheme.isDarkTheme ? context.appTheme.onSecondary : context.appTheme.onPrimary,
                     backgroundColor: Colors.transparent,
                     size: 35,
                     iconPadding: 7,
@@ -250,8 +247,7 @@ class _ChosenTag extends StatelessWidget {
 }
 
 class CategoryTagWidget extends StatelessWidget {
-  const CategoryTagWidget(
-      {super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
+  const CategoryTagWidget({super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
   final ValueSetter<CategoryTag> onLongPress;
@@ -265,7 +261,7 @@ class CategoryTagWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: CustomInkWell(
             inkColor: AppColors.greyBgr(context),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(8),
             onTap: () => onTap(categoryTag),
             onLongPress: () => onLongPress(categoryTag),
             child: CardItem(
@@ -292,8 +288,7 @@ class CategoryTagWidget extends StatelessWidget {
 }
 
 class AddCategoryTagButton extends ConsumerStatefulWidget {
-  const AddCategoryTagButton(
-      {super.key, this.focusNode, this.category, required this.onEditingComplete});
+  const AddCategoryTagButton({super.key, this.focusNode, this.category, required this.onEditingComplete});
   final FocusNode? focusNode;
   final Category? category;
   final ValueSetter<CategoryTag> onEditingComplete;
@@ -362,8 +357,7 @@ class _AddCategoryTagButtonState extends ConsumerState<AddCategoryTagButton> {
 
             CategoryTag? newTag = categoryRepo.writeNewTag(name: _newTag!, category: widget.category!);
 
-            categoryRepo.reorderTagToTop(
-                widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
+            categoryRepo.reorderTagToTop(widget.category!, categoryRepo.getTagList(widget.category)!.length - 1);
 
             widget.onEditingComplete(newTag!);
 

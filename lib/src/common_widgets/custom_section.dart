@@ -71,108 +71,103 @@ class _CustomSectionState extends State<CustomSection> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      padding: EdgeInsets.zero,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    widget.title != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(left: 6.0),
-                            child: Text(
-                              widget.title!,
-                              style: kHeader1TextStyle.copyWith(
-                                color: context.appTheme.onBackground.withOpacity(0.85),
-                                fontSize: 22,
-                              ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  widget.title != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: Text(
+                            widget.title!,
+                            style: kHeader1TextStyle.copyWith(
+                              color: context.appTheme.onBackground.withOpacity(0.85),
+                              fontSize: 22,
                             ),
-                          )
-                        : Gap.noGap,
-                    widget.subTitle != null
-                        ? IntrinsicWidth(
-                            child: Padding(
-                            padding: const EdgeInsets.only(left: 6.0),
-                            child: widget.subTitle,
-                          ))
-                        : Gap.noGap,
-                  ],
-                ),
+                          ),
+                        )
+                      : Gap.noGap,
+                  widget.subTitle != null
+                      ? IntrinsicWidth(
+                          child: Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: widget.subTitle,
+                        ))
+                      : Gap.noGap,
+                ],
               ),
-              ...?widget.subIcons,
-            ],
-          ),
-          widget.title != null ? Gap.h16 : Gap.noGap,
-          CardItem(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.linear,
-            padding: widget.isWrapByCard ? const EdgeInsets.all(8) : EdgeInsets.zero,
-            margin: widget.isWrapByCard ? const EdgeInsets.all(6) : const EdgeInsets.only(bottom: 24),
-            color: widget.isWrapByCard ? null : Colors.transparent,
-            borderRadius: widget.isWrapByCard ? null : BorderRadius.zero,
-            clip: widget.sectionsClipping,
-            child: widget.onReorder == null
-                ? Center(
-                    child: Column(
-                      crossAxisAlignment: widget.crossAxisAlignment,
-                      children: _children,
-                    ),
-                  )
-                : ReorderableColumn(
+            ),
+            ...?widget.subIcons,
+          ],
+        ),
+        widget.title != null ? Gap.h16 : Gap.noGap,
+        CardItem(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.linear,
+          padding: EdgeInsets.zero,
+          color: widget.isWrapByCard ? null : Colors.transparent,
+          borderRadius: widget.isWrapByCard ? null : BorderRadius.zero,
+          clip: widget.sectionsClipping,
+          child: widget.onReorder == null
+              ? Center(
+                  child: Column(
                     crossAxisAlignment: widget.crossAxisAlignment,
-                    scrollController: ScrollController(),
-                    draggingWidgetOpacity: 0,
-                    needsLongPressDraggable: widget.holdToReorder,
-                    reorderAnimationDuration: k250msDuration,
-                    onReorderStarted: (_) => _controller.forward(from: 0),
-                    // This callback build the widget when dragging is happening
-                    buildDraggableFeedback: (context, constraint, feedback) {
-                      return ConstrainedBox(
-                        constraints: constraint,
-                        child: Material(
-                            color: Colors.transparent,
-                            child: AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform(
-                                  alignment: Alignment.center,
-                                  transform: Matrix4.identity()
-                                    ..scale(1.0 + 0.04 * _animation.value)
-                                    ..rotateZ(math.pi * 0.025 * _animation.value),
-                                  child: Container(
-                                    decoration: BoxDecoration(boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.black.withOpacity(0.1),
-                                        blurRadius: 13 * _animation.value,
-                                        offset: Offset(2 * _animation.value, 30 * _animation.value),
-                                        spreadRadius: -13,
-                                      )
-                                    ]),
-                                    child: (feedback as SectionTile).child,
-                                  ),
-                                );
-                              },
-                            )),
-                      );
-                    },
-                    onReorder: (oldIndex, newIndex) {
-                      _controller.reverse(from: 1);
-                      _onReorder(oldIndex, newIndex);
-                      widget.onReorder!.call(oldIndex, newIndex);
-                    },
                     children: _children,
                   ),
-          )
-        ],
-      ),
+                )
+              : ReorderableColumn(
+                  crossAxisAlignment: widget.crossAxisAlignment,
+                  scrollController: ScrollController(),
+                  draggingWidgetOpacity: 0,
+                  needsLongPressDraggable: widget.holdToReorder,
+                  reorderAnimationDuration: k250msDuration,
+                  onReorderStarted: (_) => _controller.forward(from: 0),
+                  // This callback build the widget when dragging is happening
+                  buildDraggableFeedback: (context, constraint, feedback) {
+                    return ConstrainedBox(
+                      constraints: constraint,
+                      child: Material(
+                          color: Colors.transparent,
+                          child: AnimatedBuilder(
+                            animation: _animation,
+                            builder: (context, child) {
+                              return Transform(
+                                alignment: Alignment.center,
+                                transform: Matrix4.identity()
+                                  ..scale(1.0 + 0.04 * _animation.value)
+                                  ..rotateZ(math.pi * 0.025 * _animation.value),
+                                child: Container(
+                                  decoration: BoxDecoration(boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.black.withOpacity(0.1),
+                                      blurRadius: 13 * _animation.value,
+                                      offset: Offset(2 * _animation.value, 30 * _animation.value),
+                                      spreadRadius: -13,
+                                    )
+                                  ]),
+                                  child: (feedback as SectionTile).child,
+                                ),
+                              );
+                            },
+                          )),
+                    );
+                  },
+                  onReorder: (oldIndex, newIndex) {
+                    _controller.reverse(from: 1);
+                    _onReorder(oldIndex, newIndex);
+                    widget.onReorder!.call(oldIndex, newIndex);
+                  },
+                  children: _children,
+                ),
+        )
+      ],
     );
   }
 }

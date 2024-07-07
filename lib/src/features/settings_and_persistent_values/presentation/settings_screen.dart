@@ -56,7 +56,7 @@ class SettingsScreen extends ConsumerWidget {
                 statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
               },
             ),
-            Gap.divider(context, indent: 6),
+            Gap.divider(context),
             SettingTileToggle(
               title: context.loc.useDarkMode,
               valueLabels: [context.loc.off, context.loc.on, context.loc.systemDefault],
@@ -98,7 +98,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               onTap: () => context.push(RoutePath.setCurrency),
             ),
-            Gap.divider(context, indent: 6),
+            Gap.divider(context),
             SettingTileDropDown<CurrencyType>(
               title: context.loc.currencyFormat,
               initialValue: currentSettings.currencyType,
