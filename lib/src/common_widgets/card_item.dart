@@ -20,7 +20,7 @@ class CardItem extends StatelessWidget {
       this.boxShadow,
       this.border,
       this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+      this.padding = const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
       this.elevation = 0,
       this.clip = true,
       this.alignment});

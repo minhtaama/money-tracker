@@ -71,10 +71,11 @@ class Gap {
   static get h40 => const SizedBox(height: 40);
   static get h48 => const SizedBox(height: 48);
 
-  static divider(BuildContext context, {double? indent}) => Divider(
-        color: context.appTheme.onBackground.withOpacity(0.2),
+  static divider(BuildContext context, {double? indent, Color? color, double? thickness}) => Divider(
+        color: color ?? context.appTheme.onBackground.withOpacity(0.2),
         indent: indent,
         endIndent: indent,
+        thickness: thickness,
       );
 
   static verticalDivider(BuildContext context, {double? indent}) => VerticalDivider(

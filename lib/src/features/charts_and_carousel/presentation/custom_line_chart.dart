@@ -86,30 +86,26 @@ class CustomLineChart extends StatelessWidget {
       stops: [todayPercent, todayPercent + 0.00000001],
     );
 
-    Gradient mainBelowLineGradient() {
-      bool isDashed = _customLineType == _CustomLineType.dashed;
-      bool isDarkTheme = context.appTheme.isDarkTheme;
-      double opaTop = todayDotColor != null
-          ? 0.25
-          : isDarkTheme
-              ? (isDashed ? 0.25 : 0.35)
-              : (isDashed ? 0.05 : 0.15);
-      double opaBottom = todayDotColor != null
-          ? 0.1
-          : isDarkTheme
-              ? 0.15
-              : 0;
-
-      return LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          color?.withOpacity(opaTop) ?? context.appTheme.accent1.withOpacity(opaTop),
-          color?.withOpacity(opaBottom) ?? context.appTheme.accent1.withOpacity(opaBottom),
-        ],
-        stops: const [0, 0.6],
-      );
-    }
+    // Gradient mainBelowLineGradient() {
+    //   bool isDashed = _customLineType == _CustomLineType.dashed;
+    //   bool isDarkTheme = context.appTheme.isDarkTheme;
+    //   double opaTop = todayDotColor != null
+    //       ? 0.25
+    //       : isDarkTheme
+    //           ? (isDashed ? 0.25 : 0.35)
+    //           : (isDashed ? 0.05 : 0.15);
+    //   double opaBottom = 0;
+    //
+    //   return LinearGradient(
+    //     begin: Alignment.topCenter,
+    //     end: Alignment.bottomCenter,
+    //     colors: [
+    //       color?.withOpacity(opaTop) ?? context.appTheme.accent1.withOpacity(opaTop),
+    //       color?.withOpacity(opaBottom) ?? context.appTheme.accent1.withOpacity(opaBottom),
+    //     ],
+    //     stops: const [0, 0.2],
+    //   );
+    // }
 
     Alignment extraLineLabelAlignment() {
       if (extraLineY == null) {
@@ -153,17 +149,20 @@ class CustomLineChart extends StatelessWidget {
         preventCurveOverShooting: true,
         barWidth: _customLineType == _CustomLineType.solid ? 2 : 1.5,
         dashArray: [12, _customLineType == _CustomLineType.solid ? 0 : 8],
-        shadow: context.appTheme.isDarkTheme
-            ? Shadow(
-                color: context.appTheme.accent1,
-                blurRadius: 50,
-              )
-            : const Shadow(color: Colors.transparent),
+        // shadow: context.appTheme.isDarkTheme
+        //     ? Shadow(
+        //         color: context.appTheme.accent1.withOpacity(1),
+        //         blurRadius: 5,
+        //       )
+        //     : const Shadow(color: Colors.transparent),
         color: color?.withOpacity(_customLineType == _CustomLineType.solid ? 1 : 0.5) ??
             context.appTheme.accent1.withOpacity(_customLineType == _CustomLineType.solid ? 1 : 0.5),
         belowBarData: BarAreaData(
           show: true,
-          gradient: mainBelowLineGradient(),
+          color: context.appTheme.isDarkTheme
+              ? color?.withOpacity(0.08) ?? context.appTheme.accent1.withOpacity(0.08)
+              : Colors.transparent,
+          //gradient: mainBelowLineGradient(),
         ),
         dotData: const FlDotData(show: false),
         isStepLineChart: isForCredit,

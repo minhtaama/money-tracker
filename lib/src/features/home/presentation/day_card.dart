@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/day_card_transactions_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -59,18 +61,17 @@ class DayCard extends StatelessWidget {
     final today = DateTime.now().onlyYearMonthDay;
 
     return CardItem(
-      margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 6, vertical: forModal ? 4 : 6),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+      margin: EdgeInsets.symmetric(horizontal: forModal ? 0 : 8, vertical: forModal ? 4 : 6),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
       border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             child: Row(
               children: [
-                Gap.w4,
                 CardItem(
                   margin: EdgeInsets.zero,
                   padding: dateTime.isSameDayAs(today)
@@ -126,30 +127,19 @@ class DayCard extends StatelessWidget {
               ],
             ),
           ),
-          transactions.isNotEmpty ? Gap.divider(context, indent: 10) : Gap.noGap,
+          transactions.isNotEmpty
+              ? Gap.divider(context, indent: 0, color: context.appTheme.background1, thickness: 1)
+              : Gap.noGap,
           DayCardTransactionsList(
             transactions: transactions,
             onTransactionTap: onTransactionTap,
           ),
           plannedTransactions.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 12.0, top: 4),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Gap.divider(context, indent: 0),
-                      ),
-                      Gap.w8,
-                      Text(
-                        context.loc.plannedTransactions,
-                        style: kHeader4TextStyle.copyWith(
-                          color: context.appTheme.onBackground.withOpacity(0.65),
-                          fontSize: 12,
-                        ),
-                      ),
-                      Gap.w12,
-                    ],
-                  ),
+              ? Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Gap.divider(context, indent: 0, color: context.appTheme.background1, thickness: 1),
+                  ],
                 )
               : Gap.noGap,
           DayCardPlannedTransactionsList(
