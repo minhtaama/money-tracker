@@ -10,7 +10,6 @@ import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dar
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
 import '../../../theme_and_ui/colors.dart';
@@ -20,8 +19,7 @@ import '../domain/recurrence.dart';
 import 'transaction_data_tile.dart';
 
 class PlannedTransactionsModalScreen extends ConsumerWidget {
-  const PlannedTransactionsModalScreen(this.controller, this.isScrollable,
-      {super.key, required this.dateTime});
+  const PlannedTransactionsModalScreen(this.controller, this.isScrollable, {super.key, required this.dateTime});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -64,12 +62,10 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
     );
   }
 
-  List<Widget> _buildDays(
-      BuildContext context, WidgetRef ref, List<TransactionData> plannedTransactions) {
+  List<Widget> _buildDays(BuildContext context, WidgetRef ref, List<TransactionData> plannedTransactions) {
     final result = <Widget>[];
 
-    final upcomingTxns =
-        plannedTransactions.where((e) => e.state == PlannedState.upcoming).toList().reversed;
+    final upcomingTxns = plannedTransactions.where((e) => e.state == PlannedState.upcoming).toList().reversed;
 
     result.add(
       TextHeader(
@@ -84,7 +80,7 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
 
     for (TransactionData txn in upcomingTxns) {
       result.add(
-        _Tile(key: ValueKey(txn.dateTime), model: txn),
+        _Tile(key: ValueKey(txn.hashCode), model: txn),
       );
     }
 
@@ -103,12 +99,11 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
 
     for (TransactionData txn in todayTxns) {
       result.add(
-        _Tile(key: ValueKey(txn.dateTime), model: txn),
+        _Tile(key: ValueKey(txn.hashCode), model: txn),
       );
     }
 
-    final overdueTxns =
-        plannedTransactions.where((e) => e.state == PlannedState.overdue).toList().reversed;
+    final overdueTxns = plannedTransactions.where((e) => e.state == PlannedState.overdue).toList().reversed;
 
     result.add(
       TextHeader(
@@ -123,12 +118,11 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
 
     for (TransactionData txn in overdueTxns) {
       result.add(
-        _Tile(key: ValueKey(txn.dateTime), model: txn),
+        _Tile(key: ValueKey(txn.hashCode), model: txn),
       );
     }
 
-    final skippedTxns =
-        plannedTransactions.where((e) => e.state == PlannedState.skipped).toList().reversed;
+    final skippedTxns = plannedTransactions.where((e) => e.state == PlannedState.skipped).toList().reversed;
 
     result.add(
       TextHeader(
@@ -143,7 +137,7 @@ class PlannedTransactionsModalScreen extends ConsumerWidget {
 
     for (TransactionData txn in skippedTxns) {
       result.add(
-        _Tile(key: ValueKey(txn.dateTime), model: txn),
+        _Tile(key: ValueKey(txn.hashCode), model: txn),
       );
     }
 
@@ -279,8 +273,7 @@ class _TileState extends ConsumerState<_Tile> {
                                                   _hide = !_hide;
                                                 });
                                                 Future.delayed(k350msDuration, () {
-                                                  final recRepo =
-                                                      ref.read(recurrenceRepositoryRealmProvider);
+                                                  final recRepo = ref.read(recurrenceRepositoryRealmProvider);
                                                   recRepo.addTransaction(ref, widget.model);
                                                 });
                                               },
@@ -305,8 +298,7 @@ class _TileState extends ConsumerState<_Tile> {
                                                   _hide = !_hide;
                                                 });
                                                 Future.delayed(k350msDuration, () {
-                                                  final recRepo =
-                                                      ref.read(recurrenceRepositoryRealmProvider);
+                                                  final recRepo = ref.read(recurrenceRepositoryRealmProvider);
                                                   recRepo.addSkipped(widget.model);
                                                 });
                                               },

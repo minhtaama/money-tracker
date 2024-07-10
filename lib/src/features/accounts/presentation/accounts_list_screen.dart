@@ -132,7 +132,7 @@ class _AccountTile extends StatelessWidget {
         child: CardItem(
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
-          elevation: 3,
+          elevation: 1,
           borderRadius: BorderRadius.circular(12),
           child: Column(
             children: [
@@ -265,7 +265,7 @@ class _SavingTile extends StatelessWidget {
         child: CardItem(
           margin: EdgeInsets.zero,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          elevation: 3,
+          elevation: 0,
           borderRadius: BorderRadius.circular(12),
           color: model.backgroundColor.lerpWithBg(context, 0.2),
           child: Column(

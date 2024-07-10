@@ -24,10 +24,9 @@ class BottomAppBarButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // use isLeft to set padding for symmetric with centered FAB
     EdgeInsets buttonPadding = EdgeInsets.only(left: isLeft ? 35 : 30, right: isLeft ? 30 : 35);
-    BorderRadius borderRadius = BorderRadius.circular(38);
+    BorderRadius borderRadius = BorderRadius.circular(8);
 
-    Color backgroundColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
+    Color backgroundColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background2;
 
     return Expanded(
       child: Padding(
@@ -39,7 +38,7 @@ class BottomAppBarButton extends StatelessWidget {
           highlightColor: Colors.transparent,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            height: kBottomAppBarHeight - 28,
+            height: kBottomAppBarHeight - 30,
             decoration: BoxDecoration(
               color: isSelected ? backgroundColor : backgroundColor.withOpacity(0),
               borderRadius: borderRadius,
@@ -53,12 +52,8 @@ class BottomAppBarButton extends StatelessWidget {
                   child: SvgIcon(
                     item.iconData,
                     color: isSelected
-                        ? (context.appTheme.isDarkTheme
-                            ? context.appTheme.secondary1
-                            : context.appTheme.onBackground)
-                        : (context.appTheme.isDarkTheme
-                            ? context.appTheme.secondary1
-                            : context.appTheme.onBackground),
+                        ? (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground)
+                        : (context.appTheme.isDarkTheme ? context.appTheme.secondary1 : context.appTheme.onBackground),
                   ),
                 ),
                 Gap.w4,

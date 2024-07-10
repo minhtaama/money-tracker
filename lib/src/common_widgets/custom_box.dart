@@ -33,7 +33,7 @@ class CustomBox extends StatelessWidget {
         border: Border.all(
           color: context.appTheme.onBackground.withOpacity(hide ? 0.0 : 0.3),
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: ConstrainedBox(
         constraints: constraints ?? const BoxConstraints.tightForFinite(),

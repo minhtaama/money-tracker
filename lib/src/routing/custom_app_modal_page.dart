@@ -137,7 +137,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               left: context.isBigScreen ? 6 : 0,
               right: context.isBigScreen ? 8 : 0,
             ),
-      padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 12, right: 12),
+      padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 8, right: 8),
       borderRadius: context.isBigScreen || isDialog
           ? const BorderRadius.all(Radius.circular(8))
           : BorderRadius.only(
@@ -146,7 +146,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
             ),
       child: Padding(
         padding: EdgeInsets.only(
-          top: isDialog ? 0 : 16,
+          top: isDialog ? 0 : 12,
           bottom: 16,
         ),
         child: child,

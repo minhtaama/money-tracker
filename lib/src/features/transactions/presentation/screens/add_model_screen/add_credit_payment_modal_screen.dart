@@ -166,7 +166,6 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         statement: stateWatch.statement,
                       ),
                     ),
-                    Gap.divider(context, indent: 6),
                     Gap.h8,
                     Padding(
                       padding: const EdgeInsets.only(left: 2.0),
@@ -281,8 +280,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                       stateWatch.totalBalanceAmount.roundBySetting(context) -
                                               stateWatch.userPaymentAmount!.roundBySetting(context) >
                                           0
-                                  ? CalService.formatCurrency(context,
-                                      stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                  ? CalService.formatCurrency(
+                                      context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                   : '???',
                               textAlign: TextAlign.right,
                               controller: _remainingInputController,

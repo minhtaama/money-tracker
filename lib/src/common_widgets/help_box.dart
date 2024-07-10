@@ -59,7 +59,7 @@ class _HelpBoxState extends State<HelpBox> {
         margin: _isShow ? widget.margin : EdgeInsets.zero,
         decoration: BoxDecoration(
           color: widget.backgroundColor ?? context.appTheme.negative,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: ConstrainedBox(
           constraints: widget.constraints ?? const BoxConstraints.tightForFinite(),

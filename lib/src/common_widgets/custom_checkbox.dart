@@ -48,7 +48,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                       widget.showOptionalWidgetWhenValueIsFalse && !_value
                   ? (widget.checkboxBackgroundColor ?? AppColors.greyBgr(context))
                   : (widget.checkboxBackgroundColor?.withOpacity(0) ?? AppColors.greyBgr(context).withOpacity(0)),
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
             ),
             child: Padding(
               padding: widget.optionalWidget != null ? const EdgeInsets.only(bottom: 8.0, right: 12) : EdgeInsets.zero,
@@ -66,7 +66,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity:
                           widget.optionalWidget == null ? const VisualDensity(horizontal: 0, vertical: -3) : null,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                       side: BorderSide(color: context.appTheme.onBackground.withOpacity(0.4), width: 1.5),
                       value: _value,
                       onChanged: (value) {
@@ -128,10 +128,10 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                             ? 0.3
                             : 0),
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: AnimatedSize(
-                  duration: k150msDuration,
+                  duration: k250msDuration,
                   child: !widget.showOptionalWidgetWhenValueIsFalse && _value ||
                           widget.showOptionalWidgetWhenValueIsFalse && !_value
                       ? widget.optionalWidget ?? Gap.noGap

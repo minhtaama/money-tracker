@@ -120,6 +120,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         CustomSection(
           sections: [
+            Gap.h8,
             SettingTileDropDown<Locale>(
               title: context.loc.language,
               initialValue: currentSettings.locale,

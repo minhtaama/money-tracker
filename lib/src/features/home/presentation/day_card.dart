@@ -138,7 +138,7 @@ class DayCard extends StatelessWidget {
               ),
               transactions.isNotEmpty
                   ? Gap.divider(context, indent: 0, color: context.appTheme.background1, thickness: 1)
-                  : Gap.noGap,
+                  : Gap.h8,
               DayCardTransactionsList(
                 transactions: transactions,
                 onTransactionTap: onTransactionTap,
