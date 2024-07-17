@@ -14,11 +14,10 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../../../theme_and_ui/icons.dart';
-import '../../../utils/enums_dashboard.dart';
+import 'components/enums_dashboard.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -45,8 +44,7 @@ class DashboardScreen extends StatelessWidget {
     };
   }
 
-  Widget _smallScreen(
-      BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+  Widget _smallScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar(
         child: PageHeading(
@@ -70,8 +68,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _bigScreen(
-      BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
+  Widget _bigScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar.empty(),
       children: [

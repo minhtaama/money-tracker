@@ -26,6 +26,10 @@ class AppSettingsData {
 
   final FirstDayOfWeek firstDayOfWeek;
 
+  final HomescreenType homescreenType;
+
+  final LineChartInHomescreen lineChartInHomescreen;
+
   factory AppSettingsData.fromDatabase(SettingsDb settingsDb) {
     return AppSettingsData._(
       themeIndex: settingsDb.themeIndex,
@@ -37,6 +41,8 @@ class AppSettingsData {
       longDateType: LongDateType.fromDatabaseValue(settingsDb.longDateType),
       shortDateType: ShortDateType.fromDatabaseValue(settingsDb.shortDateType),
       firstDayOfWeek: FirstDayOfWeek.fromDatabaseValue(settingsDb.firstDayOfWeek),
+      lineChartInHomescreen: LineChartInHomescreen.fromDatabaseValue(settingsDb.lineChartInHomescreen),
+      homescreenType: HomescreenType.fromDatabaseValue(settingsDb.homescreenType),
     );
   }
 
@@ -67,6 +73,8 @@ class AppSettingsData {
     required this.longDateType,
     required this.shortDateType,
     required this.firstDayOfWeek,
+    required this.homescreenType,
+    required this.lineChartInHomescreen,
   });
 
   AppSettingsData copyWith({
@@ -79,6 +87,8 @@ class AppSettingsData {
     LongDateType? longDateType,
     ShortDateType? shortDateType,
     FirstDayOfWeek? firstDayOfWeek,
+    HomescreenType? homescreenType,
+    LineChartInHomescreen? lineChartInHomescreen,
   }) {
     return AppSettingsData._(
       themeIndex: themeIndex ?? this.themeIndex,
@@ -90,6 +100,8 @@ class AppSettingsData {
       longDateType: longDateType ?? this.longDateType,
       shortDateType: shortDateType ?? this.shortDateType,
       firstDayOfWeek: firstDayOfWeek ?? this.firstDayOfWeek,
+      lineChartInHomescreen: lineChartInHomescreen ?? this.lineChartInHomescreen,
+      homescreenType: homescreenType ?? this.homescreenType,
     );
   }
 }

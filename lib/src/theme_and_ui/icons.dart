@@ -86,6 +86,9 @@ class AppIcons {
 
   static String get defaultIcon => 'assets/svg/app/default.svg';
 
+  static String get pageViewLarge => 'assets/svg/app/page-view.svg';
+  static String get scrollableSheetLarge => 'assets/svg/app/scrollable-sheet.svg';
+
   /// Call this function in `main()` method, before `runApp()`
   static Future<void> init() async {
     final assets = await rootBundle.loadString('AssetManifest.json');

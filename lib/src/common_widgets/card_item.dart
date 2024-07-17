@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
@@ -6,24 +9,27 @@ import '../theme_and_ui/colors.dart';
 
 class CardItem extends StatelessWidget {
   /// A common widget for this project
-  const CardItem(
-      {super.key,
-      this.duration,
-      this.curve,
-      this.child,
-      this.color,
-      this.height,
-      this.width,
-      this.constraints,
-      this.isGradient = false,
-      this.borderRadius,
-      this.boxShadow,
-      this.border,
-      this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      this.padding = const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
-      this.elevation = 0,
-      this.clip = true,
-      this.alignment});
+  const CardItem({
+    super.key,
+    this.duration,
+    this.curve,
+    this.child,
+    this.color,
+    this.height,
+    this.width,
+    this.constraints,
+    this.isGradient = false,
+    this.borderRadius,
+    this.boxShadow,
+    this.border,
+    this.margin = const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+    this.padding = const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+    this.elevation = 0,
+    this.clip = true,
+    this.alignment,
+    this.onTap,
+  });
+
   final Duration? duration;
   final Curve? curve;
   final Color? color;
@@ -40,6 +46,7 @@ class CardItem extends StatelessWidget {
   final Widget? child;
   final Alignment? alignment;
   final bool clip;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +89,13 @@ class CardItem extends StatelessWidget {
       child: ClipRRect(
         clipBehavior: clip ? Clip.antiAliasWithSaveLayer : Clip.none,
         borderRadius: borderRadius?.subtract(BorderRadius.circular(1)) ?? BorderRadius.circular(8),
-        child: Padding(
-          padding: padding,
-          child: child,
+        child: CustomInkWell(
+          inkColor: color ?? defaultBgColor,
+          onTap: onTap,
+          child: Padding(
+            padding: padding,
+            child: child,
+          ),
         ),
       ),
     );

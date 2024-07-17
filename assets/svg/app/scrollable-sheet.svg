@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="125.067 24.675 249.935 169.579" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <g transform="matrix(1, 0, 0, 1, -0.0004959999932907522, 1.0130029916763448)" style="">
+    <title>Scrollable sheet</title>
+    <path style="fill: none; stroke: rgb(0, 0, 0); stroke-miterlimit: 7.65; stroke-width: 3px;" d="M 138.527 120.418 C 138.527 120.418 164.783 85.781 184.825 85.23 C 197.724 84.875 214.216 126.149 235.557 124.013 C 269.559 120.609 266.875 52.083 301.024 53.82 C 320.22 54.795 321.891 95.923 341.023 97.663 C 350.478 98.523 361.543 79.349 361.543 79.349"/>
+    <path style="fill: none; stroke-width: 3px; stroke: rgb(138, 138, 138);" d="M 153.527 134.325 H 346.543 A 15 15 0 0 1 361.543 149.325 V 171.595 A 6.233 6.233 0 0 1 355.31 177.828 H 144.76 A 6.233 6.233 0 0 1 138.527 171.595 V 149.325 A 15 15 0 0 1 153.527 134.325 Z" bx:shape="rect 138.527 134.325 223.016 43.503 15 15 6.233 6.233 1@a0e65586"/>
+    <rect x="138.527" y="35.051" width="223.016" height="142.777" style="fill: none; stroke-width: 3px; stroke: rgb(138, 138, 138);" rx="6.233" ry="6.233"/>
+  </g>
+</svg>

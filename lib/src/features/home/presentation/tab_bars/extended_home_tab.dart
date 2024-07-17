@@ -29,7 +29,7 @@ class ExtendedHomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isBigScreen) {
+    if (context.isBigScreen || context.appSettings.homescreenType == HomescreenType.pageView) {
       return _ExtendedHomeTabForPageView(
           carouselController: carouselController,
           initialPageIndex: initialPageIndex,
@@ -262,10 +262,10 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
           child: Container(
             decoration: BoxDecoration(
               color: context.appTheme.background0,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(8),
             ),
             padding: const EdgeInsets.only(top: 30),
-            margin: const EdgeInsets.symmetric(horizontal: 24),
+            margin: const EdgeInsets.symmetric(horizontal: 6),
             child: CustomLineChart(
               currentMonth: widget.displayDate,
               data: data,

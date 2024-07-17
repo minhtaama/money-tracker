@@ -102,7 +102,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
 
   @override
   Widget build(BuildContext context) {
-    if (context.isBigScreen) {
+    if (context.isBigScreen || context.appSettings.homescreenType == HomescreenType.pageView) {
       return _pageView();
     }
     return _scrollableSheet();
@@ -162,42 +162,44 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
   }
 
   Widget _pageView() {
-    return Stack(
-      children: [
-        _CustomListView(
-          noPersistentSmallTabBar: true,
-          smallTabBar: widget.smallTabBar,
-          extendedTabBar: widget.extendedTabBar,
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.bottomCenter,
-              children: [
-                _extendedTabBarForPageView(),
-                _toolBarForPageView(),
-              ],
-            ),
-            Gap.h12,
-            Gap.divider(context, indent: 25),
-            ExpandablePageView(
-              controller: widget.controller,
-              onPageChanged: _onPageChange,
-              itemCount: widget.pageItemCount,
-              itemBuilder: (_, pageIndex) => Consumer(
-                builder: (context, ref, _) => Column(
-                  children: [
-                    ...widget.itemBuilder(context, ref, pageIndex),
-                    SizedBox(
-                      height: MediaQuery.of(context).padding.bottom + 32,
-                    )
-                  ],
+    return Scaffold(
+      backgroundColor: context.appTheme.background1,
+      body: Stack(
+        children: [
+          _CustomListView(
+            noPersistentSmallTabBar: true,
+            smallTabBar: widget.smallTabBar,
+            extendedTabBar: widget.extendedTabBar,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.bottomCenter,
+                children: [
+                  _extendedTabBarForPageView(),
+                  _toolBarForPageView(),
+                ],
+              ),
+              Gap.h12,
+              ExpandablePageView(
+                controller: widget.controller,
+                onPageChanged: _onPageChange,
+                itemCount: widget.pageItemCount,
+                itemBuilder: (_, pageIndex) => Consumer(
+                  builder: (context, ref, _) => Column(
+                    children: [
+                      ...widget.itemBuilder(context, ref, pageIndex),
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.bottom + 32,
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        _smallTabBarForPageView(),
-      ],
+            ],
+          ),
+          _smallTabBarForPageView(),
+        ],
+      ),
     );
   }
 }
@@ -393,7 +395,6 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
             color: bgColor,
             elevation: 1,
             padding: const EdgeInsets.symmetric(vertical: 12),
-            margin: const EdgeInsets.symmetric(horizontal: 16),
             child: SizedBox(
               height: widget.toolBarHeight,
               child: widget.toolBar,

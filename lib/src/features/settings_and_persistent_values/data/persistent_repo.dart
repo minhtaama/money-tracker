@@ -3,7 +3,7 @@ import 'package:money_tracker_app/persistent/realm_data_store.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
 import '../../../../persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
-import '../../../utils/enums_dashboard.dart';
+import '../../dashboard/presentation/components/enums_dashboard.dart';
 
 class PersistentController extends Notifier<AppPersistentValues> {
   @override

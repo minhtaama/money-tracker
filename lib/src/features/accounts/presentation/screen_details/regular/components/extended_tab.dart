@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../../../../common_widgets/modal_and_dialog.dart';
 import '../../../../../../common_widgets/rounded_icon_button.dart';
+import '../../../../../../utils/enums.dart';
 import '../../../../../charts_and_carousel/application/custom_line_chart_services.dart';
 import '../../../../../charts_and_carousel/presentation/custom_line_chart.dart';
 import '../../../../../transactions/data/transaction_repo.dart';
@@ -33,14 +34,14 @@ class ExtendedRegularAccountTab extends ConsumerWidget {
       data = chartServices.getCLCDataOfRegularAsset(account, range.start, range.end);
     });
 
-    if (context.isBigScreen) {
+    if (context.isBigScreen || context.appSettings.homescreenType == HomescreenType.pageView) {
       return Container(
         decoration: BoxDecoration(
           color: account.backgroundColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.only(bottom: 4),
-        margin: const EdgeInsets.only(left: 24, right: 24, top: 6),
+        margin: const EdgeInsets.only(left: 6, right: 6, top: 6),
         child: _content(data),
       );
     }

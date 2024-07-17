@@ -6,7 +6,7 @@ import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../utils/enums_dashboard.dart';
+import 'components/enums_dashboard.dart';
 import '../../settings_and_persistent_values/data/persistent_repo.dart';
 
 class DashboardEditModalScreen extends ConsumerStatefulWidget {
@@ -18,13 +18,10 @@ class DashboardEditModalScreen extends ConsumerStatefulWidget {
 
 class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScreen> {
   late final List<DashboardWidgetType> _order = List.from(context.appPersistentValues.dashboardOrder);
-  late final List<DashboardWidgetType> _hiddenList =
-      List.from(context.appPersistentValues.hiddenDashboardWidgets);
+  late final List<DashboardWidgetType> _hiddenList = List.from(context.appPersistentValues.hiddenDashboardWidgets);
 
   void _updateDb() {
-    ref
-        .read(persistentControllerProvider.notifier)
-        .set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
+    ref.read(persistentControllerProvider.notifier).set(dashboardOrder: _order, hiddenDashboardWidgets: _hiddenList);
   }
 
   @override

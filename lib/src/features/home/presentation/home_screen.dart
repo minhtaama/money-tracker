@@ -12,6 +12,7 @@ import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.d
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -55,9 +56,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // DateTime? _maxDate;
 
   void _onPageChange(int value) {
-    if (!context.isBigScreen) {
+    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
       _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
     }
+
     setState(() {
       _currentDisplayDate = DateTime(_today.year, _today.month + (value - _initialPageIndex));
     });
@@ -65,21 +67,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _previousPage() {
     _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
-    if (!context.isBigScreen) {
+    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
       _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
     }
   }
 
   void _nextPage() {
     _pageController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
-    if (!context.isBigScreen) {
+    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
       _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
     }
   }
 
   void _animatedToPage(int page) {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-    if (!context.isBigScreen) {
+    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
       _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
     }
   }

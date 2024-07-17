@@ -337,6 +337,10 @@ class _SettingsDb {
 
   // null == default
   int? firstDayOfWeek;
+
+  int homescreenType = 0;
+
+  int lineChartInHomescreen = 1;
 }
 
 @RealmModel()

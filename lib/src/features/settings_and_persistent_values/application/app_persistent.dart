@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker_app/persistent/realm_dto.dart';
 import '../../../utils/enums.dart';
-import '../../../utils/enums_dashboard.dart';
+import '../../dashboard/presentation/components/enums_dashboard.dart';
 
 // Access this class through `context.appPersistentValues`
 class AppPersistentValues {
@@ -15,15 +15,11 @@ class AppPersistentValues {
 
   factory AppPersistentValues.fromDatabase(PersistentValuesDb persistentValuesDb) {
     return AppPersistentValues._(
-      chartDataTypeInHomescreen:
-          LineChartDataType.fromDatabaseValue(persistentValuesDb.chartDataTypeInHomescreen),
+      chartDataTypeInHomescreen: LineChartDataType.fromDatabaseValue(persistentValuesDb.chartDataTypeInHomescreen),
       showAmount: persistentValuesDb.showAmount,
-      dashboardOrder: persistentValuesDb.dashboardOrder
-          .map((e) => DashboardWidgetType.fromDatabaseValue(e))
-          .toList(),
-      hiddenDashboardWidgets: persistentValuesDb.hiddenDashboardWidgets
-          .map((e) => DashboardWidgetType.fromDatabaseValue(e))
-          .toList(),
+      dashboardOrder: persistentValuesDb.dashboardOrder.map((e) => DashboardWidgetType.fromDatabaseValue(e)).toList(),
+      hiddenDashboardWidgets:
+          persistentValuesDb.hiddenDashboardWidgets.map((e) => DashboardWidgetType.fromDatabaseValue(e)).toList(),
     );
   }
 

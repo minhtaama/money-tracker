@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/color_picker.dart';
+import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/homescreen_type_selector.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/setting_tile_dropdown.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/setting_tile_toggle.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
@@ -54,6 +55,13 @@ class SettingsScreen extends ConsumerWidget {
               onColorTap: (int value) {
                 settingsController.set(themeIndex: value);
                 statusBarBrightness.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+              },
+            ),
+            Gap.divider(context),
+            HomescreenTypeSelector(
+              currentType: context.appSettings.homescreenType,
+              onTypeTap: (type) {
+                settingsController.set(homescreenType: type);
               },
             ),
             Gap.divider(context),

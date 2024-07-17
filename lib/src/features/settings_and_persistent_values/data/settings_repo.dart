@@ -23,6 +23,8 @@ class SettingsController extends Notifier<AppSettingsData> {
     LongDateType? longDateType,
     ShortDateType? shortDateType,
     FirstDayOfWeek? firstDayOfWeek,
+    HomescreenType? homescreenType,
+    LineChartInHomescreen? lineChartInHomescreen,
   }) async {
     final realm = ref.read(realmProvider);
 
@@ -36,6 +38,8 @@ class SettingsController extends Notifier<AppSettingsData> {
       longDateType: longDateType,
       shortDateType: shortDateType,
       firstDayOfWeek: firstDayOfWeek,
+      homescreenType: homescreenType,
+      lineChartInHomescreen: lineChartInHomescreen,
     );
 
     realm.write(() => realm.add<SettingsDb>(state.toDatabase(), update: true));

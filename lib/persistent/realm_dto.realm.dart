@@ -1603,6 +1603,8 @@ int longDateType = 0,
 int shortDateType = 0,
 int currencyType = 0,
 int? firstDayOfWeek,
+int homescreenType = 0,
+int lineChartInHomescreen = 1,
 }
 ) {
 if (!_defaultsSet) {
@@ -1616,6 +1618,8 @@ if (!_defaultsSet) {
 'longDateType': 0,
 'shortDateType': 0,
 'currencyType': 0,
+'homescreenType': 0,
+'lineChartInHomescreen': 1,
   });
 }
 RealmObjectBase.set(this, 'id', id);
@@ -1628,6 +1632,8 @@ RealmObjectBase.set(this, 'longDateType', longDateType);
 RealmObjectBase.set(this, 'shortDateType', shortDateType);
 RealmObjectBase.set(this, 'currencyType', currencyType);
 RealmObjectBase.set(this, 'firstDayOfWeek', firstDayOfWeek);
+RealmObjectBase.set(this, 'homescreenType', homescreenType);
+RealmObjectBase.set(this, 'lineChartInHomescreen', lineChartInHomescreen);
 }
 
 SettingsDb._();
@@ -1681,6 +1687,16 @@ int? get firstDayOfWeek => RealmObjectBase.get<int>(this, 'firstDayOfWeek') as i
 set firstDayOfWeek(int? value) => RealmObjectBase.set(this, 'firstDayOfWeek', value);
 
 @override
+int get homescreenType => RealmObjectBase.get<int>(this, 'homescreenType') as int;
+@override
+set homescreenType(int value) => RealmObjectBase.set(this, 'homescreenType', value);
+
+@override
+int get lineChartInHomescreen => RealmObjectBase.get<int>(this, 'lineChartInHomescreen') as int;
+@override
+set lineChartInHomescreen(int value) => RealmObjectBase.set(this, 'lineChartInHomescreen', value);
+
+@override
 Stream<RealmObjectChanges<SettingsDb>> get changes => RealmObjectBase.getChanges<SettingsDb>(this);
 
 @override
@@ -1701,6 +1717,8 @@ return <String, dynamic>{
 'shortDateType': shortDateType.toEJson(),
 'currencyType': currencyType.toEJson(),
 'firstDayOfWeek': firstDayOfWeek.toEJson(),
+'homescreenType': homescreenType.toEJson(),
+'lineChartInHomescreen': lineChartInHomescreen.toEJson(),
 };
 }
 static EJsonValue _toEJson(SettingsDb value) => value.toEJson();
@@ -1717,6 +1735,8 @@ return switch (ejson) {
 'shortDateType': EJsonValue shortDateType,
 'currencyType': EJsonValue currencyType,
 'firstDayOfWeek': EJsonValue firstDayOfWeek,
+'homescreenType': EJsonValue homescreenType,
+'lineChartInHomescreen': EJsonValue lineChartInHomescreen,
 } => SettingsDb(
 fromEJson(id),
 themeIndex: fromEJson(themeIndex),
@@ -1728,6 +1748,8 @@ longDateType: fromEJson(longDateType),
 shortDateType: fromEJson(shortDateType),
 currencyType: fromEJson(currencyType),
 firstDayOfWeek: fromEJson(firstDayOfWeek),
+homescreenType: fromEJson(homescreenType),
+lineChartInHomescreen: fromEJson(lineChartInHomescreen),
 ),
 _ => raiseInvalidEJson(ejson),
 };
@@ -1746,6 +1768,8 @@ SchemaProperty('longDateType', RealmPropertyType.int),
 SchemaProperty('shortDateType', RealmPropertyType.int),
 SchemaProperty('currencyType', RealmPropertyType.int),
 SchemaProperty('firstDayOfWeek', RealmPropertyType.int, optional: true),
+SchemaProperty('homescreenType', RealmPropertyType.int),
+SchemaProperty('lineChartInHomescreen', RealmPropertyType.int),
 ]);
 }();
 
