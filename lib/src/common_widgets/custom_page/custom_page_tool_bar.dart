@@ -41,7 +41,7 @@ class CustomPageToolBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.max,
         children: [
-          context.isBigScreen ? Gap.w12 : Gap.w24,
+          Gap.w12,
           Flexible(
             flex: 3,
             child: GestureDetector(
@@ -165,7 +165,6 @@ class CustomPageToolBar extends StatelessWidget {
                     ],
                   ),
                 ),
-          context.isBigScreen ? Gap.noGap : Gap.w8,
         ],
       ),
     );

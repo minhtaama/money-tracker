@@ -13,6 +13,7 @@ class CustomAdaptivePageView extends ConsumerStatefulWidget {
     this.pageItemCount,
     this.onDragLeft,
     this.onDragRight,
+    this.forcePageView = false,
   }) : assert(toolBarHeight <= kCustomTabBarHeight);
 
   final SmallTabBar smallTabBar;
@@ -25,6 +26,7 @@ class CustomAdaptivePageView extends ConsumerStatefulWidget {
   final ValueChanged<int>? onPageChanged;
   final VoidCallback? onDragLeft;
   final VoidCallback? onDragRight;
+  final bool forcePageView;
 
   @override
   ConsumerState<CustomAdaptivePageView> createState() => _CustomPageViewWithScrollableSheetState();
@@ -102,7 +104,7 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
 
   @override
   Widget build(BuildContext context) {
-    if (context.isBigScreen || context.appSettings.homescreenType == HomescreenType.pageView) {
+    if (context.isBigScreen || widget.forcePageView) {
       return _pageView();
     }
     return _scrollableSheet();
@@ -298,7 +300,8 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
+                                  width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -314,7 +317,8 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(
+                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),

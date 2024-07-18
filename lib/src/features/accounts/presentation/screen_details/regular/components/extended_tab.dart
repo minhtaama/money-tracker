@@ -34,7 +34,7 @@ class ExtendedRegularAccountTab extends ConsumerWidget {
       data = chartServices.getCLCDataOfRegularAsset(account, range.start, range.end);
     });
 
-    if (context.isBigScreen || context.appSettings.homescreenType == HomescreenType.pageView) {
+    if (context.isBigScreen) {
       return Container(
         decoration: BoxDecoration(
           color: account.backgroundColor,

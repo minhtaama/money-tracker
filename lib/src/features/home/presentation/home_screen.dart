@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
@@ -13,16 +10,12 @@ import 'package:money_tracker_app/src/features/settings_and_persistent_values/da
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
-import '../../../common_widgets/icon_with_text.dart';
 import '../../../common_widgets/illustration.dart';
 import '../../../common_widgets/rounded_icon_button.dart';
-import '../../../common_widgets/svg_icon.dart';
-import '../../../theme_and_ui/colors.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../../utils/constants.dart';
 import '../../recurrence/domain/recurrence.dart';
@@ -55,8 +48,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   //
   // DateTime? _maxDate;
 
+  late final _forcePageView = context.appSettings.homescreenType == HomescreenType.pageView;
+
   void _onPageChange(int value) {
-    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
+    if (!context.isBigScreen && !_forcePageView) {
       _carouselController.animateToPage(value, duration: k350msDuration, curve: Curves.easeOut);
     }
 
@@ -67,21 +62,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _previousPage() {
     _pageController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
-    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
+
+    if (!context.isBigScreen && !_forcePageView) {
       _carouselController.previousPage(duration: k250msDuration, curve: Curves.easeOut);
     }
   }
 
   void _nextPage() {
     _pageController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
-    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
+
+    if (!context.isBigScreen && !_forcePageView) {
       _carouselController.nextPage(duration: k250msDuration, curve: Curves.easeOut);
     }
   }
 
   void _animatedToPage(int page) {
     _pageController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
-    if (!context.isBigScreen && context.appSettings.homescreenType != HomescreenType.pageView) {
+
+    if (!context.isBigScreen && !_forcePageView) {
       _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
     }
   }
@@ -102,7 +100,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay =
+          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
       final plannedTxnsInDay = plannedTransactions
           .where(
             (plannedTxn) =>
@@ -144,6 +143,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return CustomAdaptivePageView(
       controller: _pageController,
+      forcePageView: _forcePageView,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
           secondaryTitle: _currentDisplayDate.toLongDate(context, noDay: true),
@@ -189,7 +189,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList =
+            _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
         List<TransactionData> plannedTransactions =
             _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
 
@@ -201,7 +202,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         ref.listen(recurrenceChangesStreamProvider, (_, __) {
           setState(() {
-            plannedTransactions = _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
+            plannedTransactions =
+                _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
           });
         });
 

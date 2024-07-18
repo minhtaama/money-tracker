@@ -60,6 +60,8 @@ class AppSettingsData {
       longDateType: longDateType.databaseValue,
       shortDateType: shortDateType.databaseValue,
       firstDayOfWeek: firstDayOfWeek.databaseValue,
+      homescreenType: homescreenType.databaseValue,
+      lineChartInHomescreen: lineChartInHomescreen.databaseValue,
     );
   }
 

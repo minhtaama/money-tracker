@@ -29,13 +29,16 @@ class ExtendedHomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isBigScreen || context.appSettings.homescreenType == HomescreenType.pageView) {
+    final forcePageView = context.appSettings.homescreenType == HomescreenType.pageView;
+
+    if (context.isBigScreen || forcePageView) {
       return _ExtendedHomeTabForPageView(
-          carouselController: carouselController,
-          initialPageIndex: initialPageIndex,
-          displayDate: displayDate,
-          showNumber: showNumber,
-          onEyeTap: onEyeTap);
+        carouselController: carouselController,
+        initialPageIndex: initialPageIndex,
+        displayDate: displayDate,
+        showNumber: showNumber,
+        onEyeTap: onEyeTap,
+      );
     }
 
     return _ExtendedHomeTabForScrollableSheet(
@@ -63,7 +66,8 @@ class _ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
   final VoidCallback onEyeTap;
 
   @override
-  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
+  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() =>
+      _ExtendedHomeTabForScrollableSheetState();
 }
 
 class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHomeTabForScrollableSheet> {
@@ -213,12 +217,29 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
             : 'Expected assets in $month';
   }
 
+  // String _titleBuilder(String month, int pageIndex) {
+  //   final today = DateTime.now();
+  //   final displayDate = DateTime(Calendar.minDate.year, pageIndex);
+  //
+  //   return switch (_type) {
+  //     LineChartDataType.cashflow => context.loc.cashflowIn(month),
+  //     LineChartDataType.expense => context.loc.expenseIn(month),
+  //     LineChartDataType.income => context.loc.incomeIn(month),
+  //     LineChartDataType.totalAssets => displayDate.isSameMonthAs(today)
+  //         ? context.loc.currentAssets
+  //         : displayDate.isInMonthBefore(today)
+  //         ? context.loc.assetsLeftIn(month)
+  //         : context.loc.expectedAssetsIn(month),
+  //   };
+  // }
+
   @override
   Widget build(BuildContext context) {
     final chartServices = ref.watch(customLineChartServicesProvider);
     final txnServices = ref.read(customLineChartServicesProvider);
 
-    CLCData data = chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
+    CLCData data =
+        chartServices.getCLCDataForHomeScreen(LineChartDataType.totalAssets, widget.displayDate);
     // double avg = chartServices.getAverageAssets();
     double amount = txnServices.getTotalAssets(widget.displayDate);
 
@@ -237,7 +258,7 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
       children: [
         Gap.h12,
         Padding(
-          padding: const EdgeInsets.only(left: 25.0),
+          padding: const EdgeInsets.only(left: 12.0),
           child: MoneyAmount(
             amount: amount,
             style: kHeader1TextStyle.copyWith(
@@ -249,7 +270,7 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 25.0),
+          padding: const EdgeInsets.only(left: 12.0),
           child: Text(
             _titleBuilder(),
             style: kNormalTextStyle.copyWith(
@@ -276,24 +297,6 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
           ),
         ),
       ],
-    );
-  }
-}
-
-class _WelcomeText extends StatelessWidget {
-  const _WelcomeText();
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      'moneyMate',
-      style: TextStyle(
-        color: context.appTheme.accent1,
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Lobster',
-        //letterSpacing: 2,
-      ),
     );
   }
 }
