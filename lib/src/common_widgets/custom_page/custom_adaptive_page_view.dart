@@ -397,7 +397,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
         ? CardItem(
             width: double.infinity,
             color: bgColor,
-            elevation: 1,
+            elevation: 1.5,
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: SizedBox(
               height: widget.toolBarHeight,
