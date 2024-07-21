@@ -47,12 +47,6 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
       isScrollable: widget.isScrollable,
       header: ModalHeader(
         title: context.loc.creditPayment,
-        subTitle: _DateTime(
-          isEditMode: _transaction.account is DeletedAccount ? false : _isEditMode,
-          isEdited: _isDateTimeEdited(stateWatch),
-          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
-          onEditModeTap: _changeDateTime,
-        ),
         trailing: widget.screenType == TransactionScreenType.editable
             ? Row(
                 mainAxisSize: MainAxisSize.min,
@@ -91,14 +85,18 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
           transactionType: TransactionType.creditPayment,
           amount: widget.transaction.amount,
         ),
-        Gap.h8,
-        Gap.divider(context, indent: 6),
-        Gap.h8,
+        _DateTime(
+          isEditMode: _transaction.account is DeletedAccount ? false : _isEditMode,
+          isEdited: _isDateTimeEdited(stateWatch),
+          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+          onEditModeTap: _changeDateTime,
+        ),
+        Gap.h32,
         Row(
           children: [
             const TxnTransferLine(
               height: 100,
-              width: 30,
+              width: 20,
               strokeWidth: 1.5,
               opacity: 0.5,
             ),

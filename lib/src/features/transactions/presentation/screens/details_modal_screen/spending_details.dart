@@ -55,12 +55,6 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
     return ModalContent(
       header: ModalHeader(
         title: context.loc.creditSpending,
-        subTitle: _DateTime(
-          isEditMode: _isEditMode,
-          isEdited: _isDateTimeEdited(stateWatch),
-          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
-          onEditModeTap: _changeDateTime,
-        ),
         trailing: widget.screenType == TransactionScreenType.editable
             ? Row(
                 mainAxisSize: MainAxisSize.min,
@@ -99,7 +93,13 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
           amount: stateWatch.amount ?? _transaction.amount,
           onEditModeTap: _changeAmount,
         ),
-        Gap.h12,
+        _DateTime(
+          isEditMode: _isEditMode,
+          isEdited: _isDateTimeEdited(stateWatch),
+          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+          onEditModeTap: _changeDateTime,
+        ),
+        Gap.h16,
         _InstallmentOfSpendingDetails(
           isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
           isEdited: _isInstallmentEdited(stateWatch),
@@ -116,9 +116,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
           onMonthOutput: _changeInstallmentPeriod,
           onChangePaymentStartFromNextStatement: _changePaymentStartFromNextStatement,
         ),
-        Gap.h8,
-        Gap.divider(context, indent: 6),
-        Gap.h8,
+        Gap.h32,
         _AccountCard(isEditMode: false, account: widget.transaction.account),
         Gap.h12,
         _CategoryCard(

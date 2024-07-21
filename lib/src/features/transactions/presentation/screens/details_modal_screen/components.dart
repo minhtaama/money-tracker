@@ -100,109 +100,97 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _EditWrap(
-      isEditMode: isEditMode,
-      isEdited: isEdited,
-      withPadding: true,
-      child: AnimatedCrossFade(
-          duration: k250msDuration,
-          firstChild: Transform.translate(
-            offset: const Offset(0, -5),
-            child: CustomCheckbox(
-              initialValue: (initialValues[0] as bool),
-              label: context.loc.installmentPayment,
-              onChanged: onToggle,
-              optionalWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InlineTextFormField(
-                    prefixText: context.loc.installmentPeriod,
-                    suffixText: context.loc.monthS,
-                    onChanged: onMonthOutput,
-                    hintText: initialValues[2] != null ? (initialValues[2] as int).toString() : '',
-                  ),
-                  Gap.h8,
-                  InlineTextFormField(
-                    prefixText: context.loc.amount,
-                    suffixText: context.appSettings.currency.code,
-                    widget: CalculatorInput(
-                        controller: installmentController,
-                        fontSize: 18,
-                        isDense: true,
-                        textAlign: TextAlign.end,
-                        formattedResultOutput: onFormattedInstallmentOutput,
-                        focusColor: context.appTheme.secondary1,
-                        hintText: initialValues[1] != null
-                            ? CalService.formatNumberInGroup((initialValues[1] as double).toString())
-                            : ''),
-                  ),
-                  Gap.h12,
-                  CustomCheckbox(
-                    label: context.loc.startPaymentInNextStatement,
-                    initialValue:
-                        (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
-                    onChanged: onChangePaymentStartFromNextStatement,
-                  ),
-                ],
+    return Center(
+      child: _EditWrap(
+        isEditMode: isEditMode,
+        isEdited: isEdited,
+        withPadding: true,
+        child: AnimatedCrossFade(
+            duration: k250msDuration,
+            firstChild: Transform.translate(
+              offset: const Offset(0, -5),
+              child: CustomCheckbox(
+                initialValue: (initialValues[0] as bool),
+                label: context.loc.installmentPayment,
+                onChanged: onToggle,
+                optionalWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InlineTextFormField(
+                      prefixText: context.loc.installmentPeriod,
+                      suffixText: context.loc.monthS,
+                      onChanged: onMonthOutput,
+                      hintText: initialValues[2] != null ? (initialValues[2] as int).toString() : '',
+                    ),
+                    Gap.h8,
+                    InlineTextFormField(
+                      prefixText: context.loc.amount,
+                      suffixText: context.appSettings.currency.code,
+                      widget: CalculatorInput(
+                          controller: installmentController,
+                          fontSize: 18,
+                          isDense: true,
+                          textAlign: TextAlign.end,
+                          formattedResultOutput: onFormattedInstallmentOutput,
+                          focusColor: context.appTheme.secondary1,
+                          hintText: initialValues[1] != null
+                              ? CalService.formatNumberInGroup((initialValues[1] as double).toString())
+                              : ''),
+                    ),
+                    Gap.h12,
+                    CustomCheckbox(
+                      label: context.loc.startPaymentInNextStatement,
+                      initialValue:
+                          (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
+                      onChanged: onChangePaymentStartFromNextStatement,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          secondChild: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                Gap.w12,
-                RoundedIconButton(
-                  iconPath: transaction.hasInstallment
-                      ? AppIcons.installmentTwoTone
-                      : AppIcons.handCoinTwoTone,
-                  backgroundColor: Colors.transparent,
-                  iconColor: context.appTheme.negative,
-                  iconPadding: 0,
-                  size: 26,
-                ),
-                Gap.w12,
-                transaction.hasInstallment
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.loc.installmentPaymentIn(transaction.monthsToPay.toString()),
-                            style: kHeader3TextStyle.copyWith(
-                                color: context.appTheme.onBackground, fontSize: 14),
+            secondChild: Container(
+              child: transaction.hasInstallment
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          context.loc.installmentPaymentIn(transaction.monthsToPay.toString()),
+                          style: kHeader3TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                            fontSize: 13,
                           ),
-                          Gap.h2,
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            textBaseline: TextBaseline.alphabetic,
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            children: [
-                              TxnAmount(
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          textBaseline: TextBaseline.alphabetic,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          children: [
+                            Flexible(
+                              child: TxnAmount(
                                 transaction: transaction,
-                                fontSize: 18,
+                                fontSize: 20,
                                 color: context.appTheme.negative,
                                 showPaymentAmount: true,
                               ),
-                              Text(
-                                '/month'.hardcoded,
-                                style: kHeader3TextStyle.copyWith(
-                                  fontSize: 16,
-                                  color: context.appTheme.onBackground,
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      )
-                    : Text(
-                        context.loc.payBeforeDueDate,
-                        style:
-                            kHeader3TextStyle.copyWith(color: context.appTheme.negative, fontSize: 16),
-                      ),
-              ],
+                            ),
+                            Text(
+                              '/month'.hardcoded,
+                              style: kHeader3TextStyle.copyWith(
+                                fontSize: 16,
+                                color: context.appTheme.onBackground,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    )
+                  : Text(
+                      context.loc.payBeforeDueDate,
+                      style: kHeader3TextStyle.copyWith(color: context.appTheme.negative, fontSize: 16),
+                    ),
             ),
-          ),
-          crossFadeState: isEditMode ? CrossFadeState.showFirst : CrossFadeState.showSecond),
+            crossFadeState: isEditMode ? CrossFadeState.showFirst : CrossFadeState.showSecond),
+      ),
     );
   }
 }
@@ -226,16 +214,18 @@ class _DateTime extends StatelessWidget {
         onTap: onEditModeTap,
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          textBaseline: TextBaseline.alphabetic,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
           children: [
             Text(
               '${formatter.format(dateTime.hour)}:${formatter.format(dateTime.minute)}',
-              style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
+              style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
             ),
             Gap.w8,
             Flexible(
               child: Text(
                 dateTime.toLongDate(context),
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 13),
+                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
               ),
             ),
           ],

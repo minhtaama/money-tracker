@@ -80,15 +80,13 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
           dateTime: stateWatch.dateTime ?? _transaction.dateTime,
           onEditModeTap: _changeDateTime,
         ),
-        Gap.h8,
-        Gap.divider(context, indent: 6),
-        Gap.h8,
+        Gap.h32,
         Row(
           children: [
             _transaction is Transfer
                 ? const TxnTransferLine(
                     height: 100,
-                    width: 30,
+                    width: 20,
                     strokeWidth: 1.5,
                     opacity: 0.5,
                   )
