@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
 import '../common_widgets/card_item.dart';
@@ -6,7 +7,8 @@ import '../theme_and_ui/colors.dart';
 import '../utils/constants.dart';
 
 class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
-  CustomAppModalRoute({Widget? child, Widget Function(ScrollController controller, bool isScrollable)? builder})
+  CustomAppModalRoute(
+      {Widget? child, Widget Function(ScrollController controller, bool isScrollable)? builder})
       : super(
           CustomAppModalPage(
             child: child,
@@ -137,20 +139,15 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               left: context.isBigScreen ? 6 : 0,
               right: context.isBigScreen ? 8 : 0,
             ),
-      padding: isDialog ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 8, right: 8),
+      padding: isDialog ? const EdgeInsets.all(12) : const EdgeInsets.only(left: 8, right: 8),
       borderRadius: context.isBigScreen || isDialog
           ? const BorderRadius.all(Radius.circular(8))
           : BorderRadius.only(
               topLeft: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 10),
-              topRight: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 10),
+              topRight:
+                  Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 10),
             ),
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: isDialog ? 0 : 12,
-          bottom: 16,
-        ),
-        child: child,
-      ),
+      child: child,
     );
   }
 
@@ -179,8 +176,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                 _page.secondaryChild != null
                     ? Flexible(
                         child: Padding(
-                          padding:
-                              EdgeInsets.only(top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
+                          padding: EdgeInsets.only(
+                              top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: 350,
@@ -198,16 +195,31 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _page.secondaryChild != null
-                    ? Padding(
-                        padding:
-                            EdgeInsets.only(top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
-                          child: SingleChildScrollView(child: _page.secondaryChild),
+                    ? HideableContainer(
+                        hide: MediaQuery.of(context).viewInsets.bottom > 0,
+                        child: AnimatedOpacity(
+                          opacity: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 1,
+                          duration: k350msDuration,
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  top: Gap.statusBarHeight(context) + 12,
+                                  bottom: 24,
+                                  left: 16,
+                                  right: 16),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
+                                child: SingleChildScrollView(child: _page.secondaryChild),
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     : Gap.noGap,
-                Flexible(child: _page.builder != null ? _contentWithScrollView(context) : _contentNoScrollView(context))
+                Flexible(
+                    child: _page.builder != null
+                        ? _contentWithScrollView(context)
+                        : _contentNoScrollView(context))
               ],
             );
 
@@ -238,7 +250,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
+    final tween =
+        Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(

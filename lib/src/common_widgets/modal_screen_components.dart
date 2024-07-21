@@ -119,58 +119,63 @@ class _ModalContentState extends State<ModalContent> {
   Widget build(BuildContext context) {
     // final color =
     //     context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
-    final padding = (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
+    final padding =
+        (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        widget.header,
-        Gap.h12,
-        Flexible(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: padding),
-            child: Stack(
-              children: [
-                SingleChildScrollView(
-                  controller: widget.controller,
-                  child: Form(
-                    key: widget.formKey,
-                    child: CustomSection(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      onReorder: widget.onReorder,
-                      isWrapByCard: false,
-                      sectionsClipping: false,
-                      sections: widget.body,
-                      margin: widget.bodyMargin,
+    return AnimatedPadding(
+      padding: EdgeInsets.only(top: widget.isScrollable ? 22.0 : 0),
+      duration: k150msDuration,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          widget.header,
+          Gap.h12,
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: padding),
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    controller: widget.controller,
+                    child: Form(
+                      key: widget.formKey,
+                      child: CustomSection(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        onReorder: widget.onReorder,
+                        isWrapByCard: false,
+                        sectionsClipping: false,
+                        sections: widget.body,
+                        margin: widget.bodyMargin,
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: -0.2,
-                  left: 0,
-                  right: 0,
-                  child: _AnimatedFading(
-                    isFade: widget.isScrollable,
-                    position: _FadingPosition.top,
+                  Positioned(
+                    top: -0.2,
+                    left: 0,
+                    right: 0,
+                    child: _AnimatedFading(
+                      isFade: widget.isScrollable,
+                      position: _FadingPosition.top,
+                    ),
                   ),
-                ),
-                Positioned(
-                  bottom: -0.2,
-                  left: 0,
-                  right: 0,
-                  child: _AnimatedFading(
-                    isFade: widget.isScrollable,
-                    position: _FadingPosition.bottom,
+                  Positioned(
+                    bottom: -0.2,
+                    left: 0,
+                    right: 0,
+                    child: _AnimatedFading(
+                      isFade: widget.isScrollable,
+                      position: _FadingPosition.bottom,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        Gap.h12,
-        SizedBox(key: _footerKey, child: widget.footer),
-        Gap.h8,
-      ],
+          Gap.h12,
+          SizedBox(key: _footerKey, child: widget.footer),
+          Gap.h8,
+        ],
+      ),
     );
   }
 }
@@ -260,7 +265,8 @@ class TextHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
+      style: kHeader2TextStyle.copyWith(
+          fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
     );
   }
 }
@@ -273,7 +279,8 @@ class _AnimatedFading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final color =
+        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
 
     return IgnorePointer(
       child: AnimatedContainer(

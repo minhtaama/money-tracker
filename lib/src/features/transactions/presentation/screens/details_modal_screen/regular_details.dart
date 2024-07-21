@@ -38,12 +38,6 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
       isScrollable: widget.isScrollable,
       header: ModalHeader(
         title: _title,
-        subTitle: _DateTime(
-          isEditMode: _isEditMode,
-          isEdited: _isDateTimeEdited(stateWatch),
-          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
-          onEditModeTap: _changeDateTime,
-        ),
         trailing: widget.screenType == TransactionScreenType.editable
             ? Row(
                 mainAxisSize: MainAxisSize.min,
@@ -79,6 +73,12 @@ class _RegularDetailsState extends ConsumerState<_RegularDetails> {
           transactionType: _transaction.type,
           amount: stateWatch.amount ?? _transaction.amount,
           onEditModeTap: _changeAmount,
+        ),
+        _DateTime(
+          isEditMode: _isEditMode,
+          isEdited: _isDateTimeEdited(stateWatch),
+          dateTime: stateWatch.dateTime ?? _transaction.dateTime,
+          onEditModeTap: _changeDateTime,
         ),
         Gap.h8,
         Gap.divider(context, indent: 6),

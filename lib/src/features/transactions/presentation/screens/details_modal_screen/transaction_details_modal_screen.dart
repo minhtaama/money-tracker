@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -76,15 +77,16 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
           );
 
       return switch (transaction) {
-        BaseRegularTransaction() =>
-          _RegularDetails(screenType, controller, isScrollable, transaction: transaction as BaseRegularTransaction),
+        BaseRegularTransaction() => _RegularDetails(screenType, controller, isScrollable,
+            transaction: transaction as BaseRegularTransaction),
         CreditSpending() => screenType == TransactionScreenType.installmentToPay
             ? _InstallmentDetails(transaction: transaction as CreditSpending)
-            : _SpendingDetails(screenType, controller, isScrollable, transaction: transaction as CreditSpending),
-        CreditPayment() =>
-          _PaymentDetails(screenType, controller, isScrollable, transaction: transaction as CreditPayment),
-        CreditCheckpoint() =>
-          _CheckpointDetails(screenType, controller, isScrollable, transaction: transaction as CreditCheckpoint),
+            : _SpendingDetails(screenType, controller, isScrollable,
+                transaction: transaction as CreditSpending),
+        CreditPayment() => _PaymentDetails(screenType, controller, isScrollable,
+            transaction: transaction as CreditPayment),
+        CreditCheckpoint() => _CheckpointDetails(screenType, controller, isScrollable,
+            transaction: transaction as CreditCheckpoint),
       };
     } catch (e) {
       return IconWithText(
