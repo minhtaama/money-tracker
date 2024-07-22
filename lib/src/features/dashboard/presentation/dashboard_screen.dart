@@ -212,7 +212,7 @@ class _EditButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgIcon(
-                    AppIcons.editBulk,
+                    AppIcons.editLight,
                     color: AppColors.grey(context),
                     size: 17,
                   ),

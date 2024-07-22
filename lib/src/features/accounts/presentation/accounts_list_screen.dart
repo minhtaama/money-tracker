@@ -307,7 +307,7 @@ class _SavingTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: RoundedIconButton(
-                      iconPath: AppIcons.editBulk,
+                      iconPath: AppIcons.editLight,
                       backgroundColor: Colors.transparent,
                       iconColor: model.iconColor,
                       size: 30,

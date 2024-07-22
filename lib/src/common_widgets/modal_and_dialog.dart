@@ -86,7 +86,7 @@ Future<T?> showConfirmModal<T>({
               ),
               Gap.w24,
               RoundedIconButton(
-                iconPath: confirmIcon ?? AppIcons.deleteBulk,
+                iconPath: confirmIcon ?? AppIcons.deleteLight,
                 iconColor: context.appTheme.onNegative,
                 backgroundColor: context.appTheme.negative,
                 onTap: () {

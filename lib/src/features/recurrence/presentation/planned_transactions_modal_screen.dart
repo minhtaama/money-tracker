@@ -179,7 +179,7 @@ class _TileState extends ConsumerState<_Tile> {
       child: AnimatedSwipeTile(
         buttons: [
           RoundedIconButton(
-            iconPath: AppIcons.deleteBulk,
+            iconPath: AppIcons.deleteLight,
             size: 38,
             iconPadding: 6,
             elevation: 18,

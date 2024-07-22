@@ -77,20 +77,19 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
           );
 
       return switch (transaction) {
-        BaseRegularTransaction() => _RegularDetails(screenType, controller, isScrollable,
-            transaction: transaction as BaseRegularTransaction),
+        BaseRegularTransaction() =>
+          _RegularDetails(screenType, controller, isScrollable, transaction: transaction as BaseRegularTransaction),
         CreditSpending() => screenType == TransactionScreenType.installmentToPay
             ? _InstallmentDetails(transaction: transaction as CreditSpending)
-            : _SpendingDetails(screenType, controller, isScrollable,
-                transaction: transaction as CreditSpending),
-        CreditPayment() => _PaymentDetails(screenType, controller, isScrollable,
-            transaction: transaction as CreditPayment),
-        CreditCheckpoint() => _CheckpointDetails(screenType, controller, isScrollable,
-            transaction: transaction as CreditCheckpoint),
+            : _SpendingDetails(screenType, controller, isScrollable, transaction: transaction as CreditSpending),
+        CreditPayment() =>
+          _PaymentDetails(screenType, controller, isScrollable, transaction: transaction as CreditPayment),
+        CreditCheckpoint() =>
+          _CheckpointDetails(screenType, controller, isScrollable, transaction: transaction as CreditCheckpoint),
       };
     } catch (e) {
       return IconWithText(
-        iconPath: AppIcons.deleteBulk,
+        iconPath: AppIcons.deleteLight,
         text: 'Transaction deleted!'.hardcoded,
       );
     }

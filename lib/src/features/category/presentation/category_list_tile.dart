@@ -55,7 +55,7 @@ class CategoryListTile extends ConsumerWidget {
               ),
               Gap.w8,
               RoundedIconButton(
-                iconPath: AppIcons.editBulk,
+                iconPath: AppIcons.editLight,
                 backgroundColor: Colors.transparent,
                 iconColor: context.appTheme.onBackground,
                 onTap: onMenuTap,
@@ -66,8 +66,7 @@ class CategoryListTile extends ConsumerWidget {
           tags.isNotEmpty ? Gap.h12 : Gap.noGap,
           Wrap(
             children: [
-              for (CategoryTag tag in tags)
-                CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
+              for (CategoryTag tag in tags) CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
             ],
           )
         ],

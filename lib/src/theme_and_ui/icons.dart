@@ -41,8 +41,8 @@ class AppIcons {
   static String get settingsBulk => 'assets/svg/app/setting.svg';
   static String get backLight => 'assets/svg/app/arrow-left.svg';
   static String get addLight => 'assets/svg/app/plus.svg';
-  static String get editBulk => 'assets/svg/app/edit.svg';
-  static String get deleteBulk => 'assets/svg/app/delete.svg';
+  static String get editLight => 'assets/svg/app/edit.svg';
+  static String get deleteLight => 'assets/svg/app/delete.svg';
   static String get doneLight => 'assets/svg/app/check.svg';
   static String get accountsBulk => 'assets/svg/app/accounts.svg';
   static String get categoriesBulk => 'assets/svg/app/categories.svg';

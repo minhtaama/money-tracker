@@ -58,7 +58,7 @@ class DeletedCategory extends Category {
           name: 'Deleted category'.hardcoded,
           iconColor: AppColors.black,
           backgroundColor: Colors.grey[300]!,
-          iconPath: AppIcons.deleteBulk,
+          iconPath: AppIcons.deleteLight,
           isNotExistInDatabase: true,
         );
 }

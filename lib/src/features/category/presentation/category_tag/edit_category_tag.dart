@@ -67,7 +67,7 @@ class _EditCategoryTagState extends ConsumerState<EditCategoryTag> {
         ),
       ],
       footer: ModalFooter(
-        smallButtonIcon: AppIcons.deleteBulk,
+        smallButtonIcon: AppIcons.deleteLight,
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,

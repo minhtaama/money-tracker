@@ -124,7 +124,7 @@ class _Header extends StatelessWidget {
             ),
             backgroundColor: Colors.transparent,
             iconColor: account.iconColor,
-            iconPath: AppIcons.editBulk,
+            iconPath: AppIcons.editLight,
           ),
         ],
       ),

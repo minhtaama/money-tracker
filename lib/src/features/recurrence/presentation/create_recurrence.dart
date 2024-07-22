@@ -526,7 +526,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
           child: Row(
             children: [
               SvgIcon(
-                AppIcons.editBulk,
+                AppIcons.editLight,
                 color: context.appTheme.onBackground,
                 size: 17,
               ),

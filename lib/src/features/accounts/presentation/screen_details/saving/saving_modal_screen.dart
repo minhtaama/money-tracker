@@ -21,8 +21,7 @@ import '../../../../transactions/presentation/components/base_transaction_compon
 import '../../../domain/account_base.dart';
 
 class SavingModalScreen extends ConsumerWidget {
-  const SavingModalScreen(this.controller, this.isScrollable,
-      {super.key, required this.objectIdHexString});
+  const SavingModalScreen(this.controller, this.isScrollable, {super.key, required this.objectIdHexString});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -63,7 +62,7 @@ class SavingModalScreen extends ConsumerWidget {
       );
     } catch (e) {
       return IconWithText(
-        iconPath: AppIcons.deleteBulk,
+        iconPath: AppIcons.deleteLight,
         text: 'Account deleted!',
       );
     }
@@ -187,8 +186,7 @@ class _TransactionsListState extends State<_TransactionsList> {
     );
   }
 
-  List<Widget> buildList(
-      BuildContext context, List<Transfer> transactions, GlobalKey topKey, GlobalKey bottomKey) {
+  List<Widget> buildList(BuildContext context, List<Transfer> transactions, GlobalKey topKey, GlobalKey bottomKey) {
     final list = <Widget>[];
 
     for (int i = transactions.length - 1; i >= 0; i--) {
@@ -266,9 +264,7 @@ class _Transaction extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              transaction.isToSavingAccount
-                                  ? 'Add from'.hardcoded
-                                  : 'Remove to'.hardcoded,
+                              transaction.isToSavingAccount ? 'Add from'.hardcoded : 'Remove to'.hardcoded,
                               style: kHeader4TextStyle.copyWith(
                                 color: context.appTheme.onBackground.withOpacity(0.65),
                                 fontSize: 12,
@@ -292,9 +288,7 @@ class _Transaction extends StatelessWidget {
                       TxnAmount(
                         transaction: transaction,
                         fontSize: 15,
-                        color: transaction.isFromSavingAccount
-                            ? context.appTheme.negative
-                            : context.appTheme.positive,
+                        color: transaction.isFromSavingAccount ? context.appTheme.negative : context.appTheme.positive,
                       )
                     ],
                   ),

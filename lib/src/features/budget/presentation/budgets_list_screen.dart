@@ -110,7 +110,7 @@ class _BudgetTile extends StatelessWidget {
                 ),
               ),
               RoundedIconButton(
-                iconPath: AppIcons.editBulk,
+                iconPath: AppIcons.editLight,
                 size: 32,
                 iconPadding: 6,
                 onTap: () {

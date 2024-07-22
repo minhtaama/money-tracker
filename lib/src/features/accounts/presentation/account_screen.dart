@@ -38,7 +38,7 @@ class AccountScreen extends ConsumerWidget {
       };
     } catch (e) {
       return IconWithText(
-        iconPath: AppIcons.deleteBulk,
+        iconPath: AppIcons.deleteLight,
         text: 'Account deleted!',
       );
     }

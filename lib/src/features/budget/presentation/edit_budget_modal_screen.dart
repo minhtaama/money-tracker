@@ -42,14 +42,11 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late String _name = widget.budget.name;
-  late BudgetType _budgetType =
-      widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
+  late BudgetType _budgetType = widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
   late BudgetPeriodType _periodType = widget.budget.periodType;
   late double _amount = widget.budget.amount;
-  late List<BaseAccount> _accounts =
-      widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
-  late List<Category> _categories =
-      widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
+  late List<BaseAccount> _accounts = widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
+  late List<Category> _categories = widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
 
   @override
   Widget build(BuildContext context) {
@@ -231,8 +228,8 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,
-        smallButtonIcon: AppIcons.deleteBulk,
-        bigButtonIcon: AppIcons.editBulk,
+        smallButtonIcon: AppIcons.deleteLight,
+        bigButtonIcon: AppIcons.editLight,
         bigButtonLabel: context.loc.done,
         onSmallButtonTap: () {
           showConfirmModal(

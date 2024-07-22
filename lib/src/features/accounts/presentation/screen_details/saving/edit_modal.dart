@@ -110,8 +110,7 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditSavingModalS
                       textAlign: TextAlign.end,
                       formattedResultOutput: (value) => _calculatorOutput = value,
                       focusColor: context.appTheme.secondary1,
-                      hintText:
-                          CalService.formatNumberInGroup(widget.savingAccount.targetAmount.toString())),
+                      hintText: CalService.formatNumberInGroup(widget.savingAccount.targetAmount.toString())),
                 ),
               ),
               Gap.h16,
@@ -132,9 +131,7 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditSavingModalS
                         });
                       },
                       labelBuilder: (dateTime) {
-                        return dateTime != null
-                            ? 'Until ${dateTime.toShortDate(context)}'
-                            : 'No target date';
+                        return dateTime != null ? 'Until ${dateTime.toShortDate(context)}' : 'No target date';
                       },
                     ),
                   ],
@@ -147,7 +144,7 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditSavingModalS
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,
-        smallButtonIcon: AppIcons.deleteBulk,
+        smallButtonIcon: AppIcons.deleteLight,
         bigButtonIcon: AppIcons.doneLight,
         bigButtonLabel: context.loc.done,
         onSmallButtonTap: () async {

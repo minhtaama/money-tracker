@@ -486,7 +486,7 @@ class _EditWrap extends StatelessWidget {
             curve: Curves.easeOut,
             duration: k250msDuration,
             child: RoundedIconButton(
-              iconPath: AppIcons.editBulk,
+              iconPath: AppIcons.editLight,
               iconColor: isEdited ? context.appTheme.onNegative : context.appTheme.onAccent,
               backgroundColor: isEdited ? context.appTheme.negative : context.appTheme.accent2,
               size: 20,
@@ -527,7 +527,7 @@ class _EditButton extends StatelessWidget {
               duration: k250msDuration,
               opacity: isEditMode ? 0 : 1,
               child: SvgIcon(
-                AppIcons.editBulk,
+                AppIcons.editLight,
                 color: context.appTheme.onBackground,
               ),
             ),
@@ -586,7 +586,7 @@ class _DeleteButton extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: FittedBox(
               child: SvgIcon(
-                AppIcons.deleteBulk,
+                AppIcons.deleteLight,
                 color: context.appTheme.onBackground.withOpacity(isDisable ? 0.3 : 1),
               ),
             ),
