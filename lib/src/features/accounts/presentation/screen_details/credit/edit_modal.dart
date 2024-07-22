@@ -168,6 +168,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
       footer: ModalFooter(
         isBigButtonDisabled: false,
         smallButtonIcon: AppIcons.deleteLight,
+        bigButtonIcon: AppIcons.doneLight,
+        bigButtonLabel: context.loc.done,
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,

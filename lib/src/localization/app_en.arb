@@ -96,9 +96,18 @@
 
   "@___________________________ [ ACCOUNT FEATURES ] _____________________________": {},
 
+  "regularAdj": "Regular",
+  "creditAdj": "Credit",
+  "savingAdj": "Saving",
+
+  "addAccount": "Add account",
   "deletedAccount": "Deleted account",
   "deleteAccountConfirm1": "1 more confirmation to delete this account",
   "deleteAccountConfirm2": "Last warning. The account will be deleted after this confirmation.",
+  "currentBalance": "Current balance:",
+  "outstandingCredit": "Outstanding credit:",
+  "noAccountsAvailable": "No accounts available",
+  "noSavingsAvailable": "No savings available",
 
 
   "quoteRegularAccountScreen": "This account does not have any transactions in {month}, Create a new one by tapping ''+'' button",
@@ -112,6 +121,10 @@
     }
   },
 
+
+  "editSavingAccount": "Edit saving account",
+  "savingMustHigherThan0": "Saving target must higher than 0",
+  "savingTarget": "Saving target",
 
   "editRegularAccount": "Edit account",
   "areYouSureToDeleteRegularAccount1": "Are you sure that you want to delete account \"{accountName}\"",
@@ -130,7 +143,7 @@
   "noTransactionMadeBeforeThisDay": "No transactions has made before this day",
   "tapToAddBalanceCheckpoint": "Tap to add balance checkpoint",
   "editCreditAccount": "Edit credit account",
-  "creditLimit": "Credit limit:",
+  "creditLimit": "Credit limit",
   "accountAPR": "Account APR",
   "paymentAndInterestPreferences": "Payment & Interest preferences:",
   "annualPercentageRate": "Annual Percentage Rate",
@@ -207,6 +220,19 @@
       }
     }
   },
+
+  "dateOrdinal": "Day {count, select, 0{0} 1{1st} 2{2nd} 3{3rd} other{{count}th}}",
+  "@dateOrdinal": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "format": "compact"
+      }
+    }
+  },
+
+  "ofThisMonth": "of this month",
+  "ofNextMonth": "of next month",
 
   "@___________________________ [ BUDGET FEATURES ] _____________________________": {},
 

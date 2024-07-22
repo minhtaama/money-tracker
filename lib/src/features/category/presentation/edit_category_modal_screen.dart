@@ -11,7 +11,6 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../data/category_repo.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
@@ -83,6 +82,8 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
       footer: ModalFooter(
         isBigButtonDisabled: false,
         smallButtonIcon: AppIcons.deleteLight,
+        bigButtonIcon: AppIcons.doneLight,
+        bigButtonLabel: context.loc.done,
         onSmallButtonTap: () {
           showConfirmModal(
             context: context,

@@ -7,7 +7,6 @@ import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dar
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/color_select_list_view.dart';
 import 'package:money_tracker_app/src/features/icons_and_colors/presentation/icon_select_button.dart';
-import 'package:money_tracker_app/src/routing/app_router.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
@@ -51,7 +50,7 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditSavingModalS
   Widget build(BuildContext context) {
     return ModalContent(
       header: ModalHeader(
-        title: 'Edit saving account'.hardcoded,
+        title: context.loc.editSavingAccount,
       ),
       body: [
         Row(

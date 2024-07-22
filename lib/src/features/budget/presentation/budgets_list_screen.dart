@@ -47,7 +47,7 @@ class BudgetsListScreen extends ConsumerWidget {
               Gap.h16,
               EmptyIllustration(
                 AppIcons.budgetsBulk,
-                'No budget available',
+                context.loc.noBudgetsAvailable,
               ),
             ];
     }

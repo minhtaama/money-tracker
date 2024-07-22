@@ -98,24 +98,6 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
     }
   }
 
-  String _dateBuilder(DateTime? dateTime) {
-    if (dateTime == null) {
-      return '--';
-    }
-
-    String suffix = 'th';
-
-    if (dateTime.day.toString() == '1') {
-      suffix = 'st';
-    } else if (dateTime.day.toString() == '2') {
-      suffix = 'nd';
-    } else if (dateTime.day.toString() == '3') {
-      suffix = 'rd';
-    }
-
-    return '${dateTime.day.toString()}$suffix';
-  }
-
   @override
   Widget build(BuildContext context) {
     return ModalContent(
@@ -123,7 +105,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
       controller: widget.controller,
       isScrollable: widget.isScrollable,
       header: ModalHeader(
-        title: 'Add Account'.hardcoded,
+        title: context.loc.addAccount,
       ),
       body: [
         CustomSliderToggle<AccountType>(
@@ -134,7 +116,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                   : 0,
           values: const [AccountType.regular, AccountType.credit, AccountType.saving],
           iconPaths: [AppIcons.walletLight, AppIcons.creditLight, AppIcons.savingsLight],
-          labels: const ['Regular', 'Credit', 'Saving'],
+          labels: [context.loc.regularAdj, context.loc.creditAdj, context.loc.savingAdj],
           height: 42,
           onTap: (type) {
             setState(() {
@@ -150,18 +132,18 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             Expanded(
               child: CalculatorInput(
                 hintText: _accountType == AccountType.regular
-                    ? 'Initial Balance'
+                    ? context.loc.initialBalance
                     : _accountType == AccountType.credit
-                        ? 'Credit limit'
-                        : 'Saving target',
+                        ? context.loc.creditLimit
+                        : context.loc.savingTarget,
                 focusColor: AppColors.allColorsUserCanPick[_colorIndex][0],
                 validator: (_) {
                   if (CalService.formatToDouble(_calculatorOutput) == null) {
-                    return 'Invalid amount';
+                    return context.loc.invalidAmount;
                   }
 
                   if (_accountType == AccountType.saving && CalService.formatToDouble(_calculatorOutput)! <= 0) {
-                    return 'Saving target must higher than 0';
+                    return context.loc.savingMustHigherThan0;
                   }
 
                   return null;
@@ -245,7 +227,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     Row(
                       children: [
                         Text(
-                          'Statement day:',
+                          "${context.loc.statementDate}:",
                           style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
                         ),
                         DateSelector(
@@ -256,7 +238,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                             });
                           },
                           labelBuilder: (dateTime) {
-                            return '${_dateBuilder(dateTime)} of this month';
+                            return '${context.loc.dateOrdinal(dateTime!.day.toString())} ${context.loc.ofThisMonth}';
                           },
                         ),
                       ],
@@ -266,7 +248,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                     Row(
                       children: [
                         Text(
-                          'Payment due day:',
+                          "${context.loc.paymentDueDate}:",
                           style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
                         ),
                         DateSelector(
@@ -275,7 +257,7 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                             _paymentDueDay = dateTime.day;
                           },
                           labelBuilder: (dateTime) {
-                            return '${_dateBuilder(dateTime)} of next month';
+                            return '${context.loc.dateOrdinal(dateTime!.day.toString())} ${context.loc.ofNextMonth}';
                           },
                         ),
                       ],

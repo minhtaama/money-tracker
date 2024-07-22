@@ -67,7 +67,7 @@ class CategoriesListScreen extends ConsumerWidget {
       smallTabBar: SmallTabBar(
         child: PageHeading(
           isTopLevelOfNavigationRail: true,
-          title: 'Categories',
+          title: context.loc.categories,
           trailing: RoundedIconButton(
             iconPath: AppIcons.addLight,
             iconColor: context.appTheme.onBackground,

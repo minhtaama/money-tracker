@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../utils/constants.dart';
-import '../hideable_container.dart';
 
 class SmallTabBar extends StatelessWidget {
   const SmallTabBar({

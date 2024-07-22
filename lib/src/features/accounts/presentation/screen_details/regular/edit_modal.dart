@@ -82,6 +82,8 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditRegularAccou
       footer: ModalFooter(
         isBigButtonDisabled: false,
         smallButtonIcon: AppIcons.deleteLight,
+        bigButtonIcon: AppIcons.doneLight,
+        bigButtonLabel: context.loc.done,
         onSmallButtonTap: () async {
           showConfirmModal(
             context: context,

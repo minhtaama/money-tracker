@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
@@ -55,7 +56,7 @@ class AccountsListScreen extends ConsumerWidget {
               Gap.h24,
               EmptyIllustration(
                 AppIcons.walletLight,
-                'No accounts available'.hardcoded,
+                context.loc.noAccountsAvailable,
               ),
             ];
     }
@@ -72,7 +73,7 @@ class AccountsListScreen extends ConsumerWidget {
           : [
               EmptyIllustration(
                 AppIcons.savingsEmptyLight,
-                'No saving accounts'.hardcoded,
+                context.loc.noSavingsAvailable,
               ),
             ];
     }
@@ -82,7 +83,7 @@ class AccountsListScreen extends ConsumerWidget {
       body: CustomPage(
         smallTabBar: SmallTabBar(
           child: PageHeading(
-            title: 'Accounts',
+            title: context.loc.accounts,
             isTopLevelOfNavigationRail: true,
             trailing: RoundedIconButton(
               iconPath: AppIcons.addLight,
@@ -102,8 +103,9 @@ class AccountsListScreen extends ConsumerWidget {
                 accountRepository.reorder([AccountType.regular, AccountType.credit], oldIndex, newIndex),
             sections: buildAccountCards(context),
           ),
+          Gap.h8,
           CustomSection(
-            title: 'Savings',
+            title: context.loc.savings,
             isWrapByCard: false,
             sectionsClipping: false,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -135,6 +137,7 @@ class _AccountTile extends StatelessWidget {
           elevation: 1,
           borderRadius: BorderRadius.circular(12),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 color: model.backgroundColor,
@@ -159,7 +162,7 @@ class _AccountTile extends StatelessWidget {
                           softWrap: false,
                         ),
                         Text(
-                          model is CreditAccount ? 'Credit account' : 'Regular Account',
+                          model is CreditAccount ? context.loc.creditAccount : context.loc.regularAccount,
                           style: kNormalTextStyle.copyWith(color: model.iconColor, fontSize: 13),
                         ),
                       ],
@@ -169,37 +172,41 @@ class _AccountTile extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    model is CreditAccount ? _CreditDetails(model: model as CreditAccount) : Gap.h4,
-                    Text(
-                      model is RegularAccount ? 'Current Balance:' : 'Outstanding credit:',
-                      style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
-                    ),
-                    Row(
-                      // Account Current Balance
-                      children: [
-                        Text(
-                          context.appSettings.currency.code,
-                          style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 23),
-                        ),
-                        Gap.w8,
-                        Expanded(
-                          child: Text(
-                            CalService.formatCurrency(context, model.availableAmount),
-                            style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 23),
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
+                    model is CreditAccount
+                        ? Expanded(child: _CreditDetails(model: model as CreditAccount))
+                        : const Spacer(),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            model is RegularAccount ? context.loc.currentBalance : context.loc.outstandingCredit,
+                            style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
                           ),
-                        ),
-                      ],
+                          MoneyAmount(
+                            noAnimation: true,
+                            amount: model.availableAmount,
+                            style: kHeader1TextStyle.copyWith(color: fgColor, fontSize: 23),
+                            symbolStyle: kHeader3TextStyle.copyWith(color: fgColor, fontSize: 16),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
+              model is CreditAccount
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 6.0, right: 6.0, bottom: 6.0),
+                      child: _Bar(
+                          color: model.backgroundColor,
+                          percentage: model.availableAmount / (model as CreditAccount).creditLimit),
+                    )
+                  : Gap.noGap,
             ],
           ),
         ),
@@ -213,20 +220,6 @@ class _CreditDetails extends StatelessWidget {
 
   final CreditAccount model;
 
-  String _dateBuilder(int day) {
-    String suffix = 'th';
-
-    if (day.toString().endsWith('1')) {
-      suffix = 'st';
-    } else if (day.toString().endsWith('2')) {
-      suffix = 'nd';
-    } else if (day.toString().endsWith('3')) {
-      suffix = 'rd';
-    }
-
-    return '${day.toString()}$suffix';
-  }
-
   @override
   Widget build(BuildContext context) {
     final fgColor = context.appTheme.onBackground;
@@ -234,18 +227,14 @@ class _CreditDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Gap.h8,
         Text(
-          'Statement: Day ${_dateBuilder(model.statementDay)}',
+          'Statement: ${context.loc.dateOrdinal(model.statementDay.toString())}',
           style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
         ),
         Text(
-          'Payment due: Day ${_dateBuilder(model.paymentDueDay)}',
+          'Payment due: ${context.loc.dateOrdinal(model.paymentDueDay.toString())}',
           style: kNormalTextStyle.copyWith(color: fgColor, fontSize: 13),
         ),
-        Gap.h8,
-        _Bar(color: model.backgroundColor, percentage: model.availableAmount / model.creditLimit),
-        Gap.h8,
       ],
     );
   }

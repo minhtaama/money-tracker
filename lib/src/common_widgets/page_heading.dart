@@ -28,7 +28,7 @@ class PageHeading extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        secondaryTitle != null ? Gap.h8 : Gap.h16,
+        secondaryTitle != null ? Gap.h8 : Gap.noGap,
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -41,7 +41,7 @@ class PageHeading extends StatelessWidget {
                       onTap: () => context.pop(),
                     )
                   : const SizedBox(),
-              Gap.w8,
+              Gap.w4,
               Expanded(
                 flex: 5,
                 child: secondaryTitle != null
@@ -78,8 +78,8 @@ class PageHeading extends StatelessWidget {
                             style: kNormalTextStyle.copyWith(
                               color: context.appTheme.onBackground.withOpacity(0.8),
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          Gap.h8,
                         ],
                       )
                     : Text(

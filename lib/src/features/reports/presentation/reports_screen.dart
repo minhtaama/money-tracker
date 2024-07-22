@@ -110,8 +110,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   HideableContainer(
-                    hide: _type != _ReportType.month ||
-                        _selectedDateTimes.first.isSameMonthAs(_todayMonth.start),
+                    hide: _type != _ReportType.month || _selectedDateTimes.first.isSameMonthAs(_todayMonth.start),
                     axis: Axis.horizontal,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 6.0),
@@ -146,8 +145,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             AnimatedCrossFade(
               duration: k350msDuration,
               sizeCurve: Curves.easeOut,
-              crossFadeState:
-                  _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              crossFadeState: _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               firstChild: _MonthCarousel(
                 key: _monthCarouselKey,
                 onMonthChange: (dateTimeList) => setState(() {
@@ -169,7 +167,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       );
 
   String _date() =>
-      '${_selectedDateTimes.first.toLongDate(context)}${_selectedDateTimes.length > 1 ? ' - ${_selectedDateTimes.last.toLongDate(context)}' : ''}';
+      '${_selectedDateTimes.first.toShortDate(context)}${_selectedDateTimes.length > 1 ? ' - ${_selectedDateTimes.last.toShortDate(context)}' : ''}';
 }
 
 class _MonthCarousel extends StatefulWidget {
@@ -201,8 +199,7 @@ class _MonthCarouselState extends State<_MonthCarousel> {
   }
 
   void _animateToToday() {
-    _carouselController.animateToPage(_initialPageIndex,
-        duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.animateToPage(_initialPageIndex, duration: k250msDuration, curve: Curves.easeOut);
   }
 
   @override

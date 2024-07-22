@@ -96,9 +96,18 @@
 
   "@___________________________ [ ACCOUNT FEATURES ] _____________________________": {},
 
+  "regularAdj": "Thường",
+  "creditAdj": "Tín dụng",
+  "savingAdj": "Tiết kiệm",
+
+  "addAccount": "Thêm tài khoản",
   "deletedAccount": "Tài khoản đã xoá",
   "deleteAccountConfirm1": "Xác nhận lần nữa để xoá tài khoản",
   "deleteAccountConfirm2": "Cảnh báo lần cuối, tài khoản sẽ bị xoá sau lần xác nhận này.",
+  "currentBalance": "Số dư hiện tại:",
+  "outstandingCredit": "Hạn mức còn lại:",
+  "noAccountsAvailable": "Không có tài khoản nào",
+  "noSavingsAvailable": "Không có khoản tiết kiệm nào",
 
 
   "quoteRegularAccountScreen": "Tài khoản này không có giao dịch nào trong {month}, Thêm mới bằng cách ấn nút ''+''",
@@ -112,6 +121,10 @@
     }
   },
 
+
+  "editSavingAccount": "Tuỳ chỉnh khoản tiết kiệm",
+  "savingMustHigherThan0": "Mục tiêu phải lớn hơn 0",
+  "savingTarget": "Mục tiêu tiết kiệm",
 
   "editRegularAccount": "Tuỳ chỉnh tài khoản",
   "areYouSureToDeleteRegularAccount1": "Bạn có chắc chắn muốn xoá tài khoản \"{accountName}\"?",
@@ -130,7 +143,7 @@
   "noTransactionMadeBeforeThisDay": "Không có giao dịch nào trước ngày này",
   "tapToAddBalanceCheckpoint": "Ấn để thêm mới checkpoint",
   "editCreditAccount": "Tuỳ chỉnh tài khoản tín dụng",
-  "creditLimit": "Hạn mức tín dụng:",
+  "creditLimit": "Hạn mức tín dụng",
   "accountAPR": "APR",
   "paymentAndInterestPreferences": "Tuỳ chỉnh thanh toán & lãi suất:",
   "annualPercentageRate": "Lãi suất thường niên",
@@ -207,6 +220,19 @@
       }
     }
   },
+
+  "dateOrdinal": "Ngày {count}",
+  "@dateOrdinal": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "format": "compact"
+      }
+    }
+  },
+
+  "ofThisMonth": "của tháng này",
+  "ofNextMonth": "của tháng sau",
 
   "@___________________________ [ BUDGET FEATURES ] _____________________________": {},
 
@@ -631,57 +657,57 @@
 
   "clearDate" : "Xoá ngày",
 
-  "quoteCreditCalendarDialog1": "This credit account currently has no credit/BNPL transaction needed to pay",
+  "quoteCreditCalendarDialog1": "Tài khoản tín dụng này hiện không có giao dịch nào cần thanh toán",
   "@quoteCreditCalendarDialog1": {
     "description": "Show in credit date time selector dialog"
   },
 
-  "quoteCreditCalendarDialog2": "No transactions before this time",
+  "quoteCreditCalendarDialog2": "Không có giao dịch nào trước ngày này",
   "@quoteCreditCalendarDialog2": {
     "description": "Show in credit date time selector dialog"
   },
 
-  "quoteCreditCalendarDialog3": "Select a payment day.\n Spending transaction can be paid will be displayed here",
+  "quoteCreditCalendarDialog3": "Chọn ngày thanh toán.\n Các giao dịch cần thanh toán sẽ hiển thị tại đây",
   "@quoteCreditCalendarDialog3": {
     "description": "Show in credit date time selector dialog when first display"
   },
 
-  "quoteCreditCalendarDialog4": "You can only add transaction after [latest checkpoint]",
+  "quoteCreditCalendarDialog4": "Bạn chỉ có thể thêm giao dịch sau [ngày checkpoint cuối cùng]",
   "@quoteCreditCalendarDialog4": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog4_1": "You can only select day after [latest checkpoint]",
+  "quoteCreditCalendarDialog4_1": "Bạn chỉ có thể chọn ngày sau [ngày checkpoint cuối cùng]",
   "@quoteCreditCalendarDialog4_1": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog5": "Oops! You can only add transactions since [the statement contains the latest payment]",
+  "quoteCreditCalendarDialog5": "Oops! Bạn chỉ có thể them giao dịch kể từ [kỳ sao kê chứa khoản thanh toán cuối cùng]",
   "@quoteCreditCalendarDialog5": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog5_1": "Oops! You can only select day in this statement",
+  "quoteCreditCalendarDialog5_1": "Oops! Bạn chỉ có thể chọn ngày trong kỳ sao kê này",
   "@quoteCreditCalendarDialog5_1": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog6": "Oops! This is future statement!",
+  "quoteCreditCalendarDialog6": "Oops! Đây là kỳ sao kê trong tương lai!",
   "@quoteCreditCalendarDialog6": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog7": "Oops! Can only pay in grace period (Account preference)",
+  "quoteCreditCalendarDialog7": "Oops! Chỉ có thể thanh toán trong kỳ gia hạn (Cài đặt của tài khoản)",
   "@quoteCreditCalendarDialog7": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog8": "Oops! There is a payment between current date and selected date",
+  "quoteCreditCalendarDialog8": "Oops! Có một khoản thanh toán nằm giữa ngày hiện tại và ngày được chọn",
   "@quoteCreditCalendarDialog8": {
     "description": "Show as error pop-up dialog when user select day"
   },
 
-  "quoteCreditCalendarDialog8_1": "Oops! There is a spending between current date and selected date",
+  "quoteCreditCalendarDialog8_1": "Oops! Có một khoản chi tiêu nằm giữa ngày hiện tại và ngày được chọn",
   "@quoteCreditCalendarDialog8_1": {
     "description": "Show as error pop-up dialog when user select day"
   }
