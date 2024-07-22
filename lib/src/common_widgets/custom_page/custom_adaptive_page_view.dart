@@ -300,8 +300,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
                         border: Border(
                           bottom: !context.appTheme.isDarkTheme
                               ? BorderSide(
-                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value),
-                                  width: 1.5)
+                                  color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                               : BorderSide.none,
                         ),
                       ),
@@ -317,8 +316,7 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
             decoration: BoxDecoration(
               border: Border(
                 bottom: !context.appTheme.isDarkTheme
-                    ? BorderSide(
-                        color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
+                    ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeDividerAnimation.value), width: 1.5)
                     : BorderSide.none,
               ),
             ),
@@ -358,8 +356,8 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
       decoration: BoxDecoration(
         color: context.appTheme.background1,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          topRight: Radius.circular(8),
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
         boxShadow: [
           BoxShadow(

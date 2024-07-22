@@ -125,11 +125,9 @@ class _DisableOverlay extends StatelessWidget {
           height: height,
           width: width,
           padding: const EdgeInsets.all(8),
-          color: context.appTheme.isDarkTheme
-              ? context.appTheme.background0.withOpacity(0.85)
-              : context.appTheme.background1.withOpacity(0.85),
+          color: context.appTheme.background0.withOpacity(0.75),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
             child: Center(
                 child: Text(
               text ?? '',

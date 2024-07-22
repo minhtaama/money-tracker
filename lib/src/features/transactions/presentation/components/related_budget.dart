@@ -132,7 +132,7 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
     );
 
     return CardItem(
-      color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+      color: context.appTheme.background0,
       elevation: 2.5,
       margin: EdgeInsets.zero,
       padding: const EdgeInsets.all(6),

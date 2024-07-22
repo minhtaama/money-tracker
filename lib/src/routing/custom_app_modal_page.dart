@@ -7,8 +7,7 @@ import '../theme_and_ui/colors.dart';
 import '../utils/constants.dart';
 
 class CustomAppModalRoute<T> extends _CustomAppModalPageRoute<T> {
-  CustomAppModalRoute(
-      {Widget? child, Widget Function(ScrollController controller, bool isScrollable)? builder})
+  CustomAppModalRoute({Widget? child, Widget Function(ScrollController controller, bool isScrollable)? builder})
       : super(
           CustomAppModalPage(
             child: child,
@@ -83,12 +82,10 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
   @override
   Color? get barrierColor => navigator!.context.isBigScreen
-      ? navigator!.context.appTheme.isDarkTheme
-          ? AppColors.black.withOpacity(0.2)
-          : AppColors.white.withOpacity(0.1)
+      ? null
       : navigator!.context.appTheme.isDarkTheme
           ? AppColors.black.withOpacity(0.45)
-          : AppColors.black.withOpacity(0.25);
+          : AppColors.black.withOpacity(0.15);
 
   @override
   String? get barrierLabel => null;
@@ -124,7 +121,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
   Widget _cardWrapper(BuildContext context, {Widget? child, bool? isScrollable}) {
     return CardItem(
-      color: context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1,
+      color: context.appTheme.background0,
       elevation: 2.5,
       width: isDialog
           ? null
@@ -139,13 +136,16 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               left: context.isBigScreen ? 6 : 0,
               right: context.isBigScreen ? 8 : 0,
             ),
-      padding: isDialog ? const EdgeInsets.all(12) : const EdgeInsets.only(left: 8, right: 8),
+      padding: isDialog ? const EdgeInsets.symmetric(vertical: 12) : const EdgeInsets.only(left: 8, right: 8),
+      border: Border.all(
+        color:
+            context.appTheme.onBackground.withOpacity(context.isBigScreen && context.appTheme.isDarkTheme ? 0.25 : 0),
+      ),
       borderRadius: context.isBigScreen || isDialog
-          ? const BorderRadius.all(Radius.circular(8))
+          ? const BorderRadius.all(Radius.circular(18))
           : BorderRadius.only(
-              topLeft: Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 10),
-              topRight:
-                  Radius.circular((isScrollable ?? false) && _page.secondaryChild == null ? 0 : 10),
+              topLeft: Radius.circular(isScrollable ?? false ? 0 : 18),
+              topRight: Radius.circular(isScrollable ?? false ? 0 : 18),
             ),
       child: child,
     );
@@ -176,8 +176,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                 _page.secondaryChild != null
                     ? Flexible(
                         child: Padding(
-                          padding: EdgeInsets.only(
-                              top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
+                          padding:
+                              EdgeInsets.only(top: Gap.statusBarHeight(context) + 10, bottom: 8, left: 12, right: 6),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: 350,
@@ -203,10 +203,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                           child: Center(
                             child: Padding(
                               padding: EdgeInsets.only(
-                                  top: Gap.statusBarHeight(context) + 12,
-                                  bottom: 24,
-                                  left: 16,
-                                  right: 16),
+                                  top: Gap.statusBarHeight(context) + 12, bottom: 24, left: 16, right: 16),
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(maxHeight: Gap.screenHeight(context) / 3),
                                 child: SingleChildScrollView(child: _page.secondaryChild),
@@ -216,10 +213,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                         ),
                       )
                     : Gap.noGap,
-                Flexible(
-                    child: _page.builder != null
-                        ? _contentWithScrollView(context)
-                        : _contentNoScrollView(context))
+                Flexible(child: _page.builder != null ? _contentWithScrollView(context) : _contentNoScrollView(context))
               ],
             );
 
@@ -250,8 +244,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final tween =
-        Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
+    final tween = Tween(begin: const Offset(0, 0.05), end: Offset.zero).chain(CurveTween(curve: Curves.easeOut));
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(

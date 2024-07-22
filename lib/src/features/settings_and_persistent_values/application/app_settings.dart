@@ -176,6 +176,7 @@ class AppThemeData {
   /// __Light Mode:__
   /// * [RoundedIconButton]'s default background
   /// * [CardItem]'s default background
+  /// * Modals background
   /// * [ExtendedHomeTab]'s background
   ///
   /// __DarkMode:__
@@ -185,16 +186,7 @@ class AppThemeData {
   /// *
   final Color background0;
 
-  /// __Light Mode:__
-  /// * DO NOT USE COLOR HAS BRIGHTNESS > 99%
-  /// * [ScaffoldWithBottomNavBar]'s color
-  /// * [SmallHomeTab]'s background color
-  /// * [BottomAppBarWithFAB]'s background
-  /// * System nav bar color
-  /// * Modals background
-  ///
-  /// __Dark Mode:__
-  /// * [ScaffoldWithBottomNavBar]'s color
+  /// * [Scaffold]'s color
   /// * [SmallHomeTab]'s background color
   /// * [BottomAppBarWithFAB]'s background
   /// * System nav bar color

@@ -17,18 +17,6 @@ class _Amount extends ConsumerWidget {
   final double amount;
   final VoidCallback? onEditModeTap;
 
-  String get _iconPath {
-    return switch (transactionType) {
-      TransactionType.income => AppIcons.incomeLight,
-      TransactionType.expense => AppIcons.expenseLight,
-      TransactionType.transfer => AppIcons.transferLight,
-      TransactionType.creditSpending => AppIcons.receiptDollarBulk,
-      TransactionType.creditPayment => AppIcons.handCoinTwoTone,
-      TransactionType.creditCheckpoint => AppIcons.receiptEditLight,
-      TransactionType.installmentToPay => AppIcons.installmentTwoTone,
-    };
-  }
-
   Color _color(BuildContext context) {
     return switch (transactionType) {
       TransactionType.income => context.appTheme.positive,
@@ -140,8 +128,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                     Gap.h12,
                     CustomCheckbox(
                       label: context.loc.startPaymentInNextStatement,
-                      initialValue:
-                          (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
+                      initialValue: (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
                       onChanged: onChangePaymentStartFromNextStatement,
                     ),
                   ],
@@ -196,8 +183,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
 }
 
 class _DateTime extends StatelessWidget {
-  const _DateTime(
-      {required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
+  const _DateTime({required this.isEditMode, this.isEdited = false, required this.dateTime, this.onEditModeTap});
 
   final bool isEditMode;
   final bool isEdited;
@@ -236,8 +222,7 @@ class _DateTime extends StatelessWidget {
 }
 
 class _AccountCard extends StatelessWidget {
-  const _AccountCard(
-      {required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
+  const _AccountCard({required this.isEditMode, this.isEdited = false, required this.account, this.onEditModeTap});
   final bool isEditMode;
   final bool isEdited;
   final BaseAccount account;
@@ -245,8 +230,7 @@ class _AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor =
-        account.backgroundColor.withOpacity(0.2).addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0);
+    final bgColor = account.backgroundColor.withOpacity(0.2).addDark(context.appTheme.isDarkTheme ? 0.2 : 0.0);
 
     return _EditWrap(
       isEditMode: isEditMode,
@@ -276,9 +260,7 @@ class _AccountCard extends StatelessWidget {
                     ..scale(5.0),
                   child: SvgIcon(
                     account.iconPath,
-                    color: isEditMode
-                        ? account.backgroundColor.addDark(0.2)
-                        : account.backgroundColor.addDark(0.2),
+                    color: isEditMode ? account.backgroundColor.addDark(0.2) : account.backgroundColor.addDark(0.2),
                   ),
                 ),
               ),
@@ -292,8 +274,8 @@ class _AccountCard extends StatelessWidget {
                         : account is SavingAccountInfo
                             ? 'SAVING ACCOUNT'
                             : 'ACCOUNT:',
-                    style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                    style:
+                        kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                   ),
                   Gap.h4,
                   Row(
@@ -301,8 +283,7 @@ class _AccountCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           account.name,
-                          style: kHeader2TextStyle.copyWith(
-                              color: context.appTheme.onBackground, fontSize: 20),
+                          style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
                         ),
                       ),
                       Gap.w48,
@@ -320,11 +301,7 @@ class _AccountCard extends StatelessWidget {
 
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard(
-      {required this.isEditMode,
-      this.isEdited = false,
-      required this.category,
-      this.categoryTag,
-      this.onEditModeTap});
+      {required this.isEditMode, this.isEdited = false, required this.category, this.categoryTag, this.onEditModeTap});
 
   final bool isEditMode;
   final bool isEdited;
@@ -350,8 +327,7 @@ class _CategoryCard extends StatelessWidget {
           children: [
             Text(
               'CATEGORY:',
-              style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+              style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
             ),
             Gap.h8,
             Row(
@@ -371,8 +347,7 @@ class _CategoryCard extends StatelessWidget {
                     children: [
                       Text(
                         category.name,
-                        style: kHeader2TextStyle.copyWith(
-                            color: context.appTheme.onBackground, fontSize: 20),
+                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 20),
                       ),
                       categoryTag != null && categoryTag != CategoryTag.noTag
                           ? Row(
@@ -388,8 +363,7 @@ class _CategoryCard extends StatelessWidget {
                                 Gap.w4,
                                 Text(
                                   categoryTag!.name,
-                                  style: kHeader3TextStyle.copyWith(
-                                      color: context.appTheme.onBackground, fontSize: 15),
+                                  style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 15),
                                 ),
                               ],
                             )
@@ -407,8 +381,7 @@ class _CategoryCard extends StatelessWidget {
 }
 
 class _Note extends StatelessWidget {
-  const _Note(
-      {required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeChanged});
+  const _Note({required this.isEditMode, this.isEdited = false, required this.note, this.onEditModeChanged});
   final bool isEditMode;
   final bool isEdited;
   final String? note;
@@ -431,8 +404,8 @@ class _Note extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   'NOTE:',
-                  style: kHeader2TextStyle.copyWith(
-                      color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                  style:
+                      kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                 ),
               ),
               Gap.h4,
@@ -473,12 +446,7 @@ class _EditWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow =
-        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow =
-        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final containerColor = context.appTheme.background0;
 
     return Stack(
       clipBehavior: Clip.none,
@@ -493,20 +461,6 @@ class _EditWrap extends StatelessWidget {
             border: Border.all(
               color: context.appTheme.onBackground.withOpacity(isEditMode ? 0.15 : 0),
             ),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: isEditMode
-            //         ? bottomRightShadow.withOpacity(context.appTheme.isDarkTheme ? 0.6 : 0.2)
-            //         : bottomRightShadow.withOpacity(0),
-            //     offset: const Offset(3, 3),
-            //     blurRadius: 8,
-            //   ),
-            //   BoxShadow(
-            //     color: isEditMode ? topLeftShadow.withOpacity(0.8) : topLeftShadow.withOpacity(0),
-            //     offset: const Offset(-4, -4),
-            //     blurRadius: 4,
-            //   ),
-            // ],
           ),
           child: Material(
             color: Colors.transparent,
@@ -518,8 +472,7 @@ class _EditWrap extends StatelessWidget {
                 duration: k250msDuration,
                 curve: Curves.easeOut,
                 padding: EdgeInsets.symmetric(
-                    vertical: isEditMode && withPadding ? 4 : 0,
-                    horizontal: isEditMode && withPadding ? 6 : 0),
+                    vertical: isEditMode && withPadding ? 4 : 0, horizontal: isEditMode && withPadding ? 6 : 0),
                 child: child,
               ),
             ),
@@ -546,80 +499,6 @@ class _EditWrap extends StatelessWidget {
   }
 }
 
-// class _NeumorphicEditCardWrap extends StatelessWidget {
-//   const _NeumorphicEditCardWrap(
-//       {required this.isEditMode,
-//       this.isEdited = false,
-//       this.onTap,
-//       required this.backgroundColor,
-//       required this.child});
-//   final bool isEditMode;
-//   final bool isEdited;
-//   final VoidCallback? onTap;
-//   final Color backgroundColor;
-//   final Widget child;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final topLeftShadow = context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-//     final bottomRightShadow = context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-//     final bgEditColor = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
-//
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-//       child: Stack(
-//         children: [
-//           CardItem(
-//             margin: isEditMode ? const EdgeInsets.only(left: 4, right: 8, top: 8) : EdgeInsets.zero,
-//             elevation: 0,
-//             padding: EdgeInsets.zero,
-//             color: isEditMode ? bgEditColor : backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
-//             boxShadow: [
-//               BoxShadow(
-//                 color: isEditMode
-//                     ? bottomRightShadow.withOpacity(context.appTheme.isDarkTheme ? 0.6 : 0.2)
-//                     : bottomRightShadow.withOpacity(0),
-//                 offset: const Offset(3, 3),
-//                 blurRadius: 8,
-//               ),
-//               BoxShadow(
-//                 color: isEditMode ? topLeftShadow.withOpacity(0.8) : topLeftShadow.withOpacity(0),
-//                 offset: const Offset(-4, -4),
-//                 blurRadius: 4,
-//               ),
-//             ],
-//             constraints: const BoxConstraints(minHeight: 65, minWidth: double.infinity),
-//             child: CustomInkWell(
-//               onTap: isEditMode ? onTap : null,
-//               inkColor: AppColors.grey(context),
-//               child: Padding(
-//                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//                 child: child,
-//               ),
-//             ),
-//           ),
-//           Positioned(
-//             top: 1,
-//             right: 4,
-//             child: AnimatedOpacity(
-//               opacity: isEditMode ? 1 : 0,
-//               duration: k250msDuration,
-//               curve: Curves.easeOut,
-//               child: RoundedIconButton(
-//                 iconPath: AppIcons.edit,
-//                 iconColor: isEdited ? context.appTheme.onNegative : context.appTheme.onAccent,
-//                 backgroundColor: isEdited ? context.appTheme.negative : context.appTheme.accent2,
-//                 size: 20,
-//                 iconPadding: 4,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 class _EditButton extends StatelessWidget {
   const _EditButton({required this.isEditMode, required this.onTap});
 
@@ -628,12 +507,7 @@ class _EditButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topLeftShadow =
-        context.appTheme.isDarkTheme ? context.appTheme.background0.addWhite(0.04) : AppColors.white;
-    final bottomRightShadow =
-        context.appTheme.isDarkTheme ? AppColors.black : context.appTheme.onBackground;
-    final containerColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final containerColor = context.appTheme.background0;
 
     return CardItem(
       width: 50,
@@ -674,10 +548,7 @@ class _EditButton extends StatelessWidget {
 
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton(
-      {required this.isEditMode,
-      required this.onConfirm,
-      this.isDisable = false,
-      this.disableText = ''});
+      {required this.isEditMode, required this.onConfirm, this.isDisable = false, this.disableText = ''});
 
   final bool isEditMode;
   final bool isDisable;
@@ -686,8 +557,7 @@ class _DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final containerColor =
-        context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final containerColor = context.appTheme.background0;
 
     return CardItem(
       width: isEditMode ? 0 : 40,
@@ -775,14 +645,12 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
                             ? element.backgroundColor
                             : context.appTheme.onBackground.withOpacity(0.4),
                       ),
-                      backgroundColor:
-                          selectedItem == element ? element.backgroundColor : Colors.transparent,
+                      backgroundColor: selectedItem == element ? element.backgroundColor : Colors.transparent,
                       color: selectedItem == element ? element.iconColor : context.appTheme.onBackground,
                       inkColor: element.backgroundColor,
                       onTap: onItemTap != null
                           ? () => onItemTap?.call(element)
-                          : () =>
-                              selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
+                          : () => selectedItem == element ? context.pop<T>(null) : context.pop<T>(element),
                       height: null,
                       width: null,
                     ),

@@ -52,6 +52,7 @@ Future<T?> showConfirmModal<T>({
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          Gap.h16,
           Text(
             label,
             style: kHeader3TextStyle.copyWith(
@@ -94,7 +95,8 @@ Future<T?> showConfirmModal<T>({
                 },
               )
             ],
-          )
+          ),
+          Gap.h16,
         ],
       ),
     ),
