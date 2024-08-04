@@ -3,6 +3,8 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
+import 'hideable_container.dart';
+
 class CustomCheckbox extends StatefulWidget {
   const CustomCheckbox({
     super.key,
@@ -33,6 +35,32 @@ class CustomCheckbox extends StatefulWidget {
 
 class _CustomCheckboxState extends State<CustomCheckbox> {
   late bool _value = widget.initialValue;
+
+  late Widget? _child = _value
+      ? widget.showOptionalWidgetWhenValueIsFalse
+          ? Gap.noGap
+          : widget.optionalWidget
+      : widget.showOptionalWidgetWhenValueIsFalse
+          ? widget.optionalWidget
+          : Gap.noGap;
+
+  void _modifyChild() {
+    if (widget.optionalWidget == null) {
+      return;
+    }
+
+    if (!_value) {
+      Future.delayed(
+          k350msDuration,
+          () => setState(() {
+                _child = Gap.noGap;
+              }));
+    } else {
+      setState(() {
+        _child = widget.optionalWidget;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +102,8 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                           _value = value!;
                           widget.onChanged(_value);
                         });
+
+                        _modifyChild();
                       },
                     ),
                     Expanded(
@@ -85,6 +115,8 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                               _value = !_value;
                               widget.onChanged(_value);
                             });
+
+                            _modifyChild();
                           },
                           child: Row(
                             children: [
@@ -109,33 +141,23 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
             ),
           ),
         ),
-        widget.optionalWidget != null
+        _child != null
             ? AnimatedContainer(
                 duration: k150msDuration,
                 width: double.infinity,
                 margin: EdgeInsets.zero,
-                padding: !widget.showOptionalWidgetWhenValueIsFalse && _value ||
-                        widget.showOptionalWidgetWhenValueIsFalse && !_value
-                    ? const EdgeInsets.all(16)
-                    : EdgeInsets.zero,
                 decoration: BoxDecoration(
-                  color: widget.optionalWidgetBackgroundColor ??
-                      (context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1),
+                  color: widget.optionalWidgetBackgroundColor ?? context.appTheme.background0,
                   border: Border.all(
                     color: context.appTheme.onBackground.withOpacity(
-                        !widget.showOptionalWidgetWhenValueIsFalse && _value ||
-                                widget.showOptionalWidgetWhenValueIsFalse && !_value
-                            ? 0.3
-                            : 0),
+                      !widget.showOptionalWidgetWhenValueIsFalse && !_value ? 0 : 0.3,
+                    ),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: AnimatedSize(
-                  duration: k250msDuration,
-                  child: !widget.showOptionalWidgetWhenValueIsFalse && _value ||
-                          widget.showOptionalWidgetWhenValueIsFalse && !_value
-                      ? widget.optionalWidget ?? Gap.noGap
-                      : Gap.noGap,
+                child: HideableContainer(
+                  hide: !widget.showOptionalWidgetWhenValueIsFalse && !_value,
+                  child: _child!,
                 ),
               )
             : Gap.noGap,

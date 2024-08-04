@@ -35,6 +35,8 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   CreditSpendingFormState get _stateRead => ref.read(creditSpendingFormNotifierProvider);
 
   void _submit() {
+    print('stateWatch.installmentPeriod: ${_stateRead.installmentPeriod}');
+
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
       ref.read(transactionRepositoryRealmProvider).writeNewCreditSpending(
@@ -125,7 +127,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
               InlineTextFormField(
                 prefixText: context.loc.installmentPeriod,
                 suffixText: context.loc.monthS,
-                validator: (_) => stateWatch.installmentPeriod == null ? 'error' : null,
+                validator: (_) => _installmentPeriodValidator(),
                 onChanged: (value) {
                   _stateController.changeInstallmentPeriod(int.tryParse(value));
                   _changeInstallmentControllerText();
@@ -185,7 +187,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                     accountType: AccountType.credit,
                     validator: (_) => _creditAccountValidator(),
                     onChangedAccount: (newAccount) =>
-                        _stateController.changeCreditAccount(newAccount as CreditAccount),
+                        _stateController.changeCreditAccount(newAccount as CreditAccount?),
                   ),
                   Gap.h16,
                   TextHeader(context.loc.expenseCategory),
@@ -251,6 +253,10 @@ extension _Validators on _AddCreditTransactionModalScreenState {
       return context.loc.tooHigh;
     }
     return null;
+  }
+
+  String? _installmentPeriodValidator() {
+    return _stateRead.installmentPeriod == null ? 'error' : null;
   }
 
   String? _categoryValidator() {

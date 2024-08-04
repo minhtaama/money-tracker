@@ -40,9 +40,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
           .map((e) => CardItem(
                 margin: const EdgeInsets.symmetric(vertical: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                border: context.appTheme.isDarkTheme
-                    ? Border.all(color: context.appTheme.onBackground.withOpacity(0.15))
-                    : null,
+                border: Border.all(color: context.appTheme.onBackground.withOpacity(0.15)),
                 child: Row(
                   children: [
                     SvgIcon(
