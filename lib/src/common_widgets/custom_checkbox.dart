@@ -15,6 +15,7 @@ class CustomCheckbox extends StatefulWidget {
     this.optionalWidgetBackgroundColor,
     this.checkboxBackgroundColor,
     this.labelStyle,
+    this.optionalWidgetDecoration = true,
     this.showOptionalWidgetWhenValueIsFalse = false,
     this.initialValue = false,
   });
@@ -26,6 +27,7 @@ class CustomCheckbox extends StatefulWidget {
   final Widget? optionalWidget;
   final Color? optionalWidgetBackgroundColor;
   final Color? checkboxBackgroundColor;
+  final bool optionalWidgetDecoration;
   final bool showOptionalWidgetWhenValueIsFalse;
   final bool initialValue;
 
@@ -68,75 +70,81 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Transform.translate(
-          offset: Offset(widget.optionalWidget != null ? 0.0 : -10.0, widget.optionalWidget != null ? 10.0 : 0.0),
+          offset: !widget.optionalWidgetDecoration
+              ? const Offset(-11.0, 10.0)
+              : Offset(
+                  widget.optionalWidget != null ? 0.0 : -11.0,
+                  widget.optionalWidget != null ? 10.0 : 0.0,
+                ),
           child: AnimatedContainer(
             duration: k150msDuration,
-            decoration: BoxDecoration(
-              color: widget.optionalWidget != null && !widget.showOptionalWidgetWhenValueIsFalse && _value ||
-                      widget.showOptionalWidgetWhenValueIsFalse && !_value
-                  ? (widget.checkboxBackgroundColor ?? AppColors.greyBgr(context))
-                  : (widget.checkboxBackgroundColor?.withOpacity(0) ?? AppColors.greyBgr(context).withOpacity(0)),
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-            ),
+            decoration: widget.optionalWidgetDecoration
+                ? BoxDecoration(
+                    color: widget.optionalWidget != null && !widget.showOptionalWidgetWhenValueIsFalse && _value ||
+                            widget.showOptionalWidgetWhenValueIsFalse && !_value
+                        ? (widget.checkboxBackgroundColor ?? AppColors.greyBgr(context))
+                        : (widget.checkboxBackgroundColor?.withOpacity(0) ?? AppColors.greyBgr(context).withOpacity(0)),
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+                  )
+                : null,
             child: Padding(
               padding: widget.optionalWidget != null ? const EdgeInsets.only(bottom: 8.0, right: 12) : EdgeInsets.zero,
-              child: IntrinsicWidth(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Checkbox(
-                      activeColor: context.appTheme.secondary1,
-                      focusColor: context.appTheme.secondary1,
-                      hoverColor: context.appTheme.secondary1,
-                      checkColor: context.appTheme.onSecondary,
-                      overlayColor: MaterialStatePropertyAll<Color>(context.appTheme.secondary1.withOpacity(0.1)),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity:
-                          widget.optionalWidget == null ? const VisualDensity(horizontal: 0, vertical: -3) : null,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                      side: BorderSide(color: context.appTheme.onBackground.withOpacity(0.4), width: 1.5),
-                      value: _value,
-                      onChanged: (value) {
-                        setState(() {
-                          _value = value!;
-                          widget.onChanged(_value);
-                        });
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Checkbox(
+                    activeColor: context.appTheme.secondary1,
+                    focusColor: context.appTheme.secondary1,
+                    hoverColor: context.appTheme.secondary1,
+                    checkColor: context.appTheme.onSecondary,
+                    overlayColor: MaterialStatePropertyAll<Color>(context.appTheme.secondary1.withOpacity(0.1)),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity:
+                        widget.optionalWidget == null ? const VisualDensity(horizontal: 0, vertical: -3) : null,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    side: BorderSide(color: context.appTheme.onBackground.withOpacity(0.4), width: 1.5),
+                    value: _value,
+                    onChanged: (value) {
+                      setState(() {
+                        _value = value!;
+                        widget.onChanged(_value);
+                      });
 
-                        _modifyChild();
-                      },
-                    ),
-                    Expanded(
-                      child: Transform.translate(
-                        offset: Offset(0, widget.optionalWidget != null ? 9 : 3),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _value = !_value;
-                              widget.onChanged(_value);
-                            });
+                      _modifyChild();
+                    },
+                  ),
+                  Flexible(
+                    child: Transform.translate(
+                      offset: Offset(0, widget.optionalWidget != null ? 9 : 3),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _value = !_value;
+                            widget.onChanged(_value);
+                          });
 
-                            _modifyChild();
-                          },
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  widget.label,
-                                  style: widget.labelStyle ??
-                                      kHeader3TextStyle.copyWith(
-                                          fontSize: 15, color: context.appTheme.onBackground.withOpacity(0.6)),
-                                ),
+                          _modifyChild();
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                widget.label,
+                                style: widget.labelStyle ??
+                                    kHeader3TextStyle.copyWith(
+                                        fontSize: 15, color: context.appTheme.onBackground.withOpacity(0.6)),
                               ),
-                              Gap.w8,
-                              widget.labelSuffix ?? Gap.noGap
-                            ],
-                          ),
+                            ),
+                            Gap.w8,
+                            widget.labelSuffix ?? Gap.noGap
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -148,16 +156,23 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                 margin: EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: widget.optionalWidgetBackgroundColor ?? context.appTheme.background0,
-                  border: Border.all(
-                    color: context.appTheme.onBackground.withOpacity(
-                      !widget.showOptionalWidgetWhenValueIsFalse && !_value ? 0 : 0.3,
-                    ),
-                  ),
+                  border: widget.optionalWidgetDecoration
+                      ? Border.all(
+                          color: context.appTheme.onBackground.withOpacity(
+                            !widget.showOptionalWidgetWhenValueIsFalse && !_value ? 0 : 0.3,
+                          ),
+                        )
+                      : null,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: HideableContainer(
                   hide: !widget.showOptionalWidgetWhenValueIsFalse && !_value,
-                  child: _child!,
+                  child: Column(
+                    children: [
+                      widget.optionalWidgetDecoration ? Gap.noGap : Gap.divider(context),
+                      _child!,
+                    ],
+                  ),
                 ),
               )
             : Gap.noGap,

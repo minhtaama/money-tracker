@@ -121,41 +121,44 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             }
             _changeInstallmentControllerText();
           },
-          optionalWidget: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InlineTextFormField(
-                prefixText: context.loc.installmentPeriod,
-                suffixText: context.loc.monthS,
-                validator: (_) => _installmentPeriodValidator(),
-                onChanged: (value) {
-                  _stateController.changeInstallmentPeriod(int.tryParse(value));
-                  _changeInstallmentControllerText();
-                },
-              ),
-              Gap.h8,
-              InlineTextFormField(
-                prefixText: '${context.loc.paymentAmount}:',
-                suffixText: context.appSettings.currency.code,
-                widget: CalculatorInput(
-                    controller: _installmentPaymentController,
-                    fontSize: 18,
-                    isDense: true,
-                    textAlign: TextAlign.end,
-                    validator: (_) => _installmentPaymentValidator(),
-                    formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
-                    focusColor: context.appTheme.secondary1,
-                    hintText: ''),
-              ),
-              Gap.h12,
-              CustomCheckbox(
-                label: context.loc.startPaymentInNextStatement,
-                initialValue: stateWatch.paymentStartFromNextStatement ?? true,
-                onChanged: (value) {
-                  _stateController.changePaymentStartFromNextStatement(value);
-                },
-              ),
-            ],
+          optionalWidget: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InlineTextFormField(
+                  prefixText: context.loc.installmentPeriod,
+                  suffixText: context.loc.monthS,
+                  validator: (_) => _installmentPeriodValidator(),
+                  onChanged: (value) {
+                    _stateController.changeInstallmentPeriod(int.tryParse(value));
+                    _changeInstallmentControllerText();
+                  },
+                ),
+                Gap.h8,
+                InlineTextFormField(
+                  prefixText: '${context.loc.paymentAmount}:',
+                  suffixText: context.appSettings.currency.code,
+                  widget: CalculatorInput(
+                      controller: _installmentPaymentController,
+                      fontSize: 18,
+                      isDense: true,
+                      textAlign: TextAlign.end,
+                      validator: (_) => _installmentPaymentValidator(),
+                      formattedResultOutput: (value) => _stateController.changeInstallmentAmount(value),
+                      focusColor: context.appTheme.secondary1,
+                      hintText: ''),
+                ),
+                Gap.h12,
+                CustomCheckbox(
+                  label: context.loc.startPaymentInNextStatement,
+                  initialValue: stateWatch.paymentStartFromNextStatement ?? true,
+                  onChanged: (value) {
+                    _stateController.changePaymentStartFromNextStatement(value);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         Gap.h8,

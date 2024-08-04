@@ -97,41 +97,45 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
             duration: k250msDuration,
             firstChild: Transform.translate(
               offset: const Offset(0, -5),
-              child: CustomCheckbox(
-                initialValue: (initialValues[0] as bool),
-                label: context.loc.installmentPayment,
-                onChanged: onToggle,
-                optionalWidget: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InlineTextFormField(
-                      prefixText: context.loc.installmentPeriod,
-                      suffixText: context.loc.monthS,
-                      onChanged: onMonthOutput,
-                      hintText: initialValues[2] != null ? (initialValues[2] as int).toString() : '',
-                    ),
-                    Gap.h8,
-                    InlineTextFormField(
-                      prefixText: context.loc.amount,
-                      suffixText: context.appSettings.currency.code,
-                      widget: CalculatorInput(
-                          controller: installmentController,
-                          fontSize: 18,
-                          isDense: true,
-                          textAlign: TextAlign.end,
-                          formattedResultOutput: onFormattedInstallmentOutput,
-                          focusColor: context.appTheme.secondary1,
-                          hintText: initialValues[1] != null
-                              ? CalService.formatNumberInGroup((initialValues[1] as double).toString())
-                              : ''),
-                    ),
-                    Gap.h12,
-                    CustomCheckbox(
-                      label: context.loc.startPaymentInNextStatement,
-                      initialValue: (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
-                      onChanged: onChangePaymentStartFromNextStatement,
-                    ),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: CustomCheckbox(
+                  initialValue: (initialValues[0] as bool),
+                  label: context.loc.installmentPayment,
+                  onChanged: onToggle,
+                  optionalWidgetDecoration: false,
+                  optionalWidget: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InlineTextFormField(
+                        prefixText: context.loc.installmentPeriod,
+                        suffixText: context.loc.monthS,
+                        onChanged: onMonthOutput,
+                        hintText: initialValues[2] != null ? (initialValues[2] as int).toString() : '',
+                      ),
+                      Gap.h8,
+                      InlineTextFormField(
+                        prefixText: context.loc.amount,
+                        suffixText: context.appSettings.currency.code,
+                        widget: CalculatorInput(
+                            controller: installmentController,
+                            fontSize: 18,
+                            isDense: true,
+                            textAlign: TextAlign.end,
+                            formattedResultOutput: onFormattedInstallmentOutput,
+                            focusColor: context.appTheme.secondary1,
+                            hintText: initialValues[1] != null
+                                ? CalService.formatNumberInGroup((initialValues[1] as double).toString())
+                                : ''),
+                      ),
+                      Gap.h12,
+                      CustomCheckbox(
+                        label: context.loc.startPaymentInNextStatement,
+                        initialValue: (initialValues[3] as bool?) ?? transaction.paymentStartFromNextStatement,
+                        onChanged: onChangePaymentStartFromNextStatement,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
