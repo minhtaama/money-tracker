@@ -73,8 +73,9 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-              child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child:
+                  widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
             ),
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             calendarPicker(),
@@ -101,7 +102,8 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
               : Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-                    child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+                    child: widget.contentBuilder
+                        ?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
                   ),
                 ),
         ],

@@ -53,6 +53,8 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
     final stateWatch = ref.watch(creditSpendingFormNotifierProvider);
 
     return ModalContent(
+      controller: widget.controller,
+      isScrollable: widget.isScrollable,
       header: ModalHeader(
         title: context.loc.creditSpending,
         trailing: widget.screenType == TransactionScreenType.editable
@@ -80,7 +82,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
                     isDisable: !_canDelete,
                     disableText: context.loc.quoteTransaction9,
                     onConfirm: _delete,
-                  )
+                  ),
                 ],
               )
             : null,
@@ -101,7 +103,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
         ),
         Gap.h16,
         _InstallmentOfSpendingDetails(
-          isEditMode: _canEditAmount(stateWatch) ? _isEditMode : false,
+          isEditMode: _canEditInstallmentDetails(stateWatch) ? _isEditMode : false,
           isEdited: _isInstallmentEdited(stateWatch),
           installmentController: _installmentPaymentController,
           transaction: _transaction,
@@ -230,6 +232,17 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
           .isAfter(_creditAccount.latestClosedStatementDueDate) &&
       (state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay)
           .isAfter(_creditAccount.latestCheckpointDateTime);
+
+  bool _canEditInstallmentDetails(CreditSpendingFormState state) {
+    final currentDateTime = state.dateTime?.onlyYearMonthDay ?? _transaction.dateTime.onlyYearMonthDay;
+    final isAfterLatestPayment = _creditAccount.paymentTransactions.isNotEmpty
+        ? currentDateTime.isAfter(_creditAccount.paymentTransactions.last.dateTime)
+        : true;
+
+    return currentDateTime.isAfter(_creditAccount.latestClosedStatementDueDate) &&
+        currentDateTime.isAfter(_creditAccount.latestCheckpointDateTime) &&
+        isAfterLatestPayment;
+  }
 
   bool _submit() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);

@@ -269,30 +269,29 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                       onChanged: _onToggleFullPaymentCheckbox,
                       label: context.loc.fullPayment,
                       showOptionalWidgetWhenValueIsFalse: true,
-                      optionalWidget: Column(
-                        children: [
-                          InlineTextFormField(
-                            prefixText: context.loc.balAfterPayment,
-                            suffixText: context.appSettings.currency.code,
-                            textSize: 14,
-                            widget: CalculatorInput(
-                              hintText: stateWatch.userPaymentAmount != null &&
-                                      stateWatch.totalBalanceAmount.roundBySetting(context) -
-                                              stateWatch.userPaymentAmount!.roundBySetting(context) >
-                                          0
-                                  ? CalService.formatCurrency(
-                                      context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
-                                  : '???',
-                              textAlign: TextAlign.right,
-                              controller: _remainingInputController,
-                              isDense: true,
-                              fontSize: 16,
-                              focusColor: context.appTheme.primary,
-                              validator: (_) => _remainingInputValidator(context),
-                              formattedResultOutput: _onRemainingInputChange,
-                            ),
+                      optionalWidget: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                        child: InlineTextFormField(
+                          prefixText: context.loc.balAfterPayment,
+                          suffixText: context.appSettings.currency.code,
+                          textSize: 14,
+                          widget: CalculatorInput(
+                            hintText: stateWatch.userPaymentAmount != null &&
+                                    stateWatch.totalBalanceAmount.roundBySetting(context) -
+                                            stateWatch.userPaymentAmount!.roundBySetting(context) >
+                                        0
+                                ? CalService.formatCurrency(context,
+                                    stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                : '???',
+                            textAlign: TextAlign.right,
+                            controller: _remainingInputController,
+                            isDense: true,
+                            fontSize: 16,
+                            focusColor: context.appTheme.primary,
+                            validator: (_) => _remainingInputValidator(context),
+                            formattedResultOutput: _onRemainingInputChange,
                           ),
-                        ],
+                        ),
                       ),
                     )
                   : Gap.noGap,
