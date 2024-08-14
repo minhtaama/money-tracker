@@ -20,6 +20,7 @@ class TransactionDataTile extends ConsumerWidget {
     this.smaller = false,
     this.showState = false,
     this.showDateTime = false,
+    this.amountColor,
   });
 
   final TransactionData model;
@@ -27,6 +28,7 @@ class TransactionDataTile extends ConsumerWidget {
   final bool smaller;
   final bool showState;
   final bool showDateTime;
+  final Color? amountColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,9 +44,8 @@ class TransactionDataTile extends ConsumerWidget {
     };
 
     return Row(
-      crossAxisAlignment: model.note != null || model.categoryTag != null
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.center,
+      crossAxisAlignment:
+          model.note != null || model.categoryTag != null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 4.0),
@@ -63,6 +64,7 @@ class TransactionDataTile extends ConsumerWidget {
                 TransactionType.transfer => _TransferDetails(
                     model: model,
                     smaller: smaller,
+                    showState: showState,
                     showDateTime: showDateTime,
                   ),
                 _ => _WithCategoryDetails(
@@ -85,11 +87,11 @@ class TransactionDataTile extends ConsumerWidget {
               noAnimation: true,
               style: smaller
                   ? kHeader3TextStyle.copyWith(
-                      color: color.withOpacity(0.65),
+                      color: amountColor ?? color.withOpacity(0.65),
                       fontSize: 11,
                     )
                   : kHeader2TextStyle.copyWith(
-                      color: color,
+                      color: amountColor ?? color,
                       fontSize: 13,
                     ),
             ),
@@ -203,12 +205,11 @@ class _AccountName extends ConsumerWidget {
       style: destination
           ? kHeader3TextStyle.copyWith(
               color: context.appTheme.onBackground.withOpacity(model.toAccount != null ? 1 : 0.25),
-              fontSize: 13,
+              fontSize: smaller ? 11 : 13,
             )
           : kHeader4TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(destination
-                  ? (model.toAccount != null ? 0.65 : 0.25)
-                  : (model.account != null ? 0.65 : 0.25)),
+              color: context.appTheme.onBackground.withOpacity(
+                  destination ? (model.toAccount != null ? 0.65 : 0.25) : (model.account != null ? 0.65 : 0.25)),
               fontSize: smaller ? 9 : 12,
             ),
       softWrap: false,
@@ -318,8 +319,7 @@ class _WithCategoryDetails extends StatelessWidget {
                 showState
                     ? state
                     : '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)}',
-                style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+                style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                 softWrap: false,
                 overflow: TextOverflow.fade,
               )
@@ -331,14 +331,26 @@ class _WithCategoryDetails extends StatelessWidget {
 }
 
 class _TransferDetails extends StatelessWidget {
-  const _TransferDetails({required this.model, required this.smaller, required this.showDateTime});
+  const _TransferDetails(
+      {required this.model, required this.smaller, required this.showState, required this.showDateTime});
 
   final TransactionData model;
   final bool smaller;
+  final bool showState;
   final bool showDateTime;
 
   @override
   Widget build(BuildContext context) {
+    final state = model.state != null && showState
+        ? '${switch (model.state!) {
+            PlannedState.upcoming => context.loc.upcoming,
+            PlannedState.today => context.loc.today,
+            PlannedState.added => context.loc.added,
+            PlannedState.skipped => context.loc.skipped,
+            PlannedState.overdue => context.loc.overdue,
+          }} - '
+        : '';
+
     String dateTime = showDateTime
         ? '${model.dateTime!.weekdayToString(context, short: true)}, ${model.dateTime!.toShortDate(context, noYear: true)} - '
         : '';
@@ -347,16 +359,15 @@ class _TransferDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$dateTime${context.loc.transferTo}:',
-          style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
+          '$dateTime$state${context.loc.transferTo}',
+          style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
           softWrap: false,
           overflow: TextOverflow.fade,
         ),
         _AccountName(
           model: model,
           destination: true,
-          smaller: false,
+          smaller: smaller,
         ),
       ],
     );

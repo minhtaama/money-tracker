@@ -150,39 +150,23 @@ class DayCard extends StatelessWidget {
           hide: plannedTransactions.isEmpty,
           initialAnimation: false,
           child: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8, top: 1, bottom: 6),
+            padding: const EdgeInsets.only(left: 8, right: 8, bottom: 6),
             child: ClipRect(
-              child: Stack(
-                children: [
-                  CardItem(
-                    margin: EdgeInsets.zero,
-                    padding: EdgeInsets.zero,
-                    border: forModal && context.appTheme.isDarkTheme
-                        ? Border.all(color: AppColors.greyBorder(context))
-                        : null,
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(0),
-                      topLeft: Radius.circular(0),
-                      bottomLeft: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
-                    ),
-                    child: DayCardPlannedTransactionsList(
-                      plannedTransactions: plannedTransactions,
-                      onPlannedTransactionTap: onPlannedTransactionTap,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Transform.translate(
-                      offset: const Offset(-15, -5),
-                      child: SvgIcon(
-                        AppIcons.bookmarkBulk,
-                        color: context.appTheme.accent1,
-                        size: 23,
-                      ),
-                    ),
-                  ),
-                ],
+              child: CardItem(
+                margin: EdgeInsets.zero,
+                padding: EdgeInsets.zero,
+                border:
+                    forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(0),
+                  topLeft: Radius.circular(0),
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
+                child: DayCardPlannedTransactionsList(
+                  plannedTransactions: plannedTransactions,
+                  onPlannedTransactionTap: onPlannedTransactionTap,
+                ),
               ),
             ),
           ),

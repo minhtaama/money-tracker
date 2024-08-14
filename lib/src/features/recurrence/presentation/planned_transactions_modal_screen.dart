@@ -205,14 +205,14 @@ class _TileState extends ConsumerState<_Tile> {
             border: Border.all(
               color: color.withOpacity(widget.model.state == PlannedState.today ? 0.65 : 0),
             ),
-            color: color.withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.2),
+            color: color.withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.15),
             child: CustomInkWell(
               inkColor: color,
               onTap: () => setState(() {
                 _showButtons = !_showButtons;
               }),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
                 child: Column(
                   children: [
                     TransactionDataTile(
