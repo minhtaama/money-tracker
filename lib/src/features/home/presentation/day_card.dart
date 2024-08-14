@@ -174,7 +174,7 @@ class DayCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.topRight,
                     child: Transform.translate(
-                      offset: const Offset(-10, -5),
+                      offset: const Offset(-15, -5),
                       child: SvgIcon(
                         AppIcons.bookmarkBulk,
                         color: context.appTheme.accent1,
