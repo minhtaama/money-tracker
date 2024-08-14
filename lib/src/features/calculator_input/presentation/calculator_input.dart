@@ -10,12 +10,10 @@ import 'package:intl/intl.dart';
 import 'layout/calculator_layout.dart';
 
 Future<String?> showCalculatorModalScreen(BuildContext context, {double? initialValue}) {
-  final valString = CalService.formatCurrency(context, initialValue ?? 0);
-
   return showCustomModal<String>(
       context: context,
       child: _Calculator(
-        initialValue: valString,
+        initialValue: initialValue ?? 0,
       ));
 }
 
@@ -45,7 +43,7 @@ class CalculatorInput extends StatefulWidget {
   final String? Function(String? value)? validator;
   final Color focusColor;
   final String hintText;
-  final String? initialValue;
+  final double? initialValue;
   final double hintFontSize;
   final double fontSize;
   final bool disableErrorText;
@@ -67,7 +65,10 @@ class _CalculatorInputState extends State<CalculatorInput> {
   @override
   void initState() {
     _formattedStringValue = '';
-    _controller = widget.controller ?? TextEditingController(text: widget.initialValue);
+    _controller = widget.controller ??
+        TextEditingController(
+          text: widget.initialValue != null ? CalService.formatNumberInGroup(widget.initialValue!.toString()) : null,
+        );
     super.initState();
   }
 
@@ -84,7 +85,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
     if (widget.initialValue != oldWidget.initialValue) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (widget.initialValue != null) {
-          _controller.text = widget.initialValue!;
+          _controller.text = CalService.formatNumberInGroup(widget.initialValue!.toString());
         }
       });
     }
@@ -142,7 +143,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
         showCustomModal(
             context: context,
             child: _Calculator(
-              initialValue: _controller.text,
+              initialValue: widget.initialValue ?? 0,
               resultOutput: (value) {
                 setState(() {
                   // Replace '0' value with empty to show hint text
@@ -172,7 +173,7 @@ class _Calculator extends StatefulWidget {
 
   /// The initial number value in type __String__. It can be in grouping thousand
   /// format or not in any format. __Must not include any characters other than 0 to 9__
-  final String initialValue;
+  final double initialValue;
 
   /// The value returned, which has no format and has type __String__
   final ValueChanged<String>? resultOutput;
@@ -192,18 +193,21 @@ class _CalculatorState extends State<_Calculator> {
 
   @override
   void initState() {
-    // Un-format the initialValue (without "," symbol)
-    _rawString = widget.initialValue.isEmpty ? '0' : _unformatNumberGrouping(widget.initialValue);
+    // Remove the .0 at the end of the initial value
+    _rawString = widget.initialValue.toString().replaceAllMapped(RegExp(r'(.0+$)'), (match) => '');
 
     // Reformat again to display
     _formattedString = _formatNumberInGroup(_rawString);
 
     _previousExpression = '';
 
-    // if (kDebugMode) {
-    //   print('rawString: $_rawString');
-    //   print('formatted: $_formattedString');
-    // }
+    if (kDebugMode) {
+      print('------------------------------------');
+      print('initialValue: ${widget.initialValue}');
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+      print('------------------------------------');
+    }
 
     super.initState();
   }
@@ -282,10 +286,12 @@ class _CalculatorState extends State<_Calculator> {
 
     setState(() {});
 
-    // if (kDebugMode) {
-    //   print('rawString: $_rawString');
-    //   print('formatted: $_formattedString');
-    // }
+    if (kDebugMode) {
+      print('------------------------------------');
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+      print('------------------------------------');
+    }
   }
 
   void _backspace() {
@@ -333,10 +339,12 @@ class _CalculatorState extends State<_Calculator> {
 
       setState(() {});
 
-      // if (kDebugMode) {
-      //   print('rawString: $_rawString');
-      //   print('formatted: $_formattedString');
-      // }
+      if (kDebugMode) {
+        print('------------------------------------');
+        print('rawString: $_rawString');
+        print('formatted: $_formattedString');
+        print('------------------------------------');
+      }
     } catch (_) {
       if (kDebugMode) {
         print(_.toString());
@@ -349,10 +357,13 @@ class _CalculatorState extends State<_Calculator> {
     _formattedString = _formatNumberInGroup(_rawString);
     _previousExpression = '';
     setState(() {});
-    // if (kDebugMode) {
-    //   print('rawString: $_rawString');
-    //   print('formatted: $_formattedString');
-    // }
+
+    if (kDebugMode) {
+      print('------------------------------------');
+      print('rawString: $_rawString');
+      print('formatted: $_formattedString');
+      print('------------------------------------');
+    }
   }
 
   /// This function takes the argument only in type __String__. It use Regex to find all

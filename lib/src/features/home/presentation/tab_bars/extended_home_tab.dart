@@ -68,8 +68,7 @@ class _ExtendedHomeTabForScrollableSheet extends ConsumerStatefulWidget {
   final VoidCallback onEyeTap;
 
   @override
-  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() =>
-      _ExtendedHomeTabForScrollableSheetState();
+  ConsumerState<_ExtendedHomeTabForScrollableSheet> createState() => _ExtendedHomeTabForScrollableSheetState();
 }
 
 class _ExtendedHomeTabForScrollableSheetState extends ConsumerState<_ExtendedHomeTabForScrollableSheet> {
@@ -287,8 +286,8 @@ class _ExtendedHomeTabForPageViewState extends ConsumerState<_ExtendedHomeTabFor
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MoneyAmount(
-                  amount: _amountBuilder(
-                      widget.displayDate.monthRange.start, widget.displayDate.monthRange.end),
+                  canHide: true,
+                  amount: _amountBuilder(widget.displayDate.monthRange.start, widget.displayDate.monthRange.end),
                   style: kHeader1TextStyle.copyWith(
                     color: context.appTheme.onBackground,
                   ),

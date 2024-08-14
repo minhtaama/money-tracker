@@ -14,6 +14,7 @@ class MoneyAmount extends StatefulWidget {
   final bool noAnimation;
   final TextOverflow overflow;
   final int? maxLines;
+  final bool canHide;
 
   const MoneyAmount({
     super.key,
@@ -25,6 +26,7 @@ class MoneyAmount extends StatefulWidget {
     this.noAnimation = false,
     this.overflow = TextOverflow.clip,
     this.maxLines,
+    this.canHide = false,
   });
 
   @override
@@ -110,6 +112,7 @@ class _MoneyAmountState extends State<MoneyAmount> with TickerProviderStateMixin
       suffix: !symbolBefore ? symbol : '',
       maxLines: widget.maxLines,
       overflow: widget.overflow,
+      canHide: widget.canHide,
     );
   }
 }
@@ -124,6 +127,7 @@ class _MoneyAnimatedText extends AnimatedWidget {
   final String? suffix;
   final TextOverflow overflow;
   final int? maxLines;
+  final bool canHide;
 
   _MoneyAnimatedText({
     required this.animation,
@@ -133,27 +137,22 @@ class _MoneyAnimatedText extends AnimatedWidget {
     this.suffix,
     this.overflow = TextOverflow.clip,
     this.maxLines,
+    this.canHide = false,
   }) : super(listenable: animation);
 
   @override
   Widget build(BuildContext context) {
     return EasyRichText(
-      '$prefix ${CalService.formatCurrency(context, animation.value)} $suffix',
+      '$prefix ${CalService.formatCurrency(context, animation.value, canHide: canHide)} $suffix',
       defaultStyle: style,
       overflow: overflow,
       maxLines: maxLines,
       softWrap: false,
       patternList: [
         EasyRichTextPattern(
-            targetString: prefix,
-            hasSpecialCharacters: true,
-            style: symbolStyle,
-            matchWordBoundaries: false),
+            targetString: prefix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
         EasyRichTextPattern(
-            targetString: suffix,
-            hasSpecialCharacters: true,
-            style: symbolStyle,
-            matchWordBoundaries: false),
+            targetString: suffix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
       ],
     );
   }

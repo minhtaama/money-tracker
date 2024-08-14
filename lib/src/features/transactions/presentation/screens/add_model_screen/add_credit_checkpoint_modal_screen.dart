@@ -18,8 +18,7 @@ import '../../../../accounts/domain/statement/base_class/statement.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
 
 class AddCreditCheckpointModalScreen extends ConsumerStatefulWidget {
-  const AddCreditCheckpointModalScreen(
-      {super.key, required this.creditAccount, this.statementDate, this.statement});
+  const AddCreditCheckpointModalScreen({super.key, required this.creditAccount, this.statementDate, this.statement});
 
   final Statement? statement;
   final DateTime? statementDate;
@@ -35,8 +34,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
   double _unpaidInstallmentsAmount = 0;
 
   ////////////////////// OUTPUT TO DATABASE VALUE ///////////////////////
-  late final DateTime _dateTime =
-      widget.statement?.date.statement ?? widget.statementDate!.onlyYearMonthDay;
+  late final DateTime _dateTime = widget.statement?.date.statement ?? widget.statementDate!.onlyYearMonthDay;
 
   List<Installment> _finishedInstallments = [];
 
@@ -99,7 +97,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
               textAlign: TextAlign.end,
               focusColor: context.appTheme.secondary1,
               hintText: '',
-              initialValue: '0',
+              initialValue: 0,
               validator: (_) => _oustdBalanceValidator(),
               formattedResultOutput: (value) => _calOutputFormattedAmount = value,
             ),
@@ -126,8 +124,7 @@ extension _Validators on _AddCreditCheckpointModalScreenState {
       CalService.formatToDouble(_calOutputFormattedAmount) == 0;
 
   String? _oustdBalanceValidator() {
-    if (CalService.formatToDouble(_calOutputFormattedAmount)! <
-        _unpaidInstallmentsAmount.roundBySetting(context)) {
+    if (CalService.formatToDouble(_calOutputFormattedAmount)! < _unpaidInstallmentsAmount.roundBySetting(context)) {
       return context.loc.quoteTransaction2;
     }
 

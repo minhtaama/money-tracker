@@ -269,7 +269,7 @@ class _CarouselContentState extends State<_CarouselContent> {
       ),
       Gap.w4,
       EasyRichText(
-        CalService.formatCurrency(context, widget.amount, isAbs: true),
+        CalService.formatCurrency(context, widget.amount, isAbs: true, canHide: true),
         defaultStyle: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 23, letterSpacing: 1),
         textAlign: TextAlign.right,
         patternList: [
