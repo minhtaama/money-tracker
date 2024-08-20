@@ -136,7 +136,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               left: context.isBigScreen ? 6 : 0,
               right: context.isBigScreen ? 8 : 0,
             ),
-      padding: isDialog ? const EdgeInsets.symmetric(vertical: 12) : const EdgeInsets.only(left: 8, right: 8),
+      padding: isDialog ? const EdgeInsets.symmetric(vertical: 12) : EdgeInsets.zero,
       border: Border.all(
         color:
             context.appTheme.onBackground.withOpacity(context.isBigScreen && context.appTheme.isDarkTheme ? 0.25 : 0),

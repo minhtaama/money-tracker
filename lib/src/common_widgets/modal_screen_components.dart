@@ -31,6 +31,7 @@ class ModalHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Gap.w4,
           ModalRoute.of(context)!.canPop && withBackButton
               ? RoundedIconButton(
                   iconPath: AppIcons.backLight,
@@ -68,6 +69,7 @@ class ModalHeader extends StatelessWidget {
             ),
           ),
           trailing ?? const SizedBox(),
+          Gap.w8,
         ],
       ),
     );
@@ -105,8 +107,13 @@ class _ModalContentState extends State<ModalContent> {
   final _footerKey = GlobalKey();
   double _footerHeight = 0;
 
+  bool _showTopShadow = false;
+  bool _showBottomShadow = false;
+
   @override
   void initState() {
+    widget.controller?.addListener(_scrollControllerListener);
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
         _footerHeight = _footerKey.currentContext!.size!.height;
@@ -116,9 +123,45 @@ class _ModalContentState extends State<ModalContent> {
   }
 
   @override
+  void dispose() {
+    widget.controller?.removeListener(_scrollControllerListener);
+    super.dispose();
+  }
+
+  void _scrollControllerListener() {
+    if (widget.controller != null) {
+      ScrollController controller = widget.controller!;
+      ScrollPosition position = controller.position;
+      double pixels = position.pixels;
+
+      if (pixels == 0) {
+        setState(() {
+          _showTopShadow = false;
+        });
+      }
+
+      if (pixels == position.maxScrollExtent) {
+        setState(() {
+          _showBottomShadow = false;
+        });
+      }
+
+      if (pixels > 0 && _showTopShadow == false) {
+        setState(() {
+          _showTopShadow = true;
+        });
+      }
+
+      if (pixels < position.maxScrollExtent && _showBottomShadow == false) {
+        setState(() {
+          _showBottomShadow = true;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // final color =
-    //     context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
     final padding = (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
 
     return AnimatedPadding(
@@ -131,7 +174,7 @@ class _ModalContentState extends State<ModalContent> {
           Gap.h12,
           Flexible(
             child: Padding(
-              padding: EdgeInsets.only(bottom: padding),
+              padding: EdgeInsets.only(bottom: padding, left: 8, right: 8),
               child: Stack(
                 children: [
                   SingleChildScrollView(
@@ -153,7 +196,7 @@ class _ModalContentState extends State<ModalContent> {
                     left: 0,
                     right: 0,
                     child: _AnimatedFading(
-                      isFade: widget.isScrollable,
+                      isFade: widget.isScrollable && _showTopShadow,
                       position: _FadingPosition.top,
                     ),
                   ),
@@ -162,7 +205,7 @@ class _ModalContentState extends State<ModalContent> {
                     left: 0,
                     right: 0,
                     child: _AnimatedFading(
-                      isFade: widget.isScrollable,
+                      isFade: widget.isScrollable && _showBottomShadow,
                       position: _FadingPosition.bottom,
                     ),
                   ),
@@ -202,7 +245,7 @@ class ModalFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Gap.w16,
+        Gap.w8,
         optional != null
             ? Expanded(child: optional!)
             : (smallButtonIcon != null
