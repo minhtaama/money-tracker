@@ -49,7 +49,7 @@ class _DashboardEditModalScreenState extends ConsumerState<DashboardEditModalScr
                     ),
                     Gap.w16,
                     Text(
-                      e.name,
+                      e.name(context),
                       style: kHeader2TextStyle.copyWith(
                         color: context.appTheme.onBackground,
                         fontSize: 16,

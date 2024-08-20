@@ -10,7 +10,6 @@ import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.d
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../common_widgets/money_amount.dart';
 import '../../../../common_widgets/svg_icon.dart';
 import '../../../../utils/constants.dart';
@@ -57,7 +56,11 @@ class UpcomingWidget extends ConsumerWidget {
                   child: _tile(
                     context,
                     model: rec.transactionData,
-                    repeatOn: rec.getAllPlannedTransactionsInMonth(context, today).map((e) => e.dateTime!).toList(),
+                    repeatOn: rec
+                        .getAllPlannedTransactionsInMonth(context, today)
+                        .where((txn) => txn.state == PlannedState.upcoming || txn.state == PlannedState.today)
+                        .map((e) => e.dateTime!)
+                        .toList(),
                   ),
                 )
             ],

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../../theme_and_ui/icons.dart';
 
@@ -29,14 +31,14 @@ enum DashboardWidgetType {
     };
   }
 
-  String get name {
+  String name(BuildContext context) {
     return switch (this) {
       DashboardWidgetType.menu => 'Menu'.hardcoded,
-      DashboardWidgetType.weeklyReport => 'Weekly Report'.hardcoded,
-      DashboardWidgetType.monthlyExpense => 'Monthly Expense'.hardcoded,
-      DashboardWidgetType.monthlyIncome => 'Monthly Income'.hardcoded,
-      DashboardWidgetType.budgets => 'Budgets'.hardcoded,
-      DashboardWidgetType.upcomingTransactions => 'Upcoming Transactions'.hardcoded,
+      DashboardWidgetType.weeklyReport => context.loc.weeklyReport,
+      DashboardWidgetType.monthlyExpense => context.loc.monthlyExpense,
+      DashboardWidgetType.monthlyIncome => context.loc.monthlyIncome,
+      DashboardWidgetType.budgets => context.loc.budgets,
+      DashboardWidgetType.upcomingTransactions => context.loc.upcomingTransactions,
     };
   }
 }

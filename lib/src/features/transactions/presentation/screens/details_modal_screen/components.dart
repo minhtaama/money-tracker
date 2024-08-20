@@ -274,10 +274,10 @@ class _AccountCard extends StatelessWidget {
                 children: [
                   Text(
                     account is CreditAccountInfo
-                        ? 'CREDIT ACCOUNT:'
+                        ? context.loc.creditAccount.toUpperCase()
                         : account is SavingAccountInfo
-                            ? 'SAVING ACCOUNT'
-                            : 'ACCOUNT:',
+                            ? context.loc.savingAccounts.toUpperCase()
+                            : context.loc.account.toUpperCase(),
                     style:
                         kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.6), fontSize: 11),
                   ),
@@ -642,7 +642,7 @@ class _ModelWithIconEditSelector<T extends BaseModelWithIcon> extends StatelessW
                       label: element.name,
                       isDisabled: isDisable != null ? isDisable!(element) : false,
                       labelSize: 18,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(8),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       border: Border.all(
                         color: selectedItem == element

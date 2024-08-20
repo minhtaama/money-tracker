@@ -55,33 +55,38 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
         children: List.generate(
           keyList.length,
           (keyIndex) {
-            return CustomSection(
-              title: keyList[keyIndex],
-              sections: [
-                Wrap(
-                  spacing: 13,
-                  runSpacing: 13,
-                  children: List.generate(
-                    AppIcons.iconsWithCategories[keyList[keyIndex]]!.length,
-                    (iconIndex) {
-                      return CircleIcon(
-                        isSelected:
-                            currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
-                        onTap: (newIconCategory, newIconIndex) {
-                          setState(
-                            () {
-                              currentCategory = newIconCategory;
-                              currentIconIndex = newIconIndex;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: CustomSection(
+                title: keyList[keyIndex],
+                sections: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                    child: Wrap(
+                      spacing: 13,
+                      runSpacing: 13,
+                      children: List.generate(
+                        AppIcons.iconsWithCategories[keyList[keyIndex]]!.length,
+                        (iconIndex) {
+                          return CircleIcon(
+                            isSelected: currentCategory == keyList[keyIndex] && currentIconIndex == iconIndex,
+                            onTap: (newIconCategory, newIconIndex) {
+                              setState(
+                                () {
+                                  currentCategory = newIconCategory;
+                                  currentIconIndex = newIconIndex;
+                                },
+                              );
                             },
+                            iconCategory: keyList[keyIndex],
+                            iconIndex: iconIndex,
                           );
                         },
-                        iconCategory: keyList[keyIndex],
-                        iconIndex: iconIndex,
-                      );
-                    },
-                  ),
-                )
-              ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             );
           },
         ),
@@ -92,11 +97,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
 
 class CircleIcon extends StatelessWidget {
   const CircleIcon(
-      {super.key,
-      required this.isSelected,
-      required this.onTap,
-      required this.iconCategory,
-      required this.iconIndex});
+      {super.key, required this.isSelected, required this.onTap, required this.iconCategory, required this.iconIndex});
   final String iconCategory;
   final int iconIndex;
   final bool isSelected;

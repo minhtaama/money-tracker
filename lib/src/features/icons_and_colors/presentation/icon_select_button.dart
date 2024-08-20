@@ -48,11 +48,13 @@ class _IconSelectButtonState extends State<IconSelectButton> {
       iconPadding: 8,
       size: 50,
       onTap: () async {
-        List<dynamic> returnedValue = await context.push(RoutePath.selectIcon) as List<dynamic>;
-        setState(() {
-          currentCategory = returnedValue[0];
-          currentIconIndex = returnedValue[1];
-        });
+        List<dynamic>? returnedValue = await context.push(RoutePath.selectIcon) as List<dynamic>?;
+        if (returnedValue != null) {
+          setState(() {
+            currentCategory = returnedValue[0];
+            currentIconIndex = returnedValue[1];
+          });
+        }
         widget.onTap(currentCategory, currentIconIndex);
       },
     );
