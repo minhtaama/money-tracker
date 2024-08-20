@@ -119,6 +119,14 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
     return controller!.drive(CurveTween(curve: Curves.fastOutSlowIn));
   }
 
+  bool _roundedTopCornerSmallScreen(BuildContext context, bool? isScrollable) => isScrollable ?? false
+      ? _page.secondaryChild != null
+          ? MediaQuery.of(context).viewInsets.bottom > 0
+              ? false
+              : true
+          : false
+      : true;
+
   Widget _cardWrapper(BuildContext context, {Widget? child, bool? isScrollable}) {
     return CardItem(
       color: context.appTheme.background0,
@@ -136,7 +144,9 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
               left: context.isBigScreen ? 6 : 0,
               right: context.isBigScreen ? 8 : 0,
             ),
-      padding: isDialog ? const EdgeInsets.symmetric(vertical: 12) : EdgeInsets.zero,
+      padding: isDialog
+          ? const EdgeInsets.symmetric(vertical: 12)
+          : EdgeInsets.only(top: _roundedTopCornerSmallScreen(context, isScrollable) ? 0 : 22.0),
       border: Border.all(
         color:
             context.appTheme.onBackground.withOpacity(context.isBigScreen && context.appTheme.isDarkTheme ? 0.25 : 0),
@@ -144,8 +154,8 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
       borderRadius: context.isBigScreen || isDialog
           ? const BorderRadius.all(Radius.circular(18))
           : BorderRadius.only(
-              topLeft: Radius.circular(isScrollable ?? false ? 0 : 18),
-              topRight: Radius.circular(isScrollable ?? false ? 0 : 18),
+              topLeft: Radius.circular(_roundedTopCornerSmallScreen(context, isScrollable) ? 18 : 0),
+              topRight: Radius.circular(_roundedTopCornerSmallScreen(context, isScrollable) ? 18 : 0),
             ),
       child: child,
     );
@@ -257,7 +267,6 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
 
 class _ScrollableChecker extends StatefulWidget {
   const _ScrollableChecker({
-    super.key,
     required this.builder,
   });
 

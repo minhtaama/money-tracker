@@ -162,62 +162,58 @@ class _ModalContentState extends State<ModalContent> {
   Widget build(BuildContext context) {
     final padding = (MediaQuery.of(context).viewInsets.bottom - _footerHeight - 8 - 12).clamp(0.0, double.infinity);
 
-    return AnimatedPadding(
-      padding: EdgeInsets.only(top: widget.isScrollable && !context.isBigScreen ? 22.0 : 0),
-      duration: k150msDuration,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          widget.header,
-          Gap.h12,
-          Flexible(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: padding),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SingleChildScrollView(
-                      controller: widget.controller,
-                      child: Form(
-                        key: widget.formKey,
-                        child: CustomSection(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          onReorder: widget.onReorder,
-                          isWrapByCard: false,
-                          sectionsClipping: false,
-                          sections: widget.body,
-                        ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        widget.header,
+        Gap.h12,
+        Flexible(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: padding),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SingleChildScrollView(
+                    controller: widget.controller,
+                    child: Form(
+                      key: widget.formKey,
+                      child: CustomSection(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        onReorder: widget.onReorder,
+                        isWrapByCard: false,
+                        sectionsClipping: false,
+                        sections: widget.body,
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: -0.2,
-                    left: 0,
-                    right: 0,
-                    child: _AnimatedFading(
-                      isFade: widget.isScrollable && _showTopShadow,
-                      position: _FadingPosition.top,
-                    ),
+                ),
+                Positioned(
+                  top: -0.2,
+                  left: 0,
+                  right: 0,
+                  child: _AnimatedFading(
+                    isFade: widget.isScrollable && _showTopShadow,
+                    position: _FadingPosition.top,
                   ),
-                  Positioned(
-                    bottom: -0.2,
-                    left: 0,
-                    right: 0,
-                    child: _AnimatedFading(
-                      isFade: widget.isScrollable && _showBottomShadow,
-                      position: _FadingPosition.bottom,
-                    ),
+                ),
+                Positioned(
+                  bottom: -0.2,
+                  left: 0,
+                  right: 0,
+                  child: _AnimatedFading(
+                    isFade: widget.isScrollable && _showBottomShadow,
+                    position: _FadingPosition.bottom,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Gap.h12,
-          SizedBox(key: _footerKey, child: widget.footer),
-          Gap.h8,
-        ],
-      ),
+        ),
+        Gap.h12,
+        SizedBox(key: _footerKey, child: widget.footer),
+        Gap.h8,
+      ],
     );
   }
 }
