@@ -172,7 +172,7 @@
   "quoteCreditAccountComponent3": "Do có dư nợ từ kỳ trước, có thể vẫn sẽ bị tính lãi tại kỳ sau dù cho kỳ này có thanh toán đủ hay không.",
   "quoteCreditAccountComponent4": "Thanh toán đủ trước ngày này để được miễn lãi",
 
-  "payment": "Khoản chi tiêu",
+  "payment": "Thanh toán",
   "@payment": {
     "description": "paid amount"
   },

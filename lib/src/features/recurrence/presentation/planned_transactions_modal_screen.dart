@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
 import 'package:money_tracker_app/src/common_widgets/icon_with_text_button.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
@@ -170,6 +171,14 @@ class _TileState extends ConsumerState<_Tile> {
   @override
   Widget build(BuildContext context) {
     final color = widget.model.category?.backgroundColor ?? AppColors.grey(context);
+
+    final typeColor = switch (widget.model.type) {
+      TransactionType.transfer => context.appTheme.onBackground,
+      TransactionType.income => context.appTheme.positive,
+      TransactionType.expense => context.appTheme.negative,
+      _ => AppColors.grey(context),
+    };
+
     final onColor = widget.model.category?.iconColor ?? context.appTheme.onBackground;
 
     return TapRegion(
@@ -199,13 +208,23 @@ class _TileState extends ConsumerState<_Tile> {
         ],
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: CardItem(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.zero,
-            border: Border.all(
-              color: color.withOpacity(widget.model.state == PlannedState.today ? 0.65 : 0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: color.withOpacity(widget.model.state == PlannedState.today ? 0.65 : 0),
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  color.withOpacity(context.appTheme.isDarkTheme ? 0.2 : 0.15),
+                  color.withOpacity(context.appTheme.isDarkTheme ? 0.2 : 0.15),
+                  typeColor.withOpacity(context.appTheme.isDarkTheme ? 0.15 : 0.15),
+                ],
+                stops: const [0, 0.65, 0.9],
+              ),
             ),
-            color: color.withOpacity(context.appTheme.isDarkTheme ? 0.1 : 0.15),
             child: CustomInkWell(
               inkColor: color,
               onTap: () => setState(() {

@@ -14,7 +14,6 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../common_widgets/custom_radio.dart';
 import '../../../common_widgets/custom_text_form_field.dart';
@@ -100,6 +99,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
             Gap.w16,
             Expanded(
               child: CalculatorInput(
+                title: context.loc.budgetLimit,
                 hintText: CalService.formatNumberInGroup(_amount.toString()),
                 focusColor: context.appTheme.onBackground,
                 validator: (_) {

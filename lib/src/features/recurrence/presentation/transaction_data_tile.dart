@@ -33,14 +33,10 @@ class TransactionDataTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final color = switch (model.type) {
-      TransactionType.transfer => AppColors.grey(context),
+      TransactionType.transfer => context.appTheme.onBackground,
       TransactionType.income => context.appTheme.positive,
       TransactionType.expense => context.appTheme.negative,
-      TransactionType.creditPayment ||
-      TransactionType.creditSpending ||
-      TransactionType.creditCheckpoint ||
-      TransactionType.installmentToPay =>
-        AppColors.grey(context),
+      _ => AppColors.grey(context),
     };
 
     return Row(

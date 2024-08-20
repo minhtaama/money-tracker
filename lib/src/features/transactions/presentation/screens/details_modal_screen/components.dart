@@ -118,6 +118,7 @@ class _InstallmentOfSpendingDetails extends StatelessWidget {
                         prefixText: context.loc.amount,
                         suffixText: context.appSettings.currency.code,
                         widget: CalculatorInput(
+                            title: context.loc.paymentAmount,
                             controller: installmentController,
                             fontSize: 18,
                             isDense: true,

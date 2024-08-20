@@ -86,7 +86,6 @@ class ModalContent extends StatefulWidget {
     required this.header,
     required this.body,
     required this.footer,
-    this.bodyMargin,
   });
 
   final ScrollController? controller;
@@ -96,8 +95,6 @@ class ModalContent extends StatefulWidget {
   final Widget header;
   final List<Widget> body;
   final Widget footer;
-
-  final EdgeInsets? bodyMargin;
 
   @override
   State<ModalContent> createState() => _ModalContentState();
@@ -115,6 +112,7 @@ class _ModalContentState extends State<ModalContent> {
     widget.controller?.addListener(_scrollControllerListener);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollControllerListener();
       setState(() {
         _footerHeight = _footerKey.currentContext!.size!.height;
       });
@@ -174,20 +172,22 @@ class _ModalContentState extends State<ModalContent> {
           Gap.h12,
           Flexible(
             child: Padding(
-              padding: EdgeInsets.only(bottom: padding, left: 8, right: 8),
+              padding: EdgeInsets.only(bottom: padding),
               child: Stack(
                 children: [
-                  SingleChildScrollView(
-                    controller: widget.controller,
-                    child: Form(
-                      key: widget.formKey,
-                      child: CustomSection(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        onReorder: widget.onReorder,
-                        isWrapByCard: false,
-                        sectionsClipping: false,
-                        sections: widget.body,
-                        margin: widget.bodyMargin,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: SingleChildScrollView(
+                      controller: widget.controller,
+                      child: Form(
+                        key: widget.formKey,
+                        child: CustomSection(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          onReorder: widget.onReorder,
+                          isWrapByCard: false,
+                          sectionsClipping: false,
+                          sections: widget.body,
+                        ),
                       ),
                     ),
                   ),
@@ -320,7 +320,7 @@ class _AnimatedFading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = context.appTheme.isDarkTheme ? context.appTheme.background0 : context.appTheme.background1;
+    final color = context.appTheme.background1;
 
     return IgnorePointer(
       child: AnimatedContainer(

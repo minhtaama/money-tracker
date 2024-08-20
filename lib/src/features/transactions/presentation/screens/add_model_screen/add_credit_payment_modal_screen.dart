@@ -193,6 +193,7 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                 color: context.appTheme.onBackground,
                               ),
                             ),
+                            title: context.loc.addCreditPayment,
                             hintText: '???',
                             controller: _paymentInputController,
                             focusColor: context.appTheme.primary,
@@ -276,12 +277,13 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                           suffixText: context.appSettings.currency.code,
                           textSize: 14,
                           widget: CalculatorInput(
+                            title: context.loc.balAfterPayment,
                             hintText: stateWatch.userPaymentAmount != null &&
                                     stateWatch.totalBalanceAmount.roundBySetting(context) -
                                             stateWatch.userPaymentAmount!.roundBySetting(context) >
                                         0
-                                ? CalService.formatCurrency(context,
-                                    stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                ? CalService.formatCurrency(
+                                    context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                 : '???',
                             textAlign: TextAlign.right,
                             controller: _remainingInputController,

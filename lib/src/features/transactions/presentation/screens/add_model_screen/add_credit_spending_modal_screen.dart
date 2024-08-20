@@ -92,6 +92,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             Gap.w16,
             Expanded(
               child: CalculatorInput(
+                title: context.loc.spendingAmount,
                 hintText: context.loc.spendingAmount,
                 focusColor: context.appTheme.primary,
                 validator: (_) => _calSpendingAmountValidator(),
@@ -140,6 +141,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
                   prefixText: '${context.loc.paymentAmount}:',
                   suffixText: context.appSettings.currency.code,
                   widget: CalculatorInput(
+                      title: context.loc.paymentAmount,
                       controller: _installmentPaymentController,
                       fontSize: 18,
                       isDense: true,

@@ -131,6 +131,11 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
             Gap.w16,
             Expanded(
               child: CalculatorInput(
+                title: _accountType == AccountType.regular
+                    ? context.loc.initialBalance
+                    : _accountType == AccountType.credit
+                        ? context.loc.creditLimit
+                        : context.loc.savingTarget,
                 hintText: _accountType == AccountType.regular
                     ? context.loc.initialBalance
                     : _accountType == AccountType.credit

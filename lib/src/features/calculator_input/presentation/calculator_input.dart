@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'layout/calculator_layout.dart';
 
-Future<String?> showCalculatorModalScreen(BuildContext context, {double? initialValue}) {
+Future<String?> showCalculatorModalScreen(BuildContext context, {required String title, double? initialValue}) {
   return showCustomModal<String>(
       context: context,
       child: _Calculator(
+        title: title,
         initialValue: initialValue ?? 0,
       ));
 }
@@ -27,6 +29,7 @@ class CalculatorInput extends StatefulWidget {
     required this.formattedResultOutput,
     required this.focusColor,
     required this.hintText,
+    required this.title,
     this.hintFontSize = 18,
     this.initialValue,
     this.disableErrorText = false,
@@ -41,6 +44,7 @@ class CalculatorInput extends StatefulWidget {
   final TextEditingController? controller;
   final ValueSetter<String> formattedResultOutput;
   final String? Function(String? value)? validator;
+  final String title;
   final Color focusColor;
   final String hintText;
   final double? initialValue;
@@ -143,6 +147,7 @@ class _CalculatorInputState extends State<CalculatorInput> {
         showCustomModal(
             context: context,
             child: _Calculator(
+              title: widget.title,
               initialValue: widget.initialValue ?? 0,
               resultOutput: (value) {
                 setState(() {
@@ -169,6 +174,7 @@ class _Calculator extends StatefulWidget {
     super.key,
     required this.initialValue,
     this.resultOutput,
+    required this.title,
   });
 
   /// The initial number value in type __String__. It can be in grouping thousand
@@ -177,6 +183,8 @@ class _Calculator extends StatefulWidget {
 
   /// The value returned, which has no format and has type __String__
   final ValueChanged<String>? resultOutput;
+
+  final String title;
 
   @override
   State<_Calculator> createState() => _CalculatorState();
@@ -214,17 +222,26 @@ class _CalculatorState extends State<_Calculator> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CalDisplay(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ModalHeader(
+          title: widget.title,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: CalDisplay(
             previousExpression: _previousExpression,
             result: _formattedString,
           ),
-          Gap.divider(context),
-          Flexible(
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Gap.divider(context, color: context.appTheme.onBackground.withOpacity(0.35)),
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: KeysLayout(
               onInput: _add,
               onEqual: _equal,
@@ -236,9 +253,9 @@ class _CalculatorState extends State<_Calculator> {
               },
             ),
           ),
-          Gap.h16,
-        ],
-      ),
+        ),
+        Gap.h16,
+      ],
     );
   }
 

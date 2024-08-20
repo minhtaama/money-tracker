@@ -232,6 +232,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             Gap.w16,
             Expanded(
               child: CalculatorInput(
+                title: context.loc.amount,
                 hintText: context.loc.amount,
                 initialValue: stateWatch.amount,
                 focusColor: context.appTheme.primary,

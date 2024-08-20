@@ -92,6 +92,7 @@ class _AddCreditCheckpointModalScreenState extends ConsumerState<AddCreditCheckp
             prefixText: context.loc.oustdBalance,
             suffixText: context.appSettings.currency.code,
             widget: CalculatorInput(
+              title: context.loc.checkpoint,
               fontSize: 18,
               isDense: true,
               textAlign: TextAlign.end,

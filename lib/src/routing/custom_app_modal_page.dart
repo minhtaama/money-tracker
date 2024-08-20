@@ -84,7 +84,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
   Color? get barrierColor => navigator!.context.isBigScreen
       ? null
       : navigator!.context.appTheme.isDarkTheme
-          ? AppColors.black.withOpacity(0.45)
+          ? AppColors.black.withOpacity(0.60)
           : AppColors.black.withOpacity(0.15);
 
   @override
