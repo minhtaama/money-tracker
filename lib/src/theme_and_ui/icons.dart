@@ -12,17 +12,7 @@ class AppIcons {
   ///
   /// Remember everytime adding a new folder/category, add a
   /// asset path to that folder in pubspec.yaml.
-  static Map<String, List<String>> get iconsWithCategories => <String, List<String>>{
-        'Money': _getFileNameListInFolderPath(_json, 'assets/svg/money/'),
-        'Business': _getFileNameListInFolderPath(_json, 'assets/svg/business/'),
-        'Activities': _getFileNameListInFolderPath(_json, 'assets/svg/activity/'),
-        'Food': _getFileNameListInFolderPath(_json, 'assets/svg/food/'),
-        'Games': _getFileNameListInFolderPath(_json, 'assets/svg/game/'),
-        'Households': _getFileNameListInFolderPath(_json, 'assets/svg/household/'),
-        'Health': _getFileNameListInFolderPath(_json, 'assets/svg/health/'),
-        'Buildings': _getFileNameListInFolderPath(_json, 'assets/svg/building/'),
-        'Emoji': _getFileNameListInFolderPath(_json, 'assets/svg/emoji/'),
-      };
+  static Map<String, List<String>> iconsWithCategories = <String, List<String>>{};
 
   static String fromCategoryAndIndex(String iconCategory, int iconIndex) {
     return iconsWithCategories[iconCategory]?[iconIndex] ?? defaultIcon;
@@ -94,7 +84,20 @@ class AppIcons {
   /// Call this function in `main()` method, before `runApp()`
   static Future<void> init() async {
     final assets = await rootBundle.loadString('AssetManifest.json');
+
     _json = jsonDecode(assets);
+
+    iconsWithCategories = <String, List<String>>{
+      'Money': _getFileNameListInFolderPath(_json, 'assets/svg/money/'),
+      'Business': _getFileNameListInFolderPath(_json, 'assets/svg/business/'),
+      'Activities': _getFileNameListInFolderPath(_json, 'assets/svg/activity/'),
+      'Food': _getFileNameListInFolderPath(_json, 'assets/svg/food/'),
+      'Games': _getFileNameListInFolderPath(_json, 'assets/svg/game/'),
+      'Households': _getFileNameListInFolderPath(_json, 'assets/svg/household/'),
+      'Health': _getFileNameListInFolderPath(_json, 'assets/svg/health/'),
+      'Buildings': _getFileNameListInFolderPath(_json, 'assets/svg/building/'),
+      'Emoji': _getFileNameListInFolderPath(_json, 'assets/svg/emoji/'),
+    };
   }
 
   /// This function is used to get all the file name in folder path.
