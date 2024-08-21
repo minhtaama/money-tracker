@@ -7,7 +7,7 @@ sealed class BaseRegularTransaction extends BaseTransaction {
 
   abstract final TransactionType type;
 
-  final Recurrence? recurrence;
+  final RecurrenceInfo? recurrence;
 }
 
 @immutable
@@ -76,9 +76,9 @@ class Transfer extends BaseRegularTransaction implements ITransferable {
   final AccountInfo? _transferAccount;
   final Fee? fee;
 
-  bool get isToSavingAccount => _transferAccount?.toAccount() is SavingAccount;
+  bool get isToSavingAccount => _transferAccount is SavingAccountInfo;
 
-  bool get isFromSavingAccount => _account?.toAccount() is SavingAccount;
+  bool get isFromSavingAccount => _account is SavingAccountInfo;
 
   const Transfer._(
     super._isarObject,

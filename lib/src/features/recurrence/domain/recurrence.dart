@@ -10,6 +10,122 @@ import '../../accounts/domain/account_base.dart';
 import '../../category/domain/category.dart';
 import '../../category/domain/category_tag.dart';
 
+class RecurrenceInfo extends BaseModel<RecurrenceDb> {
+  final RepeatEvery _type;
+
+  /// # Interval
+  /// means `targetDate` = `startDate` * nth * [_interval].
+  ///
+  /// Similar to "every X days/weeks/months/years".
+  final int _interval;
+
+  /// # Only year, month, day
+  ///
+  /// ## WARNING: These DateTimes do not reflect the correct day to write transaction.
+  final List<DateTime> _patterns;
+
+  /// # Only year, month, day
+  final DateTime startOn;
+
+  /// # Only year, month, day
+  final DateTime? endOn;
+
+  final bool autoCreateTransaction;
+
+  /// The expression of how this recurrence is repeated
+  String expression(BuildContext context) {
+    String everyN;
+    String repeatPattern;
+
+    switch (_type) {
+      case RepeatEvery.xDay:
+        everyN = context.loc.everyNDay(_interval);
+        repeatPattern = '';
+        break;
+
+      case RepeatEvery.xWeek:
+        final sort = List<DateTime>.from(_patterns)..sort((a, b) => a.weekday - b.weekday);
+        final list = sort
+            .map(
+              (date) => date.weekdayToString(
+                context,
+                short: _patterns.length <= 2 ? false : true,
+              ),
+            )
+            .toList();
+
+        everyN = context.loc.everyNWeek(_interval);
+        repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xWeek', list.join(', '));
+        break;
+
+      case RepeatEvery.xMonth:
+        final sort = List<DateTime>.from(_patterns)..sort((a, b) => a.day - b.day);
+        final list = sort
+            .map(
+              (date) => date.dayToString(context),
+            )
+            .toList();
+
+        everyN = context.loc.everyNMonth(_interval);
+        repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xMonth', list.join(', '));
+        break;
+
+      case RepeatEvery.xYear:
+        final sort = List<DateTime>.from(_patterns)..sort((a, b) => a.compareTo(b));
+        final list = sort
+            .map(
+              (date) => date.toShortDate(context, noYear: true),
+            )
+            .toList();
+
+        everyN = context.loc.everyNYear(_interval);
+        repeatPattern = list.isEmpty ? '' : context.loc.repeatPattern('xYear', list.join(', '));
+        break;
+    }
+
+    String startDate =
+        startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : startOn.toShortDate(context);
+
+    String endDate = endOn != null ? context.loc.untilEndDate(endOn!.toShortDate(context)) : '';
+
+    return context.loc.quoteRecurrence3(
+      everyN,
+      repeatPattern,
+      startOn.isSameDayAs(DateTime.now()).toString(),
+      startDate,
+      endDate,
+    );
+  }
+
+  static RecurrenceInfo? fromDatabase(RecurrenceDb? db) {
+    if (db == null) {
+      return null;
+    }
+
+    return RecurrenceInfo._(
+      db,
+      type: RepeatEvery.fromDatabaseValue(db.type),
+      interval: db.repeatInterval,
+      patterns: db.patterns.map((e) => e.toLocal()).toList(),
+      startOn: db.startOn.toLocal(),
+      endOn: db.endOn?.toLocal(),
+      autoCreateTransaction: db.autoCreateTransaction,
+    );
+  }
+
+  const RecurrenceInfo._(
+    super.databaseObject, {
+    required RepeatEvery type,
+    required int interval,
+    required List<DateTime> patterns,
+    required this.startOn,
+    this.endOn,
+    required this.autoCreateTransaction,
+  })  : _type = type,
+        _interval = interval,
+        _patterns = patterns;
+}
+
 class Recurrence extends BaseModel<RecurrenceDb> {
   final RepeatEvery _type;
 
@@ -108,9 +224,7 @@ class Recurrence extends BaseModel<RecurrenceDb> {
       final selectedWeekDay = _patterns.map((e) => e.weekday);
 
       for (DateTimeRange range in targetAnchorRanges) {
-        for (DateTime date = range.start;
-            !date.isAfter(range.end);
-            date = date.add(const Duration(days: 1))) {
+        for (DateTime date = range.start; !date.isAfter(range.end); date = date.add(const Duration(days: 1))) {
           if (selectedWeekDay.contains(date.weekday)) {
             targetDates.add(date.onlyYearMonthDay);
           }
@@ -119,15 +233,13 @@ class Recurrence extends BaseModel<RecurrenceDb> {
     }
 
     if (_type == RepeatEvery.xMonth) {
-      targetDates = _patterns
-          .map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay)
-          .toList();
+      targetDates =
+          _patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay).toList();
     }
 
     if (_type == RepeatEvery.xYear) {
-      targetDates = _patterns
-          .map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay)
-          .toList();
+      targetDates =
+          _patterns.map((e) => e.copyWith(month: targetAnchorRanges[0].start.month).onlyYearMonthDay).toList();
     }
 
     // Remove targetDates before startOn, after endOn and not in same month with reference dateTime.
@@ -213,9 +325,8 @@ class Recurrence extends BaseModel<RecurrenceDb> {
         break;
     }
 
-    String startDate = startOn.isSameDayAs(DateTime.now())
-        ? context.loc.today.toLowerCase()
-        : startOn.toShortDate(context);
+    String startDate =
+        startOn.isSameDayAs(DateTime.now()) ? context.loc.today.toLowerCase() : startOn.toShortDate(context);
 
     String endDate = endOn != null ? context.loc.untilEndDate(endOn!.toShortDate(context)) : '';
 
