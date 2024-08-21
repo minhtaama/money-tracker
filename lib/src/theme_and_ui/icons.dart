@@ -1,8 +1,6 @@
 import 'package:flutter/services.dart';
 import 'dart:convert';
 
-class AppIconsData {}
-
 class AppIcons {
   static Map<String, dynamic> _json = {};
 
