@@ -83,24 +83,23 @@ class _MoneyAmountState extends State<MoneyAmount> with TickerProviderStateMixin
     final symbol = context.appSettings.currency.symbol;
 
     if (widget.amount == null) {
-      return EasyRichText(
-        '${symbolBefore ? symbol : ''} ---- ${!symbolBefore ? symbol : ''}',
-        defaultStyle: widget.style?.copyWith(letterSpacing: 2),
+      final inlineSpan = <InlineSpan>[
+        TextSpan(text: symbolBefore ? '$symbol ' : ''),
+        TextSpan(
+          text: '----',
+          style: widget.style?.copyWith(letterSpacing: 2),
+        ),
+        TextSpan(text: !symbolBefore ? ' $symbol' : ''),
+      ];
+
+      return RichText(
+        text: TextSpan(
+          children: inlineSpan,
+          style: widget.symbolStyle ?? widget.style?.copyWith(letterSpacing: 2),
+        ),
         overflow: widget.overflow,
         maxLines: widget.maxLines,
         softWrap: false,
-        patternList: [
-          EasyRichTextPattern(
-              targetString: symbolBefore ? symbol : '',
-              hasSpecialCharacters: true,
-              style: widget.symbolStyle,
-              matchWordBoundaries: false),
-          EasyRichTextPattern(
-              targetString: !symbolBefore ? symbol : '',
-              hasSpecialCharacters: true,
-              style: widget.symbolStyle,
-              matchWordBoundaries: false),
-        ],
       );
     }
 
@@ -108,8 +107,8 @@ class _MoneyAmountState extends State<MoneyAmount> with TickerProviderStateMixin
       animation: _animation,
       style: widget.style,
       symbolStyle: widget.symbolStyle,
-      prefix: symbolBefore ? symbol : '',
-      suffix: !symbolBefore ? symbol : '',
+      prefix: symbolBefore ? symbol : null,
+      suffix: !symbolBefore ? symbol : null,
       maxLines: widget.maxLines,
       overflow: widget.overflow,
       canHide: widget.canHide,
@@ -142,18 +141,23 @@ class _MoneyAnimatedText extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    return EasyRichText(
-      '$prefix ${CalService.formatCurrency(context, animation.value, canHide: canHide)} $suffix',
-      defaultStyle: style,
+    final inlineSpan = <InlineSpan>[
+      TextSpan(text: prefix != null ? '$prefix ' : null),
+      TextSpan(
+        text: CalService.formatCurrency(context, animation.value, canHide: canHide),
+        style: style,
+      ),
+      TextSpan(text: suffix != null ? ' $suffix' : null),
+    ];
+
+    return RichText(
+      text: TextSpan(
+        children: inlineSpan,
+        style: symbolStyle ?? style,
+      ),
       overflow: overflow,
       maxLines: maxLines,
       softWrap: false,
-      patternList: [
-        EasyRichTextPattern(
-            targetString: prefix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
-        EasyRichTextPattern(
-            targetString: suffix, hasSpecialCharacters: true, style: symbolStyle, matchWordBoundaries: false),
-      ],
     );
   }
 }

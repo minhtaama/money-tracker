@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/expanded_page_view.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'custom_tab_bar.dart';
 
@@ -42,7 +40,8 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state =
+          context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -97,7 +96,9 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
                         ? null
                         : Border(
                             bottom: !context.appTheme.isDarkTheme
-                                ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
+                                ? BorderSide(
+                                    color: Colors.grey.shade300.withOpacity(_fadeAnimation.value),
+                                    width: 1.5)
                                 : BorderSide.none,
                           ),
                   ),
