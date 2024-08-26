@@ -24,7 +24,7 @@ const kNormalTextStyle = TextStyle(fontSize: 15, fontFamily: 'WixMadeforDisplay'
 /// Value related to CustomTabBar and CustomTabPage
 const double kCustomTabBarHeight = 80;
 
-const double kCustomToolBarHeight = 40;
+const double kCustomToolBarHeight = 50;
 
 /// Value related to CustomTabBar and CustomTabPage
 const double kExtendedCustomTabBarHeight = 320;
