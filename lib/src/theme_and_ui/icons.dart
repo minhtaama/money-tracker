@@ -53,6 +53,7 @@ class AppIcons {
   static String get receiptCheckBulk => 'assets/svg/app/receipt_check.svg';
   static String get receiptDollarBulk => 'assets/svg/app/receipt_dollar.svg';
   static String get receiptEditLight => 'assets/svg/app/receipt_edit.svg';
+  static String get noteLight => 'assets/svg/app/note.svg';
   static String get creditLight => 'assets/svg/app/credit.svg';
   static String get statementCheckpointBulk => 'assets/svg/app/statement_checkpoint.svg';
   static String get sadFaceBulk => 'assets/svg/app/sad_face.svg';

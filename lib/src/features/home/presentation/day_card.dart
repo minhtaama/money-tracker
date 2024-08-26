@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/components/day_card_transactions_list.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
-import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
@@ -64,9 +62,14 @@ class DayCard extends StatelessWidget {
       children: [
         CardItem(
           margin: EdgeInsets.only(
-              left: forModal ? 0 : 8, right: forModal ? 0 : 8, top: forModal ? 4 : 6, bottom: forModal ? 4 : 0),
+              left: forModal ? 0 : 8,
+              right: forModal ? 0 : 8,
+              top: forModal ? 4 : 6,
+              bottom: forModal ? 4 : 0),
           padding: const EdgeInsets.only(top: 6),
-          border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+          border: forModal && context.appTheme.isDarkTheme
+              ? Border.all(color: AppColors.greyBorder(context))
+              : null,
           borderRadius: BorderRadius.only(
             topRight: const Radius.circular(8),
             topLeft: const Radius.circular(8),
@@ -87,7 +90,8 @@ class DayCard extends StatelessWidget {
                           ? const EdgeInsets.symmetric(horizontal: 6, vertical: 6)
                           : EdgeInsets.zero,
                       border: Border.all(
-                        color: context.appTheme.onBackground.withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
+                        color: context.appTheme.onBackground
+                            .withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
                       ),
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.transparent,
@@ -117,7 +121,8 @@ class DayCard extends StatelessWidget {
                         ),
                         Text(
                           dateTime.toLongDate(context, noDay: true),
-                          style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
+                          style: kNormalTextStyle.copyWith(
+                              color: context.appTheme.onBackground, fontSize: 10),
                           textAlign: TextAlign.left,
                         ),
                       ],
@@ -155,8 +160,9 @@ class DayCard extends StatelessWidget {
               child: CardItem(
                 margin: EdgeInsets.zero,
                 padding: EdgeInsets.zero,
-                border:
-                    forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+                border: forModal && context.appTheme.isDarkTheme
+                    ? Border.all(color: AppColors.greyBorder(context))
+                    : null,
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(0),
                   topLeft: Radius.circular(0),

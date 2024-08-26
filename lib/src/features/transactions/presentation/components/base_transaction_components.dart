@@ -266,7 +266,8 @@ class TxnAccountIcon extends ConsumerWidget {
             child: SvgIcon(
               _iconPath(ref),
               size: 14,
-              color: context.appTheme.onBackground.withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
+              color: context.appTheme.onBackground
+                  .withOpacity(transaction.account is DeletedAccount ? 0.25 : 0.65),
             ),
           );
   }
@@ -328,7 +329,8 @@ class TxnToAccountName extends ConsumerWidget {
     return Text(
       name(),
       style: kHeader2TextStyle.copyWith(
-          color: context.appTheme.onBackground.withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
+          color: context.appTheme.onBackground
+              .withOpacity(transaction.transferAccount is DeletedAccount ? 0.25 : 1),
           fontSize: 12),
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -337,7 +339,8 @@ class TxnToAccountName extends ConsumerWidget {
 }
 
 class TxnAmount extends StatelessWidget {
-  const TxnAmount({super.key, required this.transaction, this.fontSize, this.color, this.showPaymentAmount = false})
+  const TxnAmount(
+      {super.key, required this.transaction, this.fontSize, this.color, this.showPaymentAmount = false})
       : assert(showPaymentAmount == true ? transaction is CreditSpending : true);
 
   final BaseTransaction transaction;
@@ -395,27 +398,54 @@ class TxnNote extends StatelessWidget {
             margin: const EdgeInsets.only(left: 15.5, top: 8),
             padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
+              border: Border(
+                  left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.3), width: 1)),
             ),
-            child: EasyRichText(
-              'Note: ${transaction.note!}',
-              defaultStyle: kHeader4TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65),
-                fontSize: 12,
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  WidgetSpan(
+                    child: Transform.translate(
+                      offset: const Offset(-2, 0),
+                      child: SvgIcon(
+                        AppIcons.noteLight,
+                        color: context.appTheme.onBackground,
+                        size: 14,
+                      ),
+                    ),
+                  ),
+                  TextSpan(
+                    text: ': ${transaction.note}',
+                    style: kHeader3TextStyle.copyWith(
+                      color: context.appTheme.onBackground.withOpacity(0.65),
+                      fontSize: 12,
+                    ),
+                  )
+                ],
               ),
               overflow: TextOverflow.ellipsis,
-              softWrap: true,
               maxLines: 2,
-              patternList: [
-                EasyRichTextPattern(
-                  targetString: 'Note:',
-                  style: kHeader3TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+              softWrap: true,
             ),
+            // child: EasyRichText(
+            //   'Note: ${transaction.note!}',
+            //   defaultStyle: kHeader4TextStyle.copyWith(
+            //     color: context.appTheme.onBackground.withOpacity(0.65),
+            //     fontSize: 12,
+            //   ),
+            //   overflow: TextOverflow.ellipsis,
+            //   softWrap: true,
+            //   maxLines: 2,
+            //   patternList: [
+            //     EasyRichTextPattern(
+            //       targetString: 'Note:',
+            //       style: kHeader3TextStyle.copyWith(
+            //         color: context.appTheme.onBackground,
+            //         fontSize: 12,
+            //       ),
+            //     ),
+            //   ],
+            // ),
           )
         : Gap.noGap;
   }
@@ -423,7 +453,12 @@ class TxnNote extends StatelessWidget {
 
 class TxnTransferLine extends StatelessWidget {
   const TxnTransferLine(
-      {super.key, this.height = 27, this.width = 14, this.adjustY = 1, this.strokeWidth = 1, this.opacity = 0.65});
+      {super.key,
+      this.height = 27,
+      this.width = 14,
+      this.adjustY = 1,
+      this.strokeWidth = 1,
+      this.opacity = 0.65});
 
   final double height;
   final double adjustY;
@@ -438,7 +473,8 @@ class TxnTransferLine extends StatelessWidget {
       width: width,
       child: ClipRect(
         child: CustomPaint(
-          painter: _TransferLinePainter(context, strokeWidth, opacity, height: height, width: width, adjustY: adjustY),
+          painter: _TransferLinePainter(context, strokeWidth, opacity,
+              height: height, width: width, adjustY: adjustY),
         ),
       ),
     );
