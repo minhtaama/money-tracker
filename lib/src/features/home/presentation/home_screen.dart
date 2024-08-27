@@ -100,8 +100,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<DayCard> dayCards = [];
 
     for (int day = dayEndOfMonth.day; day >= dayBeginOfMonth.day; day--) {
-      final transactionsInDay =
-          transactionList.where((transaction) => transaction.dateTime.day == day).toList();
+      final transactionsInDay = transactionList.where((transaction) => transaction.dateTime.day == day).toList();
       final plannedTxnsInDay = plannedTransactions
           .where(
             (plannedTxn) =>
@@ -142,7 +141,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     bool showTotalBalance = context.appPersistentValues.showAmount;
 
     return CustomAdaptivePageView(
-      controller: _pageController,
+      pageController: _pageController,
       forcePageView: _forcePageView,
       smallTabBar: SmallTabBar(
         child: SmallHomeTab(
@@ -189,8 +188,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
-        List<BaseTransaction> transactionList =
-            _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
+        List<BaseTransaction> transactionList = _transactionRepository.getTransactions(dayBeginOfMonth, dayEndOfMonth);
         List<TransactionData> plannedTransactions =
             _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
 
@@ -202,8 +200,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         ref.listen(recurrenceChangesStreamProvider, (_, __) {
           setState(() {
-            plannedTransactions =
-                _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
+            plannedTransactions = _recurrenceRepository.getPlannedTransactionsInMonth(context, dayBeginOfMonth);
           });
         });
 

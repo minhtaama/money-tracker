@@ -1,26 +1,26 @@
 part of 'custom_page.dart';
 
-class CustomAdaptivePageView extends ConsumerStatefulWidget {
+class CustomAdaptivePageView extends StatelessWidget {
   const CustomAdaptivePageView({
     super.key,
     required this.smallTabBar,
     this.extendedTabBar,
     this.toolBar,
     this.toolBarHeight = kCustomToolBarHeight,
-    this.controller,
+    this.pageController,
     this.onPageChanged,
     required this.itemBuilder,
     this.pageItemCount,
     this.onDragLeft,
     this.onDragRight,
     this.forcePageView = false,
-  }) : assert(toolBarHeight <= kCustomTabBarHeight);
+  });
 
   final SmallTabBar smallTabBar;
   final ExtendedTabBar? extendedTabBar;
   final Widget? toolBar;
   final double toolBarHeight;
-  final PageController? controller;
+  final PageController? pageController;
   final int? pageItemCount;
   final List<Widget> Function(BuildContext, WidgetRef, int) itemBuilder;
   final ValueChanged<int>? onPageChanged;
@@ -29,11 +29,68 @@ class CustomAdaptivePageView extends ConsumerStatefulWidget {
   final bool forcePageView;
 
   @override
-  ConsumerState<CustomAdaptivePageView> createState() => _CustomPageViewWithScrollableSheetState();
+  Widget build(BuildContext context) {
+    if (context.isBigScreen || forcePageView) {
+      return _NormalList(
+        smallTabBar: smallTabBar,
+        extendedTabBar: extendedTabBar,
+        toolBar: toolBar,
+        toolBarHeight: toolBarHeight,
+        pageController: pageController,
+        onPageChanged: onPageChanged,
+        itemBuilder: itemBuilder,
+        pageItemCount: pageItemCount,
+        onDragLeft: onDragLeft,
+        onDragRight: onDragRight,
+      );
+    }
+
+    return _ScrollableSheet(
+      smallTabBar: smallTabBar,
+      extendedTabBar: extendedTabBar,
+      toolBar: toolBar,
+      toolBarHeight: toolBarHeight,
+      pageController: pageController,
+      onPageChanged: onPageChanged,
+      itemBuilder: itemBuilder,
+      pageItemCount: pageItemCount,
+      onDragLeft: onDragLeft,
+      onDragRight: onDragRight,
+    );
+  }
 }
 
-class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdaptivePageView>
-    with TickerProviderStateMixin {
+class _ScrollableSheet extends ConsumerStatefulWidget {
+  const _ScrollableSheet({
+    super.key,
+    required this.smallTabBar,
+    required this.extendedTabBar,
+    required this.toolBar,
+    required this.toolBarHeight,
+    required this.pageController,
+    required this.onPageChanged,
+    required this.itemBuilder,
+    required this.pageItemCount,
+    required this.onDragLeft,
+    required this.onDragRight,
+  }) : assert(toolBarHeight <= kCustomTabBarHeight);
+
+  final SmallTabBar smallTabBar;
+  final ExtendedTabBar? extendedTabBar;
+  final Widget? toolBar;
+  final double toolBarHeight;
+  final PageController? pageController;
+  final int? pageItemCount;
+  final List<Widget> Function(BuildContext, WidgetRef, int) itemBuilder;
+  final ValueChanged<int>? onPageChanged;
+  final VoidCallback? onDragLeft;
+  final VoidCallback? onDragRight;
+
+  @override
+  ConsumerState<_ScrollableSheet> createState() => _ScrollableSheetState();
+}
+
+class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerProviderStateMixin {
   late double _triggerSmallTabBarHeight;
   late double _sheetMinFraction;
   late double _sheetMaxFraction;
@@ -41,23 +98,24 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
   late double _sheetMaxHeight;
   late double _sheetMaxOffset;
 
-  late final _scrollableController = DraggableScrollableController();
+  late final _sheetController = DraggableScrollableController();
+  late final _pageController = widget.pageController ?? PageController();
 
-  late final AnimationController _tabOffsetController;
-  late final AnimationController _fadeTabBarController;
+  late final _sheetOffsetAnimController = AnimationController(vsync: this, duration: k1msDuration, upperBound: 1000);
 
-  late final Animation<double> _fadeTabBarAnimation;
+  late final _smallTabBarAnimController = AnimationController(vsync: this, duration: k250msDuration);
+  late final _smallTabBarAnimation = _smallTabBarAnimController.drive(CurveTween(curve: Curves.easeInOut));
+
+  late final _sheetAnimController = AnimationController(vsync: this, duration: k150msDuration);
+  late final _sheetAnimation = _sheetAnimController.drive(CurveTween(curve: Curves.fastOutSlowIn));
 
   late bool _isShowSmallTabBar = widget.extendedTabBar == null ? true : false;
+  late bool _isScaleDownSheet = false;
 
   @override
   void initState() {
-    _tabOffsetController = AnimationController(vsync: this, duration: k1msDuration, upperBound: 1000);
-    _fadeTabBarController = AnimationController(vsync: this, duration: k250msDuration);
-
-    _fadeTabBarAnimation = _fadeTabBarController.drive(CurveTween(curve: Curves.easeInOut));
-
-    _scrollableController.addListener(_scrollControllerListener);
+    _sheetController.addListener(_sheetControllerListener);
+    _pageController.addListener(_pageControllerListener);
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _changeStatusBrightness();
@@ -70,15 +128,11 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
   void didChangeDependencies() {
     setState(() {
       final screenHeight = Gap.screenHeight(context);
-
       _sheetMinFraction = 1.0 - (kExtendedCustomTabBarHeight / screenHeight);
       _sheetMaxFraction = 1.0 - (Gap.statusBarHeight(context) / screenHeight);
-
       _sheetMinHeight = _sheetMinFraction * Gap.screenHeight(context);
       _sheetMaxHeight = _sheetMaxFraction * Gap.screenHeight(context);
-
       _sheetMaxOffset = screenHeight - _sheetMinHeight;
-
       _triggerSmallTabBarHeight = _sheetMaxHeight - 7;
     });
 
@@ -87,106 +141,18 @@ class _CustomPageViewWithScrollableSheetState extends ConsumerState<CustomAdapti
 
   @override
   void dispose() {
-    _tabOffsetController.dispose();
-    _fadeTabBarController.dispose();
-    _scrollableController.removeListener(_scrollControllerListener);
-    _scrollableController.dispose();
+    _sheetOffsetAnimController.dispose();
+    _smallTabBarAnimController.dispose();
+    _sheetController.removeListener(_sheetControllerListener);
+    _sheetController.dispose();
+    if (widget.pageController == null) {
+      _pageController.dispose();
+    }
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (context.isBigScreen || widget.forcePageView) {
-      return _pageView();
-    }
-    return _scrollableSheet();
-  }
-
-  Widget _scrollableSheet() {
-    return Stack(
-      children: [
-        _extendedTabBarForScrollableSheet(),
-        DraggableScrollableSheet(
-          controller: _scrollableController,
-          minChildSize: _sheetMinFraction,
-          initialChildSize: _sheetMinFraction,
-          maxChildSize: _sheetMaxFraction,
-          snap: true,
-          snapAnimationDuration: k250msDuration,
-          builder: (context, scrollController) => PageView.builder(
-            controller: widget.controller,
-            onPageChanged: _onPageChange,
-            itemCount: widget.pageItemCount,
-            itemBuilder: (_, pageIndex) => Consumer(
-              builder: (context, ref, _) => _sheetWrapper(
-                child: ListView(
-                  controller: scrollController,
-                  children: [
-                    widget.toolBar != null
-                        ? Transform.translate(
-                            offset: const Offset(0, -7),
-                            child: SizedBox(
-                              height: kCustomToolBarHeight,
-                              child: widget.toolBar!,
-                            ),
-                          )
-                        : Gap.noGap,
-                    ...widget.itemBuilder(context, ref, pageIndex),
-                    const SizedBox(
-                      height: kBottomAppBarHeight,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        _smallTabBarForScrollableSheet(),
-      ],
-    );
-  }
-
-  Widget _pageView() {
-    return Scaffold(
-      backgroundColor: context.appTheme.background1,
-      body: SafeArea(
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverToBoxAdapter(
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.bottomCenter,
-                children: [
-                  _extendedTabBarForPageView(),
-                  _toolBarForPageView(),
-                ],
-              ),
-            ),
-          ],
-          body: PageView.builder(
-            controller: widget.controller,
-            onPageChanged: _onPageChange,
-            itemCount: widget.pageItemCount,
-            itemBuilder: (_, pageIndex) => Consumer(
-              builder: (context, ref, _) => ListView(
-                children: [
-                  ...widget.itemBuilder(context, ref, pageIndex),
-                  const SizedBox(
-                    height: kBottomAppBarHeight,
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   void _onSheetHeightChange(double height) {
-    _tabOffsetController.value = (height - _sheetMinHeight) / 3;
+    _sheetOffsetAnimController.value = (height - _sheetMinHeight) / 3;
 
     // At the moment show smallAppBar
     if (height >= _triggerSmallTabBarHeight && _isShowSmallTabBar == false) {
@@ -200,13 +166,13 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   }
 
   void _showSmallTabBar() {
-    _fadeTabBarController.forward(from: 0);
+    _smallTabBarAnimController.forward(from: 0);
     _isShowSmallTabBar = true;
     _changeStatusBrightness();
   }
 
   void _showExtendedTabBar() {
-    _fadeTabBarController.reverse(from: 1);
+    _smallTabBarAnimController.reverse(from: 1);
     _isShowSmallTabBar = false;
     _changeStatusBrightness();
   }
@@ -216,13 +182,36 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
     widget.onPageChanged?.call(index);
   }
 
-  void _scrollControllerListener() {
+  void _sheetControllerListener() {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (_scrollableController.isAttached) {
-        double height = _scrollableController.pixels;
+      if (_sheetController.isAttached) {
+        double height = _sheetController.pixels;
         _onSheetHeightChange(height);
       }
     });
+  }
+
+  void _pageControllerListener() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_pageController.hasClients) {
+        double page = _pageController.page!;
+        _scalingSheet(page);
+      }
+    });
+  }
+
+  void _scalingSheet(double page) {
+    if ((page - page.floor() < 0.98 && page - page.floor() > 0.02) && !_isScaleDownSheet && !_isShowSmallTabBar) {
+      _sheetAnimController.forward();
+      _isScaleDownSheet = true;
+      print('called');
+    }
+
+    if ((page - page.floor() > 0.98 || page - page.floor() < 0.02) && _isScaleDownSheet) {
+      _isScaleDownSheet = false;
+      _sheetAnimController.reverse();
+      print('called2');
+    }
   }
 
   void _changeStatusBrightness() {
@@ -246,17 +235,17 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
     statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
   }
 
-  Widget _smallTabBarForScrollableSheet() {
+  Widget _smallTabBar() {
     return widget.extendedTabBar != null
         ? SizeTransition(
-            sizeFactor: _fadeTabBarAnimation,
+            sizeFactor: _smallTabBarAnimation,
             child: FadeTransition(
-              opacity: _fadeTabBarAnimation,
+              opacity: _smallTabBarAnimation,
               child: AnimatedBuilder(
-                animation: _fadeTabBarAnimation,
+                animation: _smallTabBarAnimation,
                 builder: (_, child) {
                   return IgnorePointer(
-                    ignoring: _fadeTabBarAnimation.value == 0,
+                    ignoring: _smallTabBarAnimation.value == 0,
                     child: child,
                   );
                 },
@@ -268,22 +257,22 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   }
 
   /// Actually the widget display above and behind scrollable-sheet.
-  Widget _extendedTabBarForScrollableSheet() {
+  Widget _extendedTabBar() {
     final bgColor = widget.extendedTabBar?.backgroundColor ??
         (context.appTheme.isDarkTheme ? context.appTheme.background2 : context.appTheme.background0);
 
     return AnimatedBuilder(
-      animation: _tabOffsetController,
+      animation: _sheetOffsetAnimController,
       builder: (_, child) {
         return Transform.translate(
-          offset: Offset(0, -_tabOffsetController.value),
+          offset: Offset(0, -_sheetOffsetAnimController.value),
           child: Container(
             width: double.infinity,
             height: widget.extendedTabBar!.height - Gap.statusBarHeight(context) + 22,
             color: bgColor,
             padding: EdgeInsets.only(top: Gap.statusBarHeight(context)),
             child: Opacity(
-              opacity: 1 - (3 * _tabOffsetController.value / _sheetMaxOffset).clamp(0, 1),
+              opacity: 1 - (3 * _sheetOffsetAnimController.value / _sheetMaxOffset).clamp(0, 1),
               child: child,
             ),
           ),
@@ -294,50 +283,174 @@ extension _ScrollableSheetFunctions on _CustomPageViewWithScrollableSheetState {
   }
 
   Widget _sheetWrapper({required Widget child}) {
-    return Container(
-      height: Gap.screenHeight(context),
-      decoration: BoxDecoration(
-        color: context.appTheme.background1,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: (widget.extendedTabBar?.backgroundColor ?? context.appTheme.background0)
-                .withOpacity(context.appTheme.isDarkTheme ? 0.0 : 1),
-            blurRadius: 7,
-            spreadRadius: 5,
-          )
-        ],
-      ),
+    return AnimatedBuilder(
+      animation: _sheetAnimation,
+      builder: (context, animChild) {
+        return Transform.scale(
+          scale: 1 - 0.045 * _sheetAnimation.value,
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.appTheme.background1,
+              border: Border(
+                top: BorderSide(color: context.appTheme.onBackground.withOpacity(0.12 * _sheetAnimation.value)),
+                left: BorderSide(color: context.appTheme.onBackground.withOpacity(0.12 * _sheetAnimation.value)),
+                right: BorderSide(color: context.appTheme.onBackground.withOpacity(0.12 * _sheetAnimation.value)),
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: animChild,
+          ),
+        );
+      },
       child: child,
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: context.appTheme.background0,
+      child: Stack(
+        children: [
+          _extendedTabBar(),
+          DraggableScrollableSheet(
+            controller: _sheetController,
+            minChildSize: _sheetMinFraction,
+            initialChildSize: _sheetMinFraction,
+            maxChildSize: _sheetMaxFraction,
+            snap: true,
+            snapAnimationDuration: k250msDuration,
+            builder: (context, scrollController) => PageView.builder(
+              controller: _pageController,
+              onPageChanged: _onPageChange,
+              itemCount: widget.pageItemCount,
+              itemBuilder: (_, pageIndex) => Consumer(
+                builder: (context, ref, _) => _sheetWrapper(
+                  child: ListView(
+                    controller: scrollController,
+                    children: [
+                      widget.toolBar != null
+                          ? Transform.translate(
+                              offset: const Offset(0, -12),
+                              child: SizedBox(
+                                height: kCustomToolBarHeight,
+                                child: widget.toolBar!,
+                              ),
+                            )
+                          : Gap.noGap,
+                      ...widget.itemBuilder(context, ref, pageIndex),
+                      const SizedBox(
+                        height: kBottomAppBarHeight,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          _smallTabBar(),
+        ],
+      ),
+    );
+  }
+}
+
+class _NormalList extends StatelessWidget {
+  const _NormalList({
+    super.key,
+    required this.smallTabBar,
+    required this.extendedTabBar,
+    required this.toolBar,
+    required this.toolBarHeight,
+    required this.pageController,
+    required this.onPageChanged,
+    required this.itemBuilder,
+    required this.pageItemCount,
+    required this.onDragLeft,
+    required this.onDragRight,
+  }) : assert(toolBarHeight <= kCustomTabBarHeight);
+
+  final SmallTabBar smallTabBar;
+  final ExtendedTabBar? extendedTabBar;
+  final Widget? toolBar;
+  final double toolBarHeight;
+  final PageController? pageController;
+  final int? pageItemCount;
+  final List<Widget> Function(BuildContext, WidgetRef, int) itemBuilder;
+  final ValueChanged<int>? onPageChanged;
+  final VoidCallback? onDragLeft;
+  final VoidCallback? onDragRight;
+
+  void _onPageChange(int index) {
+    HapticFeedback.vibrate();
+    onPageChanged?.call(index);
   }
 
   Widget _extendedTabBarForPageView() {
     return Container(
       width: double.infinity,
-      height: widget.extendedTabBar!.height,
+      height: extendedTabBar!.height,
       padding: const EdgeInsets.only(bottom: 52),
-      child: widget.extendedTabBar,
+      child: extendedTabBar,
     );
   }
 
-  Widget _toolBarForPageView() {
+  Widget _toolBarForPageView(BuildContext context) {
     final bgColor = context.appTheme.background0;
 
-    return widget.toolBar != null
+    return toolBar != null
         ? CardItem(
             width: double.infinity,
             color: bgColor,
             elevation: 1.5,
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: SizedBox(
-              height: widget.toolBarHeight,
-              child: widget.toolBar,
+              height: toolBarHeight,
+              child: toolBar,
             ),
           )
         : Gap.noGap;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.appTheme.background1,
+      body: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            SliverToBoxAdapter(
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.bottomCenter,
+                children: [
+                  _extendedTabBarForPageView(),
+                  _toolBarForPageView(context),
+                ],
+              ),
+            ),
+          ],
+          body: PageView.builder(
+            controller: pageController,
+            onPageChanged: _onPageChange,
+            itemCount: pageItemCount,
+            itemBuilder: (_, pageIndex) => Consumer(
+              builder: (context, ref, _) => ListView(
+                children: [
+                  ...itemBuilder(context, ref, pageIndex),
+                  const SizedBox(
+                    height: kBottomAppBarHeight,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -134,7 +134,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomAdaptivePageView(
-        controller: _pageController,
+        pageController: _pageController,
         smallTabBar: SmallTabBar(
           child: PageHeading(
             title: widget.regularAccount.name,

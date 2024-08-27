@@ -140,7 +140,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomAdaptivePageView(
-        controller: _controller,
+        pageController: _controller,
         smallTabBar: SmallTabBar(
           child: PageHeading(
             title: widget.creditAccount.name,
