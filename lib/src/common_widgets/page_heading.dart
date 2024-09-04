@@ -25,74 +25,66 @@ class PageHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     final canPop = context.isBigScreen ? !isTopLevelOfNavigationRail : true;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        secondaryTitle != null ? Gap.h8 : Gap.noGap,
+        canPop && ModalRoute.of(context)!.canPop
+            ? RoundedIconButton(
+                iconPath: AppIcons.backLight,
+                backgroundColor: Colors.transparent,
+                iconColor: context.appTheme.onBackground,
+                onTap: () => context.pop(),
+              )
+            : Gap.w8,
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              canPop && ModalRoute.of(context)!.canPop
-                  ? RoundedIconButton(
-                      iconPath: AppIcons.backLight,
-                      backgroundColor: Colors.transparent,
-                      iconColor: context.appTheme.onBackground,
-                      onTap: () => context.pop(),
-                    )
-                  : const SizedBox(),
-              Gap.w4,
-              Expanded(
-                flex: 5,
-                child: secondaryTitle != null
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          leadingTitle != null
-                              ? Row(
-                                  children: [
-                                    Text(
-                                      leadingTitle!,
-                                      style: kNormalTextStyle.copyWith(
-                                          color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
-                                    ),
-                                    Gap.w8,
-                                    Expanded(
-                                      child: Text(
-                                        title,
-                                        style: kHeader1TextStyle.copyWith(
-                                          color: context.appTheme.onBackground,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Text(
+          flex: 5,
+          child: secondaryTitle != null
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    leadingTitle != null
+                        ? Row(
+                            children: [
+                              Text(
+                                leadingTitle!,
+                                style: kNormalTextStyle.copyWith(
+                                    color: context.appTheme.onBackground, fontSize: kHeader1TextStyle.fontSize),
+                              ),
+                              Gap.w8,
+                              Expanded(
+                                child: Text(
                                   title,
                                   style: kHeader1TextStyle.copyWith(
                                     color: context.appTheme.onBackground,
                                   ),
                                 ),
-                          Text(
-                            secondaryTitle!,
-                            style: kNormalTextStyle.copyWith(
-                              color: context.appTheme.onBackground.withOpacity(0.8),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            title,
+                            style: kHeader1TextStyle.copyWith(
+                              color: context.appTheme.onBackground,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      )
-                    : Text(
-                        title,
-                        style: kHeader1TextStyle.copyWith(
-                          color: context.appTheme.onBackground,
-                        ),
+                    Text(
+                      secondaryTitle!,
+                      style: kNormalTextStyle.copyWith(
+                        color: context.appTheme.onBackground.withOpacity(0.8),
                       ),
-              ),
-              trailing ?? const SizedBox(),
-            ],
-          ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                )
+              : Text(
+                  title,
+                  style: kHeader1TextStyle.copyWith(
+                    color: context.appTheme.onBackground,
+                  ),
+                ),
         ),
+        trailing ?? const SizedBox(),
       ],
     );
   }

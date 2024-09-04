@@ -87,7 +87,7 @@ class Gap {
 
   static get expanded => const Expanded(child: SizedBox());
 
-  static double statusBarHeight(BuildContext context) => MediaQuery.of(context).viewPadding.top;
+  static double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.top;
   static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
   static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
 }
