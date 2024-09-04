@@ -134,6 +134,10 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
     return CardItem(
       color: context.appTheme.background0,
       elevation: 2.5,
+      border: Border.all(
+        color:
+            context.appTheme.onBackground.withOpacity(context.isBigScreen && context.appTheme.isDarkTheme ? 0.25 : 0),
+      ),
       margin: EdgeInsets.zero,
       padding: const EdgeInsets.all(6),
       child: AnimatedCrossFade(

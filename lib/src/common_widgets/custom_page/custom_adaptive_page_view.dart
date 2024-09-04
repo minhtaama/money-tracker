@@ -184,7 +184,9 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   }
 
   void _onPageChange(int index) {
-    HapticFeedback.vibrate();
+    if (_isShowSmallTabBar) {
+      HapticFeedback.vibrate();
+    }
     widget.onPageChanged?.call(index);
   }
 
@@ -214,7 +216,7 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
 
     if ((page - page.floor() > 0.98 || page - page.floor() < 0.02) && _isScaleDownSheet) {
       _isScaleDownSheet = false;
-      _sheetAnimController.reverse();
+      _sheetAnimController.reverse().whenComplete(() => HapticFeedback.vibrate());
     }
   }
 
