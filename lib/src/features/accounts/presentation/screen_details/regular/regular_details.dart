@@ -142,6 +142,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           ),
         ),
         extendedTabBar: ExtendedTabBar(
+          overlayColor: context.appTheme.isDarkTheme ? widget.regularAccount.iconColor : null,
           backgroundColor: widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedRegularAccountTab(account: widget.regularAccount, displayDate: _currentDisplayDate),
         ),
@@ -156,6 +157,15 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           topTitle: _currentDisplayDate.year.toString(),
           title: _currentDisplayDate.monthToString(context),
         ),
+        toolBarBuilder: (pageIndex) {
+          DateTime date = DateTime(Calendar.minDate.year, pageIndex);
+          return CustomPageToolBar(
+            displayDate: date,
+            onDateTap: () => _animatedToPage(_initialPageIndex),
+            topTitle: date.year.toString(),
+            title: date.monthToString(context),
+          );
+        },
         itemBuilder: (context, ref, pageIndex) {
           DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);

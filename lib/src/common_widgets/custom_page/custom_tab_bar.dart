@@ -46,10 +46,15 @@ class ExtendedTabBar extends StatelessWidget {
   const ExtendedTabBar({
     super.key,
     this.backgroundColor,
+    this.overlayColor,
     this.height = kExtendedCustomTabBarHeight + 30,
     required this.child,
   });
   final Color? backgroundColor;
+
+  /// For the background color below extended tab bar of scrollable sheet
+  final Color? overlayColor;
+
   final Widget child;
   final double height;
 

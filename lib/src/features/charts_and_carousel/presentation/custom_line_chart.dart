@@ -440,7 +440,7 @@ class CustomLineChart extends StatelessWidget {
         drawBelowEverything: false,
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: isForCredit ? 30 : 14,
+          reservedSize: isForCredit ? 30 : 0,
           interval: 1,
           getTitlesWidget: isForCredit ? bottomTitleWidgetsForCredit : noBottomTitle,
         ),
@@ -486,7 +486,7 @@ class CustomLineChart extends StatelessWidget {
     );
 
     return Transform.translate(
-      offset: Offset(0, isForCredit ? 30 : 20),
+      offset: Offset(0, isForCredit ? 30 : 0),
       child: LineChart(
         LineChartData(
           maxY: maxY,

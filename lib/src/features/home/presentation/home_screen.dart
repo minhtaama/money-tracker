@@ -154,6 +154,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       extendedTabBar: ExtendedTabBar(
+        overlayColor: context.appTheme.isDarkTheme ? context.appTheme.accent1 : null,
         child: ExtendedHomeTab(
           carouselController: _carouselController,
           initialPageIndex: _initialPageIndex,
@@ -184,6 +185,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           iconPadding: 5,
         ),
       ),
+      toolBarBuilder: (pageIndex) {
+        DateTime date = DateTime(Calendar.minDate.year, pageIndex);
+        return CustomPageToolBar(
+          displayDate: date,
+          onDateTap: () => _animatedToPage(_initialPageIndex),
+          topTitle: date.year.toString(),
+          title: date.monthToString(context),
+          optionalButton: RoundedIconButton(
+            iconPath: AppIcons.recurrenceBulk,
+            iconColor: context.appTheme.onBackground,
+            backgroundColor: Colors.transparent,
+            onTap: () => context.push(RoutePath.plannedTransactions, extra: _currentDisplayDate),
+            size: 33,
+            iconPadding: 5,
+          ),
+        );
+      },
       itemBuilder: (context, ref, pageIndex) {
         DateTime dayBeginOfMonth = DateTime(Calendar.minDate.year, pageIndex);
         DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
