@@ -15,7 +15,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../common_widgets/custom_radio.dart';
 import '../../../common_widgets/custom_text_form_field.dart';
 import '../../../common_widgets/hideable_container.dart';
 import '../../../common_widgets/icon_with_text.dart';
@@ -24,6 +23,7 @@ import '../../../theme_and_ui/colors.dart';
 import '../../calculator_input/application/calculator_service.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../category/domain/category.dart';
+import '../../charts_and_carousel/presentation/carousel.dart';
 import '../data/budget_repo.dart';
 
 class EditBudgetModalScreen extends ConsumerStatefulWidget {
@@ -41,11 +41,14 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late String _name = widget.budget.name;
-  late BudgetType _budgetType = widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
+  late BudgetType _budgetType =
+      widget.budget is AccountBudget ? BudgetType.forAccount : BudgetType.forCategory;
   late BudgetPeriodType _periodType = widget.budget.periodType;
   late double _amount = widget.budget.amount;
-  late List<BaseAccount> _accounts = widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
-  late List<Category> _categories = widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
+  late List<BaseAccount> _accounts =
+      widget.budget is AccountBudget ? (widget.budget as AccountBudget).accounts : [];
+  late List<Category> _categories =
+      widget.budget is CategoryBudget ? (widget.budget as CategoryBudget).categories : [];
 
   @override
   Widget build(BuildContext context) {
@@ -123,66 +126,14 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
             style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.greyBorder(context)),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.daily,
-                    width: 135,
-                    value: BudgetPeriodType.daily,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.weekly,
-                    width: 135,
-                    value: BudgetPeriodType.weekly,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.monthly,
-                    width: 135,
-                    value: BudgetPeriodType.monthly,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.yearly,
-                    width: 135,
-                    value: BudgetPeriodType.yearly,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                ],
-              ),
-            ],
-          ),
+        TextCarousel(
+          textBuilder: (index) => BudgetPeriodType.values[index].name(context),
+          itemCount: BudgetPeriodType.values.length,
+          initialPageIndex: BudgetPeriodType.values.indexOf(_periodType),
+          onPageChanged: (index) => setState(() {
+            _periodType = BudgetPeriodType.values[index];
+          }),
         ),
-        Gap.h16,
         HideableContainer(
           hide: _budgetType == BudgetType.forAccount,
           child: Column(
@@ -274,10 +225,10 @@ class _Selector<T extends BaseModelWithIcon> extends ConsumerStatefulWidget {
   final List<T> initialSelected;
 
   @override
-  ConsumerState<_Selector<T>> createState() => _AccountSelectorState();
+  ConsumerState<_Selector<T>> createState() => _SelectorState();
 }
 
-class _AccountSelectorState<T extends BaseModelWithIcon> extends ConsumerState<_Selector<T>> {
+class _SelectorState<T extends BaseModelWithIcon> extends ConsumerState<_Selector<T>> {
   late final _selectedItems = widget.initialSelected;
 
   List<T> _items = [];
@@ -356,7 +307,7 @@ class _Item<T extends BaseModelWithIcon> extends StatelessWidget {
       iconPath: item.iconPath,
       label: item.name,
       labelSize: 18,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       border: Border.all(
         color: isSelected ? item.backgroundColor : context.appTheme.onBackground.withOpacity(0.4),

@@ -14,8 +14,8 @@ import '../../../utils/enums.dart';
 class TextCarousel extends StatefulWidget {
   const TextCarousel({
     super.key,
-    required this.controller,
-    required this.initialPageIndex,
+    this.controller,
+    this.initialPageIndex,
     this.leftIconPath,
     this.rightIconPath,
     this.onTapRightIcon,
@@ -24,10 +24,11 @@ class TextCarousel extends StatefulWidget {
     this.subTextBuilder,
     this.onPageChanged,
     this.physics,
+    this.itemCount,
   });
 
-  final PageController controller;
-  final int initialPageIndex;
+  final PageController? controller;
+  final int? initialPageIndex;
   final String? leftIconPath;
   final String? rightIconPath;
   final VoidCallback? onTapRightIcon;
@@ -36,13 +37,16 @@ class TextCarousel extends StatefulWidget {
   final String Function(int pageIndex) textBuilder;
   final String? Function(int pageIndex)? subTextBuilder;
   final ScrollPhysics? physics;
+  final int? itemCount;
 
   @override
   State<TextCarousel> createState() => _TextCarouselState();
 }
 
 class _TextCarouselState extends State<TextCarousel> {
-  late int _currentPageIndex = widget.controller.initialPage;
+  late final PageController _controller = widget.controller ??
+      PageController(viewportFraction: 0.4, initialPage: widget.initialPageIndex ?? 0);
+  late int _currentPageIndex = _controller.initialPage;
   late double _betweenButtonsGap = 0;
 
   @override
@@ -53,7 +57,8 @@ class _TextCarouselState extends State<TextCarousel> {
         children: [
           PageView.builder(
             physics: widget.physics,
-            controller: widget.controller,
+            controller: _controller,
+            itemCount: widget.itemCount,
             onPageChanged: (page) {
               setState(() {
                 _currentPageIndex = page;
@@ -143,12 +148,14 @@ class _CarouselContent extends StatefulWidget {
     this.subText,
     required this.isActive,
     this.onChange,
+    this.withBackground = true,
   });
 
   final bool isActive;
   final String text;
   final String? subText;
   final ValueChanged<double>? onChange;
+  final bool withBackground;
 
   @override
   State<_CarouselContent> createState() => _CarouselContentState();
@@ -183,11 +190,18 @@ class _CarouselContentState extends State<_CarouselContent> {
       child: AnimatedContainer(
         duration: k250msDuration,
         margin: EdgeInsets.only(
-          //top: widget.isActive ? 0 : 10,
           left: widget.isActive ? 0 : 15,
           right: widget.isActive ? 0 : 15,
         ),
-        //color: Colors.green,
+        padding: widget.withBackground
+            ? const EdgeInsets.symmetric(vertical: 6, horizontal: 12)
+            : EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: widget.withBackground
+              ? context.appTheme.primary.withOpacity(widget.isActive ? 1 : 0)
+              : null,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: AnimatedOpacity(
           duration: k250msDuration,
           opacity: widget.isActive ? 1 : 0.5,
@@ -200,7 +214,9 @@ class _CarouselContentState extends State<_CarouselContent> {
                   key: _key,
                   widget.text,
                   style: kHeader2TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
+                    color: widget.withBackground
+                        ? (widget.isActive ? context.appTheme.onPrimary : context.appTheme.onBackground)
+                        : context.appTheme.onBackground,
                     fontSize: 20,
                   ),
                 ),

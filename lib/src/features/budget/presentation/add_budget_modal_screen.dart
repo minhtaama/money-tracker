@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/features/accounts/data/account_repo.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
+import 'package:money_tracker_app/src/features/charts_and_carousel/presentation/carousel.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
@@ -119,66 +120,13 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
             style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.greyBorder(context)),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.daily,
-                    width: 135,
-                    value: BudgetPeriodType.daily,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.weekly,
-                    width: 135,
-                    value: BudgetPeriodType.weekly,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.monthly,
-                    width: 135,
-                    value: BudgetPeriodType.monthly,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                  CustomRadio<BudgetPeriodType>(
-                    label: context.loc.yearly,
-                    width: 135,
-                    value: BudgetPeriodType.yearly,
-                    groupValue: _periodType,
-                    onChanged: (value) => setState(() {
-                      _periodType = value!;
-                    }),
-                  ),
-                ],
-              ),
-            ],
-          ),
+        TextCarousel(
+          textBuilder: (index) => BudgetPeriodType.values[index].name(context),
+          itemCount: BudgetPeriodType.values.length,
+          onPageChanged: (index) => setState(() {
+            _periodType = BudgetPeriodType.values[index];
+          }),
         ),
-        Gap.h16,
         HideableContainer(
           hide: _budgetType == BudgetType.forAccount,
           child: Column(
@@ -251,10 +199,10 @@ class _Selector<T extends BaseModelWithIcon> extends ConsumerStatefulWidget {
   final ValueChanged<List<T>> onChanged;
 
   @override
-  ConsumerState<_Selector<T>> createState() => _AccountSelectorState();
+  ConsumerState<_Selector<T>> createState() => _SelectorState();
 }
 
-class _AccountSelectorState<T extends BaseModelWithIcon> extends ConsumerState<_Selector<T>> {
+class _SelectorState<T extends BaseModelWithIcon> extends ConsumerState<_Selector<T>> {
   final _selectedItems = <T>[];
 
   List<T> _items = [];
@@ -333,7 +281,7 @@ class _Item<T extends BaseModelWithIcon> extends StatelessWidget {
       iconPath: item.iconPath,
       label: item.name,
       labelSize: 18,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       border: Border.all(
         color: isSelected ? item.backgroundColor : context.appTheme.onBackground.withOpacity(0.4),

@@ -110,6 +110,15 @@ enum BudgetPeriodType {
     };
   }
 
+  String name(BuildContext context) {
+    return switch (this) {
+      BudgetPeriodType.daily => context.loc.daily,
+      BudgetPeriodType.weekly => context.loc.weekly,
+      BudgetPeriodType.monthly => context.loc.monthly,
+      BudgetPeriodType.yearly => context.loc.yearly,
+    };
+  }
+
   static BudgetPeriodType fromDatabaseValue(int value) {
     return BudgetPeriodType.values.firstWhere((e) => e.databaseValue == value);
   }
