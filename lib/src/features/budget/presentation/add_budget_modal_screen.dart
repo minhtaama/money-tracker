@@ -123,6 +123,7 @@ class _AddBudgetModalScreenState extends ConsumerState<AddBudgetModalScreen> {
         TextCarousel(
           textBuilder: (index) => BudgetPeriodType.values[index].name(context),
           itemCount: BudgetPeriodType.values.length,
+          withBackground: true,
           onPageChanged: (index) => setState(() {
             _periodType = BudgetPeriodType.values[index];
           }),

@@ -130,6 +130,7 @@ class _EditBudgetModalScreenState extends ConsumerState<EditBudgetModalScreen> {
           textBuilder: (index) => BudgetPeriodType.values[index].name(context),
           itemCount: BudgetPeriodType.values.length,
           initialPageIndex: BudgetPeriodType.values.indexOf(_periodType),
+          withBackground: true,
           onPageChanged: (index) => setState(() {
             _periodType = BudgetPeriodType.values[index];
           }),

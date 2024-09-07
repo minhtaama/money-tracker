@@ -8,6 +8,7 @@ import 'package:money_tracker_app/src/common_widgets/card_item.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/expanded_page_view.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../theme_and_ui/colors.dart';
 import 'custom_tab_bar.dart';
 
 part 'custom_adaptive_page_view.dart';
@@ -42,7 +43,8 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state =
+          context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -53,17 +55,17 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
     super.dispose();
   }
 
-  late bool _showDivider = false;
+  late bool _showShadow = false;
 
   void _onOffsetChange(double offset) {
-    if (offset >= _triggerDividerAtListOffset && _showDivider == false) {
+    if (offset >= _triggerDividerAtListOffset && _showShadow == false) {
       _fadeController.forward(from: 0);
-      _showDivider = true;
+      _showShadow = true;
     }
 
-    if (offset < _triggerDividerAtListOffset && _showDivider == true) {
+    if (offset < _triggerDividerAtListOffset && _showShadow == true) {
       _fadeController.reverse(from: 1);
-      _showDivider = false;
+      _showShadow = false;
     }
   }
 
@@ -93,13 +95,13 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
                 return Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    border: widget.smallTabBar.height == 0
-                        ? null
-                        : Border(
-                            bottom: !context.appTheme.isDarkTheme
-                                ? BorderSide(color: Colors.grey.shade300.withOpacity(_fadeAnimation.value), width: 1.5)
-                                : BorderSide.none,
-                          ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.5),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      )
+                    ],
                   ),
                   child: child,
                 );

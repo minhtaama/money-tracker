@@ -51,72 +51,75 @@ class BudgetsWidget extends ConsumerWidget {
       title: context.loc.budgets,
       emptyTitle: context.loc.noBudgetsAvailable,
       isEmpty: list.isEmpty,
-      child: Column(
-        children: list.map((e) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 1.0, bottom: 5.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      e.budget.name,
-                      style: kHeader2TextStyle.copyWith(
-                        color: context.appTheme.onBackground,
-                        fontSize: 14,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          children: list.map((e) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 1.0, bottom: 5.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        e.budget.name,
+                        style: kHeader2TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    ..._itemIcons(context, e),
-                  ],
+                      const Spacer(),
+                      ..._itemIcons(context, e),
+                    ],
+                  ),
                 ),
-              ),
-              ProgressBar(
-                color: e.currentAmount / e.budget.amount < 0.8
-                    ? context.appTheme.positive
-                    : context.appTheme.negative,
-                percentage: (e.currentAmount / e.budget.amount).clamp(0, 1),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 1.0, top: 5.0, bottom: 10.0),
-                child: Row(
-                  textBaseline: TextBaseline.alphabetic,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  children: [
-                    MoneyAmount(
-                      amount: e.currentAmount,
-                      style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.onBackground,
-                        fontSize: 12,
-                      ),
-                      symbolStyle: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.onBackground,
-                        fontSize: 10,
-                      ),
-                    ),
-                    Text(
-                      '/${CalService.formatCurrency(context, e.budget.amount)}',
-                      style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.onBackground.withOpacity(0.65),
-                        fontSize: 10,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${DateTime.now().getDaysDifferent(e.range.end)} days left',
-                      style: kHeader3TextStyle.copyWith(
-                        color: context.appTheme.onBackground.withOpacity(0.65),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                ProgressBar(
+                  color: e.currentAmount / e.budget.amount < 0.8
+                      ? context.appTheme.positive
+                      : context.appTheme.negative,
+                  percentage: (e.currentAmount / e.budget.amount).clamp(0, 1),
                 ),
-              )
-            ],
-          );
-        }).toList(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 1.0, top: 5.0, bottom: 10.0),
+                  child: Row(
+                    textBaseline: TextBaseline.alphabetic,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    children: [
+                      MoneyAmount(
+                        amount: e.currentAmount,
+                        style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 12,
+                        ),
+                        symbolStyle: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground,
+                          fontSize: 10,
+                        ),
+                      ),
+                      Text(
+                        '/${CalService.formatCurrency(context, e.budget.amount)}',
+                        style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground.withOpacity(0.65),
+                          fontSize: 10,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${DateTime.now().getDaysDifferent(e.range.end)} days left',
+                        style: kHeader3TextStyle.copyWith(
+                          color: context.appTheme.onBackground.withOpacity(0.65),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            );
+          }).toList(),
+        ),
       ),
     );
   }

@@ -41,7 +41,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   final _todayMonth = DateTime.now().onlyYearMonthDay.monthRange;
 
   late List<DateTime> _selectedDateTimes = [_todayMonth.start, _todayMonth.end];
-  _ReportType _type = _ReportType.month;
+  ReportPeriod _reportPeriod = ReportPeriod.month;
 
   bool _hideDateSelector = true;
 
@@ -84,6 +84,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         Gap.h32,
         CategoryReport(
           key: const ValueKey('CategoryReport'),
+          reportPeriod: _reportPeriod,
           dateTimes: _selectedDateTimes,
         ),
         Gap.h32,
@@ -110,7 +111,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   HideableContainer(
-                    hide: _type != _ReportType.month ||
+                    hide: _reportPeriod != ReportPeriod.month ||
                         _selectedDateTimes.first.isSameMonthAs(_todayMonth.start),
                     axis: Axis.horizontal,
                     child: Padding(
@@ -128,15 +129,15 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                     ),
                   ),
                   Expanded(
-                    child: CustomSliderToggle<_ReportType>(
-                      values: const [_ReportType.month, _ReportType.week],
+                    child: CustomSliderToggle<ReportPeriod>(
+                      values: const [ReportPeriod.month, ReportPeriod.week],
                       height: 35,
-                      initialValueIndex: [_ReportType.month, _ReportType.week].indexOf(_type),
+                      initialValueIndex: [ReportPeriod.month, ReportPeriod.week].indexOf(_reportPeriod),
                       iconPaths: [AppIcons.monthlyLight, AppIcons.weeklyLight],
                       fontSize: 14,
                       labels: [context.loc.monthly, context.loc.weekly],
                       onTap: (type) => setState(() {
-                        _type = type;
+                        _reportPeriod = type;
                       }),
                     ),
                   ),
@@ -146,8 +147,9 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             AnimatedCrossFade(
               duration: k350msDuration,
               sizeCurve: Curves.easeOut,
-              crossFadeState:
-                  _type == _ReportType.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              crossFadeState: _reportPeriod == ReportPeriod.month
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
               firstChild: _MonthCarousel(
                 key: _monthCarouselKey,
                 onMonthChange: (dateTimeList) => setState(() {
@@ -222,7 +224,7 @@ class _MonthCarouselState extends State<_MonthCarousel> {
   }
 }
 
-enum _ReportType {
+enum ReportPeriod {
   month,
   week,
 }

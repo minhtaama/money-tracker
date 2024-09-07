@@ -25,6 +25,7 @@ class TextCarousel extends StatefulWidget {
     this.onPageChanged,
     this.physics,
     this.itemCount,
+    this.withBackground = false,
   });
 
   final PageController? controller;
@@ -38,6 +39,7 @@ class TextCarousel extends StatefulWidget {
   final String? Function(int pageIndex)? subTextBuilder;
   final ScrollPhysics? physics;
   final int? itemCount;
+  final bool withBackground;
 
   @override
   State<TextCarousel> createState() => _TextCarouselState();
@@ -88,6 +90,7 @@ class _TextCarouselState extends State<TextCarousel> {
                   isActive: _currentPageIndex == pageIndex,
                   text: widget.textBuilder(pageIndex),
                   subText: widget.subTextBuilder?.call(pageIndex),
+                  withBackground: widget.withBackground,
                   onChange: (width) {
                     setState(() {
                       _betweenButtonsGap = width.clamp(70, 195) + 10;
@@ -148,7 +151,7 @@ class _CarouselContent extends StatefulWidget {
     this.subText,
     required this.isActive,
     this.onChange,
-    this.withBackground = true,
+    this.withBackground = false,
   });
 
   final bool isActive;
