@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/reports/presentation/reports_screen.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/domain/transaction_base.dart';
+import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
+import 'package:money_tracker_app/src/utils/enums.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../common_widgets/custom_inkwell.dart';
 import '../../../common_widgets/modal_and_dialog.dart';
@@ -408,6 +413,8 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
 
   late DateTimeRange _lastSamePeriod;
 
+  bool _isCompareWithLastSamePeriod = false;
+
   void _getPeriods() {
     _previousPeriod = widget.reportPeriod == ReportPeriod.month
         ? DateTimeRange(
@@ -489,7 +496,7 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
     }
 
     for (var entry in incomeThisPeriod) {
-      _expenseDataList.add(
+      _incomeDataList.add(
         _CategoryComparison(
           category: entry.key,
           thisPeriod: entry.value,
@@ -507,7 +514,11 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
   @override
   void initState() {
     _getPeriods();
-    _getDataList();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _getDataList();
+      });
+    });
     super.initState();
   }
 
@@ -522,103 +533,284 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text(_previousPeriod.toString()),
-          Text(_lastSamePeriod.toString()),
-          ..._expenseDataList.map((e) => Row(
-                children: [
-                  Text(e.category.name),
-                  Text(e.thisPeriod.toString()),
-                  Text(e.previousPeriod.toString()),
-                  Text(e.lastSamePeriod.toString()),
-                ],
-              )),
-          ..._incomeDataList.map((e) => Row(
-                children: [
-                  Text(e.category.name),
-                  Text(e.thisPeriod.toString()),
-                  Text(e.previousPeriod.toString()),
-                  Text(e.lastSamePeriod.toString()),
-                ],
-              )),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _header(),
+              Gap.divider(context),
+              ..._expenseDataList.map((e) => _label(e, _isCompareWithLastSamePeriod)),
+              Gap.divider(context),
+              ..._incomeDataList.map((e) => _label(e, _isCompareWithLastSamePeriod)),
+            ],
+          ),
+          Positioned.fill(
+            child: _buttons(),
+          ),
         ],
       ),
     );
   }
 
-  Widget label(MapEntry<Category, double> e, {required bool Function() isTouched}) => CustomInkWell(
-        onTap: () {},
-        inkColor: context.appTheme.onBackground,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _label(_CategoryComparison e, bool isCompareWithLastSamePeriod) {
+    final textColor =
+        e.category.type == CategoryType.income ? context.appTheme.positive : context.appTheme.negative;
+
+    final change = isCompareWithLastSamePeriod
+        ? (((e.thisPeriod - e.lastSamePeriod) / e.thisPeriod) * 100).floor()
+        : (((e.thisPeriod - e.previousPeriod) / e.thisPeriod) * 100).floor();
+
+    final prefix = change > 0
+        ? '+ '
+        : change < 0
+            ? '- '
+            : '';
+
+    final expenseChangeBgr = change > 0
+        ? context.appTheme.negative
+        : change < 0
+            ? context.appTheme.positive
+            : AppColors.greyBgr(context);
+
+    final incomeChangeBgr = change > 0
+        ? context.appTheme.positive
+        : change < 0
+            ? context.appTheme.negative
+            : AppColors.greyBgr(context);
+
+    final expenseChangeColor = change > 0
+        ? context.appTheme.onNegative
+        : change < 0
+            ? context.appTheme.onPositive
+            : context.appTheme.onBackground;
+
+    final incomeChangeColor = change > 0
+        ? context.appTheme.onPositive
+        : change < 0
+            ? context.appTheme.onNegative
+            : context.appTheme.onBackground;
+
+    final changeBgr = e.category.type == CategoryType.income ? incomeChangeBgr : expenseChangeBgr;
+
+    final changeColor = e.category.type == CategoryType.income ? incomeChangeColor : expenseChangeColor;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Column(
             children: [
-              Container(
-                height: 20,
-                width: 20,
-                decoration: BoxDecoration(
-                  color: e.key.backgroundColor,
-                  borderRadius: BorderRadius.circular(5),
-                ),
+              SvgIcon(
+                e.category.iconPath,
+                color: e.category.backgroundColor.lerpWithOnBg(context, 0.1),
               ),
-              Gap.w4,
-              Expanded(
-                child: AnimatedDefaultTextStyle(
-                  duration: k250msDuration,
-                  style: kHeader4TextStyle.copyWith(
-                    color: context.appTheme.onBackground,
-                    fontSize: 14,
-                    fontFamily: 'WixMadeforDisplay',
-                    fontWeight: isTouched() ? FontWeight.w800 : null,
-                  ),
-                  child: Text(
-                    e.key.name,
-                  ),
+              Gap.h4,
+              Text(
+                e.category.name,
+                style: kHeader4TextStyle.copyWith(
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                  fontSize: 11,
+                  height: 0.99,
                 ),
-              ),
-              MoneyAmount(
-                amount: e.value,
-                style: kHeader2TextStyle.copyWith(
-                  color: context.appTheme.onBackground,
-                  fontSize: 14,
-                ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
         ),
-      );
-
-  Widget header(String text, double amount) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Expanded(
-              child: Text(
-                text,
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Center(
+              child: Column(
+                children: [
+                  MoneyAmount(
+                    amount: e.thisPeriod,
+                    style: kHeader4TextStyle.copyWith(
+                      color: textColor,
+                      fontSize: 12,
+                      height: 0.99,
+                    ),
+                  ),
+                  Gap.h8,
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                    decoration: BoxDecoration(
+                      color: changeBgr.withOpacity(0.75),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      '$prefix${change.abs()}%',
+                      style: kHeader2TextStyle.copyWith(
+                        color: changeColor,
+                        fontSize: 11,
+                        height: 0.99,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Center(
+              child: MoneyAmount(
+                amount: e.previousPeriod,
                 style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.65),
-                  fontSize: 14,
+                  color: textColor.withOpacity(0.65),
+                  fontSize: 12,
                   height: 0.99,
                 ),
               ),
             ),
-            MoneyAmount(
-              amount: amount,
-              style: kHeader4TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65),
-                fontSize: 14,
-                height: 0.99,
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Center(
+              child: MoneyAmount(
+                amount: e.lastSamePeriod,
+                style: kHeader4TextStyle.copyWith(
+                  color: textColor.withOpacity(0.65),
+                  fontSize: 12,
+                  height: 0.99,
+                ),
               ),
             ),
-          ],
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _header() => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Gap.noGap,
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              'This period'.hardcoded,
+              style: kHeader4TextStyle.copyWith(
+                color: context.appTheme.onBackground.withOpacity(0.65),
+                fontSize: 12,
+                height: 0.99,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Previous period'.hardcoded,
+                style: kHeader4TextStyle.copyWith(
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                  fontSize: 12,
+                  height: 0.99,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Same last period'.hardcoded,
+                style: kHeader4TextStyle.copyWith(
+                  color: context.appTheme.onBackground.withOpacity(0.65),
+                  fontSize: 12,
+                  height: 0.99,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
       );
+
+  Widget _buttons() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Gap.noGap,
+        ),
+        Expanded(
+          flex: 3,
+          child: Gap.noGap,
+        ),
+        Expanded(
+          flex: 3,
+          child: CustomInkWell(
+            onTap: () {
+              if (_isCompareWithLastSamePeriod) {
+                setState(() {
+                  _isCompareWithLastSamePeriod = false;
+                });
+              }
+            },
+            inkColor: context.appTheme.primary,
+            borderRadius: BorderRadius.circular(7),
+            child: AnimatedOpacity(
+              duration: k150msDuration,
+              curve: Curves.fastOutSlowIn,
+              opacity: _isCompareWithLastSamePeriod ? 0 : 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.appTheme.primary.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: context.appTheme.primary),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: CustomInkWell(
+            onTap: () {
+              if (!_isCompareWithLastSamePeriod) {
+                setState(() {
+                  _isCompareWithLastSamePeriod = true;
+                });
+              }
+            },
+            inkColor: context.appTheme.primary,
+            borderRadius: BorderRadius.circular(7),
+            child: AnimatedOpacity(
+              duration: k150msDuration,
+              curve: Curves.fastOutSlowIn,
+              opacity: _isCompareWithLastSamePeriod ? 1 : 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.appTheme.primary.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: context.appTheme.primary),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _CategoryComparison {

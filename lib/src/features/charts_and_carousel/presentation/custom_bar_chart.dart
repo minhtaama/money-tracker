@@ -69,7 +69,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
   double _chartWidth = 1;
 
   Size _toolTipSize = Size.zero;
-  Offset _tooltipLocalPosition = const Offset(0, 0);
+  Offset _tooltipLocalPosition = const Offset(-1000, -1000);
 
   Duration _duration = k1msDuration;
 
@@ -218,6 +218,13 @@ class _CustomBarChartState extends State<CustomBarChart> {
     final double horizontalTooltipOverflow =
         math.max(0, leftTooltipPos + _toolTipSize.width - _chartWidth);
 
+    // print('==============================');
+    // print('touchOffsetY: $touchOffsetY');
+    // print('touchOffsetX: $touchOffsetX');
+    // print('_toolTipSize: $_toolTipSize');
+    // print('topTooltipPos: $topTooltipPos');
+    // print('leftTooltipPos: $leftTooltipPos');
+
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (_) {
         _updateAllSize();
@@ -289,8 +296,12 @@ class _CustomBarChartState extends State<CustomBarChart> {
                     maxWidth: (_chartWidth - 100).clamp(0, double.infinity), maxHeight: 300),
                 child: SizedBox(
                   key: _toolTipKey,
-                  child:
-                      _touchedGroupIndex != -1 ? widget.tooltipBuilder?.call(_touchedGroupIndex) : null,
+                  child: _touchedGroupIndex != -1
+                      ? widget.tooltipBuilder?.call(_touchedGroupIndex)
+                      : SizedBox(
+                          width: (_chartWidth - 100).clamp(0, double.infinity),
+                          height: 300,
+                        ),
                 ),
               ),
             ),
