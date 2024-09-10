@@ -30,6 +30,9 @@
   "plannedTransactions": "Giao dịch theo kế hoạch",
   "checkpoint": "Checkpoint",
 
+  "totalIncome": "Tổng thu nhập",
+  "totalExpense": "Tổng chi tiêu",
+
   "today": "Hôm nay",
   "daily": "Hàng ngày",
   "weekly": "Hàng tuần",

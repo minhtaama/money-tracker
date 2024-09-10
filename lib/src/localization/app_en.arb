@@ -30,6 +30,9 @@
   "plannedTransactions": "Planned transactions",
   "checkpoint": "Checkpoint",
 
+  "totalIncome": "Total income",
+  "totalExpense": "Total expense",
+
   "today": "Today",
   "daily": "Daily",
   "weekly": "Weekly",

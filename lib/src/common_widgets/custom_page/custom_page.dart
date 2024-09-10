@@ -43,8 +43,7 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
     _fadeAnimation = _fadeController.drive(CurveTween(curve: Curves.easeInOut));
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(systemIconBrightnessProvider.notifier).state =
-          context.appTheme.systemIconBrightnessOnSmallTabBar;
+      ref.read(systemIconBrightnessProvider.notifier).state = context.appTheme.systemIconBrightnessOnSmallTabBar;
     });
     super.initState();
   }
@@ -97,7 +96,9 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.5),
+                        color: context.appTheme.isDarkTheme
+                            ? AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.2)
+                            : AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.5),
                         blurRadius: 6,
                         spreadRadius: 1,
                       )

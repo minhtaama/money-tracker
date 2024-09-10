@@ -12,6 +12,7 @@ import '../../../utils/enums.dart';
 class Category extends BaseModelWithIcon<CategoryDb> {
   final CategoryType type;
   final bool isNotExistInDatabase;
+  final bool isInitialIncome;
 
   static Category initialIncome(BuildContext context) {
     return Category._(
@@ -21,6 +22,8 @@ class Category extends BaseModelWithIcon<CategoryDb> {
       iconColor: context.appTheme.onPositive,
       backgroundColor: context.appTheme.positive,
       iconPath: AppIcons.addLight,
+      isNotExistInDatabase: true,
+      isInitialIncome: true,
     );
   }
 
@@ -47,6 +50,7 @@ class Category extends BaseModelWithIcon<CategoryDb> {
     required super.iconPath,
     required this.type,
     this.isNotExistInDatabase = false,
+    this.isInitialIncome = false,
   });
 }
 

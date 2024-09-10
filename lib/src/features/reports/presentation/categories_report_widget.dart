@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/features/category/domain/category.dart';
 import 'package:money_tracker_app/src/features/reports/presentation/reports_screen.dart';
@@ -38,7 +36,7 @@ class CategoryReport extends StatelessWidget {
 }
 
 class _CategoryReportSmall extends ConsumerStatefulWidget {
-  const _CategoryReportSmall({super.key, required this.reportPeriod, required this.dateTimes});
+  const _CategoryReportSmall({required this.reportPeriod, required this.dateTimes});
 
   final ReportPeriod reportPeriod;
   final List<DateTime> dateTimes;
@@ -381,9 +379,7 @@ class _CategoryReportSmallState extends ConsumerState<_CategoryReportSmall> {
         values: list,
         center: SvgIcon(
           isExpense ? AppIcons.uploadLight : AppIcons.downloadLight,
-          color: isExpense
-              ? context.appTheme.negative.withOpacity(0.65)
-              : context.appTheme.positive.withOpacity(0.65),
+          color: isExpense ? context.appTheme.negative.withOpacity(0.65) : context.appTheme.positive.withOpacity(0.65),
           size: 25,
         ),
         onChartTap: onChartTap,
@@ -394,7 +390,7 @@ class _CategoryReportSmallState extends ConsumerState<_CategoryReportSmall> {
 }
 
 class _CategoryReportDetails extends ConsumerStatefulWidget {
-  const _CategoryReportDetails({super.key, required this.reportPeriod, required this.dateTimes});
+  const _CategoryReportDetails({required this.reportPeriod, required this.dateTimes});
 
   final ReportPeriod reportPeriod;
   final List<DateTime> dateTimes;
@@ -419,7 +415,7 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
     _previousPeriod = widget.reportPeriod == ReportPeriod.month
         ? DateTimeRange(
             start: widget.dateTimes.first.copyWith(month: widget.dateTimes.first.month - 1),
-            end: widget.dateTimes.last.copyWith(month: widget.dateTimes.last.month - 1),
+            end: widget.dateTimes.first.subtract(const Duration(days: 1)),
           )
         : DateTimeRange(
             start: widget.dateTimes.first.subtract(const Duration(days: 7)),
@@ -437,7 +433,7 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
           );
   }
 
-  void _getDataList() {
+  void _getData() {
     _expenseDataList.clear();
     _incomeDataList.clear();
 
@@ -480,34 +476,121 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
       useOther: false,
     );
 
-    for (var entry in expenseThisPeriod) {
-      _expenseDataList.add(
+    _buildList(_expenseDataList, expenseThisPeriod, expensePreviousPeriod, expenseLastSamePeriod);
+    _buildList(_incomeDataList, incomeThisPeriod, incomePreviousPeriod, incomeLastSamePeriod);
+
+    final totalIncome = _incomeDataList.isEmpty
+        ? _CategoryComparison(
+            type: CategoryType.income,
+            category: null,
+            thisPeriod: 0.0,
+            previousPeriod: 0.0,
+            lastSamePeriod: 0.0,
+          )
+        : _incomeDataList.length == 1
+            ? _incomeDataList[0].toNullCategory()
+            : _incomeDataList.reduce(
+                (val, e) => _CategoryComparison(
+                  type: CategoryType.income,
+                  category: null,
+                  thisPeriod: val.thisPeriod + e.thisPeriod,
+                  previousPeriod: val.previousPeriod + e.previousPeriod,
+                  lastSamePeriod: val.lastSamePeriod + e.lastSamePeriod,
+                ),
+              );
+
+    final totalExpense = _expenseDataList.isEmpty
+        ? _CategoryComparison(
+            type: CategoryType.expense,
+            category: null,
+            thisPeriod: 0.0,
+            previousPeriod: 0.0,
+            lastSamePeriod: 0.0,
+          )
+        : _expenseDataList.length == 1
+            ? _expenseDataList[0].toNullCategory()
+            : _expenseDataList.reduce(
+                (val, e) => _CategoryComparison(
+                  type: CategoryType.expense,
+                  category: null,
+                  thisPeriod: val.thisPeriod + e.thisPeriod,
+                  previousPeriod: val.previousPeriod + e.previousPeriod,
+                  lastSamePeriod: val.lastSamePeriod + e.lastSamePeriod,
+                ),
+              );
+
+    _incomeDataList.insert(0, totalIncome);
+    _expenseDataList.insert(0, totalExpense);
+  }
+
+  void _buildList(
+    List<_CategoryComparison> list,
+    List<MapEntry<Category, double>> mapListThisPeriod,
+    List<MapEntry<Category, double>> mapListPreviousPeriod,
+    List<MapEntry<Category, double>> mapListLastSamePeriod,
+  ) {
+    for (var entry in mapListThisPeriod) {
+      if (entry.key.isInitialIncome) {
+        continue;
+      }
+
+      list.add(
         _CategoryComparison(
+          type: entry.key.type,
           category: entry.key,
           thisPeriod: entry.value,
-          previousPeriod: expensePreviousPeriod
+          previousPeriod: mapListPreviousPeriod
               .firstWhere((e) => e.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
               .value,
-          lastSamePeriod: expenseLastSamePeriod
+          lastSamePeriod: mapListLastSamePeriod
               .firstWhere((e) => e.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
               .value,
         ),
       );
     }
 
-    for (var entry in incomeThisPeriod) {
-      _incomeDataList.add(
-        _CategoryComparison(
+    for (var entry in mapListPreviousPeriod) {
+      // If we found element of map in list or the element of map is not exist in database,
+      // then we don't add the element to list.
+      list.firstWhere((e) => e.category == entry.key || entry.key.isInitialIncome, orElse: () {
+        final newCat = _CategoryComparison(
+          type: entry.key.type,
           category: entry.key,
-          thisPeriod: entry.value,
-          previousPeriod: incomePreviousPeriod
-              .firstWhere((e) => e.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
+          thisPeriod: 0,
+          previousPeriod: mapListPreviousPeriod
+              .firstWhere((e2) => e2.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
               .value,
-          lastSamePeriod: incomeLastSamePeriod
-              .firstWhere((e) => e.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
+          lastSamePeriod: mapListLastSamePeriod
+              .firstWhere((e2) => e2.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
               .value,
-        ),
-      );
+        );
+
+        list.add(newCat);
+
+        return newCat;
+      });
+    }
+
+    for (var entry in mapListLastSamePeriod) {
+      // If we found element of map in list or the element of map is not exist in database,
+      // then we don't add the element to list.
+      list.firstWhere((e) => e.category == entry.key || entry.key.isInitialIncome, orElse: () {
+        final newCat = _CategoryComparison(
+          type: entry.key.type,
+          category: entry.key,
+          thisPeriod: 0,
+          previousPeriod: mapListPreviousPeriod
+              .firstWhere((e2) => e2.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
+              .value,
+          lastSamePeriod: mapListLastSamePeriod
+              .firstWhere((e2) => e2.key == entry.key, orElse: () => MapEntry(DeletedCategory(), 0))
+              .value,
+        );
+
+        list.add(newCat);
+
+        return newCat;
+      });
     }
   }
 
@@ -516,7 +599,7 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
     _getPeriods();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        _getDataList();
+        _getData();
       });
     });
     super.initState();
@@ -525,7 +608,7 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
   @override
   void didUpdateWidget(covariant _CategoryReportDetails oldWidget) {
     _getPeriods();
-    _getDataList();
+    _getData();
     super.didUpdateWidget(oldWidget);
   }
 
@@ -539,14 +622,14 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
             mainAxisSize: MainAxisSize.min,
             children: [
               _header(),
-              Gap.divider(context),
+              Gap.divider(context, color: context.appTheme.onBackground.withOpacity(0.15)),
               ..._expenseDataList.map((e) => _label(e, _isCompareWithLastSamePeriod)),
-              Gap.divider(context),
+              Gap.divider(context, color: context.appTheme.onBackground.withOpacity(0.15)),
               ..._incomeDataList.map((e) => _label(e, _isCompareWithLastSamePeriod)),
             ],
           ),
           Positioned.fill(
-            child: _buttons(),
+            child: _foregroundDecoration(),
           ),
         ],
       ),
@@ -554,141 +637,162 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
   }
 
   Widget _label(_CategoryComparison e, bool isCompareWithLastSamePeriod) {
-    final textColor =
-        e.category.type == CategoryType.income ? context.appTheme.positive : context.appTheme.negative;
+    final textColor = e.type == CategoryType.income ? context.appTheme.positive : context.appTheme.negative;
 
     final change = isCompareWithLastSamePeriod
-        ? (((e.thisPeriod - e.lastSamePeriod) / e.thisPeriod) * 100).floor()
-        : (((e.thisPeriod - e.previousPeriod) / e.thisPeriod) * 100).floor();
+        ? e.lastSamePeriod == 0 || e.thisPeriod == 0
+            ? null
+            : (((e.thisPeriod - e.lastSamePeriod) / e.lastSamePeriod) * 100).floor()
+        : e.previousPeriod == 0 || e.thisPeriod == 0
+            ? null
+            : (((e.thisPeriod - e.previousPeriod) / e.previousPeriod) * 100).floor();
 
-    final prefix = change > 0
-        ? '+ '
-        : change < 0
-            ? '- '
-            : '';
+    final prefix = change == null
+        ? ''
+        : change > 0
+            ? '+ '
+            : change < 0
+                ? '- '
+                : '';
 
-    final expenseChangeBgr = change > 0
-        ? context.appTheme.negative
-        : change < 0
-            ? context.appTheme.positive
-            : AppColors.greyBgr(context);
-
-    final incomeChangeBgr = change > 0
-        ? context.appTheme.positive
-        : change < 0
+    final expenseChangeBgr = change == null
+        ? AppColors.greyBgr(context)
+        : change > 0
             ? context.appTheme.negative
-            : AppColors.greyBgr(context);
+            : change < 0
+                ? context.appTheme.positive
+                : AppColors.greyBgr(context);
 
-    final expenseChangeColor = change > 0
-        ? context.appTheme.onNegative
-        : change < 0
-            ? context.appTheme.onPositive
-            : context.appTheme.onBackground;
+    final incomeChangeBgr = change == null
+        ? AppColors.greyBgr(context)
+        : change > 0
+            ? context.appTheme.positive
+            : change < 0
+                ? context.appTheme.negative
+                : AppColors.greyBgr(context);
 
-    final incomeChangeColor = change > 0
-        ? context.appTheme.onPositive
-        : change < 0
+    final expenseChangeColor = change == null
+        ? context.appTheme.onBackground
+        : change > 0
             ? context.appTheme.onNegative
-            : context.appTheme.onBackground;
+            : change < 0
+                ? context.appTheme.onPositive
+                : context.appTheme.onBackground;
 
-    final changeBgr = e.category.type == CategoryType.income ? incomeChangeBgr : expenseChangeBgr;
+    final incomeChangeColor = change == null
+        ? context.appTheme.onBackground
+        : change > 0
+            ? context.appTheme.onPositive
+            : change < 0
+                ? context.appTheme.onNegative
+                : context.appTheme.onBackground;
 
-    final changeColor = e.category.type == CategoryType.income ? incomeChangeColor : expenseChangeColor;
+    final changeBgr = e.type == CategoryType.income ? incomeChangeBgr : expenseChangeBgr;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              SvgIcon(
-                e.category.iconPath,
-                color: e.category.backgroundColor.lerpWithOnBg(context, 0.1),
-              ),
-              Gap.h4,
-              Text(
-                e.category.name,
-                style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.65),
-                  fontSize: 11,
-                  height: 0.99,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Center(
-              child: Column(
-                children: [
-                  MoneyAmount(
-                    amount: e.thisPeriod,
-                    style: kHeader4TextStyle.copyWith(
-                      color: textColor,
-                      fontSize: 12,
-                      height: 0.99,
-                    ),
+    final changeColor = e.type == CategoryType.income ? incomeChangeColor : expenseChangeColor;
+
+    final totalText = e.type == CategoryType.income ? context.loc.totalIncome : context.loc.totalExpense;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                e.category != null
+                    ? SvgIcon(
+                        e.category!.iconPath,
+                        size: 20,
+                        color: e.category!.backgroundColor.lerpWithOnBg(context, 0.1),
+                      )
+                    : Gap.noGap,
+                Text(
+                  e.category?.name ?? totalText,
+                  style: kHeader4TextStyle.copyWith(
+                    color: context.appTheme.onBackground.withOpacity(e.category == null ? 1 : 0.65),
+                    fontSize: e.category == null ? 12 : 10,
+                    height: e.category == null ? null : 0.99,
                   ),
-                  Gap.h8,
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
-                    decoration: BoxDecoration(
-                      color: changeBgr.withOpacity(0.75),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      '$prefix${change.abs()}%',
-                      style: kHeader2TextStyle.copyWith(
-                        color: changeColor,
-                        fontSize: 11,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    MoneyAmount(
+                      amount: e.thisPeriod,
+                      style: kHeader3TextStyle.copyWith(
+                        color: textColor.withOpacity(e.category == null ? 1 : 0.65),
+                        fontSize: 12,
                         height: 0.99,
                       ),
-                      textAlign: TextAlign.center,
                     ),
+                    Gap.h8,
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                      decoration: BoxDecoration(
+                        color: changeBgr.withOpacity(0.75),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        change == null ? '-' : '$prefix${change.abs()}%',
+                        style: kHeader2TextStyle.copyWith(
+                          color: changeColor,
+                          fontSize: 11,
+                          height: 0.99,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
+                child: MoneyAmount(
+                  amount: e.previousPeriod,
+                  style: kHeader3TextStyle.copyWith(
+                    color: textColor.withOpacity(e.category == null ? 1 : 0.65),
+                    fontSize: 12,
+                    height: 0.99,
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Center(
-              child: MoneyAmount(
-                amount: e.previousPeriod,
-                style: kHeader4TextStyle.copyWith(
-                  color: textColor.withOpacity(0.65),
-                  fontSize: 12,
-                  height: 0.99,
                 ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Center(
-              child: MoneyAmount(
-                amount: e.lastSamePeriod,
-                style: kHeader4TextStyle.copyWith(
-                  color: textColor.withOpacity(0.65),
-                  fontSize: 12,
-                  height: 0.99,
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
+                child: MoneyAmount(
+                  amount: e.lastSamePeriod,
+                  style: kHeader3TextStyle.copyWith(
+                    color: textColor.withOpacity(e.category == null ? 1 : 0.65),
+                    fontSize: 12,
+                    height: 0.99,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -744,7 +848,30 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
         ],
       );
 
-  Widget _buttons() {
+  Widget _foregroundDecoration() {
+    Widget decoration1() => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.appTheme.primary.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+              //border: Border.all(color: context.appTheme.primary),
+            ),
+          ),
+        );
+
+    Widget decoration2(double opacity) => AnimatedOpacity(
+          duration: k150msDuration,
+          curve: Curves.fastOutSlowIn,
+          opacity: opacity,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: context.appTheme.primary.withOpacity(0.65)),
+            ),
+          ),
+        );
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -754,57 +881,41 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
         ),
         Expanded(
           flex: 3,
-          child: Gap.noGap,
+          child: decoration1(),
         ),
         Expanded(
           flex: 3,
-          child: CustomInkWell(
-            onTap: () {
-              if (_isCompareWithLastSamePeriod) {
-                setState(() {
-                  _isCompareWithLastSamePeriod = false;
-                });
-              }
-            },
-            inkColor: context.appTheme.primary,
-            borderRadius: BorderRadius.circular(7),
-            child: AnimatedOpacity(
-              duration: k150msDuration,
-              curve: Curves.fastOutSlowIn,
-              opacity: _isCompareWithLastSamePeriod ? 0 : 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.appTheme.primary.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: context.appTheme.primary),
-                ),
-              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+            child: CustomInkWell(
+              onTap: () {
+                if (_isCompareWithLastSamePeriod) {
+                  setState(() {
+                    _isCompareWithLastSamePeriod = false;
+                  });
+                }
+              },
+              inkColor: context.appTheme.primary,
+              borderRadius: BorderRadius.circular(7),
+              child: decoration2(_isCompareWithLastSamePeriod ? 0 : 1),
             ),
           ),
         ),
         Expanded(
           flex: 3,
-          child: CustomInkWell(
-            onTap: () {
-              if (!_isCompareWithLastSamePeriod) {
-                setState(() {
-                  _isCompareWithLastSamePeriod = true;
-                });
-              }
-            },
-            inkColor: context.appTheme.primary,
-            borderRadius: BorderRadius.circular(7),
-            child: AnimatedOpacity(
-              duration: k150msDuration,
-              curve: Curves.fastOutSlowIn,
-              opacity: _isCompareWithLastSamePeriod ? 1 : 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.appTheme.primary.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: context.appTheme.primary),
-                ),
-              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+            child: CustomInkWell(
+              onTap: () {
+                if (!_isCompareWithLastSamePeriod) {
+                  setState(() {
+                    _isCompareWithLastSamePeriod = true;
+                  });
+                }
+              },
+              inkColor: context.appTheme.primary,
+              borderRadius: BorderRadius.circular(7),
+              child: decoration2(_isCompareWithLastSamePeriod ? 1 : 0),
             ),
           ),
         ),
@@ -814,14 +925,26 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
 }
 
 class _CategoryComparison {
-  final Category category;
+  final CategoryType type;
+  final Category? category;
   final double thisPeriod;
   final double previousPeriod;
   final double lastSamePeriod;
 
   _CategoryComparison(
-      {required this.category,
+      {required this.type,
+      required this.category,
       required this.thisPeriod,
       required this.previousPeriod,
       required this.lastSamePeriod});
+
+  _CategoryComparison toNullCategory() {
+    return _CategoryComparison(
+      type: type,
+      category: null,
+      thisPeriod: thisPeriod,
+      previousPeriod: previousPeriod,
+      lastSamePeriod: lastSamePeriod,
+    );
+  }
 }
