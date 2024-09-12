@@ -15,6 +15,14 @@ abstract class BaseModel<T extends IRealmObjectWithID> {
   T get databaseObject => _databaseObject;
 
   ObjectId get id => _databaseObject.id;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BaseModel && runtimeType == other.runtimeType && _databaseObject.id == other._databaseObject.id;
+
+  @override
+  int get hashCode => _databaseObject.hashCode;
 }
 
 @immutable

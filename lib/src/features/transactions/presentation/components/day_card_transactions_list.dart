@@ -17,75 +17,96 @@ class DayCardTransactionsList extends StatelessWidget {
     super.key,
     required this.transactions,
     this.onTransactionTap,
+    this.selectedTransactions = const [],
+    this.onLongPressTransaction,
+    this.isInMultiSelectionMode = false,
   });
 
   final List<BaseTransaction> transactions;
   final void Function(BaseTransaction)? onTransactionTap;
+  final List<BaseTransaction> selectedTransactions;
+  final Function(BaseTransaction)? onLongPressTransaction;
+  final bool isInMultiSelectionMode;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: List.generate(transactions.length, (index) {
         final transaction = transactions[index];
+        final isSelected = selectedTransactions.contains(transaction);
 
-        return CustomInkWell(
-          inkColor: AppColors.grey(context),
-          onTap: () => onTransactionTap?.call(transaction),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TxnHomeCategoryIcon(transaction: transaction),
-                    Gap.w8,
-                    Expanded(
-                      child: switch (transaction) {
-                        Transfer() => _TransferDetails(
-                            transaction: transaction,
+        return AnimatedContainer(
+          duration: k150msDuration,
+          color: context.appTheme.primary.withOpacity(isSelected ? 0.15 : 0),
+          child: CustomInkWell(
+            inkColor: context.appTheme.primary.withOpacity(isSelected ? 0.05 : 0.15),
+            onTap: () {
+              if (isInMultiSelectionMode) {
+                onLongPressTransaction?.call(transaction);
+              } else {
+                onTransactionTap?.call(transaction);
+              }
+            },
+            onLongPress: () => onLongPressTransaction?.call(transaction),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TxnHomeCategoryIcon(
+                        transaction: transaction,
+                        isSelected: isSelected,
+                      ),
+                      Gap.w8,
+                      Expanded(
+                        child: switch (transaction) {
+                          Transfer() => _TransferDetails(
+                              transaction: transaction,
+                            ),
+                          IBaseTransactionWithCategory() => _WithCategoryDetails(
+                              transaction: transaction,
+                            ),
+                          CreditPayment() => _PaymentDetails(transaction: transaction),
+                          CreditCheckpoint() => Gap.noGap,
+                          //TODO: styling checkpoint
+                        },
+                      ),
+                      Gap.w8,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            children: [
+                              transaction is BaseRegularTransaction && transaction.recurrence != null
+                                  ? HelpButton(
+                                      text: context.loc.recurrenceTransactions,
+                                      size: 15,
+                                      yOffset: 1,
+                                      iconPath: AppIcons.switchTwoTone,
+                                    )
+                                  : Gap.noGap,
+                              Gap.w4,
+                              TxnAmount(transaction: transaction),
+                            ],
                           ),
-                        IBaseTransactionWithCategory() => _WithCategoryDetails(
-                            transaction: transaction,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              TxnAccountName(transaction: transaction),
+                              Gap.w4,
+                              TxnAccountIcon(transaction: transaction),
+                            ],
                           ),
-                        CreditPayment() => _PaymentDetails(transaction: transaction),
-                        CreditCheckpoint() => Gap.noGap,
-                        //TODO: styling checkpoint
-                      },
-                    ),
-                    Gap.w8,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          children: [
-                            transaction is BaseRegularTransaction && transaction.recurrence != null
-                                ? HelpButton(
-                                    text: context.loc.recurrenceTransactions,
-                                    size: 15,
-                                    yOffset: 1,
-                                    iconPath: AppIcons.switchTwoTone,
-                                  )
-                                : Gap.noGap,
-                            Gap.w4,
-                            TxnAmount(transaction: transaction),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            TxnAccountName(transaction: transaction),
-                            Gap.w4,
-                            TxnAccountIcon(transaction: transaction),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                TxnNote(transaction: transaction),
-              ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  TxnNote(transaction: transaction),
+                ],
+              ),
             ),
           ),
         );

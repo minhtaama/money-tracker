@@ -39,16 +39,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   late final DateTime _today = DateTime.now().onlyYearMonth;
   late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
-
-  //late int _currentPageIndex = _initialPageIndex;
   late DateTime _currentDisplayDate = _today;
+
+  late final _forcePageView = context.appSettings.homescreenType == HomescreenType.pageView;
+
+  final List<BaseTransaction> _selectedTransactions = [];
+  bool _isMultiSelectionMode = false;
 
   // TODO: filter
   // DateTime? _minDate;
   //
   // DateTime? _maxDate;
 
-  late final _forcePageView = context.appSettings.homescreenType == HomescreenType.pageView;
+  void _toggleMultiSelectionMode() {
+    if (_selectedTransactions.isNotEmpty) {
+      _isMultiSelectionMode = true;
+    } else {
+      _isMultiSelectionMode = false;
+    }
+  }
 
   void _onPageChange(int value) {
     if (!context.isBigScreen && !_forcePageView) {
@@ -115,8 +124,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             dateTime: dayBeginOfMonth.copyWith(day: day),
             transactions: transactionsInDay.reversed.toList(),
             plannedTransactions: plannedTxnsInDay.reversed.toList(),
+            selectedTransactions: _selectedTransactions,
+            isInMultiSelectionMode: _isMultiSelectionMode,
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
+            onLongPressTransaction: (transaction) {
+              if (_selectedTransactions.contains(transaction)) {
+                setState(() {
+                  _selectedTransactions.remove(transaction);
+                  _toggleMultiSelectionMode();
+                });
+              } else {
+                setState(() {
+                  _selectedTransactions.add(transaction);
+                  _toggleMultiSelectionMode();
+                });
+              }
+            },
           ),
         );
       }

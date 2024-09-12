@@ -15,6 +15,7 @@ class CustomAdaptivePageView extends StatelessWidget {
     this.onDragLeft,
     this.onDragRight,
     this.forcePageView = false,
+    this.forceShowSmallTabBar = false,
   });
 
   final SmallTabBar smallTabBar;
@@ -32,7 +33,9 @@ class CustomAdaptivePageView extends StatelessWidget {
   final ValueChanged<int>? onPageChanged;
   final VoidCallback? onDragLeft;
   final VoidCallback? onDragRight;
+
   final bool forcePageView;
+  final bool forceShowSmallTabBar;
 
   @override
   Widget build(BuildContext context) {

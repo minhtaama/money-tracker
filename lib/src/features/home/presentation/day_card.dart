@@ -17,18 +17,24 @@ class DayCard extends StatelessWidget {
     super.key,
     required this.dateTime,
     required this.transactions,
-    this.onTransactionTap,
     required this.plannedTransactions,
+    this.selectedTransactions = const [],
+    this.onTransactionTap,
+    this.onLongPressTransaction,
     this.onPlannedTransactionTap,
     this.forModal = false,
+    this.isInMultiSelectionMode = false,
   });
 
   final DateTime dateTime;
   final List<BaseTransaction> transactions;
   final List<TransactionData> plannedTransactions;
   final Function(BaseTransaction)? onTransactionTap;
+  final Function(BaseTransaction)? onLongPressTransaction;
   final Function(TransactionData)? onPlannedTransactionTap;
+  final List<BaseTransaction> selectedTransactions;
 
+  final bool isInMultiSelectionMode;
   final bool forModal;
 
   double get _calculateCashFlow {
@@ -58,126 +64,126 @@ class DayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final today = DateTime.now().onlyYearMonthDay;
 
-    return Column(
-      children: [
-        CardItem(
-          margin: EdgeInsets.only(
-              left: forModal ? 0 : 8,
-              right: forModal ? 0 : 8,
-              top: forModal ? 4 : 6,
-              bottom: forModal ? 4 : 0),
-          padding: const EdgeInsets.only(top: 6),
-          border: forModal && context.appTheme.isDarkTheme
-              ? Border.all(color: AppColors.greyBorder(context))
-              : null,
-          borderRadius: BorderRadius.only(
-            topRight: const Radius.circular(8),
-            topLeft: const Radius.circular(8),
-            bottomLeft: Radius.circular(plannedTransactions.isEmpty ? 8 : 0),
-            bottomRight: Radius.circular(plannedTransactions.isEmpty ? 8 : 0),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                child: Row(
-                  children: [
-                    CardItem(
-                      margin: EdgeInsets.zero,
-                      padding: dateTime.isSameDayAs(today)
-                          ? const EdgeInsets.symmetric(horizontal: 6, vertical: 6)
-                          : EdgeInsets.zero,
-                      border: Border.all(
-                        color: context.appTheme.onBackground
-                            .withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.transparent,
-                      child: Text(
-                        NumberFormat('00').format(dateTime.day),
-                        style: kHeader1TextStyle.copyWith(
-                          fontSize: dateTime.isSameDayAs(today) ? 19 : 23,
-                          color: context.appTheme.onBackground,
-                          height: 0.99,
+    return HideableContainer(
+      hide: isInMultiSelectionMode && transactions.isEmpty,
+      initialAnimation: false,
+      child: Column(
+        children: [
+          CardItem(
+            margin: EdgeInsets.only(
+                left: forModal ? 0 : 8, right: forModal ? 0 : 8, top: forModal ? 4 : 6, bottom: forModal ? 4 : 0),
+            padding: const EdgeInsets.only(top: 6),
+            border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+            borderRadius: BorderRadius.only(
+              topRight: const Radius.circular(8),
+              topLeft: const Radius.circular(8),
+              bottomLeft: Radius.circular(plannedTransactions.isEmpty ? 8 : 0),
+              bottomRight: Radius.circular(plannedTransactions.isEmpty ? 8 : 0),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  child: Row(
+                    children: [
+                      CardItem(
+                        margin: EdgeInsets.zero,
+                        padding: dateTime.isSameDayAs(today)
+                            ? const EdgeInsets.symmetric(horizontal: 6, vertical: 6)
+                            : EdgeInsets.zero,
+                        border: Border.all(
+                          color: context.appTheme.onBackground.withOpacity(dateTime.isSameDayAs(today) ? 0.65 : 0),
                         ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                    Gap.w8,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          dateTime.weekdayToString(context),
-                          style: kHeader3TextStyle.copyWith(
-                            color: dateTime.weekday == 6 || dateTime.weekday == 7
-                                ? context.appTheme.negative
-                                : context.appTheme.onBackground,
-                            fontSize: 13,
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.transparent,
+                        child: Text(
+                          NumberFormat('00').format(dateTime.day),
+                          style: kHeader1TextStyle.copyWith(
+                            fontSize: dateTime.isSameDayAs(today) ? 19 : 23,
+                            color: context.appTheme.onBackground,
+                            height: 0.99,
                           ),
                           textAlign: TextAlign.left,
                         ),
-                        Text(
-                          dateTime.toLongDate(context, noDay: true),
-                          style: kNormalTextStyle.copyWith(
-                              color: context.appTheme.onBackground, fontSize: 10),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    ),
-                    Gap.expanded,
-                    Text(
-                      '$_symbol${CalService.formatCurrency(context, _calculateCashFlow.abs())}',
-                      style: kHeader3TextStyle.copyWith(
-                          color: _calculateCashFlow > 0
-                              ? context.appTheme.positive
-                              : _calculateCashFlow < 0
+                      ),
+                      Gap.w8,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            dateTime.weekdayToString(context),
+                            style: kHeader3TextStyle.copyWith(
+                              color: dateTime.weekday == 6 || dateTime.weekday == 7
                                   ? context.appTheme.negative
                                   : context.appTheme.onBackground,
-                          fontSize: 13),
-                    )
-                  ],
+                              fontSize: 13,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            dateTime.toLongDate(context, noDay: true),
+                            style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 10),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                      Gap.expanded,
+                      Text(
+                        '$_symbol${CalService.formatCurrency(context, _calculateCashFlow.abs())}',
+                        style: kHeader3TextStyle.copyWith(
+                            color: _calculateCashFlow > 0
+                                ? context.appTheme.positive
+                                : _calculateCashFlow < 0
+                                    ? context.appTheme.negative
+                                    : context.appTheme.onBackground,
+                            fontSize: 13),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              transactions.isNotEmpty
-                  ? Gap.divider(context, indent: 0, color: context.appTheme.background1, thickness: 1)
-                  : Gap.h8,
-              DayCardTransactionsList(
-                transactions: transactions,
-                onTransactionTap: onTransactionTap,
-              ),
-            ],
+                transactions.isNotEmpty
+                    ? Gap.divider(context, indent: 0, color: context.appTheme.background1, thickness: 1)
+                    : Gap.h8,
+                DayCardTransactionsList(
+                  transactions: transactions,
+                  onTransactionTap: onTransactionTap,
+                  onLongPressTransaction: onLongPressTransaction,
+                  selectedTransactions: selectedTransactions,
+                  isInMultiSelectionMode: isInMultiSelectionMode,
+                ),
+              ],
+            ),
           ),
-        ),
-        HideableContainer(
-          hide: plannedTransactions.isEmpty,
-          initialAnimation: false,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8, bottom: 6),
-            child: ClipRect(
-              child: CardItem(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                border: forModal && context.appTheme.isDarkTheme
-                    ? Border.all(color: AppColors.greyBorder(context))
-                    : null,
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(0),
-                  topLeft: Radius.circular(0),
-                  bottomLeft: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
-                ),
-                child: DayCardPlannedTransactionsList(
-                  plannedTransactions: plannedTransactions,
-                  onPlannedTransactionTap: onPlannedTransactionTap,
+          HideableContainer(
+            hide: plannedTransactions.isEmpty || isInMultiSelectionMode,
+            initialAnimation: false,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8, bottom: 6),
+              child: ClipRect(
+                child: CardItem(
+                  margin: EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
+                  border: forModal && context.appTheme.isDarkTheme
+                      ? Border.all(color: AppColors.greyBorder(context))
+                      : null,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(0),
+                    topLeft: Radius.circular(0),
+                    bottomLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                  child: DayCardPlannedTransactionsList(
+                    plannedTransactions: plannedTransactions,
+                    onPlannedTransactionTap: onPlannedTransactionTap,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
