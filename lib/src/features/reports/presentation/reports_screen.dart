@@ -60,7 +60,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           hide: _hideDateSelector,
           child: _dateSelector(),
         ),
-        child: PageHeading(
+        firstChild: PageHeading(
           title: context.loc.report,
           isTopLevelOfNavigationRail: true,
           trailing: RotatedBox(
@@ -147,9 +147,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             AnimatedCrossFade(
               duration: k350msDuration,
               sizeCurve: Curves.easeOut,
-              crossFadeState: _reportPeriod == ReportPeriod.month
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
+              crossFadeState:
+                  _reportPeriod == ReportPeriod.month ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               firstChild: _MonthCarousel(
                 key: _monthCarouselKey,
                 onMonthChange: (dateTimeList) => setState(() {
@@ -203,8 +202,7 @@ class _MonthCarouselState extends State<_MonthCarousel> {
   }
 
   void _animateToToday() {
-    _carouselController.animateToPage(_initialPageIndex,
-        duration: k250msDuration, curve: Curves.easeOut);
+    _carouselController.animateToPage(_initialPageIndex, duration: k250msDuration, curve: Curves.easeOut);
   }
 
   @override

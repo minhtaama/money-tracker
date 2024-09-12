@@ -65,6 +65,7 @@ class CustomAdaptivePageView extends StatelessWidget {
       pageItemCount: pageItemCount,
       onDragLeft: onDragLeft,
       onDragRight: onDragRight,
+      forceShowSmallTabBar: forceShowSmallTabBar,
     );
   }
 }
@@ -82,6 +83,7 @@ class _ScrollableSheet extends ConsumerStatefulWidget {
     required this.pageItemCount,
     required this.onDragLeft,
     required this.onDragRight,
+    required this.forceShowSmallTabBar,
   }) : assert(toolBarHeight <= kCustomTabBarHeight);
 
   final SmallTabBar smallTabBar;
@@ -94,6 +96,7 @@ class _ScrollableSheet extends ConsumerStatefulWidget {
   final ValueChanged<int>? onPageChanged;
   final VoidCallback? onDragLeft;
   final VoidCallback? onDragRight;
+  final bool forceShowSmallTabBar;
 
   @override
   ConsumerState<_ScrollableSheet> createState() => _ScrollableSheetState();
@@ -134,6 +137,24 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   }
 
   @override
+  void didUpdateWidget(covariant _ScrollableSheet oldWidget) {
+    if (widget.forceShowSmallTabBar && !oldWidget.forceShowSmallTabBar) {
+      double height = _sheetController.pixels;
+      if (height < _triggerSmallTabBarHeight) {
+        _showSmallTabBar();
+      } else {
+        _onSheetHeightChange(height);
+      }
+    }
+
+    if (!widget.forceShowSmallTabBar && oldWidget.forceShowSmallTabBar) {
+      double height = _sheetController.pixels;
+      _onSheetHeightChange(height);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void didChangeDependencies() {
     setState(() {
       final screenHeight = Gap.screenHeight(context);
@@ -163,6 +184,10 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   void _onSheetHeightChange(double height) {
     _sheetOffsetAnimController.value = (height - _sheetMinHeight) / 3;
 
+    if (widget.forceShowSmallTabBar) {
+      return;
+    }
+
     // At the moment show smallAppBar
     if (height >= _triggerSmallTabBarHeight && _isShowSmallTabBar == false) {
       _showSmallTabBar();
@@ -170,7 +195,7 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
 
     // At the moment smallAppBar disappear
     if (height < _triggerSmallTabBarHeight && _isShowSmallTabBar == true) {
-      _showExtendedTabBar();
+      _hideSmallTabBar();
     }
   }
 
@@ -180,7 +205,7 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
     _changeStatusBrightness();
   }
 
-  void _showExtendedTabBar() {
+  void _hideSmallTabBar() {
     _smallTabBarAnimController.reverse(from: 1);
     _isShowSmallTabBar = false;
     _changeStatusBrightness();

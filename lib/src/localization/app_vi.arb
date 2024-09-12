@@ -40,6 +40,17 @@
   "sameMonthLastYear": "Tháng cùng kỳ năm ngoái",
   "sameWeekLastMonth": "Tuần này tháng trước",
 
+  "nTransactionsSelected": "đã chọn {count, plural, =0{0 giao dịch} =1{1 giao dịch} other{{count} giao dịch}}",
+  "@selectedNTransactions": {
+    "description": "2 transactions selected",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
   "today": "Hôm nay",
   "daily": "Hàng ngày",
   "weekly": "Hàng tuần",

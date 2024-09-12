@@ -167,14 +167,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return CustomAdaptivePageView(
       pageController: _pageController,
       forcePageView: _forcePageView,
+      forceShowSmallTabBar: _isMultiSelectionMode,
       smallTabBar: SmallTabBar(
-        child: SmallHomeTab(
+        showSecondChild: _isMultiSelectionMode,
+        firstChild: SmallHomeTab(
           secondaryTitle: _currentDisplayDate.toLongDate(context, noDay: true),
           showNumber: showTotalBalance,
           onEyeTap: () {
             setState(() => showTotalBalance = !showTotalBalance);
             _persistentController.set(showAmount: showTotalBalance);
           },
+        ),
+        secondChild: MultiSelectionHomeTab(
+          selectedTransactions: _selectedTransactions,
+          onClearTap: () => setState(() {
+            _selectedTransactions.clear();
+            _toggleMultiSelectionMode();
+          }),
         ),
       ),
       extendedTabBar: ExtendedTabBar(

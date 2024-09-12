@@ -142,7 +142,7 @@ class _CreditScreenDetailsState extends State<CreditScreenDetails> {
       body: CustomAdaptivePageView(
         pageController: _controller,
         smallTabBar: SmallTabBar(
-          child: PageHeading(
+          firstChild: PageHeading(
             title: widget.creditAccount.name,
             secondaryTitle: context.loc.creditAccount,
           ),

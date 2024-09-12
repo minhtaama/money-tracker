@@ -48,7 +48,7 @@ class _SelectIconsScreenState extends State<SelectIconsScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomPage(
         smallTabBar: SmallTabBar(
-          child: PageHeading(
+          firstChild: PageHeading(
             title: context.loc.chooseIcon,
           ),
         ),

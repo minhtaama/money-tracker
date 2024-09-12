@@ -40,6 +40,17 @@
   "sameMonthLastYear": "Same month last year",
   "sameWeekLastMonth": "Same week last month",
 
+  "nTransactionsSelected": "{count, plural, =0{no transaction} =1{1 transaction} other{{count} transactions}} selected",
+  "@selectedNTransactions": {
+    "description": "2 transactions selected",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+
   "today": "Today",
   "daily": "Daily",
   "weekly": "Weekly",

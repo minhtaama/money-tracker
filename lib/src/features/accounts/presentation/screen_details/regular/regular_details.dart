@@ -136,7 +136,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
       body: CustomAdaptivePageView(
         pageController: _pageController,
         smallTabBar: SmallTabBar(
-          child: PageHeading(
+          firstChild: PageHeading(
             title: widget.regularAccount.name,
             secondaryTitle: context.loc.regularAccount,
           ),

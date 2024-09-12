@@ -1,12 +1,18 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/features/accounts/application/account_services.dart';
+import 'package:money_tracker_app/src/utils/constants.dart';
+import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../theme_and_ui/icons.dart';
 import '../../../calculator_input/application/calculator_service.dart';
 import '../../../transactions/data/transaction_repo.dart';
+import '../../../transactions/domain/transaction_base.dart';
 
 class SmallHomeTab extends ConsumerWidget {
   const SmallHomeTab({
@@ -42,6 +48,90 @@ class SmallHomeTab extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         iconColor: context.appTheme.onBackground,
         onTap: onEyeTap,
+      ),
+    );
+  }
+}
+
+class MultiSelectionHomeTab extends StatelessWidget {
+  const MultiSelectionHomeTab({
+    super.key,
+    required this.selectedTransactions,
+    required this.onClearTap,
+  });
+
+  final List<BaseTransaction> selectedTransactions;
+  final VoidCallback onClearTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: kCustomTabBarHeight + Gap.statusBarHeight(context),
+      padding: const EdgeInsets.symmetric(horizontal: 22),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0, 1],
+          colors: [
+            context.appTheme.primary.withOpacity(0.05),
+            context.appTheme.primary.withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
+          ],
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          SizedBox(
+            height: Gap.statusBarHeight(context),
+          ),
+          Expanded(
+            child: Center(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Expanded(
+                    child: EasyRichText(
+                      context.loc.nTransactionsSelected(selectedTransactions.length),
+                      defaultStyle: kHeader3TextStyle.copyWith(
+                        color: context.appTheme.onBackground,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      maxLines: 2,
+                      patternList: [
+                        EasyRichTextPattern(
+                          targetString: r"[0-9]+",
+                          style: kHeader1TextStyle.copyWith(
+                            color: context.appTheme.onBackground,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // child: Text(
+                    //   context.loc.nTransactionsSelected(selectedTransactions.length),
+                    //   style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary),
+                    //   maxLines: 2,
+                    // ),
+                  ),
+                  RoundedIconButton(
+                    iconPath: AppIcons.deleteLight,
+                    iconColor: context.appTheme.onBackground,
+                    backgroundColor: Colors.transparent,
+                  ),
+                  Gap.w2,
+                  RoundedIconButton(
+                    iconPath: AppIcons.closeLight,
+                    iconColor: context.appTheme.onBackground,
+                    backgroundColor: Colors.transparent,
+                    onTap: onClearTap,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -82,7 +82,7 @@ class AccountsListScreen extends ConsumerWidget {
       backgroundColor: context.appTheme.background1,
       body: CustomPage(
         smallTabBar: SmallTabBar(
-          child: PageHeading(
+          firstChild: PageHeading(
             title: context.loc.accounts,
             isTopLevelOfNavigationRail: true,
             trailing: RoundedIconButton(

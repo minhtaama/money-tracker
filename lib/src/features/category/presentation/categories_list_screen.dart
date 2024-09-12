@@ -65,7 +65,7 @@ class CategoriesListScreen extends ConsumerWidget {
 
     return CustomPage(
       smallTabBar: SmallTabBar(
-        child: PageHeading(
+        firstChild: PageHeading(
           isTopLevelOfNavigationRail: true,
           title: context.loc.categories,
           trailing: RoundedIconButton(

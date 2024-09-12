@@ -52,7 +52,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget _smallScreen(BuildContext context, List<DashboardWidgetType> order, List<DashboardWidgetType> hiddenWidgets) {
     return CustomPage(
       smallTabBar: SmallTabBar(
-        child: PageHeading(
+        firstChild: PageHeading(
           title: context.loc.dashboard,
           secondaryTitle: DateTime.now().toLongDate(context, noDay: true),
           isTopLevelOfNavigationRail: true,

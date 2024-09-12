@@ -94,15 +94,17 @@ class _CustomPageState extends ConsumerState<CustomPage> with TickerProviderStat
                 return Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.appTheme.isDarkTheme
-                            ? AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.2)
-                            : AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.5),
-                        blurRadius: 6,
-                        spreadRadius: 1,
-                      )
-                    ],
+                    boxShadow: widget.smallTabBar.height == 0
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: context.appTheme.isDarkTheme
+                                  ? AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.2)
+                                  : AppColors.grey(context).withOpacity(_fadeAnimation.value * 0.5),
+                              blurRadius: 6,
+                              spreadRadius: 1,
+                            )
+                          ],
                   ),
                   child: child,
                 );

@@ -54,7 +54,7 @@ class BudgetsListScreen extends ConsumerWidget {
 
     return CustomPage(
       smallTabBar: SmallTabBar(
-        child: PageHeading(
+        firstChild: PageHeading(
           isTopLevelOfNavigationRail: true,
           title: context.loc.budgets,
           trailing: RoundedIconButton(
@@ -87,8 +87,7 @@ class _BudgetTile extends StatelessWidget {
   List<Widget> _assignedModels() {
     return switch (model) {
       AccountBudget() => (model as AccountBudget).accounts.map((e) => _AssignedModel(model: e)).toList(),
-      CategoryBudget() =>
-        (model as CategoryBudget).categories.map((e) => _AssignedModel(model: e)).toList(),
+      CategoryBudget() => (model as CategoryBudget).categories.map((e) => _AssignedModel(model: e)).toList(),
     };
   }
 
@@ -129,8 +128,7 @@ class _BudgetTile extends StatelessWidget {
           Gap.h4,
           Text(
             context.loc.budget,
-            style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
           ),
           Gap.h4,
           Row(
@@ -155,8 +153,7 @@ class _BudgetTile extends StatelessWidget {
           Gap.h8,
           Text(
             model is AccountBudget ? context.loc.assignedAccounts : context.loc.assignedCategories,
-            style: kHeader3TextStyle.copyWith(
-                color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
+            style: kHeader3TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 14),
           ),
           Gap.h8,
           Wrap(

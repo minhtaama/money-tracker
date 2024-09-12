@@ -435,25 +435,6 @@ class TxnNote extends StatelessWidget {
               maxLines: 2,
               softWrap: true,
             ),
-            // child: EasyRichText(
-            //   'Note: ${transaction.note!}',
-            //   defaultStyle: kHeader4TextStyle.copyWith(
-            //     color: context.appTheme.onBackground.withOpacity(0.65),
-            //     fontSize: 12,
-            //   ),
-            //   overflow: TextOverflow.ellipsis,
-            //   softWrap: true,
-            //   maxLines: 2,
-            //   patternList: [
-            //     EasyRichTextPattern(
-            //       targetString: 'Note:',
-            //       style: kHeader3TextStyle.copyWith(
-            //         color: context.appTheme.onBackground,
-            //         fontSize: 12,
-            //       ),
-            //     ),
-            //   ],
-            // ),
           )
         : Gap.noGap;
   }

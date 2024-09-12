@@ -5,18 +5,29 @@ import '../../utils/constants.dart';
 class SmallTabBar extends StatelessWidget {
   const SmallTabBar({
     super.key,
-    required this.child,
-    this.height = kCustomTabBarHeight,
+    required this.firstChild,
+    this.secondChild,
+    this.showSecondChild = false,
     this.optional,
+    this.height = kCustomTabBarHeight,
   });
-  final Widget child;
-  final double height;
+
+  final Widget firstChild;
+  final Widget? secondChild;
+  final bool showSecondChild;
 
   final Widget? optional;
 
+  final double height;
+
   factory SmallTabBar.empty() => SmallTabBar(
-        child: Gap.noGap,
+        firstChild: Gap.noGap,
         height: 0,
+      );
+
+  Widget _firstChild(BuildContext context) => Padding(
+        padding: EdgeInsets.only(left: 12, right: 12, top: Gap.statusBarHeight(context)),
+        child: firstChild,
       );
 
   @override
@@ -25,15 +36,21 @@ class SmallTabBar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
+        SizedBox(
           height: height + Gap.statusBarHeight(context),
-          color: context.appTheme.background1,
           child: Material(
             color: context.appTheme.background1,
-            child: Padding(
-              padding: EdgeInsets.only(left: 12, right: 12, top: Gap.statusBarHeight(context)),
-              child: child,
-            ),
+            child: secondChild != null
+                ? AnimatedCrossFade(
+                    duration: k250msDuration,
+                    sizeCurve: Curves.fastOutSlowIn,
+                    firstCurve: Curves.easeOutExpo,
+                    secondCurve: Curves.easeInExpo,
+                    crossFadeState: showSecondChild ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                    firstChild: _firstChild(context),
+                    secondChild: secondChild!,
+                  )
+                : _firstChild(context),
           ),
         ),
         optional ?? Gap.noGap,
