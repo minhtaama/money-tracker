@@ -727,6 +727,38 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: Center(
+                child: MoneyAmount(
+                  amount: e.lastSamePeriod,
+                  style: kHeader3TextStyle.copyWith(
+                    color: textColor.withOpacity(e.category == null ? 1 : 0.65),
+                    fontSize: 12,
+                    height: 0.99,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
+                child: MoneyAmount(
+                  amount: e.previousPeriod,
+                  style: kHeader3TextStyle.copyWith(
+                    color: textColor.withOpacity(e.category == null ? 1 : 0.65),
+                    fontSize: 12,
+                    height: 0.99,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Center(
                 child: Column(
                   children: [
                     MoneyAmount(
@@ -759,94 +791,62 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
               ),
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Center(
-                child: MoneyAmount(
-                  amount: e.previousPeriod,
-                  style: kHeader3TextStyle.copyWith(
-                    color: textColor.withOpacity(e.category == null ? 1 : 0.65),
-                    fontSize: 12,
-                    height: 0.99,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Center(
-                child: MoneyAmount(
-                  amount: e.lastSamePeriod,
-                  style: kHeader3TextStyle.copyWith(
-                    color: textColor.withOpacity(e.category == null ? 1 : 0.65),
-                    fontSize: 12,
-                    height: 0.99,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _header() => Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Gap.noGap,
-          ),
-          Expanded(
-            flex: 3,
+  Widget _header() {
+    final isMonthlyReport = widget.reportPeriod == ReportPeriod.month;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Gap.noGap,
+        ),
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Text(
-              'This period'.hardcoded,
+              isMonthlyReport ? context.loc.sameMonthLastYear : context.loc.sameWeekLastMonth,
               style: kHeader4TextStyle.copyWith(
                 color: context.appTheme.onBackground.withOpacity(0.65),
                 fontSize: 12,
-                height: 0.99,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Previous period'.hardcoded,
-                style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.65),
-                  fontSize: 12,
-                  height: 0.99,
-                ),
-                textAlign: TextAlign.center,
+        ),
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              isMonthlyReport ? context.loc.previousMonth : context.loc.previousWeek,
+              style: kHeader4TextStyle.copyWith(
+                color: context.appTheme.onBackground.withOpacity(0.65),
+                fontSize: 12,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Same last period'.hardcoded,
-                style: kHeader4TextStyle.copyWith(
-                  color: context.appTheme.onBackground.withOpacity(0.65),
-                  fontSize: 12,
-                  height: 0.99,
-                ),
-                textAlign: TextAlign.center,
-              ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            isMonthlyReport ? context.loc.thisMonth : context.loc.thisWeek,
+            style: kHeader4TextStyle.copyWith(
+              color: context.appTheme.onBackground.withOpacity(0.65),
+              fontSize: 12,
             ),
+            textAlign: TextAlign.center,
           ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
 
   Widget _foregroundDecoration() {
     Widget decoration1() => Padding(
@@ -881,7 +881,21 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
         ),
         Expanded(
           flex: 3,
-          child: decoration1(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+            child: CustomInkWell(
+              onTap: () {
+                if (!_isCompareWithLastSamePeriod) {
+                  setState(() {
+                    _isCompareWithLastSamePeriod = true;
+                  });
+                }
+              },
+              inkColor: context.appTheme.primary,
+              borderRadius: BorderRadius.circular(7),
+              child: decoration2(_isCompareWithLastSamePeriod ? 1 : 0),
+            ),
+          ),
         ),
         Expanded(
           flex: 3,
@@ -903,21 +917,7 @@ class _CategoryReportDetailsState extends ConsumerState<_CategoryReportDetails> 
         ),
         Expanded(
           flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3.0),
-            child: CustomInkWell(
-              onTap: () {
-                if (!_isCompareWithLastSamePeriod) {
-                  setState(() {
-                    _isCompareWithLastSamePeriod = true;
-                  });
-                }
-              },
-              inkColor: context.appTheme.primary,
-              borderRadius: BorderRadius.circular(7),
-              child: decoration2(_isCompareWithLastSamePeriod ? 1 : 0),
-            ),
-          ),
+          child: decoration1(),
         ),
       ],
     );

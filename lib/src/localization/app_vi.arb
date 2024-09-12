@@ -33,6 +33,13 @@
   "totalIncome": "Tổng thu nhập",
   "totalExpense": "Tổng chi tiêu",
 
+  "thisMonth": "Tháng này",
+  "thisWeek": "Tuần này",
+  "previousMonth": "Tháng liền trước",
+  "previousWeek": "Tuần liền trước",
+  "sameMonthLastYear": "Tháng cùng kỳ năm ngoái",
+  "sameWeekLastMonth": "Tuần này tháng trước",
+
   "today": "Hôm nay",
   "daily": "Hàng ngày",
   "weekly": "Hàng tuần",

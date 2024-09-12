@@ -33,6 +33,13 @@
   "totalIncome": "Total income",
   "totalExpense": "Total expense",
 
+  "thisMonth": "This month",
+  "thisWeek": "This week",
+  "previousMonth": "Previous month",
+  "previousWeek": "Previous week",
+  "sameMonthLastYear": "Same month last year",
+  "sameWeekLastMonth": "Same week last month",
+
   "today": "Today",
   "daily": "Daily",
   "weekly": "Weekly",
