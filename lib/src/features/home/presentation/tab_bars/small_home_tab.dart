@@ -1,12 +1,11 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/features/accounts/application/account_services.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
-import 'package:money_tracker_app/src/utils/extensions/color_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../common_widgets/rounded_icon_button.dart';
 import '../../../../theme_and_ui/icons.dart';
@@ -56,26 +55,31 @@ class SmallHomeTab extends ConsumerWidget {
 class MultiSelectionHomeTab extends StatelessWidget {
   const MultiSelectionHomeTab({
     super.key,
+    this.backgroundColor,
     required this.selectedTransactions,
-    required this.onClearTap,
+    required this.onConfirmDelete,
+    required this.onClear,
   });
 
+  final Color? backgroundColor;
   final List<BaseTransaction> selectedTransactions;
-  final VoidCallback onClearTap;
+  final VoidCallback onConfirmDelete;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: kCustomTabBarHeight + Gap.statusBarHeight(context),
-      padding: const EdgeInsets.symmetric(horizontal: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           stops: const [0, 1],
           colors: [
-            context.appTheme.primary.withOpacity(0.05),
-            context.appTheme.primary.withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
+            backgroundColor?.withOpacity(0.05) ?? context.appTheme.primary.withOpacity(0.05),
+            backgroundColor?.withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15) ??
+                context.appTheme.primary.withOpacity(context.appTheme.isDarkTheme ? 0.25 : 0.15),
           ],
         ),
       ),
@@ -91,6 +95,7 @@ class MultiSelectionHomeTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
+                  Gap.w12,
                   Expanded(
                     child: EasyRichText(
                       context.loc.nTransactionsSelected(selectedTransactions.length),
@@ -109,23 +114,24 @@ class MultiSelectionHomeTab extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // child: Text(
-                    //   context.loc.nTransactionsSelected(selectedTransactions.length),
-                    //   style: kHeader2TextStyle.copyWith(color: context.appTheme.onPrimary),
-                    //   maxLines: 2,
-                    // ),
                   ),
                   RoundedIconButton(
                     iconPath: AppIcons.deleteLight,
                     iconColor: context.appTheme.onBackground,
                     backgroundColor: Colors.transparent,
+                    onTap: () => showConfirmModal(
+                      context: context,
+                      isOnTopNavigation: true,
+                      label: context.loc.deleteNTransactionConfirm(selectedTransactions.length),
+                      onConfirm: onConfirmDelete,
+                    ),
                   ),
                   Gap.w2,
                   RoundedIconButton(
                     iconPath: AppIcons.closeLight,
                     iconColor: context.appTheme.onBackground,
                     backgroundColor: Colors.transparent,
-                    onTap: onClearTap,
+                    onTap: onClear,
                   ),
                 ],
               ),

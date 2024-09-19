@@ -122,6 +122,7 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   late final _sheetAnimation = _sheetAnimController.drive(CurveTween(curve: Curves.fastOutSlowIn));
 
   late bool _isShowSmallTabBar = widget.extendedTabBar == null ? true : false;
+  late bool _shouldScaleDownSheet = true;
   late bool _isScaleDownSheet = false;
 
   @override
@@ -184,17 +185,27 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   void _onSheetHeightChange(double height) {
     _sheetOffsetAnimController.value = (height - _sheetMinHeight) / 3;
 
+    // At the moment show smallAppBar
+    if (height >= _triggerSmallTabBarHeight && _shouldScaleDownSheet) {
+      _shouldScaleDownSheet = false;
+    }
+
+    // At the moment smallAppBar disappear
+    if (height < _triggerSmallTabBarHeight && !_shouldScaleDownSheet) {
+      _shouldScaleDownSheet = true;
+    }
+
     if (widget.forceShowSmallTabBar) {
       return;
     }
 
     // At the moment show smallAppBar
-    if (height >= _triggerSmallTabBarHeight && _isShowSmallTabBar == false) {
+    if (height >= _triggerSmallTabBarHeight && !_isShowSmallTabBar) {
       _showSmallTabBar();
     }
 
     // At the moment smallAppBar disappear
-    if (height < _triggerSmallTabBarHeight && _isShowSmallTabBar == true) {
+    if (height < _triggerSmallTabBarHeight && _isShowSmallTabBar) {
       _hideSmallTabBar();
     }
   }
@@ -237,14 +248,14 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   }
 
   void _scalingSheet(double page) {
-    if ((page - page.floor() < 0.98 && page - page.floor() > 0.02) && !_isScaleDownSheet && !_isShowSmallTabBar) {
+    if ((page - page.floor() < 0.98 && page - page.floor() > 0.02) && !_isScaleDownSheet && _shouldScaleDownSheet) {
       _sheetAnimController.forward();
       _isScaleDownSheet = true;
     }
 
-    if ((page - page.floor() > 0.98 || page - page.floor() < 0.02) && _isScaleDownSheet) {
-      _isScaleDownSheet = false;
+    if ((page - page.floor() > 0.98 || page - page.floor() < 0.02) && _isScaleDownSheet && _shouldScaleDownSheet) {
       _sheetAnimController.reverse().whenComplete(() => HapticFeedback.vibrate());
+      _isScaleDownSheet = false;
     }
   }
 

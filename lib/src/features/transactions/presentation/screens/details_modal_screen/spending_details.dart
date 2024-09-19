@@ -17,7 +17,6 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
   final _installmentPaymentController = TextEditingController();
 
   bool _isEditMode = false;
-  late final bool _canDelete;
 
   late CreditSpending _transaction = widget.transaction;
 
@@ -25,18 +24,6 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
       ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
-
-  @override
-  void initState() {
-    try {
-      _creditAccount.getNextPayment(from: _transaction);
-      _canDelete = false;
-    } catch (e) {
-      _canDelete = true;
-    }
-
-    super.initState();
-  }
 
   @override
   void didUpdateWidget(covariant _SpendingDetails oldWidget) {
@@ -77,7 +64,7 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
                   ),
                   _DeleteButton(
                     isEditMode: _isEditMode,
-                    isDisable: !_canDelete,
+                    isDisable: !_transaction.canDelete,
                     disableText: context.loc.quoteTransaction9,
                     onConfirm: _delete,
                   ),

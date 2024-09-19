@@ -8,6 +8,34 @@ sealed class BaseCreditTransaction extends BaseTransaction {
     super.note,
     super.account,
   );
+
+  /// **`CreditSpending`**: Can delete if there is no payment after this credit spending
+  ///
+  /// **`CreditPayment`**: Can delete if the payment is after the latest closed statement
+  ///
+  /// **`CreditCheckpoint`**: Unimplemented
+  ///
+  bool get canDelete {
+    if (account is DeletedAccount) {
+      return true;
+    }
+
+    final creditAccount = account.toAccount() as CreditAccount;
+
+    switch (this) {
+      case CreditSpending():
+        try {
+          creditAccount.getNextPayment(from: this as CreditSpending);
+          return false;
+        } catch (e) {
+          return true;
+        }
+      case CreditPayment():
+        return creditAccount.latestClosedStatementDueDate.isBefore(dateTime.onlyYearMonthDay);
+      case CreditCheckpoint():
+        throw UnimplementedError();
+    }
+  }
 }
 
 @immutable

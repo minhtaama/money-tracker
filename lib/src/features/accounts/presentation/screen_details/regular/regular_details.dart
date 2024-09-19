@@ -14,11 +14,14 @@ import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart
 import '../../../../../common_widgets/custom_navigation_bar/bottom_app_bar/custom_fab.dart';
 import '../../../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../../../common_widgets/custom_page/custom_page.dart';
+import '../../../../../common_widgets/icon_with_text.dart';
 import '../../../../../common_widgets/illustration.dart';
+import '../../../../../common_widgets/modal_and_dialog.dart';
 import '../../../../../common_widgets/page_heading.dart';
 import '../../../../../theme_and_ui/colors.dart';
 import '../../../../../theme_and_ui/icons.dart';
 import '../../../../../utils/constants.dart';
+import '../../../../home/presentation/tab_bars/small_home_tab.dart';
 import '../../../../transactions/domain/transaction_base.dart';
 
 class RegularScreenDetails extends ConsumerStatefulWidget {
@@ -31,7 +34,7 @@ class RegularScreenDetails extends ConsumerStatefulWidget {
 }
 
 class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
-  late final transactionRepository = ref.read(transactionRepositoryRealmProvider);
+  late final _transactionRepository = ref.read(transactionRepositoryRealmProvider);
 
   late final PageController _pageController = PageController(initialPage: _initialPageIndex);
 
@@ -39,6 +42,22 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
   late final int _initialPageIndex = _today.getMonthsDifferent(Calendar.minDate);
 
   late DateTime _currentDisplayDate = _today;
+
+  final List<BaseTransaction> _selectedTransactions = [];
+  bool _isMultiSelectionMode = false;
+
+  void _toggleMultiSelectionMode() {
+    if (_selectedTransactions.isNotEmpty) {
+      _isMultiSelectionMode = true;
+    } else {
+      _isMultiSelectionMode = false;
+    }
+  }
+
+  void _clearAllSelection() {
+    _selectedTransactions.clear();
+    _toggleMultiSelectionMode();
+  }
 
   void _onPageChange(int value) {
     setState(() {
@@ -77,11 +96,26 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
       if (transactionsInDay.isNotEmpty) {
         dayCards.add(
           DayCard(
-            dateTime: transactionsInDay[0].dateTime,
+            dateTime: dayBeginOfMonth.copyWith(day: day),
             transactions: transactionsInDay.reversed.toList(),
+            plannedTransactions: const [],
+            selectedTransactions: _selectedTransactions,
+            isInMultiSelectionMode: _isMultiSelectionMode,
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
-            plannedTransactions: const [],
+            onLongPressTransaction: (transaction) {
+              if (_selectedTransactions.contains(transaction)) {
+                setState(() {
+                  _selectedTransactions.remove(transaction);
+                  _toggleMultiSelectionMode();
+                });
+              } else {
+                setState(() {
+                  _selectedTransactions.add(transaction);
+                  _toggleMultiSelectionMode();
+                });
+              }
+            },
           ),
         );
       }
@@ -135,10 +169,35 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomAdaptivePageView(
         pageController: _pageController,
+        forceShowSmallTabBar: _isMultiSelectionMode,
         smallTabBar: SmallTabBar(
+          showSecondChild: _isMultiSelectionMode,
           firstChild: PageHeading(
             title: widget.regularAccount.name,
             secondaryTitle: context.loc.regularAccount,
+          ),
+          secondChild: MultiSelectionHomeTab(
+            selectedTransactions: _selectedTransactions,
+            backgroundColor: widget.regularAccount.backgroundColor,
+            onClear: () => setState(() {
+              _clearAllSelection();
+            }),
+            onConfirmDelete: () => setState(() {
+              final removeList = _transactionRepository.deleteTransactions(_selectedTransactions);
+              _clearAllSelection();
+              if (removeList.isNotEmpty) {
+                showCustomDialog(
+                  context: context,
+                  isTopNavigation: true,
+                  child: IconWithText(
+                    iconPath: AppIcons.sadFaceBulk,
+                    header: context.loc.deleteTransactionAlert1,
+                    text: context.loc.deleteTransactionAlertQuote1,
+                    textAlign: TextAlign.left,
+                  ),
+                );
+              }
+            }),
           ),
         ),
         extendedTabBar: ExtendedTabBar(
@@ -171,11 +230,11 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           DateTime dayEndOfMonth = DateTime(Calendar.minDate.year, pageIndex + 1, 0, 23, 59, 59);
 
           List<BaseTransaction> transactionList =
-              transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+              _transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
 
           ref.listen(transactionsChangesStreamProvider, (_, __) {
             transactionList =
-                transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
+                _transactionRepository.getTransactionsOfAccount(widget.regularAccount, dayBeginOfMonth, dayEndOfMonth);
             setState(() {});
           });
 

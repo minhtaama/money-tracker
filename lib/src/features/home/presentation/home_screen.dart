@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
+import 'package:money_tracker_app/src/common_widgets/icon_with_text.dart';
+import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/small_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/tab_bars/extended_home_tab.dart';
 import 'package:money_tracker_app/src/features/home/presentation/day_card.dart';
@@ -46,17 +48,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final List<BaseTransaction> _selectedTransactions = [];
   bool _isMultiSelectionMode = false;
 
-  // TODO: filter
-  // DateTime? _minDate;
-  //
-  // DateTime? _maxDate;
-
   void _toggleMultiSelectionMode() {
     if (_selectedTransactions.isNotEmpty) {
       _isMultiSelectionMode = true;
     } else {
       _isMultiSelectionMode = false;
     }
+  }
+
+  void _clearAllSelection() {
+    _selectedTransactions.clear();
+    _toggleMultiSelectionMode();
   }
 
   void _onPageChange(int value) {
@@ -92,6 +94,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _carouselController.animateToPage(page, duration: k350msDuration, curve: Curves.easeOut);
     }
   }
+
+  // TODO: filter
+  // DateTime? _minDate;
+  //
+  // DateTime? _maxDate;
 
   @override
   void dispose() {
@@ -180,9 +187,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         secondChild: MultiSelectionHomeTab(
           selectedTransactions: _selectedTransactions,
-          onClearTap: () => setState(() {
-            _selectedTransactions.clear();
-            _toggleMultiSelectionMode();
+          onClear: () => setState(() {
+            _clearAllSelection();
+          }),
+          onConfirmDelete: () => setState(() {
+            final removeList = _transactionRepository.deleteTransactions(_selectedTransactions);
+            _clearAllSelection();
+            if (removeList.isNotEmpty) {
+              showCustomDialog(
+                context: context,
+                isTopNavigation: true,
+                child: IconWithText(
+                  iconPath: AppIcons.sadFaceBulk,
+                  header: context.loc.deleteTransactionAlert1,
+                  text: context.loc.deleteTransactionAlertQuote1,
+                  textAlign: TextAlign.left,
+                ),
+              );
+            }
           }),
         ),
       ),

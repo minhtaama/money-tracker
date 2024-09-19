@@ -503,6 +503,18 @@
   "deleteTransactionConfirm1": "Xoá giao dịch này?",
   "deleteTransactionConfirm2": "Toàn bộ giao dịch có liên quan cũng sẽ bị xoá.",
   "deleteTransactionConfirm3": "Xoá giao dịch yêu thích này?",
+  "deleteTransactionAlert1": "Một số giao dịch tín dụng không thể xoá được.",
+  "deleteTransactionAlertQuote1": "Giao dịch chi tiêu tín dụng chỉ có thể bị xoá khi toàn bộ giao dịch thanh toán tín dụng sau nó cũng được chọn để xoá.\nGiao dịch thanh toán tín dụng chỉ có thể bị xoá khi toàn bộ giao dịch thanh toán sau nó cũng được chọn hoặc đang trong kỳ sao kê mới nhất chưa chốt.",
+
+  "deleteNTransactionConfirm": "Xoá {count, plural, =0{0 giao dịch} =1{1 giao dịch} other{toàn bộ {count} giao dịch}} này?",
+  "@deleteTransactionConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
 
   "quoteTransaction3": "Quá cao so với dư nợ cần thanh toán!",
   "quoteTransaction3_1": "Có thể bạn còn các giao dịch chi tiêu trước ngày này chưa nhập? Nếu không phải là khoản thanh toán đủ, bạn cần phải nhập dư nợ còn lại sau thanh toán",

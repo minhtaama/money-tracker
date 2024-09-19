@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_navigation_rail_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -43,61 +44,67 @@ Future<T?> showConfirmModal<T>({
   String confirmLabel = 'Confirm',
   String? confirmIcon,
   required VoidCallback onConfirm,
+  bool isOnTopNavigation = false,
 }) {
+  final aContext = isOnTopNavigation ? navigationRailKey.currentContext! : context;
+
   return showCustomModal<T>(
-    context: context,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Gap.h16,
-          Text(
-            label,
-            style: kHeader3TextStyle.copyWith(
-              color: context.appTheme.onBackground,
-            ),
-          ),
-          subLabel != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    subLabel,
-                    style: kNormalTextStyle.copyWith(
-                      color: context.appTheme.onBackground,
-                      fontSize: 14,
-                    ),
-                  ),
-                )
-              : Gap.noGap,
-          Gap.h24,
-          Row(
-            children: [
-              Expanded(
-                child: IconWithTextButton(
-                  iconPath: AppIcons.backLight,
-                  labelSize: 18,
-                  label: context.loc.goBack,
-                  color: context.appTheme.onBackground,
-                  backgroundColor: AppColors.greyBgr(context),
-                  onTap: () => context.pop(),
-                ),
+    context: aContext,
+    child: Material(
+      type: MaterialType.transparency,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Gap.h16,
+            Text(
+              label,
+              style: kHeader3TextStyle.copyWith(
+                color: aContext.appTheme.onBackground,
               ),
-              Gap.w24,
-              RoundedIconButton(
-                iconPath: confirmIcon ?? AppIcons.deleteLight,
-                iconColor: context.appTheme.onNegative,
-                backgroundColor: context.appTheme.negative,
-                onTap: () {
-                  context.pop();
-                  onConfirm();
-                },
-              )
-            ],
-          ),
-          Gap.h16,
-        ],
+            ),
+            subLabel != null
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      subLabel,
+                      style: kNormalTextStyle.copyWith(
+                        color: aContext.appTheme.onBackground,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                : Gap.noGap,
+            Gap.h24,
+            Row(
+              children: [
+                Expanded(
+                  child: IconWithTextButton(
+                    iconPath: AppIcons.backLight,
+                    labelSize: 18,
+                    label: aContext.loc.goBack,
+                    color: aContext.appTheme.onBackground,
+                    backgroundColor: AppColors.greyBgr(aContext),
+                    onTap: () => context.pop(),
+                  ),
+                ),
+                Gap.w24,
+                RoundedIconButton(
+                  iconPath: confirmIcon ?? AppIcons.deleteLight,
+                  iconColor: aContext.appTheme.onNegative,
+                  backgroundColor: aContext.appTheme.negative,
+                  onTap: () {
+                    context.pop();
+                    onConfirm();
+                  },
+                )
+              ],
+            ),
+            Gap.h16,
+          ],
+        ),
       ),
     ),
   );
@@ -106,13 +113,20 @@ Future<T?> showConfirmModal<T>({
 Future<T?> showCustomDialog<T>({
   required BuildContext context,
   required Widget child,
+  bool isTopNavigation = false,
 }) {
-  final NavigatorState navigator = Navigator.of(context);
+  final NavigatorState navigator = Navigator.of(isTopNavigation ? navigationRailKey.currentContext! : context);
   return navigator.push(
     CustomAppDialogRoute(
       child: Material(
         type: MaterialType.transparency,
-        child: child,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: child,
+          ),
+        ),
       ),
     ),
   );

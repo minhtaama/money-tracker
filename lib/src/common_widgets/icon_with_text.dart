@@ -17,6 +17,7 @@ class IconWithText extends StatelessWidget {
     this.text,
     this.textSize,
     this.forceIconOnTop = true,
+    this.textAlign = TextAlign.center,
   });
 
   final String? iconPath;
@@ -28,6 +29,7 @@ class IconWithText extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? color;
   final bool forceIconOnTop;
+  final TextAlign textAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -80,11 +82,12 @@ class IconWithText extends StatelessWidget {
                         : Gap.noGap,
                   ],
                 ),
+          Gap.h8,
           text != null
               ? Text(
                   text!,
                   style: kNormalTextStyle.copyWith(color: color ?? AppColors.grey(context), fontSize: textSize ?? 13),
-                  textAlign: TextAlign.center,
+                  textAlign: textAlign,
                 )
               : Gap.noGap,
         ],

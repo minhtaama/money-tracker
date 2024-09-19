@@ -30,6 +30,10 @@ class TransactionRepositoryRealmDb {
   /// Put this inside realm write transaction to update [BalanceAtDateTime],
   /// which is a de-normalization value of total regular balance
   void _updateBalanceAtDateTime(DateTime dateTime, double amount) {
+    if (amount == 0) {
+      return;
+    }
+
     List<BalanceAtDateTime> balanceAtDateTimes = getSortedBalanceAtDateTimeList();
     int index = balanceAtDateTimes.indexWhere((e) => dateTime.isSameMonthAs(e.date.toLocal()));
 
@@ -538,6 +542,54 @@ extension EditTransaction on TransactionRepositoryRealmDb {
 
       realm.delete<TransactionDb>(transaction.databaseObject);
     });
+  }
+
+  /// Included logic to check if user can delete a [BaseCreditTransaction].
+  ///
+  /// The returned list will be the transactions that can not be deleted.
+  /// If the list is empty, that means all transactions in the list are deleted.
+  ///
+  /// Currently, only a [BaseCreditTransaction] is needed to check if it can be deleted.
+  ///
+  List<BaseCreditTransaction> deleteTransactions(List<BaseTransaction> transactions) {
+    final regularTxns = transactions.whereType<BaseRegularTransaction>();
+    final creditTxns = transactions.whereType<BaseCreditTransaction>().toList();
+
+    realm.write(() {
+      // Remove all regular transactions in list
+      for (var regular in regularTxns) {
+        final double deleteAmount = switch (regular) {
+          Transfer() => 0,
+          Income() => -regular.amount,
+          Expense() => regular.amount,
+        };
+
+        _updateBalanceAtDateTime(regular.dateTime, deleteAmount);
+
+        regular.recurrence?.databaseObject.addedOn.remove(regular.databaseObject.id.hexString);
+      }
+
+      realm.deleteMany(regularTxns.map((e) => e.databaseObject));
+
+      // Check and remove all delete-able credit transactions in list
+      for (int i = creditTxns.length - 1; i >= 0; i--) {
+        final credit = creditTxns[i];
+
+        final double deleteAmount = switch (credit) {
+          CreditSpending() || CreditCheckpoint() => 0,
+          CreditPayment() => credit.amount,
+        };
+
+        if (credit.canDelete) {
+          creditTxns.remove(credit);
+
+          _updateBalanceAtDateTime(credit.dateTime, deleteAmount);
+          realm.delete(credit.databaseObject);
+        }
+      }
+    });
+
+    return creditTxns;
   }
 }
 

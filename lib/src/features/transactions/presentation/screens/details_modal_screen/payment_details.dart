@@ -1,8 +1,7 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _PaymentDetails extends ConsumerStatefulWidget {
-  const _PaymentDetails(this.screenType, this.controller, this.isScrollable,
-      {required this.transaction});
+  const _PaymentDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
 
   final CreditPayment transaction;
   final TransactionScreenType screenType;
@@ -21,14 +20,9 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
 
   late final _creditAccount = _transaction.account is DeletedAccount
       ? null
-      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject)
-          as CreditAccount;
+      : ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditPaymentFormNotifierProvider.notifier);
-
-  late final bool _canDelete = _transaction.account is DeletedAccount
-      ? true
-      : _creditAccount!.latestClosedStatementDueDate.isBefore(_transaction.dateTime.onlyYearMonthDay);
 
   @override
   void didUpdateWidget(covariant _PaymentDetails oldWidget) {
@@ -71,7 +65,7 @@ class _PaymentDetailsState extends ConsumerState<_PaymentDetails> {
                         ),
                   _DeleteButton(
                     isEditMode: _isEditMode,
-                    isDisable: !_canDelete,
+                    isDisable: !_transaction.canDelete,
                     disableText: context.loc.quoteTransaction10,
                     onConfirm: _delete,
                   )
@@ -181,8 +175,7 @@ extension _PaymentDetailsStateMethod on _PaymentDetailsState {
   bool _isDateTimeEdited(CreditPaymentFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditPaymentFormState state) =>
-      state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditPaymentFormState state) => state.note != null && state.note != _transaction.note;
 
   bool _submit() {
     final txnRepo = ref.read(transactionRepositoryRealmProvider);
