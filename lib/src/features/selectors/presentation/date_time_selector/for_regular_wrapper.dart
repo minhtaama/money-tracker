@@ -170,12 +170,14 @@ class CustomCalendar extends StatefulWidget {
     this.displayedMonthDate,
     required this.value,
     this.selectableDayPredicate,
+    this.constraintWidth = true,
     this.calendarType = CalendarDatePicker2Type.multi,
   });
 
   final void Function(List<DateTime?>) onValueChanged;
   final List<DateTime> value;
   final DateTime? displayedMonthDate;
+  final bool constraintWidth;
   final bool Function(DateTime)? selectableDayPredicate;
   final CalendarDatePicker2Type calendarType;
 
@@ -190,7 +192,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 290,
-      width: context.isBigScreen ? 300 : 350,
+      width: widget.constraintWidth ? (context.isBigScreen ? 300 : 350) : null,
       child: CalendarDatePicker2(
         config: _customConfig(
           context,

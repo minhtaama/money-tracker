@@ -295,12 +295,17 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
               hide: _form.type != RepeatEvery.xYear,
               child: Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: CustomCalendar(
-                  value: _form.patterns,
-                  onValueChanged: (list) => setState(() {
-                    _form.patterns.clear();
-                    _form.patterns.addAll(list.whereType<DateTime>());
-                  }),
+                child: Center(
+                  child: CustomCalendar(
+                    value: _form.patterns,
+                    constraintWidth: false,
+                    onValueChanged: (list) => setState(
+                      () {
+                        _form.patterns.clear();
+                        _form.patterns.addAll(list.whereType<DateTime>());
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -464,7 +469,7 @@ class _CreateRecurrenceModalState extends State<_CreateRecurrenceModal> {
           width: 33,
           borderRadius: BorderRadius.circular(1000),
           border: Border.all(
-            color: context.appTheme.primary.withOpacity(date.isSameDayAs(DateTime.now()) ? 1 : 0),
+            color: context.appTheme.primary.withOpacity(date.day == DateTime.now().day ? 1 : 0),
           ),
           padding: EdgeInsets.zero,
           margin: const EdgeInsets.symmetric(vertical: 4),
