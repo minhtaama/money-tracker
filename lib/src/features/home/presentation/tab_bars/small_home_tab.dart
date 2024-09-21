@@ -52,16 +52,18 @@ class SmallHomeTab extends ConsumerWidget {
   }
 }
 
-class MultiSelectionHomeTab extends StatelessWidget {
-  const MultiSelectionHomeTab({
+class MultiSelectionTab extends StatelessWidget {
+  const MultiSelectionTab({
     super.key,
     this.backgroundColor,
+    this.isTopNavigation = true,
     required this.selectedTransactions,
     required this.onConfirmDelete,
     required this.onClear,
   });
 
   final Color? backgroundColor;
+  final bool isTopNavigation;
   final List<BaseTransaction> selectedTransactions;
   final VoidCallback onConfirmDelete;
   final VoidCallback onClear;
@@ -121,7 +123,7 @@ class MultiSelectionHomeTab extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     onTap: () => showConfirmModal(
                       context: context,
-                      isOnTopNavigation: true,
+                      isOnTopNavigation: isTopNavigation,
                       label: context.loc.deleteNTransactionConfirm(selectedTransactions.length),
                       onConfirm: onConfirmDelete,
                     ),

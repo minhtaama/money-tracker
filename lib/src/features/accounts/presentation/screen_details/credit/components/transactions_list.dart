@@ -1,11 +1,24 @@
 part of '../credit_details.dart';
 
 class _TransactionList extends StatefulWidget {
-  const _TransactionList({required this.account, required this.statement, this.onStatementDateTap});
+  const _TransactionList({
+    required this.account,
+    required this.statement,
+    required this.isInMultiSelectionMode,
+    required this.selectedTransactions,
+    required this.onTransactionTap,
+    required this.onTransactionLongPress,
+    this.onStatementDateTap,
+  });
 
   final CreditAccount account;
   final Statement statement;
   final VoidCallback? onStatementDateTap;
+
+  final bool isInMultiSelectionMode;
+  final List<BaseCreditTransaction> selectedTransactions;
+  final void Function(BaseCreditTransaction) onTransactionTap;
+  final void Function(BaseCreditTransaction) onTransactionLongPress;
 
   @override
   State<_TransactionList> createState() => _TransactionListState();
@@ -119,11 +132,31 @@ class _TransactionListState extends State<_TransactionList> {
           txnDateTime.isAtSameMomentAs(statement.date.previousDue) ||
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: null));
+        list.add(
+          _Transaction(
+            statement: statement,
+            transaction: txn,
+            dateTime: null,
+            isInMultiSelectionMode: widget.isInMultiSelectionMode,
+            selectedTransactions: widget.selectedTransactions,
+            onTap: () => widget.onTransactionTap(txn),
+            onLongPress: () => widget.onTransactionLongPress(txn),
+          ),
+        );
         _addInstallmentsOfCurrentTransaction(list, txn, statement);
       } else {
         tempDate = txnDateTime;
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
+        list.add(
+          _Transaction(
+            statement: statement,
+            transaction: txn,
+            dateTime: tempDate,
+            isInMultiSelectionMode: widget.isInMultiSelectionMode,
+            selectedTransactions: widget.selectedTransactions,
+            onTap: () => widget.onTransactionTap(txn),
+            onLongPress: () => widget.onTransactionLongPress(txn),
+          ),
+        );
         _addInstallmentsOfCurrentTransaction(list, txn, statement);
       }
 
@@ -175,17 +208,34 @@ class _TransactionListState extends State<_TransactionList> {
           txnDateTime.isAtSameMomentAs(statement.date.due) ||
           txnDateTime.isAtSameMomentAs(tempDate) ||
           txnDateTime.isAtSameMomentAs(_today)) {
-        list.add(_Transaction(
+        list.add(
+          _Transaction(
             key:
                 i == statement.transactions.inGracePeriod.length - 1 && txnDateTime.isAtSameMomentAs(statement.date.due)
                     ? bottomKey
                     : null,
             statement: statement,
             transaction: txn,
-            dateTime: null));
+            dateTime: null,
+            isInMultiSelectionMode: widget.isInMultiSelectionMode,
+            selectedTransactions: widget.selectedTransactions,
+            onTap: () => widget.onTransactionTap(txn),
+            onLongPress: () => widget.onTransactionLongPress(txn),
+          ),
+        );
       } else {
         tempDate = txnDateTime;
-        list.add(_Transaction(statement: statement, transaction: txn, dateTime: tempDate));
+        list.add(
+          _Transaction(
+            statement: statement,
+            transaction: txn,
+            dateTime: tempDate,
+            isInMultiSelectionMode: widget.isInMultiSelectionMode,
+            selectedTransactions: widget.selectedTransactions,
+            onTap: () => widget.onTransactionTap(txn),
+            onLongPress: () => widget.onTransactionLongPress(txn),
+          ),
+        );
       }
 
       if (i == statement.transactions.inGracePeriod.length - 1 &&
@@ -282,6 +332,7 @@ class _TransactionListState extends State<_TransactionList> {
       }).map(
         (instm) => _InstallmentToPayTransaction(
           transaction: instm.txn,
+          isInMultiSelectionMode: widget.isInMultiSelectionMode,
         ),
       ),
     );
@@ -295,6 +346,7 @@ class _TransactionListState extends State<_TransactionList> {
         list.add(
           _InstallmentToPayTransaction(
             transaction: txn,
+            isInMultiSelectionMode: widget.isInMultiSelectionMode,
           ),
         );
       }

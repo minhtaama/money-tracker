@@ -94,7 +94,7 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
       child: statement.checkpoint == null
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,39 +108,45 @@ class _SummaryCard extends StatelessWidget {
                       )
                     : Gap.noGap,
                 isClosedStatement ? Gap.h16 : Gap.noGap,
-                _buildText(
-                  context,
-                  text: 'Carrying-over:',
-                  richText: '${carryString(context, statement)} ${context.appSettings.currency.code}',
-                  color: carry.roundBySetting(context) <= 0 ? 0 : -1,
-                ),
-                statement.carry.interest > 0
-                    ? _buildText(
+                CustomBox(
+                  child: Column(
+                    children: [
+                      _buildText(
                         context,
-                        text: 'Interest:',
-                        richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
-                        color: interest.roundBySetting(context) <= 0 ? 0 : -1,
-                      )
-                    : Gap.noGap,
-                _buildText(
-                  context,
-                  text: 'Spent in billing cycle:',
-                  richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
-                  color: spent.roundBySetting(context) <= 0 ? 0 : -1,
-                ),
-                _buildText(
-                  context,
-                  text: 'Paid for statement:',
-                  richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
-                  color: paid.roundBySetting(context) <= 0 ? 0 : 1,
-                ),
-                Gap.h8,
-                _buildText(
-                  context,
-                  text: 'Balance:',
-                  bold: true,
-                  richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
-                  color: balance.roundBySetting(context) <= 0 ? 0 : -1,
+                        text: '${context.loc.carry}:',
+                        richText: '${carryString(context, statement)} ${context.appSettings.currency.code}',
+                        color: carry.roundBySetting(context) <= 0 ? 0 : -1,
+                      ),
+                      statement.carry.interest > 0
+                          ? _buildText(
+                              context,
+                              text: '${context.loc.interest}:',
+                              richText: '~ ${interestString(context, statement)} ${context.appSettings.currency.code}',
+                              color: interest.roundBySetting(context) <= 0 ? 0 : -1,
+                            )
+                          : Gap.noGap,
+                      _buildText(
+                        context,
+                        text: 'Spent in billing cycle:',
+                        richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
+                        color: spent.roundBySetting(context) <= 0 ? 0 : -1,
+                      ),
+                      _buildText(
+                        context,
+                        text: 'Paid for statement:',
+                        richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
+                        color: paid.roundBySetting(context) <= 0 ? 0 : 1,
+                      ),
+                      Gap.h8,
+                      _buildText(
+                        context,
+                        text: 'Balance:',
+                        bold: true,
+                        richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
+                        color: balance.roundBySetting(context) <= 0 ? 0 : -1,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             )
@@ -153,25 +159,31 @@ class _SummaryCard extends StatelessWidget {
                   text: context.loc.quoteCreditAccountComponent2_1,
                 ),
                 Gap.h16,
-                _buildText(
-                  context,
-                  text: 'Modified balance:',
-                  richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
-                  color: spent <= 0 ? 0 : -1,
-                ),
-                _buildText(
-                  context,
-                  text: 'Paid in grace period:',
-                  richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
-                  color: paid <= 0 ? 0 : 1,
-                ),
-                Gap.h4,
-                _buildText(
-                  context,
-                  bold: true,
-                  text: 'Statement balance:',
-                  richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
-                  color: balance <= 0 ? 0 : -1,
+                CustomBox(
+                  child: Column(
+                    children: [
+                      _buildText(
+                        context,
+                        text: 'Modified balance:',
+                        richText: '${spentString(context, statement)} ${context.appSettings.currency.code}',
+                        color: spent <= 0 ? 0 : -1,
+                      ),
+                      _buildText(
+                        context,
+                        text: 'Paid in grace period:',
+                        richText: '${paidString(context, statement)} ${context.appSettings.currency.code}',
+                        color: paid <= 0 ? 0 : 1,
+                      ),
+                      Gap.h4,
+                      _buildText(
+                        context,
+                        bold: true,
+                        text: 'Statement balance:',
+                        richText: '${balanceString(context, statement)} ${context.appSettings.currency.code}',
+                        color: balance <= 0 ? 0 : -1,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -277,56 +289,83 @@ class _Header extends StatelessWidget {
 }
 
 class _Transaction extends StatelessWidget {
-  const _Transaction({super.key, required this.statement, required this.transaction, this.dateTime});
+  const _Transaction({
+    super.key,
+    required this.statement,
+    required this.transaction,
+    this.dateTime,
+    required this.isInMultiSelectionMode,
+    required this.selectedTransactions,
+    required this.onTap,
+    required this.onLongPress,
+  });
+
   final Statement statement;
   final DateTime? dateTime;
   final BaseCreditTransaction transaction;
+  final bool isInMultiSelectionMode;
+  final List<BaseCreditTransaction> selectedTransactions;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: CustomInkWell(
-        inkColor: AppColors.grey(context),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            children: [
-              _DateTime(
-                dateTime: dateTime,
-              ),
-              Gap.w4,
-              Expanded(
-                child: CardItem(
-                  margin: const EdgeInsets.only(left: 2),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                  elevation: 0.7,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _Details(
-                          transaction: transaction,
-                          statement: statement,
-                        ),
-                      ),
-                      transaction is! CreditCheckpoint
-                          ? TxnAmount(
-                              transaction: transaction,
-                              fontSize: 15,
-                              color: transaction is CreditSpending
-                                  ? (transaction as CreditSpending).hasInstallment
-                                      ? AppColors.grey(context)
-                                      : context.appTheme.negative
-                                  : context.appTheme.positive,
-                            )
-                          : Gap.noGap,
-                    ],
+        child: CustomInkWell(
+          inkColor: AppColors.grey(context),
+          onTap: () {
+            if (isInMultiSelectionMode) {
+              onLongPress();
+            } else {
+              onTap();
+            }
+          },
+          onLongPress: () => onLongPress(),
+          child: AnimatedContainer(
+            duration: k250msDuration,
+            color: context.appTheme.primary.withOpacity(selectedTransactions.contains(transaction) ? 0.35 : 0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                children: [
+                  _DateTime(
+                    dateTime: dateTime,
                   ),
-                ),
+                  Gap.w4,
+                  Expanded(
+                    child: CardItem(
+                      margin: const EdgeInsets.only(left: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      elevation: 0.7,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _Details(
+                              transaction: transaction,
+                              statement: statement,
+                            ),
+                          ),
+                          transaction is! CreditCheckpoint
+                              ? TxnAmount(
+                                  transaction: transaction,
+                                  fontSize: 15,
+                                  color: transaction is CreditSpending
+                                      ? (transaction as CreditSpending).hasInstallment
+                                          ? AppColors.grey(context)
+                                          : context.appTheme.negative
+                                      : context.appTheme.positive,
+                                )
+                              : Gap.noGap,
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -335,93 +374,98 @@ class _Transaction extends StatelessWidget {
 }
 
 class _InstallmentToPayTransaction extends StatelessWidget {
-  const _InstallmentToPayTransaction({required this.transaction});
+  const _InstallmentToPayTransaction({required this.transaction, required this.isInMultiSelectionMode});
   final CreditSpending transaction;
+  final bool isInMultiSelectionMode;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: CustomInkWell(
-        inkColor: AppColors.grey(context),
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(
-          RoutePath.transaction,
-          extra: (
-            string: transaction.databaseObject.id.hexString,
-            type: TransactionScreenType.installmentToPay,
+    return HideableContainer(
+      hide: isInMultiSelectionMode,
+      initialAnimation: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: CustomInkWell(
+          inkColor: AppColors.grey(context),
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => context.push(
+            RoutePath.transaction,
+            extra: (
+              string: transaction.databaseObject.id.hexString,
+              type: TransactionScreenType.installmentToPay,
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            children: [
-              const _DateTime(),
-              Gap.w4,
-              Expanded(
-                child: CardItem(
-                  margin: const EdgeInsets.only(left: 2),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                  elevation: 0.7,
-                  child: Row(
-                    children: [
-                      TxnCategoryIcon(
-                        transaction: transaction,
-                        color: context.appTheme.negative,
-                      ),
-                      Gap.w8,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TxnCategoryName(
-                              transaction: transaction,
-                              fontSize: 14,
-                            ),
-                            transaction.categoryTag != null
-                                ? Row(
-                                    children: [
-                                      Transform.translate(
-                                        offset: const Offset(0, 1),
-                                        child: SvgIcon(
-                                          AppIcons.arrowBendDownLight,
-                                          size: 15,
-                                          color: context.appTheme.onBackground.withOpacity(0.65),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              children: [
+                const _DateTime(),
+                Gap.w4,
+                Expanded(
+                  child: CardItem(
+                    margin: const EdgeInsets.only(left: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    elevation: 0.7,
+                    child: Row(
+                      children: [
+                        TxnCategoryIcon(
+                          transaction: transaction,
+                          color: context.appTheme.negative,
+                        ),
+                        Gap.w8,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TxnCategoryName(
+                                transaction: transaction,
+                                fontSize: 14,
+                              ),
+                              transaction.categoryTag != null
+                                  ? Row(
+                                      children: [
+                                        Transform.translate(
+                                          offset: const Offset(0, 1),
+                                          child: SvgIcon(
+                                            AppIcons.arrowBendDownLight,
+                                            size: 15,
+                                            color: context.appTheme.onBackground.withOpacity(0.65),
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        transaction.categoryTag!.name,
-                                        style: kHeader3TextStyle.copyWith(
-                                            fontSize: 13, color: context.appTheme.onBackground.withOpacity(0.65)),
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  )
-                                : Gap.noGap,
+                                        Text(
+                                          transaction.categoryTag!.name,
+                                          style: kHeader3TextStyle.copyWith(
+                                              fontSize: 13, color: context.appTheme.onBackground.withOpacity(0.65)),
+                                          softWrap: false,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    )
+                                  : Gap.noGap,
+                            ],
+                          ),
+                        ),
+                        Gap.w4,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            TxnAmount(
+                              transaction: transaction,
+                              showPaymentAmount: true,
+                              color: context.appTheme.negative,
+                            ),
+                            Text(
+                              'Instm. payment',
+                              style: kHeader3TextStyle.copyWith(fontSize: 10, color: AppColors.grey(context)),
+                            ),
                           ],
                         ),
-                      ),
-                      Gap.w4,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          TxnAmount(
-                            transaction: transaction,
-                            showPaymentAmount: true,
-                            color: context.appTheme.negative,
-                          ),
-                          Text(
-                            'Instm. payment',
-                            style: kHeader3TextStyle.copyWith(fontSize: 10, color: AppColors.grey(context)),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -260,11 +260,11 @@ class CustomLineChart extends StatelessWidget {
 
       return isShowTitle
           ? Transform.translate(
-              offset: Offset(0, -(6 + offsetLabelUp)),
+              offset: Offset(0, -((isForCredit ? 12 : 6) + offsetLabelUp)),
               child: SideTitleWidget(
                 axisSide: AxisSide.bottom,
                 space: 0,
-                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 9),
+                fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 8),
                 child: FittedBox(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

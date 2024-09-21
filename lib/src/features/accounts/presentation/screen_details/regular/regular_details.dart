@@ -44,19 +44,9 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
   late DateTime _currentDisplayDate = _today;
 
   final List<BaseTransaction> _selectedTransactions = [];
-  bool _isMultiSelectionMode = false;
-
-  void _toggleMultiSelectionMode() {
-    if (_selectedTransactions.isNotEmpty) {
-      _isMultiSelectionMode = true;
-    } else {
-      _isMultiSelectionMode = false;
-    }
-  }
 
   void _clearAllSelection() {
     _selectedTransactions.clear();
-    _toggleMultiSelectionMode();
   }
 
   void _onPageChange(int value) {
@@ -100,19 +90,17 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
             transactions: transactionsInDay.reversed.toList(),
             plannedTransactions: const [],
             selectedTransactions: _selectedTransactions,
-            isInMultiSelectionMode: _isMultiSelectionMode,
+            isInMultiSelectionMode: _selectedTransactions.isNotEmpty,
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
             onLongPressTransaction: (transaction) {
               if (_selectedTransactions.contains(transaction)) {
                 setState(() {
                   _selectedTransactions.remove(transaction);
-                  _toggleMultiSelectionMode();
                 });
               } else {
                 setState(() {
                   _selectedTransactions.add(transaction);
-                  _toggleMultiSelectionMode();
                 });
               }
             },
@@ -169,14 +157,14 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomAdaptivePageView(
         pageController: _pageController,
-        forceShowSmallTabBar: _isMultiSelectionMode,
+        forceShowSmallTabBar: _selectedTransactions.isNotEmpty,
         smallTabBar: SmallTabBar(
-          showSecondChild: _isMultiSelectionMode,
+          showSecondChild: _selectedTransactions.isNotEmpty,
           firstChild: PageHeading(
             title: widget.regularAccount.name,
             secondaryTitle: context.loc.regularAccount,
           ),
-          secondChild: MultiSelectionHomeTab(
+          secondChild: MultiSelectionTab(
             selectedTransactions: _selectedTransactions,
             backgroundColor: widget.regularAccount.backgroundColor,
             onClear: () => setState(() {

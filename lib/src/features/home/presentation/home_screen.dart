@@ -46,19 +46,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final _forcePageView = context.appSettings.homescreenType == HomescreenType.pageView;
 
   final List<BaseTransaction> _selectedTransactions = [];
-  bool _isMultiSelectionMode = false;
-
-  void _toggleMultiSelectionMode() {
-    if (_selectedTransactions.isNotEmpty) {
-      _isMultiSelectionMode = true;
-    } else {
-      _isMultiSelectionMode = false;
-    }
-  }
 
   void _clearAllSelection() {
     _selectedTransactions.clear();
-    _toggleMultiSelectionMode();
   }
 
   void _onPageChange(int value) {
@@ -132,19 +122,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             transactions: transactionsInDay.reversed.toList(),
             plannedTransactions: plannedTxnsInDay.reversed.toList(),
             selectedTransactions: _selectedTransactions,
-            isInMultiSelectionMode: _isMultiSelectionMode,
+            isInMultiSelectionMode: _selectedTransactions.isNotEmpty,
             onTransactionTap: (transaction) =>
                 context.push(RoutePath.transaction, extra: transaction.databaseObject.id.hexString),
             onLongPressTransaction: (transaction) {
               if (_selectedTransactions.contains(transaction)) {
                 setState(() {
                   _selectedTransactions.remove(transaction);
-                  _toggleMultiSelectionMode();
                 });
               } else {
                 setState(() {
                   _selectedTransactions.add(transaction);
-                  _toggleMultiSelectionMode();
                 });
               }
             },
@@ -174,9 +162,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return CustomAdaptivePageView(
       pageController: _pageController,
       forcePageView: _forcePageView,
-      forceShowSmallTabBar: _isMultiSelectionMode,
+      forceShowSmallTabBar: _selectedTransactions.isNotEmpty,
       smallTabBar: SmallTabBar(
-        showSecondChild: _isMultiSelectionMode,
+        showSecondChild: _selectedTransactions.isNotEmpty,
         firstChild: SmallHomeTab(
           secondaryTitle: _currentDisplayDate.toLongDate(context, noDay: true),
           showNumber: showTotalBalance,
@@ -185,7 +173,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             _persistentController.set(showAmount: showTotalBalance);
           },
         ),
-        secondChild: MultiSelectionHomeTab(
+        secondChild: MultiSelectionTab(
           selectedTransactions: _selectedTransactions,
           onClear: () => setState(() {
             _clearAllSelection();
