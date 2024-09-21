@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_tab_bar.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
@@ -120,8 +121,7 @@ class _CreditScreenDetailsState extends ConsumerState<CreditScreenDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appTheme.background1,
+    return ScaffoldWithBottomNavBar(
       floatingActionButton: CustomFloatingActionButton(
         color: widget.creditAccount.backgroundColor,
         iconColor: widget.creditAccount.iconColor,
@@ -149,8 +149,7 @@ class _CreditScreenDetailsState extends ConsumerState<CreditScreenDetails> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomAdaptivePageView(
+      child: CustomAdaptivePageView(
         pageController: _controller,
         forceShowSmallTabBar: _selectedTransactions.isNotEmpty,
         smallTabBar: SmallTabBar(

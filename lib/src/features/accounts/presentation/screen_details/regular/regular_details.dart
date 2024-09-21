@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_navigation_bar/scaffold_with_bottom_nav_bar_shell.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page_tool_bar.dart';
 import 'package:money_tracker_app/src/features/accounts/domain/account_base.dart';
 import 'package:money_tracker_app/src/features/accounts/presentation/screen_details/regular/components/extended_tab.dart';
@@ -125,8 +126,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appTheme.background1,
+    return ScaffoldWithBottomNavBar(
       floatingActionButton: CustomFloatingActionButton(
         color: widget.regularAccount.backgroundColor,
         iconColor: widget.regularAccount.iconColor,
@@ -154,8 +154,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomAdaptivePageView(
+      child: CustomAdaptivePageView(
         pageController: _pageController,
         forceShowSmallTabBar: _selectedTransactions.isNotEmpty,
         smallTabBar: SmallTabBar(

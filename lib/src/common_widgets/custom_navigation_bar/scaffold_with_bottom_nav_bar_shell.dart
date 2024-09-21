@@ -7,11 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ScaffoldWithBottomNavBar extends ConsumerStatefulWidget {
   const ScaffoldWithBottomNavBar({
     super.key,
-    required this.items,
+    this.items,
     required this.floatingActionButton,
     required this.child,
   });
-  final List<BottomAppBarItem> items;
+  final List<BottomAppBarItem>? items;
   final Widget floatingActionButton;
   final Widget child;
 
@@ -24,7 +24,7 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
   Widget build(BuildContext context) {
     final isSmallScreen = !context.isBigScreen;
     final currentPath = GoRouterState.of(context).uri.toString();
-    final currentIndex = widget.items.indexWhere((item) => item.path == currentPath);
+    final currentIndex = widget.items?.indexWhere((item) => item.path == currentPath) ?? 0;
 
     // Each tabItem has a `path` to navigate under ShellRoute. When GoRouter push/go
     // a route which is the child of ShellRoute, this Scaffold will not disappear, but
@@ -32,16 +32,20 @@ class _ScaffoldWithBottomNavBarState extends ConsumerState<ScaffoldWithBottomNav
     return Scaffold(
       floatingActionButton: widget.floatingActionButton,
       floatingActionButtonLocation: isSmallScreen
-          ? FloatingActionButtonLocation.centerDocked
+          ? (widget.items != null
+              ? FloatingActionButtonLocation.centerDocked
+              : FloatingActionButtonLocation.centerFloat)
           : FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: CustomBottomAppBar(
-        selectedIndex: currentIndex,
-        isShow: isSmallScreen,
-        items: widget.items,
-        onTabSelected: (int tabIndex) {
-          context.go(widget.items[tabIndex].path); // Change Tab
-        },
-      ),
+      bottomNavigationBar: widget.items != null
+          ? CustomBottomAppBar(
+              selectedIndex: currentIndex,
+              isShow: isSmallScreen,
+              items: widget.items!,
+              onTabSelected: (int tabIndex) {
+                context.go(widget.items![tabIndex].path); // Change Tab
+              },
+            )
+          : null,
       backgroundColor: context.appTheme.background1,
       extendBody: true,
       resizeToAvoidBottomInset: false,
