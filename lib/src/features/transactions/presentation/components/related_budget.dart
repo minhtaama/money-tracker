@@ -40,10 +40,11 @@ class _RelatedBudgetState extends ConsumerState<RelatedBudget> {
 
     final list = ref
         .watch(budgetServicesProvider)
-        .getBudgetDetails(context, regularTransactionFormState.dateTime ?? DateTime.now())
+        .getAllBudgetDetails(context, regularTransactionFormState.dateTime ?? DateTime.now())
         .where(
       (budgetDetail) {
         final budget = budgetDetail.budget;
+
         return switch (budget) {
           CategoryBudget() => budget.categories.contains(regularTransactionFormState.category),
           AccountBudget() => budget.accounts.contains(regularTransactionFormState.account?.toAccountInfo()),

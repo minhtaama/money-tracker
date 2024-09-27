@@ -45,7 +45,7 @@ class BudgetsWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final budgetService = ref.watch(budgetServicesProvider);
-    final list = budgetService.getBudgetDetails(context, DateTime.now());
+    final list = budgetService.getAllBudgetDetails(context, DateTime.now());
 
     return DashboardWidget(
       title: context.loc.budgets,
@@ -76,9 +76,8 @@ class BudgetsWidget extends ConsumerWidget {
                   ),
                 ),
                 ProgressBar(
-                  color: e.currentAmount / e.budget.amount < 0.8
-                      ? context.appTheme.positive
-                      : context.appTheme.negative,
+                  color:
+                      e.currentAmount / e.budget.amount < 0.8 ? context.appTheme.positive : context.appTheme.negative,
                   percentage: (e.currentAmount / e.budget.amount).clamp(0, 1),
                 ),
                 Padding(

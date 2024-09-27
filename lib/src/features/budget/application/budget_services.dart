@@ -13,7 +13,7 @@ class BudgetServices {
   final TransactionRepositoryRealmDb transactionRepo;
   final BudgetsRepositoryRealmDb budgetRepo;
 
-  List<BudgetDetail> getBudgetDetails(BuildContext context, DateTime currentDateTime) {
+  List<BudgetDetail> getAllBudgetDetails(BuildContext context, DateTime currentDateTime) {
     final budgetsList = budgetRepo.getList();
     final result = <BudgetDetail>[];
 
@@ -45,6 +45,31 @@ class BudgetServices {
     }
 
     return result;
+  }
+
+  BudgetDetail getBudgetDetail(BuildContext context, BaseBudget budget, DateTime dateTime) {
+    final range = switch (budget.periodType) {
+      BudgetPeriodType.daily => dateTime.dayRange,
+      BudgetPeriodType.weekly => dateTime.weekRange(context),
+      BudgetPeriodType.monthly => dateTime.monthRange,
+      BudgetPeriodType.yearly => dateTime.yearRange,
+    };
+
+    List<BaseTransaction> txns = transactionRepo.getTransactions(range.start, range.end);
+
+    if (budget is AccountBudget) {
+      txns = txns
+          .where((txn) => budget.accounts.contains(txn.account) && (txn is CreditSpending || txn is Expense))
+          .toList();
+    }
+
+    if (budget is CategoryBudget) {
+      txns = txns.whereType<Expense>().where((txn) => budget.categories.contains(txn.category)).toList();
+    }
+
+    final currentAmount = txns.isEmpty ? 0.0 : txns.map((e) => e.amount).reduce((value, element) => value + element);
+
+    return BudgetDetail(currentAmount: currentAmount, budget: budget, range: range);
   }
 }
 
