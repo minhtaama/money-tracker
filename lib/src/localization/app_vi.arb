@@ -57,6 +57,16 @@
   "monthly": "Hàng tháng",
   "yearly": "Hàng năm",
 
+  "nthWeek": "Tuần thứ {count, select, 0{0} 1{1} 2{2} 3{3} other{{count}}}",
+  "@nthWeek": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "format": "compact"
+      }
+    }
+  },
+
   "invalidAmount": "Dữ liệu không đúng",
 
   "@___________________ [ GENERAL BUTTON TITLES ] ________________": {},
