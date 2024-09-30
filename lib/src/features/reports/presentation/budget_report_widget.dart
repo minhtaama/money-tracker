@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/money_amount.dart';
 import 'package:money_tracker_app/src/common_widgets/progress_bar.dart';
@@ -12,7 +10,6 @@ import 'package:money_tracker_app/src/features/reports/presentation/reports_scre
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
-import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
 import '../../../common_widgets/card_item.dart';
 import '../../../common_widgets/custom_inkwell.dart';
@@ -56,7 +53,6 @@ class BudgetReportWidget extends ConsumerWidget {
 
 class _DailyBudget extends ConsumerWidget {
   const _DailyBudget({
-    super.key,
     required this.budget,
     required this.reportPeriod,
     required this.dateTimes,
@@ -180,7 +176,6 @@ class _DailyBudget extends ConsumerWidget {
 
 class _WeeklyBudget extends ConsumerWidget {
   const _WeeklyBudget({
-    super.key,
     required this.budget,
     required this.reportPeriod,
     required this.dateTimes,
@@ -263,7 +258,6 @@ class _WeeklyBudget extends ConsumerWidget {
 
 class _MonthlyAndYearlyBudget extends ConsumerWidget {
   const _MonthlyAndYearlyBudget({
-    super.key,
     required this.budget,
     required this.dateTimes,
   });
@@ -356,7 +350,7 @@ class _MonthlyAndYearlyBudget extends ConsumerWidget {
 }
 
 class _BudgetHeader extends StatelessWidget {
-  const _BudgetHeader({super.key, required this.budget});
+  const _BudgetHeader({required this.budget});
 
   final BaseBudget budget;
 
