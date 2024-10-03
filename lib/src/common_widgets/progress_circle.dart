@@ -27,7 +27,7 @@ class ProgressCircle extends CustomPainter {
     //this is base circle
     Paint outerCircle = Paint()
       ..strokeWidth = strokeWidth
-      ..color = context.appTheme.onBackground.withOpacity(0.15)
+      ..color = context.appTheme.onBackground.withOpacity(context.appTheme.isDarkTheme ? 0.15 : 0.1)
       ..style = PaintingStyle.stroke;
 
     Offset center = Offset(size.width / 2, size.height / 2);

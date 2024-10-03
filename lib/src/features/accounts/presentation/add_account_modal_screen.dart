@@ -19,6 +19,7 @@ import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 
+import '../../../common_widgets/custom_box.dart';
 import '../../../theme_and_ui/icons.dart';
 import '../../calculator_input/presentation/calculator_input.dart';
 import '../../../common_widgets/modal_screen_components.dart';
@@ -212,21 +213,15 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
           hide: _accountType != AccountType.credit,
           child: Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.greyBorder(context)),
-                ),
-                margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+              CustomBox(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Text(
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 12.0),
+                      child: TextHeader(
                         'Credit preferences:',
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                        opacity: 1,
                       ),
                     ),
                     Row(
@@ -286,21 +281,17 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
                 ),
               ),
               Gap.h8,
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.greyBorder(context)),
-                ),
+              CustomBox(
                 margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                      child: Text(
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8.0, top: 8.0),
+                      child: TextHeader(
                         'Payment & Interest preferences:',
-                        style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                        opacity: 1,
                       ),
                     ),
                     CustomRadio<StatementType>(
@@ -330,21 +321,15 @@ class _AddAccountModalScreenState extends ConsumerState<AddAccountModalScreen> {
         ),
         HideableContainer(
           hide: _accountType != AccountType.saving,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.greyBorder(context)),
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          child: CustomBox(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Text(
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 12.0),
+                  child: TextHeader(
                     'Saving preferences:',
-                    style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 14),
+                    opacity: 1,
                   ),
                 ),
                 Row(

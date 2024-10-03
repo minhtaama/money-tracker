@@ -14,7 +14,6 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../common_widgets/custom_radio.dart';
 import '../../../common_widgets/custom_text_form_field.dart';
 import '../../../common_widgets/hideable_container.dart';
 import '../../../common_widgets/icon_with_text.dart';

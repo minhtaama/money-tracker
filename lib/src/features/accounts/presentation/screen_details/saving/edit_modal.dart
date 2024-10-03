@@ -13,6 +13,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
+import '../../../../../common_widgets/custom_box.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
 import '../../../../calculator_input/application/calculator_service.dart';
 import '../../../../calculator_input/presentation/calculator_input.dart';
@@ -87,58 +88,45 @@ class _EditRegularAccountModalScreenState extends ConsumerState<EditSavingModalS
             });
           },
         ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.greyBorder(context)),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        Gap.h12,
+        CustomBox(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Gap.h8,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: InlineTextFormField(
-                  prefixText: 'Target amount:'.hardcoded,
-                  suffixText: context.appSettings.currency.code,
-                  widget: CalculatorInput(
-                    fontSize: 18,
-                    isDense: true,
-                    textAlign: TextAlign.end,
-                    formattedResultOutput: (value) => _calculatorOutput = value,
-                    focusColor: context.appTheme.secondary1,
-                    hintText: CalService.formatNumberInGroup(widget.savingAccount.targetAmount.toString()),
-                    title: context.loc.saving,
-                  ),
+              InlineTextFormField(
+                prefixText: 'Target amount:'.hardcoded,
+                suffixText: context.appSettings.currency.code,
+                widget: CalculatorInput(
+                  fontSize: 18,
+                  isDense: true,
+                  textAlign: TextAlign.end,
+                  formattedResultOutput: (value) => _calculatorOutput = value,
+                  focusColor: context.appTheme.secondary1,
+                  hintText: CalService.formatNumberInGroup(widget.savingAccount.targetAmount.toString()),
+                  title: context.loc.saving,
                 ),
               ),
               Gap.h16,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      'Target date:',
-                      style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
-                    ),
-                    DateSelector(
-                      initial: _targetSavingDate,
-                      selectableDayPredicate: (date) => date.isAfter(DateTime.now()),
-                      onChangedNullable: (dateTime) {
-                        setState(() {
-                          _targetSavingDate = dateTime;
-                        });
-                      },
-                      labelBuilder: (dateTime) {
-                        return dateTime != null ? 'Until ${dateTime.toShortDate(context)}' : 'No target date';
-                      },
-                    ),
-                  ],
-                ),
+              Row(
+                children: [
+                  Text(
+                    'Target date:',
+                    style: kNormalTextStyle.copyWith(color: context.appTheme.onBackground),
+                  ),
+                  DateSelector(
+                    initial: _targetSavingDate,
+                    selectableDayPredicate: (date) => date.isAfter(DateTime.now()),
+                    onChangedNullable: (dateTime) {
+                      setState(() {
+                        _targetSavingDate = dateTime;
+                      });
+                    },
+                    labelBuilder: (dateTime) {
+                      return dateTime != null ? 'Until ${dateTime.toShortDate(context)}' : 'No target date';
+                    },
+                  ),
+                ],
               ),
-              Gap.h8,
             ],
           ),
         ),

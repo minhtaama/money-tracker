@@ -11,6 +11,7 @@ import 'package:money_tracker_app/src/theme_and_ui/colors.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
+import '../../../../../common_widgets/custom_box.dart';
 import '../../../../../common_widgets/custom_radio.dart';
 import '../../../../../common_widgets/help_button.dart';
 import '../../../../../common_widgets/inline_text_form_field.dart';
@@ -91,11 +92,7 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCreditAccountModal
           },
         ),
         Gap.h8,
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.greyBorder(context)),
-          ),
+        CustomBox(
           margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           child: Column(

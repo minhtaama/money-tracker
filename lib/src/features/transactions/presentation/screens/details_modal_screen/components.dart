@@ -737,7 +737,7 @@ class _CategoryEditSelectorState extends ConsumerState<_CategoryEditSelector> {
         Gap.h16,
         TextHeader(context.loc.chooseTag),
         Gap.h16,
-        CategoryTagSelector(
+        CategoryTagSelector2(
           category: _selectedCategory,
           initialChosenTag: _selectedTag,
           onTagSelected: (tag) => setState(() {

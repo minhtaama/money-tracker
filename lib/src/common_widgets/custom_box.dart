@@ -25,9 +25,8 @@ class CustomBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: k150msDuration,
-      //width: double.infinity,
-      margin: hide ? EdgeInsets.zero : margin ?? EdgeInsets.zero,
-      padding: hide ? EdgeInsets.zero : padding ?? const EdgeInsets.all(8),
+      margin: hide ? EdgeInsets.zero : margin ?? const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
+      padding: hide ? EdgeInsets.zero : padding ?? const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
         color: color ?? Colors.transparent,
         border: Border.all(

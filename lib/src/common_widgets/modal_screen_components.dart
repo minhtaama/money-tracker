@@ -241,7 +241,7 @@ class ModalFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Gap.w8,
+        Gap.w16,
         optional != null
             ? Expanded(child: optional!)
             : (smallButtonIcon != null
@@ -263,7 +263,7 @@ class ModalFooter extends StatelessWidget {
           width: 150,
           padding: const EdgeInsets.only(left: 12, right: 18),
         ),
-        Gap.w8,
+        Gap.w12,
       ],
     );
   }
@@ -295,15 +295,16 @@ class CurrencyIcon extends StatelessWidget {
 }
 
 class TextHeader extends StatelessWidget {
-  const TextHeader(this.text, {super.key, this.fontSize = 15});
+  const TextHeader(this.text, {super.key, this.fontSize = 14, this.opacity = 0.55});
   final String text;
   final double fontSize;
+  final double opacity;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: kHeader2TextStyle.copyWith(fontSize: fontSize, color: context.appTheme.onBackground.withOpacity(0.5)),
+      style: kHeader2TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(opacity), fontSize: fontSize),
     );
   }
 }

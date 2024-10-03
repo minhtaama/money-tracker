@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/src/common_widgets/custom_box.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_and_dialog.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
@@ -12,6 +13,7 @@ import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../data/category_repo.dart';
+import 'category_tag/category_tag_selector.dart';
 
 class EditCategoryModalScreen extends ConsumerStatefulWidget {
   const EditCategoryModalScreen(this.currentCategory, {super.key});
@@ -39,6 +41,13 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
 
   @override
   Widget build(BuildContext context) {
+    final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
+    var tags = categoryRepo.getTagList(widget.currentCategory)!;
+
+    ref.watch(categoryTagsChangesRealmProvider(widget.currentCategory)).whenData((_) {
+      tags = categoryRepo.getTagList(widget.currentCategory)!;
+    });
+
     return ModalContent(
       header: ModalHeader(
         title: context.loc.editCategory,
@@ -78,6 +87,17 @@ class _EditCategoryModalScreenState extends ConsumerState<EditCategoryModalScree
             });
           },
         ),
+        Gap.h16,
+        TextHeader(
+          context.loc.categoryTag,
+          opacity: 1,
+        ),
+        Gap.h12,
+        CategoryTagSelector2(
+          category: widget.currentCategory,
+          tagColor: AppColors.allColorsUserCanPick[newColorIndex][0],
+        ),
+        Gap.h8,
       ],
       footer: ModalFooter(
         isBigButtonDisabled: false,

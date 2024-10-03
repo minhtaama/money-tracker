@@ -64,11 +64,10 @@ class CategoryListTile extends ConsumerWidget {
             ],
           ),
           tags.isNotEmpty ? Gap.h12 : Gap.noGap,
-          Wrap(
-            children: [
-              for (CategoryTag tag in tags) CategoryTagWidget(categoryTag: tag, onTap: (tag) {}, onLongPress: (tag) {})
-            ],
-          )
+          CategoryTagSelector2(
+            category: model,
+            isDisplayingOnly: true,
+          ),
         ],
       ),
     );

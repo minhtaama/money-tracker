@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/card_item.dart';
@@ -129,7 +130,7 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
                             children: List.generate(
                               _tags!.length,
                               (index) {
-                                return CategoryTagWidget(
+                                return _CategoryTagWidget(
                                   categoryTag: _tags![index],
                                   onTap: (tag) {
                                     categoryRepo.reorderTagToTop(widget.category!, index);
@@ -223,6 +224,144 @@ class _CategoryTagSelectorState extends ConsumerState<CategoryTagSelector> {
   }
 }
 
+class CategoryTagSelector2 extends ConsumerStatefulWidget {
+  const CategoryTagSelector2({
+    super.key,
+    this.isDisplayingOnly = false,
+    this.category,
+    this.onTagSelected,
+    this.onTagDeSelected,
+    this.initialChosenTag,
+    this.tagColor,
+  });
+  final bool isDisplayingOnly;
+
+  final ValueSetter<CategoryTag?>? onTagSelected;
+
+  /// Optional callback when de-select a tag
+  final VoidCallback? onTagDeSelected;
+  final Category? category;
+  final CategoryTag? initialChosenTag;
+  final Color? tagColor;
+
+  @override
+  ConsumerState<CategoryTagSelector2> createState() => _CategoryTagSelector2State();
+}
+
+class _CategoryTagSelector2State extends ConsumerState<CategoryTagSelector2> {
+  late final categoryRepo = ref.watch(categoryRepositoryRealmProvider);
+
+  late Category? _currentCategory = widget.category;
+
+  late List<CategoryTag>? _tags = categoryRepo.getTagList(_currentCategory);
+
+  late CategoryTag? _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
+
+  @override
+  void didUpdateWidget(covariant CategoryTagSelector2 oldWidget) {
+    if (widget.category != oldWidget.category) {
+      _currentCategory = widget.category;
+      _tags = categoryRepo.getTagList(_currentCategory);
+    }
+
+    if (widget.initialChosenTag != oldWidget.initialChosenTag && widget.initialChosenTag != null) {
+      _chosenTag = widget.initialChosenTag == CategoryTag.noTag ? null : widget.initialChosenTag;
+    } else if (_currentCategory == null || _currentCategory != oldWidget.category) {
+      _chosenTag = null;
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(categoryTagsChangesRealmProvider(_currentCategory)).whenData((_) {
+      _tags = categoryRepo.getTagList(_currentCategory);
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        IgnorePointer(
+          ignoring: widget.isDisplayingOnly,
+          child: Wrap(
+            runAlignment: WrapAlignment.start,
+            spacing: 12,
+            runSpacing: 6,
+            children: List.generate(
+              _tags!.length,
+              (index) {
+                return _CategoryTagWidget2(
+                  isNoFunction: widget.onTagSelected == null,
+                  isIgnoringTap: widget.isDisplayingOnly,
+                  categoryTag: _tags![index],
+                  onTap: (tag) {
+                    if (widget.onTagSelected != null) {
+                      if (_chosenTag != tag) {
+                        setState(
+                          () {
+                            _chosenTag = tag;
+                            _tags = categoryRepo.getTagList(widget.category!);
+                            widget.onTagSelected?.call(_chosenTag);
+                          },
+                        );
+                      } else {
+                        setState(
+                          () {
+                            _chosenTag = null;
+                            _tags = categoryRepo.getTagList(widget.category!);
+                            widget.onTagDeSelected?.call();
+                          },
+                        );
+                      }
+                    } else {
+                      showCustomModal(
+                        context: context,
+                        child: EditCategoryTag(
+                          tag,
+                          category: widget.category!,
+                        ),
+                      );
+                    }
+                  },
+                  onLongPress: (tag) => showCustomModal(
+                    context: context,
+                    child: EditCategoryTag(
+                      tag,
+                      category: widget.category!,
+                    ),
+                  ),
+                  selectedTag: _chosenTag,
+                  selectedColor: widget.tagColor ?? widget.category?.backgroundColor ?? AppColors.grey(context),
+                  onSelectedColor: widget.category?.iconColor ?? context.appTheme.onBackground,
+                );
+              },
+            ),
+          ),
+        ),
+        _tags == null || _tags!.isEmpty || widget.isDisplayingOnly ? Gap.noGap : Gap.h12,
+        widget.isDisplayingOnly
+            ? Gap.noGap
+            : AddCategoryTagButton(
+                category: widget.category,
+                onEditingComplete: (tag) {
+                  categoryRepo.reorderTagToTop(widget.category!, _tags!.length - 1);
+                  if (widget.onTagSelected != null) {
+                    setState(
+                      () {
+                        _chosenTag = tag;
+                        _tags = categoryRepo.getTagList(widget.category!);
+                        widget.onTagSelected?.call(_chosenTag);
+                      },
+                    );
+                  }
+                },
+              ),
+      ],
+    );
+  }
+}
+
 class _ChosenTag extends StatelessWidget {
   const _ChosenTag({
     this.chosenTag,
@@ -246,8 +385,12 @@ class _ChosenTag extends StatelessWidget {
   }
 }
 
-class CategoryTagWidget extends StatelessWidget {
-  const CategoryTagWidget({super.key, required this.categoryTag, required this.onTap, required this.onLongPress});
+class _CategoryTagWidget extends StatelessWidget {
+  const _CategoryTagWidget({
+    required this.categoryTag,
+    required this.onTap,
+    required this.onLongPress,
+  });
   final CategoryTag categoryTag;
   final ValueSetter<CategoryTag> onTap;
   final ValueSetter<CategoryTag> onLongPress;
@@ -281,6 +424,74 @@ class CategoryTagWidget extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryTagWidget2 extends StatelessWidget {
+  const _CategoryTagWidget2({
+    required this.categoryTag,
+    required this.onTap,
+    required this.onLongPress,
+    required this.selectedTag,
+    required this.selectedColor,
+    required this.onSelectedColor,
+    required this.isNoFunction,
+    required this.isIgnoringTap,
+  });
+  final CategoryTag categoryTag;
+  final ValueSetter<CategoryTag> onTap;
+  final ValueSetter<CategoryTag> onLongPress;
+  final CategoryTag? selectedTag;
+  final Color selectedColor;
+  final Color onSelectedColor;
+  final bool isNoFunction;
+  final bool isIgnoringTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomInkWell(
+      inkColor: selectedColor,
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => onTap(categoryTag),
+      onLongPress: () => onLongPress(categoryTag),
+      child: AnimatedContainer(
+        duration: k250msDuration,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: isNoFunction
+              ? selectedColor.withOpacity(0.15)
+              : selectedTag == categoryTag
+                  ? selectedColor
+                  : AppColors.greyBgr(context),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, 1),
+              child: SvgIcon(
+                AppIcons.arrowBendDownLight,
+                color: selectedTag == categoryTag ? onSelectedColor : context.appTheme.onBackground,
+                size: 20,
+              ),
+            ),
+            Gap.w4,
+            Flexible(
+              child: Text(
+                categoryTag.name,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: kHeader3TextStyle.copyWith(
+                  color: selectedTag == categoryTag ? onSelectedColor : context.appTheme.onBackground,
+                  fontSize: isIgnoringTap ? 14 : 16,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
