@@ -184,6 +184,7 @@ class _CreditScreenDetailsState extends ConsumerState<CreditScreenDetails> {
         ),
         extendedTabBar: ExtendedTabBar(
           backgroundColor: widget.creditAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
+          foregroundColor: widget.creditAccount.iconColor,
           overlayColor: widget.creditAccount.iconColor,
           child: ExtendedCreditAccountTab(account: widget.creditAccount, displayDate: _displayStatementDate),
         ),

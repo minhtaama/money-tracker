@@ -189,6 +189,7 @@ class _RegularScreenDetailsState extends ConsumerState<RegularScreenDetails> {
         ),
         extendedTabBar: ExtendedTabBar(
           overlayColor: context.appTheme.isDarkTheme ? widget.regularAccount.iconColor : null,
+          foregroundColor: widget.regularAccount.iconColor,
           backgroundColor: widget.regularAccount.backgroundColor.addDark(context.appTheme.isDarkTheme ? 0.3 : 0.0),
           child: ExtendedRegularAccountTab(account: widget.regularAccount, displayDate: _currentDisplayDate),
         ),

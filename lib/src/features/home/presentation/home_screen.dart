@@ -198,6 +198,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       extendedTabBar: ExtendedTabBar(
         overlayColor: context.appTheme.isDarkTheme ? context.appTheme.accent1 : null,
+        foregroundColor: context.appTheme.accent1,
         child: ExtendedHomeTab(
           carouselController: _carouselController,
           initialPageIndex: _initialPageIndex,

@@ -130,21 +130,27 @@ class DayCard extends StatelessWidget {
                         ],
                       ),
                       Gap.expanded,
-                      Text(
-                        '$_symbol${CalService.formatCurrency(context, _calculateCashFlow.abs())}',
-                        style: kHeader3TextStyle.copyWith(
-                            color: _calculateCashFlow > 0
-                                ? context.appTheme.positive
-                                : _calculateCashFlow < 0
-                                    ? context.appTheme.negative
-                                    : context.appTheme.onBackground,
-                            fontSize: 13),
-                      )
+                      forModal
+                          ? Gap.noGap
+                          : Text(
+                              '$_symbol${CalService.formatCurrency(context, _calculateCashFlow.abs())}',
+                              style: kHeader3TextStyle.copyWith(
+                                color: _calculateCashFlow > 0
+                                    ? context.appTheme.positive
+                                    : _calculateCashFlow < 0
+                                        ? context.appTheme.negative
+                                        : context.appTheme.onBackground,
+                                fontSize: 13,
+                              ),
+                            )
                     ],
                   ),
                 ),
                 transactions.isNotEmpty
-                    ? Gap.divider(context, indent: 0, color: context.appTheme.background1, thickness: 1)
+                    ? Gap.divider(context,
+                        indent: 0,
+                        color: forModal ? AppColors.greyBorder(context) : context.appTheme.background1,
+                        thickness: 1)
                     : Gap.h8,
                 DayCardTransactionsList(
                   transactions: transactions,

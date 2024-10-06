@@ -48,41 +48,43 @@ class MoneyTrackerApp extends ConsumerWidget {
       data: appPersistentValues,
       child: AppSettings(
         data: appSettings,
-        child: Builder(builder: (context) {
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle(
-              systemNavigationBarColor:
-                  context.isBigScreen ? context.appTheme.background2 : context.appTheme.background1,
-              systemNavigationBarIconBrightness: context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
-              systemNavigationBarDividerColor: Colors.transparent,
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: systemIconBrightness,
-            ),
-            child: Portal(
-              child: MaterialApp.router(
-                restorationScopeId: 'app',
-                locale: context.appSettings.locale,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-                routerConfig: goRouter,
-                theme: ThemeData(
-                  useMaterial3: true,
-                  fontFamily: 'WixMadeforDisplay',
-                  pageTransitionsTheme: const PageTransitionsTheme(
-                    builders: <TargetPlatform, PageTransitionsBuilder>{
-                      TargetPlatform.android: ZoomPageTransitionsBuilder(
-                        allowSnapshotting: false,
-                      ),
-                    },
+        child: Builder(
+          builder: (context) {
+            return AnnotatedRegion<SystemUiOverlayStyle>(
+              value: SystemUiOverlayStyle(
+                systemNavigationBarColor:
+                    context.isBigScreen ? context.appTheme.background2 : context.appTheme.background1,
+                systemNavigationBarIconBrightness: context.appTheme.isDarkTheme ? Brightness.light : Brightness.dark,
+                systemNavigationBarDividerColor: Colors.transparent,
+                statusBarColor: Colors.transparent,
+                statusBarIconBrightness: systemIconBrightness,
+              ),
+              child: Portal(
+                child: MaterialApp.router(
+                  restorationScopeId: 'app',
+                  locale: context.appSettings.locale,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  routerConfig: goRouter,
+                  theme: ThemeData(
+                    useMaterial3: true,
+                    fontFamily: 'WixMadeforDisplay',
+                    pageTransitionsTheme: const PageTransitionsTheme(
+                      builders: <TargetPlatform, PageTransitionsBuilder>{
+                        TargetPlatform.android: ZoomPageTransitionsBuilder(
+                          allowSnapshotting: false,
+                        ),
+                      },
+                    ),
+                    // For showDatePicker2 colors
+                    colorScheme: ColorScheme.fromSwatch()
+                        .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
                   ),
-                  // For showDatePicker2 colors
-                  colorScheme: ColorScheme.fromSwatch()
-                      .copyWith(surfaceTint: Colors.transparent, primary: context.appTheme.primary),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }

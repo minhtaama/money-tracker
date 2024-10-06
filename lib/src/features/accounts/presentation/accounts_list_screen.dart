@@ -114,19 +114,23 @@ class AccountsListScreen extends ConsumerWidget {
   }
 }
 
-class _AccountTile extends StatelessWidget {
+class _AccountTile extends ConsumerWidget {
   const _AccountTile({required this.model});
 
   final Account model;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final fgColor = context.appTheme.onBackground;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
-        onTap: () => context.go(RoutePath.accountScreen, extra: model.databaseObject.id.hexString),
+        onTap: () => context.pushThenChangeBrightnessToDefaultWhenPop(
+          ref,
+          RoutePath.accountScreen,
+          extra: model.databaseObject.id.hexString,
+        ),
         child: CardItem(
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,

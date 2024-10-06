@@ -267,9 +267,9 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
       return;
     }
 
-    if (widget.extendedTabBar?.backgroundColor != null) {
-      final lum = widget.extendedTabBar!.backgroundColor!.computeLuminance();
-      if (lum < 0.5) {
+    if (widget.extendedTabBar?.foregroundColor != null) {
+      final lum = widget.extendedTabBar!.foregroundColor!.computeLuminance();
+      if (lum > 0.5) {
         statusBrnNotifier.state = Brightness.light;
       } else {
         statusBrnNotifier.state = Brightness.dark;
