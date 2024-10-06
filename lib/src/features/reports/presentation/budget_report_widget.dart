@@ -28,18 +28,32 @@ class BudgetReportWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final budgetList = ref.watch(budgetsRepositoryRealmProvider).getList();
+    final types = budgetList.map((e) => e.periodType);
 
-    return ReportWrapper(
+    return ReportWrapperSwitcher(
       title: context.loc.budgets,
-      child: Padding(
+      showButton: types.contains(BudgetPeriodType.monthly) || types.contains(BudgetPeriodType.yearly),
+      firstChild: Padding(
         padding: const EdgeInsets.only(top: 8.0, left: 5.0, right: 5.0),
         child: Column(
           children: budgetList
-              .map((budget) => switch (budget.periodType) {
+              .map<Widget>((budget) => switch (budget.periodType) {
                     BudgetPeriodType.daily =>
                       _DailyBudget(budget: budget, reportPeriod: reportPeriod, dateTimes: dateTimes),
                     BudgetPeriodType.weekly =>
                       _WeeklyBudget(budget: budget, reportPeriod: reportPeriod, dateTimes: dateTimes),
+                    BudgetPeriodType.monthly || BudgetPeriodType.yearly => Gap.noGap,
+                  })
+              .toList(),
+        ),
+      ),
+      secondChild: Padding(
+        padding: const EdgeInsets.only(top: 8.0, left: 5.0, right: 5.0),
+        child: Column(
+          children: budgetList
+              .map<Widget>((budget) => switch (budget.periodType) {
+                    BudgetPeriodType.daily => Gap.noGap,
+                    BudgetPeriodType.weekly => Gap.noGap,
                     BudgetPeriodType.monthly ||
                     BudgetPeriodType.yearly =>
                       _MonthlyAndYearlyBudget(budget: budget, dateTimes: dateTimes),
@@ -62,20 +76,19 @@ class _DailyBudget extends ConsumerWidget {
   final ReportPeriod reportPeriod;
   final List<DateTime> dateTimes;
 
-  Widget item(BuildContext context, DateTime dateTime, BudgetServices budgetService) {
+  Widget _item(BuildContext context, DateTime dateTime, BudgetServices budgetService) {
     final budgetDetail = budgetService.getBudgetDetail(context, budget, dateTime);
 
     final colorList = budget is CategoryBudget
         ? (budget as CategoryBudget).categories.map((e) => e.backgroundColor)
         : (budget as AccountBudget).accounts.map((e) => e.backgroundColor);
 
-    return CustomPaint(
-      painter: ProgressCircle(
-        context,
-        currentProgress: budgetDetail.currentAmount / budgetDetail.budget.amount,
-        completeColor: context.appTheme.negative,
-        completeColors: colorList.toList(),
-      ),
+    return ProgressCircle(
+      key: ValueKey(dateTime.day),
+      duration: k250msDuration,
+      currentProgress: budgetDetail.currentAmount / budgetDetail.budget.amount,
+      completeColor: context.appTheme.negative,
+      completeColors: colorList.toList(),
       child: CardItem(
         color: Colors.transparent,
         height: 55,
@@ -102,58 +115,118 @@ class _DailyBudget extends ConsumerWidget {
     );
   }
 
+  Widget _notInCurrentMonthItem(BuildContext context, DateTime dateTime) {
+    return SizedBox(
+      height: 55,
+      width: 60,
+      child: Center(
+        child: Text(
+          dateTime.day.toString(),
+          style: kHeader2TextStyle.copyWith(
+            color: context.appTheme.onBackground.withOpacity(0.55),
+            fontSize: 15,
+            height: 0.99,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  TableRow _firstTableRow(BuildContext context) {
+    final weekRange = dateTimes.first.weekRange(context).toList();
+
+    return TableRow(
+      key: const ValueKey('RowAlpha'),
+      children: [
+        for (DateTime day in weekRange)
+          Text(
+            day.weekdayToString(context, short: true),
+            style: kHeader1TextStyle.copyWith(
+              color: day.weekday == 7 ? context.appTheme.negative : context.appTheme.onBackground,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          )
+      ],
+    );
+  }
+
   List<TableRow> _buildTableRow(BuildContext context, BudgetServices budgetServices) {
     if (reportPeriod == ReportPeriod.week) {
       return [
+        _firstTableRow(context),
         TableRow(
+          key: const ValueKey('Row2'),
           children: [
             for (int i = dateTimes.first.day; i <= dateTimes.last.day; i++)
-              Text(
-                dateTimes.first.copyWith(day: i).weekdayToString(context, short: true),
-                style: kHeader4TextStyle.copyWith(color: context.appTheme.onBackground),
-                textAlign: TextAlign.center,
-              )
-          ],
-        ),
-        TableRow(
-          children: [
-            for (int i = dateTimes.first.day; i <= dateTimes.last.day; i++)
-              item(context, dateTimes.first.copyWith(day: i), budgetServices),
+              _item(context, dateTimes.first.copyWith(day: i), budgetServices),
           ],
         ),
       ];
     } else {
-      return [
-        TableRow(children: [
-          SizedBox(
-            height: 55,
-            width: 60,
-            child: Center(
-              child: Text(
-                dateTimes.first.monthToString(context, short: true),
-                style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground.withOpacity(0.65), fontSize: 15),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          for (int i = 1; i <= 6; i++) item(context, dateTimes.first.copyWith(day: i), budgetServices)
-        ]),
+      final firstWeekRange = dateTimes.first.weekRange(context).toList();
+      final secondWeekRange = firstWeekRange.last.add(const Duration(days: 1)).weekRange(context).toList();
+      final thirdWeekRange = secondWeekRange.last.add(const Duration(days: 1)).weekRange(context).toList();
+      final forthWeekRange = thirdWeekRange.last.add(const Duration(days: 1)).weekRange(context).toList();
+      final fifthWeekRange = forthWeekRange.last.add(const Duration(days: 1)).weekRange(context).toList();
+      final sixthWeekRange = fifthWeekRange.last.add(const Duration(days: 1)).weekRange(context).toList();
+
+      final result = [
+        _firstTableRow(context),
         TableRow(
-            children: [for (int i = 7; i <= 13; i++) item(context, dateTimes.first.copyWith(day: i), budgetServices)]),
-        TableRow(
-            children: [for (int i = 14; i <= 20; i++) item(context, dateTimes.first.copyWith(day: i), budgetServices)]),
-        TableRow(
-            children: [for (int i = 21; i <= 27; i++) item(context, dateTimes.first.copyWith(day: i), budgetServices)]),
-        TableRow(
+          key: const ValueKey('Row1A'),
           children: [
-            for (int i = 28; i <= 31; i++)
-              i > dateTimes.last.day ? Gap.noGap : item(context, dateTimes.first.copyWith(day: i), budgetServices),
-            Gap.noGap,
-            Gap.noGap,
-            Gap.noGap
+            for (DateTime day in firstWeekRange)
+              day.month == dateTimes.first.month
+                  ? _item(context, day, budgetServices)
+                  : _notInCurrentMonthItem(context, day),
+          ],
+        ),
+        TableRow(
+          key: const ValueKey('Row2A'),
+          children: [
+            for (DateTime day in secondWeekRange) _item(context, day, budgetServices),
+          ],
+        ),
+        TableRow(
+          key: const ValueKey('Row3A'),
+          children: [
+            for (DateTime day in thirdWeekRange) _item(context, day, budgetServices),
+          ],
+        ),
+        TableRow(
+          key: const ValueKey('Row4A'),
+          children: [
+            for (DateTime day in forthWeekRange) _item(context, day, budgetServices),
+          ],
+        ),
+        TableRow(
+          key: const ValueKey('Row5A'),
+          children: [
+            for (DateTime day in fifthWeekRange)
+              day.month == dateTimes.first.month
+                  ? _item(context, day, budgetServices)
+                  : _notInCurrentMonthItem(context, day),
           ],
         ),
       ];
+
+      if (sixthWeekRange.first.month == dateTimes.first.month) {
+        result.add(
+          TableRow(
+            key: const ValueKey('Row6A'),
+            children: [
+              for (DateTime day in sixthWeekRange)
+                day.month == dateTimes.first.month
+                    ? _item(context, day, budgetServices)
+                    : _notInCurrentMonthItem(context, day),
+            ],
+          ),
+        );
+      }
+
+      return result;
     }
   }
 
@@ -285,14 +358,12 @@ class _MonthlyAndYearlyBudget extends ConsumerWidget {
               SizedBox(
                 height: 150,
                 width: 150,
-                child: CustomPaint(
-                  painter: ProgressCircle(
-                    context,
-                    currentProgress: budgetDetail.currentAmount / budgetDetail.budget.amount,
-                    completeColor: context.appTheme.negative,
-                    completeColors: colorList.toList(),
-                    strokeWidth: 11,
-                  ),
+                child: ProgressCircle(
+                  duration: k250msDuration,
+                  currentProgress: budgetDetail.currentAmount / budgetDetail.budget.amount,
+                  completeColor: context.appTheme.negative,
+                  completeColors: colorList.toList(),
+                  strokeWidth: 11,
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,

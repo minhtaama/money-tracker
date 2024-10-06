@@ -2,16 +2,89 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-class ProgressCircle extends CustomPainter {
+import '../utils/constants.dart';
+import 'card_item.dart';
+import 'custom_inkwell.dart';
+
+class ProgressCircle extends ImplicitlyAnimatedWidget {
+  const ProgressCircle({
+    super.key,
+    super.curve,
+    required super.duration,
+    super.onEnd,
+    required this.completeColor,
+    required this.currentProgress,
+    this.strokeWidth = 5,
+    required this.completeColors,
+    this.onTap,
+    this.child,
+  });
+
+  final Color completeColor;
+  final double currentProgress;
+  final double strokeWidth;
+  final List<Color>? completeColors;
+  final Widget? child;
+  final VoidCallback? onTap;
+
+  @override
+  ProgressCircleState createState() => ProgressCircleState();
+}
+
+class ProgressCircleState extends AnimatedWidgetBaseState<ProgressCircle> {
+  Tween<double>? _tween;
+
+  @override
+  void forEachTween(visitor) {
+    _tween = visitor(
+      // The latest tween value. Can be `null`.
+      _tween,
+      // The value toward which we are animating.
+      widget.currentProgress,
+      // A function that takes a value and returns a tween beginning at that value.
+      (dynamic value) => Tween<double>(begin: value as double?),
+    ) as Tween<double>?;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: ProgressCirclePainter(
+        context,
+        currentProgress: _tween?.evaluate(animation) as double,
+        completeColor: context.appTheme.negative,
+        completeColors: widget.completeColors,
+      ),
+      child: CardItem(
+        color: Colors.transparent,
+        height: 55,
+        width: 60,
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        child: CustomInkWell(
+          inkColor: context.appTheme.primary,
+          onTap: () {
+            HapticFeedback.vibrate();
+            widget.onTap;
+          },
+          child: widget.child ?? Gap.noGap,
+        ),
+      ),
+    );
+  }
+}
+
+class ProgressCirclePainter extends CustomPainter {
   final BuildContext context;
   final Color completeColor;
   final double currentProgress;
   final double strokeWidth;
   final List<Color>? completeColors;
 
-  ProgressCircle(
+  ProgressCirclePainter(
     this.context, {
     required this.currentProgress,
     required this.completeColor,

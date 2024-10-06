@@ -73,7 +73,7 @@ class DayCard extends StatelessWidget {
             margin: EdgeInsets.only(
                 left: forModal ? 0 : 8, right: forModal ? 0 : 8, top: forModal ? 4 : 6, bottom: forModal ? 4 : 0),
             padding: const EdgeInsets.only(top: 6),
-            border: forModal && context.appTheme.isDarkTheme ? Border.all(color: AppColors.greyBorder(context)) : null,
+            border: forModal ? Border.all(color: AppColors.greyBorder(context)) : null,
             borderRadius: BorderRadius.only(
               topRight: const Radius.circular(8),
               topLeft: const Radius.circular(8),
@@ -146,12 +146,14 @@ class DayCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                transactions.isNotEmpty
+                transactions.isNotEmpty && !forModal
                     ? Gap.divider(context,
                         indent: 0,
                         color: forModal ? AppColors.greyBorder(context) : context.appTheme.background1,
                         thickness: 1)
-                    : Gap.h8,
+                    : forModal
+                        ? Gap.h2
+                        : Gap.h8,
                 DayCardTransactionsList(
                   transactions: transactions,
                   onTransactionTap: onTransactionTap,

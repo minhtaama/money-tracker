@@ -108,11 +108,13 @@ class ReportWrapperSwitcher extends StatefulWidget {
     required this.title,
     required this.firstChild,
     required this.secondChild,
+    this.showButton = true,
   });
 
   final String title;
   final Widget firstChild;
   final Widget secondChild;
+  final bool showButton;
 
   @override
   State<ReportWrapperSwitcher> createState() => _ReportWrapperSwitcherState();
@@ -148,35 +150,38 @@ class _ReportWrapperSwitcherState extends State<ReportWrapperSwitcher> {
                   ),
                 ),
               ),
-              RotatedBox(
-                quarterTurns: _showFirstChild ? 1 : -1,
-                child: RoundedIconButton(
-                  iconPath: AppIcons.arrowRightLight,
-                  backgroundColor: context.appTheme.primary,
-                  iconColor: context.appTheme.onPrimary,
-                  size: 28,
-                  iconPadding: 4,
-                  onTap: () => setState(() {
-                    _showFirstChild = !_showFirstChild;
-                  }),
-                ),
-              ),
+              widget.showButton
+                  ? RotatedBox(
+                      quarterTurns: _showFirstChild ? 1 : -1,
+                      child: RoundedIconButton(
+                        iconPath: AppIcons.arrowRightLight,
+                        backgroundColor: context.appTheme.primary,
+                        iconColor: context.appTheme.onPrimary,
+                        size: 28,
+                        iconPadding: 4,
+                        onTap: () => setState(() {
+                          _showFirstChild = !_showFirstChild;
+                        }),
+                      ),
+                    )
+                  : Gap.noGap,
             ],
           ),
         ),
         Gap.h12,
         CardItem(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            clip: false,
-            color: context.appTheme.background0,
-            child: ModifiedAnimatedCrossFade(
-              duration: k350msDuration,
-              sizeCurve: Curves.easeInOut,
-              firstChild: widget.firstChild,
-              secondChild: widget.secondChild,
-              crossFadeState: _showFirstChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-            ))
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          clip: false,
+          color: context.appTheme.background0,
+          child: ModifiedAnimatedCrossFade(
+            duration: k350msDuration,
+            sizeCurve: Curves.easeInOut,
+            firstChild: widget.firstChild,
+            secondChild: widget.secondChild,
+            crossFadeState: _showFirstChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          ),
+        )
       ],
     );
   }

@@ -21,7 +21,13 @@ extension BuildContextExtension on BuildContext {
       if (kDebugMode) {
         print('Changed system icon brightness');
       }
-      ref.read(systemIconBrightnessProvider.notifier).state = appTheme.systemIconBrightnessOnSmallTabBar;
+      try {
+        ref.read(systemIconBrightnessProvider.notifier).state = appTheme.systemIconBrightnessOnSmallTabBar;
+      } catch (e) {
+        if (kDebugMode) {
+          print(e.toString());
+        }
+      }
     });
   }
 }
