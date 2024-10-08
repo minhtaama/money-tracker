@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
-import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
@@ -24,7 +23,8 @@ import '../../../../selectors/presentation/forms.dart';
 import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
+      {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -39,7 +39,8 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController =
+      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
 
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
@@ -225,27 +226,16 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
         onBigButtonTap: _submit,
       ),
       body: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const CurrencyIcon(),
-            Gap.w16,
-            Expanded(
-              child: CalculatorInput(
-                title: context.loc.amount,
-                hintText: context.loc.amount,
-                initialValue: stateWatch.amount,
-                focusColor: context.appTheme.primary,
-                validator: (_) => _calculatorValidator(),
-                formattedResultOutput: (value) {
-                  _stateController.changeAmount(value);
-                  _checkIfIsTemplate();
-                },
-              ),
-            ),
-          ],
+        AmountFormSelector(
+          transactionType: widget.transactionType,
+          initialValue: stateWatch.amount,
+          validator: (_) => _calculatorValidator(),
+          onChangedAmount: (value) {
+            _stateController.changeAmountDouble(value);
+            _checkIfIsTemplate();
+          },
         ),
-        Gap.h16,
+        Gap.h8,
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -307,8 +297,9 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount:
-                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
+                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
+                              ? stateWatch.account
+                              : null,
                         ),
                 ],
               ),
@@ -365,13 +356,13 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
 extension _Validators on _AddTransactionModalScreenState {
   bool get _isButtonDisabled =>
       _stateRead.amount == null ||
-      _stateRead.amount == 0 ||
+      _stateRead.amount! <= 0 ||
       _stateRead.category == null && widget.transactionType != TransactionType.transfer ||
       _stateRead.toAccount == null && widget.transactionType == TransactionType.transfer ||
       _stateRead.account == null;
 
   String? _calculatorValidator() {
-    if (_stateRead.amount == null || _stateRead.amount == 0) {
+    if (_stateRead.amount == null || _stateRead.amount! <= 0) {
       return context.loc.invalidAmount;
     }
     return null;

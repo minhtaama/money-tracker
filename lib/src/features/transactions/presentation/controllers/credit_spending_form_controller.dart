@@ -65,8 +65,9 @@ class CreditSpendingFormState {
       installmentPeriod: installmentPeriod != null ? installmentPeriod() : this.installmentPeriod,
       installmentAmount: installmentAmount != null ? installmentAmount() : this.installmentAmount,
       hasInstallment: hasInstallment != null ? hasInstallment() : this.hasInstallment,
-      paymentStartFromNextStatement:
-          paymentStartFromNextStatement != null ? paymentStartFromNextStatement() : this.paymentStartFromNextStatement,
+      paymentStartFromNextStatement: paymentStartFromNextStatement != null
+          ? paymentStartFromNextStatement()
+          : this.paymentStartFromNextStatement,
     );
   }
 }
@@ -106,8 +107,8 @@ class CreditSpendingFormController extends AutoDisposeNotifier<CreditSpendingFor
     );
   }
 
-  void changeAmount(String value, {CreditSpending? initialTransaction}) {
-    state = state.copyWith(amount: () => CalService.formatToDouble(value));
+  void changeAmount(double value, {CreditSpending? initialTransaction}) {
+    state = state.copyWith(amount: () => value);
 
     if (state.installmentPeriod != null) {
       state = state.copyWith(

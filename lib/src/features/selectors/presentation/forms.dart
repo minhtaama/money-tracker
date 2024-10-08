@@ -8,6 +8,7 @@ import '../../accounts/domain/account_base.dart';
 import '../../accounts/domain/statement/base_class/statement.dart';
 import '../../category/domain/category.dart';
 import 'account_selector.dart';
+import 'amount_selector.dart';
 import 'category_selector.dart';
 
 class CategoryFormSelector extends FormField<Category> {
@@ -83,6 +84,53 @@ class AccountFormSelector extends FormField<Account> {
                       )
                     : Gap.noGap,
               ),
+            ],
+          );
+        });
+}
+
+class AmountFormSelector extends FormField<double> {
+  AmountFormSelector({
+    super.key,
+    required TransactionType transactionType,
+    required ValueChanged<double> onChangedAmount,
+    super.onSaved,
+    super.validator,
+    super.initialValue,
+    super.autovalidateMode = AutovalidateMode.onUserInteraction,
+    bool isCentered = true,
+    Widget? suffix,
+  }) : super(builder: (FormFieldState<double> state) {
+          return Column(
+            children: [
+              AmountSelector(
+                  transactionType: transactionType,
+                  initialValue: initialValue,
+                  isCentered: isCentered,
+                  suffix: suffix,
+                  onChanged: (newAmount) {
+                    state.didChange(newAmount);
+                    onChangedAmount(newAmount);
+                  }),
+              AnimatedOpacity(
+                opacity: state.errorText != null ? 1 : 0,
+                duration: k250msDuration,
+                child: state.errorText != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          state.errorText!,
+                          style: kHeader4TextStyle.copyWith(
+                            color: state.context.appTheme.negative,
+                            fontSize: 13,
+                          ),
+                        ),
+                      )
+                    : Gap.noGap,
+              ),
+              // state.errorText != null
+              //     ? const AlertBox(offset: Offset(90, -33), errorText: '!')
+              //     : Gap.noGap,
             ],
           );
         });

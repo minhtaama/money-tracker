@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker_app/persistent/base_model.dart';
@@ -15,6 +17,7 @@ import 'package:money_tracker_app/src/features/calculator_input/presentation/cal
 import 'package:money_tracker_app/src/features/category/data/category_repo.dart';
 import 'package:money_tracker_app/src/features/category/domain/category_tag.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
+import 'package:money_tracker_app/src/features/recurrence/domain/recurrence.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_payment_form_controller.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
@@ -76,15 +79,16 @@ class TransactionDetailsModalScreen extends ConsumerWidget {
           );
 
       return switch (transaction) {
-        BaseRegularTransaction() =>
-          _RegularDetails(screenType, controller, isScrollable, transaction: transaction as BaseRegularTransaction),
+        BaseRegularTransaction() => _RegularDetails(screenType, controller, isScrollable,
+            transaction: transaction as BaseRegularTransaction),
         CreditSpending() => screenType == TransactionScreenType.installmentToPay
             ? _InstallmentDetails(transaction: transaction as CreditSpending)
-            : _SpendingDetails(screenType, controller, isScrollable, transaction: transaction as CreditSpending),
-        CreditPayment() =>
-          _PaymentDetails(screenType, controller, isScrollable, transaction: transaction as CreditPayment),
-        CreditCheckpoint() =>
-          _CheckpointDetails(screenType, controller, isScrollable, transaction: transaction as CreditCheckpoint),
+            : _SpendingDetails(screenType, controller, isScrollable,
+                transaction: transaction as CreditSpending),
+        CreditPayment() => _PaymentDetails(screenType, controller, isScrollable,
+            transaction: transaction as CreditPayment),
+        CreditCheckpoint() => _CheckpointDetails(screenType, controller, isScrollable,
+            transaction: transaction as CreditCheckpoint),
       };
     } catch (e) {
       return IconWithText(

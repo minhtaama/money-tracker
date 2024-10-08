@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,31 +86,18 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
       ),
       footer: ModalFooter(isBigButtonDisabled: _isButtonDisable, onBigButtonTap: _submit),
       body: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const CurrencyIcon(),
-            Gap.w16,
-            Expanded(
-              child: CalculatorInput(
-                title: context.loc.spendingAmount,
-                hintText: context.loc.spendingAmount,
-                focusColor: context.appTheme.primary,
-                validator: (_) => _calSpendingAmountValidator(),
-                formattedResultOutput: (value) {
-                  _stateController.changeAmount(value);
-                  _changeInstallmentControllerText();
-                },
-              ),
-            ),
-            Gap.w16,
-            HelpButton(
-              text: context.loc.quoteTransaction8,
-              yOffset: 4,
-            )
-          ],
+        AmountFormSelector(
+          transactionType: TransactionType.creditSpending,
+          initialValue: stateWatch.amount,
+          validator: (_) => _calSpendingAmountValidator(),
+          suffix: HelpButton(
+            text: context.loc.quoteTransaction8,
+            yOffset: 4,
+          ),
+          onChangedAmount: (value) {
+            _stateController.changeAmount(value);
+          },
         ),
-        Gap.h4,
         CustomCheckbox(
           label: context.loc.installmentPayment,
           labelSuffix: HelpButton(
@@ -163,7 +151,7 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
             ),
           ),
         ),
-        Gap.h8,
+        Gap.h4,
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

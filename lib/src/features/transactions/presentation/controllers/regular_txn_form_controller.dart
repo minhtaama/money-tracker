@@ -29,7 +29,12 @@ class RegularTransactionFormState {
   }
 
   bool isAllNull() {
-    return amount == null && note == null && tag == null && category == null && account == null && toAccount == null;
+    return amount == null &&
+        note == null &&
+        tag == null &&
+        category == null &&
+        account == null &&
+        toAccount == null;
   }
 
   RegularTransactionFormState._({
@@ -105,6 +110,10 @@ class RegularTransactionFormController
     state = state.copyWith(amount: () => CalService.formatToDouble(value));
   }
 
+  void changeAmountDouble(double value) {
+    state = state.copyWith(amount: () => value);
+  }
+
   void changeDateTime(DateTime? dateTime) {
     state = state.copyWith(dateTime: () => dateTime);
   }
@@ -132,8 +141,7 @@ class RegularTransactionFormController
 }
 
 /// Set arg to `null` if edit mode (initial state has properties all `null`)
-final regularTransactionFormNotifierProvider =
-    AutoDisposeNotifierProviderFamily<RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(
-        () {
+final regularTransactionFormNotifierProvider = AutoDisposeNotifierProviderFamily<
+    RegularTransactionFormController, RegularTransactionFormState, TransactionType?>(() {
   return RegularTransactionFormController();
 });

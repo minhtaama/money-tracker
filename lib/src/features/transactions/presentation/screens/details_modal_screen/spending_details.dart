@@ -1,7 +1,8 @@
 part of 'transaction_details_modal_screen.dart';
 
 class _SpendingDetails extends ConsumerStatefulWidget {
-  const _SpendingDetails(this.screenType, this.controller, this.isScrollable, {required this.transaction});
+  const _SpendingDetails(this.screenType, this.controller, this.isScrollable,
+      {required this.transaction});
 
   final CreditSpending transaction;
   final TransactionScreenType screenType;
@@ -20,8 +21,9 @@ class _SpendingDetailsState extends ConsumerState<_SpendingDetails> {
 
   late CreditSpending _transaction = widget.transaction;
 
-  late final _creditAccount =
-      ref.read(accountRepositoryProvider).getAccount(_transaction.account.databaseObject) as CreditAccount;
+  late final _creditAccount = ref
+      .read(accountRepositoryProvider)
+      .getAccount(_transaction.account.databaseObject) as CreditAccount;
 
   late final _stateController = ref.read(creditSpendingFormNotifierProvider.notifier);
 
@@ -153,7 +155,8 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
     );
 
     if (newAmount != null && mounted) {
-      _stateController.changeAmount(newAmount, initialTransaction: _transaction);
+      _stateController.changeAmount(CalService.formatToDouble(newAmount)!,
+          initialTransaction: _transaction);
       _changeInstallmentControllerText();
     }
   }
@@ -201,12 +204,14 @@ extension _SpendingDetailsStateMethod on _SpendingDetailsState {
       (state.category != null || state.tag != null) &&
       (state.category != _transaction.category || state.tag != _transaction.categoryTag);
 
-  bool _isAmountEdited(CreditSpendingFormState state) => state.amount != null && state.amount != _transaction.amount;
+  bool _isAmountEdited(CreditSpendingFormState state) =>
+      state.amount != null && state.amount != _transaction.amount;
 
   bool _isDateTimeEdited(CreditSpendingFormState state) =>
       state.dateTime != null && state.dateTime != _transaction.dateTime;
 
-  bool _isNoteEdited(CreditSpendingFormState state) => state.note != null && state.note != _transaction.note;
+  bool _isNoteEdited(CreditSpendingFormState state) =>
+      state.note != null && state.note != _transaction.note;
 
   bool _isInstallmentEdited(CreditSpendingFormState state) =>
       state.installmentPeriod != null || state.installmentAmount != null;

@@ -26,7 +26,8 @@ class CustomBox extends StatelessWidget {
     return AnimatedContainer(
       duration: k150msDuration,
       margin: hide ? EdgeInsets.zero : margin ?? const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
-      padding: hide ? EdgeInsets.zero : padding ?? const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      padding:
+          hide ? EdgeInsets.zero : padding ?? const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
         color: color ?? Colors.transparent,
         border: Border.all(
@@ -34,9 +35,12 @@ class CustomBox extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: ConstrainedBox(
-        constraints: constraints ?? const BoxConstraints.tightForFinite(),
-        child: child,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(7),
+        child: ConstrainedBox(
+          constraints: constraints ?? const BoxConstraints.tightForFinite(),
+          child: child,
+        ),
       ),
     );
   }

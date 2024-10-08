@@ -14,13 +14,17 @@ class CalService {
     if (value >= 1000000000.0) {
       final shortValue = value / 1000000000;
       formatter = NumberFormat('###,###.##');
-      return !context.appPersistentValues.showAmount && canHide ? '***' : '${formatter.format(shortValue)} B';
+      return !context.appPersistentValues.showAmount && canHide
+          ? '***'
+          : '${formatter.format(shortValue)} B';
     }
 
     if (value >= 100000000.0) {
       final shortValue = value / 1000000;
       formatter = NumberFormat('###,###.##');
-      return !context.appPersistentValues.showAmount && canHide ? '***' : '${formatter.format(shortValue)} M';
+      return !context.appPersistentValues.showAmount && canHide
+          ? '***'
+          : '${formatter.format(shortValue)} M';
     }
 
     formatter = NumberFormat.decimalPatternDigits(
@@ -57,7 +61,7 @@ class CalService {
     }
 
     try {
-      double value = double.parse(formattedValue.split(',').join());
+      double value = double.parse(formattedValue.split(',').join().split(' ').join());
       if (value == double.infinity || value == double.negativeInfinity) {
         return null;
       } else {

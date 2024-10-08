@@ -167,43 +167,20 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                       ),
                     ),
                     Gap.h8,
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2.0),
-                      child: Text(
-                        context.loc.paymentAmount,
-                        style: kHeader3TextStyle.copyWith(
-                          fontSize: 14,
-                          color: context.appTheme.onBackground.withOpacity(0.8),
-                        ),
+                    Text(
+                      context.loc.paymentAmount,
+                      style: kHeader3TextStyle.copyWith(
+                        fontSize: 14,
+                        color: context.appTheme.onBackground.withOpacity(0.8),
                       ),
                     ),
                     Gap.h4,
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CurrencyIcon(),
-                        Gap.w8,
-                        Expanded(
-                          child: CalculatorInput(
-                            suffix: Transform.translate(
-                              offset: const Offset(0, 5),
-                              child: SvgIcon(
-                                AppIcons.receiptCheckBulk,
-                                size: 27,
-                                color: context.appTheme.onBackground,
-                              ),
-                            ),
-                            title: context.loc.addCreditPayment,
-                            hintText: '???',
-                            controller: _paymentInputController,
-                            focusColor: context.appTheme.primary,
-                            fontSize: 25,
-                            validator: (_) => _paymentInputValidator(context),
-                            formattedResultOutput: _onPaymentInputChange,
-                          ),
-                        ),
-                        Gap.w8,
-                      ],
+                    AmountFormSelector(
+                      transactionType: TransactionType.creditPayment,
+                      validator: (_) => _paymentInputValidator(context),
+                      isCentered: false,
+                      onChangedAmount: (value) =>
+                          _onPaymentInputChange(CalService.formatCurrency(context, value)),
                     ),
                   ],
                 ),
@@ -282,8 +259,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                     stateWatch.totalBalanceAmount.roundBySetting(context) -
                                             stateWatch.userPaymentAmount!.roundBySetting(context) >
                                         0
-                                ? CalService.formatCurrency(
-                                    context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                ? CalService.formatCurrency(context,
+                                    stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                 : '???',
                             textAlign: TextAlign.right,
                             controller: _remainingInputController,
