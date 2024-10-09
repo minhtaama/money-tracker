@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_inkwell.dart';
+import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
@@ -20,6 +21,7 @@ class AmountSelector extends ConsumerStatefulWidget {
     required this.onChanged,
     required this.isCentered,
     required this.suffix,
+    required this.errorText,
   });
 
   final ValueChanged<double> onChanged;
@@ -27,6 +29,7 @@ class AmountSelector extends ConsumerStatefulWidget {
   final double? initialValue;
   final bool isCentered;
   final Widget? suffix;
+  final String? errorText;
 
   @override
   ConsumerState<AmountSelector> createState() => _AmountSelectorState();
@@ -91,48 +94,96 @@ class _AmountSelectorState extends ConsumerState<AmountSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: context.appTheme.onBackground.withOpacity(0.45),
-            ),
-          ),
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.only(bottom: 8, top: 4),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [
+            _color(context).withOpacity(0.0),
+            _color(context).withOpacity(0.1),
+          ],
+          stops: const [0.35, 1],
         ),
-        child: CustomInkWell(
-          inkColor: context.appTheme.onBackground,
-          onTap: _changeAmount,
-          child: Stack(
-            alignment: Alignment.center,
+        border: Border.all(
+          color: _color(context).withOpacity(0.45),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: CustomInkWell(
+        inkColor: _color(context).withOpacity(0.15),
+        onTap: _changeAmount,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
             children: [
-              Row(
-                mainAxisAlignment:
-                    widget.isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  MoneyAmount(
-                    amount: _currentAmount ?? 0,
-                    noAnimation: true,
-                    style: kHeader1TextStyle.copyWith(
-                      color: _color(context),
-                      fontSize: 40,
-                    ),
-                    symbolStyle: kHeader2TextStyle.copyWith(
-                      color: _color(context),
-                    ),
+                  Row(
+                    mainAxisAlignment: widget.isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
+                    children: [
+                      MoneyAmount(
+                        amount: _currentAmount ?? 0,
+                        noAnimation: true,
+                        style: kHeader2TextStyle.copyWith(
+                          color: _color(context),
+                          fontSize: 32,
+                          letterSpacing: 0.99,
+                        ),
+                        symbolStyle: kHeader3TextStyle.copyWith(
+                          color: _color(context),
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    right: 6,
+                    child: widget.suffix ??
+                        SvgIcon(
+                          AppIcons.editLight,
+                          color: _color(context),
+                        ),
                   ),
                 ],
               ),
-              Positioned(
-                right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: widget.suffix ??
-                      SvgIcon(
-                        AppIcons.editLight,
-                        color: _color(context),
+              HideableContainer(
+                hide: widget.errorText == null,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 6.0),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          WidgetSpan(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: SvgIcon(
+                                AppIcons.warningBulk,
+                                color: context.appTheme.negative,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                          TextSpan(
+                            text: widget.errorText ?? '',
+                            style: kHeader3TextStyle.copyWith(
+                              color: context.appTheme.negative,
+                              fontSize: 13,
+                              height: 1,
+                            ),
+                          )
+                        ],
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: true,
+                    ),
+                  ),
                 ),
               ),
             ],

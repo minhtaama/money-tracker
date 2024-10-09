@@ -69,6 +69,8 @@ class ExtendedTabBar extends StatelessWidget {
     required this.child,
   });
   final Color? backgroundColor;
+
+  /// The color used to determine system navigation bar icon brightness
   final Color? foregroundColor;
 
   /// For the background color below extended tab bar of scrollable sheet

@@ -66,6 +66,7 @@ class AppIcons {
   static String get walletLight => 'assets/svg/app/wallet.svg';
   static String get monthlyLight => 'assets/svg/app/monthly.svg';
   static String get weeklyLight => 'assets/svg/app/weekly.svg';
+  static String get warningBulk => 'assets/svg/app/warning.svg';
   static String get bookmarkBulk => 'assets/svg/app/bookmark.svg';
 
   static String get alienTwoTone => 'assets/svg/app/alien.svg';

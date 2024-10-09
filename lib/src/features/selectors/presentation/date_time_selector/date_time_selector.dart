@@ -62,21 +62,14 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: context.isBigScreen ? bigScreenLayout() : smallScreenLayout(),
-    );
+    return context.isBigScreen ? bigScreenLayout() : smallScreenLayout();
   }
 
   Widget smallScreenLayout() => SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child:
-                  widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
-            ),
+            widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay) ?? Gap.noGap,
             widget.contentBuilder != null ? Gap.divider(context, indent: 20) : Gap.noGap,
             calendarPicker(),
             actionButtons(),
@@ -102,8 +95,7 @@ class _CustomCalendarDialogState extends State<_CustomCalendarDialog> {
               : Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-                    child: widget.contentBuilder
-                        ?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
+                    child: widget.contentBuilder?.call(monthView: _currentMonthView, selectedDay: _selectedDay),
                   ),
                 ),
         ],

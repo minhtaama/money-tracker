@@ -18,13 +18,11 @@ import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import '../../../../../theme_and_ui/icons.dart';
 import '../../../../accounts/domain/account_base.dart';
-import '../../../../calculator_input/presentation/calculator_input.dart';
 import '../../../../selectors/presentation/forms.dart';
 import '../../../../recurrence/domain/recurrence.dart';
 
 class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
-  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType,
-      {super.key, this.template});
+  const AddRegularTxnModalScreen(this.controller, this.isScrollable, this.transactionType, {super.key, this.template});
 
   final ScrollController controller;
   final bool isScrollable;
@@ -39,8 +37,7 @@ class AddRegularTxnModalScreen extends ConsumerStatefulWidget {
 class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late final _stateController =
-      ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
+  late final _stateController = ref.read(regularTransactionFormNotifierProvider(widget.transactionType).notifier);
 
   RegularTransactionFormState get _stateRead =>
       ref.read(regularTransactionFormNotifierProvider(widget.transactionType));
@@ -235,7 +232,6 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
             _checkIfIsTemplate();
           },
         ),
-        Gap.h8,
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -297,9 +293,8 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                             }
                             _checkIfIsTemplate();
                           },
-                          otherSelectedAccount: widget.transactionType == TransactionType.transfer
-                              ? stateWatch.account
-                              : null,
+                          otherSelectedAccount:
+                              widget.transactionType == TransactionType.transfer ? stateWatch.account : null,
                         ),
                 ],
               ),

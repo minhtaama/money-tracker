@@ -130,9 +130,7 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
     _sheetController.addListener(_sheetControllerListener);
     _pageController.addListener(_pageControllerListener);
 
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _changeStatusBrightness();
-    });
+    _changeStatusBrightness();
 
     super.initState();
   }
@@ -260,24 +258,26 @@ class _ScrollableSheetState extends ConsumerState<_ScrollableSheet> with TickerP
   }
 
   void _changeStatusBrightness() {
-    final statusBrnNotifier = ref.read(systemIconBrightnessProvider.notifier);
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      final statusBrnNotifier = ref.read(systemIconBrightnessProvider.notifier);
 
-    if (_isShowSmallTabBar) {
-      statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
-      return;
-    }
-
-    if (widget.extendedTabBar?.foregroundColor != null) {
-      final lum = widget.extendedTabBar!.foregroundColor!.computeLuminance();
-      if (lum > 0.5) {
-        statusBrnNotifier.state = Brightness.light;
-      } else {
-        statusBrnNotifier.state = Brightness.dark;
+      if (_isShowSmallTabBar) {
+        statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnSmallTabBar;
+        return;
       }
-      return;
-    }
 
-    statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
+      if (widget.extendedTabBar?.foregroundColor != null) {
+        final lum = widget.extendedTabBar!.foregroundColor!.computeLuminance();
+        if (lum > 0.4) {
+          statusBrnNotifier.state = Brightness.light;
+        } else {
+          statusBrnNotifier.state = Brightness.dark;
+        }
+        return;
+      }
+
+      statusBrnNotifier.state = context.appTheme.systemIconBrightnessOnExtendedTabBar;
+    });
   }
 
   Widget _smallTabBar() {

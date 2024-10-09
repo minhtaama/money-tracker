@@ -25,25 +25,17 @@ class CategoryFormSelector extends FormField<Category> {
             alignment: Alignment.center,
             children: [
               CategorySelector(
-                  transactionType: transactionType,
-                  initialValue: initialValue,
-                  onChangedCategory: (newCategory) {
-                    state.didChange(newCategory);
-                    onChangedCategory(newCategory);
-                  }),
-              AnimatedOpacity(
-                opacity: state.errorText != null ? 1 : 0,
-                duration: k250msDuration,
-                child: state.errorText != null
-                    ? _AlertBox(
-                        errorText: state.errorText!,
-                        yOffset: -35,
-                      )
-                    : Gap.noGap,
+                transactionType: transactionType,
+                initialValue: initialValue,
+                onChangedCategory: (newCategory) {
+                  state.didChange(newCategory);
+                  onChangedCategory(newCategory);
+                },
               ),
-              // state.errorText != null
-              //     ? const AlertBox(offset: Offset(90, -33), errorText: '!')
-              //     : Gap.noGap,
+              _AlertBox(
+                errorText: state.errorText,
+                triggerShowingAlertBox: state.errorText != null,
+              ),
             ],
           );
         });
@@ -74,15 +66,9 @@ class AccountFormSelector extends FormField<Account> {
                   onChangedAccount(newAccount);
                 },
               ),
-              AnimatedOpacity(
-                opacity: state.errorText != null ? 1 : 0,
-                duration: k250msDuration,
-                child: state.errorText != null
-                    ? _AlertBox(
-                        errorText: state.errorText!,
-                        yOffset: -35,
-                      )
-                    : Gap.noGap,
+              _AlertBox(
+                errorText: state.errorText,
+                triggerShowingAlertBox: state.errorText != null,
               ),
             ],
           );
@@ -100,40 +86,21 @@ class AmountFormSelector extends FormField<double> {
     super.autovalidateMode = AutovalidateMode.onUserInteraction,
     bool isCentered = true,
     Widget? suffix,
-  }) : super(builder: (FormFieldState<double> state) {
-          return Column(
-            children: [
-              AmountSelector(
-                  transactionType: transactionType,
-                  initialValue: initialValue,
-                  isCentered: isCentered,
-                  suffix: suffix,
-                  onChanged: (newAmount) {
-                    state.didChange(newAmount);
-                    onChangedAmount(newAmount);
-                  }),
-              AnimatedOpacity(
-                opacity: state.errorText != null ? 1 : 0,
-                duration: k250msDuration,
-                child: state.errorText != null
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          state.errorText!,
-                          style: kHeader4TextStyle.copyWith(
-                            color: state.context.appTheme.negative,
-                            fontSize: 13,
-                          ),
-                        ),
-                      )
-                    : Gap.noGap,
-              ),
-              // state.errorText != null
-              //     ? const AlertBox(offset: Offset(90, -33), errorText: '!')
-              //     : Gap.noGap,
-            ],
-          );
-        });
+  }) : super(
+          builder: (FormFieldState<double> state) {
+            return AmountSelector(
+              transactionType: transactionType,
+              initialValue: initialValue,
+              isCentered: isCentered,
+              suffix: suffix,
+              errorText: state.errorText,
+              onChanged: (newAmount) {
+                state.didChange(newAmount);
+                onChangedAmount(newAmount);
+              },
+            );
+          },
+        );
 }
 
 class CreditDateTimeFormSelector extends FormField<DateTime?> {
@@ -164,15 +131,10 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                       onChanged(newDateTime, newStatement);
                     },
                   ),
-                  AnimatedOpacity(
-                    opacity: state.errorText != null ? 1 : 0,
-                    duration: k250msDuration,
-                    child: state.errorText != null
-                        ? _AlertBox(
-                            errorText: state.errorText!,
-                            yOffset: -4,
-                          )
-                        : Gap.noGap,
+                  _AlertBox(
+                    errorText: state.errorText,
+                    yOffset: -4,
+                    triggerShowingAlertBox: state.errorText != null,
                   ),
                 ],
               );
@@ -181,11 +143,13 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
 
 class _AlertBox extends StatefulWidget {
   const _AlertBox({
+    required this.triggerShowingAlertBox,
     required this.errorText,
-    this.yOffset = 0,
+    this.yOffset = -20,
   });
 
-  final String errorText;
+  final bool triggerShowingAlertBox;
+  final String? errorText;
   final double yOffset;
 
   @override
@@ -206,39 +170,43 @@ class _AlertBoxState extends State<_AlertBox> {
       });
     });
 
-    return Transform.translate(
-      offset: Offset(0, -_height / 2 + widget.yOffset),
-      child: Container(
-        key: _key,
-        padding: const EdgeInsets.all(8),
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        constraints: const BoxConstraints(minWidth: 30, maxWidth: 80),
-        decoration: BoxDecoration(
-          color: context.appTheme.negative,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Stack(
-          children: [
-            Transform(
-              transform: Matrix4.identity()
-                ..translate(_width / 2 - 12, _height - 7 - 8)
-                ..rotateZ(math.pi / 4),
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: context.appTheme.negative,
+    return AnimatedOpacity(
+      opacity: widget.triggerShowingAlertBox ? 1 : 0,
+      duration: k250msDuration,
+      child: Transform.translate(
+        offset: Offset(0, -_height / 2 + widget.yOffset),
+        child: Container(
+          key: _key,
+          padding: const EdgeInsets.all(8),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          constraints: const BoxConstraints(minWidth: 30, maxWidth: 80),
+          decoration: BoxDecoration(
+            color: context.appTheme.negative,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Stack(
+            children: [
+              Transform(
+                transform: Matrix4.identity()
+                  ..translate(_width / 2 - 12, _height - 7 - 8)
+                  ..rotateZ(math.pi / 4),
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: context.appTheme.negative,
+                  ),
                 ),
               ),
-            ),
-            Text(
-              widget.errorText,
-              style: widget.errorText.length == 1
-                  ? kHeader2TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 17)
-                  : kNormalTextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 10),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              Text(
+                widget.errorText ?? '',
+                style: widget.errorText?.length == 1
+                    ? kHeader2TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 17)
+                    : kNormalTextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 10),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

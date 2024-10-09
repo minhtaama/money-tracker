@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 
-import '../../../../common_widgets/card_item.dart';
 import '../../../../common_widgets/custom_inkwell.dart';
 import '../../../../common_widgets/hideable_container.dart';
 import '../../../../common_widgets/icon_with_text_button.dart';
