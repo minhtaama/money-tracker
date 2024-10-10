@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart';
 import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/category/presentation/category_tag/category_tag_selector.dart';
 import 'package:money_tracker_app/src/features/recurrence/data/recurrence_repo.dart';
 import 'package:money_tracker_app/src/features/transactions/data/template_transaction_repo.dart';
@@ -62,6 +63,14 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
                 ? context.loc.outOfSavingAccount
                 : context.loc.betweenRegularAccount
         : context.loc.forRegularAccount;
+  }
+
+  String get _icon {
+    return widget.transactionType == TransactionType.income
+        ? AppIcons.incomeLight
+        : widget.transactionType == TransactionType.expense
+            ? AppIcons.expenseLight
+            : AppIcons.transferLight;
   }
 
   void _submit() {
@@ -227,6 +236,7 @@ class _AddTransactionModalScreenState extends ConsumerState<AddRegularTxnModalSc
           transactionType: widget.transactionType,
           initialValue: stateWatch.amount,
           validator: (_) => _calculatorValidator(),
+          prefix: _icon,
           onChangedAmount: (value) {
             _stateController.changeAmountDouble(value);
             _checkIfIsTemplate();

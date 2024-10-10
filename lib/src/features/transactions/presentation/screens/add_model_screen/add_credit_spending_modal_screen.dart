@@ -9,6 +9,7 @@ import 'package:money_tracker_app/src/features/category/presentation/category_ta
 import 'package:money_tracker_app/src/common_widgets/custom_checkbox.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/presentation/controllers/credit_spending_form_controller.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
@@ -36,8 +37,6 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
   CreditSpendingFormState get _stateRead => ref.read(creditSpendingFormNotifierProvider);
 
   void _submit() {
-    print('stateWatch.installmentPeriod: ${_stateRead.installmentPeriod}');
-
     // By validating, no important value can be null
     if (_formKey.currentState!.validate()) {
       ref.read(transactionRepositoryRealmProvider).writeNewCreditSpending(
@@ -90,9 +89,9 @@ class _AddCreditTransactionModalScreenState extends ConsumerState<AddCreditSpend
           transactionType: TransactionType.creditSpending,
           initialValue: stateWatch.amount,
           validator: (_) => _calSpendingAmountValidator(),
+          prefix: AppIcons.receiptDollarBulk,
           suffix: HelpButton(
             text: context.loc.quoteTransaction8,
-            yOffset: 4,
           ),
           onChangedAmount: (value) {
             _stateController.changeAmount(value);

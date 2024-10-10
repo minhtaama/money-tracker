@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +8,6 @@ import 'package:money_tracker_app/src/common_widgets/custom_text_form_field.dart
 import 'package:money_tracker_app/src/common_widgets/help_box.dart';
 import 'package:money_tracker_app/src/common_widgets/hideable_container.dart';
 import 'package:money_tracker_app/src/common_widgets/inline_text_form_field.dart';
-import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/common_widgets/modal_screen_components.dart';
 import 'package:money_tracker_app/src/features/transactions/data/transaction_repo.dart';
@@ -174,13 +174,14 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                         color: context.appTheme.onBackground.withOpacity(0.8),
                       ),
                     ),
-                    Gap.h4,
-                    AmountFormSelector(
-                      transactionType: TransactionType.creditPayment,
-                      validator: (_) => _paymentInputValidator(context),
-                      isCentered: false,
-                      onChangedAmount: (value) =>
-                          _onPaymentInputChange(CalService.formatCurrency(context, value)),
+                    Transform.translate(
+                      offset: const Offset(0, 6),
+                      child: AmountFormSelector(
+                        transactionType: TransactionType.creditPayment,
+                        validator: (_) => _paymentInputValidator(context),
+                        prefix: AppIcons.handCoinTwoTone,
+                        onChangedAmount: (value) => _onPaymentInputChange(CalService.formatCurrency(context, value)),
+                      ),
                     ),
                   ],
                 ),
@@ -259,8 +260,8 @@ class _AddCreditPaymentModalScreenState extends ConsumerState<AddCreditPaymentMo
                                     stateWatch.totalBalanceAmount.roundBySetting(context) -
                                             stateWatch.userPaymentAmount!.roundBySetting(context) >
                                         0
-                                ? CalService.formatCurrency(context,
-                                    stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
+                                ? CalService.formatCurrency(
+                                    context, stateWatch.totalBalanceAmount - stateWatch.userPaymentAmount!)
                                 : '???',
                             textAlign: TextAlign.right,
                             controller: _remainingInputController,

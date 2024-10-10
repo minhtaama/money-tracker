@@ -146,7 +146,11 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
             ),
       padding: isDialog
           ? const EdgeInsets.symmetric(vertical: 12)
-          : EdgeInsets.only(top: _roundedTopCornerSmallScreen(context, isScrollable) ? 0 : 22.0),
+          : EdgeInsets.only(
+              top: _roundedTopCornerSmallScreen(context, isScrollable) || context.isBigScreen
+                  ? 0
+                  : (Gap.statusBarHeight(context) - 12.5).clamp(0, double.infinity),
+            ),
       border: Border.all(
         color:
             context.appTheme.onBackground.withOpacity(context.isBigScreen && context.appTheme.isDarkTheme ? 0.25 : 0),
@@ -207,6 +211,7 @@ class _CustomAppModalPageRoute<T> extends PopupRoute<T> {
                 _page.secondaryChild != null
                     ? HideableContainer(
                         hide: MediaQuery.of(context).viewInsets.bottom > 0,
+                        initialAnimation: false,
                         child: AnimatedOpacity(
                           opacity: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 1,
                           duration: k350msDuration,

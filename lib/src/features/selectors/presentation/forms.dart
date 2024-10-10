@@ -1,7 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/selectors/presentation/date_time_selector/date_time_selector.dart';
+import 'package:money_tracker_app/src/theme_and_ui/icons.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'dart:math' as math;
+import '../../../common_widgets/hideable_container.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/enums.dart';
 import '../../accounts/domain/account_base.dart';
@@ -21,8 +25,8 @@ class CategoryFormSelector extends FormField<Category> {
       super.initialValue,
       super.autovalidateMode = AutovalidateMode.onUserInteraction})
       : super(builder: (FormFieldState<Category> state) {
-          return Stack(
-            alignment: Alignment.center,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CategorySelector(
                 transactionType: transactionType,
@@ -32,9 +36,8 @@ class CategoryFormSelector extends FormField<Category> {
                   onChangedCategory(newCategory);
                 },
               ),
-              _AlertBox(
+              _Alert(
                 errorText: state.errorText,
-                triggerShowingAlertBox: state.errorText != null,
               ),
             ],
           );
@@ -53,8 +56,8 @@ class AccountFormSelector extends FormField<Account> {
     super.initialValue,
     super.autovalidateMode = AutovalidateMode.onUserInteraction,
   }) : super(builder: (FormFieldState<Account> state) {
-          return Stack(
-            alignment: Alignment.center,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AccountSelector(
                 accountType: accountType,
@@ -66,9 +69,8 @@ class AccountFormSelector extends FormField<Account> {
                   onChangedAccount(newAccount);
                 },
               ),
-              _AlertBox(
+              _Alert(
                 errorText: state.errorText,
-                triggerShowingAlertBox: state.errorText != null,
               ),
             ],
           );
@@ -86,6 +88,7 @@ class AmountFormSelector extends FormField<double> {
     super.autovalidateMode = AutovalidateMode.onUserInteraction,
     bool isCentered = true,
     Widget? suffix,
+    String? prefix,
   }) : super(
           builder: (FormFieldState<double> state) {
             return AmountSelector(
@@ -93,6 +96,7 @@ class AmountFormSelector extends FormField<double> {
               initialValue: initialValue,
               isCentered: isCentered,
               suffix: suffix,
+              prefix: prefix,
               errorText: state.errorText,
               onChanged: (newAmount) {
                 state.didChange(newAmount);
@@ -132,8 +136,6 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
                     },
                   ),
                   _AlertBox(
-                    errorText: state.errorText,
-                    yOffset: -4,
                     triggerShowingAlertBox: state.errorText != null,
                   ),
                 ],
@@ -141,72 +143,95 @@ class CreditDateTimeFormSelector extends FormField<DateTime?> {
             });
 }
 
-class _AlertBox extends StatefulWidget {
-  const _AlertBox({
-    required this.triggerShowingAlertBox,
-    required this.errorText,
-    this.yOffset = -20,
-  });
+class _Alert extends StatelessWidget {
+  const _Alert({super.key, required this.errorText});
 
-  final bool triggerShowingAlertBox;
   final String? errorText;
-  final double yOffset;
-
-  @override
-  State<_AlertBox> createState() => _AlertBoxState();
-}
-
-class _AlertBoxState extends State<_AlertBox> {
-  final _key = GlobalKey();
-  double _width = 0;
-  double _height = 0;
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        _width = _key.currentContext!.size!.width;
-        _height = _key.currentContext!.size!.height;
-      });
-    });
-
-    return AnimatedOpacity(
-      opacity: widget.triggerShowingAlertBox ? 1 : 0,
-      duration: k250msDuration,
-      child: Transform.translate(
-        offset: Offset(0, -_height / 2 + widget.yOffset),
-        child: Container(
-          key: _key,
-          padding: const EdgeInsets.all(8),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          constraints: const BoxConstraints(minWidth: 30, maxWidth: 80),
-          decoration: BoxDecoration(
-            color: context.appTheme.negative,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Stack(
+    return HideableContainer(
+      hide: errorText == null,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 6.0),
+        child: RichText(
+          text: TextSpan(
             children: [
-              Transform(
-                transform: Matrix4.identity()
-                  ..translate(_width / 2 - 12, _height - 7 - 8)
-                  ..rotateZ(math.pi / 4),
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
+              WidgetSpan(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: SvgIcon(
+                    AppIcons.warningBulk,
                     color: context.appTheme.negative,
+                    size: 18,
                   ),
                 ),
               ),
-              Text(
-                widget.errorText ?? '',
-                style: widget.errorText?.length == 1
-                    ? kHeader2TextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 17)
-                    : kNormalTextStyle.copyWith(color: context.appTheme.onNegative, fontSize: 10),
-                textAlign: TextAlign.center,
-              ),
+              TextSpan(
+                text: errorText ?? '',
+                style: kHeader3TextStyle.copyWith(
+                  color: context.appTheme.negative,
+                  fontSize: 13,
+                  height: 1,
+                ),
+              )
             ],
           ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          softWrap: true,
+        ),
+      ),
+    );
+  }
+}
+
+class _AlertBox extends StatelessWidget {
+  const _AlertBox({
+    required this.triggerShowingAlertBox,
+    this.yOffset = 0,
+  });
+
+  final bool triggerShowingAlertBox;
+  final double yOffset;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: triggerShowingAlertBox ? 1 : 0,
+      duration: k250msDuration,
+      child: Transform.translate(
+        offset: Offset(0, -40 / 2 + yOffset),
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              height: 40,
+              width: 40,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: context.appTheme.negative,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: SvgIcon(
+                AppIcons.warningBulk,
+                color: context.appTheme.onNegative,
+                size: 20,
+              ),
+            ),
+            Transform(
+              transform: Matrix4.identity()
+                ..translate(5.0, -8)
+                ..rotateZ(math.pi / 4),
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: context.appTheme.negative,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

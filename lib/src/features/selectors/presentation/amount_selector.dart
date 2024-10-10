@@ -21,6 +21,7 @@ class AmountSelector extends ConsumerStatefulWidget {
     required this.onChanged,
     required this.isCentered,
     required this.suffix,
+    required this.prefix,
     required this.errorText,
   });
 
@@ -29,6 +30,7 @@ class AmountSelector extends ConsumerStatefulWidget {
   final double? initialValue;
   final bool isCentered;
   final Widget? suffix;
+  final String? prefix;
   final String? errorText;
 
   @override
@@ -117,74 +119,75 @@ class _AmountSelectorState extends ConsumerState<AmountSelector> {
         inkColor: _color(context).withOpacity(0.15),
         onTap: _changeAmount,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 6),
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              Stack(
-                alignment: Alignment.center,
+              Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: widget.isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
-                    children: [
-                      MoneyAmount(
-                        amount: _currentAmount ?? 0,
-                        noAnimation: true,
-                        style: kHeader2TextStyle.copyWith(
-                          color: _color(context),
-                          fontSize: 32,
-                          letterSpacing: 0.99,
-                        ),
-                        symbolStyle: kHeader3TextStyle.copyWith(
-                          color: _color(context),
-                          fontSize: 20,
+                  MoneyAmount(
+                    amount: _currentAmount ?? 0,
+                    noAnimation: true,
+                    style: kHeader1TextStyle.copyWith(
+                      color: _color(context),
+                      fontSize: 31,
+                      letterSpacing: 0.99,
+                    ),
+                    symbolStyle: kHeader3TextStyle.copyWith(
+                      color: _color(context),
+                      fontSize: 20,
+                    ),
+                  ),
+                  HideableContainer(
+                    hide: widget.errorText == null,
+                    child: Transform.translate(
+                      offset: const Offset(0, 1.5),
+                      child: Center(
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              WidgetSpan(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: SvgIcon(
+                                    AppIcons.warningBulk,
+                                    color: context.appTheme.negative,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                              TextSpan(
+                                text: widget.errorText ?? '',
+                                style: kHeader3TextStyle.copyWith(
+                                  color: context.appTheme.negative,
+                                  fontSize: 13,
+                                  height: 1,
+                                ),
+                              )
+                            ],
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: true,
                         ),
                       ),
-                    ],
-                  ),
-                  Positioned(
-                    right: 6,
-                    child: widget.suffix ??
-                        SvgIcon(
-                          AppIcons.editLight,
-                          color: _color(context),
-                        ),
+                    ),
                   ),
                 ],
               ),
-              HideableContainer(
-                hide: widget.errorText == null,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 6.0),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          WidgetSpan(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 6),
-                              child: SvgIcon(
-                                AppIcons.warningBulk,
-                                color: context.appTheme.negative,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                          TextSpan(
-                            text: widget.errorText ?? '',
-                            style: kHeader3TextStyle.copyWith(
-                              color: context.appTheme.negative,
-                              fontSize: 13,
-                              height: 1,
-                            ),
-                          )
-                        ],
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      softWrap: true,
-                    ),
-                  ),
-                ),
+              Positioned(
+                right: 6,
+                child: widget.suffix ?? Gap.noGap,
+              ),
+              Positioned(
+                left: 6,
+                child: widget.prefix != null
+                    ? SvgIcon(
+                        widget.prefix!,
+                        color: _color(context),
+                        size: 30,
+                      )
+                    : Gap.noGap,
               ),
             ],
           ),
