@@ -56,7 +56,7 @@ class LocalNotificationsSingleton {
   }
 
   // By design, iOS applications do not display notifications while the app is in the foreground unless configured to do so.
-  static void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
+  void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
     // display a dialog with the notification details, tap ok to go to another page
     // showDialog(
     //   context: context,
