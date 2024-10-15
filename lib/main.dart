@@ -19,8 +19,7 @@ Future<void> main() async {
   usePathUrlStrategy(); //remove # character in web link
 
   // initialize REALM database
-  final realmDataStore = RealmDataStore();
-  realmDataStore.init();
+  final realmDataStore = RealmDataStore()..init();
 
   // initialize app icons
   await AppIcons.init();
