@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'; // need to add to pubspec.yaml as a dependency
 import 'package:money_tracker_app/persistent/realm_data_store.dart';
+import 'package:money_tracker_app/services/local_notifications/local_notifications.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_page/custom_page.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/application/app_persistent.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/data/persistent_repo.dart';
@@ -21,6 +22,9 @@ Future<void> main() async {
   // initialize REALM database
   final realmDataStore = RealmDataStore()..init();
 
+  // initialize local notifications
+  final localNotificationsSingleton = LocalNotificationsSingleton()..init();
+
   // initialize app icons
   await AppIcons.init();
 
@@ -28,6 +32,7 @@ Future<void> main() async {
     ProviderScope(
       overrides: [
         realmDataStoreProvider.overrideWithValue(realmDataStore),
+        localNotificationsSingletonProvider.overrideWithValue(localNotificationsSingleton),
       ],
       child: const MoneyTrackerApp(),
     ),

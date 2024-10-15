@@ -4,9 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // https://pub.dev/packages/flutter_local_notifications
 class LocalNotificationsSingleton {
-  LocalNotificationsSingleton(this.context);
-
-  final BuildContext context;
   final FlutterLocalNotificationsPlugin _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   void init() async {
@@ -59,7 +56,7 @@ class LocalNotificationsSingleton {
   }
 
   // By design, iOS applications do not display notifications while the app is in the foreground unless configured to do so.
-  void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
+  static void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
     // display a dialog with the notification details, tap ok to go to another page
     // showDialog(
     //   context: context,
@@ -86,7 +83,7 @@ class LocalNotificationsSingleton {
   }
 
   @pragma('vm:entry-point')
-  void _notificationTapBackground(NotificationResponse notificationResponse) {
+  static void _notificationTapBackground(NotificationResponse notificationResponse) {
     // handle action
   }
 
@@ -125,7 +122,7 @@ final localNotificationsSingletonProvider = Provider<LocalNotificationsSingleton
 });
 
 /// Use this provider to get [LocalNotificationsSingleton._localNotificationsPlugin] instance in widgets
-final realmProvider = Provider<FlutterLocalNotificationsPlugin>((ref) {
+final localNotificationsPluginProvider = Provider<FlutterLocalNotificationsPlugin>((ref) {
   final localNotificationsSingleton = ref.watch(localNotificationsSingletonProvider);
   return localNotificationsSingleton._localNotificationsPlugin;
 });
