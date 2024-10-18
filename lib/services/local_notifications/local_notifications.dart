@@ -8,7 +8,8 @@ class LocalNotificationsSingleton {
 
   void init() async {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('app_icon');
+    // icon name is the file located in android/app/src/main/res/drawable
+    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('status_bar_icon');
 
     // For iOS, permission should be called at the appropriate point in the application
     final DarwinInitializationSettings initSettingsDarwin = DarwinInitializationSettings(
