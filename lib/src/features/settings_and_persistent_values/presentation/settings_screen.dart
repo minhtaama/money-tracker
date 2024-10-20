@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_tracker_app/services/local_notifications/local_notifications.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
@@ -19,6 +20,7 @@ import 'package:money_tracker_app/src/utils/constants.dart';
 import 'package:money_tracker_app/src/utils/enums.dart';
 import 'package:money_tracker_app/src/utils/extensions/context_extensions.dart';
 import 'package:money_tracker_app/src/utils/extensions/date_time_extensions.dart';
+import 'package:money_tracker_app/src/utils/extensions/string_double_extension.dart';
 import '../../../common_widgets/custom_page/custom_tab_bar.dart';
 import '../../../common_widgets/custom_page/custom_page.dart';
 import '../data/settings_repo.dart';
@@ -94,7 +96,8 @@ class SettingsScreen extends ConsumerWidget {
                 children: [
                   Text(
                     currentSettings.currency.code,
-                    style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+                    style:
+                        kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
                   ),
                   Gap.w4,
                   SvgIcon(
@@ -128,6 +131,18 @@ class SettingsScreen extends ConsumerWidget {
         ),
         CustomSection(
           sections: [
+            Gap.h4,
+            CustomTile(
+              title: 'Test Notification'.hardcoded,
+              onTap: () {
+                final localNotificationsSingleton = ref.watch(localNotificationsSingletonProvider);
+                localNotificationsSingleton.showNotificationWithActions();
+              },
+            ),
+          ],
+        ),
+        CustomSection(
+          sections: [
             Gap.h8,
             SettingTileDropDown<Locale>(
               title: context.loc.language,
@@ -144,7 +159,8 @@ class SettingsScreen extends ConsumerWidget {
             SettingTileDropDown<ShortDateType>(
               title: context.loc.shortDateFormat,
               initialValue: currentSettings.shortDateType,
-              values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
+              values:
+                  ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
               onChanged: (type) => settingsController.set(shortDateType: type),
             ),
             SettingTileDropDown<FirstDayOfWeek>(

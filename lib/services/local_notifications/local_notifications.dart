@@ -9,7 +9,8 @@ class LocalNotificationsSingleton {
   void init() async {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // icon name is the file located in android/app/src/main/res/drawable
-    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('status_bar_icon');
+    const AndroidInitializationSettings initSettingsAndroid =
+        AndroidInitializationSettings('status_bar_icon');
 
     // For iOS, permission should be called at the appropriate point in the application
     final DarwinInitializationSettings initSettingsDarwin = DarwinInitializationSettings(
@@ -100,18 +101,21 @@ class LocalNotificationsSingleton {
   }
 
   // For android
-  Future<void> _showNotificationWithActions() async {
+  Future<void> showNotificationWithActions() async {
     const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       '...',
       '...',
       channelDescription: '...',
+      importance: Importance.max,
+      priority: Priority.high,
       actions: <AndroidNotificationAction>[
         AndroidNotificationAction('id_1', 'Action 1'),
         AndroidNotificationAction('id_2', 'Action 2'),
         AndroidNotificationAction('id_3', 'Action 3'),
       ],
     );
-    const NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
     await _localNotificationsPlugin.show(0, '...', '...', notificationDetails);
   }
 }
