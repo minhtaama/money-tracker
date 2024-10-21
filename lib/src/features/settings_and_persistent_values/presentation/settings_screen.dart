@@ -96,8 +96,7 @@ class SettingsScreen extends ConsumerWidget {
                 children: [
                   Text(
                     currentSettings.currency.code,
-                    style:
-                        kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
+                    style: kHeader1TextStyle.copyWith(color: context.appTheme.onBackground, fontSize: 18),
                   ),
                   Gap.w4,
                   SvgIcon(
@@ -135,7 +134,7 @@ class SettingsScreen extends ConsumerWidget {
             CustomTile(
               title: 'Test Notification'.hardcoded,
               onTap: () {
-                final localNotificationsSingleton = ref.watch(localNotificationsSingletonProvider);
+                final localNotificationsSingleton = ref.watch(localNotificationsServiceProvider);
                 localNotificationsSingleton.showNotificationWithActions();
               },
             ),
@@ -159,8 +158,7 @@ class SettingsScreen extends ConsumerWidget {
             SettingTileDropDown<ShortDateType>(
               title: context.loc.shortDateFormat,
               initialValue: currentSettings.shortDateType,
-              values:
-                  ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
+              values: ShortDateType.values.map((e) => (e, today.toShortDate(context, custom: e))).toList(),
               onChanged: (type) => settingsController.set(shortDateType: type),
             ),
             SettingTileDropDown<FirstDayOfWeek>(

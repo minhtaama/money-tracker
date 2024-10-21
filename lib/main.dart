@@ -23,7 +23,7 @@ Future<void> main() async {
   final realmDataStore = RealmDataStore()..init();
 
   // initialize local notifications
-  final localNotificationsSingleton = LocalNotificationsSingleton()..init();
+  final localNotificationsService = LocalNotificationsService()..init();
 
   // initialize app icons
   await AppIcons.init();
@@ -32,7 +32,7 @@ Future<void> main() async {
     ProviderScope(
       overrides: [
         realmDataStoreProvider.overrideWithValue(realmDataStore),
-        localNotificationsSingletonProvider.overrideWithValue(localNotificationsSingleton),
+        localNotificationsServiceProvider.overrideWithValue(localNotificationsService),
       ],
       child: const MoneyTrackerApp(),
     ),
