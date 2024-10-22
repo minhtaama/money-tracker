@@ -107,6 +107,31 @@ class LocalNotificationsService {
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
     );
   }
+
+  Future<List<PendingNotificationRequest>> pendingNotifications() async {
+    return await _localNotificationsPlugin.pendingNotificationRequests();
+  }
+
+  // void reScheduleNotification() async {
+  //   // Assuming you have a function to calculate the next notification time
+  //   DateTime nextNotificationTime = calculateNextNotificationTime();
+  //
+  // // Schedule the silent check-in notification
+  //   await FlutterLocalNotificationsPlugin().zonedSchedule(
+  //     check_in_notification_id,
+  //     "Silent Check-In",
+  //     "Waking up the app...",
+  //     // Schedule the notification to repeat every 15 minutes
+  //     const PeriodicNotificationRepeat(interval: RepeatInterval.everyFifteenMinutes),
+  //     AndroidNotificationDetails(...), // Set silent notification details
+  //     IOSNotificationDetails(...), // Set silent notification details
+  //     payload: {"payload": "check_in"}, uiLocalNotificationDateInterpretation: null, // Payload to identify the check-in
+  //   );
+  // }
+
+  // void cancelNotification() {
+  //   _localNotificationsPlugin.cancel(id);
+  // }
 }
 
 enum CustomNotificationDetails {
@@ -125,6 +150,7 @@ enum CustomNotificationDetails {
       ),
     ),
   ),
+
   upcomingTransaction(
     NotificationDetails(
       android: AndroidNotificationDetails(
@@ -189,9 +215,3 @@ class _ActionGroupID {
 final localNotificationsServiceProvider = Provider<LocalNotificationsService>((ref) {
   throw UnimplementedError();
 });
-
-// /// Use this provider to get [LocalNotificationsSingleton._localNotificationsPlugin] instance in widgets
-// final localNotificationsPluginProvider = Provider<FlutterLocalNotificationsPlugin>((ref) {
-//   final localNotificationsSingleton = ref.watch(localNotificationsSingletonProvider);
-//   return localNotificationsSingleton._localNotificationsPlugin;
-// });

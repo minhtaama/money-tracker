@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,7 @@ import 'package:money_tracker_app/services/local_notifications/local_notificatio
 import 'package:money_tracker_app/src/common_widgets/custom_tile.dart';
 import 'package:money_tracker_app/src/common_widgets/page_heading.dart';
 import 'package:money_tracker_app/src/common_widgets/custom_section.dart';
+import 'package:money_tracker_app/src/common_widgets/rounded_icon_button.dart';
 import 'package:money_tracker_app/src/common_widgets/svg_icon.dart';
 import 'package:money_tracker_app/src/features/calculator_input/application/calculator_service.dart';
 import 'package:money_tracker_app/src/features/settings_and_persistent_values/presentation/components/color_picker.dart';
@@ -131,6 +134,26 @@ class SettingsScreen extends ConsumerWidget {
         CustomSection(
           sections: [
             Gap.h4,
+            _NotificationsList(),
+            SettingTileToggle(
+              title: 'Daily reminder',
+              onTap: (int index) {
+                if (index == 0) {
+                } else {
+                  print('run');
+                  final localNotificationsSingleton = ref.watch(localNotificationsServiceProvider);
+                  localNotificationsSingleton.scheduleNotification(
+                    title: 'Daily reminder',
+                    body: 'body 222',
+                    scheduledNotificationDateTime: DateTime.now().copyWith(hour: 20, minute: 00),
+                    details: CustomNotificationDetails.dailyReminder,
+                    payload: '',
+                  );
+                }
+              },
+              valuesCount: 2,
+              initialValueIndex: currentSettings.showDecimalDigits ? 1 : 0,
+            ),
             CustomTile(
               title: 'Test Notification'.hardcoded,
               onTap: () {
@@ -168,6 +191,62 @@ class SettingsScreen extends ConsumerWidget {
               onChanged: (weekDay) => settingsController.set(firstDayOfWeek: weekDay),
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class _NotificationsList extends ConsumerStatefulWidget {
+  const _NotificationsList({super.key});
+
+  @override
+  ConsumerState<_NotificationsList> createState() => _NotificationsListState();
+}
+
+class _NotificationsListState extends ConsumerState<_NotificationsList> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('Pending notifications'),
+        FutureBuilder(
+          future: ref.watch(localNotificationsServiceProvider).pendingNotifications(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return SvgIcon(AppIcons.eyeBulk);
+            }
+            if (snapshot.hasError) {
+              return SvgIcon(AppIcons.defaultIcon);
+            }
+            if (snapshot.hasData) {
+              return Row(
+                children: [
+                  RoundedIconButton(
+                    iconPath: AppIcons.eyeBulk,
+                    onTap: () => setState(() {}),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: snapshot.data!
+                          .map(
+                            (e) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(e.title ?? ''),
+                                Text(e.body ?? ''),
+                                Text(e.id.toString()),
+                              ],
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Gap.noGap;
+          },
         ),
       ],
     );
